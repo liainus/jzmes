@@ -1,4 +1,4 @@
-import MicroMES.Model.core
+import Model.core
 import json
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
@@ -6,7 +6,7 @@ from sqlalchemy import create_engine, Column,ForeignKey, Table, DateTime, Intege
 from sqlalchemy import Column, DateTime, Float, Integer, String, Unicode,BigInteger
 from sqlalchemy.dialects.mssql.base import BIT
 from sqlalchemy import func
-import MicroMES.Model.Global
+import Model.Global
 from collections import Counter
 import datetime
 import json
@@ -20,7 +20,7 @@ from datetime import datetime, date, timedelta
 import pymssql
 
 # 创建对象的基类
-engine = create_engine(MicroMES.Model.Global.GLOBAL_DATABASE_CONNECT_STRING, deprecate_large_types=True)
+engine = create_engine(Model.Global.GLOBAL_DATABASE_CONNECT_STRING, deprecate_large_types=True)
 # Session = sessionmaker(bind=engine)
 # session = Session()
 # Base = declarative_base(engine)
@@ -32,15 +32,15 @@ class ctrlPlan:
     def __init__(self,name):
         try:
             self.name = name
-            # self.productrule = MicroMES.Model.core.ProductRule("1")
-            # self.productunit = MicroMES.Model.core.ProductUnit("2")
-            # self.productcontrltask = MicroMES.Model.core.ProductContrlTask("3")
-            # self.productparameter = MicroMES.Model.core.ProductParameter("4")
-            # self.materialbom = MicroMES.Model.core.MaterialBOM("5")
-            # self.productunitroute = MicroMES.Model.core.ProductUnitRoute("6")
-            # self.scheduleplan = MicroMES.Model.core.SchedulePlan("7")
-            # self.planmanager = MicroMES.Model.core.PlanManager("8")
-            # self.unit = MicroMES.Model.core.Unit("9")
+            # self.productrule = Model.core.ProductRule("1")
+            # self.productunit = Model.core.ProductUnit("2")
+            # self.productcontrltask = Model.core.ProductContrlTask("3")
+            # self.productparameter = Model.core.ProductParameter("4")
+            # self.materialbom = Model.core.MaterialBOM("5")
+            # self.productunitroute = Model.core.ProductUnitRoute("6")
+            # self.scheduleplan = Model.core.SchedulePlan("7")
+            # self.planmanager = Model.core.PlanManager("8")
+            # self.unit = Model.core.Unit("9")
         except Exception as e:
             print(e)
 
@@ -56,11 +56,11 @@ class ctrlPlan:
     def queryPlanDate(self,AProductDate):
         bReturn = True
         try:
-            oclass = session.query(MicroMES.Model.core.SchedulePlan).filter_by(SchedulePlanCode=AProductDate).first()
+            oclass = session.query(Model.core.SchedulePlan).filter_by(SchedulePlanCode=AProductDate).first()
             if oclass is None:
                 bReturn = False
             else:
-                session.add(MicroMES.Model.core.SchedulePlan(SchedulePlanCode=AProductDate, Desc="", PlanBeginTime="2018-05-04 08:00:00",
+                session.add(Model.core.SchedulePlan(SchedulePlanCode=AProductDate, Desc="", PlanBeginTime="2018-05-04 08:00:00",
                                                              PlanEndTime="2018-05-05 07:59:59", Type="天"))
                 session.commit()
             return (bReturn,oclass)
@@ -72,7 +72,7 @@ class ctrlPlan:
     def queryProductRule(self,AID):
         bReturn = True
         try:
-            oclass = session.query(MicroMES.Model.core.ProductRule).filter_by(ID=AID).first()
+            oclass = session.query(Model.core.ProductRule).filter_by(ID=AID).first()
             if oclass is None:
                 bReturn = False
             else:
@@ -85,7 +85,7 @@ class ctrlPlan:
     def queryProductUnit(self,AID):
         bReturn = True
         try:
-            oclass = session.query(MicroMES.Model.core.ProductUnit).filter_by(ProductRuleID=AID).all()
+            oclass = session.query(Model.core.ProductUnit).filter_by(ProductRuleID=AID).all()
             if oclass is None:
                 bReturn = False
             else:
@@ -98,7 +98,7 @@ class ctrlPlan:
     def queryProductUnitRoute(self,AID):
         bReturn = True
         try:
-            oclass = session.query(MicroMES.Model.core.ProductUnitRoute).filter_by(ProductRuleID=AID).all()
+            oclass = session.query(Model.core.ProductUnitRoute).filter_by(ProductRuleID=AID).all()
             if oclass is None:
                 bReturn = False
             else:
@@ -113,11 +113,11 @@ class ctrlPlan:
         bReturn = True
         iTaskCount = 0
         try:
-            oclass = session.query(MicroMES.Model.core.ProductControlTask)\
-                .filter(MicroMES.Model.core.ProductControlTask.ProductRuleID==AID) \
-                .filter(MicroMES.Model.core.ProductControlTask.PUID == APUID) \
-                .filter(MicroMES.Model.core.ProductControlTask.LowLimit<=AWeight)\
-                .filter(MicroMES.Model.core.ProductControlTask.HighLimit > AWeight).first()
+            oclass = session.query(Model.core.ProductControlTask)\
+                .filter(Model.core.ProductControlTask.ProductRuleID==AID) \
+                .filter(Model.core.ProductControlTask.PUID == APUID) \
+                .filter(Model.core.ProductControlTask.LowLimit<=AWeight)\
+                .filter(Model.core.ProductControlTask.HighLimit > AWeight).first()
             if oclass is None:
                 bReturn = False
             else:
@@ -132,13 +132,13 @@ class ctrlPlan:
         bReturn = True;
         try:
             session.add(
-                MicroMES.Model.core.ZYPlan(
+                Model.core.ZYPlan(
                     PlanDate=APlanDate,
                     PlanNo=ATaskNO,
                     BatchID=ABatchID,
                     PlanSeq=ASeq,
                     PUID=APUID,
-                    PlanType=MicroMES.Model.Global.PLANTYPE.SCHEDULE.value,
+                    PlanType=Model.Global.PLANTYPE.SCHEDULE.value,
                     BrandID=ABrandID,
                     BrandName=ABrandName,
                     ERPOrderNo="",
@@ -150,10 +150,10 @@ class ctrlPlan:
                     PlanEndTime=APlanEndTime,
                     ActBeginTime="",
                     ActEndTime="",
-                    TaskStatus=MicroMES.Model.Global.TASKSTATUS.COMPILE.value,
-                    LockStatus=MicroMES.Model.Global.TASKLOCKSTATUS.LOCKED.value,
-                    INFStatus=MicroMES.Model.Global.TASKSTATUS.COMPILE.value,
-                    WMSStatus=MicroMES.Model.Global.TASKSTATUS.COMPILE.value))
+                    TaskStatus=Model.Global.TASKSTATUS.COMPILE.value,
+                    LockStatus=Model.Global.TASKLOCKSTATUS.LOCKED.value,
+                    INFStatus=Model.Global.TASKSTATUS.COMPILE.value,
+                    WMSStatus=Model.Global.TASKSTATUS.COMPILE.value))
             session.commit()
         except Exception as e:
             session.rollback()
@@ -166,13 +166,13 @@ class ctrlPlan:
         bReturn = True;
         try:
             session.add(
-                MicroMES.Model.core.ZYTask(
+                Model.core.ZYTask(
                     PlanDate=APlanDate,
                     TaskID=ATaskNO,
                     BatchID=ABatchID,
                     PlanSeq=ASeq,
                     PUID=APUID,
-                    PlanType=MicroMES.Model.Global.PLANTYPE.SCHEDULE.value,
+                    PlanType=Model.Global.PLANTYPE.SCHEDULE.value,
                     BrandID=ABrandID,
                     BrandName=ABrandName,
                     PlanQuantity=APlanWeight,
@@ -184,8 +184,8 @@ class ctrlPlan:
                     SetRepeatCount=ASetRepeatCount,
                     # CurretnRepeatCount=odata['CurretnRepeatCount'],
                     # ActTank=odata['ActTank'],
-                    TaskStatus=MicroMES.Model.Global.TASKSTATUS.COMPILE.value,
-                    LockStatus=MicroMES.Model.Global.TASKLOCKSTATUS.LOCKED.value))
+                    TaskStatus=Model.Global.TASKSTATUS.COMPILE.value,
+                    LockStatus=Model.Global.TASKLOCKSTATUS.LOCKED.value))
             session.commit()
             return bReturn
         except Exception as e:
@@ -197,10 +197,10 @@ class ctrlPlan:
     def getPUPara(self,APUID,ABrandID, APUPara):
         bReturn = True
         try:
-            oclass = session.query(MicroMES.Model.core.ProductParameter).filter(
-                MicroMES.Model.core.ProductParameter.ProductRuleID == ABrandID).filter(
-                MicroMES.Model.core.ProductParameter.PUID == APUID).filter(
-                MicroMES.Model.core.ProductParameter.PDParaCode ==APUPara).first()
+            oclass = session.query(Model.core.ProductParameter).filter(
+                Model.core.ProductParameter.ProductRuleID == ABrandID).filter(
+                Model.core.ProductParameter.PUID == APUID).filter(
+                Model.core.ProductParameter.PDParaCode ==APUPara).first()
             if oclass is None:
                 bReturn = True
                 paraValue = 0
@@ -215,8 +215,8 @@ class ctrlPlan:
     def getLineInfo(self):
         bReturn = True
         try:
-            oclass = session.query(MicroMES.Model.core.ProductLine).filter(
-                MicroMES.Model.core.ProductLine.PLineName == "江中罗亭生产线1").first()
+            oclass = session.query(Model.core.ProductLine).filter(
+                Model.core.ProductLine.PLineName == "江中罗亭生产线1").first()
             if oclass is None:
                 bReturn = False
                 return bReturn, "", ""
@@ -231,9 +231,9 @@ class ctrlPlan:
         bReturn = True
         iSeq = 0
         try:
-            oclass = session.query(func.max(MicroMES.Model.core.ZYPlan.PlanSeq)).filter(
-                MicroMES.Model.core.ZYPlan.PlanDate == APlanDate).filter(
-                MicroMES.Model.core.ZYPlan.PUID == APUID).all()
+            oclass = session.query(func.max(Model.core.ZYPlan.PlanSeq)).filter(
+                Model.core.ZYPlan.PlanDate == APlanDate).filter(
+                Model.core.ZYPlan.PUID == APUID).all()
             if oclass[0][0] is None:
                 bReturn = True
                 iSeq = 1
@@ -248,8 +248,8 @@ class ctrlPlan:
     def getProductUnitRoute(self,AProductRuleID):
         bReturn = True
         try:
-            oclass = session.query(MicroMES.Model.core.ProductUnitRoute).filter(
-                MicroMES.Model.core.ProductUnitRoute.ProductRuleID == AProductRuleID).all()
+            oclass = session.query(Model.core.ProductUnitRoute).filter(
+                Model.core.ProductUnitRoute.ProductRuleID == AProductRuleID).all()
             if oclass is None:
                 bReturn = False
             else:
@@ -264,9 +264,9 @@ class ctrlPlan:
         bReturn = True
         iSeq = 0
         try:
-            oclass = session.query(MicroMES.Model.core.ZYTask).filter(
-                MicroMES.Model.core.ZYTask.BatchID == ABatchID).filter(
-                MicroMES.Model.core.ZYTask.PUID == APUID).last()
+            oclass = session.query(Model.core.ZYTask).filter(
+                Model.core.ZYTask.BatchID == ABatchID).filter(
+                Model.core.ZYTask.PUID == APUID).last()
             if oclass is None:
                 bReturn = True
                 iSeq = 1
@@ -282,9 +282,9 @@ class ctrlPlan:
         bReturn = True
         iSeq = 0
         try:
-            oclass = session.query(func.max(MicroMES.Model.core.PlanManager.Seq)).filter(
-                MicroMES.Model.core.PlanManager.SchedulePlanCode == APlanDate).filter(
-                MicroMES.Model.core.PlanManager.PLineID == APLineID).all()
+            oclass = session.query(func.max(Model.core.PlanManager.Seq)).filter(
+                Model.core.PlanManager.SchedulePlanCode == APlanDate).filter(
+                Model.core.PlanManager.PLineID == APLineID).all()
             if oclass[0][0] is None:
                 bReturn = True
                 iSeq = 1
@@ -300,15 +300,15 @@ class ctrlPlan:
         iReturn = 0
         iIsExist = 0
         try:
-            oclass = session.query(MicroMES.Model.core.PlanManager).filter(
-                MicroMES.Model.core.PlanManager.BatchID == ABatchID).first()
+            oclass = session.query(Model.core.PlanManager).filter(
+                Model.core.PlanManager.BatchID == ABatchID).first()
             if oclass is None:
                 iReturn = 0
                 iIsExist = 0
             else:
                 iReturn = 0
                 iIsExist = 1
-            return iReturn, iIsExist,MicroMES.Model.Global.GLOBAL_NULL_STRING
+            return iReturn, iIsExist,Model.Global.GLOBAL_NULL_STRING
         except Exception as e:
             iReturn = -1
             print(e)
@@ -318,13 +318,13 @@ class ctrlPlan:
         bReturn = True;
         try:
             session.add(
-                MicroMES.Model.core.PlanManager(
+                Model.core.PlanManager(
                     SchedulePlanCode=APlanDate,
                     BatchID = ABatchID,
                     BrandID = ABrandID,
                     BrandName = ABrandName,
                     Seq = ASeq,
-                    PlanBeginTime = APlanDate + " " + MicroMES.Model.Global.GLOBAL_PLANSTARTTIME,
+                    PlanBeginTime = APlanDate + " " + Model.Global.GLOBAL_PLANSTARTTIME,
                     Type = AType,
                     PlanQuantity = APlanQuantity,
                     Unit = AUnit,
@@ -343,8 +343,8 @@ class ctrlPlan:
         IsExist = False
         oclass = None
         try:
-            oclass = session.query(MicroMES.Model.core.SchedulePlan).filter(
-                MicroMES.Model.core.SchedulePlan.SchedulePlanCode == APlanDate).first()
+            oclass = session.query(Model.core.SchedulePlan).filter(
+                Model.core.SchedulePlan.SchedulePlanCode == APlanDate).first()
             if oclass is None:
                 bReturn = True
                 IsExist = False
@@ -361,7 +361,7 @@ class ctrlPlan:
         bReturn = True
         try:
             session.add(
-                MicroMES.Model.core.SchedulePlan(
+                Model.core.SchedulePlan(
                     SchedulePlanCode=APlanDate,
                     Desc=ADesc,
                     PlanBeginTime=APlanBeginTime,
@@ -387,13 +387,13 @@ class ctrlPlan:
         iReturn = 0
         iIsExist = 0
         try:
-            strPlanStarTime = str(APlanDate) + " " + MicroMES.Model.Global.GLOBAL_PLANSTARTTIME
+            strPlanStarTime = str(APlanDate) + " " + Model.Global.GLOBAL_PLANSTARTTIME
             dEndTime = datetime.strptime(APlanDate, '%Y-%m-%d') + timedelta(days=1)
-            strPlanEndTime = dEndTime.strftime('%Y-%m-%d') + " " + MicroMES.Model.Global.GLOBAL_PLANENDTIME
+            strPlanEndTime = dEndTime.strftime('%Y-%m-%d') + " " + Model.Global.GLOBAL_PLANENDTIME
             bReturn,bIsExist = self.IsExistSchedulePlanDate(APlanDate)
             if (bReturn == True) and (bIsExist == False):
-                bReturn = self.createSchedulePlan(APlanDate, MicroMES.Model.Global.SCHEDULETYPE.DAY.value,
-                                                  MicroMES.Model.Global.SCHEDULETYPE.DAY.value, strPlanStarTime,strPlanEndTime)
+                bReturn = self.createSchedulePlan(APlanDate, Model.Global.SCHEDULETYPE.DAY.value,
+                                                  Model.Global.SCHEDULETYPE.DAY.value, strPlanStarTime,strPlanEndTime)
                 if bReturn == False:
                     return False
 
@@ -436,7 +436,7 @@ class ctrlPlan:
                                 pass
 
                             bReturn = self.createPUPlan(iPUID, ABatchID, ABrandID, ABrandName, APlanWeight, strTaskNo,
-                                                        iPlanSeq, APlanDate, AUnit, strPlanStarTime, MicroMES.Model.Global.GLOBAL_PLANENDTIME)
+                                                        iPlanSeq, APlanDate, AUnit, strPlanStarTime, Model.Global.GLOBAL_PLANENDTIME)
                             if bReturn == False:
                                 return False
 
@@ -462,7 +462,7 @@ class ctrlPlan:
 
     def getTaskNo(self):
         bReturn = True
-        qry = session.query(func.max(MicroMES.Model.core.TaskNoGenerator.TaskNoInt)).all();
+        qry = session.query(func.max(Model.core.TaskNoGenerator.TaskNoInt)).all();
         intTaskNo = int(qry[0][0])
         varTaskNo = str(intTaskNo + 1)
         if len(varTaskNo) == 1:
@@ -479,7 +479,7 @@ class ctrlPlan:
             varTaskNo = varTaskNo
         try:
             session.add(
-                MicroMES.Model.core.TaskNoGenerator(
+                Model.core.TaskNoGenerator(
                     TaskNoInt=intTaskNo + 1,
                     TaskNoVar=varTaskNo,
                     Desc=""))

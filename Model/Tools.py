@@ -1,7 +1,7 @@
-from MicroMES.Model.system import Role,Organization
-from MicroMES.Model.core import TaskNoGenerator
-from MicroMES.Model.BSFramwork import AlchemyEncoder
-import MicroMES.Model.Global
+from Model.system import Role,Organization
+from Model.core import TaskNoGenerator
+from Model.BSFramwork import AlchemyEncoder
+import Model.Global
 import json
 import sqlalchemy
 import time,datetime,decimal
@@ -15,7 +15,7 @@ from collections import Counter
 import configparser
 
 
-engine = create_engine(MicroMES.Model.Global.GLOBAL_DATABASE_CONNECT_STRING, deprecate_large_types=True)
+engine = create_engine(Model.Global.GLOBAL_DATABASE_CONNECT_STRING, deprecate_large_types=True)
 Session = sessionmaker(bind=engine)
 session = Session()
 

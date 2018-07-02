@@ -15,13 +15,13 @@ from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy import create_engine, Column,ForeignKey, Table, DateTime, Integer, String
 from sqlalchemy import Column, DateTime, Float, Integer, String, Unicode
 from sqlalchemy.dialects.mssql.base import BIT
-import MicroMES.Model.Global
+import Model.Global
 
 #引入mssql数据库引擎
 import pymssql
 
 # 创建对象的基类
-engine = create_engine(MicroMES.Model.Global.GLOBAL_DATABASE_CONNECT_STRING, deprecate_large_types=True)
+engine = create_engine(Model.Global.GLOBAL_DATABASE_CONNECT_STRING, deprecate_large_types=True)
 Session = sessionmaker(bind=engine)
 session = Session()
 Base = declarative_base(engine)

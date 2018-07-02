@@ -19,7 +19,7 @@ from sqlalchemy import create_engine, Column,ForeignKey, Table, DateTime, Intege
 from sqlalchemy import Column, DateTime, Float, Integer, String, Unicode,BigInteger
 from sqlalchemy.dialects.mssql.base import BIT
 from sqlalchemy import func
-import MicroMES.Model.Global
+import Model.Global
 from collections import Counter
 import json
 import re
@@ -30,7 +30,7 @@ import sys
 import pymssql
 
 # 创建对象的基类
-engine = create_engine(MicroMES.Model.Global.GLOBAL_DATABASE_CONNECT_STRING, deprecate_large_types=True)
+engine = create_engine(Model.Global.GLOBAL_DATABASE_CONNECT_STRING, deprecate_large_types=True)
 Session = sessionmaker(bind=engine)
 session = Session()
 Base = declarative_base(engine)
@@ -176,7 +176,7 @@ class ZYPlanWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 10:
 				session.add(
-					MicroMES.Model.core.ZYPlan(
+					Model.core.ZYPlan(
 						PlanDate= odata['PlanDate'],
 						PlanNo= odata['PlanNo'],
 						BatchID= odata['BatchID'],
@@ -199,11 +199,11 @@ class ZYPlanWebIFS(object):
 						INFStatus= odata['INFStatus'],
 						WMSStatus= odata['WMSStatus']))
 				session.commit()
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 								  ensure_ascii=False)
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allZYPlansDelete(self,rcvdata):
 		odata = rcvdata
@@ -215,17 +215,17 @@ class ZYPlanWebIFS(object):
 					# for subkey in list(key):
 					ZYPlanid = int(key)
 					try:
-						oclass = session.query(MicroMES.Model.core.ZYPlan).filter_by(ID=ZYPlanid).delete()
+						oclass = session.query(Model.core.ZYPlan).filter_by(ID=ZYPlanid).delete()
 					except Exception as ee:
 						print(ee)
-						return json.dumps([{"status": "error:" + str(ee)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+						return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
 												  ensure_ascii=False)
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
 					# return json.dumps([{"status": "Error"+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def ZYPlansFind(self,rcvdata):
 		odata = rcvdata
@@ -237,12 +237,12 @@ class ZYPlanWebIFS(object):
 				rowsnumber = int(odata['rows'])
 				inipage = (pages - 1) * rowsnumber + 0
 				endpage = (pages - 1) * rowsnumber + rowsnumber
-				total = session.query(func.count(MicroMES.Model.core.ZYPlan.ID)).scalar()
-				qDatas = session.query(MicroMES.Model.core.ZYPlan).all()[inipage:endpage]
+				total = session.query(func.count(Model.core.ZYPlan.ID)).scalar()
+				qDatas = session.query(Model.core.ZYPlan).all()[inipage:endpage]
 				if total > 0:
-					qDatas = session.query(MicroMES.Model.core.ZYPlan).all()[inipage:endpage]
+					qDatas = session.query(Model.core.ZYPlan).all()[inipage:endpage]
 					# ORM模型转换json格式
-					jsonorganzitions = json.dumps(qDatas,cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+					jsonorganzitions = json.dumps(qDatas,cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 					jsonorganzitions = '{"total"' + ":" + str(
 								total) + ',"rows"' + ":\n" + jsonorganzitions + "}"
 					return jsonorganzitions
@@ -250,7 +250,7 @@ class ZYPlanWebIFS(object):
 					return ""
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allZYPlansUpdate(self,rcvdata):
 		odata = rcvdata
@@ -258,7 +258,7 @@ class ZYPlanWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 10:
 				ZYPlanid = int(odata['ID'])
-				oclass = session.query(MicroMES.Model.core.ZYPlan).filter_by(ID=ZYPlanid).first()
+				oclass = session.query(Model.core.ZYPlan).filter_by(ID=ZYPlanid).first()
 				oclass.PlanDate = odata['PlanDate']
 				oclass.PlanNo = odata['PlanNo']
 				oclass.BatchID = odata['BatchID']
@@ -281,11 +281,11 @@ class ZYPlanWebIFS(object):
 				oclass.INFStatus = odata['INFStatus']
 				oclass.WMSStatus = odata['WMSStatus']
 				session.commit()
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allZYPlansSearch(self,rcvdata):
 		odata = rcvdata
@@ -293,15 +293,15 @@ class ZYPlanWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 2:
 				strconditon = "%" + odata['condition'] + "%"
-				ZYPlanscount = session.query(MicroMES.Model.core.ZYPlan).filter(
+				ZYPlanscount = session.query(Model.core.ZYPlan).filter(
 							ZYPlan.BatchID.like(strconditon)).all()
 				total = Counter(ZYPlanscount)
-				jsonZYPlans = json.dumps(ZYPlanscount, cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+				jsonZYPlans = json.dumps(ZYPlanscount, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 				jsonZYPlans = '{"total"' + ":" + str(total.__len__()) + ',"rows"' + ":\n" + jsonZYPlans + "}"
 				return jsonZYPlans
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error：" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 	
 #ZYPlanMaterial:
 class ZYPlanMaterial(Base):
@@ -361,7 +361,7 @@ class ZYPlanMaterialWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 10:
 				session.add(
-					MicroMES.Model.core.ZYPlanMaterial(
+					Model.core.ZYPlanMaterial(
 						PlanDate=odata['PlanDate'],
 						PlanID=odata['PlanID'],
 						BatchID=odata['BatchID'],
@@ -377,11 +377,11 @@ class ZYPlanMaterialWebIFS(object):
 						Unit=odata['Unit'],
 						EnterTime=odata['EnterTime']))
 				session.commit()
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 								  ensure_ascii=False)
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allZYPlanMaterialsDelete(self,rcvdata):
 		odata = rcvdata
@@ -393,17 +393,17 @@ class ZYPlanMaterialWebIFS(object):
 					# for subkey in list(key):
 					ZYPlanMaterialid = int(key)
 					try:
-						oclass = session.query(MicroMES.Model.core.ZYPlanMaterial).filter_by(ID=ZYPlanMaterialid).delete()
+						oclass = session.query(Model.core.ZYPlanMaterial).filter_by(ID=ZYPlanMaterialid).delete()
 					except Exception as ee:
 						print(ee)
-						return json.dumps([{"status": "error:" + str(ee)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+						return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
 												  ensure_ascii=False)
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
 					# return json.dumps([{"status": "Error"+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def ZYPlanMaterialsFind(self,rcvdata):
 		odata = rcvdata
@@ -415,12 +415,12 @@ class ZYPlanMaterialWebIFS(object):
 				rowsnumber = int(odata['rows'])
 				inipage = (pages - 1) * rowsnumber + 0
 				endpage = (pages - 1) * rowsnumber + rowsnumber
-				total = session.query(func.count(MicroMES.Model.core.ZYPlanMaterial.ID)).scalar()
-				qDatas = session.query(MicroMES.Model.core.ZYPlanMaterial).all()[inipage:endpage]
+				total = session.query(func.count(Model.core.ZYPlanMaterial.ID)).scalar()
+				qDatas = session.query(Model.core.ZYPlanMaterial).all()[inipage:endpage]
 				if total > 0:
-					qDatas = session.query(MicroMES.Model.core.ZYPlanMaterial).all()[inipage:endpage]
+					qDatas = session.query(Model.core.ZYPlanMaterial).all()[inipage:endpage]
 					# ORM模型转换json格式
-					jsonorganzitions = json.dumps(qDatas,cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+					jsonorganzitions = json.dumps(qDatas,cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 					jsonorganzitions = '{"total"' + ":" + str(
 								total) + ',"rows"' + ":\n" + jsonorganzitions + "}"
 					return jsonorganzitions
@@ -428,7 +428,7 @@ class ZYPlanMaterialWebIFS(object):
 					return ""
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allZYPlanMaterialsUpdate(self,rcvdata):
 		global oclass
@@ -437,7 +437,7 @@ class ZYPlanMaterialWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 10:
 				ZYPlanMaterialid = int(odata['ID'])
-				oclass = session.query(MicroMES.Model.core.ZYPlanMaterial).filter_by(ID=ZYPlanMaterialid).first()
+				oclass = session.query(Model.core.ZYPlanMaterial).filter_by(ID=ZYPlanMaterialid).first()
 				oclass.PlanDate = odata['PlanDate']
 				oclass.PlanID = odata['PlanID']
 				oclass.BatchID = odata['BatchID']
@@ -453,11 +453,11 @@ class ZYPlanMaterialWebIFS(object):
 				oclass.Unit = odata['Unit']
 				oclass.EnterTime = odata['EnterTime']
 				session.commit()
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allZYPlanMaterialsSearch(self,rcvdata):
 		odata = rcvdata
@@ -465,15 +465,15 @@ class ZYPlanMaterialWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 2:
 				strconditon = "%" + odata['condition'] + "%"
-				ZYPlanMaterialscount = session.query(MicroMES.Model.core.ZYPlanMaterial).filter(
+				ZYPlanMaterialscount = session.query(Model.core.ZYPlanMaterial).filter(
 							ZYPlanMaterial.BatchID.like(strconditon)).all()
 				total = Counter(ZYPlanMaterialscount)
-				jsonZYPlanMaterials = json.dumps(ZYPlanMaterialscount, cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+				jsonZYPlanMaterials = json.dumps(ZYPlanMaterialscount, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 				jsonZYPlanMaterials = '{"total"' + ":" + str(total.__len__()) + ',"rows"' + ":\n" + jsonZYPlanMaterials + "}"
 				return jsonZYPlanMaterials
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error：" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 	
 #ZYTask:
 class ZYTask(Base):
@@ -548,7 +548,7 @@ class ZYTaskWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 10:
 				session.add(
-					MicroMES.Model.core.ZYTask(
+					Model.core.ZYTask(
 						PlanDate=odata['PlanDate'],
 						TaskID=odata['TaskID'],
 						BatchID=odata['BatchID'],
@@ -569,11 +569,11 @@ class ZYTaskWebIFS(object):
 						TaskStatus=odata['TaskStatus'],
 						LockStatus=odata['LockStatus']))
 				session.commit()
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 								  ensure_ascii=False)
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allZYTasksDelete(self,rcvdata):
 		odata = rcvdata
@@ -585,17 +585,17 @@ class ZYTaskWebIFS(object):
 					# for subkey in list(key):
 					ZYTaskid = int(key)
 					try:
-						oclass = session.query(MicroMES.Model.core.ZYTask).filter_by(ID=ZYTaskid).delete()
+						oclass = session.query(Model.core.ZYTask).filter_by(ID=ZYTaskid).delete()
 					except Exception as ee:
 						print(ee)
-						return json.dumps([{"status": "error:" + str(ee)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+						return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
 												  ensure_ascii=False)
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
 					# return json.dumps([{"status": "Error"+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def ZYTasksFind(self,rcvdata):
 		odata = rcvdata
@@ -607,12 +607,12 @@ class ZYTaskWebIFS(object):
 				rowsnumber = int(odata['rows'])
 				inipage = (pages - 1) * rowsnumber + 0
 				endpage = (pages - 1) * rowsnumber + rowsnumber
-				total = session.query(func.count(MicroMES.Model.core.ZYTask.ID)).scalar()
-				qDatas = session.query(MicroMES.Model.core.ZYTask).all()[inipage:endpage]
+				total = session.query(func.count(Model.core.ZYTask.ID)).scalar()
+				qDatas = session.query(Model.core.ZYTask).all()[inipage:endpage]
 				if total > 0:
-					qDatas = session.query(MicroMES.Model.core.ZYTask).all()[inipage:endpage]
+					qDatas = session.query(Model.core.ZYTask).all()[inipage:endpage]
 					# ORM模型转换json格式
-					jsonorganzitions = json.dumps(qDatas,cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+					jsonorganzitions = json.dumps(qDatas,cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 					jsonorganzitions = '{"total"' + ":" + str(
 								total) + ',"rows"' + ":\n" + jsonorganzitions + "}"
 					return jsonorganzitions
@@ -620,7 +620,7 @@ class ZYTaskWebIFS(object):
 					return ""
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allZYTasksUpdate(self,rcvdata):
 		global oclass
@@ -629,7 +629,7 @@ class ZYTaskWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 10:
 				ZYTaskid = int(odata['ID'])
-				oclass = session.query(MicroMES.Model.core.ZYTask).filter_by(ID=ZYTaskid).first()
+				oclass = session.query(Model.core.ZYTask).filter_by(ID=ZYTaskid).first()
 				oclass.PlanDate = odata['PlanDate']
 				oclass.TaskID = odata['TaskID']
 				oclass.BatchID = odata['BatchID']
@@ -650,11 +650,11 @@ class ZYTaskWebIFS(object):
 				oclass.TaskStatus = odata['TaskStatus']
 				oclass.LockStatus = odata['LockStatus']
 				session.commit()
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allZYTasksSearch(self,rcvdata):
 		odata = rcvdata
@@ -662,15 +662,15 @@ class ZYTaskWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 2:
 				strconditon = "%" + odata['condition'] + "%"
-				ZYTaskscount = session.query(MicroMES.Model.core.ZYTask).filter(
+				ZYTaskscount = session.query(Model.core.ZYTask).filter(
 							ZYTask.TaskID.like(strconditon)).all()
 				total = Counter(ZYTaskscount)
-				jsonZYTasks = json.dumps(ZYTaskscount, cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+				jsonZYTasks = json.dumps(ZYTaskscount, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 				jsonZYTasks = '{"total"' + ":" + str(total.__len__()) + ',"rows"' + ":\n" + jsonZYTasks + "}"
 				return jsonZYTasks
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error：" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 	
 #ProductLine:
 class ProductLine(Base):
@@ -709,7 +709,7 @@ class ProductLineWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 10:
 				session.add(
-					MicroMES.Model.core.ProductLine(
+					Model.core.ProductLine(
 						PLineCode=odata['PLineCode'],
 						PLineName=odata['PLineName'],
 						AreaID = odata['AreaID'],
@@ -718,11 +718,11 @@ class ProductLineWebIFS(object):
 						Unit=odata['Unit'],
 						Desc=odata['Desc']))
 				session.commit()
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 								  ensure_ascii=False)
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allProductLinesDelete(self,rcvdata):
 		odata = rcvdata
@@ -734,17 +734,17 @@ class ProductLineWebIFS(object):
 					# for subkey in list(key):
 					ProductLineid = int(key)
 					try:
-						oclass = session.query(MicroMES.Model.core.ProductLine).filter_by(ID=ProductLineid).delete()
+						oclass = session.query(Model.core.ProductLine).filter_by(ID=ProductLineid).delete()
 					except Exception as ee:
 						print(ee)
-						return json.dumps([{"status": "error:" + str(ee)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+						return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
 												  ensure_ascii=False)
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
 					# return json.dumps([{"status": "Error"+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def ProductLinesFind(self,rcvdata):
 		odata = rcvdata
@@ -756,12 +756,12 @@ class ProductLineWebIFS(object):
 				rowsnumber = int(odata['rows'])
 				inipage = (pages - 1) * rowsnumber + 0
 				endpage = (pages - 1) * rowsnumber + rowsnumber
-				total = session.query(func.count(MicroMES.Model.core.ProductLine.ID)).scalar()
-				qDatas = session.query(MicroMES.Model.core.ProductLine).all()[inipage:endpage]
+				total = session.query(func.count(Model.core.ProductLine.ID)).scalar()
+				qDatas = session.query(Model.core.ProductLine).all()[inipage:endpage]
 				if total > 0:
-					qDatas = session.query(MicroMES.Model.core.ProductLine).all()[inipage:endpage]
+					qDatas = session.query(Model.core.ProductLine).all()[inipage:endpage]
 					# ORM模型转换json格式
-					jsonorganzitions = json.dumps(qDatas,cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+					jsonorganzitions = json.dumps(qDatas,cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 					jsonorganzitions = '{"total"' + ":" + str(
 								total) + ',"rows"' + ":\n" + jsonorganzitions + "}"
 					return jsonorganzitions
@@ -769,7 +769,7 @@ class ProductLineWebIFS(object):
 					return ""
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allProductLinesUpdate(self,rcvdata):
 		global oclass
@@ -778,7 +778,7 @@ class ProductLineWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 10:
 				ProductLineid = int(odata['ID'])
-				oclass = session.query(MicroMES.Model.core.ProductLine).filter_by(ID=ProductLineid).first()
+				oclass = session.query(Model.core.ProductLine).filter_by(ID=ProductLineid).first()
 				oclass.PLineCode = odata['PLineCode']
 				oclass.PLineName = odata['PLineName']
 				oclass.AreaID = odata['AreaID']
@@ -787,11 +787,11 @@ class ProductLineWebIFS(object):
 				oclass.PLineCapacity = odata['PLineCapacity']
 				oclass.Unit = odata['Unit']
 				session.commit()
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allProductLinesSearch(self,rcvdata):
 		odata = rcvdata
@@ -799,15 +799,15 @@ class ProductLineWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 2:
 				strconditon = "%" + odata['condition'] + "%"
-				ProductLinescount = session.query(MicroMES.Model.core.ProductLine).filter(
+				ProductLinescount = session.query(Model.core.ProductLine).filter(
 							ProductLine.PLineName.like(strconditon)).all()
 				total = Counter(ProductLinescount)
-				jsonProductLines = json.dumps(ProductLinescount, cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+				jsonProductLines = json.dumps(ProductLinescount, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 				jsonProductLines = '{"total"' + ":" + str(total.__len__()) + ',"rows"' + ":\n" + jsonProductLines + "}"
 				return jsonProductLines
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error：" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 	
 #ProcessUnit:
 class ProcessUnit(Base):
@@ -858,7 +858,7 @@ class ProcessUnitWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 10:
 				session.add(
-					MicroMES.Model.core.ProcessUnit(
+					Model.core.ProcessUnit(
 						PUCode=odata['PUCode'],
 						PUName=odata['PUName'],
 						PLineID=odata['PLineID'],
@@ -871,11 +871,11 @@ class ProcessUnitWebIFS(object):
 						TimeUnit=odata['TimeUnit'],
 						BatchRunTime=odata['BatchRunTime']))
 				session.commit()
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 								  ensure_ascii=False)
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allProcessUnitsDelete(self,rcvdata):
 		odata = rcvdata
@@ -887,17 +887,17 @@ class ProcessUnitWebIFS(object):
 					# for subkey in list(key):
 					ProcessUnitid = int(key)
 					try:
-						oclass = session.query(MicroMES.Model.core.ProcessUnit).filter_by(ID=ProcessUnitid).delete()
+						oclass = session.query(Model.core.ProcessUnit).filter_by(ID=ProcessUnitid).delete()
 					except Exception as ee:
 						print(ee)
-						return json.dumps([{"status": "error:" + str(ee)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+						return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
 												  ensure_ascii=False)
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
 					# return json.dumps([{"status": "Error"+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def ProcessUnitsFind(self,rcvdata):
 		odata = rcvdata
@@ -909,12 +909,12 @@ class ProcessUnitWebIFS(object):
 				rowsnumber = int(odata['rows'])
 				inipage = (pages - 1) * rowsnumber + 0
 				endpage = (pages - 1) * rowsnumber + rowsnumber
-				total = session.query(func.count(MicroMES.Model.core.ProcessUnit.ID)).scalar()
-				qDatas = session.query(MicroMES.Model.core.ProcessUnit).all()[inipage:endpage]
+				total = session.query(func.count(Model.core.ProcessUnit.ID)).scalar()
+				qDatas = session.query(Model.core.ProcessUnit).all()[inipage:endpage]
 				if total > 0:
-					qDatas = session.query(MicroMES.Model.core.ProcessUnit).all()[inipage:endpage]
+					qDatas = session.query(Model.core.ProcessUnit).all()[inipage:endpage]
 					# ORM模型转换json格式
-					jsonorganzitions = json.dumps(qDatas,cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+					jsonorganzitions = json.dumps(qDatas,cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 					jsonorganzitions = '{"total"' + ":" + str(
 								total) + ',"rows"' + ":\n" + jsonorganzitions + "}"
 					return jsonorganzitions
@@ -922,7 +922,7 @@ class ProcessUnitWebIFS(object):
 					return ""
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allProcessUnitsUpdate(self,rcvdata):
 		global oclass
@@ -931,7 +931,7 @@ class ProcessUnitWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 10:
 				ProcessUnitid = int(odata['ID'])
-				oclass = session.query(MicroMES.Model.core.ProcessUnit).filter_by(ID=ProcessUnitid).first()
+				oclass = session.query(Model.core.ProcessUnit).filter_by(ID=ProcessUnitid).first()
 				oclass.PUCode = odata['PUCode']
 				oclass.PUName = odata['PUName']
 				oclass.PLineID = odata['PLineID']
@@ -944,11 +944,11 @@ class ProcessUnitWebIFS(object):
 				oclass.TimeUnit = odata['TimeUnit']
 				oclass.BatchRunTime = odata['BatchRunTime']
 				session.commit()
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allProcessUnitsSearch(self,rcvdata):
 		odata = rcvdata
@@ -956,15 +956,15 @@ class ProcessUnitWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 2:
 				strconditon = "%" + odata['condition'] + "%"
-				ProcessUnitscount = session.query(MicroMES.Model.core.ProcessUnit).filter(
+				ProcessUnitscount = session.query(Model.core.ProcessUnit).filter(
 							ProcessUnit.PUName.like(strconditon)).all()
 				total = Counter(ProcessUnitscount)
-				jsonProcessUnits = json.dumps(ProcessUnitscount, cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+				jsonProcessUnits = json.dumps(ProcessUnitscount, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 				jsonProcessUnits = '{"total"' + ":" + str(total.__len__()) + ',"rows"' + ":\n" + jsonProcessUnits + "}"
 				return jsonProcessUnits
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error：" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 	
 #Equipment:
 class Equipment(Base):
@@ -994,17 +994,17 @@ class EquipmentWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 10:
 				session.add(
-					MicroMES.Model.core.Equipment(
+					Model.core.Equipment(
 						EQPCode=odata['EQPCode'],
 						EQPName=odata['EQPName'],
 						PUID=odata['PUID'],
 						Desc=odata['Desc']))
 				session.commit()
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 								  ensure_ascii=False)
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allEquipmentsDelete(self,rcvdata):
 		odata = rcvdata
@@ -1016,17 +1016,17 @@ class EquipmentWebIFS(object):
 					# for subkey in list(key):
 					Equipmentid = int(key)
 					try:
-						oclass = session.query(MicroMES.Model.core.Equipment).filter_by(ID=Equipmentid).delete()
+						oclass = session.query(Model.core.Equipment).filter_by(ID=Equipmentid).delete()
 					except Exception as ee:
 						print(ee)
-						return json.dumps([{"status": "error:" + str(ee)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+						return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
 												  ensure_ascii=False)
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
 					# return json.dumps([{"status": "Error"+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def EquipmentsFind(self,rcvdata):
 		odata = rcvdata
@@ -1038,12 +1038,12 @@ class EquipmentWebIFS(object):
 				rowsnumber = int(odata['rows'])
 				inipage = (pages - 1) * rowsnumber + 0
 				endpage = (pages - 1) * rowsnumber + rowsnumber
-				total = session.query(func.count(MicroMES.Model.core.Equipment.ID)).scalar()
-				qDatas = session.query(MicroMES.Model.core.Equipment).all()[inipage:endpage]
+				total = session.query(func.count(Model.core.Equipment.ID)).scalar()
+				qDatas = session.query(Model.core.Equipment).all()[inipage:endpage]
 				if total > 0:
-					qDatas = session.query(MicroMES.Model.core.Equipment).all()[inipage:endpage]
+					qDatas = session.query(Model.core.Equipment).all()[inipage:endpage]
 					# ORM模型转换json格式
-					jsonorganzitions = json.dumps(qDatas,cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+					jsonorganzitions = json.dumps(qDatas,cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 					jsonorganzitions = '{"total"' + ":" + str(
 								total) + ',"rows"' + ":\n" + jsonorganzitions + "}"
 					return jsonorganzitions
@@ -1051,7 +1051,7 @@ class EquipmentWebIFS(object):
 					return ""
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allEquipmentsUpdate(self,rcvdata):
 		global oclass
@@ -1060,17 +1060,17 @@ class EquipmentWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 10:
 				Equipmentid = int(odata['ID'])
-				oclass = session.query(MicroMES.Model.core.Equipment).filter_by(ID=Equipmentid).first()
+				oclass = session.query(Model.core.Equipment).filter_by(ID=Equipmentid).first()
 				oclass.EQPCode = odata['EQPCode']
 				oclass.EQPName = odata['EQPName']
 				oclass.PUID = odata['PUID']
 				oclass.Desc = odata['Desc']
 				session.commit()
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allEquipmentsSearch(self,rcvdata):
 		odata = rcvdata
@@ -1078,15 +1078,15 @@ class EquipmentWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 2:
 				strconditon = "%" + odata['condition'] + "%"
-				Equipmentscount = session.query(MicroMES.Model.core.Equipment).filter(
+				Equipmentscount = session.query(Model.core.Equipment).filter(
 							Equipment.EQPCode.like(strconditon)).all()
 				total = Counter(Equipmentscount)
-				jsonEquipments = json.dumps(Equipmentscount, cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+				jsonEquipments = json.dumps(Equipmentscount, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 				jsonEquipments = '{"total"' + ":" + str(total.__len__()) + ',"rows"' + ":\n" + jsonEquipments + "}"
 				return jsonEquipments
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error：" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 	
 #BatchData:
 class BatchData(Base):
@@ -1147,7 +1147,7 @@ class EnterpriseWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 10:
 				session.add(
-					MicroMES.Model.core.Enterprise(
+					Model.core.Enterprise(
 						EnterpriseCode=odata['EnterpriseCode'],
 						EnterpriseName=odata['EnterpriseName'],
 						EnterpriseNo = odata['EnterpriseNo'],
@@ -1156,11 +1156,11 @@ class EnterpriseWebIFS(object):
 						Desc=odata['Desc'],
 						Type=odata['Type']))
 				session.commit()
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 								  ensure_ascii=False)
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allEnterprisesDelete(self,rcvdata):
 		odata = rcvdata
@@ -1172,17 +1172,17 @@ class EnterpriseWebIFS(object):
 					# for subkey in list(key):
 					Enterpriseid = int(key)
 					try:
-						oclass = session.query(MicroMES.Model.core.Enterprise).filter_by(ID=Enterpriseid).delete()
+						oclass = session.query(Model.core.Enterprise).filter_by(ID=Enterpriseid).delete()
 					except Exception as ee:
 						print(ee)
-						return json.dumps([{"status": "error:" + str(ee)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+						return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
 												  ensure_ascii=False)
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
 					# return json.dumps([{"status": "Error"+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def EnterprisesFind(self,rcvdata):
 		odata = rcvdata
@@ -1194,12 +1194,12 @@ class EnterpriseWebIFS(object):
 				rowsnumber = int(odata['rows'])
 				inipage = (pages - 1) * rowsnumber + 0
 				endpage = (pages - 1) * rowsnumber + rowsnumber
-				total = session.query(func.count(MicroMES.Model.core.Enterprise.ID)).scalar()
-				qDatas = session.query(MicroMES.Model.core.Enterprise).all()[inipage:endpage]
+				total = session.query(func.count(Model.core.Enterprise.ID)).scalar()
+				qDatas = session.query(Model.core.Enterprise).all()[inipage:endpage]
 				if total > 0:
-					qDatas = session.query(MicroMES.Model.core.Enterprise).all()[inipage:endpage]
+					qDatas = session.query(Model.core.Enterprise).all()[inipage:endpage]
 					# ORM模型转换json格式
-					jsonorganzitions = json.dumps(qDatas,cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+					jsonorganzitions = json.dumps(qDatas,cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 					jsonorganzitions = '{"total"' + ":" + str(
 								total) + ',"rows"' + ":\n" + jsonorganzitions + "}"
 					return jsonorganzitions
@@ -1207,7 +1207,7 @@ class EnterpriseWebIFS(object):
 					return ""
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allEnterprisesUpdate(self,rcvdata):
 		odata = rcvdata
@@ -1215,7 +1215,7 @@ class EnterpriseWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 10:
 				Enterpriseid = int(odata['ID'])
-				oclass = session.query(MicroMES.Model.core.Enterprise).filter_by(ID=Enterpriseid).first()
+				oclass = session.query(Model.core.Enterprise).filter_by(ID=Enterpriseid).first()
 				oclass.EnterpriseCode = odata['EnterpriseCode']
 				oclass.EnterpriseName = odata['EnterpriseName']
 				oclass.EnterpriseNo = odata['EnterpriseNo']
@@ -1224,11 +1224,11 @@ class EnterpriseWebIFS(object):
 				oclass.Desc = odata['Desc']
 				oclass.Type = odata['Type']
 				session.commit()
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allEnterprisesSearch(self,rcvdata):
 		odata = rcvdata
@@ -1236,15 +1236,15 @@ class EnterpriseWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 2:
 				strconditon = "%" + odata['condition'] + "%"
-				Enterprisescount = session.query(MicroMES.Model.core.Enterprise).filter(
+				Enterprisescount = session.query(Model.core.Enterprise).filter(
 							Enterprise.EnterpriseName.like(strconditon)).all()
 				total = Counter(Enterprisescount)
-				jsonEnterprises = json.dumps(Enterprisescount, cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+				jsonEnterprises = json.dumps(Enterprisescount, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 				jsonEnterprises = '{"total"' + ":" + str(total.__len__()) + ',"rows"' + ":\n" + jsonEnterprises + "}"
 				return jsonEnterprises
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error：" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 	
 #Factory:
 class Factory(Base):
@@ -1283,7 +1283,7 @@ class FactoryWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 10:
 				session.add(
-					MicroMES.Model.core.Factory(
+					Model.core.Factory(
 						FactoryCode=odata['FactoryCode'],
 						FactoryName=odata['FactoryName'],
 						FactoryNo = odata['FactoryNo'],
@@ -1292,11 +1292,11 @@ class FactoryWebIFS(object):
 						Desc=odata['Desc'],
 						Type=odata['Type']))
 				session.commit()
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 								  ensure_ascii=False)
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allFactorysDelete(self,rcvdata):
 		odata = rcvdata
@@ -1308,17 +1308,17 @@ class FactoryWebIFS(object):
 					# for subkey in list(key):
 					Factoryid = int(key)
 					try:
-						oclass = session.query(MicroMES.Model.core.Factory).filter_by(ID=Factoryid).delete()
+						oclass = session.query(Model.core.Factory).filter_by(ID=Factoryid).delete()
 					except Exception as ee:
 						print(ee)
-						return json.dumps([{"status": "error:" + str(ee)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+						return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
 												  ensure_ascii=False)
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
 					# return json.dumps([{"status": "Error"+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def FactorysFind(self,rcvdata):
 		odata = rcvdata
@@ -1330,12 +1330,12 @@ class FactoryWebIFS(object):
 				rowsnumber = int(odata['rows'])
 				inipage = (pages - 1) * rowsnumber + 0
 				endpage = (pages - 1) * rowsnumber + rowsnumber
-				total = session.query(func.count(MicroMES.Model.core.Factory.ID)).scalar()
-				qDatas = session.query(MicroMES.Model.core.Factory).all()[inipage:endpage]
+				total = session.query(func.count(Model.core.Factory.ID)).scalar()
+				qDatas = session.query(Model.core.Factory).all()[inipage:endpage]
 				if total > 0:
-					qDatas = session.query(MicroMES.Model.core.Factory).all()[inipage:endpage]
+					qDatas = session.query(Model.core.Factory).all()[inipage:endpage]
 					# ORM模型转换json格式
-					jsonorganzitions = json.dumps(qDatas,cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+					jsonorganzitions = json.dumps(qDatas,cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 					jsonorganzitions = '{"total"' + ":" + str(
 								total) + ',"rows"' + ":\n" + jsonorganzitions + "}"
 					return jsonorganzitions
@@ -1343,7 +1343,7 @@ class FactoryWebIFS(object):
 					return ""
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allFactorysUpdate(self,rcvdata):
 		odata = rcvdata
@@ -1351,7 +1351,7 @@ class FactoryWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 10:
 				Factoryid = int(odata['ID'])
-				oclass = session.query(MicroMES.Model.core.Factory).filter_by(ID=Factoryid).first()
+				oclass = session.query(Model.core.Factory).filter_by(ID=Factoryid).first()
 				oclass.FactoryCode = odata['FactoryCode']
 				oclass.FactoryName = odata['FactoryName']
 				oclass.FactoryNo = odata['FactoryNo']
@@ -1360,11 +1360,11 @@ class FactoryWebIFS(object):
 				oclass.Desc = odata['Desc']
 				oclass.Type = odata['Type']
 				session.commit()
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allFactorysSearch(self,rcvdata):
 		odata = rcvdata
@@ -1372,15 +1372,15 @@ class FactoryWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 2:
 				strconditon = "%" + odata['condition'] + "%"
-				Factoryscount = session.query(MicroMES.Model.core.Factory).filter(
+				Factoryscount = session.query(Model.core.Factory).filter(
 							Factory.FactoryName.like(strconditon)).all()
 				total = Counter(Factoryscount)
-				jsonFactorys = json.dumps(Factoryscount, cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+				jsonFactorys = json.dumps(Factoryscount, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 				jsonFactorys = '{"total"' + ":" + str(total.__len__()) + ',"rows"' + ":\n" + jsonFactorys + "}"
 				return jsonFactorys
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error：" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 	
 #Area:
 class Area(Base):
@@ -1419,7 +1419,7 @@ class AreaWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 10:
 				session.add(
-					MicroMES.Model.core.Area(
+					Model.core.Area(
 						AreaCode=odata['AreaCode'],
 						AreaName=odata['AreaName'],
 						AreaNo = odata['AreaNo'],
@@ -1428,11 +1428,11 @@ class AreaWebIFS(object):
 						Desc=odata['Desc'],
 						Type=odata['Type']))
 				session.commit()
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 								  ensure_ascii=False)
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allAreasDelete(self,rcvdata):
 		odata = rcvdata
@@ -1444,17 +1444,17 @@ class AreaWebIFS(object):
 					# for subkey in list(key):
 					Areaid = int(key)
 					try:
-						oclass = session.query(MicroMES.Model.core.Area).filter_by(ID=Areaid).delete()
+						oclass = session.query(Model.core.Area).filter_by(ID=Areaid).delete()
 					except Exception as ee:
 						print(ee)
-						return json.dumps([{"status": "error:" + str(ee)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+						return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
 												  ensure_ascii=False)
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
 					# return json.dumps([{"status": "Error"+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def AreasFind(self,rcvdata):
 		odata = rcvdata
@@ -1466,12 +1466,12 @@ class AreaWebIFS(object):
 				rowsnumber = int(odata['rows'])
 				inipage = (pages - 1) * rowsnumber + 0
 				endpage = (pages - 1) * rowsnumber + rowsnumber
-				total = session.query(func.count(MicroMES.Model.core.Area.ID)).scalar()
-				qDatas = session.query(MicroMES.Model.core.Area).all()[inipage:endpage]
+				total = session.query(func.count(Model.core.Area.ID)).scalar()
+				qDatas = session.query(Model.core.Area).all()[inipage:endpage]
 				if total > 0:
-					qDatas = session.query(MicroMES.Model.core.Area).all()[inipage:endpage]
+					qDatas = session.query(Model.core.Area).all()[inipage:endpage]
 					# ORM模型转换json格式
-					jsonorganzitions = json.dumps(qDatas,cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+					jsonorganzitions = json.dumps(qDatas,cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 					jsonorganzitions = '{"total"' + ":" + str(
 								total) + ',"rows"' + ":\n" + jsonorganzitions + "}"
 					return jsonorganzitions
@@ -1479,7 +1479,7 @@ class AreaWebIFS(object):
 					return ""
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allAreasUpdate(self,rcvdata):
 		odata = rcvdata
@@ -1487,7 +1487,7 @@ class AreaWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 10:
 				Areaid = int(odata['ID'])
-				oclass = session.query(MicroMES.Model.core.Area).filter_by(ID=Areaid).first()
+				oclass = session.query(Model.core.Area).filter_by(ID=Areaid).first()
 				oclass.AreaCode = odata['AreaCode']
 				oclass.AreaName = odata['AreaName']
 				oclass.AreaNo = odata['AreaNo']
@@ -1496,11 +1496,11 @@ class AreaWebIFS(object):
 				oclass.Desc = odata['Desc']
 				oclass.Type = odata['Type']
 				session.commit()
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allAreasSearch(self,rcvdata):
 		odata = rcvdata
@@ -1508,15 +1508,15 @@ class AreaWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 2:
 				strconditon = "%" + odata['condition'] + "%"
-				Areascount = session.query(MicroMES.Model.core.Area).filter(
+				Areascount = session.query(Model.core.Area).filter(
 							Area.AreaName.like(strconditon)).all()
 				total = Counter(Areascount)
-				jsonAreas = json.dumps(Areascount, cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+				jsonAreas = json.dumps(Areascount, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 				jsonAreas = '{"total"' + ":" + str(total.__len__()) + ',"rows"' + ":\n" + jsonAreas + "}"
 				return jsonAreas
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error：" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 #ProductRule:
 class ProductRule(Base):
@@ -1555,7 +1555,7 @@ class ProductRuleWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 10:
 				session.add(
-					MicroMES.Model.core.ProductRule(
+					Model.core.ProductRule(
 						PRCode=odata['PRCode'],
 						PRName=odata['PRName'],
 						Version = odata['Version'],
@@ -1564,11 +1564,11 @@ class ProductRuleWebIFS(object):
 						Appy_date=odata['Appy_date'],
 						IsUsed=odata['IsUsed']))
 				session.commit()
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 								  ensure_ascii=False)
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allProductRulesDelete(self,rcvdata):
 		odata = rcvdata
@@ -1580,17 +1580,17 @@ class ProductRuleWebIFS(object):
 					# for subkey in list(key):
 					ProductRuleid = int(key)
 					try:
-						oclass = session.query(MicroMES.Model.core.ProductRule).filter_by(ID=ProductRuleid).delete()
+						oclass = session.query(Model.core.ProductRule).filter_by(ID=ProductRuleid).delete()
 					except Exception as ee:
 						print(ee)
-						return json.dumps([{"status": "error:" + str(ee)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+						return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
 												  ensure_ascii=False)
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
 					# return json.dumps([{"status": "Error"+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def ProductRulesFind(self,rcvdata):
 		odata = rcvdata
@@ -1602,12 +1602,12 @@ class ProductRuleWebIFS(object):
 				rowsnumber = int(odata['rows'])
 				inipage = (pages - 1) * rowsnumber + 0
 				endpage = (pages - 1) * rowsnumber + rowsnumber
-				total = session.query(func.count(MicroMES.Model.core.ProductRule.ID)).scalar()
-				qDatas = session.query(MicroMES.Model.core.ProductRule).all()[inipage:endpage]
+				total = session.query(func.count(Model.core.ProductRule.ID)).scalar()
+				qDatas = session.query(Model.core.ProductRule).all()[inipage:endpage]
 				if total > 0:
-					qDatas = session.query(MicroMES.Model.core.ProductRule).all()[inipage:endpage]
+					qDatas = session.query(Model.core.ProductRule).all()[inipage:endpage]
 					# ORM模型转换json格式
-					jsonorganzitions = json.dumps(qDatas,cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+					jsonorganzitions = json.dumps(qDatas,cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 					jsonorganzitions = '{"total"' + ":" + str(
 								total) + ',"rows"' + ":\n" + jsonorganzitions + "}"
 					return jsonorganzitions
@@ -1615,7 +1615,7 @@ class ProductRuleWebIFS(object):
 					return ""
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allProductRulesUpdate(self,rcvdata):
 		odata = rcvdata
@@ -1623,7 +1623,7 @@ class ProductRuleWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 10:
 				ProductRuleid = int(odata['ID'])
-				oclass = session.query(MicroMES.Model.core.ProductRule).filter_by(ID=ProductRuleid).first()
+				oclass = session.query(Model.core.ProductRule).filter_by(ID=ProductRuleid).first()
 				oclass.PRCode = odata['PRCode']
 				oclass.PRName = odata['PRName']
 				oclass.Version = odata['Version']
@@ -1632,11 +1632,11 @@ class ProductRuleWebIFS(object):
 				oclass.Appy_date = odata['Appy_date']
 				oclass.IsUsed = odata['IsUsed']
 				session.commit()
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allProductRulesSearch(self,rcvdata):
 		odata = rcvdata
@@ -1644,15 +1644,15 @@ class ProductRuleWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 2:
 				strconditon = "%" + odata['condition'] + "%"
-				ProductRulescount = session.query(MicroMES.Model.core.ProductRule).filter(
+				ProductRulescount = session.query(Model.core.ProductRule).filter(
 							ProductRule.PRName.like(strconditon)).all()
 				total = Counter(ProductRulescount)
-				jsonProductRules = json.dumps(ProductRulescount, cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+				jsonProductRules = json.dumps(ProductRulescount, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 				jsonProductRules = '{"total"' + ":" + str(total.__len__()) + ',"rows"' + ":\n" + jsonProductRules + "}"
 				return jsonProductRules
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error：" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 	
 #ProductUnit:
 class ProductUnit(Base):
@@ -1694,7 +1694,7 @@ class ProductUnitWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 10:
 				session.add(
-					MicroMES.Model.core.ProductUnit(
+					Model.core.ProductUnit(
 						PDUnitCode=odata['PDUnitCode'],
 						PDUnitName=odata['PDUnitName'],
 						Desc = odata['Desc'],
@@ -1704,11 +1704,11 @@ class ProductUnitWebIFS(object):
 						PUID=odata['PUID'],
 						Seq=odata['Seq']))
 				session.commit()
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 								  ensure_ascii=False)
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allProductUnitsDelete(self,rcvdata):
 		odata = rcvdata
@@ -1720,17 +1720,17 @@ class ProductUnitWebIFS(object):
 					# for subkey in list(key):
 					ProductUnitid = int(key)
 					try:
-						oclass = session.query(MicroMES.Model.core.ProductUnit).filter_by(ID=ProductUnitid).delete()
+						oclass = session.query(Model.core.ProductUnit).filter_by(ID=ProductUnitid).delete()
 					except Exception as ee:
 						print(ee)
-						return json.dumps([{"status": "error:" + str(ee)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+						return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
 												  ensure_ascii=False)
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
 					# return json.dumps([{"status": "Error"+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def ProductUnitsFind(self,rcvdata):
 		odata = rcvdata
@@ -1742,12 +1742,12 @@ class ProductUnitWebIFS(object):
 				rowsnumber = int(odata['rows'])
 				inipage = (pages - 1) * rowsnumber + 0
 				endpage = (pages - 1) * rowsnumber + rowsnumber
-				total = session.query(func.count(MicroMES.Model.core.ProductUnit.ID)).scalar()
-				qDatas = session.query(MicroMES.Model.core.ProductUnit).all()[inipage:endpage]
+				total = session.query(func.count(Model.core.ProductUnit.ID)).scalar()
+				qDatas = session.query(Model.core.ProductUnit).all()[inipage:endpage]
 				if total > 0:
-					qDatas = session.query(MicroMES.Model.core.ProductUnit).all()[inipage:endpage]
+					qDatas = session.query(Model.core.ProductUnit).all()[inipage:endpage]
 					# ORM模型转换json格式
-					jsonorganzitions = json.dumps(qDatas,cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+					jsonorganzitions = json.dumps(qDatas,cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 					jsonorganzitions = '{"total"' + ":" + str(
 								total) + ',"rows"' + ":\n" + jsonorganzitions + "}"
 					return jsonorganzitions
@@ -1755,7 +1755,7 @@ class ProductUnitWebIFS(object):
 					return ""
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allProductUnitsUpdate(self,rcvdata):
 		odata = rcvdata
@@ -1763,7 +1763,7 @@ class ProductUnitWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 10:
 				ProductUnitid = int(odata['ID'])
-				oclass = session.query(MicroMES.Model.core.ProductUnit).filter_by(ID=ProductUnitid).first()
+				oclass = session.query(Model.core.ProductUnit).filter_by(ID=ProductUnitid).first()
 				oclass.PDUnitCode = odata['PDUnitCode']
 				oclass.PDUnitName = odata['PDUnitName']
 				oclass.Desc = odata['Desc']
@@ -1773,11 +1773,11 @@ class ProductUnitWebIFS(object):
 				oclass.PUID = odata['PUID']
 				oclass.Seq = odata['Seq']
 				session.commit()
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allProductUnitsSearch(self,rcvdata):
 		odata = rcvdata
@@ -1785,15 +1785,15 @@ class ProductUnitWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 2:
 				strconditon = "%" + odata['condition'] + "%"
-				ProductUnitscount = session.query(MicroMES.Model.core.ProductUnit).filter(
+				ProductUnitscount = session.query(Model.core.ProductUnit).filter(
 							ProductUnit.PDUnitName.like(strconditon)).all()
 				total = Counter(ProductUnitscount)
-				jsonProductUnits = json.dumps(ProductUnitscount, cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+				jsonProductUnits = json.dumps(ProductUnitscount, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 				jsonProductUnits = '{"total"' + ":" + str(total.__len__()) + ',"rows"' + ":\n" + jsonProductUnits + "}"
 				return jsonProductUnits
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error：" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 	
 #ProductControlTask:
 class ProductControlTask(Base):
@@ -1838,7 +1838,7 @@ class ProductControlTaskWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 10:
 				session.add(
-					MicroMES.Model.core.ProductControlTask(
+					Model.core.ProductControlTask(
 						PDCtrlTaskCode=odata['PDCtrlTaskCode'],
 						PDCtrlTaskName=odata['PDCtrlTaskName'],
 						Desc=odata['Desc'],
@@ -1849,11 +1849,11 @@ class ProductControlTaskWebIFS(object):
 						PUID=odata['PUID'],
 						Seq=odata['Seq']))
 				session.commit()
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 								  ensure_ascii=False)
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allProductControlTasksDelete(self,rcvdata):
 		odata = rcvdata
@@ -1865,17 +1865,17 @@ class ProductControlTaskWebIFS(object):
 					# for subkey in list(key):
 					ProductControlTaskid = int(key)
 					try:
-						oclass = session.query(MicroMES.Model.core.ProductControlTask).filter_by(ID=ProductControlTaskid).delete()
+						oclass = session.query(Model.core.ProductControlTask).filter_by(ID=ProductControlTaskid).delete()
 					except Exception as ee:
 						print(ee)
-						return json.dumps([{"status": "error:" + str(ee)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+						return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
 												  ensure_ascii=False)
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
 					# return json.dumps([{"status": "Error"+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def ProductControlTasksFind(self,rcvdata):
 		odata = rcvdata
@@ -1887,12 +1887,12 @@ class ProductControlTaskWebIFS(object):
 				rowsnumber = int(odata['rows'])
 				inipage = (pages - 1) * rowsnumber + 0
 				endpage = (pages - 1) * rowsnumber + rowsnumber
-				total = session.query(func.count(MicroMES.Model.core.ProductControlTask.ID)).scalar()
-				qDatas = session.query(MicroMES.Model.core.ProductControlTask).all()[inipage:endpage]
+				total = session.query(func.count(Model.core.ProductControlTask.ID)).scalar()
+				qDatas = session.query(Model.core.ProductControlTask).all()[inipage:endpage]
 				if total > 0:
-					qDatas = session.query(MicroMES.Model.core.ProductControlTask).all()[inipage:endpage]
+					qDatas = session.query(Model.core.ProductControlTask).all()[inipage:endpage]
 					# ORM模型转换json格式
-					jsonorganzitions = json.dumps(qDatas,cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+					jsonorganzitions = json.dumps(qDatas,cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 					jsonorganzitions = '{"total"' + ":" + str(
 								total) + ',"rows"' + ":\n" + jsonorganzitions + "}"
 					return jsonorganzitions
@@ -1900,7 +1900,7 @@ class ProductControlTaskWebIFS(object):
 					return ""
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allProductControlTasksUpdate(self,rcvdata):
 		odata = rcvdata
@@ -1908,7 +1908,7 @@ class ProductControlTaskWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 10:
 				ProductControlTaskid = int(odata['ID'])
-				oclass = session.query(MicroMES.Model.core.ProductControlTask).filter_by(ID=ProductControlTaskid).first()
+				oclass = session.query(Model.core.ProductControlTask).filter_by(ID=ProductControlTaskid).first()
 				oclass.PDCtrlTaskCode = odata['PDCtrlTaskCode']
 				oclass.PDCtrlTaskName = odata['PDCtrlTaskName']
 				oclass.Desc = odata['Desc']
@@ -1919,11 +1919,11 @@ class ProductControlTaskWebIFS(object):
 				oclass.PUID = odata['PUID']
 				oclass.Seq = odata['Seq']
 				session.commit()
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allProductControlTasksSearch(self,rcvdata):
 		odata = rcvdata
@@ -1931,15 +1931,15 @@ class ProductControlTaskWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 2:
 				strconditon = "%" + odata['condition'] + "%"
-				ProductControlTaskscount = session.query(MicroMES.Model.core.ProductControlTask).filter(
+				ProductControlTaskscount = session.query(Model.core.ProductControlTask).filter(
 							ProductControlTask.PDCtrlTaskName.like(strconditon)).all()
 				total = Counter(ProductControlTaskscount)
-				jsonProductControlTasks = json.dumps(ProductControlTaskscount, cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+				jsonProductControlTasks = json.dumps(ProductControlTaskscount, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 				jsonProductControlTasks = '{"total"' + ":" + str(total.__len__()) + ',"rows"' + ":\n" + jsonProductControlTasks + "}"
 				return jsonProductControlTasks
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error：" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 	
 #ProductParameter:
 class ProductParameter(Base):
@@ -1981,7 +1981,7 @@ class ProductParameterWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 10:
 				session.add(
-					MicroMES.Model.core.ProductParameter(
+					Model.core.ProductParameter(
 						PDParaCode=odata['PDParaCode'],
 						PDParaName=odata['PDParaName'],
 						Desc=odata['Desc'],
@@ -1991,11 +1991,11 @@ class ProductParameterWebIFS(object):
 						PUID=odata['PUID'],
 						Seq=odata['Seq']))
 				session.commit()
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 								  ensure_ascii=False)
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allProductParametersDelete(self,rcvdata):
 		odata = rcvdata
@@ -2007,17 +2007,17 @@ class ProductParameterWebIFS(object):
 					# for subkey in list(key):
 					ProductParameterid = int(key)
 					try:
-						oclass = session.query(MicroMES.Model.core.ProductParameter).filter_by(ID=ProductParameterid).delete()
+						oclass = session.query(Model.core.ProductParameter).filter_by(ID=ProductParameterid).delete()
 					except Exception as ee:
 						print(ee)
-						return json.dumps([{"status": "error:" + str(ee)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+						return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
 												  ensure_ascii=False)
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
 					# return json.dumps([{"status": "Error"+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def ProductParametersFind(self,rcvdata):
 		odata = rcvdata
@@ -2029,12 +2029,12 @@ class ProductParameterWebIFS(object):
 				rowsnumber = int(odata['rows'])
 				inipage = (pages - 1) * rowsnumber + 0
 				endpage = (pages - 1) * rowsnumber + rowsnumber
-				total = session.query(func.count(MicroMES.Model.core.ProductParameter.ID)).scalar()
-				qDatas = session.query(MicroMES.Model.core.ProductParameter).all()[inipage:endpage]
+				total = session.query(func.count(Model.core.ProductParameter.ID)).scalar()
+				qDatas = session.query(Model.core.ProductParameter).all()[inipage:endpage]
 				if total > 0:
-					qDatas = session.query(MicroMES.Model.core.ProductParameter).all()[inipage:endpage]
+					qDatas = session.query(Model.core.ProductParameter).all()[inipage:endpage]
 					# ORM模型转换json格式
-					jsonorganzitions = json.dumps(qDatas,cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+					jsonorganzitions = json.dumps(qDatas,cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 					jsonorganzitions = '{"total"' + ":" + str(
 								total) + ',"rows"' + ":\n" + jsonorganzitions + "}"
 					return jsonorganzitions
@@ -2042,7 +2042,7 @@ class ProductParameterWebIFS(object):
 					return ""
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allProductParametersUpdate(self,rcvdata):
 		odata = rcvdata
@@ -2050,7 +2050,7 @@ class ProductParameterWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 10:
 				ProductParameterid = int(odata['ID'])
-				oclass = session.query(MicroMES.Model.core.ProductParameter).filter_by(ID=ProductParameterid).first()
+				oclass = session.query(Model.core.ProductParameter).filter_by(ID=ProductParameterid).first()
 				oclass.PDParaCode = odata['PDParaCode']
 				oclass.PDParaName = odata['PDParaName']
 				oclass.Desc = odata['Desc']
@@ -2060,11 +2060,11 @@ class ProductParameterWebIFS(object):
 				oclass.PUID = odata['PUID']
 				oclass.Seq = odata['Seq']
 				session.commit()
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allProductParametersSearch(self,rcvdata):
 		odata = rcvdata
@@ -2072,15 +2072,15 @@ class ProductParameterWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 2:
 				strconditon = "%" + odata['condition'] + "%"
-				ProductParameterscount = session.query(MicroMES.Model.core.ProductParameter).filter(
+				ProductParameterscount = session.query(Model.core.ProductParameter).filter(
 							ProductParameter.PDParaName.like(strconditon)).all()
 				total = Counter(ProductParameterscount)
-				jsonProductParameters = json.dumps(ProductParameterscount, cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+				jsonProductParameters = json.dumps(ProductParameterscount, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 				jsonProductParameters = '{"total"' + ":" + str(total.__len__()) + ',"rows"' + ":\n" + jsonProductParameters + "}"
 				return jsonProductParameters
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error：" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 	
 #MaterialType:
 class MaterialType(Base):
@@ -2110,17 +2110,17 @@ class MaterialTypeWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 10:
 				session.add(
-					MicroMES.Model.core.MaterialType(
+					Model.core.MaterialType(
 						MATTypeCode=odata['MATTypeCode'],
 						MATTypeName=odata['MATTypeName'],
 						Desc=odata['Desc'],
 						Seq=odata['Seq']))
 				session.commit()
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 								  ensure_ascii=False)
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allMaterialTypesDelete(self,rcvdata):
 		odata = rcvdata
@@ -2132,17 +2132,17 @@ class MaterialTypeWebIFS(object):
 					# for subkey in list(key):
 					MaterialTypeid = int(key)
 					try:
-						oclass = session.query(MicroMES.Model.core.MaterialType).filter_by(ID=MaterialTypeid).delete()
+						oclass = session.query(Model.core.MaterialType).filter_by(ID=MaterialTypeid).delete()
 					except Exception as ee:
 						print(ee)
-						return json.dumps([{"status": "error:" + str(ee)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+						return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
 												  ensure_ascii=False)
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
 					# return json.dumps([{"status": "Error"+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def MaterialTypesFind(self,rcvdata):
 		odata = rcvdata
@@ -2154,12 +2154,12 @@ class MaterialTypeWebIFS(object):
 				rowsnumber = int(odata['rows'])
 				inipage = (pages - 1) * rowsnumber + 0
 				endpage = (pages - 1) * rowsnumber + rowsnumber
-				total = session.query(func.count(MicroMES.Model.core.MaterialType.ID)).scalar()
-				qDatas = session.query(MicroMES.Model.core.MaterialType).all()[inipage:endpage]
+				total = session.query(func.count(Model.core.MaterialType.ID)).scalar()
+				qDatas = session.query(Model.core.MaterialType).all()[inipage:endpage]
 				if total > 0:
-					qDatas = session.query(MicroMES.Model.core.MaterialType).all()[inipage:endpage]
+					qDatas = session.query(Model.core.MaterialType).all()[inipage:endpage]
 					# ORM模型转换json格式
-					jsonorganzitions = json.dumps(qDatas,cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+					jsonorganzitions = json.dumps(qDatas,cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 					jsonorganzitions = '{"total"' + ":" + str(
 								total) + ',"rows"' + ":\n" + jsonorganzitions + "}"
 					return jsonorganzitions
@@ -2167,7 +2167,7 @@ class MaterialTypeWebIFS(object):
 					return ""
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allMaterialTypesUpdate(self,rcvdata):
 		odata = rcvdata
@@ -2175,17 +2175,17 @@ class MaterialTypeWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 10:
 				MaterialTypeid = int(odata['ID'])
-				oclass = session.query(MicroMES.Model.core.MaterialType).filter_by(ID=MaterialTypeid).first()
+				oclass = session.query(Model.core.MaterialType).filter_by(ID=MaterialTypeid).first()
 				oclass.MATTypeCode = odata['MATTypeCode']
 				oclass.MATTypeName = odata['MATTypeName']
 				oclass.Desc = odata['Desc']
 				oclass.Seq = odata['Seq']
 				session.commit()
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allMaterialTypesSearch(self,rcvdata):
 		odata = rcvdata
@@ -2193,15 +2193,15 @@ class MaterialTypeWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 2:
 				strconditon = "%" + odata['condition'] + "%"
-				MaterialTypescount = session.query(MicroMES.Model.core.MaterialType).filter(
+				MaterialTypescount = session.query(Model.core.MaterialType).filter(
 							MaterialType.MATTypeName.like(strconditon)).all()
 				total = Counter(MaterialTypescount)
-				jsonMaterialTypes = json.dumps(MaterialTypescount, cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+				jsonMaterialTypes = json.dumps(MaterialTypescount, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 				jsonMaterialTypes = '{"total"' + ":" + str(total.__len__()) + ',"rows"' + ":\n" + jsonMaterialTypes + "}"
 				return jsonMaterialTypes
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error：" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 	
 #Material:
 class Material(Base):
@@ -2240,7 +2240,7 @@ class MaterialWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 10:
 				session.add(
-					MicroMES.Model.core.Material(
+					Model.core.Material(
 						MATCode=odata['MATCode'],
 						MATName=odata['MATName'],
 						MATTypeID=odata['MATTypeID'],
@@ -2249,11 +2249,11 @@ class MaterialWebIFS(object):
 						Grade=odata['Grade'],
 						MATBatchNo=odata['MATBatchNo']))
 				session.commit()
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 								  ensure_ascii=False)
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allMaterialsDelete(self,rcvdata):
 		odata = rcvdata
@@ -2265,17 +2265,17 @@ class MaterialWebIFS(object):
 					# for subkey in list(key):
 					Materialid = int(key)
 					try:
-						oclass = session.query(MicroMES.Model.core.Material).filter_by(ID=Materialid).delete()
+						oclass = session.query(Model.core.Material).filter_by(ID=Materialid).delete()
 					except Exception as ee:
 						print(ee)
-						return json.dumps([{"status": "error:" + str(ee)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+						return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
 												  ensure_ascii=False)
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
 					# return json.dumps([{"status": "Error"+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def MaterialsFind(self,rcvdata):
 		odata = rcvdata
@@ -2287,12 +2287,12 @@ class MaterialWebIFS(object):
 				rowsnumber = int(odata['rows'])
 				inipage = (pages - 1) * rowsnumber + 0
 				endpage = (pages - 1) * rowsnumber + rowsnumber
-				total = session.query(func.count(MicroMES.Model.core.Material.ID)).scalar()
-				qDatas = session.query(MicroMES.Model.core.Material).all()[inipage:endpage]
+				total = session.query(func.count(Model.core.Material.ID)).scalar()
+				qDatas = session.query(Model.core.Material).all()[inipage:endpage]
 				if total > 0:
-					qDatas = session.query(MicroMES.Model.core.Material).all()[inipage:endpage]
+					qDatas = session.query(Model.core.Material).all()[inipage:endpage]
 					# ORM模型转换json格式
-					jsonorganzitions = json.dumps(qDatas,cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+					jsonorganzitions = json.dumps(qDatas,cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 					jsonorganzitions = '{"total"' + ":" + str(
 								total) + ',"rows"' + ":\n" + jsonorganzitions + "}"
 					return jsonorganzitions
@@ -2300,7 +2300,7 @@ class MaterialWebIFS(object):
 					return ""
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allMaterialsUpdate(self,rcvdata):
 		odata = rcvdata
@@ -2308,7 +2308,7 @@ class MaterialWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 10:
 				Materialid = int(odata['ID'])
-				oclass = session.query(MicroMES.Model.core.Material).filter_by(ID=Materialid).first()
+				oclass = session.query(Model.core.Material).filter_by(ID=Materialid).first()
 				oclass.MATCode = odata['MATCode']
 				oclass.MATName = odata['MATName']
 				oclass.MATTypeID = odata['MATTypeID']
@@ -2317,11 +2317,11 @@ class MaterialWebIFS(object):
 				oclass.Grade = odata['Grade']
 				oclass.MATBatchNo = odata['MATBatchNo']
 				session.commit()
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allMaterialsSearch(self,rcvdata):
 		odata = rcvdata
@@ -2329,15 +2329,15 @@ class MaterialWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 2:
 				strconditon = "%" + odata['condition'] + "%"
-				Materialscount = session.query(MicroMES.Model.core.Material).filter(
+				Materialscount = session.query(Model.core.Material).filter(
 							Material.MATName.like(strconditon)).all()
 				total = Counter(Materialscount)
-				jsonMaterials = json.dumps(Materialscount, cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+				jsonMaterials = json.dumps(Materialscount, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 				jsonMaterials = '{"total"' + ":" + str(total.__len__()) + ',"rows"' + ":\n" + jsonMaterials + "}"
 				return jsonMaterials
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error：" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 	
 #MaterialBOM:
 class MaterialBOM(Base):
@@ -2385,7 +2385,7 @@ class MaterialBOMWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 10:
 				session.add(
-					MicroMES.Model.core.MaterialBOM(
+					Model.core.MaterialBOM(
 						MATID=odata['MATID'],
 						BatchTotalWeight=odata['BatchTotalWeight'],
 						BatchSingleMATWeight=odata['BatchSingleMATWeight'],
@@ -2397,11 +2397,11 @@ class MaterialBOMWebIFS(object):
 						Seq=odata['Seq'],
 						Grade=odata['Grade']))
 				session.commit()
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 								  ensure_ascii=False)
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allMaterialBOMsDelete(self,rcvdata):
 		odata = rcvdata
@@ -2413,17 +2413,17 @@ class MaterialBOMWebIFS(object):
 					# for subkey in list(key):
 					MaterialBOMid = int(key)
 					try:
-						oclass = session.query(MicroMES.Model.core.MaterialBOM).filter_by(ID=MaterialBOMid).delete()
+						oclass = session.query(Model.core.MaterialBOM).filter_by(ID=MaterialBOMid).delete()
 					except Exception as ee:
 						print(ee)
-						return json.dumps([{"status": "error:" + str(ee)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+						return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
 												  ensure_ascii=False)
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
 					# return json.dumps([{"status": "Error"+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def MaterialBOMsFind(self,rcvdata):
 		odata = rcvdata
@@ -2435,12 +2435,12 @@ class MaterialBOMWebIFS(object):
 				rowsnumber = int(odata['rows'])
 				inipage = (pages - 1) * rowsnumber + 0
 				endpage = (pages - 1) * rowsnumber + rowsnumber
-				total = session.query(func.count(MicroMES.Model.core.MaterialBOM.ID)).scalar()
-				qDatas = session.query(MicroMES.Model.core.MaterialBOM).all()[inipage:endpage]
+				total = session.query(func.count(Model.core.MaterialBOM.ID)).scalar()
+				qDatas = session.query(Model.core.MaterialBOM).all()[inipage:endpage]
 				if total > 0:
-					qDatas = session.query(MicroMES.Model.core.MaterialBOM).all()[inipage:endpage]
+					qDatas = session.query(Model.core.MaterialBOM).all()[inipage:endpage]
 					# ORM模型转换json格式
-					jsonorganzitions = json.dumps(qDatas,cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+					jsonorganzitions = json.dumps(qDatas,cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 					jsonorganzitions = '{"total"' + ":" + str(
 								total) + ',"rows"' + ":\n" + jsonorganzitions + "}"
 					return jsonorganzitions
@@ -2448,7 +2448,7 @@ class MaterialBOMWebIFS(object):
 					return ""
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allMaterialBOMsUpdate(self,rcvdata):
 		odata = rcvdata
@@ -2456,7 +2456,7 @@ class MaterialBOMWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 10:
 				MaterialBOMid = int(odata['ID'])
-				oclass = session.query(MicroMES.Model.core.MaterialBOM).filter_by(ID=MaterialBOMid).first()
+				oclass = session.query(Model.core.MaterialBOM).filter_by(ID=MaterialBOMid).first()
 				oclass.MATID = odata['MATID']
 				oclass.BatchTotalWeight = odata['BatchTotalWeight']
 				oclass.BatchSingleMATWeight = odata['BatchSingleMATWeight']
@@ -2468,11 +2468,11 @@ class MaterialBOMWebIFS(object):
 				oclass.Seq = odata['Seq']
 				oclass.Grade = odata['Grade']
 				session.commit()
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allMaterialBOMsSearch(self,rcvdata):
 		odata = rcvdata
@@ -2480,15 +2480,15 @@ class MaterialBOMWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 2:
 				strconditon = "%" + odata['condition'] + "%"
-				MaterialBOMscount = session.query(MicroMES.Model.core.MaterialBOM).filter(
+				MaterialBOMscount = session.query(Model.core.MaterialBOM).filter(
 							MaterialBOM.MATID.like(strconditon)).all()
 				total = Counter(MaterialBOMscount)
-				jsonMaterialBOMs = json.dumps(MaterialBOMscount, cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+				jsonMaterialBOMs = json.dumps(MaterialBOMscount, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 				jsonMaterialBOMs = '{"total"' + ":" + str(total.__len__()) + ',"rows"' + ":\n" + jsonMaterialBOMs + "}"
 				return jsonMaterialBOMs
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error：" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 	
 #ProductUnitRoute:
 class ProductUnitRoute(Base):
@@ -2530,7 +2530,7 @@ class ProductUnitRouteWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 10:
 				session.add(
-					MicroMES.Model.core.ProductUnitRoute(
+					Model.core.ProductUnitRoute(
 						PDUnitRouteCode=odata['PDUnitRouteCode'],
 						PDUnitRouteName=odata['PDUnitRouteName'],
 						Desc=odata['Desc'],
@@ -2540,11 +2540,11 @@ class ProductUnitRouteWebIFS(object):
 						PUID=odata['PUID'],
 						Seq=odata['Seq']))
 				session.commit()
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 								  ensure_ascii=False)
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allProductUnitRoutesDelete(self,rcvdata):
 		odata = rcvdata
@@ -2556,17 +2556,17 @@ class ProductUnitRouteWebIFS(object):
 					# for subkey in list(key):
 					ProductUnitRouteid = int(key)
 					try:
-						oclass = session.query(MicroMES.Model.core.ProductUnitRoute).filter_by(ID=ProductUnitRouteid).delete()
+						oclass = session.query(Model.core.ProductUnitRoute).filter_by(ID=ProductUnitRouteid).delete()
 					except Exception as ee:
 						print(ee)
-						return json.dumps([{"status": "error:" + str(ee)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+						return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
 												  ensure_ascii=False)
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
 					# return json.dumps([{"status": "Error"+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def ProductUnitRoutesFind(self,rcvdata):
 		odata = rcvdata
@@ -2578,12 +2578,12 @@ class ProductUnitRouteWebIFS(object):
 				rowsnumber = int(odata['rows'])
 				inipage = (pages - 1) * rowsnumber + 0
 				endpage = (pages - 1) * rowsnumber + rowsnumber
-				total = session.query(func.count(MicroMES.Model.core.ProductUnitRoute.ID)).scalar()
-				qDatas = session.query(MicroMES.Model.core.ProductUnitRoute).all()[inipage:endpage]
+				total = session.query(func.count(Model.core.ProductUnitRoute.ID)).scalar()
+				qDatas = session.query(Model.core.ProductUnitRoute).all()[inipage:endpage]
 				if total > 0:
-					qDatas = session.query(MicroMES.Model.core.ProductUnitRoute).all()[inipage:endpage]
+					qDatas = session.query(Model.core.ProductUnitRoute).all()[inipage:endpage]
 					# ORM模型转换json格式
-					jsonorganzitions = json.dumps(qDatas,cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+					jsonorganzitions = json.dumps(qDatas,cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 					jsonorganzitions = '{"total"' + ":" + str(
 								total) + ',"rows"' + ":\n" + jsonorganzitions + "}"
 					return jsonorganzitions
@@ -2591,7 +2591,7 @@ class ProductUnitRouteWebIFS(object):
 					return ""
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allProductUnitRoutesUpdate(self,rcvdata):
 		odata = rcvdata
@@ -2599,7 +2599,7 @@ class ProductUnitRouteWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 10:
 				ProductUnitRouteid = int(odata['ID'])
-				oclass = session.query(MicroMES.Model.core.ProductUnitRoute).filter_by(ID=ProductUnitRouteid).first()
+				oclass = session.query(Model.core.ProductUnitRoute).filter_by(ID=ProductUnitRouteid).first()
 				oclass.PDUnitRouteCode = odata['PDUnitRouteCode']
 				oclass.PDUnitRouteName = odata['PDUnitRouteName']
 				oclass.Desc = odata['Desc']
@@ -2609,11 +2609,11 @@ class ProductUnitRouteWebIFS(object):
 				oclass.PUID = odata['PUID']
 				oclass.Seq = odata['Seq']
 				session.commit()
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allProductUnitRoutesSearch(self,rcvdata):
 		odata = rcvdata
@@ -2621,15 +2621,15 @@ class ProductUnitRouteWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 2:
 				strconditon = "%" + odata['condition'] + "%"
-				ProductUnitRoutescount = session.query(MicroMES.Model.core.ProductUnitRoute).filter(
+				ProductUnitRoutescount = session.query(Model.core.ProductUnitRoute).filter(
 							ProductUnitRoute.PDUnitRouteName.like(strconditon)).all()
 				total = Counter(ProductUnitRoutescount)
-				jsonProductUnitRoutes = json.dumps(ProductUnitRoutescount, cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+				jsonProductUnitRoutes = json.dumps(ProductUnitRoutescount, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 				jsonProductUnitRoutes = '{"total"' + ":" + str(total.__len__()) + ',"rows"' + ":\n" + jsonProductUnitRoutes + "}"
 				return jsonProductUnitRoutes
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error：" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 	
 #SchedulePlan:
 class SchedulePlan(Base):
@@ -2662,18 +2662,18 @@ class SchedulePlanWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 10:
 				session.add(
-					MicroMES.Model.core.SchedulePlan(
+					Model.core.SchedulePlan(
 						SchedulePlanCode=odata['SchedulePlanCode'],
 						Desc=odata['Desc'],
 						PlanBeginTime=odata['PlanBeginTime'],
 						PlanEndTime=odata['PlanEndTime'],
 						Type=odata['Type']))
 				session.commit()
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 								  ensure_ascii=False)
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allSchedulePlansDelete(self,rcvdata):
 		odata = rcvdata
@@ -2685,17 +2685,17 @@ class SchedulePlanWebIFS(object):
 					# for subkey in list(key):
 					SchedulePlanid = int(key)
 					try:
-						oclass = session.query(MicroMES.Model.core.SchedulePlan).filter_by(ID=SchedulePlanid).delete()
+						oclass = session.query(Model.core.SchedulePlan).filter_by(ID=SchedulePlanid).delete()
 					except Exception as ee:
 						print(ee)
-						return json.dumps([{"status": "error:" + str(ee)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+						return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
 												  ensure_ascii=False)
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
 					# return json.dumps([{"status": "Error"+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def SchedulePlansFind(self,rcvdata):
 		odata = rcvdata
@@ -2707,12 +2707,12 @@ class SchedulePlanWebIFS(object):
 				rowsnumber = int(odata['rows'])
 				inipage = (pages - 1) * rowsnumber + 0
 				endpage = (pages - 1) * rowsnumber + rowsnumber
-				total = session.query(func.count(MicroMES.Model.core.SchedulePlan.ID)).scalar()
-				qDatas = session.query(MicroMES.Model.core.SchedulePlan).all()[inipage:endpage]
+				total = session.query(func.count(Model.core.SchedulePlan.ID)).scalar()
+				qDatas = session.query(Model.core.SchedulePlan).all()[inipage:endpage]
 				if total > 0:
-					qDatas = session.query(MicroMES.Model.core.SchedulePlan).all()[inipage:endpage]
+					qDatas = session.query(Model.core.SchedulePlan).all()[inipage:endpage]
 					# ORM模型转换json格式
-					jsonorganzitions = json.dumps(qDatas,cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+					jsonorganzitions = json.dumps(qDatas,cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 					jsonorganzitions = '{"total"' + ":" + str(
 								total) + ',"rows"' + ":\n" + jsonorganzitions + "}"
 					return jsonorganzitions
@@ -2720,7 +2720,7 @@ class SchedulePlanWebIFS(object):
 					return ""
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allSchedulePlansUpdate(self,rcvdata):
 		odata = rcvdata
@@ -2728,18 +2728,18 @@ class SchedulePlanWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 10:
 				SchedulePlanid = int(odata['ID'])
-				oclass = session.query(MicroMES.Model.core.SchedulePlan).filter_by(ID=SchedulePlanid).first()
+				oclass = session.query(Model.core.SchedulePlan).filter_by(ID=SchedulePlanid).first()
 				oclass.SchedulePlanCode = odata['SchedulePlanCode']
 				oclass.Desc = odata['Desc']
 				oclass.PlanBeginTime = odata['PlanBeginTime']
 				oclass.PlanEndTime = odata['PlanEndTime']
 				oclass.Type = odata['Type']
 				session.commit()
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allSchedulePlansSearch(self,rcvdata):
 		odata = rcvdata
@@ -2747,15 +2747,15 @@ class SchedulePlanWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 2:
 				strconditon = "%" + odata['condition'] + "%"
-				SchedulePlanscount = session.query(MicroMES.Model.core.SchedulePlan).filter(
+				SchedulePlanscount = session.query(Model.core.SchedulePlan).filter(
 							SchedulePlan.SchedulePlanCode.like(strconditon)).all()
 				total = Counter(SchedulePlanscount)
-				jsonSchedulePlans = json.dumps(SchedulePlanscount, cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+				jsonSchedulePlans = json.dumps(SchedulePlanscount, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 				jsonSchedulePlans = '{"total"' + ":" + str(total.__len__()) + ',"rows"' + ":\n" + jsonSchedulePlans + "}"
 				return jsonSchedulePlans
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error：" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 class PlanManager(Base):
 	__tablename__ = "PlanManager"
@@ -2804,7 +2804,7 @@ class PlanManagerWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 10:
 				session.add(
-					MicroMES.Model.core.PlanManager(
+					Model.core.PlanManager(
 						SchedulePlanCode=odata['SchedulePlanCode'],
 						BatchID=odata['BatchID'],
 						BrandID=odata['BrandID'],
@@ -2817,12 +2817,12 @@ class PlanManagerWebIFS(object):
 						PLineName = odata['PLineName'],
 						Type=odata['Type']))
 				session.commit()
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK],
-								  cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK],
+								  cls=Model.BSFramwork.AlchemyEncoder,
 								  ensure_ascii=False)
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
 							  ensure_ascii=False)
 
 	def allPlanManagersDelete(self, rcvdata):
@@ -2835,20 +2835,20 @@ class PlanManagerWebIFS(object):
 					# for subkey in list(key):
 					PlanManagerid = int(key)
 					try:
-						oclass = session.query(MicroMES.Model.core.PlanManager).filter_by(
+						oclass = session.query(Model.core.PlanManager).filter_by(
 							ID=PlanManagerid).delete()
 					except Exception as ee:
 						print(ee)
 						return json.dumps([{"status": "error:" + str(ee)}],
-										  cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+										  cls=Model.BSFramwork.AlchemyEncoder,
 										  ensure_ascii=False)
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK],
-								  cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK],
+								  cls=Model.BSFramwork.AlchemyEncoder,
 								  ensure_ascii=False)
 		except Exception as e:
 			print(e)
 			# return json.dumps([{"status": "Error"+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
 							  ensure_ascii=False)
 
 	def PlanManagersFind(self, rcvdata):
@@ -2861,12 +2861,12 @@ class PlanManagerWebIFS(object):
 				rowsnumber = int(odata['rows'])
 				inipage = (pages - 1) * rowsnumber + 0
 				endpage = (pages - 1) * rowsnumber + rowsnumber
-				total = session.query(func.count(MicroMES.Model.core.PlanManager.ID)).scalar()
-				qDatas = session.query(MicroMES.Model.core.PlanManager).all()[inipage:endpage]
+				total = session.query(func.count(Model.core.PlanManager.ID)).scalar()
+				qDatas = session.query(Model.core.PlanManager).all()[inipage:endpage]
 				if total > 0:
-					qDatas = session.query(MicroMES.Model.core.PlanManager).all()[inipage:endpage]
+					qDatas = session.query(Model.core.PlanManager).all()[inipage:endpage]
 					# ORM模型转换json格式
-					jsonorganzitions = json.dumps(qDatas, cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+					jsonorganzitions = json.dumps(qDatas, cls=Model.BSFramwork.AlchemyEncoder,
 												  ensure_ascii=False)
 					jsonorganzitions = '{"total"' + ":" + str(
 						total) + ',"rows"' + ":\n" + jsonorganzitions + "}"
@@ -2875,7 +2875,7 @@ class PlanManagerWebIFS(object):
 					return ""
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
 							  ensure_ascii=False)
 
 	def allPlanManagersUpdate(self, rcvdata):
@@ -2884,7 +2884,7 @@ class PlanManagerWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 10:
 				PlanManagerid = int(odata['ID'])
-				oclass = session.query(MicroMES.Model.core.PlanManager).filter_by(ID=PlanManagerid).first()
+				oclass = session.query(Model.core.PlanManager).filter_by(ID=PlanManagerid).first()
 				oclass.SchedulePlanCode = odata['SchedulePlanCode']
 				oclass.BatchID = odata['BatchID']
 				oclass.BrandID = odata['BrandID']
@@ -2897,12 +2897,12 @@ class PlanManagerWebIFS(object):
 				oclass.PlanBeginTime = odata['PlanBeginTime']
 				oclass.Type = odata['Type']
 				session.commit()
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK],
-								  cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK],
+								  cls=Model.BSFramwork.AlchemyEncoder,
 								  ensure_ascii=False)
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
 							  ensure_ascii=False)
 
 	def allPlanManagersSearch(self, rcvdata):
@@ -2911,17 +2911,17 @@ class PlanManagerWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 2:
 				strconditon = "%" + odata['condition'] + "%"
-				PlanManagerscount = session.query(MicroMES.Model.core.PlanManager).filter(
+				PlanManagerscount = session.query(Model.core.PlanManager).filter(
 					PlanManager.BatchID.like(strconditon)).all()
 				total = Counter(PlanManagerscount)
-				jsonPlanManagers = json.dumps(PlanManagerscount, cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				jsonPlanManagers = json.dumps(PlanManagerscount, cls=Model.BSFramwork.AlchemyEncoder,
 											   ensure_ascii=False)
 				jsonPlanManagers = '{"total"' + ":" + str(
 					total.__len__()) + ',"rows"' + ":\n" + jsonPlanManagers + "}"
 				return jsonPlanManagers
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error：" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+			return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
 							  ensure_ascii=False)
 	
 #Unit:
@@ -2949,16 +2949,16 @@ class UnitWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 10:
 				session.add(
-					MicroMES.Model.core.Unit(
+					Model.core.Unit(
 						UnitCode=odata['UnitCode'],
 						UnitName=odata['UnitName'],
 						Desc=odata['Desc']))
 				session.commit()
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 								  ensure_ascii=False)
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allUnitsDelete(self,rcvdata):
 		odata = rcvdata
@@ -2970,17 +2970,17 @@ class UnitWebIFS(object):
 					# for subkey in list(key):
 					Unitid = int(key)
 					try:
-						oclass = session.query(MicroMES.Model.core.Unit).filter_by(ID=Unitid).delete()
+						oclass = session.query(Model.core.Unit).filter_by(ID=Unitid).delete()
 					except Exception as ee:
 						print(ee)
-						return json.dumps([{"status": "error:" + str(ee)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+						return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
 												  ensure_ascii=False)
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
 					# return json.dumps([{"status": "Error"+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def UnitsFind(self,rcvdata):
 		odata = rcvdata
@@ -2992,12 +2992,12 @@ class UnitWebIFS(object):
 				rowsnumber = int(odata['rows'])
 				inipage = (pages - 1) * rowsnumber + 0
 				endpage = (pages - 1) * rowsnumber + rowsnumber
-				total = session.query(func.count(MicroMES.Model.core.Unit.ID)).scalar()
-				qDatas = session.query(MicroMES.Model.core.Unit).all()[inipage:endpage]
+				total = session.query(func.count(Model.core.Unit.ID)).scalar()
+				qDatas = session.query(Model.core.Unit).all()[inipage:endpage]
 				if total > 0:
-					qDatas = session.query(MicroMES.Model.core.Unit).all()[inipage:endpage]
+					qDatas = session.query(Model.core.Unit).all()[inipage:endpage]
 					# ORM模型转换json格式
-					jsonorganzitions = json.dumps(qDatas,cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+					jsonorganzitions = json.dumps(qDatas,cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 					jsonorganzitions = '{"total"' + ":" + str(
 								total) + ',"rows"' + ":\n" + jsonorganzitions + "}"
 					return jsonorganzitions
@@ -3005,7 +3005,7 @@ class UnitWebIFS(object):
 					return ""
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allUnitsUpdate(self,rcvdata):
 		odata = rcvdata
@@ -3013,16 +3013,16 @@ class UnitWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 10:
 				Unitid = int(odata['ID'])
-				oclass = session.query(MicroMES.Model.core.Unit).filter_by(ID=Unitid).first()
+				oclass = session.query(Model.core.Unit).filter_by(ID=Unitid).first()
 				oclass.UnitCode = odata['UnitCode']
 				oclass.UnitName = odata['UnitName']
 				oclass.Desc = odata['Desc']
 				session.commit()
-				return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error:" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allUnitsSearch(self,rcvdata):
 		odata = rcvdata
@@ -3030,28 +3030,28 @@ class UnitWebIFS(object):
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 2:
 				strconditon = "%" + odata['condition'] + "%"
-				Unitscount = session.query(MicroMES.Model.core.Unit).filter(
+				Unitscount = session.query(Model.core.Unit).filter(
 							Unit.UnitCode.like(strconditon)).all()
 				total = Counter(Unitscount)
-				jsonUnits = json.dumps(Unitscount, cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+				jsonUnits = json.dumps(Unitscount, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 				jsonUnits = '{"total"' + ":" + str(total.__len__()) + ',"rows"' + ":\n" + jsonUnits + "}"
 				return jsonUnits
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error：" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allUnitsSearchByCondition(self,condition):
 		try:
 			strconditon = "%" + condition + "%"
-			Unitscount = session.query(MicroMES.Model.core.Unit).filter(
+			Unitscount = session.query(Model.core.Unit).filter(
 				Unit.UnitCode.like(strconditon)).all()
 			total = Counter(Unitscount)
-			jsonUnits = json.dumps(Unitscount, cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			jsonUnits = json.dumps(Unitscount, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 			jsonUnits = '{"total"' + ":" + str(total.__len__()) + ',"rows"' + ":\n" + jsonUnits + "}"
 			return jsonUnits
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error：" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder,
+			return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
 							  ensure_ascii=False)
 
 	def getUnitByCondition(self,condition):
@@ -3059,7 +3059,7 @@ class UnitWebIFS(object):
 		strcondition = "%" + condition + "%"
 		strSelected = "true"
 		try:
-			objs = session.query(MicroMES.Model.core.Unit).filter(
+			objs = session.query(Model.core.Unit).filter(
 				Unit.UnitCode.like(strcondition)).all()
 			for obj in objs:
 				sz.append({"ID": obj.ID, "text": obj.UnitCode,"selected":strSelected})
@@ -3068,7 +3068,7 @@ class UnitWebIFS(object):
 			return sz
 		except Exception as e:
 			print(e)
-			return json.dumps([{"status": "Error：" + str(e)}], cls=MicroMES.Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+			return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 
 # TaskNoGenerator:

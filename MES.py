@@ -1,11 +1,11 @@
 from flask import render_template,request
 from flask import Flask, jsonify
-from MicroMES.Model.system import Role, Organization
-from MicroMES.Model.core import Enterprise, Area,Factory,ProductLine,ProcessUnit,Equipment
-from MicroMES.Model.BSFramwork import AlchemyEncoder
-import MicroMES.Model.Global
+from Model.system import Role, Organization
+from Model.core import Enterprise, Area,Factory,ProductLine,ProcessUnit,Equipment
+from Model.BSFramwork import AlchemyEncoder
+import Model.Global
 import json
-import time,datetime,decimal
+import time, datetime, decimal
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy import create_engine, Column,ForeignKey, Table, DateTime, Integer, String
@@ -15,24 +15,30 @@ import re
 from collections import Counter
 
 
-
+# 获取本文件名实例化一个flask对象
 app = Flask(__name__)
 
-engine = create_engine(MicroMES.Model.Global.GLOBAL_DATABASE_CONNECT_STRING, deprecate_large_types=True)
-Session = sessionmaker(bind=engine)
-session = Session()
+engine = create_engine(Model.Global.GLOBAL_DATABASE_CONNECT_STRING, deprecate_large_types=True)
+session = sessionmaker(bind=engine)()
 
+# 存储
 def store(data):
+    # 调用__enter__函数，该函数把返回值传给变量json_file
     with open('data.json',encoding='gbk') as json_file:
-        json_file.write(json.dumps(data))
+        # 将python数据进行json编码并写入json文件对象中
+        json_file.write(json.dumps(data))# 该语句结束后执行__exit__，它将对异常进行监控和处理
 
+#重写load
 def load():
     with open('D:\Python\JZMES\MicroMES\static\data\datagrid_organization.json',encoding='utf-8') as json_file:
         data = json.load(json_file)
         return data
 
+
+
 # 加载工作台
-@app.route('/batchmanager')
+# 左右滑动添加
+@app.route('/batchmanager')#批次管理
 def batchmanager():
     return render_template('batch_manager.html')
 
@@ -53,15 +59,15 @@ def organization():
 @app.route('/allOrganizations/Find')
 def OrganizationsFind():
     if request.method == 'GET':
-        data = request.values
+        data = request.values # 返回请求中的参数和form
         try:
             json_str = json.dumps(data.to_dict())
             print(json_str)
             if len(json_str) > 10:
-                pages = int(data['page'])
-                rowsnumber = int(data['rows'])
-                inipage = (pages - 1) * rowsnumber + 0
-                endpage = (pages-1) * rowsnumber + rowsnumber
+                pages = int(data['page']) # 页数
+                rowsnumber = int(data['rows'])  # 行数
+                inipage = (pages - 1) * rowsnumber + 0  # 起始页
+                endpage = (pages-1) * rowsnumber + rowsnumber #截止页
                 total = session.query(func.count(Organization.ID)).scalar()
                 organiztions = session.query(Organization).all()[inipage:endpage]
                 #ORM模型转换json格式
@@ -76,6 +82,7 @@ def OrganizationsFind():
 @app.route('/allOrganizations/Update', methods=['POST', 'GET'])
 def allOrganizationsUpdate():
     if request.method == 'POST':
+
         data = request.values
         str = request.get_json()
         try:
@@ -93,7 +100,7 @@ def allOrganizationsUpdate():
                 organization.Img = data['Img']
                 organization.Color = data['Color']
                 session.commit()
-                return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=AlchemyEncoder,
+                return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=AlchemyEncoder,
                                           ensure_ascii=False)
         except Exception as e:
             print(e)
@@ -119,7 +126,7 @@ def allOrganizationsDelete():
                         print(ee)
                         return json.dumps([{"status": "error:" + string(ee)}], cls=AlchemyEncoder,
                                                       ensure_ascii=False)
-                return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=AlchemyEncoder,
+                return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=AlchemyEncoder,
                                               ensure_ascii=False)
         except Exception as e:
             print(e)
@@ -182,7 +189,7 @@ def Enterprise():
 def EnterprisesFind():
     if request.method == 'GET':
         data = request.values
-        EnterpriseIFS = MicroMES.Model.core.EnterpriseWebIFS("EnterpriseFind")
+        EnterpriseIFS = Model.core.EnterpriseWebIFS("EnterpriseFind")
         re = EnterpriseIFS.EnterprisesFind(data)
         return re
 
@@ -191,7 +198,7 @@ def EnterprisesFind():
 def allEnterprisesUpdate():
     if request.method == 'POST':
         data = request.values
-        EnterpriseIFS = MicroMES.Model.core.EnterpriseWebIFS("EnterpriseUpdate")
+        EnterpriseIFS = Model.core.EnterpriseWebIFS("EnterpriseUpdate")
         re = EnterpriseIFS.allEnterprisesUpdate(data)
         return re
 
@@ -201,7 +208,7 @@ def allEnterprisesUpdate():
 def allEnterprisesDelete():
     if request.method == 'POST':
         data = request.values
-        EnterpriseIFS = MicroMES.Model.core.EnterpriseWebIFS("EnterpriseDelete")
+        EnterpriseIFS = Model.core.EnterpriseWebIFS("EnterpriseDelete")
         re = EnterpriseIFS.allEnterprisesDelete(data)
         return re
 
@@ -210,7 +217,7 @@ def allEnterprisesDelete():
 def allEnterprisesCreate():
     if request.method == 'POST':
         data = request.values
-        EnterpriseIFS = MicroMES.Model.core.EnterpriseWebIFS("EnterpriseCreate")
+        EnterpriseIFS = Model.core.EnterpriseWebIFS("EnterpriseCreate")
         re = EnterpriseIFS.allEnterprisesCreate(data)
         return re
 
@@ -219,7 +226,7 @@ def allEnterprisesCreate():
 def allEnterprisesSearch():
     if request.method == 'POST':
         data = request.values
-        EnterpriseIFS = MicroMES.Model.core.EnterpriseWebIFS("EnterpriseSearch")
+        EnterpriseIFS = Model.core.EnterpriseWebIFS("EnterpriseSearch")
         re = EnterpriseIFS.allEnterprisesSearch(data)
         return re
 
@@ -232,7 +239,7 @@ def Factory():
 def FactorysFind():
     if request.method == 'GET':
         data = request.values
-        FactoryIFS = MicroMES.Model.core.FactoryWebIFS("FactoryFind")
+        FactoryIFS = Model.core.FactoryWebIFS("FactoryFind")
         re = FactoryIFS.FactorysFind(data)
         return re
 
@@ -241,7 +248,7 @@ def FactorysFind():
 def allFactorysUpdate():
     if request.method == 'POST':
         data = request.values
-        FactoryIFS = MicroMES.Model.core.FactoryWebIFS("FactoryUpdate")
+        FactoryIFS = Model.core.FactoryWebIFS("FactoryUpdate")
         re = FactoryIFS.allFactorysUpdate(data)
         return re
 
@@ -251,7 +258,7 @@ def allFactorysUpdate():
 def allFactorysDelete():
     if request.method == 'POST':
         data = request.values
-        FactoryIFS = MicroMES.Model.core.FactoryWebIFS("FactoryDelete")
+        FactoryIFS = Model.core.FactoryWebIFS("FactoryDelete")
         re = FactoryIFS.allFactorysDelete(data)
         return re
 
@@ -260,7 +267,7 @@ def allFactorysDelete():
 def allFactorysCreate():
     if request.method == 'POST':
         data = request.values
-        FactoryIFS = MicroMES.Model.core.FactoryWebIFS("FactoryCreate")
+        FactoryIFS = Model.core.FactoryWebIFS("FactoryCreate")
         re = FactoryIFS.allFactorysCreate(data)
         return re
 
@@ -268,7 +275,7 @@ def allFactorysCreate():
 def allFactorysSearch():
     if request.method == 'POST':
         data = request.values
-        FactoryIFS = MicroMES.Model.core.FactoryWebIFS("FactorySearch")
+        FactoryIFS = Model.core.FactoryWebIFS("FactorySearch")
         re = FactoryIFS.allFactorysSearch(data)
         return re
 
@@ -282,8 +289,9 @@ def getRootArea():
 def AreasFind():
     if request.method == 'GET':
         data = request.values
-        AreaIFS = MicroMES.Model.core.AreaWebIFS("AreaFind")
+        AreaIFS = Model.core.AreaWebIFS("AreaFind")
         re = AreaIFS.AreasFind(data)
+        print(re)
         return re
 
 # role更新数据，通过传入的json数据，解析之后进行相应更新
@@ -291,7 +299,7 @@ def AreasFind():
 def allAreasUpdate():
     if request.method == 'POST':
         data = request.values
-        AreaIFS = MicroMES.Model.core.AreaWebIFS("AreaUpdate")
+        AreaIFS = Model.core.AreaWebIFS("AreaUpdate")
         re = AreaIFS.allAreasUpdate(data)
         return re
 
@@ -301,7 +309,7 @@ def allAreasUpdate():
 def allAreasDelete():
     if request.method == 'POST':
         data = request.values
-        AreaIFS = MicroMES.Model.core.AreaWebIFS("AreaDelete")
+        AreaIFS = Model.core.AreaWebIFS("AreaDelete")
         re = AreaIFS.allAreasDelete(data)
         return re
 
@@ -310,7 +318,7 @@ def allAreasDelete():
 def allAreasCreate():
     if request.method == 'POST':
         data = request.values
-        AreaIFS = MicroMES.Model.core.AreaWebIFS("AreaCreate")
+        AreaIFS = Model.core.AreaWebIFS("AreaCreate")
         re = AreaIFS.allAreasCreate(data)
         return re
 
@@ -318,7 +326,7 @@ def allAreasCreate():
 def allAreasSearch():
     if request.method == 'POST':
         data = request.values
-        AreaIFS = MicroMES.Model.core.AreaWebIFS("AreaSearch")
+        AreaIFS = Model.core.AreaWebIFS("AreaSearch")
         re = AreaIFS.allAreasSearch(data)
         return re
 
@@ -331,7 +339,7 @@ def ProductLine():
 def ProductLinesFind():
     if request.method == 'GET':
         data = request.values
-        ProductLineIFS = MicroMES.Model.core.ProductLineWebIFS("ProductLineFind")
+        ProductLineIFS = Model.core.ProductLineWebIFS("ProductLineFind")
         re = ProductLineIFS.ProductLinesFind(data)
         return re
 
@@ -340,7 +348,7 @@ def ProductLinesFind():
 def allProductLinesUpdate():
     if request.method == 'POST':
         data = request.values
-        ProductLineIFS = MicroMES.Model.core.ProductLineWebIFS("ProductLineUpdate")
+        ProductLineIFS = Model.core.ProductLineWebIFS("ProductLineUpdate")
         re = ProductLineIFS.allProductLinesUpdate(data)
         return re
 
@@ -350,7 +358,7 @@ def allProductLinesUpdate():
 def allProductLinesDelete():
     if request.method == 'POST':
         data = request.values
-        ProductLineIFS = MicroMES.Model.core.ProductLineWebIFS("ProductLineDelete")
+        ProductLineIFS = Model.core.ProductLineWebIFS("ProductLineDelete")
         re = ProductLineIFS.allProductLinesDelete(data)
         return re
 
@@ -359,7 +367,7 @@ def allProductLinesDelete():
 def allProductLinesCreate():
     if request.method == 'POST':
         data = request.values
-        ProductLineIFS = MicroMES.Model.core.ProductLineWebIFS("ProductLineCreate")
+        ProductLineIFS = Model.core.ProductLineWebIFS("ProductLineCreate")
         re = ProductLineIFS.allProductLinesCreate(data)
         return re
 
@@ -368,7 +376,7 @@ def allProductLinesCreate():
 def allProductLinesSearch():
     if request.method == 'POST':
         data = request.values
-        ProductLineIFS = MicroMES.Model.core.ProductLineWebIFS("ProductLineSearch")
+        ProductLineIFS = Model.core.ProductLineWebIFS("ProductLineSearch")
         re = ProductLineIFS.allProductLinesSearch(data)
         return re
     
@@ -382,7 +390,7 @@ def ProcessUnit():
 def ProcessUnitsFind():
     if request.method == 'GET':
         data = request.values
-        ProcessUnitIFS = MicroMES.Model.core.ProcessUnitWebIFS("ProcessUnitFind")
+        ProcessUnitIFS = Model.core.ProcessUnitWebIFS("ProcessUnitFind")
         re = ProcessUnitIFS.ProcessUnitsFind(data)
         return re
 
@@ -391,7 +399,7 @@ def ProcessUnitsFind():
 def allProcessUnitsUpdate():
     if request.method == 'POST':
         data = request.values
-        ProcessUnitIFS = MicroMES.Model.core.ProcessUnitWebIFS("ProcessUnitUpdate")
+        ProcessUnitIFS = Model.core.ProcessUnitWebIFS("ProcessUnitUpdate")
         re = ProcessUnitIFS.allProcessUnitsUpdate(data)
         return re
 
@@ -401,7 +409,7 @@ def allProcessUnitsUpdate():
 def allProcessUnitsDelete():
     if request.method == 'POST':
         data = request.values
-        ProcessUnitIFS = MicroMES.Model.core.ProcessUnitWebIFS("ProcessUnitDelete")
+        ProcessUnitIFS = Model.core.ProcessUnitWebIFS("ProcessUnitDelete")
         re = ProcessUnitIFS.allProcessUnitsDelete(data)
         return re
 
@@ -410,7 +418,7 @@ def allProcessUnitsDelete():
 def allProcessUnitsCreate():
     if request.method == 'POST':
         data = request.values
-        ProcessUnitIFS = MicroMES.Model.core.ProcessUnitWebIFS("ProcessUnitCreate")
+        ProcessUnitIFS = Model.core.ProcessUnitWebIFS("ProcessUnitCreate")
         re = ProcessUnitIFS.allProcessUnitsCreate(data)
         return re
 
@@ -419,7 +427,7 @@ def allProcessUnitsCreate():
 def allProcessUnitsSearch():
     if request.method == 'POST':
         data = request.values
-        ProcessUnitIFS = MicroMES.Model.core.ProcessUnitWebIFS("ProcessUnitSearch")
+        ProcessUnitIFS = Model.core.ProcessUnitWebIFS("ProcessUnitSearch")
         re = ProcessUnitIFS.allProcessUnitsSearch(data)
         return re
 
@@ -432,7 +440,7 @@ def Equipment():
 def EquipmentsFind():
     if request.method == 'GET':
         data = request.values
-        EquipmentIFS = MicroMES.Model.core.EquipmentWebIFS("EquipmentFind")
+        EquipmentIFS = Model.core.EquipmentWebIFS("EquipmentFind")
         re = EquipmentIFS.EquipmentsFind(data)
         return re
 
@@ -441,7 +449,7 @@ def EquipmentsFind():
 def allEquipmentsUpdate():
     if request.method == 'POST':
         data = request.values
-        EquipmentIFS = MicroMES.Model.core.EquipmentWebIFS("EquipmentUpdate")
+        EquipmentIFS = Model.core.EquipmentWebIFS("EquipmentUpdate")
         re = EquipmentIFS.allEquipmentsUpdate(data)
         return re
 
@@ -451,7 +459,7 @@ def allEquipmentsUpdate():
 def allEquipmentsDelete():
     if request.method == 'POST':
         data = request.values
-        EquipmentIFS = MicroMES.Model.core.EquipmentWebIFS("EquipmentDelete")
+        EquipmentIFS = Model.core.EquipmentWebIFS("EquipmentDelete")
         re = EquipmentIFS.allEquipmentsDelete(data)
         return re
 
@@ -460,7 +468,7 @@ def allEquipmentsDelete():
 def allEquipmentsCreate():
     if request.method == 'POST':
         data = request.values
-        EquipmentIFS = MicroMES.Model.core.EquipmentWebIFS("EquipmentCreate")
+        EquipmentIFS = Model.core.EquipmentWebIFS("EquipmentCreate")
         re = EquipmentIFS.allEquipmentsCreate(data)
         return re
 
@@ -469,7 +477,7 @@ def allEquipmentsCreate():
 def allEquipmentsSearch():
     if request.method == 'POST':
         data = request.values
-        EquipmentIFS = MicroMES.Model.core.EquipmentWebIFS("EquipmentSearch")
+        EquipmentIFS = Model.core.EquipmentWebIFS("EquipmentSearch")
         re = EquipmentIFS.allEquipmentsSearch(data)
         return re
     
@@ -482,7 +490,7 @@ def ProductRule():
 def ProductRulesFind():
     if request.method == 'GET':
         data = request.values
-        ProductRuleIFS = MicroMES.Model.core.ProductRuleWebIFS("ProductRuleFind")
+        ProductRuleIFS = Model.core.ProductRuleWebIFS("ProductRuleFind")
         re = ProductRuleIFS.ProductRulesFind(data)
         return re
 
@@ -491,7 +499,7 @@ def ProductRulesFind():
 def allProductRulesUpdate():
     if request.method == 'POST':
         data = request.values
-        ProductRuleIFS = MicroMES.Model.core.ProductRuleWebIFS("ProductRuleUpdate")
+        ProductRuleIFS = Model.core.ProductRuleWebIFS("ProductRuleUpdate")
         re = ProductRuleIFS.allProductRulesUpdate(data)
         return re
 
@@ -501,7 +509,7 @@ def allProductRulesUpdate():
 def allProductRulesDelete():
     if request.method == 'POST':
         data = request.values
-        ProductRuleIFS = MicroMES.Model.core.ProductRuleWebIFS("ProductRuleDelete")
+        ProductRuleIFS = Model.core.ProductRuleWebIFS("ProductRuleDelete")
         re = ProductRuleIFS.allProductRulesDelete(data)
         return re
 
@@ -510,7 +518,7 @@ def allProductRulesDelete():
 def allProductRulesCreate():
     if request.method == 'POST':
         data = request.values
-        ProductRuleIFS = MicroMES.Model.core.ProductRuleWebIFS("ProductRuleCreate")
+        ProductRuleIFS = Model.core.ProductRuleWebIFS("ProductRuleCreate")
         re = ProductRuleIFS.allProductRulesCreate(data)
         return re
 
@@ -519,7 +527,7 @@ def allProductRulesCreate():
 def allProductRulesSearch():
     if request.method == 'POST':
         data = request.values
-        ProductRuleIFS = MicroMES.Model.core.ProductRuleWebIFS("ProductRuleSearch")
+        ProductRuleIFS = Model.core.ProductRuleWebIFS("ProductRuleSearch")
         re = ProductRuleIFS.allProductRulesSearch(data)
         return re
 
@@ -532,7 +540,7 @@ def ZYPlan():
 def ZYPlansFind():
     if request.method == 'GET':
         data = request.values
-        ZYPlanIFS = MicroMES.Model.core.ZYPlanWebIFS("ZYPlanFind")
+        ZYPlanIFS = Model.core.ZYPlanWebIFS("ZYPlanFind")
         re = ZYPlanIFS.ZYPlansFind(data)
         return re
 
@@ -541,7 +549,7 @@ def ZYPlansFind():
 def allZYPlansUpdate():
     if request.method == 'POST':
         data = request.values
-        ZYPlanIFS = MicroMES.Model.core.ZYPlanWebIFS("ZYPlanUpdate")
+        ZYPlanIFS = Model.core.ZYPlanWebIFS("ZYPlanUpdate")
         re = ZYPlanIFS.allZYPlansUpdate(data)
         return re
 
@@ -551,7 +559,7 @@ def allZYPlansUpdate():
 def allZYPlansDelete():
     if request.method == 'POST':
         data = request.values
-        ZYPlanIFS = MicroMES.Model.core.ZYPlanWebIFS("ZYPlanDelete")
+        ZYPlanIFS = Model.core.ZYPlanWebIFS("ZYPlanDelete")
         re = ZYPlanIFS.allZYPlansDelete(data)
         return re
 
@@ -560,7 +568,7 @@ def allZYPlansDelete():
 def allZYPlansCreate():
     if request.method == 'POST':
         data = request.values
-        ZYPlanIFS = MicroMES.Model.core.ZYPlanWebIFS("ZYPlanCreate")
+        ZYPlanIFS = Model.core.ZYPlanWebIFS("ZYPlanCreate")
         re = ZYPlanIFS.allZYPlansCreate(data)
         return re
 
@@ -568,7 +576,7 @@ def allZYPlansCreate():
 def allZYPlansSearch():
     if request.method == 'POST':
         data = request.values
-        ZYPlanIFS = MicroMES.Model.core.ZYPlanWebIFS("ZYPlanSearch")
+        ZYPlanIFS = Model.core.ZYPlanWebIFS("ZYPlanSearch")
         re = ZYPlanIFS.allZYPlansSearch(data)
         return re
 
@@ -581,7 +589,7 @@ def ZYTask():
 def ZYTasksFind():
     if request.method == 'GET':
         data = request.values
-        ZYTaskIFS = MicroMES.Model.core.ZYTaskWebIFS("ZYTaskFind")
+        ZYTaskIFS = Model.core.ZYTaskWebIFS("ZYTaskFind")
         re = ZYTaskIFS.ZYTasksFind(data)
         return re
 
@@ -590,7 +598,7 @@ def ZYTasksFind():
 def allZYTasksUpdate():
     if request.method == 'POST':
         data = request.values
-        ZYTaskIFS = MicroMES.Model.core.ZYTaskWebIFS("ZYTaskUpdate")
+        ZYTaskIFS = Model.core.ZYTaskWebIFS("ZYTaskUpdate")
         re = ZYTaskIFS.allZYTasksUpdate(data)
         return re
 
@@ -600,7 +608,7 @@ def allZYTasksUpdate():
 def allZYTasksDelete():
     if request.method == 'POST':
         data = request.values
-        ZYTaskIFS = MicroMES.Model.core.ZYTaskWebIFS("ZYTaskDelete")
+        ZYTaskIFS = Model.core.ZYTaskWebIFS("ZYTaskDelete")
         re = ZYTaskIFS.allZYTasksDelete(data)
         return re
 
@@ -609,7 +617,7 @@ def allZYTasksDelete():
 def allZYTasksCreate():
     if request.method == 'POST':
         data = request.values
-        ZYTaskIFS = MicroMES.Model.core.ZYTaskWebIFS("ZYTaskCreate")
+        ZYTaskIFS = Model.core.ZYTaskWebIFS("ZYTaskCreate")
         re = ZYTaskIFS.allZYTasksCreate(data)
         return re
 
@@ -617,7 +625,7 @@ def allZYTasksCreate():
 def allZYTasksSearch():
     if request.method == 'POST':
         data = request.values
-        ZYTaskIFS = MicroMES.Model.core.ZYTaskWebIFS("ZYTaskSearch")
+        ZYTaskIFS = Model.core.ZYTaskWebIFS("ZYTaskSearch")
         re = ZYTaskIFS.allZYTasksSearch(data)
         return re
 
@@ -630,7 +638,7 @@ def ProductControlTask():
 def ProductControlTasksFind():
     if request.method == 'GET':
         data = request.values
-        ProductControlTaskIFS = MicroMES.Model.core.ProductControlTaskWebIFS("ProductControlTaskFind")
+        ProductControlTaskIFS = Model.core.ProductControlTaskWebIFS("ProductControlTaskFind")
         re = ProductControlTaskIFS.ProductControlTasksFind(data)
         return re
 
@@ -639,7 +647,7 @@ def ProductControlTasksFind():
 def allProductControlTasksUpdate():
     if request.method == 'POST':
         data = request.values
-        ProductControlTaskIFS = MicroMES.Model.core.ProductControlTaskWebIFS("ProductControlTaskUpdate")
+        ProductControlTaskIFS = Model.core.ProductControlTaskWebIFS("ProductControlTaskUpdate")
         re = ProductControlTaskIFS.allProductControlTasksUpdate(data)
         return re
 
@@ -649,7 +657,7 @@ def allProductControlTasksUpdate():
 def allProductControlTasksDelete():
     if request.method == 'POST':
         data = request.values
-        ProductControlTaskIFS = MicroMES.Model.core.ProductControlTaskWebIFS("ProductControlTaskDelete")
+        ProductControlTaskIFS = Model.core.ProductControlTaskWebIFS("ProductControlTaskDelete")
         re = ProductControlTaskIFS.allProductControlTasksDelete(data)
         return re
 
@@ -658,7 +666,7 @@ def allProductControlTasksDelete():
 def allProductControlTasksCreate():
     if request.method == 'POST':
         data = request.values
-        ProductControlTaskIFS = MicroMES.Model.core.ProductControlTaskWebIFS("ProductControlTaskCreate")
+        ProductControlTaskIFS = Model.core.ProductControlTaskWebIFS("ProductControlTaskCreate")
         re = ProductControlTaskIFS.allProductControlTasksCreate(data)
         return re
 
@@ -666,7 +674,7 @@ def allProductControlTasksCreate():
 def allProductControlTasksSearch():
     if request.method == 'POST':
         data = request.values
-        ProductControlTaskIFS = MicroMES.Model.core.ProductControlTaskWebIFS("ProductControlTaskSearch")
+        ProductControlTaskIFS = Model.core.ProductControlTaskWebIFS("ProductControlTaskSearch")
         re = ProductControlTaskIFS.allProductControlTasksSearch(data)
         return re
 
@@ -679,7 +687,7 @@ def ProductParameter():
 def ProductParametersFind():
     if request.method == 'GET':
         data = request.values
-        ProductParameterIFS = MicroMES.Model.core.ProductParameterWebIFS("ProductParameterFind")
+        ProductParameterIFS = Model.core.ProductParameterWebIFS("ProductParameterFind")
         re = ProductParameterIFS.ProductParametersFind(data)
         return re
 
@@ -688,7 +696,7 @@ def ProductParametersFind():
 def allProductParametersUpdate():
     if request.method == 'POST':
         data = request.values
-        ProductParameterIFS = MicroMES.Model.core.ProductParameterWebIFS("ProductParameterUpdate")
+        ProductParameterIFS = Model.core.ProductParameterWebIFS("ProductParameterUpdate")
         re = ProductParameterIFS.allProductParametersUpdate(data)
         return re
 
@@ -698,7 +706,7 @@ def allProductParametersUpdate():
 def allProductParametersDelete():
     if request.method == 'POST':
         data = request.values
-        ProductParameterIFS = MicroMES.Model.core.ProductParameterWebIFS("ProductParameterDelete")
+        ProductParameterIFS = Model.core.ProductParameterWebIFS("ProductParameterDelete")
         re = ProductParameterIFS.allProductParametersDelete(data)
         return re
 
@@ -707,7 +715,7 @@ def allProductParametersDelete():
 def allProductParametersCreate():
     if request.method == 'POST':
         data = request.values
-        ProductParameterIFS = MicroMES.Model.core.ProductParameterWebIFS("ProductParameterCreate")
+        ProductParameterIFS = Model.core.ProductParameterWebIFS("ProductParameterCreate")
         re = ProductParameterIFS.allProductParametersCreate(data)
         return re
 
@@ -715,7 +723,7 @@ def allProductParametersCreate():
 def allProductParametersSearch():
     if request.method == 'POST':
         data = request.values
-        ProductParameterIFS = MicroMES.Model.core.ProductParameterWebIFS("ProductParameterSearch")
+        ProductParameterIFS = Model.core.ProductParameterWebIFS("ProductParameterSearch")
         re = ProductParameterIFS.allProductParametersSearch(data)
         return re
 
@@ -728,7 +736,7 @@ def MaterialType():
 def MaterialTypesFind():
     if request.method == 'GET':
         data = request.values
-        MaterialTypeIFS = MicroMES.Model.core.MaterialTypeWebIFS("MaterialTypeFind")
+        MaterialTypeIFS = Model.core.MaterialTypeWebIFS("MaterialTypeFind")
         re = MaterialTypeIFS.MaterialTypesFind(data)
         return re
 
@@ -737,7 +745,7 @@ def MaterialTypesFind():
 def allMaterialTypesUpdate():
     if request.method == 'POST':
         data = request.values
-        MaterialTypeIFS = MicroMES.Model.core.MaterialTypeWebIFS("MaterialTypeUpdate")
+        MaterialTypeIFS = Model.core.MaterialTypeWebIFS("MaterialTypeUpdate")
         re = MaterialTypeIFS.allMaterialTypesUpdate(data)
         return re
 
@@ -747,7 +755,7 @@ def allMaterialTypesUpdate():
 def allMaterialTypesDelete():
     if request.method == 'POST':
         data = request.values
-        MaterialTypeIFS = MicroMES.Model.core.MaterialTypeWebIFS("MaterialTypeDelete")
+        MaterialTypeIFS = Model.core.MaterialTypeWebIFS("MaterialTypeDelete")
         re = MaterialTypeIFS.allMaterialTypesDelete(data)
         return re
 
@@ -756,7 +764,7 @@ def allMaterialTypesDelete():
 def allMaterialTypesCreate():
     if request.method == 'POST':
         data = request.values
-        MaterialTypeIFS = MicroMES.Model.core.MaterialTypeWebIFS("MaterialTypeCreate")
+        MaterialTypeIFS = Model.core.MaterialTypeWebIFS("MaterialTypeCreate")
         re = MaterialTypeIFS.allMaterialTypesCreate(data)
         return re
 
@@ -764,7 +772,7 @@ def allMaterialTypesCreate():
 def allMaterialTypesSearch():
     if request.method == 'POST':
         data = request.values
-        MaterialTypeIFS = MicroMES.Model.core.MaterialTypeWebIFS("MaterialTypeSearch")
+        MaterialTypeIFS = Model.core.MaterialTypeWebIFS("MaterialTypeSearch")
         re = MaterialTypeIFS.allMaterialTypesSearch(data)
         return re
 
@@ -777,7 +785,7 @@ def Material():
 def MaterialsFind():
     if request.method == 'GET':
         data = request.values
-        MaterialIFS = MicroMES.Model.core.MaterialWebIFS("MaterialFind")
+        MaterialIFS = Model.core.MaterialWebIFS("MaterialFind")
         re = MaterialIFS.MaterialsFind(data)
         return re
 
@@ -786,7 +794,7 @@ def MaterialsFind():
 def allMaterialsUpdate():
     if request.method == 'POST':
         data = request.values
-        MaterialIFS = MicroMES.Model.core.MaterialWebIFS("MaterialUpdate")
+        MaterialIFS = Model.core.MaterialWebIFS("MaterialUpdate")
         re = MaterialIFS.allMaterialsUpdate(data)
         return re
 
@@ -796,7 +804,7 @@ def allMaterialsUpdate():
 def allMaterialsDelete():
     if request.method == 'POST':
         data = request.values
-        MaterialIFS = MicroMES.Model.core.MaterialWebIFS("MaterialDelete")
+        MaterialIFS = Model.core.MaterialWebIFS("MaterialDelete")
         re = MaterialIFS.allMaterialsDelete(data)
         return re
 
@@ -805,15 +813,24 @@ def allMaterialsDelete():
 def allMaterialsCreate():
     if request.method == 'POST':
         data = request.values
-        MaterialIFS = MicroMES.Model.core.MaterialWebIFS("MaterialCreate")
+        MaterialIFS = Model.core.MaterialWebIFS("MaterialCreate")
         re = MaterialIFS.allMaterialsCreate(data)
+        return re
+
+@app.route('/allMaterialPlanBOMS', methods=['POST', 'GET'])
+def allMaterialPlanBOMS():
+    if request.method == 'GET':
+        data = request.values
+        MaterialBOMIFS = Model.core.MaterialBOMWebIFS("MaterialCreate")
+        re = MaterialBOMIFS.MaterialPlanBOMsFind(data)
+        print(re)
         return re
 
 @app.route('/allMaterials/Search', methods=['POST', 'GET'])
 def allMaterialsSearch():
     if request.method == 'POST':
         data = request.values
-        MaterialIFS = MicroMES.Model.core.MaterialWebIFS("MaterialSearch")
+        MaterialIFS = Model.core.MaterialWebIFS("MaterialSearch")
         re = MaterialIFS.allMaterialsSearch(data)
         return re
 
@@ -826,7 +843,7 @@ def MaterialBOM():
 def MaterialBOMsFind():
     if request.method == 'GET':
         data = request.values
-        MaterialBOMIFS = MicroMES.Model.core.MaterialBOMWebIFS("MaterialBOMFind")
+        MaterialBOMIFS = Model.core.MaterialBOMWebIFS("MaterialBOMFind")
         re = MaterialBOMIFS.MaterialBOMsFind(data)
         return re
 
@@ -835,7 +852,7 @@ def MaterialBOMsFind():
 def allMaterialBOMsUpdate():
     if request.method == 'POST':
         data = request.values
-        MaterialBOMIFS = MicroMES.Model.core.MaterialBOMWebIFS("MaterialBOMUpdate")
+        MaterialBOMIFS = Model.core.MaterialBOMWebIFS("MaterialBOMUpdate")
         re = MaterialBOMIFS.allMaterialBOMsUpdate(data)
         return re
 
@@ -845,7 +862,7 @@ def allMaterialBOMsUpdate():
 def allMaterialBOMsDelete():
     if request.method == 'POST':
         data = request.values
-        MaterialBOMIFS = MicroMES.Model.core.MaterialBOMWebIFS("MaterialBOMDelete")
+        MaterialBOMIFS = Model.core.MaterialBOMWebIFS("MaterialBOMDelete")
         re = MaterialBOMIFS.allMaterialBOMsDelete(data)
         return re
 
@@ -854,7 +871,7 @@ def allMaterialBOMsDelete():
 def allMaterialBOMsCreate():
     if request.method == 'POST':
         data = request.values
-        MaterialBOMIFS = MicroMES.Model.core.MaterialBOMWebIFS("MaterialBOMCreate")
+        MaterialBOMIFS = Model.core.MaterialBOMWebIFS("MaterialBOMCreate")
         re = MaterialBOMIFS.allMaterialBOMsCreate(data)
         return re
 
@@ -862,7 +879,7 @@ def allMaterialBOMsCreate():
 def allMaterialBOMsSearch():
     if request.method == 'POST':
         data = request.values
-        MaterialBOMIFS = MicroMES.Model.core.MaterialBOMWebIFS("MaterialBOMSearch")
+        MaterialBOMIFS = Model.core.MaterialBOMWebIFS("MaterialBOMSearch")
         re = MaterialBOMIFS.allMaterialBOMsSearch(data)
         return re
 
@@ -876,7 +893,7 @@ def ZYPlanMaterial():
 def ZYPlanMaterialsFind():
     if request.method == 'GET':
         data = request.values
-        ZYPlanMaterialIFS = MicroMES.Model.core.ZYPlanMaterialWebIFS("ZYPlanMaterialFind")
+        ZYPlanMaterialIFS = Model.core.ZYPlanMaterialWebIFS("ZYPlanMaterialFind")
         re = ZYPlanMaterialIFS.ZYPlanMaterialsFind(data)
         return re
 
@@ -885,7 +902,7 @@ def ZYPlanMaterialsFind():
 def allZYPlanMaterialsUpdate():
     if request.method == 'POST':
         data = request.values
-        ZYPlanMaterialIFS = MicroMES.Model.core.ZYPlanMaterialWebIFS("ZYPlanMaterialUpdate")
+        ZYPlanMaterialIFS = Model.core.ZYPlanMaterialWebIFS("ZYPlanMaterialUpdate")
         re = ZYPlanMaterialIFS.allZYPlanMaterialsUpdate(data)
         return re
 
@@ -895,7 +912,7 @@ def allZYPlanMaterialsUpdate():
 def allZYPlanMaterialsDelete():
     if request.method == 'POST':
         data = request.values
-        ZYPlanMaterialIFS = MicroMES.Model.core.ZYPlanMaterialWebIFS("ZYPlanMaterialDelete")
+        ZYPlanMaterialIFS = Model.core.ZYPlanMaterialWebIFS("ZYPlanMaterialDelete")
         re = ZYPlanMaterialIFS.allZYPlanMaterialsDelete(data)
         return re
 
@@ -904,7 +921,7 @@ def allZYPlanMaterialsDelete():
 def allZYPlanMaterialsCreate():
     if request.method == 'POST':
         data = request.values
-        ZYPlanMaterialIFS = MicroMES.Model.core.ZYPlanMaterialWebIFS("ZYPlanMaterialCreate")
+        ZYPlanMaterialIFS = Model.core.ZYPlanMaterialWebIFS("ZYPlanMaterialCreate")
         re = ZYPlanMaterialIFS.allZYPlanMaterialsCreate(data)
         return re
 
@@ -912,7 +929,7 @@ def allZYPlanMaterialsCreate():
 def allZYPlanMaterialsSearch():
     if request.method == 'POST':
         data = request.values
-        ZYPlanMaterialIFS = MicroMES.Model.core.ZYPlanMaterialWebIFS("ZYPlanMaterialSearch")
+        ZYPlanMaterialIFS = Model.core.ZYPlanMaterialWebIFS("ZYPlanMaterialSearch")
         re = ZYPlanMaterialIFS.allZYPlanMaterialsSearch(data)
         return re
 
@@ -929,7 +946,7 @@ def ProductUnit():
 def ProductUnitsFind():
     if request.method == 'GET':
         data = request.values
-        ProductUnitIFS = MicroMES.Model.core.ProductUnitWebIFS("ProductUnitFind")
+        ProductUnitIFS = Model.core.ProductUnitWebIFS("ProductUnitFind")
         re = ProductUnitIFS.ProductUnitsFind(data)
         return re
 
@@ -938,7 +955,7 @@ def ProductUnitsFind():
 def allProductUnitsUpdate():
     if request.method == 'POST':
         data = request.values
-        ProductUnitIFS = MicroMES.Model.core.ProductUnitWebIFS("ProductUnitUpdate")
+        ProductUnitIFS = Model.core.ProductUnitWebIFS("ProductUnitUpdate")
         re = ProductUnitIFS.allProductUnitsUpdate(data)
         return re
 
@@ -948,7 +965,7 @@ def allProductUnitsUpdate():
 def allProductUnitsDelete():
     if request.method == 'POST':
         data = request.values
-        ProductUnitIFS = MicroMES.Model.core.ProductUnitWebIFS("ProductUnitDelete")
+        ProductUnitIFS = Model.core.ProductUnitWebIFS("ProductUnitDelete")
         re = ProductUnitIFS.allProductUnitsDelete(data)
         return re
 
@@ -957,7 +974,7 @@ def allProductUnitsDelete():
 def allProductUnitsCreate():
     if request.method == 'POST':
         data = request.values
-        ProductUnitIFS = MicroMES.Model.core.ProductUnitWebIFS("ProductUnitCreate")
+        ProductUnitIFS = Model.core.ProductUnitWebIFS("ProductUnitCreate")
         re = ProductUnitIFS.allProductUnitsCreate(data)
         return re
 
@@ -966,7 +983,7 @@ def allProductUnitsCreate():
 def allProductUnitsSearch():
     if request.method == 'POST':
         data = request.values
-        ProductUnitIFS = MicroMES.Model.core.ProductUnitWebIFS("ProductUnitSearch")
+        ProductUnitIFS = Model.core.ProductUnitWebIFS("ProductUnitSearch")
         re = ProductUnitIFS.allProductUnitsSearch(data)
         return re
 
@@ -980,7 +997,7 @@ def ProductUnitRoute():
 def ProductUnitRoutesFind():
     if request.method == 'GET':
         data = request.values
-        ProductUnitRouteIFS = MicroMES.Model.core.ProductUnitRouteWebIFS("ProductUnitRouteFind")
+        ProductUnitRouteIFS = Model.core.ProductUnitRouteWebIFS("ProductUnitRouteFind")
         re = ProductUnitRouteIFS.ProductUnitRoutesFind(data)
         return re
 
@@ -989,7 +1006,7 @@ def ProductUnitRoutesFind():
 def allProductUnitRoutesUpdate():
     if request.method == 'POST':
         data = request.values
-        ProductUnitRouteIFS = MicroMES.Model.core.ProductUnitRouteWebIFS("ProductUnitRouteUpdate")
+        ProductUnitRouteIFS = Model.core.ProductUnitRouteWebIFS("ProductUnitRouteUpdate")
         re = ProductUnitRouteIFS.allProductUnitRoutesUpdate(data)
         return re
 
@@ -999,7 +1016,7 @@ def allProductUnitRoutesUpdate():
 def allProductUnitRoutesDelete():
     if request.method == 'POST':
         data = request.values
-        ProductUnitRouteIFS = MicroMES.Model.core.ProductUnitRouteWebIFS("ProductUnitRouteDelete")
+        ProductUnitRouteIFS = Model.core.ProductUnitRouteWebIFS("ProductUnitRouteDelete")
         re = ProductUnitRouteIFS.allProductUnitRoutesDelete(data)
         return re
 
@@ -1008,7 +1025,7 @@ def allProductUnitRoutesDelete():
 def allProductUnitRoutesCreate():
     if request.method == 'POST':
         data = request.values
-        ProductUnitRouteIFS = MicroMES.Model.core.ProductUnitRouteWebIFS("ProductUnitRouteCreate")
+        ProductUnitRouteIFS = Model.core.ProductUnitRouteWebIFS("ProductUnitRouteCreate")
         re = ProductUnitRouteIFS.allProductUnitRoutesCreate(data)
         return re
 
@@ -1017,7 +1034,7 @@ def allProductUnitRoutesCreate():
 def allProductUnitRoutesSearch():
     if request.method == 'POST':
         data = request.values
-        ProductUnitRouteIFS = MicroMES.Model.core.ProductUnitRouteWebIFS("ProductUnitRouteSearch")
+        ProductUnitRouteIFS = Model.core.ProductUnitRouteWebIFS("ProductUnitRouteSearch")
         re = ProductUnitRouteIFS.allProductUnitRoutesSearch(data)
         return re
 
@@ -1030,7 +1047,7 @@ def SchedulePlan():
 def SchedulePlansFind():
     if request.method == 'GET':
         data = request.values
-        SchedulePlanIFS = MicroMES.Model.core.SchedulePlanWebIFS("SchedulePlanFind")
+        SchedulePlanIFS = Model.core.SchedulePlanWebIFS("SchedulePlanFind")
         re = SchedulePlanIFS.SchedulePlansFind(data)
         return re
 
@@ -1039,7 +1056,7 @@ def SchedulePlansFind():
 def allSchedulePlansUpdate():
     if request.method == 'POST':
         data = request.values
-        SchedulePlanIFS = MicroMES.Model.core.SchedulePlanWebIFS("SchedulePlanUpdate")
+        SchedulePlanIFS = Model.core.SchedulePlanWebIFS("SchedulePlanUpdate")
         re = SchedulePlanIFS.allSchedulePlansUpdate(data)
         return re
 
@@ -1049,7 +1066,7 @@ def allSchedulePlansUpdate():
 def allSchedulePlansDelete():
     if request.method == 'POST':
         data = request.values
-        SchedulePlanIFS = MicroMES.Model.core.SchedulePlanWebIFS("SchedulePlanDelete")
+        SchedulePlanIFS = Model.core.SchedulePlanWebIFS("SchedulePlanDelete")
         re = SchedulePlanIFS.allSchedulePlansDelete(data)
         return re
 
@@ -1058,7 +1075,7 @@ def allSchedulePlansDelete():
 def allSchedulePlansCreate():
     if request.method == 'POST':
         data = request.values
-        SchedulePlanIFS = MicroMES.Model.core.SchedulePlanWebIFS("SchedulePlanCreate")
+        SchedulePlanIFS = Model.core.SchedulePlanWebIFS("SchedulePlanCreate")
         re = SchedulePlanIFS.allSchedulePlansCreate(data)
         return re
 
@@ -1067,7 +1084,7 @@ def allSchedulePlansCreate():
 def allSchedulePlansSearch():
     if request.method == 'POST':
         data = request.values
-        SchedulePlanIFS = MicroMES.Model.core.SchedulePlanWebIFS("SchedulePlanSearch")
+        SchedulePlanIFS = Model.core.SchedulePlanWebIFS("SchedulePlanSearch")
         re = SchedulePlanIFS.allSchedulePlansSearch(data)
         return re
 
@@ -1080,7 +1097,7 @@ def PlanManager():
 def PlanManagersFind():
     if request.method == 'GET':
         data = request.values
-        PlanManagerIFS = MicroMES.Model.core.PlanManagerWebIFS("PlanManagerFind")
+        PlanManagerIFS = Model.core.PlanManagerWebIFS("PlanManagerFind")
         re = PlanManagerIFS.PlanManagersFind(data)
         return re
 
@@ -1089,7 +1106,7 @@ def PlanManagersFind():
 def allPlanManagersUpdate():
     if request.method == 'POST':
         data = request.values
-        PlanManagerIFS = MicroMES.Model.core.PlanManagerWebIFS("PlanManagerUpdate")
+        PlanManagerIFS = Model.core.PlanManagerWebIFS("PlanManagerUpdate")
         re = PlanManagerIFS.allPlanManagersUpdate(data)
         return re
 
@@ -1099,7 +1116,7 @@ def allPlanManagersUpdate():
 def allPlanManagersDelete():
     if request.method == 'POST':
         data = request.values
-        PlanManagerIFS = MicroMES.Model.core.PlanManagerWebIFS("PlanManagerDelete")
+        PlanManagerIFS = Model.core.PlanManagerWebIFS("PlanManagerDelete")
         re = PlanManagerIFS.allPlanManagersDelete(data)
         return re
 
@@ -1108,7 +1125,7 @@ def allPlanManagersDelete():
 def allPlanManagersCreate():
     if request.method == 'POST':
         data = request.values
-        PlanManagerIFS = MicroMES.Model.core.PlanManagerWebIFS("PlanManagerCreate")
+        PlanManagerIFS = Model.core.PlanManagerWebIFS("PlanManagerCreate")
         re = PlanManagerIFS.allPlanManagersCreate(data)
         return re
 
@@ -1116,7 +1133,7 @@ def allPlanManagersCreate():
 def allPlanManagersSearch():
     if request.method == 'POST':
         data = request.values
-        PlanManagerIFS = MicroMES.Model.core.PlanManagerWebIFS("PlanManagerSearch")
+        PlanManagerIFS = Model.core.PlanManagerWebIFS("PlanManagerSearch")
         re = PlanManagerIFS.allPlanManagersSearch(data)
         return re
 
@@ -1130,7 +1147,7 @@ def Unit():
 def UnitsFind():
     if request.method == 'GET':
         data = request.values
-        UnitIFS = MicroMES.Model.core.UnitWebIFS("UnitFind")
+        UnitIFS = Model.core.UnitWebIFS("UnitFind")
         re = UnitIFS.UnitsFind(data)
         return re
 
@@ -1139,7 +1156,7 @@ def UnitsFind():
 def allUnitsUpdate():
     if request.method == 'POST':
         data = request.values
-        UnitIFS = MicroMES.Model.core.UnitWebIFS("UnitUpdate")
+        UnitIFS = Model.core.UnitWebIFS("UnitUpdate")
         re = UnitIFS.allUnitsUpdate(data)
         return re
 
@@ -1149,7 +1166,7 @@ def allUnitsUpdate():
 def allUnitsDelete():
     if request.method == 'POST':
         data = request.values
-        UnitIFS = MicroMES.Model.core.UnitWebIFS("UnitDelete")
+        UnitIFS = Model.core.UnitWebIFS("UnitDelete")
         re = UnitIFS.allUnitsDelete(data)
         return re
 
@@ -1158,7 +1175,7 @@ def allUnitsDelete():
 def allUnitsCreate():
     if request.method == 'POST':
         data = request.values
-        UnitIFS = MicroMES.Model.core.UnitWebIFS("UnitCreate")
+        UnitIFS = Model.core.UnitWebIFS("UnitCreate")
         re = UnitIFS.allUnitsCreate(data)
         return re
 
@@ -1167,7 +1184,7 @@ def allUnitsCreate():
 def allUnitsSearch():
     if request.method == 'POST':
         data = request.values
-        UnitIFS = MicroMES.Model.core.UnitWebIFS("UnitSearch")
+        UnitIFS = Model.core.UnitWebIFS("UnitSearch")
         re = UnitIFS.allUnitsSearch(data)
         return re
 
@@ -1237,7 +1254,7 @@ def allrolesUpdate():
                 role.CreatePerson =  data['CreatePerson']
                 role.CreateDate =  data['CreateDate']
                 session.commit()
-                return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=AlchemyEncoder, ensure_ascii=False)
+                return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
             return json.dumps([{"status": "Error"+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
@@ -1261,7 +1278,7 @@ def allrolesDelete():
                     except Exception as ee:
                         print(ee)
                         return json.dumps([{"status": "error:"+string(ee)}], cls=AlchemyEncoder, ensure_ascii=False)
-                return json.dumps([MicroMES.Model.Global.GLOBAL_JSON_RETURN_OK], cls=AlchemyEncoder, ensure_ascii=False)
+                return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
             # return json.dumps([{"status": "Error"+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
@@ -1399,7 +1416,7 @@ def MyenterpriseSelect():
             json_str = json.dumps(odata.to_dict())
             if len(json_str) > 5        :
                 objid = int(odata['ID'])
-                oclass = session.query(MicroMES.Model.system.Organization).filter_by(ID=objid).first()
+                oclass = session.query(Model.system.Organization).filter_by(ID=objid).first()
                 jsondata = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
             print(jsondata)
             return jsondata
@@ -1416,7 +1433,7 @@ def createPlanWizard():
 def getUnitByKg():
     if request.method == 'GET':
         try:
-            UnitIFS = MicroMES.Model.core.UnitWebIFS("getUnitByKg")
+            UnitIFS = Model.core.UnitWebIFS("getUnitByKg")
             re = UnitIFS.getUnitByCondition("kg")
             jsondata = json.dumps(re, cls=AlchemyEncoder, ensure_ascii=False)
             return jsondata
@@ -1429,7 +1446,7 @@ def getUnitByKg():
 def getdefaultPlanWeight():
     if request.method == 'GET':
         try:
-            UnitIFS = MicroMES.Model.core.UnitWebIFS("getUnitByKg")
+            UnitIFS = Model.core.UnitWebIFS("getUnitByKg")
             re = UnitIFS.getUnitByCondition("kg")
             jsondata = json.dumps(re, cls=AlchemyEncoder, ensure_ascii=False)
             return jsondata
@@ -1441,7 +1458,7 @@ def getdefaultPlanWeight():
 def getProductRule():
     sz=[]
     try:
-        objs = session.query(MicroMES.Model.core.ProductRule).filter().all()
+        objs = session.query(Model.core.ProductRule).filter().all()
         iIndex = 0
         strSelected = "true"
         for obj in objs:
