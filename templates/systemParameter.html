@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>系统配置</title>
+    <link href="../static/css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
+    <link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
+    <link rel="stylesheet" href="../static/css/providers.css">
+    <link href="../static/css/process.css" rel="stylesheet">
+    <link href="../static/js/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
+
+    <style>
+    .window.dialog .window-header,.panel.dialog .window-header {
+ height:38px;
+ line-height:38px;
+ color:#fff;
+ padding:0;
+ background:#1c87b3
+}
+.dialog .panel-tool-close {
+ background:url('../static/custom/uimaker/images/new/dialog_close.png?1464355571') no-repeat -20px 0px
+}
+.dialog .panel-tool-close:hover {
+  background-color:#1c87b3 !important;
+ background:url('../static/custom/uimaker/images/new/dialog_close.png?1464355571') no-repeat -20px 0px
+}
+</style>
+</head>
+
+
+<body>
+    <div class="container">
+        <table class="easyui-datagrid" style="width:100%;height:554px" title="角色" data-options="url:'../static/data/datagrid_role.json',
+{#        <table class="easyui-datagrid" style="width:100%;height:554px" title="角色" data-options="url:'/allroles',',#}
+                method:'get',
+                rownumbers:true,
+                singleSelect:true,
+                autoRowHeight:false,
+                pagination:true,
+                fitColumns:true,
+                striped:true,
+                checkOnSelect:true,
+                selectOnCheck:true,
+                collapsible:true,
+                toolbar:'#tb',
+                pageSize:10">
+            <thead>
+                <tr>
+                    <th data-options="field:'ck',checkbox:true,width:100,align:'center'">选择</th>
+                    <!--field名称大小写区分 //-->
+                    <th data-options="field:'Id',width:100,align:'left',halign:'center'">ID</th>
+                    <th data-options="field:'RoleCode',width:300,align:'left',halign:'center'">角色编码</th>
+                    <th data-options="field:'RoleSeq',width:300,align:'left',halign:'center'">角色顺序</th>
+                    <th data-options="field:'RoleName',width:500,align:'left',halign:'center'">角色名称</th>
+                    <th data-options="field:'Description',width:500,align:'left',halign:'center'">描述</th>
+                    <th data-options="field:'CreatePerson',width:500,align:'left',halign:'center'">创建人</th>
+                    <th data-options="field:'CreateDate',width:500,align:'left',halign:'center'">创建时间</th>
+                </tr>
+            </thead>
+        </table>
+        <div id="tb" style="padding:0 10px;">
+            名称:
+            <input type="text" class="textbox-text validatebox-text textbox-prompt" style="height:28px;" autocomplete="off" placeholder="">
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'">查询</a>
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add'" onclick="$('#dlgAdd').dialog('open')">添加</a>
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit'" onclick="$('#dlgAdd').dialog('open')">编辑</a>
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove'">删除</a>
+
+        </div>
+    </div>
+
+
+
+    <div id="dlgAdd" class="easyui-dialog" title="Complex Toolbar on Dialog" style="width:800px;height:400px;padding:3px" data-options="
+        closed:'true',
+        iconCls: 'icon-edit',
+        toolbar: '#dlg-toolbar',
+        buttons: '#dlg-buttons'
+    ">
+
+        <table class="kv-table">
+            <tbody>
+                <tr>
+                    <td class="kv-label">KEYID</td>
+                    <td class="kv-content">
+                        <input type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="">
+                    </td>
+                    <td class="kv-label">所属工厂</td>
+                    <td class="kv-content">
+                        <select class="easyui-combobox" name="combobox1" style="width:180px;">
+                            <option value="ar">昆明卷烟厂</option>
+                            <option value="bg">玉溪卷烟厂</option>
+                            <option value="ca">红河卷烟厂</option>
+                        </select>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td class="kv-label">工段编码</td>
+                    <td class="kv-content">
+                            <select class="easyui-combobox" name="combobox1" style="width:180px;">
+                                    <option value="ar">昆明卷烟厂</option>
+                                    <option value="bg">玉溪卷烟厂</option>
+                                    <option value="ca">红河卷烟厂</option>
+                                </select>
+                    </td>
+
+                    <td class="kv-label">机组编码</td>
+                    <td class="kv-content">
+                            <select class="easyui-combobox" name="combobox1" style="width:180px;">
+                                    <option value="ar">昆明卷烟厂</option>
+                                    <option value="bg">玉溪卷烟厂</option>
+                                    <option value="ca">红河卷烟厂</option>
+                                </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="kv-label">仓库编码</td>
+                    <td class="kv-content">
+                        <input class="easyui-switchbutton" checked>
+                    </td>
+                    <td class="kv-label">货位编码</td>
+                    <td class="kv-content">
+                        <input type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="">
+                    </td>
+                </tr>
+                <tr>
+                    <td class="kv-label">货位名称</td>
+                    <td class="kv-content">
+                        <input type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="">
+                    </td>
+                    <td class="kv-label">货位楼层</td>
+                    <td class="kv-content">
+                        <input type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="">
+                    </td>
+
+                </tr>
+                <tr>
+                    <td class="kv-label">高度</td>
+                    <td class="kv-content">
+                        <input type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="">
+                    </td>
+
+                    <td class="kv-label">实际容量</td>
+                    <td class="kv-content">
+                        <input type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="">
+                    </td>
+                </tr>
+                <tr>
+                    <td class="kv-label">最大库容(箱)</td>
+                    <td class="kv-content">
+                        <input class="easyui-switchbutton" checked>
+                    </td>
+                    <td class="kv-label">容量类型</td>
+                    <td class="kv-content">
+                        <input type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="">
+                    </td>
+                </tr>
+                <tr>
+                    <td class="kv-label">标准库容(箱)</td>
+                    <td class="kv-content">
+                        <input class="easyui-switchbutton" checked>
+                    </td>
+                    <td class="kv-label">备注</td>
+                    <td class="kv-content">
+                        <input type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="dlg-buttons">
+        <a href="javascript:void(0)" class="easyui-linkbutton" data-options="" onclick="javascript:alert('save')">保存</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" onclick="javascript:$('#dlgAdd').dialog('close')">关闭</a>
+    </div>
+
+</body>
+
+</html>
+<script type="text/javascript" src="../static/js/jquery.min.js"></script>
+<script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>

@@ -1,0 +1,15 @@
+{"total":28,"rows":[
+{"id":"1","username":"杨利婷","loginname":"20080910","status":"启用","creater":"Admin","createtime":"2017/6/5","lastlogintime":"2017/7/3","islock":"否"},
+{"id":"2","username":"王签顺","loginname":"20081009","status":"启用","creater":"Admin","createtime":"2017/6/5","lastlogintime":"2017/7/3","islock":"否"},
+{"id":"3","username":"熊文祥","loginname":"20090303","status":"启用","creater":"Admin","createtime":"2017/6/5","lastlogintime":"2017/7/3","islock":"否"},
+{"id":"4","username":"杨美琼","loginname":"20081007","status":"启用","creater":"Admin","createtime":"2017/6/5","lastlogintime":"2017/7/3","islock":"否"},
+{"id":"5","username":"杨明","loginname":"20090529","status":"启用","creater":"Admin","createtime":"2017/6/5","lastlogintime":"2017/7/3","islock":"否"},
+{"id":"6","username":"余琼","loginname":"20090426","status":"启用","creater":"Admin","createtime":"2017/6/5","lastlogintime":"2017/7/3","islock":"否"},
+{"id":"7","username":"马岑洧","loginname":"20090617","status":"启用","creater":"Admin","createtime":"2017/6/5","lastlogintime":"2017/7/3","islock":"否"},
+{"id":"8","username":"余庆国","loginname":"20081001","status":"启用","creater":"Admin","createtime":"2017/6/5","lastlogintime":"2017/7/3","islock":"否"},
+{"id":"9","username":"周俊","loginname":"20080315","status":"启用","creater":"Admin","createtime":"2017/6/5","lastlogintime":"2017/7/3","islock":"否"},
+{"id":"10","username":"黄宝财","loginname":"20081223","status":"启用","creater":"Admin","createtime":"2017/6/5","lastlogintime":"2017/7/3","islock":"否"},
+{"id":"11","username":"熊欢","loginname":"20090105","status":"启用","creater":"Admin","createtime":"2017/6/5","lastlogintime":"2017/7/3","islock":"否"},
+{"id":"12","username":"余海云","loginname":"20090325","status":"启用","creater":"Admin","createtime":"2017/6/5","lastlogintime":"2017/7/3","islock":"否"},
+{"id":"13","username":"余金才","loginname":"20080717","status":"启用","creater":"Admin","createtime":"2017/6/5","lastlogintime":"2017/7/3","islock":"否"}
+]}

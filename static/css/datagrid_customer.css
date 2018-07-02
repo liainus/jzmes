@@ -1,0 +1,21 @@
+
+/* 设置选中行背景色 */
+.datagrid-row-selected.datagrid-row-alt {
+    background: #0074e8;
+}
+.datagrid-row-selected {
+    background: #0074e8;
+}
+
+/* 设置选中行内单元格的前景色 */
+.datagrid-row-selected.datagrid-row-alt >td > .datagrid-cell{
+    color:white;
+}
+.datagrid-row-selected >td > .datagrid-cell {
+    color:white;
+}
+
+/* 设置默认表格行高 */
+.datagrid-header-row, .datagrid-row {
+    height: 32px;
+}

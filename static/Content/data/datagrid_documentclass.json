@@ -1,0 +1,12 @@
+[
+{"field1":"doc001","field2":"工艺通知","field3":"GY_NOTICE","field4":"启用"},
+{"field1":"doc002","field2":"生产通知","field3":"PR_NOTICE","field4":"启用"},
+{"field1":"doc003","field2":"技术通知","field3":"TCH_NOTICE","field4":"启用"},
+{"field1":"doc004","field2":"质量报告通知","field3":"QC_REPORT","field4":"启用"},
+{"field1":"doc005","field2":"生产报表","field3":"PR_REPORT","field4":"启用"},
+{"field1":"doc006","field2":"非处方类","field3":"DE_REPORT","field4":"启用"},
+{"field1":"doc007","field2":"滋补保健类","field3":"DC_REPORT","field4":"启用"},
+{"field1":"doc008","field2":"食疗产品","field3":"CC_REPORT","field4":"启用"},
+{"field1":"doc009","field2":"营养饮品","field3":"DER_REPORT","field4":"启用"},
+{"field1":"doc010","field2":"处方类","field3":"DGC_REPORT","field4":"启用"}
+]

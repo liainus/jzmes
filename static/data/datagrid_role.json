@@ -1,0 +1,20 @@
+[
+  {
+    "Id":"1",
+    "RoleCode":"Admin",
+    "RoleName": "系统管理员",
+    "RoleSeq": "1",
+    "Description": "系统管理员",
+    "CreatePerson": "系统管理员",
+    "CreateDate": "2017-12-22 10:00:00"
+  },
+  {
+    "Id":"2",
+    "RoleCode":"DeviceAdmin",
+    "RoleName": "设备管理员",
+    "RoleSeq": "2",
+    "Description": "设备管理员",
+    "CreatePerson": "系统管理员",
+    "CreateDate": "2017-12-22 10:00:00"
+  }
+]

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>计划信息</title>
+
+    <link href="../static/css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
+    <link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
+    <link rel="stylesheet" href="../static/css/providers.css">
+    <link href="../static/css/process.css" rel="stylesheet">
+    <link href="../static/js/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
+    <link href="../static/css/datagridpanel_customer.css" rel="stylesheet">
+    <link href="../static/css/dialogpanel.css" type="text/css" rel="stylesheet">
+    <link href="../static/css/datagrid_customer.css" type="text/css" rel="stylesheet">
+    <script type="text/javascript">
+        $(function () {
+            $('#ZYPlanName').attr("disabled", true);
+        });
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <textZYPlan id="wote"></textZYPlan>
+        <table id="ZYPlanClassTable"></table>
+
+        <div id="ZYPlanClassToolbar" style="padding:0 10px;">
+            名称:
+            <input type="text" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
+                placeholder="">
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="ZYPlanClassToolbar.search();">查询</a>
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add'" onclick="ZYPlanClassToolbar.create();">添加</a>
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit'" onclick="ZYPlanClassToolbar.update();">修改</a>
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove'" onclick="ZYPlanClassToolbar.delete();">删除</a>
+            <a href="#" class="easyui-linkbutton" id="reload" data-options="iconCls:'icon-reload'" onclick="ZYPlanClassToolbar.refresh();">刷新</a>
+        </div>
+    </div>
+
+    <div id="ZYPlanClassDialog" class="easyui-dialog" style="width:620px;height:560px;padding:10px;"
+     data-options="closed:'true',buttons:'#ZYPlanClassDialogButtons',modal:true">
+    <!-- <div id="ZYPlanClassFormTitle" class="field-title">Title</div> -->
+    <form id="ZYPlanClassForm" method="post" class="dialog-form">
+        <table class="kv-table">
+            <tbody>
+                <tr>
+                    <td class="kv-label">ID</td>
+                    <td class="kv-content">
+                        <input  name="iID" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                    </td>
+                    <td class="kv-label">生产日期</td>
+                    <td class="kv-content">
+                        <input  name="iPlanDate" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="kv-label">计划单号</td>
+                    <td class="kv-content">
+                        <input  name="iPlanNo" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                    </td>
+                    <td class="kv-label">批次号</td>
+                    <td class="kv-content">
+                        <input  name="iBatchID" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="kv-label">顺序号</td>
+                    <td class="kv-content">
+                        <input  name="iPlanSeq" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                    </td>
+                    <td class="kv-label">工艺段编号</td>
+                    <td class="kv-content">
+                        <input  name="iPUID" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="kv-label">计划类型</td>
+                    <td class="kv-content">
+                        <input  name="iPlanType" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                    </td>
+                    <td class="kv-label">品牌编号</td>
+                    <td class="kv-content">
+                        <input  name="iBrandCode" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="kv-label">品牌名称</td>
+                    <td class="kv-content">
+                        <input  name="iBrandName" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                    </td>
+                    <td class="kv-label">ERP订单号</td>
+                    <td class="kv-content">
+                        <input  name="iERPOrderNo" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="kv-label">计划数量</td>
+                    <td class="kv-content">
+                        <input  name="iPlanQuantity" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                    </td>
+                    <td class="kv-label">实际数量</td>
+                    <td class="kv-content">
+                        <input  name="iActQuantity" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="kv-label">单位</td>
+                    <td class="kv-content">
+                        <input  name="iUnit" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                    </td>
+                    <td class="kv-label">录入时间</td>
+                    <td class="kv-content">
+                        <input  name="iEnterTime" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="kv-label">计划开始时间</td>
+                    <td class="kv-content">
+                        <input  name="iPlanBeginTime" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                    </td>
+                    <td class="kv-label">计划结束时间</td>
+                    <td class="kv-content">
+                        <input  name="iPlanEndTime" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="kv-label">实际结束时间</td>
+                    <td class="kv-content">
+                        <input  name="iActBeginTime" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                    </td>
+                    <td class="kv-label">实际结束时间</td>
+                    <td class="kv-content">
+                        <input  name="iActEndTime" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="kv-label">任务状态</td>
+                    <td class="kv-content">
+                        <input  name="iTaskStatus" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                    </td>
+                    <td class="kv-label">锁定状态</td>
+                    <td class="kv-content">
+                        <input  name="iLockStatus" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="kv-label">接口状态</td>
+                    <td class="kv-content">
+                        <input  name="iINFStatus" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                    </td>
+                    <td class="kv-label">投料状态</td>
+                    <td class="kv-content">
+                        <input  name="iWMSStatus" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div id="ZYPlanClassDialogButtons" >
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'"  onclick="ZYPlanClassToolbar.save()" value="submit" >保存</a>
+            <a href="#" class="easyui-linkbutton" onclick="$('#ZYPlanClassDialog').dialog('close')">关闭</a>
+        </div>
+    </form>
+</div>
+<!-- 右键菜单 -->
+    <div id="contextmenu" class="easyui-menu" style="width:120px;">
+        <div data-options="iconCls:'icon-reload'" onclick="ZYPlanClassToolbar.refresh();">刷新</div>
+        <div data-options="iconCls:'icon-add'" onclick="ZYPlanClassToolbar.create();">新建</div>
+        <div class="menu-sep"></div>
+
+        <div data-options="iconCls:'icon-edit'" onclick="ZYPlanClassToolbar.update();">编辑</div>
+        <div data-options="iconCls:'icon-remove'" onclick="ZYPlanClassToolbar.delete();">删除</div>
+
+        <div>
+    		<span>其他</span>
+    		<div style="width:150px;">
+    			<div data-options="" onclick="">启用</div>
+    			<div data-options="" onclick="">禁用</div>
+    		</div>
+        </div>
+    </div>
+
+</body>
+
+</html>
+
+<script type="text/javascript" src="../static/js/jquery.min.js"></script>
+<script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
+<script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
+<script type="text/javascript" src="../static/js/system/ZYPlanClass.js" charset="utf-8"></script>
+

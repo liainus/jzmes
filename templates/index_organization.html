@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Basic usage</title>
+    <meta charset="utf-8">
+    <link href="../static/kendo/content/shared/styles/examples-offline.css" rel="stylesheet">
+    <link href="../static/kendo/styles/kendo.common.min.css" rel="stylesheet">
+    <link href="../static/kendo/styles/kendo.rtl.min.css" rel="stylesheet">
+    <link href="../static/kendo/styles/kendo.default.min.css" rel="stylesheet">
+    <link href="../static/kendo/styles/kendo.dataviz.min.css" rel="stylesheet">
+    <link href="../static/kendo/styles/kendo.dataviz.default.min.css" rel="stylesheet">
+    <script src="../static/kendo/js/jquery.min.js"></script>
+    <script src="../static/kendo/js/jszip.min.js"></script>
+    <script src="../static/kendo/js/kendo.all.min.js"></script>
+    <script src="../static/kendo/content/shared/js/console.js"></script>
+    <script>
+        
+    </script>
+    
+    
+</head>
+<body>
+    
+        <a class="offline-button" href="../index.html">Back</a>
+    
+    <div id="example">
+    <div id="diagram"></div>
+    <script>
+        var data = [{
+            firstName: "名字",
+            lastName: "Moreno",
+            image: "antonio.jpg",
+            title: "团队领导",
+            colorScheme: "#1696d3",
+            items: [{
+                firstName: "Elizabeth",
+                image: "elizabeth.jpg",
+                lastName: "Brown",
+                title: "Design Lead",
+                colorScheme: "#ef6944",
+                items: [{
+                    firstName: "Ann",
+                    lastName: "Devon",
+                    image: "ann.jpg",
+                    title: "UI Designer",
+                    colorScheme: "#ef6944"
+                }]
+            }, {
+                firstName: "Diego",
+                lastName: "Roel",
+                image: "diego.jpg",
+                title: "QA Engineer",
+                colorScheme: "#ee587b",
+                items: [{
+                    firstName: "Fran",
+                    lastName: "Wilson",
+                    image: "fran.jpg",
+                    title: "QA Intern",
+                    colorScheme: "#ee587b"
+                }]
+            }, {
+                firstName: "Felipe",
+                lastName: "Izquiedro",
+                image: "felipe.jpg",
+                title: "Senior Developer",
+                colorScheme: "#75be16",
+                items: [{
+                    firstName: "Daniel",
+                    lastName: "Tonini",
+                    image: "daniel.jpg",
+                    title: "Developer",
+                    colorScheme: "#75be16"
+                }]
+            }]
+        }];
+
+
+        function visualTemplate(options) {
+            var dataviz = kendo.dataviz;
+            var g = new dataviz.diagram.Group();
+            var dataItem = options.dataItem;
+
+            g.append(new dataviz.diagram.Rectangle({
+                width: 210,
+                height: 75,
+                stroke: {
+                    width: 0
+                },
+                fill: {
+                    gradient: {
+                        type: "linear",
+                        stops: [{
+                            color: dataItem.colorScheme,
+                            offset: 0,
+                            opacity: 0.5
+                        }, {
+                            color: dataItem.colorScheme,
+                            offset: 1,
+                            opacity: 1
+                        }]
+                    }
+                }
+            }));
+
+            g.append(new dataviz.diagram.TextBlock({
+                text: dataItem.firstName,// + " " + dataItem.lastName,
+                x: 85,
+                y: 20,
+                fill: "#fff"
+            }));
+
+            g.append(new dataviz.diagram.TextBlock({
+                text: dataItem.title,
+                x: 85,
+                y: 30,
+                fill: "#fff"
+            }));
+
+            g.append(new dataviz.diagram.Image({
+                source: "../static/kendo/content/dataviz/diagram/people/" + dataItem.image,
+                x: 3,
+                y: 3,
+                width: 68,
+                height: 68
+            }));
+
+            return g;
+        }
+
+
+
+        function createDiagram() {
+            var structdata = "";
+            var jsondata = "";
+            var jsonobj
+            {#             $.ajax({#}
+            {#                     url: "/Organization/Find",#}
+            {#                     type: 'GET',#}
+            {#                     dataType: 'JSON',#}
+            {#                     success : function(structdata){#}
+            {#                          jsondata = JSON.parse(structdata);#}
+            {#                          alert(sjondata);#}
+            {#                          jsonobj = eval(structdata );#}
+            {#                         console.log("structdate:",structdata);#}
+            {#                         console.log("data:",data);#}
+            {#                         console.log("jsonobj:",jsonobj);#}
+            {#                     }#}
+            {#                 });#}
+            var testdataSource = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: "/Organization/Find",
+                        dataType: "json"
+                    }
+                },
+                schema: {
+                    model: {
+                        children: "items",
+                        fields: {
+{#                            firstName: "firstName",#}
+{#                            lastName: "lastName",#}
+{#                            image: "image",#}
+                            title: "title",
+                            colorScheme: "colorScheme"
+                        }
+                    }
+                }
+            });
+
+
+            var datare
+            testdataSource.fetch(function () {
+                datare = testdataSource.data();
+                {#                dataarray = JSON.parse(datare)#}
+
+                var arJson = new Array();
+
+                function refining(datare, arJson) {//将嵌套的JSON对象遍历出来，转为二维数组
+                    for (var i = 0, j = arJson.length; i < datare.length; i++) {
+                        arJson[j] = {
+{#                            firstName: datare[i].firstName,#}
+{#                            lastName: datare[i].lastName,#}
+{#                            image: datare[i].image,#}
+                            title: datare[i].title,
+                            colorScheme: datare[i].colorScheme,
+{#                            colorScheme: "#ee587b",#}
+                            items:datare[i].items
+                        };
+                        j++;
+                        if (datare[i].items) {
+{#                            refining(datare[i].items, arJson);#}
+                        }
+                    }
+                };
+
+                    refining(datare, arJson);
+                    console.log(datare.length);  // displays "77"
+                    console.log(testdataSource.data);
+                    console.log(testdataSource);
+                    console.log(arJson);
+                    console.log(data);
+                    console.log(datare); // displays "Ch
+                    console.log(datare[0].items); // displays "Chai"
+
+
+                $("#diagram").kendoDiagram({
+                    dataSource: arJson,
+                    {#                    schema: {#}
+                    {#                        model: {#}
+                    {#                            children: "items"#}
+                    {#                        }#}
+                    {#                    },#}
+                    layout: {
+                        type: "layered"
+                    },
+                    shapeDefaults: {
+                        visual: visualTemplate
+                    },
+                    connectionDefaults: {
+                        stroke: {
+                            color: "#979797",
+                            width: 2
+                        }
+                    }
+                });
+                var diagram = $("#diagram").getKendoDiagram();
+                diagram.bringIntoView(diagram.shapes);
+            });
+        }
+          $(document).ready(createDiagram);
+    </script>
+</div>
+
+
+    
+</body>
+</html>

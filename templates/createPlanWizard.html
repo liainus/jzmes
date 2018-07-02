@@ -1,0 +1,302 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+	<title>Smart Wizard 2 - Basic Example - a javascript jQuery wizard control plugin</title>
+
+	<link href="../static/styles/smart_wizard.css" rel="stylesheet" type="text/css">
+
+	<link href="../static/css/base.css" rel="stylesheet">
+	<link href="../static/custom/uimaker/easyui.css" rel="stylesheet">
+	<link href="../static/css/basic_info.css" rel="stylesheet">
+	<link href="../static/custom/uimaker/icon.css" rel="stylesheet" type="text/css">
+	<link href="../static/js/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
+
+    <link rel="stylesheet" href="../static/kendo/styles/kendo.common.min.css" />
+    <link rel="stylesheet" href="../static/kendo/styles/kendo.default.min.css" />
+    <link rel="stylesheet" href="../static/kendo/styles/kendo.default.mobile.min.css" />
+
+    <script src="../static/kendo/js/jquery.min.js"></script>
+    <script src="../static/kendo/js/kendo.all.min.js"></script>
+
+	<script type="text/javascript" src="../static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
+	<script type="text/javascript" src="../static/js/jquery.smartWizard-2.0.js"></script>
+	<script type="text/javascript">
+
+		$(function () {
+			//Smart Wizard
+			$('#wizard').smartWizard();
+			function onFinishCallback() {
+				$('#wizard').smartWizard('showMessage', 'Finish Clicked');
+			}
+		});
+
+         function myformatter(date){
+            var y = date.getFullYear();
+            var m = date.getMonth()+1;
+            var d = date.getDate();
+            return y+'-'+(m<10?('0'+m):m)+'-'+( d<10?('0'+d):d);
+        }
+
+        function myparser(s){
+            if (!s) return new Date();
+            var ss = (s.split('-'));
+            var y = parseInt(ss[0],10);
+            var m = parseInt(ss[1],10);
+            var d = parseInt(ss[2],10);
+            if (!isNaN(y) && !isNaN(m) && !isNaN(d)){
+                return new Date(y,m-1,d);
+            } else {
+                return new Date();
+            }
+    }
+
+
+	</script>
+
+	<script type="text/javascript" src="../static/custom/jquery.easyui.min.js"></script>
+	<script type="text/javascript" charset="utf-8" src="../static/js/umeditor/umeditor.config.js"></script>
+	<script type="text/javascript" charset="utf-8" src="../static/js/umeditor/umeditor.min.js"></script>
+	<script type="text/javascript" src="../static/js/umeditor/lang/zh-cn/zh-cn.js"></script>
+	<script type="text/javascript" src="../static/js/bee.js" charset="utf-8"></script>
+	<script type="text/javascript">
+		$(function () {
+            var state = UM.getEditor('editor-state');
+			state.setWidth("98%");
+			state.setHeight(150);
+			$(".edui-body-container").css("width", "98%");
+
+
+		});
+
+		window.onload = function () {
+                $("#prodDate").datebox("setValue", myformatter(new Date()));
+            }
+	</script>
+
+</head>
+
+<body>
+
+	<style type="text/css">
+		#topmenu {
+			width: 980px;
+			margin: 40px auto 0 auto;
+			height: 60px;
+			position: relative;
+		}
+
+		#topmenu ul {
+			margin: 0;
+			padding: 0;
+		}
+
+		#topmenu ul li {
+			float: left;
+			font-size: 12px;
+			list-style: none;
+			background: #222;
+			position: relative;
+			text-align: center;
+			text-transform: uppercase;
+			width: 180px;
+			margin: 0 10px;
+			display: inline;
+			line-height: 30px;
+		}
+
+		#topmenu ul li a {
+			color: #aaa;
+			text-decoration: none;
+		}
+
+		#topmenu ul li a:hover {
+			color: #fff;
+		}
+
+		#topmenu ul li.active a {
+			color: #fff;
+			font-weight: 800;
+		}
+	</style>
+
+	<div id="topmenu">
+		<ul>
+			<li class="active">
+				<a href="index.html">制药生产计划向导</a>
+			</li>
+		</ul>
+	</div>
+
+
+	<div id="wizard" class="swMain">
+		<ul>
+			<li>
+				<a href="#step-1">
+					<span class="stepNumber">1</span>
+					<span class="stepDesc">Step 1
+						<br />
+						<small>计划日期选择</small>
+					</span>
+				</a>
+			</li>
+			<li>
+				<a href="#step-2">
+					<span class="stepNumber">2</span>
+					<span class="stepDesc">Step 2
+						<br />
+						<small>批次号品名录入</small>
+					</span>
+				</a>
+			</li>
+			<li>
+				<a href="#step-3">
+					<span class="stepNumber">3</span>
+					<span class="stepDesc">Step 3
+						<br />
+						<small>物料明细</small>
+					</span>
+				</a>
+			</li>
+			<li>
+				<a href="#step-4">
+					<span class="stepNumber">4</span>
+					<span class="stepDesc">Step 4
+						<br />
+						<small>计划效验结果</small>
+					</span>
+				</a>
+			</li>
+		</ul>
+		<div id="step-1">
+            <h2 class="StepTitle">计划日期选择</h2>
+            <br />
+            <br />
+            <br />
+            <a>  生产日期选择:  </a>
+                  <input class="easyui-datebox" id = "prodDate" labelPosition="top" data-options="formatter:myformatter,parser:myparser" style="width:200px;height:40px;line-height:70px;">
+		</div>
+		<div id="step-2">
+			<h2 class="StepTitle">计划实际信息</h2>
+            <div>
+{#				<div class="container">#}
+					<div class="content">
+                        <div class="column">
+							<span class="current">基本信息</span>
+							<span id="selectedNodeId" style="display:none;"></span>
+                        </div>
+						<form id="orgForm" method="post" class="dialog-form">
+							<table class="kv-table">
+								<tbody>
+									<tr>
+										<td class="kv-label">批次号</td>
+										<td class="kv-content">
+											<input type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="">
+										</td>
+                                        <td class="kv-label">品名</td>
+										<td class="kv-content">
+											<input id="unittypelist" class="easyui-combobox" name="单位类型" style="height:35px;width:120px" data-options="
+													   url:'treeProductRule',
+													   method:'get',
+													   valueField: 'id',
+													   textField: 'text'"
+                                        }>
+										</td>
+										<td class="kv-label">计划重量</td>
+										<td class="kv-content">
+											<input id="unittypelist" class="easyui-combobox" name="单位类型" style="height:35px;width:80px" data-options="
+													   url:'../static/data/combobox_defaultWeight.json',
+													   method:'get',
+													   valueField: 'id',
+													   textField: 'text'"
+                                        }>
+
+										</td>
+										<td class="kv-label">单位</td>
+										<td class="kv-content">
+											<select id="parentlist" class="easyui-combobox" name="language" style="height:35px;;width:50px" data-options="
+													    url:'getUnitByKg',
+													   method:'get',
+													   valueField: 'ID',
+													   textField: 'text'"
+											</select>
+
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</form>
+					</div>
+{#				</div>#}
+			</div>
+
+		</div>
+		<div id="step-3">
+			<h2 class="StepTitle">物料BOM</h2>
+
+            <div id="tab" class="easyui-tabs" style="width:100%;height:250px;">
+            <div title="批次任务明细" data-options="closable:false"  style="padding:0px;display:none;">
+                <table  class="easyui-datagrid" style="width:100%;"  data-options="url:
+                '../static/data/datagrid_batch_manager_list2.json', method: 'get', rownumbers:true, singleSelect:false, autoRowHeight:false, pagination:true, striped:true, checkOnSelect:false,
+                selectOnCheck:false, collapsible:true, toolbar: '#tb', pageSize:10 " >
+                <thead>
+                    <tr>
+                        <th data-options="field: 'A',align: 'center' ">顺序号</th>
+                        <th data-options="field: 'B',align: 'center' ">任务号</th>
+                        <th data-options="field: 'C',align: 'center' ">投入物料</th>
+                        <th data-options="field: 'D',align: 'center' ">投入物料名称</th>
+                        <th data-options="field: 'E',align: 'center' ">投入量</th>
+                        <th data-options="field: 'F',align: 'center' ">投入比例</th>
+                        <th data-options="field: 'G',align: 'center' ">来料批号</th>
+                        <th data-options="field: 'H',align: 'center' ">来料柜号</th>
+                        <th data-options="field: 'I',align: 'center' ">来料工单号</th>
+                        <th data-options="field: 'J',align: 'center' ">来料类型</th>
+                        <th data-options="field: 'K',align: 'center' ">实际来料柜号</th>
+                    </tr>
+                </thead>
+            </table>
+            </div>
+            <div title="批次物料明细" data-options="closable:false" style="overflow:auto;padding:0px;display:none;">
+                <table  class="easyui-datagrid" style="width:100%;" data-options="url:
+                '../static/data/datagrid_batch_manager_list2.json', method: 'get', rownumbers:true, singleSelect:false, autoRowHeight:false, pagination:true, striped:true, checkOnSelect:false,
+                selectOnCheck:false, collapsible:true, toolbar: '#tb', pageSize:10 " >
+                <thead>
+                    <tr>
+                        <th data-options="field: 'A',align: 'center' ">顺序号</th>
+                        <th data-options="field: 'B',align: 'center' ">任务号</th>
+                        <th data-options="field: 'C',align: 'center' ">投入物料</th>
+                        <th data-options="field: 'D',align: 'center' ">投入物料名称</th>
+                        <th data-options="field: 'E',align: 'center' ">投入量</th>
+                        <th data-options="field: 'F',align: 'center' ">投入比例</th>
+                    </tr>
+                </thead>
+            </table>
+            </div>
+
+        </div>
+		</div>
+		<div id="step-4">
+			<h2 class="StepTitle">Step 4 Content</h2>
+			<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+				Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute
+				irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+				cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+			<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+				Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute
+				irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+				cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+			<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+				Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute
+				irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+				cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+		</div>
+	</div>
+
+
+</body>
+
+</html>

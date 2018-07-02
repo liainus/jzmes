@@ -1,0 +1,17 @@
+{"total":15,"rows":[
+{"id":"1","name":"TQ01","comment":"1号提取罐"},
+{"id":"2","name":"TQ02","comment":"2号提取罐"},
+{"id":"3","name":"TQ03","comment":"3号提取罐"},
+{"id":"4","name":"TQ04","comment":"4号提取罐"},
+{"id":"5","name":"TQ05","comment":"5号提取罐"},
+{"id":"6","name":"TQ06","comment":"6号提取罐"},
+{"id":"7","name":"TQ07","comment":"7号提取罐"},
+{"id":"8","name":"TQ08","comment":"8号提取罐"},
+{"id":"9","name":"TQ09","comment":"9号提取罐"},
+{"id":"10","name":"TQ10","comment":"10号提取罐"},
+{"id":"11","name":"NS01","comment":"1号浓缩设备"},
+{"id":"12","name":"NS02","comment":"2号浓缩设备"},
+{"id":"13","name":"NS03","comment":"3号浓缩设备"},
+{"id":"14","name":"NS04","comment":"4号浓缩设备"},
+{"id":"15","name":"NS05","comment":"5号浓缩设备"}
+ ]}

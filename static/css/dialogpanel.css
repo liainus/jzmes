@@ -1,0 +1,14 @@
+.window.dialog .window-header,.panel.dialog .window-header {
+    height:38px;
+    line-height:38px;
+    color:#fff;
+    padding:0;
+    background:#1c87b3
+   }
+   .dialog .panel-tool-close {
+    background:url('../icons/dialog_close.png?1464355571') no-repeat -20px 0px
+   }
+   .dialog .panel-tool-close:hover {
+     background-color:#1c87b3 !important;
+    background:url('../icons/dialog_close.png?1464355571') no-repeat -20px 0px
+   }

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>批次管理</title>
+    <link href="../static/css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
+    <link href="../static/css/process.css" rel="stylesheet">
+    <link href="../static/css/platform.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
+    <link href="../static/js/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
+    <link href="../static/css/BATCH_MANAGER.css" type="text/css" rel="stylesheet">
+
+</head>
+
+<body>
+    <div class="container" style="margin:3px;">
+        <div style="margin:3px;">
+            <div class="opt-buttons">
+                <a href="#" class="easyui-linkbutton">批次计划申请</a>
+                <a href="#" class="easyui-linkbutton">批生产开始</a>
+                <a href="#" class="easyui-linkbutton">批生产结束</a>
+                <a href="#" class="easyui-linkbutton">批次计划中止</a>
+                <a href="#" class="easyui-linkbutton">刷新</a>
+                <a href="#" class="easyui-linkbutton">切换工艺段</a>
+            </div>
+        </div>
+        <div style="margin:3px;">
+            <table class="kv-table">
+                <tbody>
+                    <tr>
+                        <td class="kv-label" style="white-space:nowrap;">当前工作日</td>
+                        <td class="kv-content">
+                            <input type="text" class="textbox-text validatebox-text textbox-prompt" value="2017-8-8" autocomplete="off"
+                                placeholder="">
+                        </td>
+                        <td class="kv-label" style="white-space:nowrap;">工艺段名称</td>
+                        <td class="kv-content">
+                            <input type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder=""
+                                value="ZS1A-A叶片加料段">
+                        </td>
+                        <td class="kv-label" style="white-space:nowrap;">调度模式</td>
+                        <td class="kv-content">
+                            <input type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder=""
+                                value="10-调度">
+                        </td>
+                        <td class="kv-label" style="white-space:nowrap;">控制模式</td>
+                        <td class="kv-content">
+                            <input type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder=""
+                                value="10-本地">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <table class="kv-table">
+                <tbody>
+                    <tr>
+                        <td class="kv-label">计划状态色卡</td>
+                        <td class="kv-content" style="width:80%">
+                            <div class="colorBox" style="background-color:blue;">任务编制</div>
+                            <div class="colorBox" style="background-color:chartreuse;">任务下达</div>
+                            <div class="colorBox" style="background-color:darkcyan">任务新建</div>
+                            <div class="colorBox" style="background-color:goldenrod;">任务确认</div>
+                            <div class="colorBox" style="background-color:green;">任务执行</div>
+                            <div class="colorBox" style="background-color:gray;">任务完成</div>
+                            <div class="colorBox" style="background-color:darksalmon;">任务暂停</div>
+                            <div class="colorBox" style="background-color:red;">任务错误</div>
+                            <div class="colorBox" style="background-color:deeppink;">任务中止</div>
+
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+
+        <table id="tt" class="easyui-datagrid" style="width:100%;height:300px;" title="批次计划信息" data-options="url:'../static/data/datagrid_batch_manager_list1.json',
+                method:'get',
+                rownumbers:true,
+                singleSelect:true,
+                autoRowHeight:false,
+                pagination:true,
+                striped:false,
+                checkOnSelect:false,
+                selectOnCheck:false,
+                collapsible:true,
+                toolbar:'#tb',
+                pageSize:10">
+            <thead>
+                <tr>
+                    <th data-options="field: 'A',align: 'center',">调度状态</th>
+                    <th data-options="field: 'B',align: 'center' ">生产日期</th>
+                    <th data-options="field: 'C',align: 'center' ">生产线</th>
+                    <th data-options="field: 'D',align: 'center' ">工艺段</th>
+                    <th data-options="field: 'E',align: 'center' ">批次号编码</th>
+                    <th data-options="field: 'F',align: 'center' ">主物料</th>
+                    <th data-options="field: 'G',align: 'center' ">主物料名称</th>
+                    <th data-options="field: 'H',align: 'center' ">ERP订单号</th>
+                    <th data-options="field: 'I',align: 'center' ">任务号</th>
+                    <th data-options="field: 'J',align: 'center' ">批次号</th>
+                    <th data-options="field: 'K',align: 'center' ">计划量</th>
+                    <th data-options="field: 'L',align: 'center' ">完成量</th>
+                    <th data-options="field: 'M',align: 'center' ">计量单位</th>
+                    <th data-options="field: 'N',align: 'center' ">任务状态</th>
+                    <th data-options="field: 'O',align: 'center' ">投料状态</th>
+                    <th data-options="field: 'P',align: 'center' ">计划完成时间</th>
+
+                </tr>
+            </thead>
+        </table>
+
+        <div id="tab" class="easyui-tabs" style="width:100%;height:250px;">
+            <div title="批次任务明细" data-options="closable:false"  style="padding:0px;display:none;">
+                <table  class="easyui-datagrid" style="width:100%;"  data-options="url:
+                '../static/data/datagrid_batch_manager_list2.json', method: 'get', rownumbers:true, singleSelect:false, autoRowHeight:false, pagination:true, striped:true, checkOnSelect:false,
+                selectOnCheck:false, collapsible:true, toolbar: '#tb', pageSize:10 " >
+                <thead>
+                    <tr>
+                        <th data-options="field: 'A',align: 'center' ">顺序号</th>
+                        <th data-options="field: 'B',align: 'center' ">任务号</th>
+                        <th data-options="field: 'C',align: 'center' ">投入物料</th>
+                        <th data-options="field: 'D',align: 'center' ">投入物料名称</th>
+                        <th data-options="field: 'E',align: 'center' ">投入量</th>
+                        <th data-options="field: 'F',align: 'center' ">投入比例</th>
+                        <th data-options="field: 'G',align: 'center' ">来料批号</th>
+                        <th data-options="field: 'H',align: 'center' ">来料柜号</th>
+                        <th data-options="field: 'I',align: 'center' ">来料工单号</th>
+                        <th data-options="field: 'J',align: 'center' ">来料类型</th>
+                        <th data-options="field: 'K',align: 'center' ">实际来料柜号</th>
+                    </tr>
+                </thead>
+            </table>
+            </div>
+            <div title="批次物料明细" data-options="closable:false" style="overflow:auto;padding:0px;display:none;">
+                <table  class="easyui-datagrid" style="width:100%;" data-options="url:
+                '../static/data/datagrid_batch_manager_list2.json', method: 'get', rownumbers:true, singleSelect:false, autoRowHeight:false, pagination:true, striped:true, checkOnSelect:false,
+                selectOnCheck:false, collapsible:true, toolbar: '#tb', pageSize:10 " >
+                <thead>
+                    <tr>
+                        <th data-options="field: 'A',align: 'center' ">顺序号</th>
+                        <th data-options="field: 'B',align: 'center' ">任务号</th>
+                        <th data-options="field: 'C',align: 'center' ">投入物料</th>
+                        <th data-options="field: 'D',align: 'center' ">投入物料名称</th>
+                        <th data-options="field: 'E',align: 'center' ">投入量</th>
+                        <th data-options="field: 'F',align: 'center' ">投入比例</th>
+                    </tr>
+                </thead>
+            </table>
+            </div>
+            
+        </div>
+
+
+ 
+
+ 
+   
+    </div>
+
+
+        <!-- <div id="pf-ft ">
+            <div class="system-name ">
+                <i class="iconfont ">&#xe6fe;</i>
+                <span>版本信息：1.0 版权所有</span>
+            </div>
+            <div class="copyright-name ">
+                <span>当前登录用户：操作员001&nbsp;&nbsp;</span>
+                <i class="iconfont " >&#xe6ff;</i>
+            </div>
+        </div>  -->
+
+</body>
+
+</html>
+    <script type="text/javascript " src="../static/custom/jquery.min.js "></script>
+    <script type="text/javascript " src="../static/custom/jquery.easyui.min.js "></script>
+<script  type="text/javascript " >
+	$('#tt').datagrid({
+		rowStyler:function(index,row){
+			if (row.N=='任务编制'){
+				return 'background-color:blue; color:white !important;font-weight:bold;';
+            }
+            if (row.N=='任务执行'){
+				return 'background-color:green; color:white;font-weight:bold;';
+            }
+            if (row.N=='任务完成'){
+				return 'background-color:gray; color:white;font-weight:bold;';
+            }
+            if (row.N=='任务错误'){
+				return 'background-color:red; color:white;font-weight:bold;';
+            }
+            if (row.N=='任务中止'){
+				return 'background-color:deeppink; color:white;font-weight:bold;';
+            }
+            if (row.N=='任务暂停'){
+				return 'background-color:darksalmon; color:white;font-weight:bold;';
+            }
+		}
+	});
+
+ 
+
+
+  
+
+        </script>

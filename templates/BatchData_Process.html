@@ -1,0 +1,101 @@
+<!DOCTYPE html> 
+<html lang="en"> 
+<head> 
+    <meta charset="utf-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1"> 
+    <title>过程数据</title> 
+    <link href="css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../custom/uimaker/easyui.css">
+	<link rel="stylesheet" type="text/css" href="../custom/uimaker/icon.css">
+    <link href="css/basic_info.css" rel="stylesheet">
+	
+</head> 
+<body>
+	<div class="container">
+		<div class="left-tree" >
+			<ul id="LeftTree" class="easyui-tree" data-options="url:'data/tree_ProcessItem.json',method:'get',animate:true,checkbox:false"></ul>
+		</div>
+		
+            <div id="pf-page">
+			    <div id="tb" style="padding:0 10px;">
+				<div style="margin:10px;"></div>	
+				<a>  起止日期:  </a>
+                  <input class="easyui-datebox"   style="width:166px;height:35px;line-height:35px;">
+                  <input class="easyui-datebox"  style="width:166px;height:35px;line-height:35px;">
+				  <a id="btn" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'">查询批次号</a>
+			  
+				  <a> ----> 批次号:  </a>
+				   <input class="easyui-combobox" id="rwlb" name="rwlb" style="width:250px" data-options="valueField:'id', textField:'text', panelHeight:'auto'" >  
+				   
+				 </div>			 
+				 
+			
+			    <div style="margin:10px;"></div>
+                <div id="tt" class="easyui-tabs" style="width:100%;height:380px; scrolling="false"">
+                    
+                </div>
+            </div>		
+	</div>
+	
+</body> 
+</html>
+
+    <script type="text/javascript" src="../custom/jquery.min.js"></script>
+    <script type="text/javascript" src="../custom/jquery.easyui.min.js"></script>	
+   
+<script type="text/javascript">
+
+//按钮点击后添加选项卡
+function addTab(title,url)
+{
+    if($('#tt').tabs('exists',title))
+    {
+        $('#tt').tabs('select',title);
+    }
+    else
+    {
+        var content='<iframe class="page-iframe" src="'+ url +'" frameborder="no" border="no" height="100%"    width="100%" scrolling="auto"></iframe>';
+        $('#tt').tabs('add',{
+            title:title,
+            content:content,
+            closable:true
+        });
+    }
+}
+
+$(function(){
+    $('#btn').bind('click', function(){
+		var data,json;
+		data = [];
+		data.push({ "text": "20170206_Brand1_1", "id": 101 });
+		data.push({ "text": "20170206_Brand2_1", "id": 102 });
+		$("#rwlb").combobox("loadData", data);
+    });
+});
+
+$('#LeftTree').tree({
+	onClick: function(node){	
+	   var nodePar = $('#LeftTree').tree("getParent",node.target);
+	   var comboxtext = $('#rwlb').combobox('getText');
+	   if (nodePar.text == "投料段")
+	   {
+	     if(node.text == "工序1温度")
+	     {
+         addTab(comboxtext + "  " + nodePar.text + "  " + node.text + "  数据","BatchData_Process_Data.html");
+		 addTab(comboxtext + "  " + nodePar.text + "  " + node.text + "  彩虹图","BatchData_Process_Trend.html");
+		 addTab(comboxtext + "  " + nodePar.text + "  " + node.text + "  CPK","BatchData_Process_CPK.html");
+		 addTab(comboxtext + "  " + nodePar.text + "  " + node.text + "  直方图","BatchData_Process_Histogram.html");
+		 }
+	   }
+	   else if (nodePar.text == "提取浓缩段")
+       {
+	   }
+	   else
+       {
+	   }
+	   
+	}
+});
+
+</script>
+

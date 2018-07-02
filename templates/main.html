@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>江中制药MES系统</title>
+    <link href="../static/css/base.css" rel="stylesheet">
+    <link href="../static/css/platform.css" rel="stylesheet">
+    <link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
+</head>
+
+<body>
+    <div class="container">
+        <div id="pf-hd">
+            <div class="pf-logo">
+                <img src="../static/jzmes_images/jzjt_logo.png" alt="logo">
+                <span class="split"></span>
+                <span class="system-name">MES制造执行系统</span>
+            </div>
+
+
+            <div class="pf-nav-wrap">
+                <div class="pf-nav-ww">
+                    <ul class="pf-nav">
+
+                        <li class="pf-nav-item home current" data-menu="sys-manage">
+                            <a href="javascript:;">
+                                <span class="iconfont">&#xe63f;</span>
+                                <span class="pf-nav-title">系统管理</span>
+                            </a>
+                        </li>
+                        <li class="pf-nav-item project" data-menu="org-manage">
+                            <a href="javascript:;">
+                                <span class="iconfont">&#xe60d;</span>
+                                <span class="pf-nav-title">用户管理</span>
+                            </a>
+                        </li>
+                        <li class="pf-nav-item static" data-menu="main-data">
+                            <a href="javascript:;">
+                                <span class="iconfont">&#xe61e;</span>
+                                <span class="pf-nav-title">SPC统计控制</span>
+                            </a>
+                        </li>
+                        <li class="pf-nav-item manger" data-menu="supplier-mange">
+                            <a href="javascript:;">
+                                <span class="iconfont">&#xe620;</span>
+                                <span class="pf-nav-title">物料管理</span>
+                            </a>
+                        </li>
+
+                        <li class="pf-nav-item manger" data-menu="supplier-dev">
+                            <a href="javascript:;">
+                                <span class="iconfont">&#xe625;</span>
+                                <span class="pf-nav-title">设备监控</span>
+                            </a>
+                        </li>
+
+                        <li class="pf-nav-item manger" data-menu="pur-source">
+                            <a href="javascript:;">
+                                <span class="iconfont">&#xe64b;</span>
+                                <span class="pf-nav-title">能耗分析</span>
+                            </a>
+                        </li>
+
+                        <li class="pf-nav-item manger" data-menu="contract-mange">
+                            <a href="javascript:;">
+                                <span class="iconfont">&#xe64c;</span>
+                                <span class="pf-nav-title">工厂日历</span>
+                            </a>
+                        </li>
+
+
+                        <li class="pf-nav-item manger" data-menu="pur-source">
+                            <a href="javascript:;">
+                                <span class="iconfont">&#xe623;</span>
+                                <span class="pf-nav-title">系统日志</span>
+                            </a>
+                        </li>
+
+                        <li class="pf-nav-item manger" data-menu="contract-mange">
+                            <a href="javascript:;">
+                                <span class="iconfont">&#xe646;</span>
+                                <span class="pf-nav-title">产品配置管理</span>
+                            </a>
+                        </li>
+                        <li class="pf-nav-item manger" data-menu="pur-source">
+                            <a href="javascript:;">
+                                <span class="iconfont">&#xe623;</span>
+                                <span class="pf-nav-title">工艺标准</span>
+                            </a>
+                        </li>
+
+                        <li class="pf-nav-item manger" data-menu="contract-mange">
+                            <a href="javascript:;">
+                                <span class="iconfont">&#xe646;</span>
+                                <span class="pf-nav-title">设备档案管理</span>
+                            </a>
+                        </li>
+
+
+                        <li class="pf-nav-item manger" data-menu="pur-source">
+                            <a href="javascript:;">
+                                <span class="iconfont">&#xe623;</span>
+                                <span class="pf-nav-title">设备故障</span>
+                            </a>
+                        </li>
+
+                        <li class="pf-nav-item manger" data-menu="contract-mange">
+                            <a href="javascript:;">
+                                <span class="iconfont">&#xe646;</span>
+                                <span class="pf-nav-title">设备润滑</span>
+                            </a>
+                        </li>
+
+                        <li class="pf-nav-item manger" data-menu="pur-source">
+                            <a href="javascript:;">
+                                <span class="iconfont">&#xe623;</span>
+                                <span class="pf-nav-title">文档查询</span>
+                            </a>
+                        </li>
+
+                        <li class="pf-nav-item manger" data-menu="contract-mange">
+                            <a href="javascript:;">
+                                <span class="iconfont">&#xe646;</span>
+                                <span class="pf-nav-title">用户管理</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+
+                <a href="javascript:;" class="pf-nav-prev disabled iconfont">&#xe606;</a>
+                <a href="javascript:;" class="pf-nav-next  iconfont">&#xe607;</a>
+            </div>
+
+
+
+
+            <div class="pf-user">
+                <div class="pf-user-photo">
+                    <img src="../static/jzmes_images/Customer_Male_Light.png" alt="">
+                </div>
+                <h4 class="pf-user-name ellipsis">admin</h4>
+                <i class="iconfont xiala">&#xe607;</i>
+
+                <div class="pf-user-panel">
+                    <ul class="pf-user-opt">
+                        <li>
+                            <a href="javascript:;">
+                                <i class="iconfont">&#xe60d;</i>
+                                <span class="pf-opt-name">用户信息</span>
+                            </a>
+                        </li>
+                        <li class="pf-modify-pwd">
+                            <a href="http://www.jz.com">
+                                <i class="iconfont">&#xe634;</i>
+                                <span class="pf-opt-name">修改密码</span>
+                            </a>
+                        </li>
+                        <li class="pf-logout">
+                            <a href="login.html">
+                                <i class="iconfont">&#xe60e;</i>
+                                <span class="pf-opt-name">退出</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+
+        <div id="pf-bd">
+            <div id="pf-sider">
+                <h2 class="pf-model-name">
+                    <!-- <span class="iconfont">&#xe64a;</span>-->
+                    <span class="pf-name">导航菜单</span>
+                    <span class="toggle-icon"></span>
+                </h2>
+
+                <ul class="sider-nav">
+                    <li>
+                        <a href="javascript:;">
+                            <span class="iconfont sider-nav-icon">&#xe611;</span>
+                            <span class="sider-nav-title">生产监控</span>
+                            <i class="iconfont">&#xe642;</i>
+                        </a>
+                        <ul class="sider-nav-s">
+                            <li>
+                                <a href="#" onclick="addTab('投料段生产监控','runstatus1.html')">投料段生产监控</a>
+                            </li>
+                            <li>
+                                <a href="#" onclick="addTab('提取段生产监控','processMonitorMap/index.html')">提取段生产监控</a>
+                            </li>
+                            <li>
+                                <a href="#" onclick="addTab('浓缩段生产监控','remain.html')">浓缩段生产监控</a>
+                            </li>
+                            <li>
+                                <a href="#" onclick="addTab('健胃消食片生产线-1','processMonitorMap/line_1.1.html')">健胃消食片生产线-1</a>
+                            </li>
+
+                            <li>
+                                <a href="#" onclick="addTab('草珊瑚含片生产线-1','processMonitorMap/line_2.1.html')">草珊瑚含片生产线-1</a>
+                            </li>
+
+                            <li>
+                                <a href="#" onclick="addTab('混合干燥线','processMonitorMap/line_3.html')">混合干燥线</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="javascript:;">
+                            <span class="iconfont sider-nav-icon">&#xe6ed;</span>
+                            <span class="sider-nav-title">系统管理</span>
+                            <i class="iconfont">&#xe642;</i>
+                        </a>
+                        <ul class="sider-nav-s">
+                            <li>
+                                <a href="#" onclick="addTab('组织结构建模','organization')">组织结构建模</a>
+                            </li>
+                            <li>
+                                <a href="#" onclick="addTab('组织结构模型','organizationMap')">组织结构</a>
+                            </li>
+                            <li>
+                                <a href="#" onclick="addTab('区域建模','Area')">企业建模</a>
+                            </li>
+                            <li>
+                                <a href="#" onclick="addTab('用户管理','usermanager.html')">用户管理</a>
+                            </li>
+                            <li>
+                                <a href="#" onclick="addTab('角色管理','sysrole')">角色管理</a>
+                            </li>
+                            <li>
+                                <a href="#" onclick="addTab('权限分配','roleright.html')">权限分配</a>
+                            </li>
+                            <li>
+                                <a href="#" onclick="addTab('组织机构','Myorganization')">组织机构</a>
+                            </li>
+                            <li>
+                                <a href="#" onclick="addTab('系统日志','syslogs.html')">系统日志</a>
+                            </li>
+                            <li>
+                                <a href="#" onclick="addTab('系统日志','http://www.baidu.com')">工厂日历</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="javascript:;">
+                            <span class="iconfont sider-nav-icon">&#xe6ea;</span>
+                            <span class="sider-nav-title">生产建模</span>
+                            <i class="iconfont">&#xe642;</i>
+                        </a>
+                        <ul class="sider-nav-s">
+                            <li>
+                                <a href="#" onclick="addTab('企业建模','Enterprise')">企业建模</a>
+                            </li>
+                            <li>
+                                <a href="#" onclick="addTab('工厂建模','Factory')">工厂建模</a>
+                            </li>
+                            <li>
+                                <a href="#" onclick="addTab('区域建模','Area')">区域建模</a>
+                            </li>
+                            <li>
+                                <a href="#" onclick="addTab('生产线建模','ProductLine')">生产线建模</a>
+                            </li>
+                            <li>
+                                <a href="#" onclick="addTab('工艺段建模','ProcessUnit')">工艺段建模</a>
+                            </li>
+                            <li>
+                                <a href="#" onclick="addTab('设备建模','Equipment')">设备建模</a>
+                            </li>
+                            <li>
+                                <a href="#" onclick="addTab('单位维护','Unit')">单位维护</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="javascript:;">
+                            <span class="iconfont sider-nav-icon">&#xe6c3;</span>
+                            <span class="sider-nav-title">生产计划调度管理</span>
+                            <i class="iconfont">&#xe642;</i>
+                        </a>
+                        <ul class="sider-nav-s">
+                            <li>
+                                <a href="#" onclick="addTab('制药计划','ZYPlan')">制药计划</a>
+                            </li>
+                            <li>
+                                <a href="#" onclick="addTab('制药任务','ZYTask')">制药任务</a>
+                            </li>
+                            <li>
+                                <a href="#" onclick="addTab('调度日计划','SchedulePlan')">调度日计划</a>
+                            </li>
+                            <li>
+                                <a href="#" onclick="addTab('制药计划物料','ZYPlanMaterial')">制药计划物料</a>
+                            </li>
+                            <li>
+                                <a href="#" onclick="addTab('向导-横向','createPlanWizard')">向导-横向</a>
+                            </li>
+                            <li>
+                                <a href="#" onclick="addTab('向导-纵向','jquerySteps/Page_WizardVertical.htm')">向导-纵向</a>
+                            </li>
+                            <li>
+                                <a href="#" onclick="addTab('向导-Tab','jquerySteps/Page_WizardTab.htm')">向导-Tab</a>
+                            </li>
+                            <li>
+                                <a href="#" onclick="addTab('排产计划','productionSchedulingCalendar/index.html')">排产计划</a>
+                            </li>
+                            <li>
+{#                                <a href="#" onclick="addTab('批次管理','batchPlan/batch_manager.html')">批次管理</a>#}
+                                <a href="#" onclick="addTab('批次管理','batchmanager')">批次管理</a>
+                            </li>
+                            <li>
+                                <a href="#" onclick="addTab('查询全天计划','PlanManager')">查询全天计划</a>
+                            </li>
+                            <li>
+                                <a href="#" onclick="addTab('出入库操作','')">出入库操作</a>
+                            </li>
+                            <li>
+                                <a href="#">信息维护</a>
+                            </li>
+                            <li>
+                                <a href="#">作业任务排程</a>
+                            </li>
+                            <li>
+                                <a href="#">作业任务调度</a>
+                            </li>
+                            <li>
+                                <a href="#">作业任务执行</a>
+                            </li>
+                            <li>
+                                <a href="#">生产路径管理</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="javascript:;">
+                            <span class="iconfont sider-nav-icon">&#xe65b;</span>
+                            <span class="sider-nav-title">工艺管理</span>
+                            <i class="iconfont">&#xe642;</i>
+                        </a>
+                        <ul class="sider-nav-s">
+                             <li>
+                                <a href="#" onClick="addTab('产品定义','ProductRule')">产品定义</a>
+                            </li>
+                            <li>
+                                <a href="#" onClick="addTab('产品段定义','ProductUnit')">产品段定义</a>
+                            </li>
+                            <li>
+                                <a href="#" onClick="addTab('产品段任务配置','ProductControlTask')">产品段任务配置</a>
+                            </li>
+                            <li>
+                                <a href="#" onClick="addTab('工艺参数配置','ProductParameter')">工艺参数配置</a>
+                            </li>
+                            <li>
+                                <a href="#" onClick="addTab('物料BOM','MaterialBOM')">物料BOM</a>
+                            </li>
+                             <li>
+                                <a href="#" onClick="addTab('工艺路线','ProductUnitRoute')">工艺路线</a>
+                            </li>
+                            <li>
+                                <a href="#">配方管理</a>
+                            </li>
+                            <li>
+                                <a href="#">配方下达</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="javascript:;">
+                            <span class="iconfont sider-nav-icon">&#xe611;</span>
+                            <span class="sider-nav-title">生产数据管理</span>
+                            <i class="iconfont">&#xe642;</i>
+                        </a>
+                        <ul class="sider-nav-s">
+                            <li>
+                                <a href="#">电子批记录</a>
+                            </li>
+                            <li>
+                                <a href="#">批物料平衡统计</a>
+                            </li>
+                            <li>
+                                <a href="#">作业数据管理</a>
+                            </li>
+                            <li>
+                                <a href="#">产量数据管理</a>
+                            </li>
+                            <li>
+                                <a href="#">原/辅料数据管理</a>
+                            </li>
+                            <li>
+                                <a href="#">批次故障统计</a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li>
+                        <a href="javascript:;">
+                            <span class="iconfont sider-nav-icon">&#xe64c;</span>
+                            <span class="sider-nav-title">质量管理</span>
+                            <i class="iconfont">&#xe642;</i>
+                        </a>
+                        <ul class="sider-nav-s">
+                            <li>
+                                <a href="#" onClick="addTab('过程连续数据','BatchData_Process.html')">过程连续数据</a>
+                            </li>
+                            <li>
+                                <a href="#" onClick="addTab('离散数据录入','BatchData_Scatter.html')">离散数据录入</a>
+                            </li>
+                            <li>
+                                <a href="#" onClick="addTab('统计-数据点','BatchStatistics_Point.html')">统计-数据点</a>
+                            </li>
+                            <li>
+                                <a href="#">质量标准管理</a>
+                            </li>
+                            <li>
+                                <a href="#">质量统计分析</a>
+                            </li>
+                            <li>
+                                <a href="#">质量考核统计过程控制</a>
+                            </li>
+                            <li>
+                                <a href="#">SPC控制</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="javascript:;">
+                            <span class="iconfont sider-nav-icon">&#xe69e;</span>
+                            <span class="sider-nav-title">设备管理</span>
+                            <i class="iconfont">&#xe642;</i>
+                        </a>
+                        <ul class="sider-nav-s">
+                            <li>
+                                <a href="#" onclick="addTab('参数模型','product_device.html')">设备档案管理</a>
+                            </li>
+                            <li>
+                                <a href="#">设备备件查询</a>
+                            </li>
+                            <li>
+                                <a href="#">设备故障管理</a>
+                            </li>
+                            <li>
+                                <a href="#">设备运行分析</a>
+                            </li>
+                            <li>
+                                <a href="#">原/设备维护记录</a>
+                            </li>
+                            <li>
+                                <a href="#">设备润滑管理</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="javascript:;">
+                            <span class="iconfont sider-nav-icon">&#xe620;</span>
+                            <span class="sider-nav-title">物料管理</span>
+                            <i class="iconfont">&#xe642;</i>
+                        </a>
+                        <ul class="sider-nav-s">
+                            <li>
+                                <a href="#" onClick="addTab('物料类型','MaterialType')">物料类型</a>
+                            </li>
+                            <li>
+                                <a href="#" onClick="addTab('物料信息','Material')">物料信息</a>
+                            </li>
+                            <li>
+                                <a href="#">物料投料管理</a>
+                            </li>
+                            <li>
+                                <a href="#">在制品管理</a>
+                            </li>
+                            <li>
+                                <a href="#">物料追踪</a>
+                            </li>
+                            <li>
+                                <a href="#">物料追溯</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="javascript:;">
+                            <span class="iconfont sider-nav-icon">&#xe65f;</span>
+                            <span class="sider-nav-title">能耗管理</span>
+                            <i class="iconfont">&#xe642;</i>
+                        </a>
+                        <ul class="sider-nav-s">
+                            <li>
+                                <a href="#">能耗数据采集配置</a>
+                            </li>
+                            <li>
+                                <a href="#">能耗数据分析</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="javascript:;">
+                            <span class="iconfont sider-nav-icon">&#xe6ec;</span>
+                            <span class="sider-nav-title">文档管理</span>
+                            <i class="iconfont">&#xe642;</i>
+                        </a>
+                        <ul class="sider-nav-s">
+                            <li>
+                                <a href="#" onclick="addTab('文档分类维护','document_classManager.html')">文档分类维护</a>
+                            </li>
+                            <li>
+                                <a href="#" onclick="addTab('文档管理','document_Manager.html')">文档管理</a>
+                            </li>
+                            <li>
+                                <a href="#" onclick="addTab('文档查询','document_query.html')">文档查询</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+
+            <div id="pf-page">
+                <div class="easyui-tabs1" style="width:100%;height:100%;">
+                    <div title="首页" style="padding:5px 5px 5px 10px;">
+                        <iframe class="page-iframe" src="workbench" frameborder="no" border="no" height="100%" width="100%" scrolling="auto"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="pf-ft">
+            <div class="system-name">
+                <i class="iconfont">&#xe6fe;</i>
+                <span>MES制造执行系统&nbsp;v1.0</span>
+            </div>
+            <div class="copyright-name">
+                <span>CopyRight&nbsp;2017&nbsp;&nbsp;&nbsp;版权所有&nbsp;&nbsp;</span>
+                <!--<i class="iconfont" >&#xe6ff;</i>-->
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="../static/custom/jquery.min.js"></script>
+    <script type="text/javascript" src="../static/custom/jquery.easyui.min.js"></script>
+    <!-- <script type="text/javascript" src="js/menu.js"></script> -->
+    <script type="text/javascript" src="../static/js/main.js"></script>
+    <!--[if IE 7]>
+      <script type="text/javascript">
+        $(window).resize(function(){
+          $('#pf-bd').height($(window).height()-76);
+        }).resize();
+        
+      </script>
+    <![endif]-->
+
+
+    <script type="text/javascript">
+        $('.easyui-tabs1').tabs({
+            tabHeight: 34,
+            onSelect: function (title, index) {
+                var currentTab = $('.easyui-tabs1').tabs("getSelected");
+                if (currentTab.find("iframe") && currentTab.find("iframe").size()) {
+                    currentTab.find("iframe").attr("src", currentTab.find("iframe").attr("src"));
+                }
+            }
+        })
+        $(window).resize(function () {
+            $('.tabs-panels').height($("#pf-page").height() - 46);
+            $('.panel-body').height($("#pf-page").height() - 76)
+        }).resize();
+
+        var page = 0,
+            pages = ($('.pf-nav').height() / 42) - 1;
+
+        if (pages === 0) {
+            $('.pf-nav-prev,.pf-nav-next').hide();
+        }
+        $(document).on('click', '.pf-nav-prev,.pf-nav-next', function () {
+
+
+            if ($(this).hasClass('disabled')) return;
+            if ($(this).hasClass('pf-nav-next')) {
+                page++;
+                $('.pf-nav').stop().animate({ 'margin-top': -42 * page }, 200);
+                if (page == pages) {
+                    $(this).addClass('disabled');
+                    $('.pf-nav-prev').removeClass('disabled');
+                } else {
+                    $('.pf-nav-prev').removeClass('disabled');
+                }
+
+            } else {
+                page--;
+                $('.pf-nav').stop().animate({ 'margin-top': -42 * page }, 200);
+                if (page == 0) {
+                    $(this).addClass('disabled');
+                    $('.pf-nav-next').removeClass('disabled');
+                } else {
+                    $('.pf-nav-next').removeClass('disabled');
+                }
+
+            }
+        })
+
+    // setTimeout(function(){
+    //    $('.tabs-panels').height($("#pf-page").height()-46);
+    //    $('.panel-body').height($("#pf-page").height()-76)
+    // }, 200)
+    </script>
+
+    <script type="text/javascript">
+
+        //按钮点击后添加选项卡
+        function addTab(title, url) {
+            if ($('.easyui-tabs1').tabs('exists', title)) {
+                $('.easyui-tabs1').tabs('select', title);
+            }
+            else {
+                var content = '<iframe class="page-iframe" src="' + url + '" frameborder="no" border="no" height="100%" width="100%" scrolling="auto"></iframe>';
+                $('.easyui-tabs1').tabs('add', {
+                    title: title,
+                    content: content,
+                    closable: true
+                });
+            }
+        }
+    </script>
+</body>
+
+</html>

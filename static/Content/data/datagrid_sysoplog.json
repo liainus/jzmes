@@ -1,0 +1,132 @@
+[
+  {
+    "ID": "20170315000000438313",
+    "IP": "fe80::dcdd:f3e7:7ac2",
+    "COMPUTERNAME": "DESKTOP-B9G1URE",
+    "ENTERBY": "system",
+    "ENTERDATE": "2017-03-15 20:47:42.953",
+    "MEMO": "system登录成功",
+    "SOURCE": "登录MES系统",
+    "TYPE": ""
+  },
+  {
+    "ID": "20170315000000438312",
+    "IP": "fe80::dcdd:f3e7:7ac2",
+    "COMPUTERNAME": "DESKTOP-B9G1URE",
+    "ENTERBY": "system",
+    "ENTERDATE": "2017-03-15 20:38:51.570",
+    "MEMO": "system登录成功ver2016.9.20.001",
+    "SOURCE": "登录MES系统",
+    "TYPE": ""
+  },
+  {
+    "ID": "20170315000000438311",
+    "IP": "fe80::dcdd:f3e7:7ac2",
+    "COMPUTERNAME": "DESKTOP-B9G1URE",
+    "ENTERBY": "system",
+    "ENTERDATE": "2017-03-15 20:21:24.723",
+    "MEMO": "system登录成功ver2016.9.20.001",
+    "SOURCE": "登录MES系统",
+    "TYPE": ""
+  },
+  {
+    "ID": "20170315000000438310",
+    "IP": "fe80::dcdd:f3e7:7ac2",
+    "COMPUTERNAME": "DESKTOP-B9G1URE",
+    "ENTERBY": "system",
+    "ENTERDATE": "2017-03-15 19:59:33.047",
+    "MEMO": "system登录成功ver2016.9.20.001",
+    "SOURCE": "登录MES系统",
+    "TYPE": ""
+  },
+  {
+    "ID": "20170112000000438309",
+    "IP": "fe80::dcdd:f3e7:7ac2",
+    "COMPUTERNAME": "DESKTOP-B9G1URE",
+    "ENTERBY": "system",
+    "ENTERDATE": "2017-01-12 23:33:29.917",
+    "MEMO": "system登录成功ver2016.9.20.001",
+    "SOURCE": "登录MES系统",
+    "TYPE": ""
+  },
+  {
+    "ID": "20170112000000438308",
+    "IP": "fe80::dcdd:f3e7:7ac2",
+    "COMPUTERNAME": "DESKTOP-B9G1URE",
+    "ENTERBY": "system",
+    "ENTERDATE": "2017-01-12 23:29:26.090",
+    "MEMO": "system登录成功ver2016.9.20.001",
+    "SOURCE": "登录MES系统",
+    "TYPE": ""
+  },
+  {
+    "ID": "20170112000000438307",
+    "IP": "fe80::dcdd:f3e7:7ac2",
+    "COMPUTERNAME": "DESKTOP-B9G1URE",
+    "ENTERBY": "system",
+    "ENTERDATE": "2017-01-12 23:26:32.583",
+    "MEMO": "system登录成功ver2016.9.20.001",
+    "SOURCE": "登录MES系统",
+    "TYPE": ""
+  },
+  {
+    "ID": "20170112000000438306",
+    "IP": "fe80::dcdd:f3e7:7ac2",
+    "COMPUTERNAME": "DESKTOP-B9G1URE",
+    "ENTERBY": "system",
+    "ENTERDATE": "2017-01-12 22:24:19.883",
+    "MEMO": "system登录成功ver2016.9.20.001",
+    "SOURCE": "登录MES系统",
+    "TYPE": ""
+  },
+  {
+    "ID": "20170112000000438305",
+    "IP": "fe80::dcdd:f3e7:7ac2",
+    "COMPUTERNAME": "DESKTOP-B9G1URE",
+    "ENTERBY": "system",
+    "ENTERDATE": "2017-01-12 22:19:40.363",
+    "MEMO": "添加更改GAP",
+    "SOURCE": "系统模块信息",
+    "TYPE": ""
+  },
+  {
+    "ID": "20170112000000438304",
+    "IP": "fe80::dcdd:f3e7:7ac2",
+    "COMPUTERNAME": "DESKTOP-B9G1URE",
+    "ENTERBY": "system",
+    "ENTERDATE": "2017-01-12 22:19:30.410",
+    "MEMO": "添加添加GAP",
+    "SOURCE": "系统模块信息",
+    "TYPE": ""
+  },
+  {
+    "ID": "20170112000000438303",
+    "IP": "fe80::dcdd:f3e7:7ac2",
+    "COMPUTERNAME": "DESKTOP-B9G1URE",
+    "ENTERBY": "system",
+    "ENTERDATE": "2017-01-12 22:19:19.350",
+    "MEMO": "添加导入数据",
+    "SOURCE": "系统模块信息",
+    "TYPE": ""
+  },
+  {
+    "ID": "20170112000000438302",
+    "IP": "fe80::dcdd:f3e7:7ac2",
+    "COMPUTERNAME": "DESKTOP-B9G1URE",
+    "ENTERBY": "system",
+    "ENTERDATE": "2017-01-12 22:19:01.920",
+    "MEMO": "添加导入数据",
+    "SOURCE": "系统模块信息",
+    "TYPE": ""
+  },
+  {
+    "ID": "20170112000000438301",
+    "IP": "fe80::dcdd:f3e7:7ac2",
+    "COMPUTERNAME": "DESKTOP-B9G1URE",
+    "ENTERBY": "system",
+    "ENTERDATE": "2017-01-12 22:18:09.870",
+    "MEMO": "system登录成功ver2016.9.20.001",
+    "SOURCE": "登录MES系统",
+    "TYPE": ""
+  }
+]

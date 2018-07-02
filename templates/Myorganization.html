@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>组织结构</title>
+	<link href="../static/css/base.css" rel="stylesheet">
+	<link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
+	<link href="../static/css/basic_info.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
+	<link href="../static/js/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
+</head>
+
+<body>
+	<div class="container">
+		<div class="left-tree">
+			<ul id="tt" class="easyui-tree" data-options="url:'MyOp',method:'get',animate:true"></ul>
+		</div>
+		<div class="content">
+			<div class="column">
+				<span class="current">基本信息</span>
+			</div>
+			<table class="kv-table">
+				<tbody>
+
+					<tr>
+						<td class="kv-label">机构编码</td>
+						<td class="kv-content">
+							<input id = 'dwmc' type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="">
+						</td>
+						<td class="kv-label">机构名称</td>
+						<td class="kv-content">
+							<input type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="">
+						</td>
+						<td class="kv-label">创建人</td>
+						<td class="kv-content">
+							<input type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="">
+						</td>
+					</tr>
+					<tr>
+						<td class="kv-label">创建时间</td>
+						<td class="kv-content">
+							<input type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="">
+						</td>
+						<td class="kv-label">上级机构</td>
+						<td class="kv-content">
+                            <input id="unittypelist" class="easyui-combobox" name="单位类型" style="height:35px;width:155px"
+                                   data-options="
+                                   url: 'Myenterprise',
+                                   method:'get',
+                                   valueField: 'id',
+                                   textField: 'text',
+                                   groupField:'id'">
+						</td>
+						<td class="kv-label">排序号</td>
+						<td class="kv-content">
+							<input class="easyui-numberspinner" value="1" data-options="increment:1" style="width:155px;height:30px;"></input>
+						</td>
+						</td>
+					</tr>
+					<tr>
+						<td class="kv-label">说明</td>
+						<td class="kv-content" colspan="5">
+
+							<div id="editor-state" class="editor-state">
+
+							</div>
+						</td>
+					</tr>
+
+				</tbody>
+			</table>
+			<div style="padding:5px 0;">
+                <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add'">新增</a>
+				<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'">保存</a>
+				<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove'">删除</a>
+			</div>
+		</div>
+	</div>
+
+</body>
+
+</html>
+<script type="text/javascript" src="../static/custom/jquery.min.js"></script>
+<script type="text/javascript" src="../static/custom/jquery.easyui.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="../static/js/umeditor/umeditor.config.js"></script>
+<script type="text/javascript" charset="utf-8" src="../static/js/umeditor/umeditor.min.js"></script>
+<script type="text/javascript" src="../static/js/umeditor/lang/zh-cn/zh-cn.js"></script>
+<script type="text/javascript">
+	$('.easyui-tabs1').tabs({
+		tabHeight: 36
+	});
+	$(window).resize(function () {
+		$('.easyui-tabs1').tabs("resize");
+	}).resize();
+
+	var state = UM.getEditor('editor-state');
+	state.setWidth("98%");
+	state.setHeight(150);
+	$(".edui-body-container").css("width", "98%");
+
+{#	$("#unittypelist").val(3);#}
+
+	$("#parentlist").val(4);
+
+    function createKeyIDObj(keyID){
+    return {
+        ID:keyID
+    }}
+
+    $(function(){
+       $('#tt').tree({
+           onClick: function (node) {
+               {#       alert(node.id + "::" + node.text);#}
+               var enID = node.id
+               var jsonarray = [];
+               var obj = createKeyIDObj(parseInt(enID));
+               jsonarray.push(obj);
+               a = JSON.stringify(obj);
+                var entity = {
+                    ID: enID,
+                }
+               $.ajax({
+                   url: '/Myenterprise/Select',
+                   method: 'get',
+                   traditional: true,
+                   data: entity,
+                   dataType: 'json',
+                   success: function (data) {
+                       if (data) {
+                           var obj = eval(data);
+{#                           $('input[name="dwmc"]').val("OrganizationName");#}
+                           $("#dwmc").val(obj['OrganizationName']);
+{#                           $("#dwmc").textbox('setValue',obj['OrganizationName'])#}
+                       }
+                   }
+               });
+           }
+       })
+     });
+
+</script>
