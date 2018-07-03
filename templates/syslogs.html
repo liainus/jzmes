@@ -1,0 +1,51 @@
+<!DOCTYPE html> 
+<html> 
+<head> 
+    <meta charset="utf-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1"> 
+    <title>系统日志</title>
+    <link href="css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
+    <link rel="stylesheet" type="text/css" href="../custom/uimaker/icon.css">
+    <link rel="stylesheet" href="../static/css/providers.css">
+</head> 
+<body>
+    <div class="container">
+       <table class="easyui-datagrid" style="width:100%;height:554px" title="系统日志" data-options="url:'data/datagrid_sysoplog.json',
+                method:'get',
+                rownumbers:true,
+                singleSelect:false,
+                autoRowHeight:false,
+                pagination:true,
+                fitColumns:true,
+                striped:true,
+                checkOnSelect:false,
+                selectOnCheck:false,
+                collapsible:true,
+                toolbar:'#tb',
+                pageSize:10""
+                >
+            <thead>
+                <tr>
+                    <th data-options="field:'ID',width:160,align:'center'">ID</th>
+                    <th data-options="field:'IP',width:140,align:'center'">IP</th>
+                    <th data-options="field:'COMPUTERNAME',width:140,align:'center'" >计算机名称</th>
+                    <th data-options="field:'ENTERBY',width:80,align:'center'" >操作用户</th>
+                    <th data-options="field:'ENTERDATE',width:180,align:'left',halign:'center'">日期</th>
+                    <th data-options="field:'MEMO',width:350,align:'left',halign:'center'">操作内容</th>
+                    <!--<th data-options="field:'SOURCE',width:80,align:'center'">来源</th>-->
+                    <th data-options="field:'TYPE',width:80,align:'center'">类型</th>
+                </tr>
+            </thead>
+        </table>
+      <div id="tb" style="padding:0 10px;">
+        起止日期: <input class="easyui-datebox"   style="width:166px;height:35px;line-height:35px;">
+         <input class="easyui-datebox"  style="width:166px;height:35px;line-height:35px;">
+        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'">查询</a>
+      </div>
+    </div>
+</body> 
+</html>
+<script type="text/javascript" src="../static/js/jquery.min.js"></script>
+<script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>

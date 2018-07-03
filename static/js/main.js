@@ -18,10 +18,18 @@ var mainPlatform = {
             self.render(menu[m]);
         });
 
-        $(document).on('click', '.sider-nav li', function() {
-            $('.sider-nav li').removeClass('current');
-            $(this).addClass('current');
+        $(document).on('click', '.sider-nav li', function(event) {
+			if($(this).find(".sider-nav-s").css("display") == "none"){
+				$('.sider-nav li').removeClass('current');
+            	$(this).addClass('current');
+				$(this).find(".sider-nav-s").slideDown()
+				$(this).siblings().find(".sider-nav-s").slideUp()
+				event.stopPropagation();
+			}else{
+				$(this).find(".sider-nav-s").slideUp()
+			}
             $('iframe').attr('src', $(this).data('src'));
+			event.stopPropagation();
         });
 
         $(document).on('click', '.pf-logout', function() {
