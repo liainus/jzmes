@@ -1,23 +1,23 @@
-import Model.core
-import json
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, relationship
-from sqlalchemy import create_engine, Column,ForeignKey, Table, DateTime, Integer, String
-from sqlalchemy import Column, DateTime, Float, Integer, String, Unicode,BigInteger
-from sqlalchemy.dialects.mssql.base import BIT
-from sqlalchemy import func
-import Model.Global
-from collections import Counter
 import datetime
 import json
+import json
+# 引入mssql数据库引擎
+import pymssql
 import re
 import sys
-from enum import Enum
+from collections import Counter
 from datetime import datetime, date, timedelta
+from enum import Enum
+from sqlalchemy import Column, DateTime, Float, Integer, String, Unicode, BigInteger
+from sqlalchemy import create_engine, Column, ForeignKey, Table, DateTime, Integer, String
+from sqlalchemy import func
+from sqlalchemy.dialects.mssql.base import BIT
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker, relationship
 
-
-#引入mssql数据库引擎
-import pymssql
+import Model.Global
+import Model.core
+from tools.MESLogger import MESLogger
 
 # 创建对象的基类
 engine = create_engine(Model.Global.GLOBAL_DATABASE_CONNECT_STRING, deprecate_large_types=True)
@@ -27,6 +27,7 @@ engine = create_engine(Model.Global.GLOBAL_DATABASE_CONNECT_STRING, deprecate_la
 
 Base = declarative_base(engine)
 session = sessionmaker(engine)()
+logger = MESLogger('../logs','log')
 
 class ctrlPlan:
     def __init__(self,name):
@@ -43,6 +44,7 @@ class ctrlPlan:
             # self.unit = Model.core.Unit("9")
         except Exception as e:
             print(e)
+            logger.error(e)
 
     def getjsondata(self):
         f = open("Plan.json", encoding='utf-8')
@@ -67,6 +69,7 @@ class ctrlPlan:
         except Exception as e:
             bReturn = False
             print(e)
+            logger.error(e)
             return (bReturn, oclass)
 
     def queryProductRule(self,AID):
@@ -80,6 +83,7 @@ class ctrlPlan:
             return (bReturn,oclass)
         except Exception as e:
             print(e)
+            logger.error(e)
             return (bReturn, oclass)
 
     def queryProductUnit(self,AID):
@@ -93,6 +97,7 @@ class ctrlPlan:
             return (bReturn,oclass)
         except Exception as e:
             print(e)
+            logger.error(e)
             return (bReturn, oclass)
 
     def queryProductUnitRoute(self,AID):
@@ -106,7 +111,7 @@ class ctrlPlan:
             return (bReturn,oclass)
         except Exception as e:
             print(e)
-
+            logger.error(e)
             return (bReturn, oclass)
 
     def queryProductContrlTask(self, AID,APUID, AWeight):
@@ -126,6 +131,7 @@ class ctrlPlan:
             return (bReturn,iTaskCount)
         except Exception as e:
             print(e)
+            logger.error(e)
             return (bReturn, iTaskCount)
 
     def createPUPlan(self,APUID,ABatchID, ABrandID, ABrandName, APlanWeight,ATaskNO,ASeq, APlanDate, AUnit,APlanBeginTime,APlanEndTime):
@@ -159,6 +165,7 @@ class ctrlPlan:
             session.rollback()
             bReturn = False
             print(e)
+            logger.error(e)
             return bReturn
 
 
@@ -192,6 +199,7 @@ class ctrlPlan:
             session.rollback()
             bReturn = False
             print(e)
+            logger.error(e)
             return  bReturn
 
     def getPUPara(self,APUID,ABrandID, APUPara):
@@ -210,6 +218,7 @@ class ctrlPlan:
         except Exception as e:
             bReturn = False
             print(e)
+            logger.error(e)
             return  bReturn,paraValue
 
     def getLineInfo(self):
@@ -225,6 +234,7 @@ class ctrlPlan:
         except Exception as e:
             bReturn = False
             print(e)
+            logger.error(e)
             return  bReturn,"",""
 
     def getPlanSeq(self,APUID,APlanDate):
@@ -243,6 +253,7 @@ class ctrlPlan:
         except Exception as e:
             bReturn = False
             print(e)
+            logger.error(e)
             return  bReturn,iSeq
 
     def getProductUnitRoute(self,AProductRuleID):
@@ -258,6 +269,7 @@ class ctrlPlan:
         except Exception as e:
             bReturn = False
             print(e)
+            logger.error(e)
             return  bReturn,oclass
 
     def getTaskSeq(self,APUID,ABatchID):
@@ -276,6 +288,7 @@ class ctrlPlan:
         except Exception as e:
             bReturn = False
             print(e)
+            logger.error(e)
             return  bReturn,iSeq
 
     def getPlanManagerSeq(self,APLineID,APlanDate):
@@ -294,6 +307,7 @@ class ctrlPlan:
         except Exception as e:
             bReturn = False
             print(e)
+            logger.error(e)
             return  bReturn,iSeq
 
     def IsExistBatchID(self,ABatchID):
@@ -312,6 +326,7 @@ class ctrlPlan:
         except Exception as e:
             iReturn = -1
             print(e)
+            logger.error(e)
             return iReturn, iIsExist,str(e)
 
     def createPlanManager(self, APlanDate, ABatchID,ABrandID,ABrandName,ASeq,AType,APlanQuantity,AUnit,APLineID,APlineName):
@@ -336,6 +351,7 @@ class ctrlPlan:
             session.rollback()
             bReturn = False
             print(e)
+            logger.error(e)
             return bReturn
 
     def IsExistSchedulePlanDate(self,APlanDate):
@@ -355,6 +371,7 @@ class ctrlPlan:
         except Exception as e:
             bReturn = False
             print(e)
+            logger.error(e)
             return bReturn, IsExist
 
     def createSchedulePlan(self,APlanDate,ADesc,AType,APlanBeginTime,APlanEndTime):
@@ -373,6 +390,7 @@ class ctrlPlan:
             session.rollback()
             bReturn = False
             print(e)
+            logger.error(e)
             return  bReturn
 
     def createLinePUPlan(self, AProductRuleID, APlanWeight,APlanDate,ABatchID,ABrandID,ABrandName,AUnit):
@@ -454,10 +472,12 @@ class ctrlPlan:
                         except Exception as e:
                             session.rollback()
                             print (e)
+                            logger.error(e)
                             return False
             return True
         except Exception as e:
             print(e)
+            logger.error(e)
             return bReturn
 
     def getTaskNo(self):
@@ -488,6 +508,7 @@ class ctrlPlan:
         except Exception as e:
             bReturn = False
             print(e)
+            logger.error(e)
             return  bReturn,varTaskNo
 
 

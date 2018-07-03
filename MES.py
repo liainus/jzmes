@@ -1,25 +1,30 @@
-from flask import render_template,request
-from flask import Flask, jsonify
-from Model.system import Role, Organization
-from Model.core import Enterprise, Area,Factory,ProductLine,ProcessUnit,Equipment
-from Model.BSFramwork import AlchemyEncoder
-import Model.Global
+import datetime
+import decimal
 import json
-import time, datetime, decimal
+import re
+import string
+import time
+from collections import Counter
+from flask import Flask, jsonify
+from flask import render_template, request
+from sqlalchemy import create_engine, Column, ForeignKey, Table, DateTime, Integer, String
+from sqlalchemy import func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
-from sqlalchemy import create_engine, Column,ForeignKey, Table, DateTime, Integer, String
-from sqlalchemy import func
-import string
-import re
-from collections import Counter
 
+import Model.Global
+from Model.BSFramwork import AlchemyEncoder
+from Model.core import Enterprise, Area, Factory, ProductLine, ProcessUnit, Equipment
+from Model.system import Role, Organization
+from tools.MESLogger import MESLogger
 
 # 获取本文件名实例化一个flask对象
 app = Flask(__name__)
 
 engine = create_engine(Model.Global.GLOBAL_DATABASE_CONNECT_STRING, deprecate_large_types=True)
 session = sessionmaker(bind=engine)()
+
+logger = MESLogger('../logs','log')
 
 # 存储
 def store(data):
@@ -71,11 +76,13 @@ def OrganizationsFind():
                 total = session.query(func.count(Organization.ID)).scalar()
                 organiztions = session.query(Organization).all()[inipage:endpage]
                 #ORM模型转换json格式
+                logger.info("aa="+total+','+endpage)
                 jsonorganzitions = json.dumps(organiztions, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonorganzitions = '{"total"'+":"+str(total)+',"rows"' +":\n" + jsonorganzitions + "}"
                 return jsonorganzitions
         except Exception as e:
             print(e)
+            logger.error(e)
             return json.dumps([{"status": "Error:"+ str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 # role更新数据，通过传入的json数据，解析之后进行相应更新
@@ -104,6 +111,7 @@ def allOrganizationsUpdate():
                                           ensure_ascii=False)
         except Exception as e:
             print(e)
+            logger.error(e)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 # role删除数据，通过传入的json数据，json数据只包含主键，解析之后进行相应更新
@@ -124,12 +132,14 @@ def allOrganizationsDelete():
                         organization = session.query(Organization).filter_by(ID=Organizationid).delete()
                     except Exception as ee:
                         print(ee)
+                        logger.error(ee)
                         return json.dumps([{"status": "error:" + string(ee)}], cls=AlchemyEncoder,
                                                       ensure_ascii=False)
                 return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=AlchemyEncoder,
                                               ensure_ascii=False)
         except Exception as e:
             print(e)
+            logger.error(e)
             # return json.dumps([{"status": "Error"+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
@@ -159,6 +169,7 @@ def allOrganizationsCreate():
                 return json.dumps([{"status": "OK"}], cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
+            logger.error(e)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 @app.route('/allOrganizations/Search', methods=['POST', 'GET'])
@@ -176,6 +187,7 @@ def allOrganizationsSearch():
                 return jsonorganizations
         except Exception as e:
             print(e)
+            logger.error(e)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
         
         
@@ -292,6 +304,7 @@ def AreasFind():
         AreaIFS = Model.core.AreaWebIFS("AreaFind")
         re = AreaIFS.AreasFind(data)
         print(re)
+        logger.info(re)
         return re
 
 # role更新数据，通过传入的json数据，解析之后进行相应更新
@@ -1202,6 +1215,7 @@ def getOrganizationChildren(id=0):
         return sz
     except Exception as e:
         print(e)
+        logger.error(e)
         return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 @app.route('/Organization/Find')
@@ -1216,6 +1230,7 @@ def OrganizationFind():
             return jsondata
         except Exception as e:
             print(e)
+            logger.error(e)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
@@ -1257,6 +1272,7 @@ def allrolesUpdate():
                 return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
+            logger.error(e)
             return json.dumps([{"status": "Error"+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 #role删除数据，通过传入的json数据，json数据只包含主键，解析之后进行相应更新
@@ -1277,10 +1293,12 @@ def allrolesDelete():
                         role = session.query(Role).filter_by(ID=Roleid).delete()
                     except Exception as ee:
                         print(ee)
+                        logger.error(ee)
                         return json.dumps([{"status": "error:"+string(ee)}], cls=AlchemyEncoder, ensure_ascii=False)
                 return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
+            logger.error(e)
             # return json.dumps([{"status": "Error"+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
@@ -1299,6 +1317,7 @@ def allrolesCreate():
                 return json.dumps([{"status": "OK"}], cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
+            logger.error(e)
             return json.dumps([{"status": "Error:"+ str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
@@ -1325,6 +1344,7 @@ def allrolesFind():
                 return jsonroles
         except Exception as e:
             print(e)
+            logger.error(e)
             return json.dumps([{"status": "Error："+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 @app.route('/allroles/Search',methods=['POST','GET'])
@@ -1342,6 +1362,7 @@ def allrolesSearch():
                 return jsonroles
         except Exception as e:
             print(e)
+            logger.error(e)
             return json.dumps([{"status": "Error："+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 #加载工作台
@@ -1363,6 +1384,7 @@ def getMyOrganizationChildren(id=0):
         return sz
     except Exception as e:
         print(e)
+        logger.error(e)
         return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 def getMyEnterprise(id=0):
@@ -1376,6 +1398,7 @@ def getMyEnterprise(id=0):
         return sz
     except Exception as e:
         print(e)
+        logger.error(e)
         return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 @app.route('/MyOp')
@@ -1390,6 +1413,7 @@ def MyOpFind():
             return jsondata
         except Exception as e:
             print(e)
+            logger.error(e)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
@@ -1406,6 +1430,7 @@ def Myenterprise():
             return jsondata
         except Exception as e:
             print(e)
+            logger.error(e)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 @app.route('/Myenterprise/Select')
@@ -1422,6 +1447,7 @@ def MyenterpriseSelect():
             return jsondata
         except Exception as e:
             print(e)
+            logger.error(e)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 #加载工作台
@@ -1439,6 +1465,7 @@ def getUnitByKg():
             return jsondata
         except Exception as e:
             print(e)
+            logger.error(e)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
@@ -1452,6 +1479,7 @@ def getdefaultPlanWeight():
             return jsondata
         except Exception as e:
             print(e)
+            logger.error(e)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
@@ -1474,6 +1502,7 @@ def getProductRule():
         return sz
     except Exception as e:
         print(e)
+        logger.error(e)
         return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 @app.route('/treeProductRule')
@@ -1488,6 +1517,7 @@ def treeProductRule():
             return jsondata
         except Exception as e:
             print(e)
+            logger.error(e)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 if __name__ == '__main__':
