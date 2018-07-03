@@ -4,14 +4,14 @@
     <meta charset="utf-8"> 
     <meta name="viewport" content="width=device-width, initial-scale=1"> 
     <title>系统日志</title>
-    <link href="css/base.css" rel="stylesheet">
+    <link href="../static/css/base.css" rel="stylesheet">
     <link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
-    <link rel="stylesheet" type="text/css" href="../custom/uimaker/icon.css">
+    <link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
     <link rel="stylesheet" href="../static/css/providers.css">
 </head> 
 <body>
     <div class="container">
-       <table class="easyui-datagrid" style="width:100%;height:554px" title="系统日志" data-options="url:'data/datagrid_sysoplog.json',
+       <table class="easyui-datagrid" style="width:100%;height:554px" title="系统日志" data-options="url:'../static/data/datagrid_sysoplog.json',
                 method:'get',
                 rownumbers:true,
                 singleSelect:false,
@@ -23,7 +23,7 @@
                 selectOnCheck:false,
                 collapsible:true,
                 toolbar:'#tb',
-                pageSize:10""
+                pageSize:10"
                 >
             <thead>
                 <tr>
