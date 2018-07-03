@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>用户管理</title>
+	<link href="../static/css/base.css" rel="stylesheet">
+	<link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
+	<link href="../static/css/basic_info.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
+	<link href="../static/js/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
+
+</head>
+
+<body>
+	<div class="container">
+		<div class="left-tree" >
+            <ul class="easyui-tree" data-options="url:'../static/data/tree_organization.json',method:'get',animate:true"></ul>
+		</div>
+		<div class="content">
+			<div class="column"><span class="current">用户列表</span></div>
+			<div style="margin:0px;"></div>
+
+			<table class="easyui-datagrid" id="dg" title="" style="width:99%" data-options="
+			    rownumbers:true,
+                singleSelect:true,
+                autoRowHeight:false,
+				pagination:true,
+				pageSize:10,
+                url:'../static/data/datagrid_userlist.json',
+                method:'get',
+                toolbar:toolbar">
+				<thead>
+					<tr>
+						<th data-options="field:'id',width:80,align:'center'">ID</th>
+						<th data-options="field:'username',width:200,align:'center'">用户名</th>
+						<th data-options="field:'loginname',width:100,align:'center'">登陆账号</th>
+						<th data-options="field:'status',width:80,align:'center'">状态</th>
+						<th data-options="field:'creater',width:120,align:'center'">创建用户</th>
+						<th data-options="field:'createtime',width:120,align:'center'">创建时间</th>
+						<th data-options="field:'lastlogintime',width:120,align:'center'">上次登录时间</th>
+						<th data-options="field:'islock',width:80,align:'center'">是否锁定</th>
+					</tr>
+				</thead>
+			</table>
+
+		</div>
+	</div>
+
+
+
+</body>
+
+</html>
+<script type="text/javascript" src="../static/js/jquery.min.js"></script>
+<script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
+<!--
+<script type="text/javascript">
+	$('.easyui-tabs1').tabs({
+		tabHeight: 36
+	});
+	$(window).resize(function () {
+		$('.easyui-tabs1').tabs("resize");
+	}).resize();
+
+	var state = UM.getEditor('editor-state');
+	state.setWidth("98%");
+	state.setHeight(150);
+	$(".edui-body-container").css("width", "98%");
+
+</script>-->
+
+<script type="text/javascript">
+	var toolbar = [ {
+		text: '刷新',
+		iconCls: 'icon-reload',
+		handler: function () {
+            $('#dg').datagrid('reload');
+		}
+	},{
+		text: '添加',
+		iconCls: 'icon-add',
+		handler: function () {
+		    alert('add')
+		}
+	}, {
+		text: '删除',
+		iconCls: 'icon-remove',
+		handler: function () {
+		    alert('cut')
+		}
+	}, {
+		text: '保存',
+		iconCls: 'icon-save',
+		handler: function () {
+		    alert('save')
+		}
+	}];
+
+</script>

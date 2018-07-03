@@ -49,6 +49,16 @@ def login():
 def syslogs():
     return render_template('syslogs.html')
 
+#用户管理
+@app.route('/userManager')
+def userManager():
+    return render_template('userManager.html')
+
+#权限分配
+@app.route('/roleright')
+def roleright():
+    return render_template('roleRight.html')
+
 # 加载工作台
 # 左右滑动添加
 @app.route('/batchmanager')#批次管理
