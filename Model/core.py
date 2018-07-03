@@ -3210,20 +3210,23 @@ class SysLog(Base):
 	# ID:
 	ID = Column(Integer, primary_key=True, autoincrement=True, nullable=True)
 
-	# 用户编号:
-	UserId = Column(Integer, nullable=False, primary_key=False)
+	# IP:
+	IP = Column(Unicode(64), primary_key=False, autoincrement=False, nullable=True)
 
-	# 用户姓名:
+	# 计算机名称:
+	ComputerName = Column(Unicode(64), primary_key=False, autoincrement=False, nullable=True)
+
+	# 操作用户:
 	UserName = Column(Unicode(64), primary_key=False, autoincrement=False, nullable=True)
 
-	# 登录用户名:
-	LoginName = Column(Unicode(64), primary_key=False, autoincrement=False, nullable=True)
-
-	# 操作类型:
-	OperationType = Column(Unicode(64), primary_key=False, autoincrement=False, nullable=True)
+	# 日期:
+	OperationDate = Column(Unicode(64), primary_key=False, autoincrement=False, nullable=True)
 
 	# 操作内容:
-	LogInfo = Column(Unicode(800), primary_key=False, autoincrement=False, nullable=True)
+	OperationContent = Column(Unicode(800), primary_key=False, autoincrement=False, nullable=True)
+
+	# 类型:
+	OperationType = Column(Unicode(64), primary_key=False, autoincrement=False, nullable=True)
 	
 # 生成表单的执行语句
 Base.metadata.create_all(engine)
