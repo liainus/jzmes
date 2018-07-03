@@ -34,7 +34,10 @@ def load():
         data = json.load(json_file)
         return data
 
-
+#登录页面
+@app.route('/login')
+def login():
+    return render_template('login.html')
 
 # 加载工作台
 # 左右滑动添加
@@ -1491,7 +1494,7 @@ def treeProductRule():
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
 
 
 
