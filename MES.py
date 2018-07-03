@@ -39,6 +39,11 @@ def load():
 def login():
     return render_template('login.html')
 
+#系统日志
+@app.route('/syslogs')
+def syslogs():
+    return render_template('syslogs.html')
+
 # 加载工作台
 # 左右滑动添加
 @app.route('/batchmanager')#批次管理
