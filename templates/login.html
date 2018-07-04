@@ -15,6 +15,23 @@
             border-right: 1px solid #cfcfcf;
             border-bottom: 1px solid #cfcfcf;
         }
+        #submit-btn{
+            display: inline-block;
+            text-decoration: none;
+            height: 48px;
+            line-height: 48px;
+            text-align: center;
+            color: #fff;
+            font-size: 16px;
+            font-weight: normal;
+            margin-left: 34px;
+            background-color: #1da02b;
+            margin-right: 9px;
+            width: 300px;
+            outline: none;
+            border:0;
+            cursor: pointer;
+        }
     </style>
 </head> 
 <body class="white">
@@ -40,7 +57,7 @@
 			            </div>
 						//-->
 						
-						<form>
+						<form action="/" id="loginForm">
 							<div class="lg-username input-item clearfix">
 								<i class="iconfont">&#xe60d;</i>
 								<input type="text" placeholder="账号">
@@ -62,7 +79,7 @@
 								<a href="javascript:;" class="forget-pwd">忘记密码？</a>
 							</div>
 							<div class="enter">
-								<a href="javascript:;" class="purchaser" id="submit-btn" onClick="<!--	javascript:window.location='/'-->">登录</a>
+                                <input type="submit" id="submit-btn" value="登录">
 							<!--	<a href="javascript:;" class="supplier" onClick="javascript:window.location='main.html'">供应商登录</a>-->
 							</div>
 						</form>
@@ -91,26 +108,28 @@
 <script type="text/javascript" src="../static/custom/jquery.min.js"></script>
 <script type="text/javascript">
     $(function(){
+        function loginSubmit(flag) {
+            return flag
+        }
         var show_num = [];
         draw(show_num);
 
         $("#canvas").on('click',function(){
             draw(show_num);
         })
-        $("#submit-btn").on('submit',function(){
+        $("#loginForm").submit(function(){
             var val = $("#Txtcode").val().toLowerCase();
             var num = show_num.join("");
-            if(val==''){
-                alert('请输入验证码！');
-            }else if(val == num){
+            if(val == num){
                 alert('提交成功！');
                 $("#Txtidcode").val('');
                 draw(show_num);
-
+                return loginSubmit(true);
             }else{
                 alert('验证码错误！请重新输入！');
                 $("#Txtidcode").val('');
                 draw(show_num);
+                return loginSubmit(false);
             }
         })
     })
