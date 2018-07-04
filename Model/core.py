@@ -9,31 +9,31 @@
 # ************* @Model 
 # ******************************************************************************************/
 
-#-coding:utf-8--
-#引入必要的类库
-from imp import reload
-
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, relationship
-from sqlalchemy import create_engine, Column,ForeignKey, Table, DateTime, Integer, String
-from sqlalchemy import Column, DateTime, Float, Integer, String, Unicode,BigInteger
-from sqlalchemy.dialects.mssql.base import BIT
-from sqlalchemy import func
-import Model.Global
-from collections import Counter
 import json
+# 引入mssql数据库引擎
+import pymssql
 import re
 import sys
+from collections import Counter
+# -coding:utf-8--
+# 引入必要的类库
+from imp import reload
+from sqlalchemy import Column, DateTime, Float, Integer, String, Unicode, BigInteger
+from sqlalchemy import create_engine, Column, ForeignKey, Table, DateTime, Integer, String
+from sqlalchemy import func
+from sqlalchemy.dialects.mssql.base import BIT
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker, relationship
 
-
-#引入mssql数据库引擎
-import pymssql
+import Model.Global
+from tools.MESLogger import MESLogger
 
 # 创建对象的基类
 engine = create_engine(Model.Global.GLOBAL_DATABASE_CONNECT_STRING, deprecate_large_types=True)
 Session = sessionmaker(bind=engine)
 session = Session()
 Base = declarative_base(engine)
+logger = MESLogger('../logs','log')
 
 #Data_RealTime:
 class Data_RealTime(Base):
@@ -203,6 +203,7 @@ class ZYPlanWebIFS(object):
 								  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allZYPlansDelete(self,rcvdata):
@@ -224,6 +225,7 @@ class ZYPlanWebIFS(object):
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 					# return json.dumps([{"status": "Error"+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
@@ -250,6 +252,7 @@ class ZYPlanWebIFS(object):
 					return ""
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allZYPlansUpdate(self,rcvdata):
@@ -285,6 +288,7 @@ class ZYPlanWebIFS(object):
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allZYPlansSearch(self,rcvdata):
@@ -301,6 +305,7 @@ class ZYPlanWebIFS(object):
 				return jsonZYPlans
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 	
 #ZYPlanMaterial:
@@ -381,6 +386,7 @@ class ZYPlanMaterialWebIFS(object):
 								  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allZYPlanMaterialsDelete(self,rcvdata):
@@ -396,12 +402,14 @@ class ZYPlanMaterialWebIFS(object):
 						oclass = session.query(Model.core.ZYPlanMaterial).filter_by(ID=ZYPlanMaterialid).delete()
 					except Exception as ee:
 						print(ee)
+						logger.error(ee)
 						return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
 												  ensure_ascii=False)
 				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 					# return json.dumps([{"status": "Error"+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
@@ -428,6 +436,7 @@ class ZYPlanMaterialWebIFS(object):
 					return ""
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allZYPlanMaterialsUpdate(self,rcvdata):
@@ -457,6 +466,7 @@ class ZYPlanMaterialWebIFS(object):
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allZYPlanMaterialsSearch(self,rcvdata):
@@ -473,6 +483,7 @@ class ZYPlanMaterialWebIFS(object):
 				return jsonZYPlanMaterials
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 	
 #ZYTask:
@@ -573,6 +584,7 @@ class ZYTaskWebIFS(object):
 								  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allZYTasksDelete(self,rcvdata):
@@ -594,6 +606,7 @@ class ZYTaskWebIFS(object):
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 					# return json.dumps([{"status": "Error"+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
@@ -620,6 +633,7 @@ class ZYTaskWebIFS(object):
 					return ""
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allZYTasksUpdate(self,rcvdata):
@@ -654,6 +668,7 @@ class ZYTaskWebIFS(object):
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allZYTasksSearch(self,rcvdata):
@@ -670,6 +685,7 @@ class ZYTaskWebIFS(object):
 				return jsonZYTasks
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 	
 #ProductLine:
@@ -722,6 +738,7 @@ class ProductLineWebIFS(object):
 								  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allProductLinesDelete(self,rcvdata):
@@ -737,12 +754,14 @@ class ProductLineWebIFS(object):
 						oclass = session.query(Model.core.ProductLine).filter_by(ID=ProductLineid).delete()
 					except Exception as ee:
 						print(ee)
+						logger.error(ee)
 						return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
 												  ensure_ascii=False)
 				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 					# return json.dumps([{"status": "Error"+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
@@ -769,6 +788,7 @@ class ProductLineWebIFS(object):
 					return ""
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allProductLinesUpdate(self,rcvdata):
@@ -791,6 +811,7 @@ class ProductLineWebIFS(object):
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allProductLinesSearch(self,rcvdata):
@@ -807,6 +828,7 @@ class ProductLineWebIFS(object):
 				return jsonProductLines
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 	
 #ProcessUnit:
@@ -875,6 +897,7 @@ class ProcessUnitWebIFS(object):
 								  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allProcessUnitsDelete(self,rcvdata):
@@ -890,12 +913,14 @@ class ProcessUnitWebIFS(object):
 						oclass = session.query(Model.core.ProcessUnit).filter_by(ID=ProcessUnitid).delete()
 					except Exception as ee:
 						print(ee)
+						logger.error(ee)
 						return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
 												  ensure_ascii=False)
 				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 					# return json.dumps([{"status": "Error"+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
@@ -922,6 +947,7 @@ class ProcessUnitWebIFS(object):
 					return ""
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allProcessUnitsUpdate(self,rcvdata):
@@ -948,6 +974,7 @@ class ProcessUnitWebIFS(object):
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allProcessUnitsSearch(self,rcvdata):
@@ -964,6 +991,7 @@ class ProcessUnitWebIFS(object):
 				return jsonProcessUnits
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 	
 #Equipment:
@@ -1004,6 +1032,7 @@ class EquipmentWebIFS(object):
 								  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allEquipmentsDelete(self,rcvdata):
@@ -1019,12 +1048,14 @@ class EquipmentWebIFS(object):
 						oclass = session.query(Model.core.Equipment).filter_by(ID=Equipmentid).delete()
 					except Exception as ee:
 						print(ee)
+						logger.error(ee)
 						return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
 												  ensure_ascii=False)
 				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 					# return json.dumps([{"status": "Error"+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
@@ -1051,6 +1082,7 @@ class EquipmentWebIFS(object):
 					return ""
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allEquipmentsUpdate(self,rcvdata):
@@ -1070,6 +1102,7 @@ class EquipmentWebIFS(object):
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allEquipmentsSearch(self,rcvdata):
@@ -1086,6 +1119,7 @@ class EquipmentWebIFS(object):
 				return jsonEquipments
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 	
 #BatchData:
@@ -1160,6 +1194,7 @@ class EnterpriseWebIFS(object):
 								  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allEnterprisesDelete(self,rcvdata):
@@ -1175,12 +1210,14 @@ class EnterpriseWebIFS(object):
 						oclass = session.query(Model.core.Enterprise).filter_by(ID=Enterpriseid).delete()
 					except Exception as ee:
 						print(ee)
+						logger.error(ee)
 						return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
 												  ensure_ascii=False)
 				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 					# return json.dumps([{"status": "Error"+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
@@ -1207,6 +1244,7 @@ class EnterpriseWebIFS(object):
 					return ""
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allEnterprisesUpdate(self,rcvdata):
@@ -1228,6 +1266,7 @@ class EnterpriseWebIFS(object):
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allEnterprisesSearch(self,rcvdata):
@@ -1244,6 +1283,7 @@ class EnterpriseWebIFS(object):
 				return jsonEnterprises
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 	
 #Factory:
@@ -1296,6 +1336,7 @@ class FactoryWebIFS(object):
 								  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allFactorysDelete(self,rcvdata):
@@ -1311,12 +1352,14 @@ class FactoryWebIFS(object):
 						oclass = session.query(Model.core.Factory).filter_by(ID=Factoryid).delete()
 					except Exception as ee:
 						print(ee)
+						logger.error(ee)
 						return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
 												  ensure_ascii=False)
 				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 					# return json.dumps([{"status": "Error"+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
@@ -1343,6 +1386,7 @@ class FactoryWebIFS(object):
 					return ""
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allFactorysUpdate(self,rcvdata):
@@ -1364,6 +1408,7 @@ class FactoryWebIFS(object):
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allFactorysSearch(self,rcvdata):
@@ -1380,6 +1425,7 @@ class FactoryWebIFS(object):
 				return jsonFactorys
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 	
 #Area:
@@ -1432,6 +1478,7 @@ class AreaWebIFS(object):
 								  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allAreasDelete(self,rcvdata):
@@ -1447,12 +1494,14 @@ class AreaWebIFS(object):
 						oclass = session.query(Model.core.Area).filter_by(ID=Areaid).delete()
 					except Exception as ee:
 						print(ee)
+						logger.error(ee)
 						return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
 												  ensure_ascii=False)
 				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 					# return json.dumps([{"status": "Error"+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
@@ -1479,6 +1528,7 @@ class AreaWebIFS(object):
 					return ""
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allAreasUpdate(self,rcvdata):
@@ -1500,6 +1550,7 @@ class AreaWebIFS(object):
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allAreasSearch(self,rcvdata):
@@ -1516,6 +1567,7 @@ class AreaWebIFS(object):
 				return jsonAreas
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 #ProductRule:
@@ -1568,6 +1620,7 @@ class ProductRuleWebIFS(object):
 								  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allProductRulesDelete(self,rcvdata):
@@ -1583,12 +1636,14 @@ class ProductRuleWebIFS(object):
 						oclass = session.query(Model.core.ProductRule).filter_by(ID=ProductRuleid).delete()
 					except Exception as ee:
 						print(ee)
+						logger.error(ee)
 						return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
 												  ensure_ascii=False)
 				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 					# return json.dumps([{"status": "Error"+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
@@ -1615,6 +1670,7 @@ class ProductRuleWebIFS(object):
 					return ""
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allProductRulesUpdate(self,rcvdata):
@@ -1636,6 +1692,7 @@ class ProductRuleWebIFS(object):
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allProductRulesSearch(self,rcvdata):
@@ -1652,6 +1709,7 @@ class ProductRuleWebIFS(object):
 				return jsonProductRules
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 	
 #ProductUnit:
@@ -1708,6 +1766,7 @@ class ProductUnitWebIFS(object):
 								  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allProductUnitsDelete(self,rcvdata):
@@ -1723,12 +1782,14 @@ class ProductUnitWebIFS(object):
 						oclass = session.query(Model.core.ProductUnit).filter_by(ID=ProductUnitid).delete()
 					except Exception as ee:
 						print(ee)
+						logger.error(ee)
 						return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
 												  ensure_ascii=False)
 				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 					# return json.dumps([{"status": "Error"+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
@@ -1755,6 +1816,7 @@ class ProductUnitWebIFS(object):
 					return ""
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allProductUnitsUpdate(self,rcvdata):
@@ -1777,6 +1839,7 @@ class ProductUnitWebIFS(object):
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allProductUnitsSearch(self,rcvdata):
@@ -1793,6 +1856,7 @@ class ProductUnitWebIFS(object):
 				return jsonProductUnits
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 	
 #ProductControlTask:
@@ -1853,6 +1917,7 @@ class ProductControlTaskWebIFS(object):
 								  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allProductControlTasksDelete(self,rcvdata):
@@ -1868,12 +1933,14 @@ class ProductControlTaskWebIFS(object):
 						oclass = session.query(Model.core.ProductControlTask).filter_by(ID=ProductControlTaskid).delete()
 					except Exception as ee:
 						print(ee)
+						logger.error(ee)
 						return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
 												  ensure_ascii=False)
 				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 					# return json.dumps([{"status": "Error"+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
@@ -1900,6 +1967,7 @@ class ProductControlTaskWebIFS(object):
 					return ""
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allProductControlTasksUpdate(self,rcvdata):
@@ -1923,6 +1991,7 @@ class ProductControlTaskWebIFS(object):
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allProductControlTasksSearch(self,rcvdata):
@@ -1939,6 +2008,7 @@ class ProductControlTaskWebIFS(object):
 				return jsonProductControlTasks
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 	
 #ProductParameter:
@@ -1995,6 +2065,7 @@ class ProductParameterWebIFS(object):
 								  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allProductParametersDelete(self,rcvdata):
@@ -2010,12 +2081,14 @@ class ProductParameterWebIFS(object):
 						oclass = session.query(Model.core.ProductParameter).filter_by(ID=ProductParameterid).delete()
 					except Exception as ee:
 						print(ee)
+						logger.error(ee)
 						return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
 												  ensure_ascii=False)
 				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 					# return json.dumps([{"status": "Error"+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
@@ -2042,6 +2115,7 @@ class ProductParameterWebIFS(object):
 					return ""
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allProductParametersUpdate(self,rcvdata):
@@ -2064,6 +2138,7 @@ class ProductParameterWebIFS(object):
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allProductParametersSearch(self,rcvdata):
@@ -2080,6 +2155,7 @@ class ProductParameterWebIFS(object):
 				return jsonProductParameters
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 	
 #MaterialType:
@@ -2120,6 +2196,7 @@ class MaterialTypeWebIFS(object):
 								  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allMaterialTypesDelete(self,rcvdata):
@@ -2135,12 +2212,14 @@ class MaterialTypeWebIFS(object):
 						oclass = session.query(Model.core.MaterialType).filter_by(ID=MaterialTypeid).delete()
 					except Exception as ee:
 						print(ee)
+						logger.error(ee)
 						return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
 												  ensure_ascii=False)
 				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 					# return json.dumps([{"status": "Error"+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
@@ -2167,6 +2246,7 @@ class MaterialTypeWebIFS(object):
 					return ""
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allMaterialTypesUpdate(self,rcvdata):
@@ -2185,6 +2265,7 @@ class MaterialTypeWebIFS(object):
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allMaterialTypesSearch(self,rcvdata):
@@ -2201,6 +2282,7 @@ class MaterialTypeWebIFS(object):
 				return jsonMaterialTypes
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 	
 #Material:
@@ -2253,6 +2335,7 @@ class MaterialWebIFS(object):
 								  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allMaterialsDelete(self,rcvdata):
@@ -2268,12 +2351,14 @@ class MaterialWebIFS(object):
 						oclass = session.query(Model.core.Material).filter_by(ID=Materialid).delete()
 					except Exception as ee:
 						print(ee)
+						logger.error(ee)
 						return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
 												  ensure_ascii=False)
 				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 					# return json.dumps([{"status": "Error"+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
@@ -2300,6 +2385,7 @@ class MaterialWebIFS(object):
 					return ""
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allMaterialsUpdate(self,rcvdata):
@@ -2321,6 +2407,7 @@ class MaterialWebIFS(object):
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allMaterialsSearch(self,rcvdata):
@@ -2337,6 +2424,7 @@ class MaterialWebIFS(object):
 				return jsonMaterials
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 	
 #MaterialBOM:
@@ -2401,6 +2489,7 @@ class MaterialBOMWebIFS(object):
 								  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allMaterialBOMsDelete(self,rcvdata):
@@ -2422,6 +2511,7 @@ class MaterialBOMWebIFS(object):
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 					# return json.dumps([{"status": "Error"+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
@@ -2448,6 +2538,7 @@ class MaterialBOMWebIFS(object):
 					return ""
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allMaterialBOMsUpdate(self,rcvdata):
@@ -2472,6 +2563,7 @@ class MaterialBOMWebIFS(object):
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allMaterialBOMsSearch(self,rcvdata):
@@ -2488,6 +2580,7 @@ class MaterialBOMWebIFS(object):
 				return jsonMaterialBOMs
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 	
 #ProductUnitRoute:
@@ -2544,6 +2637,7 @@ class ProductUnitRouteWebIFS(object):
 								  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allProductUnitRoutesDelete(self,rcvdata):
@@ -2565,6 +2659,7 @@ class ProductUnitRouteWebIFS(object):
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 					# return json.dumps([{"status": "Error"+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
@@ -2591,6 +2686,7 @@ class ProductUnitRouteWebIFS(object):
 					return ""
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allProductUnitRoutesUpdate(self,rcvdata):
@@ -2613,6 +2709,7 @@ class ProductUnitRouteWebIFS(object):
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allProductUnitRoutesSearch(self,rcvdata):
@@ -2629,6 +2726,7 @@ class ProductUnitRouteWebIFS(object):
 				return jsonProductUnitRoutes
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 	
 #SchedulePlan:
@@ -2673,6 +2771,7 @@ class SchedulePlanWebIFS(object):
 								  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allSchedulePlansDelete(self,rcvdata):
@@ -2694,6 +2793,7 @@ class SchedulePlanWebIFS(object):
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 					# return json.dumps([{"status": "Error"+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
@@ -2720,6 +2820,7 @@ class SchedulePlanWebIFS(object):
 					return ""
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allSchedulePlansUpdate(self,rcvdata):
@@ -2739,6 +2840,7 @@ class SchedulePlanWebIFS(object):
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allSchedulePlansSearch(self,rcvdata):
@@ -2755,6 +2857,7 @@ class SchedulePlanWebIFS(object):
 				return jsonSchedulePlans
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 class PlanManager(Base):
@@ -2822,6 +2925,7 @@ class PlanManagerWebIFS(object):
 								  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
 							  ensure_ascii=False)
 
@@ -2839,6 +2943,7 @@ class PlanManagerWebIFS(object):
 							ID=PlanManagerid).delete()
 					except Exception as ee:
 						print(ee)
+						logger.error(ee)
 						return json.dumps([{"status": "error:" + str(ee)}],
 										  cls=Model.BSFramwork.AlchemyEncoder,
 										  ensure_ascii=False)
@@ -2847,6 +2952,7 @@ class PlanManagerWebIFS(object):
 								  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			# return json.dumps([{"status": "Error"+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
 							  ensure_ascii=False)
@@ -2875,6 +2981,7 @@ class PlanManagerWebIFS(object):
 					return ""
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
 							  ensure_ascii=False)
 
@@ -2902,6 +3009,7 @@ class PlanManagerWebIFS(object):
 								  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
 							  ensure_ascii=False)
 
@@ -2921,6 +3029,7 @@ class PlanManagerWebIFS(object):
 				return jsonPlanManagers
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
 							  ensure_ascii=False)
 	
@@ -2958,6 +3067,7 @@ class UnitWebIFS(object):
 								  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allUnitsDelete(self,rcvdata):
@@ -2973,12 +3083,14 @@ class UnitWebIFS(object):
 						oclass = session.query(Model.core.Unit).filter_by(ID=Unitid).delete()
 					except Exception as ee:
 						print(ee)
+						logger.error(ee)
 						return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
 												  ensure_ascii=False)
 				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 					# return json.dumps([{"status": "Error"+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
@@ -3005,6 +3117,7 @@ class UnitWebIFS(object):
 					return ""
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allUnitsUpdate(self,rcvdata):
@@ -3022,6 +3135,7 @@ class UnitWebIFS(object):
 										  ensure_ascii=False)
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allUnitsSearch(self,rcvdata):
@@ -3038,6 +3152,7 @@ class UnitWebIFS(object):
 				return jsonUnits
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 	def allUnitsSearchByCondition(self,condition):
@@ -3051,6 +3166,7 @@ class UnitWebIFS(object):
 			return jsonUnits
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
 							  ensure_ascii=False)
 
@@ -3068,6 +3184,7 @@ class UnitWebIFS(object):
 			return sz
 		except Exception as e:
 			print(e)
+			logger.error(e)
 			return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 
@@ -3087,6 +3204,29 @@ class TaskNoGenerator(Base):
 	# 描述:
 	Desc = Column(Unicode(64), primary_key=False, autoincrement=False, nullable=True)
 
+class SysLog(Base):
+	__tablename__ = "SysLog"
+
+	# ID:
+	ID = Column(Integer, primary_key=True, autoincrement=True, nullable=True)
+
+	# IP:
+	IP = Column(Unicode(64), primary_key=False, autoincrement=False, nullable=True)
+
+	# 计算机名称:
+	ComputerName = Column(Unicode(64), primary_key=False, autoincrement=False, nullable=True)
+
+	# 操作用户:
+	UserName = Column(Unicode(64), primary_key=False, autoincrement=False, nullable=True)
+
+	# 日期:
+	OperationDate = Column(Unicode(64), primary_key=False, autoincrement=False, nullable=True)
+
+	# 操作内容:
+	OperationContent = Column(Unicode(800), primary_key=False, autoincrement=False, nullable=True)
+
+	# 类型:
+	OperationType = Column(Unicode(64), primary_key=False, autoincrement=False, nullable=True)
 	
 # 生成表单的执行语句
 Base.metadata.create_all(engine)
