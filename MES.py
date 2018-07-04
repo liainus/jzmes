@@ -18,9 +18,28 @@ from Model.core import Enterprise, Area, Factory, ProductLine, ProcessUnit, Equi
 from Model.system import Role, Organization
 from tools.MESLogger import MESLogger
 from Model.core import SysLog
-
+from sqlalchemy import create_engine, Column,ForeignKey, Table, DateTime, Integer, String
+from sqlalchemy import func
+import string
+import re
+from collections import Counter
+from Model.account import login_security
+# from flask_cache import Cache
+#
+# # redis配置
+# cache = Cache()
+# config = {
+#     'CACHE_TYPE': 'redis',
+#     'CACHE_REDIS_HPST': 'localhost',
+#     'CAHCE_REDIS_DB': '',
+#     'CACHE_REDIS_PASSWORD': ''
+# }
 # 获取本文件名实例化一个flask对象
 app = Flask(__name__)
+# app.config.from_object(config)
+# cache.init_app(app)
+
+
 
 engine = create_engine(Model.Global.GLOBAL_DATABASE_CONNECT_STRING, deprecate_large_types=True)
 session = sessionmaker(bind=engine)()
@@ -40,15 +59,64 @@ def load():
         data = json.load(json_file)
         return data
 
-#登录页面
-@app.route('/login')
+'''登录'''
+@app.route('/login', methods=['GET', 'POST'])
 def login():
-    return render_template('login.html')
+    if request.method == 'Get':
+        return render_template('system_manager/login.html')
+
+    if request.method == 'POST':
+        job_number  = request.form['job_number']
+        password = request.form['password']
+        security_status = request.form['security_status']  # 获取ajax传的验证码状态码
+
+        # 判断验证码是否正确
+        result = login_security.security(security_status)
+        if result['status'] is False:
+            return json.dumps({'status': False})
+
+        # 验证账户与密码
+        result = login_security.login_handler(job_number, password)
+        if result['status'] is True:
+            return json.dumps({'status': 200, 'msg': result['msg']})
+        return json.dumps({'status': 400, 'msg': result['msg']})
+
+'''注册'''
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if  request.method == 'GET':
+        render_template('system_manager/register.html')
+
+    if request.method == 'POST':
+        user_name = request.form['user_name']
+        job_number = request.form['job_number']
+        password1 = request.form['password1']
+        password2 = request.form['password2']
+        email = request.form['email']
+        tel = request.form['tel']
+        security_status = request.form['security_status']  # 获取ajax传的验证码状态码
+
+        # 判断验证码是否正确
+        result = login_security.security(security_status)
+        if result['status'] is False:
+            return json.dumps({'status': False})
+
+        # 用户注册
+        result = login_security.register_handler(user_name, job_number, password1, password2, email, tel)
+        if result['status'] is True:
+            return redirect('system_manager/login.html')
+        return render_template('system_manager/register.html', message=result['msg'])
+
+
+
+
+
 
 #系统日志
 @app.route('/syslogs')
 def syslogs():
     return render_template('syslogs.html')
+
 
 @app.route('/syslogs/findAll')
 def syslogsFindAll():
@@ -95,6 +163,15 @@ def syslogsFindByDate():
             print(e)
             logger.error(e)
             return json.dumps([{"status": "Error:"+ str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+#用户管理
+@app.route('/userManager')
+def userManager():
+    return render_template('userManager.html')
+
+#权限分配
+@app.route('/roleright')
+def roleright():
+    return render_template('roleRight.html')
 
 # 加载工作台
 # 左右滑动添加

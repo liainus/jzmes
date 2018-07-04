@@ -17,6 +17,8 @@ from sqlalchemy import Column, DateTime, Float, Integer, String, Unicode
 from sqlalchemy.dialects.mssql.base import BIT
 import Model.Global
 
+
+
 #引入mssql数据库引擎
 import pymssql
 
@@ -49,7 +51,11 @@ class Role(Base):
 	
 	#创建时间:
 	CreateDate = Column(DateTime, primary_key = False, autoincrement = False, nullable = True)
-	
+
+
+
+
+
 # 生成表单的执行语句
 # Base.metadata.create_all(engine)
 # import json

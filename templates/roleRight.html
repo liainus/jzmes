@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>权限分配</title>
+	<link href="css/base.css" rel="stylesheet">
+	<link rel="stylesheet" href="../custom/uimaker/easyui.css">
+	<link href="css/basic_info.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="../custom/uimaker/icon.css">
+	<link href="js/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
+
+</head>
+
+<body>
+	<div style="padding:10px 0px 5px 10px;">
+	<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'">保存</a>
+	</div>
+
+	<div style="position:absolute;display:inline-block;margin:0px;width:180px;border:1px solid #ccc;padding:10px;left:10px;">
+			<div style="width:100%;margin:0px;padding-bottom:5px;border-bottom:1px solid green;font-weight:bold;"><h3>角色列表</h3></div>
+			<div style="margin:10px;"></div>
+<ul class="easyui-tree" data-options="url:'data/tree_role.json',method:'get',animate:true"></ul>
+			</div>
+			<div style="position:absolute;display:inline-block;margin:0px;width:500px;left:220px;border:1px solid #ccc;padding:10px;">
+				<div style="width:100%;margin:0px;padding-bottom:5px;border-bottom:1px solid green;font-weight:bold;"><h3>用户列表</h3></div>
+			<div style="margin:10px;"></div>
+
+			<table class="easyui-datagrid" title="" style="width:100%" data-options="rownumbers:true,singleSelect:true,url:'data/datagrid_userlist.json',method:'get',
+                rownumbers:true,
+                singleSelect:true,
+                autoRowHeight:false,
+                pagination:true,
+                fitColumns:true,
+                striped:true,
+                checkOnSelect:true,
+                selectOnCheck:true,
+                collapsible:true,
+                toolbar:'#tb',
+                pageSize:10">
+				<thead>
+					<tr>
+						<th data-options="field:'ck',checkbox:true,align:'center'">选择</th>
+						<th data-options="field:'username',width:200,align:'center'">用户名</th>
+						<th data-options="field:'loginname',width:150,align:'center'">登陆账号</th>
+						<th data-options="field:'status',width:50,align:'center'">状态</th>
+					</tr>
+				</thead>
+			</table>
+				</div>
+			
+<div style="position:absolute;display:inline-block;margin:0px;left:760px;width:300px;border:1px solid #ccc;padding:10px;">
+<div style="width:100%;margin:0px;padding-bottom:5px;border-bottom:1px solid green;font-weight:bold;"><h3>功能模块列表</h3></div>
+			<div style="margin:10px;"></div>
+<ul id="tt" class="easyui-tree" data-options="url:'data/tree_module.json',method:'get',animate:true,checkbox:true"></ul>
+</div>
+
+
+
+</body>
+
+</html>
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/jquery.easyui.min.js"></script>
+<!--
+<script type="text/javascript">
+	$('.easyui-tabs1').tabs({
+		tabHeight: 36
+	});
+	$(window).resize(function () {
+		$('.easyui-tabs1').tabs("resize");
+	}).resize();
+
+	var state = UM.getEditor('editor-state');
+	state.setWidth("98%");
+	state.setHeight(150);
+	$(".edui-body-container").css("width", "98%");
+
+</script>-->
+
+<script type="text/javascript">
+	var toolbar = [{
+		text: '添加',
+		iconCls: 'icon-add',
+		handler: function () { alert('add') }
+	}, {
+		text: '删除',
+		iconCls: 'icon-cut',
+		handler: function () { alert('cut') }
+	}, {
+		text: '保存',
+		iconCls: 'icon-save',
+		handler: function () { alert('save') }
+	}];
+
+</script>
