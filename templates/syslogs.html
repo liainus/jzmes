@@ -11,7 +11,7 @@
 </head> 
 <body>
     <div class="container">
-       <table class="easyui-datagrid" style="width:100%;height:554px" title="系统日志" data-options="url:'../static/data/datagrid_sysoplog.json',
+       <table id="tab" class="easyui-datagrid" style="width:100%;height:554px" title="系统日志" data-options="url:'/syslogs/findByDate',
                 method:'get',
                 rownumbers:true,
                 singleSelect:false,
@@ -49,3 +49,10 @@
 <script type="text/javascript" src="../static/js/jquery.min.js"></script>
 <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
 <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
+<script>
+    $(function(){
+        $("#tab").datagrid({
+
+        })
+    })
+</script>
