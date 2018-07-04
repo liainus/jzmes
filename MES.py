@@ -1,4 +1,4 @@
-from flask import render_template,request
+from flask import render_template,request, redirect
 from flask import Flask, jsonify
 from Model.system import Role, Organization
 from Model.core import Enterprise, Area,Factory,ProductLine,ProcessUnit,Equipment
@@ -13,10 +13,23 @@ from sqlalchemy import func
 import string
 import re
 from collections import Counter
-
-
+from Model.account import login_security
+# from flask_cache import Cache
+#
+# # redis配置
+# cache = Cache()
+# config = {
+#     'CACHE_TYPE': 'redis',
+#     'CACHE_REDIS_HPST': 'localhost',
+#     'CAHCE_REDIS_DB': '',
+#     'CACHE_REDIS_PASSWORD': ''
+# }
 # 获取本文件名实例化一个flask对象
 app = Flask(__name__)
+# app.config.from_object(config)
+# cache.init_app(app)
+
+
 
 engine = create_engine(Model.Global.GLOBAL_DATABASE_CONNECT_STRING, deprecate_large_types=True)
 session = sessionmaker(bind=engine)()
@@ -34,6 +47,58 @@ def load():
         data = json.load(json_file)
         return data
 
+'''登录'''
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'Get':
+        return render_template('system_manager/login.html')
+
+    if request.method == 'POST':
+        job_number  = request.form['job_number']
+        password = request.form['password']
+        security_status = request.form['security_status']  # 获取ajax传的验证码状态码
+
+        # 判断验证码是否正确
+        result = login_security.security(security_status)
+        if result['status'] is False:
+            return json.dumps({'status': False})
+
+        # 验证账户与密码
+        result = login_security.login_handler(job_number, password)
+        if result['status'] is True:
+            return json.dumps({'status': 200, 'msg': result['msg']})
+        return json.dumps({'status': 400, 'msg': result['msg']})
+
+'''注册'''
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if  request.method == 'GET':
+        render_template('system_manager/register.html')
+
+    if request.method == 'POST':
+        user_name = request.form['user_name']
+        job_number = request.form['job_number']
+        password1 = request.form['password1']
+        password2 = request.form['password2']
+        email = request.form['email']
+        tel = request.form['tel']
+        security_status = request.form['security_status']  # 获取ajax传的验证码状态码
+
+        # 判断验证码是否正确
+        result = login_security.security(security_status)
+        if result['status'] is False:
+            return json.dumps({'status': False})
+
+        # 用户注册
+        result = login_security.register_handler(user_name, job_number, password1, password2, email, tel)
+        if result['status'] is True:
+            return redirect('system_manager/login.html')
+        return render_template('system_manager/register.html', message=result['msg'])
+
+
+
+
+
 
 
 # 加载工作台
@@ -46,7 +111,7 @@ def batchmanager():
 
 
 # 加载工作台
-@app.route('/organizationMap')
+@app.route('/organizastionMap')
 def organizationMap():
     return render_template('index_organization.html')
 
