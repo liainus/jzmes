@@ -83,8 +83,8 @@ def syslogsFindByDate():
             if len(json_str) > 10:
                 startTime = json.dumps(data['startTime']) #开始时间
                 endTime = json.dumps(data['endTime'])  # 结束时间
-                startTime = time.strptime(startTime,'%Y-%m-%d %H:%M:%S ')
-                endTime = time.strptime (endTime, '%Y-%m-%d %H:%M:%S')
+                startTime = datetime.datetime.strptime(startTime, "%Y-%m-%d %H:%M:%S")
+                endTime = datetime.datetime.strptime(endTime, "%Y-%m-%d %H:%M:%S")
                 total = session.query(SysLog).filter(SysLog.OperationDate.between(startTime),endTime).count()
                 syslogs = session.query(SysLog).filter(SysLog.OperationDate.between(startTime),endTime)
                 #ORM模型转换json格式
