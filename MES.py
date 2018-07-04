@@ -1,13 +1,23 @@
-from flask import render_template,request, redirect
-from flask import Flask, jsonify
-from Model.system import Role, Organization
-from Model.core import Enterprise, Area,Factory,ProductLine,ProcessUnit,Equipment
-from Model.BSFramwork import AlchemyEncoder
-import Model.Global
+import datetime
+import decimal
 import json
-import time, datetime, decimal
+import re
+import string
+import time
+from collections import Counter
+from flask import Flask, jsonify
+from flask import render_template, request
+from sqlalchemy import create_engine, Column, ForeignKey, Table, DateTime, Integer, String
+from sqlalchemy import func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
+
+import Model.Global
+from Model.BSFramwork import AlchemyEncoder
+from Model.core import Enterprise, Area, Factory, ProductLine, ProcessUnit, Equipment
+from Model.system import Role, Organization
+from tools.MESLogger import MESLogger
+from Model.core import SysLog
 from sqlalchemy import create_engine, Column,ForeignKey, Table, DateTime, Integer, String
 from sqlalchemy import func
 import string
@@ -107,11 +117,56 @@ def register():
 def syslogs():
     return render_template('syslogs.html')
 
+
+@app.route('/syslogs/findAll')
+def syslogsFindAll():
+    if request.method == 'GET':
+        data = request.values # 返回请求中的参数和form
+        try:
+            json_str = json.dumps(data.to_dict())
+            print(json_str)
+            if len(json_str) > 10:
+                pages = int(data['page']) # 页数
+                rowsnumber = int(data['rows'])  # 行数
+                inipage = (pages - 1) * rowsnumber + 0  # 起始页
+                endpage = (pages-1) * rowsnumber + rowsnumber #截止页
+                total = session.query(SysLog).group_by(SysLog.OperationDate).first().count()
+                syslogs = session.query(SysLog).group_by(SysLog.OperationDate).first()[inipage:endpage]
+                #ORM模型转换json格式
+                jsonsyslogs = json.dumps(syslogs, cls=AlchemyEncoder, ensure_ascii=False)
+                jsonsyslogs = '{"total"'+":"+str(total)+',"rows"' +":\n" + jsonsyslogs + "}"
+                return jsonsyslogs
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            return json.dumps([{"status": "Error:"+ str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
+@app.route('/syslogs/findByDate')
+def syslogsFindByDate():
+    if request.method == 'GET':
+        data = request.values # 返回请求中的参数和form
+        try:
+            json_str = json.dumps(data.to_dict())
+            print(json_str)
+            if len(json_str) > 10:
+                startTime = json.dumps(data['startTime']) #开始时间
+                endTime = json.dumps(data['endTime'])  # 结束时间
+                startTime = datetime.datetime.strptime(startTime, "%Y-%m-%d %H:%M:%S")
+                endTime = datetime.datetime.strptime(endTime, "%Y-%m-%d %H:%M:%S")
+                total = session.query(SysLog).filter(SysLog.OperationDate.between(startTime),endTime).count()
+                syslogs = session.query(SysLog).filter(SysLog.OperationDate.between(startTime),endTime)
+                #ORM模型转换json格式
+                jsonsyslogs = json.dumps(syslogs, cls=AlchemyEncoder, ensure_ascii=False)
+                jsonsyslogs = '{"total"'+":"+str(total)+',"rows"' +":\n" + jsonsyslogs + "}"
+                return jsonsyslogs
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            return json.dumps([{"status": "Error:"+ str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 #用户管理
 @app.route('/userManager')
 def userManager():
     return render_template('userManager.html')
->>>>>>> 0e2b53cccc10fd1e8e7b248ddded78aa8f9c047e
 
 #权限分配
 @app.route('/roleright')
@@ -128,7 +183,7 @@ def batchmanager():
 
 
 # 加载工作台
-@app.route('/organizastionMap')
+@app.route('/organizationMap')
 def organizationMap():
     return render_template('index_organization.html')
 
@@ -153,7 +208,6 @@ def OrganizationsFind():
                 total = session.query(func.count(Organization.ID)).scalar()
                 organiztions = session.query(Organization).all()[inipage:endpage]
                 #ORM模型转换json格式
-                logger.info("aa="+total+','+endpage)
                 jsonorganzitions = json.dumps(organiztions, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonorganzitions = '{"total"'+":"+str(total)+',"rows"' +":\n" + jsonorganzitions + "}"
                 return jsonorganzitions
