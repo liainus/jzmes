@@ -117,30 +117,6 @@ def register():
 def syslogs():
     return render_template('syslogs.html')
 
-
-@app.route('/syslogs/findAll')
-def syslogsFindAll():
-    if request.method == 'GET':
-        data = request.values # 返回请求中的参数和form
-        try:
-            json_str = json.dumps(data.to_dict())
-            print(json_str)
-            if len(json_str) > 10:
-                pages = int(data['page']) # 页数
-                rowsnumber = int(data['rows'])  # 行数
-                inipage = (pages - 1) * rowsnumber + 0  # 起始页
-                endpage = (pages-1) * rowsnumber + rowsnumber #截止页
-                total = session.query(SysLog).group_by(SysLog.OperationDate).first().count()
-                syslogs = session.query(SysLog).group_by(SysLog.OperationDate).first()[inipage:endpage]
-                #ORM模型转换json格式
-                jsonsyslogs = json.dumps(syslogs, cls=AlchemyEncoder, ensure_ascii=False)
-                jsonsyslogs = '{"total"'+":"+str(total)+',"rows"' +":\n" + jsonsyslogs + "}"
-                return jsonsyslogs
-        except Exception as e:
-            print(e)
-            logger.error(e)
-            return json.dumps([{"status": "Error:"+ str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
-
 @app.route('/syslogs/findByDate')
 def syslogsFindByDate():
     if request.method == 'GET':
@@ -149,15 +125,37 @@ def syslogsFindByDate():
             json_str = json.dumps(data.to_dict())
             print(json_str)
             if len(json_str) > 10:
+                pages = int(data['page'])  # 页数
+                rowsnumber = int(data['rows'])  # 行数
+                inipage = (pages - 1) * rowsnumber + 0  # 起始页
+                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
                 startTime = json.dumps(data['startTime']) #开始时间
                 endTime = json.dumps(data['endTime'])  # 结束时间
-                startTime = datetime.datetime.strptime(startTime, "%Y-%m-%d %H:%M:%S")
-                endTime = datetime.datetime.strptime(endTime, "%Y-%m-%d %H:%M:%S")
-                total = session.query(SysLog).filter(SysLog.OperationDate.between(startTime),endTime).count()
-                syslogs = session.query(SysLog).filter(SysLog.OperationDate.between(startTime),endTime)
-                #ORM模型转换json格式
-                jsonsyslogs = json.dumps(syslogs, cls=AlchemyEncoder, ensure_ascii=False)
-                jsonsyslogs = '{"total"'+":"+str(total)+',"rows"' +":\n" + jsonsyslogs + "}"
+                # startTime = datetime.datetime.strptime(startTime, "%Y-%m-%d %H:%M:%S")
+                # endTime = datetime.datetime.strptime(endTime, "%Y-%m-%d %H:%M:%S")
+
+                if startTime =="" and endTime == "":
+                    total = session.query(SysLog).count()
+                    syslogs = session.query(SysLog).all()[inipage:endpage]
+                    jsonsyslogs = json.dumps(syslogs, cls=AlchemyEncoder, ensure_ascii=False)
+                    jsonsyslogs = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonsyslogs + "}"
+                elif startTime != "" and endTime == "":
+                    nowTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                    total = session.query(SysLog).filter(SysLog.OperationDate.between(startTime, nowTime)).count()
+                    syslogs = session.query(SysLog).filter(SysLog.OperationDate.between(startTime, nowTime))[
+                              inipage:endpage]
+                    jsonsyslogs = json.dumps(syslogs, cls=AlchemyEncoder, ensure_ascii=False)
+                    jsonsyslogs = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonsyslogs + "}"
+                else:
+                    total = session.query(SysLog).filter(SysLog.OperationDate.between(startTime, endTime)).count()
+                    syslogs = session.query(SysLog).filter(SysLog.OperationDate.between(startTime, endTime))[
+                              inipage:endpage]
+                    # sql = 'select *  from SysLog where Syslog.OperationDate BETWEEN '+"'"+ startTime +"'"+ ' AND '+"'" + endTime +"'"
+
+                    # ORM模型转换json格式
+                    jsonsyslogs = json.dumps(syslogs, cls=AlchemyEncoder, ensure_ascii=False)
+                    jsonsyslogs = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonsyslogs + "}"
+
                 return jsonsyslogs
         except Exception as e:
             print(e)
