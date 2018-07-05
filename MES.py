@@ -123,6 +123,7 @@ def register():
 def syslogs():
     return render_template('syslogs.html')
 
+
 @app.route('/syslogs/findByDate')
 def syslogsFindByDate():
     if request.method == 'GET':
