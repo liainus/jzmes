@@ -179,6 +179,8 @@ def userManager():
 def roleright():
     return render_template('roleRight.html')
 
+
+
 # 加载工作台
 # 左右滑动添加
 @app.route('/batchmanager')#批次管理
