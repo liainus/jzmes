@@ -27,12 +27,12 @@
                 >
             <thead>
                 <tr>
-                    <th data-options="field:'ID',width:160,align:'center'">ID</th>
+                    <th data-options="field:'ID',width:120,align:'center'">ID</th>
                     <th data-options="field:'IP',width:140,align:'center'">IP</th>
-                    <th data-options="field:'ComputerName',width:140,align:'center'" >计算机名称</th>
-                    <th data-options="field:'UserName',width:80,align:'center'" >操作用户</th>
-                    <th data-options="field:'OperationDate',width:180,align:'left',halign:'center'">操作日期</th>
-                    <th data-options="field:'OperationContent',width:350,align:'left',halign:'center'">操作内容</th>
+                    <th data-options="field:'ComputerName',width:150,align:'center'" >计算机名称</th>
+                    <th data-options="field:'UserName',width:100,align:'center'" >操作用户</th>
+                    <th data-options="field:'OperationDate',width:180,align:'center',halign:'center'">操作日期</th>
+                    <th data-options="field:'OperationContent',width:350,align:'center',halign:'center'">操作内容</th>
                     <th data-options="field:'OperationType',width:80,align:'center'">类型</th>
                 </tr>
             </thead>
@@ -50,7 +50,10 @@
 <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
 <script>
     $(function(){
-
+        $('#tab').datagrid('load',{
+                startTime: $('#startTime').datebox('getValue'),
+                endTime: $('#endTime').datebox('getValue')
+            });
     })
     function doSearch(){
             $('#tab').datagrid('load',{
