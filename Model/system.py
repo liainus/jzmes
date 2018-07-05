@@ -51,11 +51,7 @@ class Role(Base):
 	
 	#创建时间:
 	CreateDate = Column(DateTime, primary_key = False, autoincrement = False, nullable = True)
-
-
-
-
-
+	
 # 生成表单的执行语句
 # Base.metadata.create_all(engine)
 # import json
