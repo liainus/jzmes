@@ -10,32 +10,91 @@
 	<link href="../static/css/basic_info.css" rel="stylesheet">
 	<link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
 	<link href="../static/js/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
-
 </head>
-
 <body>
 	<div class="container">
 		<div class="left-tree" >
-            <ul class="easyui-tree" data-options="url:'../static/data/tree_organization.json',method:'get',animate:true"></ul>
+            <ul class="easyui-tree" id="tree"></ul>
 		</div>
 		<div class="content">
 			<div class="column"><span class="current">用户列表</span></div>
-			<div style="margin:0px;"></div>
-
-			<table class="easyui-datagrid" id="dg" title="" style="width:99%" data-options="
+			<div id="userClassDialog" class="easyui-dialog" style="width:520px;height:440px;padding:10px;"
+                 data-options="closed:'true',buttons:'#userClassDialogButtons',modal:true">
+                <form id="userClassForm" method="post" class="dialog-form">
+                    <table class="kv-table">
+                        <tbody>
+                            <tr>
+                                <td class="kv-label">ID</td>
+                                <td class="kv-content">
+                                    <input name="iID" type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="" disabled="disabled">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="kv-label">用户名</td>
+                                <td class="kv-content">
+                                    <input name="iRoleCode" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="kv-label">登录账号</td>
+                                <td class="kv-content">
+                                    <input name="iRoleName" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="kv-label">状态</td>
+                                <td class="kv-content">
+                                    <input name="iRoleSeq" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="kv-label">创建用户</td>
+                                <td class="kv-content">
+                                    <input name="iDescription" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="kv-label">创建时间</td>
+                                <td class="kv-content">
+                                    <input name="iCreatePerson" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder="" disabled="disabled" >
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="kv-label">上次登录时间</td>
+                                <td class="kv-content">
+                                    <input name="iCreateDate" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder="" disabled="disabled" >
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="kv-label">是否锁定</td>
+                                <td class="kv-content">
+                                    <input name="iCreateDate" type="checkbox" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder="">
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div id="userClassDialogButtons" >
+                        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'"  onclick="RoleClassToolbar.save()" >保存</a>
+                        <a href="#" class="easyui-linkbutton" onclick="$('#userClassDialog').dialog('close')">关闭</a>
+                    </div>
+                </form>
+            </div>
+			<table class="easyui-datagrid" id="tab" title="" style="width:99%" data-options="
 			    rownumbers:true,
                 singleSelect:true,
                 autoRowHeight:false,
 				pagination:true,
 				pageSize:10,
+				singleSelect:false,
                 url:'../static/data/datagrid_userlist.json',
                 method:'get',
                 toolbar:toolbar">
 				<thead>
 					<tr>
+                        <th field="ck" checkbox="true"></th>
 						<th data-options="field:'id',width:80,align:'center'">ID</th>
 						<th data-options="field:'username',width:200,align:'center'">用户名</th>
-						<th data-options="field:'loginname',width:100,align:'center'">登陆账号</th>
+						<th data-options="field:'loginname',width:100,align:'center'">登录账号</th>
 						<th data-options="field:'status',width:80,align:'center'">状态</th>
 						<th data-options="field:'creater',width:120,align:'center'">创建用户</th>
 						<th data-options="field:'createtime',width:120,align:'center'">创建时间</th>
@@ -44,57 +103,128 @@
 					</tr>
 				</thead>
 			</table>
-
 		</div>
 	</div>
-
-
-
 </body>
-
 </html>
 <script type="text/javascript" src="../static/js/jquery.min.js"></script>
 <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
-<!--
+<script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
 <script type="text/javascript">
-	$('.easyui-tabs1').tabs({
-		tabHeight: 36
-	});
-	$(window).resize(function () {
-		$('.easyui-tabs1').tabs("resize");
-	}).resize();
-
-	var state = UM.getEditor('editor-state');
-	state.setWidth("98%");
-	state.setHeight(150);
-	$(".edui-body-container").css("width", "98%");
-
-</script>-->
-
-<script type="text/javascript">
-	var toolbar = [ {
-		text: '刷新',
-		iconCls: 'icon-reload',
-		handler: function () {
-            $('#dg').datagrid('reload');
-		}
-	},{
+{#    树形菜单点击事件#}
+    $("#tree").tree({
+        url:'/allOrganizations/FindAll',
+        method: 'get',
+        animate:true,
+        loadFilter: function(data){
+            console.log(data)
+            if (data.OrganizationName){
+                return data.OrganizationName;
+            } else {
+                return data;
+            }
+        },
+        onClick :function(node){
+            $('#tab').datagrid('load',{
+            treeText: node.text
+        });
+        }
+    })
+	var toolbar = [
+    {
 		text: '添加',
 		iconCls: 'icon-add',
 		handler: function () {
-		    alert('add')
+		    $("#userClassDialog").dialog('open').dialog('setTitle','添加用户');
+		    $('input[name="iID"]').val(""); //ID
+		    $('input[name="iRoleCode"]').val("");//用户名
+		    $('input[name="iRoleName"]').val("");//登录账号
+		    $('input[name="iRoleSeq"]').val("");//状态
+		    $('input[name="iDescription"]').val("");//创建用户
+		    $('input[name="iCreatePerson"]').val(Bee.DateUtils.getCurrentTime());//创建时间
+		    $('input[name="iCreateDate"]').val("");//上次登录时间
 		}
 	}, {
+		text: '修改',
+		iconCls: 'icon-edit',
+		handler: function () {
+		    var rows = $("#tab").datagrid('getSelections');
+		    if (rows.length > 1) {
+                $.messager.alert('警告操作！', '编辑记录只能选定一条数据！', 'warning');
+            }else if(rows.length == 1){
+		        var row = $("#tab").datagrid('getSelected');
+		        if(row){
+                    $("#userClassDialog").dialog('open').dialog('setTitle','修改信息');
+                    $('input[name="iID"]').val(row.id); //ID
+                    $('input[name="iRoleCode"]').val(row.username);//用户名
+                    $('input[name="iRoleName"]').val(row.loginname);//登录账号
+                    $('input[name="iRoleSeq"]').val(row.status);//状态
+                    $('input[name="iDescription"]').val(row.creater);//创建用户
+                    $('input[name="iCreatePerson"]').val(row.createtime);//创建时间
+                    $('input[name="iCreateDate"]').val(row.lastlogintime);//上次登录时间
+                }
+            } else if (rows.length == 0) {
+                $.messager.alert('警告操作！', '请至少选定一条数据进行编辑！', 'warning');
+            }
+		}
+	},{
 		text: '删除',
 		iconCls: 'icon-remove',
 		handler: function () {
-		    alert('cut')
+		    var rows = $("#tab").datagrid('getSelections');
+		    if (rows.length > 0) {
+                var jsonarray=[];
+                $.messager.confirm('确定操作', '您正在删除所选的记录吗？', function (flag) {
+                    if (flag) {
+                        var PrimaryKey = "ID";
+                        var a = "";
+                        for (var i = 0; i < rows.length; i++) {
+                            // ids.push(parseInt((rows[i].id)));
+                            var obj=createKeyIDObj(parseInt(rows[i].ID));
+                            jsonarray.push(obj);
+                        }
+                        a = JSON.stringify(jsonarray);
+                        $.ajax({
+                            url: '/allroles/Delete',
+                            method: 'POST',
+                            traditional: true,
+                            data: a,
+                            dataType: 'json',
+                            beforeSend: function () {
+                                $.messager.progress({
+                                    text: '正在删除中...'
+                                });
+                            },
+                            success: function (data) {
+                                $.messager.progress('close');
+                                if (data) {
+                                    $(tableId).datagrid('loaded');
+                                    $(tableId).datagrid('load');
+                                    $(tableId).datagrid('unselectAll');
+                                    $.messager.show({
+                                        title: '提示',
+                                        timeout:1000,
+                                        msg: '删除' + titleText + '成功',
+                                        style: {
+                                            right: '',
+                                            top: document.body.scrollTop + document.documentElement.scrollTop,
+                                            bottom: ''
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                    }
+                });
+            } else {
+                $.messager.alert('提示', '请选择要删除的记录！', 'info');
+            }
 		}
-	}, {
-		text: '保存',
-		iconCls: 'icon-save',
+	},{
+		text: '刷新',
+		iconCls: 'icon-reload',
 		handler: function () {
-		    alert('save')
+            $('#tab').datagrid('reload');
 		}
 	}];
 
