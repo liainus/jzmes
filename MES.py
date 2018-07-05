@@ -23,7 +23,7 @@ from sqlalchemy import func
 import string
 import re
 from collections import Counter
-from Model.account import login_security
+from Model.permission import login_security
 # from flask_cache import Cache
 #
 # # redis配置
