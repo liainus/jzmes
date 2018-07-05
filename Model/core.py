@@ -3219,8 +3219,8 @@ class SysLog(Base):
 	# 操作用户:
 	UserName = Column(Unicode(64), primary_key=False, autoincrement=False, nullable=True)
 
-	# 日期:
-	OperationDate = Column(Unicode(64), primary_key=False, autoincrement=False, nullable=True)
+	# 操作日期:
+	OperationDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
 
 	# 操作内容:
 	OperationContent = Column(Unicode(800), primary_key=False, autoincrement=False, nullable=True)

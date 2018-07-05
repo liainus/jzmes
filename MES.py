@@ -36,9 +36,7 @@ from Model.account import login_security
 # }
 # 获取本文件名实例化一个flask对象
 app = Flask(__name__)
-# app.config.from_object(config)
-# cache.init_app(app)
-
+app.config['SECRET_KEY'] = 'AHAHAAHAHAHA'
 
 
 engine = create_engine(Model.Global.GLOBAL_DATABASE_CONNECT_STRING, deprecate_large_types=True)
@@ -63,7 +61,7 @@ def load():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'Get':
-        return render_template('system_manager/login.html')
+        return render_template('login.html')
 
     if request.method == 'POST':
         job_number  = request.form['job_number']
@@ -78,14 +76,23 @@ def login():
         # 验证账户与密码
         result = login_security.login_handler(job_number, password)
         if result['status'] is True:
-            return json.dumps({'status': 200, 'msg': result['msg']})
+            cli_session['username'] = User.job_number
+            return render_template('main.html')
         return json.dumps({'status': 400, 'msg': result['msg']})
+
+# 退出
+@app.route('/logout', methods=['GET','POST'])
+def logout():
+    cli_session.pop('job_number', None)
+    return render_template('login.html')
+
+
 
 '''注册'''
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if  request.method == 'GET':
-        render_template('system_manager/register.html')
+        render_template('register.html')
 
     if request.method == 'POST':
         user_name = request.form['user_name']
@@ -104,8 +111,8 @@ def register():
         # 用户注册
         result = login_security.register_handler(user_name, job_number, password1, password2, email, tel)
         if result['status'] is True:
-            return redirect('system_manager/login.html')
-        return render_template('system_manager/register.html', message=result['msg'])
+            return render_template('login.html')
+        return render_template('register.html', message=result['msg'])
 
 
 
