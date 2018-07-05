@@ -131,20 +131,29 @@ class Permission(Base):
 class UserToRole(Base):
     """用户角色多对多关系表"""
     __tablename__="permission_user_to_role"
-    user_id = Column(Integer,ForeignKey("user.id"), primary_key=True)
+    user_id = Column(Integer,ForeignKey("User.ID"), primary_key=True)
     role_id = Column(Integer,ForeignKey("permission_role.id"), primary_key=True)
 
-'''用户表'''
+#用户表
 class User(Base):
-    __tablename__ = 'user'
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    uuid = Column(String(36), unique=True, nullable=False, default=lambda: str(uuid4()))
-    user_name = Column(String(60), unique=True, nullable=False)
-    job_number = Column(String(50), unique=True, nullable=False)
-    _password = Column('password', String(128), nullable=False)
-    email = Column(String(50), unique=True, nullable=False)
-    tel = Column(String(50), unique=True, nullable=False)
-    create_time = Column(DateTime, default=datetime.now)
+    __tablename__ = 'User'
+    #ID
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=True)
+    #用户名
+    UserName = Column(Unicode(64), primary_key=False, autoincrement=False, nullable=True)
+    #登录账号
+    LoginName = Column(Unicode(64), primary_key=False, autoincrement=False, nullable=True)
+    #登录状态
+    Status = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    #创建用户
+    Creater = Column(Unicode(64), primary_key=False, autoincrement=False, nullable=True)
+    #创建时间
+    CreateTime = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+    #上次登录时间
+    LastLoginTime = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+    #是否锁定
+    IsLock = Column(BIT, primary_key=False, autoincrement=False, nullable=True)
+
 
     roles = relationship("Role", secondary=UserToRole.__table__)
 
