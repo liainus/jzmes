@@ -29,19 +29,18 @@
                 <tr>
                     <th data-options="field:'ID',width:160,align:'center'">ID</th>
                     <th data-options="field:'IP',width:140,align:'center'">IP</th>
-                    <th data-options="field:'COMPUTERNAME',width:140,align:'center'" >计算机名称</th>
-                    <th data-options="field:'ENTERBY',width:80,align:'center'" >操作用户</th>
-                    <th data-options="field:'ENTERDATE',width:180,align:'left',halign:'center'">日期</th>
-                    <th data-options="field:'MEMO',width:350,align:'left',halign:'center'">操作内容</th>
-                    <!--<th data-options="field:'SOURCE',width:80,align:'center'">来源</th>-->
-                    <th data-options="field:'TYPE',width:80,align:'center'">类型</th>
+                    <th data-options="field:'ComputerName',width:140,align:'center'" >计算机名称</th>
+                    <th data-options="field:'UserName',width:80,align:'center'" >操作用户</th>
+                    <th data-options="field:'OperationDate',width:180,align:'left',halign:'center'">操作日期</th>
+                    <th data-options="field:'OperationContent',width:350,align:'left',halign:'center'">操作内容</th>
+                    <th data-options="field:'OperationType',width:80,align:'center'">类型</th>
                 </tr>
             </thead>
         </table>
       <div id="tb" style="padding:0 10px;">
-        起止日期: <input class="easyui-datebox"   style="width:166px;height:35px;line-height:35px;">
-         <input class="easyui-datebox"  style="width:166px;height:35px;line-height:35px;">
-        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'">查询</a>
+        起止日期: <input class="easyui-datebox" id="startTime" style="width:166px;height:35px;line-height:35px;">
+         <input class="easyui-datebox" id="endTime" style="width:166px;height:35px;line-height:35px;">
+        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="doSearch()">查询</a>
       </div>
     </div>
 </body> 
@@ -51,8 +50,12 @@
 <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
 <script>
     $(function(){
-        $("#tab").datagrid({
 
-        })
     })
+    function doSearch(){
+            $('#tab').datagrid('load',{
+                startTime: $('#startTime').datebox('getValue'),
+                endTime: $('#endTime').datebox('getValue')
+            });
+        }
 </script>
