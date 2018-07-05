@@ -129,10 +129,11 @@ def syslogsFindByDate():
                 rowsnumber = int(data['rows'])  # 行数
                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
-                startTime = json.dumps(data['startTime']) #开始时间
-                endTime = json.dumps(data['endTime'])  # 结束时间
+                startTime = data['startTime'] #开始时间
+                endTime = data['endTime']  # 结束时间
                 # startTime = datetime.datetime.strptime(startTime, "%Y-%m-%d %H:%M:%S")
                 # endTime = datetime.datetime.strptime(endTime, "%Y-%m-%d %H:%M:%S")
+
 
                 if startTime =="" and endTime == "":
                     total = session.query(SysLog).count()
