@@ -15,7 +15,7 @@ from sqlalchemy.orm import sessionmaker, relationship
 import Model.Global
 from Model.BSFramwork import AlchemyEncoder
 from Model.core import Enterprise, Area, Factory, ProductLine, ProcessUnit, Equipment
-from Model.system import Role, Organization
+from Model.system import Role, Organization,User
 from tools.MESLogger import MESLogger
 from Model.core import SysLog
 from sqlalchemy import create_engine, Column,ForeignKey, Table, DateTime, Integer, String
@@ -184,7 +184,6 @@ def OrganizationsFindAll():
             organiztions = session.query(Organization).all()
             #ORM模型转换json格式
             jsonorganzitions = json.dumps(organiztions, cls=AlchemyEncoder, ensure_ascii=False)
-            jsonorganzitions = '{"total"'+":"+str(total)+',"rows"' +":\n" + jsonorganzitions + "}"
             return jsonorganzitions
         except Exception as e:
             print(e)
@@ -203,11 +202,10 @@ def userManagerFindByOrganiza():
                 pages = int(data['page']) # 页数
                 rowsnumber = int(data['rows'])  # 行数
                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
-                endpage = (pages-1) * rowsnumber + rowsnumber #截止页
-                organizationID = data['ID']
-                #User
-                total = session.query(func.count(Organization.ID)).scalar()
-                organiztions = session.query(Organization).all()[inipage:endpage]
+                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+                OrganizationCode = data['OrganizationCode']
+                total = session.query(User).filter(User.OrganizationCode==OrganizationCode).count()
+                organiztions = session.query(User).filter(User.OrganizationCode==OrganizationCode)[inipage:endpage]
                 #ORM模型转换json格式
                 jsonorganzitions = json.dumps(organiztions, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonorganzitions = '{"total"'+":"+str(total)+',"rows"' +":\n" + jsonorganzitions + "}"

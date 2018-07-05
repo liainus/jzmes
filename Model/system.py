@@ -131,12 +131,6 @@ class Permission(Base):
 
 
 
-class UserToRole(Base):
-    """用户角色多对多关系表"""
-    __tablename__="permission_user_to_role"
-    user_id = Column(Integer,ForeignKey("User.ID"), primary_key=True)
-    role_id = Column(Integer,ForeignKey("permission_role.id"), primary_key=True)
-
 #用户表
 class User(Base):
     __tablename__ = 'User'
@@ -156,44 +150,46 @@ class User(Base):
     LastLoginTime = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
     #是否锁定
     IsLock = Column(BIT, primary_key=False, autoincrement=False, nullable=True)
+    #所属组织
+    OrganizationCode = Column(Unicode(100), primary_key=False, autoincrement=False, nullable=True)
 
 
-    roles = relationship("Role", secondary=UserToRole.__table__)
-
-    def __repr__(self):
-        return 'id:{},user_name:{},job_number:{},_password:{},email:{},tel:{},create_time:{}'.format(
-            self.id,
-            self.user_name,
-            self.job_number,
-            self.password,
-            self.email,
-            self.tel,
-            self.create_time,
-        )
-
-    @classmethod
-    def all(cls):
-        return session.query(cls).all()
-    @classmethod
-    def uuid(cls, uuid):
-        return session.query(cls).filter_by(uuid=uuid).first()
-    @classmethod
-    def by_email(cls, email):
-        return session.query(cls).filter_by(email=email).first()
-    def by_name(cls, name):
-        return session.query(cls).filter_by(user_name=name).first()
-
-    # 密码哈希加密
-    @property
-    def password(self):
-        raise AttributeError('password is not a readable attribute')
-
-    @password.setter
-    def password(self, password):
-        self.password_hash = generate_password_hash(password)
-
-    def verify_password(self, password):
-        return check_password_hash(self.password_hash, password)
+    # roles = relationship("Role", secondary=UserToRole.__table__)
+    #
+    # def __repr__(self):
+    #     return 'id:{},user_name:{},job_number:{},_password:{},email:{},tel:{},create_time:{}'.format(
+    #         self.id,
+    #         self.user_name,
+    #         self.job_number,
+    #         self.password,
+    #         self.email,
+    #         self.tel,
+    #         self.create_time,
+    #     )
+    #
+    # @classmethod
+    # def all(cls):
+    #     return session.query(cls).all()
+    # @classmethod
+    # def uuid(cls, uuid):
+    #     return session.query(cls).filter_by(uuid=uuid).first()
+    # @classmethod
+    # def by_email(cls, email):
+    #     return session.query(cls).filter_by(email=email).first()
+    # def by_name(cls, name):
+    #     return session.query(cls).filter_by(user_name=name).first()
+    #
+    # # 密码哈希加密
+    # @property
+    # def password(self):
+    #     raise AttributeError('password is not a readable attribute')
+    #
+    # @password.setter
+    # def password(self, password):
+    #     self.password_hash = generate_password_hash(password)
+    #
+    # def verify_password(self, password):
+    #     return check_password_hash(self.password_hash, password)
 
 class Role(Base):
     __tablename__ = "Role"
@@ -219,11 +215,11 @@ class Role(Base):
     # 创建时间:
     CreateDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
 
-    # 用户与角色关系
-    users = relationship('User', secondary=UserToRole.__table__)
-
-    # 角色与权限关系
-    permission = relationship('Permission', secondary=PermissionToRole.__table__)
+    # # 用户与角色关系
+    # users = relationship('User', secondary=UserToRole.__table__)
+    #
+    # # 角色与权限关系
+    # permission = relationship('Permission', secondary=PermissionToRole.__table__)
 
 
 
@@ -232,7 +228,6 @@ class Role(Base):
 # import json
 # UnReadMsg = session.query(Role).all()
 # print (UnReadMsg[0].RoleName.encode('utf-8').decode('utf-8'))
-
 
 # Organization:
 class Organization(Base):
