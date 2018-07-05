@@ -23,7 +23,6 @@ from sqlalchemy import func
 import string
 import re
 from collections import Counter
-from Model.permission import login_security
 # from flask_cache import Cache
 #
 # # redis配置
@@ -137,6 +136,7 @@ def syslogsFindByDate():
                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
                 startTime = data['startTime'] #开始时间
+                endTime = data['endTime']  # 结束时间
                 # startTime = datetime.datetime.strptime(startTime, "%Y-%m-%d %H:%M:%S")
                 # endTime = datetime.datetime.strptime(endTime, "%Y-%m-%d %H:%M:%S")
 
