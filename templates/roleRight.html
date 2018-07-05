@@ -5,11 +5,11 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>权限分配</title>
-	<link href="css/base.css" rel="stylesheet">
-	<link rel="stylesheet" href="../custom/uimaker/easyui.css">
-	<link href="css/basic_info.css" rel="stylesheet">
-	<link rel="stylesheet" type="text/css" href="../custom/uimaker/icon.css">
-	<link href="js/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
+	<link href="../static/css/base.css" rel="stylesheet">
+	<link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
+	<link href="../static/css/basic_info.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
+	<link href="../static/js/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
 
 </head>
 
@@ -21,13 +21,13 @@
 	<div style="position:absolute;display:inline-block;margin:0px;width:180px;border:1px solid #ccc;padding:10px;left:10px;">
 			<div style="width:100%;margin:0px;padding-bottom:5px;border-bottom:1px solid green;font-weight:bold;"><h3>角色列表</h3></div>
 			<div style="margin:10px;"></div>
-<ul class="easyui-tree" data-options="url:'data/tree_role.json',method:'get',animate:true"></ul>
+                <ul class="easyui-tree" data-options="url:'../static/data/tree_role.json',method:'get',animate:true"></ul>
 			</div>
 			<div style="position:absolute;display:inline-block;margin:0px;width:500px;left:220px;border:1px solid #ccc;padding:10px;">
 				<div style="width:100%;margin:0px;padding-bottom:5px;border-bottom:1px solid green;font-weight:bold;"><h3>用户列表</h3></div>
 			<div style="margin:10px;"></div>
 
-			<table class="easyui-datagrid" title="" style="width:100%" data-options="rownumbers:true,singleSelect:true,url:'data/datagrid_userlist.json',method:'get',
+			<table class="easyui-datagrid" title="" style="width:100%" data-options="rownumbers:true,singleSelect:true,url:'../static/data/datagrid_userlist.json',method:'get',
                 rownumbers:true,
                 singleSelect:true,
                 autoRowHeight:false,
@@ -53,7 +53,7 @@
 <div style="position:absolute;display:inline-block;margin:0px;left:760px;width:300px;border:1px solid #ccc;padding:10px;">
 <div style="width:100%;margin:0px;padding-bottom:5px;border-bottom:1px solid green;font-weight:bold;"><h3>功能模块列表</h3></div>
 			<div style="margin:10px;"></div>
-<ul id="tt" class="easyui-tree" data-options="url:'data/tree_module.json',method:'get',animate:true,checkbox:true"></ul>
+<ul id="tt" class="easyui-tree" data-options="url:'../static/data/tree_module.json',method:'get',animate:true,checkbox:true"></ul>
 </div>
 
 
@@ -61,8 +61,8 @@
 </body>
 
 </html>
-<script type="text/javascript" src="js/jquery.min.js"></script>
-<script type="text/javascript" src="js/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="../static/js/jquery.min.js"></script>
+<script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
 <!--
 <script type="text/javascript">
 	$('.easyui-tabs1').tabs({
