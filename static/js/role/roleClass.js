@@ -14,12 +14,10 @@ $(function () {
     var titleText = "角色";
 
     function createKeyIDObj(keyID){
-    return {
-        ID:keyID
-    }}
-
-
-
+        return {
+            ID:keyID
+        }
+    }
 
      $('input[name="iRoleName"]').change(function () {
          var sRoleName = $('input[name="iRoleName"]').val();
