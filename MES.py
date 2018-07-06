@@ -228,21 +228,11 @@ def roleright():
 @app.route('/rolelist')
 def roleList():
     if request.method == 'GET':
-        data = request.values # 返回请求中的参数和form
         try:
-            json_str = json.dumps(data.to_dict())
-            print(json_str)
-            if len(json_str) > 10:
-                pages = int(data['page']) # 页数
-                rowsnumber = int(data['rows'])  # 行数
-                inipage = (pages - 1) * rowsnumber + 0  # 起始页
-                endpage = (pages-1) * rowsnumber + rowsnumber #截止页
-                total = session.query(Role).count()
-                roles = session.query(Role).all()[inipage:endpage]
-                #ORM模型转换json格式
-                jsonoroles = json.dumps(roles, cls=AlchemyEncoder, ensure_ascii=False)
-                jsonoroles = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoroles + "}"
-                return jsonoroles
+            roles = session.query(Role).all()    #[inipage:endpage]
+            #ORM模型转换json格式
+            jsonoroles = json.dumps(roles, cls=AlchemyEncoder, ensure_ascii=False)
+            return jsonoroles
         except Exception as e:
             print(e)
             logger.error(e)
