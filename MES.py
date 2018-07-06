@@ -23,6 +23,9 @@ from sqlalchemy import func
 import string
 import re
 from collections import Counter
+from Model.account import login_security
+from flask import session as cli_session
+from Model.system import User
 # from flask_cache import Cache
 #
 # # redis配置
@@ -180,6 +183,55 @@ def roleright():
     return render_template('roleRight.html')
 
 
+# 权限分配下的角色列表
+@app.route('/rolelist')
+def roleList():
+    if request.method == 'GET':
+        data = request.values # 返回请求中的参数和form
+        try:
+            json_str = json.dumps(data.to_dict())
+            print(json_str)
+            if len(json_str) > 10:
+                pages = int(data['page']) # 页数
+                rowsnumber = int(data['rows'])  # 行数
+                inipage = (pages - 1) * rowsnumber + 0  # 起始页
+                endpage = (pages-1) * rowsnumber + rowsnumber #截止页
+                total = session.query(Role).count()
+                roles = session.query(Role).all()[inipage:endpage]
+                #ORM模型转换json格式
+                jsonoroles = json.dumps(roles, cls=AlchemyEncoder, ensure_ascii=False)
+                jsonoroles = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoroles + "}"
+                return jsonoroles
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            return json.dumps([{"status": "Error:"+ str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
+# 权限分配下的角色列表
+@app.route('/userlist')
+def userList():
+    if request.method == 'GET':
+        data = request.values # 返回请求中的参数和form
+        try:
+            json_str = json.dumps(data.to_dict()) # 将传回来的json数据转为python格式
+            print(json_str)
+            if len(json_str) > 10:
+                pages = int(data['page']) # 页数
+                rowsnumber = int(data['rows'])  # 行数
+                inipage = (pages - 1) * rowsnumber + 0  # 起始页
+                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+                # 获取当前角色名字
+                name = json_str['ID']
+                total = session.query(User).filter_by(RoleName=name).count()
+                users_data = session.query(User).filter_by(RoleName=name).all()[inipage:endpage]
+                #ORM模型转换json格式
+                jsonusers = json.dumps(users_data, cls=AlchemyEncoder, ensure_ascii=False)
+                jsonusers = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonusers + "}"
+                return jsonusers
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            return json.dumps([{"status": "Error:"+ str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 # 加载工作台
 # 左右滑动添加
@@ -187,14 +239,10 @@ def roleright():
 def batchmanager():
     return render_template('batch_manager.html')
 
-
-
-
 # 加载工作台
 @app.route('/organizationMap')
 def organizationMap():
     return render_template('index_organization.html')
-
 
 #加载工作台
 @app.route('/organization')
