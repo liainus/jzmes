@@ -86,7 +86,7 @@
 				pagination:true,
 				pageSize:10,
 				singleSelect:false,
-                url:'/userManagerFindByOrganiza',
+                url:'/MyUser/Select',
                 method:'get',
                 toolbar:toolbar">
 				<thead>
@@ -114,11 +114,12 @@
 <script type="text/javascript">
 {#    树形菜单点击事件#}
     $("#tree").tree({
-        url:'/allOrganizations/FindAll',
+        url:'/Organization/Find',
         method: 'get',
         animate:true,
         formatter:function(data){
-            return data.OrganizationName;
+            console.log(data)
+            return data.OrganizationName
         },
         onClick :function(node){
             $('#tab').datagrid('load',{
