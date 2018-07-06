@@ -219,7 +219,7 @@ def userManagerFindByOrganiza():
             return json.dumps([{"status": "Error:"+ str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 #权限分配
-@app.route('/permission/roleright')
+@app.route('/roleright')
 def roleright():
     return render_template('roleRight.html')
 
