@@ -36,11 +36,11 @@
                 </tr>
             </thead>
         </table>
-      <div id="tb" style="padding:0 10px;">
+        <div id="tb" style="padding:0 10px;">
         起止日期: <input class="easyui-datebox" id="startTime" style="width:166px;height:35px;line-height:35px;">
-         <input class="easyui-datebox" id="endTime" style="width:166px;height:35px;line-height:35px;">
-        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="doSearch()">查询</a>
-      </div>
+            <input class="easyui-datebox" id="endTime" style="width:166px;height:35px;line-height:35px;">
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="doSearch()">查询</a>
+        </div>
     </div>
 </body> 
 </html>
@@ -50,9 +50,9 @@
 <script>
     $(function(){
         $('#tab').datagrid('load',{
-                startTime: $('#startTime').datebox('getValue'),
-                endTime: $('#endTime').datebox('getValue')
-            });
+            startTime: $('#startTime').datebox('getValue'),
+            endTime: $('#endTime').datebox('getValue')
+        });
     })
     function doSearch(){
             $('#tab').datagrid('load',{
