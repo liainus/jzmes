@@ -219,7 +219,7 @@ def userManagerFindByOrganiza():
             return json.dumps([{"status": "Error:"+ str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 #权限分配
-@app.route('/roleright')
+@app.route('/permission/roleright')
 def roleright():
     return render_template('roleRight.html')
 
@@ -239,7 +239,7 @@ def roleList():
             return json.dumps([{"status": "Error:"+ str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 # 权限分配下的角色列表
-@app.route('/userlist')
+@app.route('/permission/userlist')
 def userList():
     if request.method == 'POST':
         data = request.values # 返回请求中的参数和form
