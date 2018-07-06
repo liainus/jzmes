@@ -243,7 +243,7 @@ def roleList():
 @app.route('/permission/userlist')
 def userList():
     # 获取用户列表
-    if request.method == 'GET':
+    if request.method == 'POST':
         data = request.values  # 返回请求中的参数和form
         try:
             json_str = json.dumps(data.to_dict())
