@@ -251,7 +251,7 @@ def roleList():
 # 权限分配下的角色列表
 @app.route('/userlist')
 def userList():
-    if request.method == 'GET':
+    if request.method == 'POST':
         data = request.values # 返回请求中的参数和form
         try:
             json_str = json.dumps(data.to_dict()) # 将传回来的json数据转为python格式
