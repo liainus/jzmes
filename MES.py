@@ -225,7 +225,7 @@ def roleright():
 
 
 # 权限分配下的角色列表
-@app.route('/rolelist')
+@app.route('permission/rolelist')
 def roleList():
     if request.method == 'GET':
         try:
