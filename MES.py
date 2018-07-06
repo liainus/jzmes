@@ -225,7 +225,7 @@ def roleright():
 
 
 # 权限分配下的角色列表
-@app.route('/permission/rolelist')
+@app.route('/rolelist')
 def roleList():
     if request.method == 'GET':
         try:
@@ -239,7 +239,7 @@ def roleList():
             return json.dumps([{"status": "Error:"+ str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 # 权限分配下的角色列表
-@app.route('/permission/userlist')
+@app.route('/userlist')
 def userList():
     if request.method == 'POST':
         data = request.values # 返回请求中的参数和form
@@ -252,9 +252,9 @@ def userList():
                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
                 # 获取当前角色名字
-                role_name = json_str['RoleName']
-                total = session.query(User).filter_by(RoleName=role_name).count()
-                users_data = session.query(User).filter_by(RoleName=role_name).all()[inipage:endpage]
+                name = json_str['ID']
+                total = session.query(User).filter_by(RoleName=name).count()
+                users_data = session.query(User).filter_by(RoleName=name).all()[inipage:endpage]
                 #ORM模型转换json格式
                 jsonusers = json.dumps(users_data, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonusers = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonusers + "}"
