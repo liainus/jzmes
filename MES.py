@@ -148,24 +148,20 @@ def syslogsFindByDate():
                 if startTime =="" and endTime == "":
                     total = session.query(SysLog).count()
                     syslogs = session.query(SysLog).all()[inipage:endpage]
-                    jsonsyslogs = json.dumps(syslogs, cls=AlchemyEncoder, ensure_ascii=False)
-                    jsonsyslogs = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonsyslogs + "}"
                 elif startTime != "" and endTime == "":
                     nowTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                     total = session.query(SysLog).filter(SysLog.OperationDate.between(startTime, nowTime)).count()
                     syslogs = session.query(SysLog).filter(SysLog.OperationDate.between(startTime, nowTime))[
                               inipage:endpage]
-                    jsonsyslogs = json.dumps(syslogs, cls=AlchemyEncoder, ensure_ascii=False)
-                    jsonsyslogs = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonsyslogs + "}"
                 else:
                     total = session.query(SysLog).filter(SysLog.OperationDate.between(startTime, endTime)).count()
                     syslogs = session.query(SysLog).filter(SysLog.OperationDate.between(startTime, endTime))[
                               inipage:endpage]
                     # sql = 'select *  from SysLog where Syslog.OperationDate BETWEEN '+"'"+ startTime +"'"+ ' AND '+"'" + endTime +"'"
 
-                    # ORM模型转换json格式
-                    jsonsyslogs = json.dumps(syslogs, cls=AlchemyEncoder, ensure_ascii=False)
-                    jsonsyslogs = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonsyslogs + "}"
+                # ORM模型转换json格式
+                jsonsyslogs = json.dumps(syslogs, cls=AlchemyEncoder, ensure_ascii=False)
+                jsonsyslogs = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonsyslogs + "}"
 
                 return jsonsyslogs
         except Exception as e:
@@ -183,8 +179,12 @@ def OrganizationsFindAll():
         data = request.values # 返回请求中的参数和form
         try:
             json_str = json.dumps(data.to_dict())
-            total = session.query(func.count(Organization.ID)).scalar()
-            organiztions = session.query(Organization).all()
+            ParentNode = data['ParentNode']
+            if ParentNode == '':
+                organiztions = session.query(Organization).filter(ParentNode == '11').all()
+            else:
+                organiztions = session.query(Organization).filter(ParentNode == ParentNode).all()
+                print(organiztions)
             #ORM模型转换json格式
             jsonorganzitions = json.dumps(organiztions, cls=AlchemyEncoder, ensure_ascii=False)
             return jsonorganzitions
