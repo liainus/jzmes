@@ -15,18 +15,17 @@
 
 <body>
 	<div style="padding:10px 0px 5px 10px;">
-	<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'">保存</a>
+	    <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'">保存</a>
 	</div>
 
 	<div style="position:absolute;display:inline-block;margin:0px;width:180px;border:1px solid #ccc;padding:10px;left:10px;">
-			<div style="width:100%;margin:0px;padding-bottom:5px;border-bottom:1px solid green;font-weight:bold;"><h3>角色列表</h3></div>
+        <div style="width:100%;margin:0px;padding-bottom:5px;border-bottom:1px solid green;font-weight:bold;"><h3>职位列表</h3></div>
 			<div style="margin:10px;"></div>
-                <ul class="easyui-tree" data-options="url:'../static/data/tree_role.json',method:'get',animate:true"></ul>
+                <ul class="easyui-tree" id="tree"></ul>
 			</div>
-			<div style="position:absolute;display:inline-block;margin:0px;width:500px;left:220px;border:1px solid #ccc;padding:10px;">
-				<div style="width:100%;margin:0px;padding-bottom:5px;border-bottom:1px solid green;font-weight:bold;"><h3>用户列表</h3></div>
+        <div style="position:absolute;display:inline-block;margin:0px;width:500px;left:220px;border:1px solid #ccc;padding:10px;">
+            <div style="width:100%;margin:0px;padding-bottom:5px;border-bottom:1px solid green;font-weight:bold;"><h3>用户列表</h3></div>
 			<div style="margin:10px;"></div>
-
 			<table class="easyui-datagrid" title="" style="width:100%" data-options="rownumbers:true,singleSelect:true,url:'../static/data/datagrid_userlist.json',method:'get',
                 rownumbers:true,
                 singleSelect:true,
@@ -48,38 +47,32 @@
 					</tr>
 				</thead>
 			</table>
-				</div>
-			
-<div style="position:absolute;display:inline-block;margin:0px;left:760px;width:300px;border:1px solid #ccc;padding:10px;">
-<div style="width:100%;margin:0px;padding-bottom:5px;border-bottom:1px solid green;font-weight:bold;"><h3>功能模块列表</h3></div>
-			<div style="margin:10px;"></div>
-<ul id="tt" class="easyui-tree" data-options="url:'../static/data/tree_module.json',method:'get',animate:true,checkbox:true"></ul>
-</div>
-
-
-
+        </div>
+        <div style="position:absolute;display:inline-block;margin:0px;left:760px;width:300px;border:1px solid #ccc;padding:10px;">
+            <div style="width:100%;margin:0px;padding-bottom:5px;border-bottom:1px solid green;font-weight:bold;"><h3>功能模块列表</h3></div>
+            <div style="margin:10px;"></div>
+            <ul id="tt" class="easyui-tree" data-options="url:'../static/data/tree_module.json',method:'get',animate:true,checkbox:true"></ul>
+        </div>
 </body>
-
 </html>
 <script type="text/javascript" src="../static/js/jquery.min.js"></script>
 <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
-<!--
 <script type="text/javascript">
-	$('.easyui-tabs1').tabs({
-		tabHeight: 36
-	});
-	$(window).resize(function () {
-		$('.easyui-tabs1').tabs("resize");
-	}).resize();
-
-	var state = UM.getEditor('editor-state');
-	state.setWidth("98%");
-	state.setHeight(150);
-	$(".edui-body-container").css("width", "98%");
-
-</script>-->
-
-<script type="text/javascript">
+    $(function(){
+        $("#tree").tree({
+            url:'/rolelist',
+            method: 'get',
+            animate:true,
+            formatter:function(data){
+                return data.RoleName;
+            },
+            onClick :function(node){
+                $('#tab').datagrid('load',{
+                    OrganizationCode: node.OrganizationCode
+                });
+            }
+        })
+    })
 	var toolbar = [{
 		text: '添加',
 		iconCls: 'icon-add',

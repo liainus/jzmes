@@ -86,20 +86,20 @@
 				pagination:true,
 				pageSize:10,
 				singleSelect:false,
-                url:'../static/data/datagrid_userlist.json',
+                url:'/userManagerFindByOrganiza',
                 method:'get',
                 toolbar:toolbar">
 				<thead>
 					<tr>
                         <th field="ck" checkbox="true"></th>
-						<th data-options="field:'id',width:80,align:'center'">ID</th>
-						<th data-options="field:'username',width:200,align:'center'">用户名</th>
-						<th data-options="field:'loginname',width:100,align:'center'">登录账号</th>
-						<th data-options="field:'status',width:80,align:'center'">状态</th>
-						<th data-options="field:'creater',width:120,align:'center'">创建用户</th>
-						<th data-options="field:'createtime',width:120,align:'center'">创建时间</th>
-						<th data-options="field:'lastlogintime',width:120,align:'center'">上次登录时间</th>
-						<th data-options="field:'islock',width:80,align:'center'">是否锁定</th>
+						<th data-options="field:'ID',width:80,align:'center'">ID</th>
+						<th data-options="field:'UserName',width:200,align:'center'">用户名</th>
+						<th data-options="field:'LoginName',width:100,align:'center'">登录账号</th>
+						<th data-options="field:'Status',width:80,align:'center'">状态</th>
+						<th data-options="field:'Creater',width:120,align:'center'">创建用户</th>
+						<th data-options="field:'CreateTime',width:120,align:'center'">创建时间</th>
+						<th data-options="field:'LastLoginTime',width:120,align:'center'">上次登录时间</th>
+						<th data-options="field:'IsLock',width:80,align:'center'">是否锁定</th>
 					</tr>
 				</thead>
 			</table>
@@ -116,18 +116,13 @@
         url:'/allOrganizations/FindAll',
         method: 'get',
         animate:true,
-        loadFilter: function(data){
-            console.log(data)
-            if (data.OrganizationName){
-                return data.OrganizationName;
-            } else {
-                return data;
-            }
+        formatter:function(data){
+            return data.OrganizationName;
         },
         onClick :function(node){
             $('#tab').datagrid('load',{
-            treeText: node.text
-        });
+                OrganizationCode: node.OrganizationCode
+            });
         }
     })
 	var toolbar = [
