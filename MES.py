@@ -173,50 +173,26 @@ def syslogsFindByDate():
 def userManager():
     return render_template('userManager.html')
 
-@app.route('/allOrganizations/FindAll')
-def OrganizationsFindAll():
+@app.route('/MyUser/Select')
+def MyUserSelect():
     if request.method == 'GET':
-        data = request.values # 返回请求中的参数和form
+        odata = request.values
         try:
-            json_str = json.dumps(data.to_dict())
-            ParentNode = data['ParentNode']
-            if ParentNode == '':
-                organiztions = session.query(Organization).filter(ParentNode == '11').all()
-            else:
-                organiztions = session.query(Organization).filter(ParentNode == ParentNode).all()
-                print(organiztions)
-            #ORM模型转换json格式
-            jsonorganzitions = json.dumps(organiztions, cls=AlchemyEncoder, ensure_ascii=False)
-            return jsonorganzitions
-        except Exception as e:
-            print(e)
-            logger.error(e)
-            return json.dumps([{"status": "Error:"+ str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
-
-#用户管理--根据组织机构查询用户列表
-@app.route('/userManagerFindByOrganiza')
-def userManagerFindByOrganiza():
-    if request.method == 'GET':
-        data = request.values # 返回请求中的参数和form
-        try:
-            json_str = json.dumps(data.to_dict())
-            print(json_str)
+            json_str = json.dumps(odata.to_dict())
             if len(json_str) > 10:
-                pages = int(data['page']) # 页数
+                pages = int(data['page'])  # 页数
                 rowsnumber = int(data['rows'])  # 行数
                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
-                OrganizationCode = data['OrganizationCode']
-                total = session.query(User).filter(User.OrganizationCode==OrganizationCode).count()
-                organiztions = session.query(User).filter(User.OrganizationCode==OrganizationCode)[inipage:endpage]
-                #ORM模型转换json格式
-                jsonorganzitions = json.dumps(organiztions, cls=AlchemyEncoder, ensure_ascii=False)
-                jsonorganzitions = '{"total"'+":"+str(total)+',"rows"' +":\n" + jsonorganzitions + "}"
-                return jsonorganzitions
+                OrganizationCode = int(odata['OrganizationCode'])
+                oclass = session.query(User).filter(User.OrganizationCode==OrganizationCode)[inipage,endpage]
+                jsondata = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
+            print(jsondata)
+            return jsondata
         except Exception as e:
             print(e)
             logger.error(e)
-            return json.dumps([{"status": "Error:"+ str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+            return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 #权限分配
 @app.route('/roleright')
@@ -224,10 +200,9 @@ def roleright():
     return render_template('roleRight.html')
 
 
-# 权限分配
+# 权限分配下的角色列表
 @app.route('/permission/rolelist')
 def roleList():
-    # 获取角色列表
     if request.method == 'GET':
         try:
             roles = session.query(Role).all()
@@ -283,28 +258,28 @@ def organizationMap():
 def organization():
     return render_template('sysOrganization.html')
 
-@app.route('/allOrganizations/Find')
-def OrganizationsFind():
-    if request.method == 'GET':
-        data = request.values # 返回请求中的参数和form
-        try:
-            json_str = json.dumps(data.to_dict())
-            print(json_str)
-            if len(json_str) > 10:
-                pages = int(data['page']) # 页数
-                rowsnumber = int(data['rows'])  # 行数
-                inipage = (pages - 1) * rowsnumber + 0  # 起始页
-                endpage = (pages-1) * rowsnumber + rowsnumber #截止页
-                total = session.query(func.count(Organization.ID)).scalar()
-                organiztions = session.query(Organization).all()[inipage:endpage]
-                #ORM模型转换json格式
-                jsonorganzitions = json.dumps(organiztions, cls=AlchemyEncoder, ensure_ascii=False)
-                jsonorganzitions = '{"total"'+":"+str(total)+',"rows"' +":\n" + jsonorganzitions + "}"
-                return jsonorganzitions
-        except Exception as e:
-            print(e)
-            logger.error(e)
-            return json.dumps([{"status": "Error:"+ str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+# @app.route('/allOrganizations/Find')
+# def OrganizationsFind():
+#     if request.method == 'GET':
+#         data = request.values # 返回请求中的参数和form
+#         try:
+#             json_str = json.dumps(data.to_dict())
+#             print(json_str)
+#             if len(json_str) > 10:
+#                 pages = int(data['page']) # 页数
+#                 rowsnumber = int(data['rows'])  # 行数
+#                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
+#                 endpage = (pages-1) * rowsnumber + rowsnumber #截止页
+#                 total = session.query(func.count(Organization.ID)).scalar()
+#                 organiztions = session.query(Organization).all()[inipage:endpage]
+#                 #ORM模型转换json格式
+#                 jsonorganzitions = json.dumps(organiztions, cls=AlchemyEncoder, ensure_ascii=False)
+#                 jsonorganzitions = '{"total"'+":"+str(total)+',"rows"' +":\n" + jsonorganzitions + "}"
+#                 return jsonorganzitions
+#         except Exception as e:
+#             print(e)
+#             logger.error(e)
+#             return json.dumps([{"status": "Error:"+ str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 # role更新数据，通过传入的json数据，解析之后进行相应更新
 @app.route('/allOrganizations/Update', methods=['POST', 'GET'])
