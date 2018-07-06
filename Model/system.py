@@ -152,6 +152,8 @@ class User(Base):
     IsLock = Column(BIT, primary_key=False, autoincrement=False, nullable=True)
     #所属组织
     OrganizationCode = Column(Unicode(100), primary_key=False, autoincrement=False, nullable=True)
+    # 角色编码:
+    RoleCode = Column(String(100), primary_key=False, autoincrement=False, nullable=True)
 
 
     # roles = relationship("Role", secondary=UserToRole.__table__)
