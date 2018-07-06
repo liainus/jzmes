@@ -26,7 +26,7 @@
         <div style="position:absolute;display:inline-block;margin:0px;width:500px;left:220px;border:1px solid #ccc;padding:10px;">
             <div style="width:100%;margin:0px;padding-bottom:5px;border-bottom:1px solid green;font-weight:bold;"><h3>用户列表</h3></div>
 			<div style="margin:10px;"></div>
-			<table class="easyui-datagrid" title="" style="width:100%" data-options="rownumbers:true,singleSelect:true,url:'/permission/userlist',method:'post',
+			<table class="easyui-datagrid" id="tab" title="" style="width:100%" data-options="rownumbers:true,singleSelect:true,url:'/permission/userlist',method:'get',
                 rownumbers:true,
                 singleSelect:true,
                 autoRowHeight:false,
@@ -68,7 +68,7 @@
             },
             onClick :function(node){
                 $('#tab').datagrid('load',{
-                    OrganizationCode: node.OrganizationCode
+                    RoleCode: node.RoleCode
                 });
             }
         })
