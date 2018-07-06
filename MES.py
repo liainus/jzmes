@@ -224,12 +224,13 @@ def roleright():
     return render_template('roleRight.html')
 
 
-# 权限分配下的角色列表
+# 权限分配
 @app.route('/permission/rolelist')
 def roleList():
+    # 获取角色列表
     if request.method == 'GET':
         try:
-            roles = session.query(Role).all()    #[inipage:endpage]
+            roles = session.query(Role).all()
             #ORM模型转换json格式
             jsonoroles = json.dumps(roles, cls=AlchemyEncoder, ensure_ascii=False)
             return jsonoroles
@@ -241,28 +242,30 @@ def roleList():
 # 权限分配下的角色列表
 @app.route('/permission/userlist')
 def userList():
-    if request.method == 'POST':
-        data = request.values # 返回请求中的参数和form
+    # 获取用户列表
+    if request.method == 'GET':
+        data = request.values  # 返回请求中的参数和form
         try:
-            json_str = json.dumps(data.to_dict()) # 将传回来的json数据转为python格式
+            json_str = json.dumps(data.to_dict())
             print(json_str)
             if len(json_str) > 10:
-                pages = int(data['page']) # 页数
+                pages = int(data['page'])  # 页数
                 rowsnumber = int(data['rows'])  # 行数
                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
                 # 获取当前角色名字
-                role_code = json_str['RoleCode']
+                role_code = data['RoleCode']
                 total = session.query(User).filter_by(RoleCode=role_code).count()
                 users_data = session.query(User).filter_by(RoleCode=role_code).all()[inipage:endpage]
-                #ORM模型转换json格式
+                # ORM模型转换json格式
                 jsonusers = json.dumps(users_data, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonusers = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonusers + "}"
                 return jsonusers
         except Exception as e:
             print(e)
             logger.error(e)
-            return json.dumps([{"status": "Error:"+ str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+            return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
 
 # 加载工作台
 # 左右滑动添加
