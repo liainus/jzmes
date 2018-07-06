@@ -252,9 +252,15 @@ def userList():
                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
                 # 获取当前角色名字
+
                 name = json_str['ID']
                 total = session.query(User).filter_by(RoleName=name).count()
                 users_data = session.query(User).filter_by(RoleName=name).all()[inipage:endpage]
+
+                role_code = json_str['RoleCode']
+                total = session.query(User).filter_by(RoleCode=role_code).count()
+                users_data = session.query(User).filter_by(RoleCode=role_code).all()[inipage:endpage]
+
                 #ORM模型转换json格式
                 jsonusers = json.dumps(users_data, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonusers = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonusers + "}"
