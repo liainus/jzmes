@@ -225,11 +225,11 @@ def roleright():
 
 
 # 权限分配下的角色列表
-@app.route('permission/rolelist')
+@app.route('/rolelist')
 def roleList():
     if request.method == 'GET':
         try:
-            roles = session.query(Role).all()
+            roles = session.query(Role).all()    #[inipage:endpage]
             #ORM模型转换json格式
             jsonoroles = json.dumps(roles, cls=AlchemyEncoder, ensure_ascii=False)
             return jsonoroles
@@ -239,7 +239,7 @@ def roleList():
             return json.dumps([{"status": "Error:"+ str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 # 权限分配下的角色列表
-@app.route('permission/userlist')
+@app.route('/userlist')
 def userList():
     if request.method == 'POST':
         data = request.values # 返回请求中的参数和form
