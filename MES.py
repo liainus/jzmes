@@ -15,7 +15,7 @@ from sqlalchemy.orm import sessionmaker, relationship
 import Model.Global
 from Model.BSFramwork import AlchemyEncoder
 from Model.core import Enterprise, Area, Factory, ProductLine, ProcessUnit, Equipment
-from Model.system import Role, Organization
+from Model.system import Role, Organization,User
 from tools.MESLogger import MESLogger
 from Model.core import SysLog
 from sqlalchemy import create_engine, Column,ForeignKey, Table, DateTime, Integer, String
@@ -176,6 +176,47 @@ def syslogsFindByDate():
 @app.route('/userManager')
 def userManager():
     return render_template('userManager.html')
+
+@app.route('/allOrganizations/FindAll')
+def OrganizationsFindAll():
+    if request.method == 'GET':
+        data = request.values # 返回请求中的参数和form
+        try:
+            json_str = json.dumps(data.to_dict())
+            total = session.query(func.count(Organization.ID)).scalar()
+            organiztions = session.query(Organization).all()
+            #ORM模型转换json格式
+            jsonorganzitions = json.dumps(organiztions, cls=AlchemyEncoder, ensure_ascii=False)
+            return jsonorganzitions
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            return json.dumps([{"status": "Error:"+ str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
+#用户管理--根据组织机构查询用户列表
+@app.route('/userManagerFindByOrganiza')
+def userManagerFindByOrganiza():
+    if request.method == 'GET':
+        data = request.values # 返回请求中的参数和form
+        try:
+            json_str = json.dumps(data.to_dict())
+            print(json_str)
+            if len(json_str) > 10:
+                pages = int(data['page']) # 页数
+                rowsnumber = int(data['rows'])  # 行数
+                inipage = (pages - 1) * rowsnumber + 0  # 起始页
+                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+                OrganizationCode = data['OrganizationCode']
+                total = session.query(User).filter(User.OrganizationCode==OrganizationCode).count()
+                organiztions = session.query(User).filter(User.OrganizationCode==OrganizationCode)[inipage:endpage]
+                #ORM模型转换json格式
+                jsonorganzitions = json.dumps(organiztions, cls=AlchemyEncoder, ensure_ascii=False)
+                jsonorganzitions = '{"total"'+":"+str(total)+',"rows"' +":\n" + jsonorganzitions + "}"
+                return jsonorganzitions
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            return json.dumps([{"status": "Error:"+ str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 #权限分配
 @app.route('/roleright')
