@@ -238,8 +238,12 @@ def roleList():
             print(e)
             logger.error(e)
             return json.dumps([{"status": "Error:"+ str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
+# 权限分配下的角色列表
+@app.route('/permission/userlist')
+def userList():
     # 获取用户列表
-    if request.method == 'POST':
+    if request.method == 'GET':
         data = request.values  # 返回请求中的参数和form
         try:
             json_str = json.dumps(data.to_dict())
@@ -250,7 +254,7 @@ def roleList():
                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
                 # 获取当前角色名字
-                role_code = json_str['RoleCode']
+                role_code = data['RoleCode']
                 total = session.query(User).filter_by(RoleCode=role_code).count()
                 users_data = session.query(User).filter_by(RoleCode=role_code).all()[inipage:endpage]
                 # ORM模型转换json格式
@@ -261,11 +265,6 @@ def roleList():
             print(e)
             logger.error(e)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
-
-# 权限分配下的角色列表
-@app.route('/permission/userlist')
-def userList():
-    pass
 
 
 # 加载工作台
