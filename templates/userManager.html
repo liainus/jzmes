@@ -14,7 +14,7 @@
 <body>
 	<div class="container">
 		<div class="left-tree" >
-            <ul class="easyui-tree" id="tree"></ul>
+            <ul class="easyui-tree" id="tree" data-options="url:'/Organization/Find',method:'get',animate:true"></ul>
 		</div>
 		<div class="content">
 			<div class="column"><span class="current">用户列表</span></div>
@@ -114,13 +114,6 @@
 <script type="text/javascript">
 {#    树形菜单点击事件#}
     $("#tree").tree({
-        url:'/Organization/Find',
-        method: 'get',
-        animate:true,
-        formatter:function(data){
-            console.log(data)
-            return data.OrganizationName
-        },
         onClick :function(node){
             $('#tab').datagrid('load',{
                 OrganizationCode: node.OrganizationCode
