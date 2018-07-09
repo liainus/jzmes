@@ -9,22 +9,15 @@
     <link href="../static/kendo/styles/kendo.default.min.css" rel="stylesheet">
     <link href="../static/kendo/styles/kendo.dataviz.min.css" rel="stylesheet">
     <link href="../static/kendo/styles/kendo.dataviz.default.min.css" rel="stylesheet">
+</head>
+<body>
+    <div id="example">
+        <div id="diagram"></div>
+    </div>
     <script src="../static/kendo/js/jquery.min.js"></script>
     <script src="../static/kendo/js/jszip.min.js"></script>
     <script src="../static/kendo/js/kendo.all.min.js"></script>
     <script src="../static/kendo/content/shared/js/console.js"></script>
-    <script>
-        
-    </script>
-    
-    
-</head>
-<body>
-    
-        <a class="offline-button" href="../index.html">Back</a>
-    
-    <div id="example">
-    <div id="diagram"></div>
     <script>
         var data = [{
             firstName: "名字",
@@ -73,13 +66,10 @@
                 }]
             }]
         }];
-
-
         function visualTemplate(options) {
             var dataviz = kendo.dataviz;
             var g = new dataviz.diagram.Group();
             var dataItem = options.dataItem;
-
             g.append(new dataviz.diagram.Rectangle({
                 width: 210,
                 height: 75,
@@ -101,21 +91,18 @@
                     }
                 }
             }));
-
             g.append(new dataviz.diagram.TextBlock({
                 text: dataItem.firstName,// + " " + dataItem.lastName,
                 x: 85,
                 y: 20,
                 fill: "#fff"
             }));
-
             g.append(new dataviz.diagram.TextBlock({
                 text: dataItem.title,
                 x: 85,
                 y: 30,
                 fill: "#fff"
             }));
-
             g.append(new dataviz.diagram.Image({
                 source: "../static/kendo/content/dataviz/diagram/people/" + dataItem.image,
                 x: 3,
@@ -123,12 +110,8 @@
                 width: 68,
                 height: 68
             }));
-
             return g;
         }
-
-
-
         function createDiagram() {
             var structdata = "";
             var jsondata = "";
@@ -166,15 +149,12 @@
                     }
                 }
             });
-
-
             var datare
             testdataSource.fetch(function () {
                 datare = testdataSource.data();
                 {#                dataarray = JSON.parse(datare)#}
 
                 var arJson = new Array();
-
                 function refining(datare, arJson) {//将嵌套的JSON对象遍历出来，转为二维数组
                     for (var i = 0, j = arJson.length; i < datare.length; i++) {
                         arJson[j] = {
@@ -192,7 +172,6 @@
                         }
                     }
                 };
-
                     refining(datare, arJson);
                     console.log(datare.length);  // displays "77"
                     console.log(testdataSource.data);
@@ -200,8 +179,7 @@
                     console.log(arJson);
                     console.log(data);
                     console.log(datare); // displays "Ch
-                    console.log(datare[0].items); // displays "Chai"
-
+                    //console.log(datare[0].items); // displays "Chai"
 
                 $("#diagram").kendoDiagram({
                     dataSource: arJson,
@@ -229,9 +207,5 @@
         }
           $(document).ready(createDiagram);
     </script>
-</div>
-
-
-    
 </body>
 </html>
