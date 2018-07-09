@@ -180,15 +180,21 @@ def MyUserSelect():
         try:
             json_str = json.dumps(odata.to_dict())
             if len(json_str) > 10:
-                pages = int(data['page'])  # 页数
-                rowsnumber = int(data['rows'])  # 行数
+                pages = int(odata['page'])  # 页数
+                rowsnumber = int(odata['rows'])  # 行数
                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
-                OrganizationCode = int(odata['OrganizationCode'])
-                oclass = session.query(User).filter(User.OrganizationCode==OrganizationCode)[inipage,endpage]
-                jsondata = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
-            print(jsondata)
-            return jsondata
+                OrganizationCode = odata['OrganizationCode']
+                if OrganizationCode == '':
+                    total = session.query(User).count()
+                    oclass = session.query(User)[inipage:endpage]
+                else:
+                    total = session.query(User).filter(User.OrganizationCode == OrganizationCode).count()
+                    oclass = session.query(User).filter(User.OrganizationCode == OrganizationCode)[inipage:endpage]
+                jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
+                jsonoclass = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
+            print(jsonoclass)
+            return jsonoclass
         except Exception as e:
             print(e)
             logger.error(e)
@@ -1577,10 +1583,10 @@ def getMyOrganizationChildren(id=0):
         srep =',' + 'items'+ ':' + '[]'
         # data = string(sz)
         # data.replace(srep, '')
+
         return sz
     except Exception as e:
         print(e)
-        logger.error(e)
         return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 def getMyEnterprise(id=0):

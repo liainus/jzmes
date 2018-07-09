@@ -114,12 +114,11 @@
 <script type="text/javascript">
 {#    树形菜单点击事件#}
     $("#tree").tree({
-        url:'/Organization/Find',
+        url:'/MyOp',
         method: 'get',
         animate:true,
-        formatter:function(data){
-            console.log(data)
-            return data.OrganizationName
+        loadfilter:function(data){
+            return dadta
         },
         onClick :function(node){
             $('#tab').datagrid('load',{
