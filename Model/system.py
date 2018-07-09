@@ -85,7 +85,8 @@ class Permission(Base):
     Creator = Column(String(50),nullable=True)
     # 与菜单建立一对一关系
     Menu = relationship("Menu", back_populates="Menu")
-
+    # 查询角色
+    Role = relationship('Role', secondary=Permission_Role)
 
 # 用户与角色关联表
 User_Role = Table('User_Role',Base.metadata,
@@ -163,6 +164,8 @@ class Role(Base):
     CreateDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
     # 查询用户
     Users = relationship('User', secondary=User_Role)
+    # 查询权限
+    Permission = relationship("Permission", secondary=Permission_Role)
 
 
 # 生成表单的执行语句
