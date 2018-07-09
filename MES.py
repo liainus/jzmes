@@ -5,7 +5,7 @@ import re
 import string
 import time
 from collections import Counter
-from flask import Flask, jsonify
+from flask import Flask, jsonify, redirect, url_for
 from flask import render_template, request
 from sqlalchemy import create_engine, Column, ForeignKey, Table, DateTime, Integer, String
 from sqlalchemy import func
@@ -15,7 +15,7 @@ from sqlalchemy.orm import sessionmaker, relationship
 import Model.Global
 from Model.BSFramwork import AlchemyEncoder
 from Model.core import Enterprise, Area, Factory, ProductLine, ProcessUnit, Equipment
-from Model.system import Role, Organization,User
+from Model.system import Role, Organization,User, Permission
 from tools.MESLogger import MESLogger
 from Model.core import SysLog
 from sqlalchemy import create_engine, Column,ForeignKey, Table, DateTime, Integer, String
@@ -38,11 +38,12 @@ from Model.system import User
 # }
 # 获取本文件名实例化一个flask对象
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'AHAHAAHAHAHA'
+# app.config['SECRET_KEY'] = 'AHAHAAHAHAHA'
 
 
 engine = create_engine(Model.Global.GLOBAL_DATABASE_CONNECT_STRING, deprecate_large_types=True)
-session = sessionmaker(bind=engine)()
+Session = sessionmaker(bind=engine)
+session = Session()
 
 logger = MESLogger('../logs','log')
 
@@ -224,22 +225,23 @@ def roleright():
     return render_template('roleRight.html')
 
 
-# 权限分配
+# 权限分配下的角色列表
 @app.route('/permission/rolelist')
 def roleList():
     # 获取角色列表
     if request.method == 'GET':
         try:
-            roles = session.query(Role).all()
+            roles = session.query(Role.RoleName, Role.ID).all()
             #ORM模型转换json格式
             jsonoroles = json.dumps(roles, cls=AlchemyEncoder, ensure_ascii=False)
+            print(jsonoroles,type(jsonoroles))
             return jsonoroles
         except Exception as e:
             print(e)
             logger.error(e)
             return json.dumps([{"status": "Error:"+ str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
-# 权限分配下的角色列表
+# 权限分配下的用户列表
 @app.route('/permission/userlist')
 def userList():
     # 获取用户列表
@@ -254,9 +256,9 @@ def userList():
                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
                 # 获取当前角色名字
-                role_code = data['RoleCode']
-                total = session.query(User).filter_by(RoleCode=role_code).count()
-                users_data = session.query(User).filter_by(RoleCode=role_code).all()[inipage:endpage]
+                role_id = data['ID']
+                total = session.query(User).filter_by(ID=role_id).count()
+                users_data = session.query(User).filter_by(ID=role_id).all()[inipage:endpage]
                 # ORM模型转换json格式
                 jsonusers = json.dumps(users_data, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonusers = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonusers + "}"
@@ -265,6 +267,31 @@ def userList():
             print(e)
             logger.error(e)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
+# 权限分配下为角色添加权限
+@app.route('/permission/permissionToRole')
+def permissionToRole():
+    if request.method == 'GET':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            # 获取权限和角色并存入数据库
+            role_id = data['ID'] # 获取角色ID
+            permission_id = data['Per_ID'] # 获取权限ID
+            permission = session.query(Permission).filter_by(Per_ID=permission_id).first() # 查询当前权限
+            role = session.query(Role).filter_by(ID=role_id).first() # 查询当前角色
+            if permission is None or role is None: # 判断当前角色或权限是否为空
+                return
+            # 将权限ID和角色ID存入PermissionToRole
+            permission.Roles.append(role)
+            session.add(permission)
+            session.commit()
+            # 存入数据库后跳转到权限分配页面
+            return redirect(url_for("roleright"))
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
 
 
 # 加载工作台
