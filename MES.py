@@ -208,7 +208,6 @@ def MyUserSelect():
                     oclass = session.query(User).all()[inipage:endpage]
                 jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonoclass = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
-            print(jsonoclass)
             return jsonoclass
         except Exception as e:
             print(e)
