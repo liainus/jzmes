@@ -121,8 +121,9 @@
             return data
         },
         onClick :function(node){
+            var code = node.id
             $('#tab').datagrid('load',{
-                OrganizationCode: node.OrganizationCode
+                OrganizationCode: code
             });
         }
     })

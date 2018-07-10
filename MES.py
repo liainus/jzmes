@@ -15,10 +15,10 @@ from sqlalchemy.orm import sessionmaker, relationship
 import Model.Global
 from Model.BSFramwork import AlchemyEncoder
 from Model.core import Enterprise, Area, Factory, ProductLine, ProcessUnit, Equipment
-from Model.system import Role, Organization,User, Permission
+from Model.system import Role, Organization, User
 from tools.MESLogger import MESLogger
 from Model.core import SysLog
-from sqlalchemy import create_engine, Column,ForeignKey, Table, DateTime, Integer, String
+from sqlalchemy import create_engine, Column, ForeignKey, Table, DateTime, Integer, String
 from sqlalchemy import func
 from sqlalchemy.ext.declarative import DeclarativeMeta
 import string
@@ -27,6 +27,7 @@ from collections import Counter
 from Model.account import login_security
 from flask import session as cli_session
 from Model.system import User
+
 # from flask_cache import Cache
 #
 # # redis配置
@@ -46,29 +47,34 @@ engine = create_engine(Model.Global.GLOBAL_DATABASE_CONNECT_STRING, deprecate_la
 Session = sessionmaker(bind=engine)
 session = Session()
 
-logger = MESLogger('../logs','log')
+logger = MESLogger('../logs', 'log')
+
 
 # 存储
 def store(data):
     # 调用__enter__函数，该函数把返回值传给变量json_file
-    with open('data.json',encoding='gbk') as json_file:
+    with open('data.json', encoding='gbk') as json_file:
         # 将python数据进行json编码并写入json文件对象中
-        json_file.write(json.dumps(data))# 该语句结束后执行__exit__，它将对异常进行监控和处理
+        json_file.write(json.dumps(data))  # 该语句结束后执行__exit__，它将对异常进行监控和处理
 
-#重写load
+
+# 重写load
 def load():
-    with open('D:\Python\JZMES\MicroMES\static\data\datagrid_organization.json',encoding='utf-8') as json_file:
+    with open('D:\Python\JZMES\MicroMES\static\data\datagrid_organization.json', encoding='utf-8') as json_file:
         data = json.load(json_file)
         return data
 
+
 '''登录'''
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'Get':
         return render_template('login.html')
 
     if request.method == 'POST':
-        job_number  = request.form['job_number']
+        job_number = request.form['job_number']
         password = request.form['password']
         security_status = request.form['security_status']  # 获取ajax传的验证码状态码
 
@@ -84,18 +90,20 @@ def login():
             return render_template('main.html')
         return json.dumps({'status': 400, 'msg': result['msg']})
 
+
 # 退出
-@app.route('/logout', methods=['GET','POST'])
+@app.route('/logout', methods=['GET', 'POST'])
 def logout():
     cli_session.pop('job_number', None)
     return render_template('login.html')
 
 
-
 '''注册'''
+
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    if  request.method == 'GET':
+    if request.method == 'GET':
         render_template('register.html')
 
     if request.method == 'POST':
@@ -119,11 +127,7 @@ def register():
         return render_template('register.html', message=result['msg'])
 
 
-
-
-
-
-#系统日志
+# 系统日志
 @app.route('/syslogs')
 def syslogs():
     return render_template('syslogs.html')
@@ -132,7 +136,7 @@ def syslogs():
 @app.route('/syslogs/findByDate')
 def syslogsFindByDate():
     if request.method == 'GET':
-        data = request.values # 返回请求中的参数和form
+        data = request.values  # 返回请求中的参数和form
         try:
             json_str = json.dumps(data.to_dict())
             print(json_str)
@@ -141,13 +145,13 @@ def syslogsFindByDate():
                 rowsnumber = int(data['rows'])  # 行数
                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
-                startTime = data['startTime'] #开始时间
+                startTime = data['startTime']  # 开始时间
                 endTime = data['endTime']  # 结束时间
                 # startTime = datetime.datetime.strptime(startTime, "%Y-%m-%d %H:%M:%S")
                 # endTime = datetime.datetime.strptime(endTime, "%Y-%m-%d %H:%M:%S")
 
 
-                if startTime =="" and endTime == "":
+                if startTime == "" and endTime == "":
                     total = session.query(SysLog).count()
                     syslogs = session.query(SysLog).all()[inipage:endpage]
                 elif startTime != "" and endTime == "":
@@ -169,11 +173,14 @@ def syslogsFindByDate():
         except Exception as e:
             print(e)
             logger.error(e)
-            return json.dumps([{"status": "Error:"+ str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
-#用户管理
+            return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
+
+# 用户管理
 @app.route('/userManager')
 def userManager():
     return render_template('userManager.html')
+
 
 @app.route('/MyUser/Select')
 def MyUserSelect():
@@ -202,7 +209,8 @@ def MyUserSelect():
             logger.error(e)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
-#权限分配
+
+# 权限分配
 @app.route('/roleright')
 def roleright():
     return render_template('roleRight.html')
@@ -213,17 +221,25 @@ def roleright():
 def roleList():
     if request.method == 'GET':
         try:
+<<<<<<< HEAD
             roles = session.query(Role).all()
             print(roles)
             #ORM模型转换json格式
             #jsonoroles = jsonify(roles)
             jsonoroles = json.dumps(roles, cls=AlchemyEncoder, ensure_ascii=False)  #加ensure_ascii=False能够防止中文乱码
             print(jsonoroles)
+=======
+            roles = session.query(Role.RoleName, Role.ID).all()
+            # ORM模型转换json格式
+            jsonoroles = json.dumps(roles, cls=AlchemyEncoder, ensure_ascii=False)
+            print(jsonoroles, type(jsonoroles))
+>>>>>>> 8fb953be4fbc468b526a1907d7b8a2cb55ecf51f
             return jsonoroles
         except Exception as e:
             print(e)
             logger.error(e)
-            return json.dumps([{"status": "Error:"+ str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+            return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
 
 # 权限分配下的用户列表
 @app.route('/permission/userlist')
@@ -255,6 +271,7 @@ def userList():
             logger.error(e)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
+
 # 权限分配下为角色添加权限
 @app.route('/permission/permissionToRole')
 def permissionToRole():
@@ -262,11 +279,11 @@ def permissionToRole():
         data = request.values  # 返回请求中的参数和form
         try:
             # 获取权限和角色并存入数据库
-            role_id = data['ID'] # 获取角色ID
-            permission_id = data['Per_ID'] # 获取权限ID
-            permission = session.query(Permission).filter_by(Per_ID=permission_id).first() # 查询当前权限
-            role = session.query(Role).filter_by(ID=role_id).first() # 查询当前角色
-            if permission is None or role is None: # 判断当前角色或权限是否为空
+            role_id = data['ID']  # 获取角色ID
+            permission_id = data['Per_ID']  # 获取权限ID
+            permission = session.query(Permission).filter_by(Per_ID=permission_id).first()  # 查询当前权限
+            role = session.query(Role).filter_by(ID=role_id).first()  # 查询当前角色
+            if permission is None or role is None:  # 判断当前角色或权限是否为空
                 return
             # 将权限ID和角色ID存入PermissionToRole
             permission.Roles.append(role)
@@ -280,45 +297,47 @@ def permissionToRole():
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
-
 # 加载工作台
 # 左右滑动添加
-@app.route('/batchmanager')#批次管理
+@app.route('/batchmanager')  # 批次管理
 def batchmanager():
     return render_template('batch_manager.html')
+
 
 # 加载工作台
 @app.route('/organizationMap')
 def organizationMap():
     return render_template('index_organization.html')
 
-#加载工作台
+
+# 加载工作台
 @app.route('/organization')
 def organization():
     return render_template('sysOrganization.html')
 
-# @app.route('/allOrganizations/Find')
-# def OrganizationsFind():
-#     if request.method == 'GET':
-#         data = request.values # 返回请求中的参数和form
-#         try:
-#             json_str = json.dumps(data.to_dict())
-#             print(json_str)
-#             if len(json_str) > 10:
-#                 pages = int(data['page']) # 页数
-#                 rowsnumber = int(data['rows'])  # 行数
-#                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
-#                 endpage = (pages-1) * rowsnumber + rowsnumber #截止页
-#                 total = session.query(func.count(Organization.ID)).scalar()
-#                 organiztions = session.query(Organization).all()[inipage:endpage]
-#                 #ORM模型转换json格式
-#                 jsonorganzitions = json.dumps(organiztions, cls=AlchemyEncoder, ensure_ascii=False)
-#                 jsonorganzitions = '{"total"'+":"+str(total)+',"rows"' +":\n" + jsonorganzitions + "}"
-#                 return jsonorganzitions
-#         except Exception as e:
-#             print(e)
-#             logger.error(e)
-#             return json.dumps([{"status": "Error:"+ str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
+@app.route('/allOrganizations/Find')
+def OrganizationsFind():
+    if request.method == 'GET':
+        data = request.values # 返回请求中的参数和form
+        try:
+            json_str = json.dumps(data.to_dict())
+            print(json_str)
+            if len(json_str) > 10:
+                pages = int(data['page']) # 页数
+                rowsnumber = int(data['rows'])  # 行数
+                inipage = (pages - 1) * rowsnumber + 0  # 起始页
+                endpage = (pages-1) * rowsnumber + rowsnumber #截止页
+                total = session.query(func.count(Organization.ID)).scalar()
+                organiztions = session.query(Organization).all()[inipage:endpage]
+                #ORM模型转换json格式
+                jsonorganzitions = json.dumps(organiztions, cls=AlchemyEncoder, ensure_ascii=False)
+                jsonorganzitions = '{"total"'+":"+str(total)+',"rows"' +":\n" + jsonorganzitions + "}"
+                return jsonorganzitions
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            return json.dumps([{"status": "Error:"+ str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 # role更新数据，通过传入的json数据，解析之后进行相应更新
 @app.route('/allOrganizations/Update', methods=['POST', 'GET'])
@@ -343,11 +362,12 @@ def allOrganizationsUpdate():
                 organization.Color = data['Color']
                 session.commit()
                 return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=AlchemyEncoder,
-                                          ensure_ascii=False)
+                                  ensure_ascii=False)
         except Exception as e:
             print(e)
             logger.error(e)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
 
 # role删除数据，通过传入的json数据，json数据只包含主键，解析之后进行相应更新
 # 解析方法：主键为数字，通过正则表达式把数字筛选出来，进行相应操作
@@ -356,12 +376,12 @@ def allOrganizationsDelete():
     if request.method == 'POST':
         data = request.values
         try:
-        #   jsonDict = data.to_dict(
+            #   jsonDict = data.to_dict(
             jsonstr = json.dumps(data.to_dict())
             if len(jsonstr) > 10:
                 jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
                 for key in jsonnumber:
-                        # for subkey in list(key):
+                    # for subkey in list(key):
                     Organizationid = int(key)
                     try:
                         organization = session.query(Organization).filter_by(ID=Organizationid).delete()
@@ -369,14 +389,15 @@ def allOrganizationsDelete():
                         print(ee)
                         logger.error(ee)
                         return json.dumps([{"status": "error:" + string(ee)}], cls=AlchemyEncoder,
-                                                      ensure_ascii=False)
+                                          ensure_ascii=False)
                 return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=AlchemyEncoder,
-                                              ensure_ascii=False)
+                                  ensure_ascii=False)
         except Exception as e:
             print(e)
             logger.error(e)
             # return json.dumps([{"status": "Error"+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
 
 # role创建数据，通过传入的json数据，解析之后进行相应更新
 @app.route('/allOrganizations/Create', methods=['POST', 'GET'])
@@ -407,6 +428,7 @@ def allOrganizationsCreate():
             logger.error(e)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
+
 @app.route('/allOrganizations/Search', methods=['POST', 'GET'])
 def allOrganizationsSearch():
     if request.method == 'POST':
@@ -424,13 +446,13 @@ def allOrganizationsSearch():
             print(e)
             logger.error(e)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
-        
-        
-        
-#加载工作台
+
+
+# 加载工作台
 @app.route('/Enterprise')
 def Enterprise():
     return render_template('sysEnterprise.html')
+
 
 @app.route('/allEnterprises/Find')
 def EnterprisesFind():
@@ -439,6 +461,7 @@ def EnterprisesFind():
         EnterpriseIFS = Model.core.EnterpriseWebIFS("EnterpriseFind")
         re = EnterpriseIFS.EnterprisesFind(data)
         return re
+
 
 # role更新数据，通过传入的json数据，解析之后进行相应更新
 @app.route('/allEnterprises/Update', methods=['POST', 'GET'])
@@ -449,6 +472,7 @@ def allEnterprisesUpdate():
         re = EnterpriseIFS.allEnterprisesUpdate(data)
         return re
 
+
 # role删除数据，通过传入的json数据，json数据只包含主键，解析之后进行相应更新
 # 解析方法：主键为数字，通过正则表达式把数字筛选出来，进行相应操作
 @app.route('/allEnterprises/Delete', methods=['POST', 'GET'])
@@ -458,6 +482,7 @@ def allEnterprisesDelete():
         EnterpriseIFS = Model.core.EnterpriseWebIFS("EnterpriseDelete")
         re = EnterpriseIFS.allEnterprisesDelete(data)
         return re
+
 
 # role创建数据，通过传入的json数据，解析之后进行相应更新
 @app.route('/allEnterprises/Create', methods=['POST', 'GET'])
@@ -477,10 +502,13 @@ def allEnterprisesSearch():
         re = EnterpriseIFS.allEnterprisesSearch(data)
         return re
 
-    # 加载工作台
+        # 加载工作台
+
+
 @app.route('/Factory')
 def Factory():
     return render_template('sysFactory.html')
+
 
 @app.route('/allFactorys/Find')
 def FactorysFind():
@@ -490,6 +518,7 @@ def FactorysFind():
         re = FactoryIFS.FactorysFind(data)
         return re
 
+
 # role更新数据，通过传入的json数据，解析之后进行相应更新
 @app.route('/allFactorys/Update', methods=['POST', 'GET'])
 def allFactorysUpdate():
@@ -498,6 +527,7 @@ def allFactorysUpdate():
         FactoryIFS = Model.core.FactoryWebIFS("FactoryUpdate")
         re = FactoryIFS.allFactorysUpdate(data)
         return re
+
 
 # role删除数据，通过传入的json数据，json数据只包含主键，解析之后进行相应更新
 # 解析方法：主键为数字，通过正则表达式把数字筛选出来，进行相应操作
@@ -509,6 +539,7 @@ def allFactorysDelete():
         re = FactoryIFS.allFactorysDelete(data)
         return re
 
+
 # role创建数据，通过传入的json数据，解析之后进行相应更新
 @app.route('/allFactorys/Create', methods=['POST', 'GET'])
 def allFactorysCreate():
@@ -517,6 +548,7 @@ def allFactorysCreate():
         FactoryIFS = Model.core.FactoryWebIFS("FactoryCreate")
         re = FactoryIFS.allFactorysCreate(data)
         return re
+
 
 @app.route('/allFactorys/Search', methods=['POST', 'GET'])
 def allFactorysSearch():
@@ -527,10 +559,11 @@ def allFactorysSearch():
         return re
 
 
-#加载工作台
+# 加载工作台
 @app.route('/Area')
 def getRootArea():
     return render_template('sysArea.html')
+
 
 @app.route('/allAreas/Find')
 def AreasFind():
@@ -542,6 +575,7 @@ def AreasFind():
         logger.info(re)
         return re
 
+
 # role更新数据，通过传入的json数据，解析之后进行相应更新
 @app.route('/allAreas/Update', methods=['POST', 'GET'])
 def allAreasUpdate():
@@ -550,6 +584,7 @@ def allAreasUpdate():
         AreaIFS = Model.core.AreaWebIFS("AreaUpdate")
         re = AreaIFS.allAreasUpdate(data)
         return re
+
 
 # role删除数据，通过传入的json数据，json数据只包含主键，解析之后进行相应更新
 # 解析方法：主键为数字，通过正则表达式把数字筛选出来，进行相应操作
@@ -561,6 +596,7 @@ def allAreasDelete():
         re = AreaIFS.allAreasDelete(data)
         return re
 
+
 # role创建数据，通过传入的json数据，解析之后进行相应更新
 @app.route('/allAreas/Create', methods=['POST', 'GET'])
 def allAreasCreate():
@@ -570,6 +606,7 @@ def allAreasCreate():
         re = AreaIFS.allAreasCreate(data)
         return re
 
+
 @app.route('/allAreas/Search', methods=['POST', 'GET'])
 def allAreasSearch():
     if request.method == 'POST':
@@ -578,10 +615,12 @@ def allAreasSearch():
         re = AreaIFS.allAreasSearch(data)
         return re
 
-#加载工作台
+
+# 加载工作台
 @app.route('/ProductLine')
 def ProductLine():
     return render_template('sysProductLine.html')
+
 
 @app.route('/allProductLines/Find')
 def ProductLinesFind():
@@ -590,6 +629,7 @@ def ProductLinesFind():
         ProductLineIFS = Model.core.ProductLineWebIFS("ProductLineFind")
         re = ProductLineIFS.ProductLinesFind(data)
         return re
+
 
 # role更新数据，通过传入的json数据，解析之后进行相应更新
 @app.route('/allProductLines/Update', methods=['POST', 'GET'])
@@ -600,6 +640,7 @@ def allProductLinesUpdate():
         re = ProductLineIFS.allProductLinesUpdate(data)
         return re
 
+
 # role删除数据，通过传入的json数据，json数据只包含主键，解析之后进行相应更新
 # 解析方法：主键为数字，通过正则表达式把数字筛选出来，进行相应操作
 @app.route('/allProductLines/Delete', methods=['POST', 'GET'])
@@ -609,6 +650,7 @@ def allProductLinesDelete():
         ProductLineIFS = Model.core.ProductLineWebIFS("ProductLineDelete")
         re = ProductLineIFS.allProductLinesDelete(data)
         return re
+
 
 # role创建数据，通过传入的json数据，解析之后进行相应更新
 @app.route('/allProductLines/Create', methods=['POST', 'GET'])
@@ -627,12 +669,13 @@ def allProductLinesSearch():
         ProductLineIFS = Model.core.ProductLineWebIFS("ProductLineSearch")
         re = ProductLineIFS.allProductLinesSearch(data)
         return re
-    
-    
-#加载工作台
+
+
+# 加载工作台
 @app.route('/ProcessUnit')
 def ProcessUnit():
     return render_template('sysProcessUnit.html')
+
 
 @app.route('/allProcessUnits/Find')
 def ProcessUnitsFind():
@@ -641,6 +684,7 @@ def ProcessUnitsFind():
         ProcessUnitIFS = Model.core.ProcessUnitWebIFS("ProcessUnitFind")
         re = ProcessUnitIFS.ProcessUnitsFind(data)
         return re
+
 
 # role更新数据，通过传入的json数据，解析之后进行相应更新
 @app.route('/allProcessUnits/Update', methods=['POST', 'GET'])
@@ -651,6 +695,7 @@ def allProcessUnitsUpdate():
         re = ProcessUnitIFS.allProcessUnitsUpdate(data)
         return re
 
+
 # role删除数据，通过传入的json数据，json数据只包含主键，解析之后进行相应更新
 # 解析方法：主键为数字，通过正则表达式把数字筛选出来，进行相应操作
 @app.route('/allProcessUnits/Delete', methods=['POST', 'GET'])
@@ -660,6 +705,7 @@ def allProcessUnitsDelete():
         ProcessUnitIFS = Model.core.ProcessUnitWebIFS("ProcessUnitDelete")
         re = ProcessUnitIFS.allProcessUnitsDelete(data)
         return re
+
 
 # role创建数据，通过传入的json数据，解析之后进行相应更新
 @app.route('/allProcessUnits/Create', methods=['POST', 'GET'])
@@ -679,10 +725,12 @@ def allProcessUnitsSearch():
         re = ProcessUnitIFS.allProcessUnitsSearch(data)
         return re
 
-#加载工作台
+
+# 加载工作台
 @app.route('/Equipment')
 def Equipment():
     return render_template('sysEquipment.html')
+
 
 @app.route('/allEquipments/Find')
 def EquipmentsFind():
@@ -691,6 +739,7 @@ def EquipmentsFind():
         EquipmentIFS = Model.core.EquipmentWebIFS("EquipmentFind")
         re = EquipmentIFS.EquipmentsFind(data)
         return re
+
 
 # role更新数据，通过传入的json数据，解析之后进行相应更新
 @app.route('/allEquipments/Update', methods=['POST', 'GET'])
@@ -701,6 +750,7 @@ def allEquipmentsUpdate():
         re = EquipmentIFS.allEquipmentsUpdate(data)
         return re
 
+
 # role删除数据，通过传入的json数据，json数据只包含主键，解析之后进行相应更新
 # 解析方法：主键为数字，通过正则表达式把数字筛选出来，进行相应操作
 @app.route('/allEquipments/Delete', methods=['POST', 'GET'])
@@ -710,6 +760,7 @@ def allEquipmentsDelete():
         EquipmentIFS = Model.core.EquipmentWebIFS("EquipmentDelete")
         re = EquipmentIFS.allEquipmentsDelete(data)
         return re
+
 
 # role创建数据，通过传入的json数据，解析之后进行相应更新
 @app.route('/allEquipments/Create', methods=['POST', 'GET'])
@@ -728,11 +779,13 @@ def allEquipmentsSearch():
         EquipmentIFS = Model.core.EquipmentWebIFS("EquipmentSearch")
         re = EquipmentIFS.allEquipmentsSearch(data)
         return re
-    
-#加载工作台
+
+
+# 加载工作台
 @app.route('/ProductRule')
 def ProductRule():
     return render_template('sysProductRule.html')
+
 
 @app.route('/allProductRules/Find')
 def ProductRulesFind():
@@ -741,6 +794,7 @@ def ProductRulesFind():
         ProductRuleIFS = Model.core.ProductRuleWebIFS("ProductRuleFind")
         re = ProductRuleIFS.ProductRulesFind(data)
         return re
+
 
 # role更新数据，通过传入的json数据，解析之后进行相应更新
 @app.route('/allProductRules/Update', methods=['POST', 'GET'])
@@ -751,6 +805,7 @@ def allProductRulesUpdate():
         re = ProductRuleIFS.allProductRulesUpdate(data)
         return re
 
+
 # role删除数据，通过传入的json数据，json数据只包含主键，解析之后进行相应更新
 # 解析方法：主键为数字，通过正则表达式把数字筛选出来，进行相应操作
 @app.route('/allProductRules/Delete', methods=['POST', 'GET'])
@@ -760,6 +815,7 @@ def allProductRulesDelete():
         ProductRuleIFS = Model.core.ProductRuleWebIFS("ProductRuleDelete")
         re = ProductRuleIFS.allProductRulesDelete(data)
         return re
+
 
 # role创建数据，通过传入的json数据，解析之后进行相应更新
 @app.route('/allProductRules/Create', methods=['POST', 'GET'])
@@ -779,10 +835,12 @@ def allProductRulesSearch():
         re = ProductRuleIFS.allProductRulesSearch(data)
         return re
 
-#加载工作台
+
+# 加载工作台
 @app.route('/ZYPlan')
 def ZYPlan():
     return render_template('sysZYPlan.html')
+
 
 @app.route('/allZYPlans/Find')
 def ZYPlansFind():
@@ -792,6 +850,7 @@ def ZYPlansFind():
         re = ZYPlanIFS.ZYPlansFind(data)
         return re
 
+
 # role更新数据，通过传入的json数据，解析之后进行相应更新
 @app.route('/allZYPlans/Update', methods=['POST', 'GET'])
 def allZYPlansUpdate():
@@ -800,6 +859,7 @@ def allZYPlansUpdate():
         ZYPlanIFS = Model.core.ZYPlanWebIFS("ZYPlanUpdate")
         re = ZYPlanIFS.allZYPlansUpdate(data)
         return re
+
 
 # role删除数据，通过传入的json数据，json数据只包含主键，解析之后进行相应更新
 # 解析方法：主键为数字，通过正则表达式把数字筛选出来，进行相应操作
@@ -811,6 +871,7 @@ def allZYPlansDelete():
         re = ZYPlanIFS.allZYPlansDelete(data)
         return re
 
+
 # role创建数据，通过传入的json数据，解析之后进行相应更新
 @app.route('/allZYPlans/Create', methods=['POST', 'GET'])
 def allZYPlansCreate():
@@ -820,6 +881,7 @@ def allZYPlansCreate():
         re = ZYPlanIFS.allZYPlansCreate(data)
         return re
 
+
 @app.route('/allZYPlans/Search', methods=['POST', 'GET'])
 def allZYPlansSearch():
     if request.method == 'POST':
@@ -828,10 +890,12 @@ def allZYPlansSearch():
         re = ZYPlanIFS.allZYPlansSearch(data)
         return re
 
+
 # 加载工作台
 @app.route('/ZYTask')
 def ZYTask():
     return render_template('sysZYTask.html')
+
 
 @app.route('/allZYTasks/Find')
 def ZYTasksFind():
@@ -841,6 +905,7 @@ def ZYTasksFind():
         re = ZYTaskIFS.ZYTasksFind(data)
         return re
 
+
 # role更新数据，通过传入的json数据，解析之后进行相应更新
 @app.route('/allZYTasks/Update', methods=['POST', 'GET'])
 def allZYTasksUpdate():
@@ -849,6 +914,7 @@ def allZYTasksUpdate():
         ZYTaskIFS = Model.core.ZYTaskWebIFS("ZYTaskUpdate")
         re = ZYTaskIFS.allZYTasksUpdate(data)
         return re
+
 
 # role删除数据，通过传入的json数据，json数据只包含主键，解析之后进行相应更新
 # 解析方法：主键为数字，通过正则表达式把数字筛选出来，进行相应操作
@@ -860,6 +926,7 @@ def allZYTasksDelete():
         re = ZYTaskIFS.allZYTasksDelete(data)
         return re
 
+
 # role创建数据，通过传入的json数据，解析之后进行相应更新
 @app.route('/allZYTasks/Create', methods=['POST', 'GET'])
 def allZYTasksCreate():
@@ -869,6 +936,7 @@ def allZYTasksCreate():
         re = ZYTaskIFS.allZYTasksCreate(data)
         return re
 
+
 @app.route('/allZYTasks/Search', methods=['POST', 'GET'])
 def allZYTasksSearch():
     if request.method == 'POST':
@@ -877,10 +945,12 @@ def allZYTasksSearch():
         re = ZYTaskIFS.allZYTasksSearch(data)
         return re
 
+
 # 加载工作台
 @app.route('/ProductControlTask')
 def ProductControlTask():
     return render_template('sysProductControlTask.html')
+
 
 @app.route('/allProductControlTasks/Find')
 def ProductControlTasksFind():
@@ -890,6 +960,7 @@ def ProductControlTasksFind():
         re = ProductControlTaskIFS.ProductControlTasksFind(data)
         return re
 
+
 # role更新数据，通过传入的json数据，解析之后进行相应更新
 @app.route('/allProductControlTasks/Update', methods=['POST', 'GET'])
 def allProductControlTasksUpdate():
@@ -898,6 +969,7 @@ def allProductControlTasksUpdate():
         ProductControlTaskIFS = Model.core.ProductControlTaskWebIFS("ProductControlTaskUpdate")
         re = ProductControlTaskIFS.allProductControlTasksUpdate(data)
         return re
+
 
 # role删除数据，通过传入的json数据，json数据只包含主键，解析之后进行相应更新
 # 解析方法：主键为数字，通过正则表达式把数字筛选出来，进行相应操作
@@ -909,6 +981,7 @@ def allProductControlTasksDelete():
         re = ProductControlTaskIFS.allProductControlTasksDelete(data)
         return re
 
+
 # role创建数据，通过传入的json数据，解析之后进行相应更新
 @app.route('/allProductControlTasks/Create', methods=['POST', 'GET'])
 def allProductControlTasksCreate():
@@ -918,6 +991,7 @@ def allProductControlTasksCreate():
         re = ProductControlTaskIFS.allProductControlTasksCreate(data)
         return re
 
+
 @app.route('/allProductControlTasks/Search', methods=['POST', 'GET'])
 def allProductControlTasksSearch():
     if request.method == 'POST':
@@ -926,10 +1000,12 @@ def allProductControlTasksSearch():
         re = ProductControlTaskIFS.allProductControlTasksSearch(data)
         return re
 
+
 # 加载工作台
 @app.route('/ProductParameter')
 def ProductParameter():
     return render_template('sysProductParameter.html')
+
 
 @app.route('/allProductParameters/Find')
 def ProductParametersFind():
@@ -939,6 +1015,7 @@ def ProductParametersFind():
         re = ProductParameterIFS.ProductParametersFind(data)
         return re
 
+
 # role更新数据，通过传入的json数据，解析之后进行相应更新
 @app.route('/allProductParameters/Update', methods=['POST', 'GET'])
 def allProductParametersUpdate():
@@ -947,6 +1024,7 @@ def allProductParametersUpdate():
         ProductParameterIFS = Model.core.ProductParameterWebIFS("ProductParameterUpdate")
         re = ProductParameterIFS.allProductParametersUpdate(data)
         return re
+
 
 # role删除数据，通过传入的json数据，json数据只包含主键，解析之后进行相应更新
 # 解析方法：主键为数字，通过正则表达式把数字筛选出来，进行相应操作
@@ -958,6 +1036,7 @@ def allProductParametersDelete():
         re = ProductParameterIFS.allProductParametersDelete(data)
         return re
 
+
 # role创建数据，通过传入的json数据，解析之后进行相应更新
 @app.route('/allProductParameters/Create', methods=['POST', 'GET'])
 def allProductParametersCreate():
@@ -967,6 +1046,7 @@ def allProductParametersCreate():
         re = ProductParameterIFS.allProductParametersCreate(data)
         return re
 
+
 @app.route('/allProductParameters/Search', methods=['POST', 'GET'])
 def allProductParametersSearch():
     if request.method == 'POST':
@@ -975,10 +1055,12 @@ def allProductParametersSearch():
         re = ProductParameterIFS.allProductParametersSearch(data)
         return re
 
+
 # 加载工作台
 @app.route('/MaterialType')
 def MaterialType():
     return render_template('sysMaterialType.html')
+
 
 @app.route('/allMaterialTypes/Find')
 def MaterialTypesFind():
@@ -988,6 +1070,7 @@ def MaterialTypesFind():
         re = MaterialTypeIFS.MaterialTypesFind(data)
         return re
 
+
 # role更新数据，通过传入的json数据，解析之后进行相应更新
 @app.route('/allMaterialTypes/Update', methods=['POST', 'GET'])
 def allMaterialTypesUpdate():
@@ -996,6 +1079,7 @@ def allMaterialTypesUpdate():
         MaterialTypeIFS = Model.core.MaterialTypeWebIFS("MaterialTypeUpdate")
         re = MaterialTypeIFS.allMaterialTypesUpdate(data)
         return re
+
 
 # role删除数据，通过传入的json数据，json数据只包含主键，解析之后进行相应更新
 # 解析方法：主键为数字，通过正则表达式把数字筛选出来，进行相应操作
@@ -1007,6 +1091,7 @@ def allMaterialTypesDelete():
         re = MaterialTypeIFS.allMaterialTypesDelete(data)
         return re
 
+
 # role创建数据，通过传入的json数据，解析之后进行相应更新
 @app.route('/allMaterialTypes/Create', methods=['POST', 'GET'])
 def allMaterialTypesCreate():
@@ -1016,6 +1101,7 @@ def allMaterialTypesCreate():
         re = MaterialTypeIFS.allMaterialTypesCreate(data)
         return re
 
+
 @app.route('/allMaterialTypes/Search', methods=['POST', 'GET'])
 def allMaterialTypesSearch():
     if request.method == 'POST':
@@ -1024,10 +1110,12 @@ def allMaterialTypesSearch():
         re = MaterialTypeIFS.allMaterialTypesSearch(data)
         return re
 
+
 # 加载工作台
 @app.route('/Material')
 def Material():
     return render_template('sysMaterial.html')
+
 
 @app.route('/allMaterials/Find')
 def MaterialsFind():
@@ -1037,6 +1125,7 @@ def MaterialsFind():
         re = MaterialIFS.MaterialsFind(data)
         return re
 
+
 # role更新数据，通过传入的json数据，解析之后进行相应更新
 @app.route('/allMaterials/Update', methods=['POST', 'GET'])
 def allMaterialsUpdate():
@@ -1045,6 +1134,7 @@ def allMaterialsUpdate():
         MaterialIFS = Model.core.MaterialWebIFS("MaterialUpdate")
         re = MaterialIFS.allMaterialsUpdate(data)
         return re
+
 
 # role删除数据，通过传入的json数据，json数据只包含主键，解析之后进行相应更新
 # 解析方法：主键为数字，通过正则表达式把数字筛选出来，进行相应操作
@@ -1056,6 +1146,7 @@ def allMaterialsDelete():
         re = MaterialIFS.allMaterialsDelete(data)
         return re
 
+
 # role创建数据，通过传入的json数据，解析之后进行相应更新
 @app.route('/allMaterials/Create', methods=['POST', 'GET'])
 def allMaterialsCreate():
@@ -1064,6 +1155,7 @@ def allMaterialsCreate():
         MaterialIFS = Model.core.MaterialWebIFS("MaterialCreate")
         re = MaterialIFS.allMaterialsCreate(data)
         return re
+
 
 @app.route('/allMaterialPlanBOMS', methods=['POST', 'GET'])
 def allMaterialPlanBOMS():
@@ -1074,6 +1166,7 @@ def allMaterialPlanBOMS():
         print(re)
         return re
 
+
 @app.route('/allMaterials/Search', methods=['POST', 'GET'])
 def allMaterialsSearch():
     if request.method == 'POST':
@@ -1082,10 +1175,12 @@ def allMaterialsSearch():
         re = MaterialIFS.allMaterialsSearch(data)
         return re
 
+
 # 加载工作台
 @app.route('/MaterialBOM')
 def MaterialBOM():
     return render_template('sysMaterialBOM.html')
+
 
 @app.route('/allMaterialBOMs/Find')
 def MaterialBOMsFind():
@@ -1095,6 +1190,7 @@ def MaterialBOMsFind():
         re = MaterialBOMIFS.MaterialBOMsFind(data)
         return re
 
+
 # role更新数据，通过传入的json数据，解析之后进行相应更新
 @app.route('/allMaterialBOMs/Update', methods=['POST', 'GET'])
 def allMaterialBOMsUpdate():
@@ -1103,6 +1199,7 @@ def allMaterialBOMsUpdate():
         MaterialBOMIFS = Model.core.MaterialBOMWebIFS("MaterialBOMUpdate")
         re = MaterialBOMIFS.allMaterialBOMsUpdate(data)
         return re
+
 
 # role删除数据，通过传入的json数据，json数据只包含主键，解析之后进行相应更新
 # 解析方法：主键为数字，通过正则表达式把数字筛选出来，进行相应操作
@@ -1114,6 +1211,7 @@ def allMaterialBOMsDelete():
         re = MaterialBOMIFS.allMaterialBOMsDelete(data)
         return re
 
+
 # role创建数据，通过传入的json数据，解析之后进行相应更新
 @app.route('/allMaterialBOMs/Create', methods=['POST', 'GET'])
 def allMaterialBOMsCreate():
@@ -1122,6 +1220,7 @@ def allMaterialBOMsCreate():
         MaterialBOMIFS = Model.core.MaterialBOMWebIFS("MaterialBOMCreate")
         re = MaterialBOMIFS.allMaterialBOMsCreate(data)
         return re
+
 
 @app.route('/allMaterialBOMs/Search', methods=['POST', 'GET'])
 def allMaterialBOMsSearch():
@@ -1137,6 +1236,7 @@ def allMaterialBOMsSearch():
 def ZYPlanMaterial():
     return render_template('sysZYPlanMaterial.html')
 
+
 @app.route('/allZYPlanMaterials/Find')
 def ZYPlanMaterialsFind():
     if request.method == 'GET':
@@ -1144,6 +1244,7 @@ def ZYPlanMaterialsFind():
         ZYPlanMaterialIFS = Model.core.ZYPlanMaterialWebIFS("ZYPlanMaterialFind")
         re = ZYPlanMaterialIFS.ZYPlanMaterialsFind(data)
         return re
+
 
 # role更新数据，通过传入的json数据，解析之后进行相应更新
 @app.route('/allZYPlanMaterials/Update', methods=['POST', 'GET'])
@@ -1153,6 +1254,7 @@ def allZYPlanMaterialsUpdate():
         ZYPlanMaterialIFS = Model.core.ZYPlanMaterialWebIFS("ZYPlanMaterialUpdate")
         re = ZYPlanMaterialIFS.allZYPlanMaterialsUpdate(data)
         return re
+
 
 # role删除数据，通过传入的json数据，json数据只包含主键，解析之后进行相应更新
 # 解析方法：主键为数字，通过正则表达式把数字筛选出来，进行相应操作
@@ -1164,6 +1266,7 @@ def allZYPlanMaterialsDelete():
         re = ZYPlanMaterialIFS.allZYPlanMaterialsDelete(data)
         return re
 
+
 # role创建数据，通过传入的json数据，解析之后进行相应更新
 @app.route('/allZYPlanMaterials/Create', methods=['POST', 'GET'])
 def allZYPlanMaterialsCreate():
@@ -1172,6 +1275,7 @@ def allZYPlanMaterialsCreate():
         ZYPlanMaterialIFS = Model.core.ZYPlanMaterialWebIFS("ZYPlanMaterialCreate")
         re = ZYPlanMaterialIFS.allZYPlanMaterialsCreate(data)
         return re
+
 
 @app.route('/allZYPlanMaterials/Search', methods=['POST', 'GET'])
 def allZYPlanMaterialsSearch():
@@ -1182,13 +1286,11 @@ def allZYPlanMaterialsSearch():
         return re
 
 
-
-
-    
-#加载工作台
+# 加载工作台
 @app.route('/ProductUnit')
 def ProductUnit():
     return render_template('sysProductUnit.html')
+
 
 @app.route('/allProductUnits/Find')
 def ProductUnitsFind():
@@ -1197,6 +1299,7 @@ def ProductUnitsFind():
         ProductUnitIFS = Model.core.ProductUnitWebIFS("ProductUnitFind")
         re = ProductUnitIFS.ProductUnitsFind(data)
         return re
+
 
 # role更新数据，通过传入的json数据，解析之后进行相应更新
 @app.route('/allProductUnits/Update', methods=['POST', 'GET'])
@@ -1207,6 +1310,7 @@ def allProductUnitsUpdate():
         re = ProductUnitIFS.allProductUnitsUpdate(data)
         return re
 
+
 # role删除数据，通过传入的json数据，json数据只包含主键，解析之后进行相应更新
 # 解析方法：主键为数字，通过正则表达式把数字筛选出来，进行相应操作
 @app.route('/allProductUnits/Delete', methods=['POST', 'GET'])
@@ -1216,6 +1320,7 @@ def allProductUnitsDelete():
         ProductUnitIFS = Model.core.ProductUnitWebIFS("ProductUnitDelete")
         re = ProductUnitIFS.allProductUnitsDelete(data)
         return re
+
 
 # role创建数据，通过传入的json数据，解析之后进行相应更新
 @app.route('/allProductUnits/Create', methods=['POST', 'GET'])
@@ -1236,10 +1341,11 @@ def allProductUnitsSearch():
         return re
 
 
-#加载工作台
+# 加载工作台
 @app.route('/ProductUnitRoute')
 def ProductUnitRoute():
     return render_template('sysProductUnitRoute.html')
+
 
 @app.route('/allProductUnitRoutes/Find')
 def ProductUnitRoutesFind():
@@ -1248,6 +1354,7 @@ def ProductUnitRoutesFind():
         ProductUnitRouteIFS = Model.core.ProductUnitRouteWebIFS("ProductUnitRouteFind")
         re = ProductUnitRouteIFS.ProductUnitRoutesFind(data)
         return re
+
 
 # role更新数据，通过传入的json数据，解析之后进行相应更新
 @app.route('/allProductUnitRoutes/Update', methods=['POST', 'GET'])
@@ -1258,6 +1365,7 @@ def allProductUnitRoutesUpdate():
         re = ProductUnitRouteIFS.allProductUnitRoutesUpdate(data)
         return re
 
+
 # role删除数据，通过传入的json数据，json数据只包含主键，解析之后进行相应更新
 # 解析方法：主键为数字，通过正则表达式把数字筛选出来，进行相应操作
 @app.route('/allProductUnitRoutes/Delete', methods=['POST', 'GET'])
@@ -1267,6 +1375,7 @@ def allProductUnitRoutesDelete():
         ProductUnitRouteIFS = Model.core.ProductUnitRouteWebIFS("ProductUnitRouteDelete")
         re = ProductUnitRouteIFS.allProductUnitRoutesDelete(data)
         return re
+
 
 # role创建数据，通过传入的json数据，解析之后进行相应更新
 @app.route('/allProductUnitRoutes/Create', methods=['POST', 'GET'])
@@ -1286,10 +1395,12 @@ def allProductUnitRoutesSearch():
         re = ProductUnitRouteIFS.allProductUnitRoutesSearch(data)
         return re
 
-#加载工作台
+
+# 加载工作台
 @app.route('/SchedulePlan')
 def SchedulePlan():
     return render_template('sysSchedulePlan.html')
+
 
 @app.route('/allSchedulePlans/Find')
 def SchedulePlansFind():
@@ -1298,6 +1409,7 @@ def SchedulePlansFind():
         SchedulePlanIFS = Model.core.SchedulePlanWebIFS("SchedulePlanFind")
         re = SchedulePlanIFS.SchedulePlansFind(data)
         return re
+
 
 # role更新数据，通过传入的json数据，解析之后进行相应更新
 @app.route('/allSchedulePlans/Update', methods=['POST', 'GET'])
@@ -1308,6 +1420,7 @@ def allSchedulePlansUpdate():
         re = SchedulePlanIFS.allSchedulePlansUpdate(data)
         return re
 
+
 # role删除数据，通过传入的json数据，json数据只包含主键，解析之后进行相应更新
 # 解析方法：主键为数字，通过正则表达式把数字筛选出来，进行相应操作
 @app.route('/allSchedulePlans/Delete', methods=['POST', 'GET'])
@@ -1317,6 +1430,7 @@ def allSchedulePlansDelete():
         SchedulePlanIFS = Model.core.SchedulePlanWebIFS("SchedulePlanDelete")
         re = SchedulePlanIFS.allSchedulePlansDelete(data)
         return re
+
 
 # role创建数据，通过传入的json数据，解析之后进行相应更新
 @app.route('/allSchedulePlans/Create', methods=['POST', 'GET'])
@@ -1336,10 +1450,12 @@ def allSchedulePlansSearch():
         re = SchedulePlanIFS.allSchedulePlansSearch(data)
         return re
 
+
 # 加载工作台
 @app.route('/PlanManager')
 def PlanManager():
     return render_template('sysPlanManager.html')
+
 
 @app.route('/allPlanManagers/Find')
 def PlanManagersFind():
@@ -1349,6 +1465,7 @@ def PlanManagersFind():
         re = PlanManagerIFS.PlanManagersFind(data)
         return re
 
+
 # role更新数据，通过传入的json数据，解析之后进行相应更新
 @app.route('/allPlanManagers/Update', methods=['POST', 'GET'])
 def allPlanManagersUpdate():
@@ -1357,6 +1474,7 @@ def allPlanManagersUpdate():
         PlanManagerIFS = Model.core.PlanManagerWebIFS("PlanManagerUpdate")
         re = PlanManagerIFS.allPlanManagersUpdate(data)
         return re
+
 
 # role删除数据，通过传入的json数据，json数据只包含主键，解析之后进行相应更新
 # 解析方法：主键为数字，通过正则表达式把数字筛选出来，进行相应操作
@@ -1368,6 +1486,7 @@ def allPlanManagersDelete():
         re = PlanManagerIFS.allPlanManagersDelete(data)
         return re
 
+
 # role创建数据，通过传入的json数据，解析之后进行相应更新
 @app.route('/allPlanManagers/Create', methods=['POST', 'GET'])
 def allPlanManagersCreate():
@@ -1376,6 +1495,7 @@ def allPlanManagersCreate():
         PlanManagerIFS = Model.core.PlanManagerWebIFS("PlanManagerCreate")
         re = PlanManagerIFS.allPlanManagersCreate(data)
         return re
+
 
 @app.route('/allPlanManagers/Search', methods=['POST', 'GET'])
 def allPlanManagersSearch():
@@ -1386,10 +1506,11 @@ def allPlanManagersSearch():
         return re
 
 
-#加载工作台
+# 加载工作台
 @app.route('/Unit')
 def Unit():
     return render_template('sysUnit.html')
+
 
 @app.route('/allUnits/Find')
 def UnitsFind():
@@ -1398,6 +1519,7 @@ def UnitsFind():
         UnitIFS = Model.core.UnitWebIFS("UnitFind")
         re = UnitIFS.UnitsFind(data)
         return re
+
 
 # role更新数据，通过传入的json数据，解析之后进行相应更新
 @app.route('/allUnits/Update', methods=['POST', 'GET'])
@@ -1408,6 +1530,7 @@ def allUnitsUpdate():
         re = UnitIFS.allUnitsUpdate(data)
         return re
 
+
 # role删除数据，通过传入的json数据，json数据只包含主键，解析之后进行相应更新
 # 解析方法：主键为数字，通过正则表达式把数字筛选出来，进行相应操作
 @app.route('/allUnits/Delete', methods=['POST', 'GET'])
@@ -1417,6 +1540,7 @@ def allUnitsDelete():
         UnitIFS = Model.core.UnitWebIFS("UnitDelete")
         re = UnitIFS.allUnitsDelete(data)
         return re
+
 
 # role创建数据，通过传入的json数据，解析之后进行相应更新
 @app.route('/allUnits/Create', methods=['POST', 'GET'])
@@ -1438,13 +1562,14 @@ def allUnitsSearch():
 
 
 def getOrganizationChildren(id=0):
-    sz=[]
+    sz = []
     try:
         orgs = session.query(Organization).filter().all()
         for obj in orgs:
-            if obj.ParentNode ==id:
-                sz.append({"id":obj.ID,"colorScheme": obj.Color,"image":obj.Img,"title":obj.OrganizationName,"items":getOrganizationChildren(obj.ID)})
-        srep =',' + 'items'+ ':' + '[]'
+            if obj.ParentNode == id:
+                sz.append({"id": obj.ID, "colorScheme": obj.Color, "image": obj.Img, "title": obj.OrganizationName,
+                           "items": getOrganizationChildren(obj.ID)})
+        srep = ',' + 'items' + ':' + '[]'
         # data = string(sz)
         # data.replace(srep, '')
         return sz
@@ -1452,6 +1577,7 @@ def getOrganizationChildren(id=0):
         print(e)
         logger.error(e)
         return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
 
 @app.route('/Organization/Find')
 def OrganizationFind():
@@ -1470,24 +1596,26 @@ def OrganizationFind():
 
 
 # 建立会话
-#主页面路由
+# 主页面路由
 @app.route('/')
 def hello_world():
     return render_template('main.html')
 
 
-#加载工作台
+# 加载工作台
 @app.route('/workbench')
 def workbenck():
     return render_template('workbench.html')
 
-#工作台菜单role
+
+# 工作台菜单role
 @app.route('/sysrole')
 def sysrole():
     return render_template('sysRole.html')
 
-#role更新数据，通过传入的json数据，解析之后进行相应更新
-@app.route('/allroles/Update',methods=['POST','GET'])
+
+# role更新数据，通过传入的json数据，解析之后进行相应更新
+@app.route('/allroles/Update', methods=['POST', 'GET'])
 def allrolesUpdate():
     if request.method == 'POST':
         data = request.values
@@ -1495,29 +1623,30 @@ def allrolesUpdate():
         try:
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 10:
-                Roleid = int(data['ID'] )
-                role= session.query(Role).filter_by(ID=Roleid).first()
+                Roleid = int(data['ID'])
+                role = session.query(Role).filter_by(ID=Roleid).first()
                 role.RoleCode = data['RoleCode']
-                role.RoleName =  data['RoleName']
-                role.RoleSeq =  data['RoleSeq']
-                role.Description =  data['Description']
-                role.CreatePerson =  data['CreatePerson']
-                role.CreateDate =  data['CreateDate']
+                role.RoleName = data['RoleName']
+                role.RoleSeq = data['RoleSeq']
+                role.Description = data['Description']
+                role.CreatePerson = data['CreatePerson']
+                role.CreateDate = data['CreateDate']
                 session.commit()
                 return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
             logger.error(e)
-            return json.dumps([{"status": "Error"+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+            return json.dumps([{"status": "Error" + string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
-#role删除数据，通过传入的json数据，json数据只包含主键，解析之后进行相应更新
-#解析方法：主键为数字，通过正则表达式把数字筛选出来，进行相应操作
-@app.route('/allroles/Delete',methods=['POST','GET'])
+
+# role删除数据，通过传入的json数据，json数据只包含主键，解析之后进行相应更新
+# 解析方法：主键为数字，通过正则表达式把数字筛选出来，进行相应操作
+@app.route('/allroles/Delete', methods=['POST', 'GET'])
 def allrolesDelete():
     if request.method == 'POST':
         data = request.values
         try:
-         #   jsonDict = data.to_dict(
+            #   jsonDict = data.to_dict(
             jsonstr = json.dumps(data.to_dict())
             if len(jsonstr) > 10:
                 jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
@@ -1529,7 +1658,7 @@ def allrolesDelete():
                     except Exception as ee:
                         print(ee)
                         logger.error(ee)
-                        return json.dumps([{"status": "error:"+string(ee)}], cls=AlchemyEncoder, ensure_ascii=False)
+                        return json.dumps([{"status": "error:" + string(ee)}], cls=AlchemyEncoder, ensure_ascii=False)
                 return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
@@ -1538,8 +1667,8 @@ def allrolesDelete():
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
-#role创建数据，通过传入的json数据，解析之后进行相应更新
-@app.route('/allroles/Create',methods=['POST','GET'])
+# role创建数据，通过传入的json数据，解析之后进行相应更新
+@app.route('/allroles/Create', methods=['POST', 'GET'])
 def allrolesCreate():
     if request.method == 'POST':
         data = request.values
@@ -1570,50 +1699,52 @@ def allrolesFind():
                 pages = int(data['page'])
                 rowsnumber = int(data['rows'])
                 inipage = (pages - 1) * rowsnumber + 0
-                endpage = (pages-1) * rowsnumber + rowsnumber
+                endpage = (pages - 1) * rowsnumber + rowsnumber
                 total = session.query(func.count(Role.ID)).scalar()
                 roles = session.query(Role).all()[inipage:endpage]
-                #ORM模型转换json格式
+                # ORM模型转换json格式
                 jsonroles = json.dumps(roles, cls=AlchemyEncoder, ensure_ascii=False)
-                jsonroles = '{"total"'+":"+str(total)+',"rows"' +":\n" + jsonroles + "}"
+                jsonroles = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonroles + "}"
                 return jsonroles
         except Exception as e:
             print(e)
             logger.error(e)
-            return json.dumps([{"status": "Error："+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+            return json.dumps([{"status": "Error：" + string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
-@app.route('/allroles/Search',methods=['POST','GET'])
+
+@app.route('/allroles/Search', methods=['POST', 'GET'])
 def allrolesSearch():
     if request.method == 'POST':
         data = request.values
         try:
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 2:
-                strconditon = "%"+data['condition']+"%"
+                strconditon = "%" + data['condition'] + "%"
                 roles = session.query(Role).filter(Role.RoleName.like(strconditon)).all()
                 total = Counter(roles)
                 jsonroles = json.dumps(roles, cls=AlchemyEncoder, ensure_ascii=False)
-                jsonroles = '{"total"'+":"+str(total.__len__())+',"rows"' +":\n" + jsonroles + "}"
+                jsonroles = '{"total"' + ":" + str(total.__len__()) + ',"rows"' + ":\n" + jsonroles + "}"
                 return jsonroles
         except Exception as e:
             print(e)
             logger.error(e)
-            return json.dumps([{"status": "Error："+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+            return json.dumps([{"status": "Error：" + string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
-#加载工作台
+
+# 加载工作台
 @app.route('/Myorganization')
 def Myorganization():
     return render_template('Myorganization.html')
 
 
 def getMyOrganizationChildren(id=0):
-    sz=[]
+    sz = []
     try:
         orgs = session.query(Organization).filter().all()
         for obj in orgs:
-            if obj.ParentNode ==id:
-                sz.append({"id":obj.ID,"text":obj.OrganizationName,"children":getMyOrganizationChildren(obj.ID)})
-        srep =',' + 'items'+ ':' + '[]'
+            if obj.ParentNode == id:
+                sz.append({"id": obj.ID, "text": obj.OrganizationName, "children": getMyOrganizationChildren(obj.ID)})
+        srep = ',' + 'items' + ':' + '[]'
         # data = string(sz)
         # data.replace(srep, '')
 
@@ -1622,12 +1753,13 @@ def getMyOrganizationChildren(id=0):
         print(e)
         return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
+
 def getMyEnterprise(id=0):
-    sz=[]
+    sz = []
     try:
         orgs = session.query(Organization).filter().all()
         for obj in orgs:
-            sz.append({"id": obj.ID, "text": obj.OrganizationName,"group":obj.ParentNode})
+            sz.append({"id": obj.ID, "text": obj.OrganizationName, "group": obj.ParentNode})
         # data = string(sz)"'"
         # data.replace(srep, '')
         return sz
@@ -1635,6 +1767,7 @@ def getMyEnterprise(id=0):
         print(e)
         logger.error(e)
         return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
 
 @app.route('/MyOp')
 def MyOpFind():
@@ -1652,7 +1785,6 @@ def MyOpFind():
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
-
 @app.route('/Myenterprise')
 def Myenterprise():
     if request.method == 'GET':
@@ -1668,13 +1800,14 @@ def Myenterprise():
             logger.error(e)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
+
 @app.route('/Myenterprise/Select')
 def MyenterpriseSelect():
     if request.method == 'GET':
         odata = request.values
         try:
             json_str = json.dumps(odata.to_dict())
-            if len(json_str) > 5        :
+            if len(json_str) > 5:
                 objid = int(odata['ID'])
                 oclass = session.query(Model.system.Organization).filter_by(ID=objid).first()
                 jsondata = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
@@ -1685,10 +1818,12 @@ def MyenterpriseSelect():
             logger.error(e)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
-#加载工作台
+
+# 加载工作台
 @app.route('/createPlanWizard')
 def createPlanWizard():
     return render_template('createPlanWizard.html')
+
 
 @app.route('/getUnitByKg')
 def getUnitByKg():
@@ -1719,7 +1854,7 @@ def getdefaultPlanWeight():
 
 
 def getProductRule():
-    sz=[]
+    sz = []
     try:
         objs = session.query(Model.core.ProductRule).filter().all()
         iIndex = 0
@@ -1731,7 +1866,6 @@ def getProductRule():
                 iIndex = iIndex + 1
                 sz.append({"id": obj.ID, "text": obj.PRName})
 
-
         # data = string(sz)"'"
         # data.replace(srep, '')
         return sz
@@ -1739,6 +1873,7 @@ def getProductRule():
         print(e)
         logger.error(e)
         return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
 
 @app.route('/treeProductRule')
 def treeProductRule():
@@ -1754,6 +1889,7 @@ def treeProductRule():
             print(e)
             logger.error(e)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
