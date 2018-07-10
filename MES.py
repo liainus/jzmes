@@ -15,11 +15,12 @@ from sqlalchemy.orm import sessionmaker, relationship
 import Model.Global
 from Model.BSFramwork import AlchemyEncoder
 from Model.core import Enterprise, Area, Factory, ProductLine, ProcessUnit, Equipment
-from Model.system import Role, Organization, User
+from Model.system import Role, Organization, User, Permission
 from tools.MESLogger import MESLogger
 from Model.core import SysLog
 from sqlalchemy import create_engine, Column, ForeignKey, Table, DateTime, Integer, String
 from sqlalchemy import func
+from sqlalchemy.ext.declarative import DeclarativeMeta
 import string
 import re
 from collections import Counter
@@ -215,22 +216,39 @@ def MyUserSelect():
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
+
 # 权限分配
 @app.route('/roleright')
 def roleright():
     return render_template('roleRight.html')
 
+def getRoleList(id=0):
+    sz = []
+    try:
+        roles = session.query(Role).filter().all()
+        for obj in roles:
+            if obj.ParentNode == id:
+                sz.append({"id": obj.ID, "text": obj.RoleName, "children": getRoleList(obj.ID)})
+        srep = ',' + 'items' + ':' + '[]'
+        # data = string(sz)
+        # data.replace(srep, '')
+
+        return sz
+    except Exception as e:
+        print(e)
+        return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 # 权限分配下的角色列表
-@app.route('/permission/rolelist')
-def roleList():
+@app.route('/Permission/SelectRoles')
+def SelectRoles():
     if request.method == 'GET':
         try:
-            roles = session.query(Role.RoleName, Role.ID).all()
-            # ORM模型转换json格式
-            jsonoroles = json.dumps(roles, cls=AlchemyEncoder, ensure_ascii=False)
-            print(jsonoroles, type(jsonoroles))
-            return jsonoroles
+            # data = load()
+            data = getRoleList(id=0)
+            # organizations = session.query(Organization).filter().all()
+            jsondata = json.dumps(data, cls=AlchemyEncoder, ensure_ascii=False)
+            print(jsondata)
+            return jsondata
         except Exception as e:
             print(e)
             logger.error(e)
@@ -251,10 +269,13 @@ def userList():
                 rowsnumber = int(data['rows'])  # 行数
                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
-                # 获取当前角色名字
+                # 通过角色ID获取当前角色对应的用户
                 role_id = data['ID']
+                role = session.query(Role).filter_by(ID=role_id).first()
+                if role is None:  # 判断当前角色是否存在
+                    return
                 total = session.query(User).filter_by(ID=role_id).count()
-                users_data = session.query(User).filter_by(ID=role_id).all()[inipage:endpage]
+                users_data = session.query(User).filter(Role.ID==role_id).all()[inipage:endpage]
                 # ORM模型转换json格式
                 jsonusers = json.dumps(users_data, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonusers = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonusers + "}"

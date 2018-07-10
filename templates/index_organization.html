@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Basic usage</title>
+    <title>组织结构</title>
     <style>
         .node {
           font: 14px sans-serif;
@@ -66,16 +66,17 @@
                     .attr("transform", function(d) {
                         return "translate(" + d.y + "," + (d.x+ -15) + ")";
                     })
+                    .on("click",function(d,i){
+                        console.log(d)
+                        alert("你点击的是"+ d.name +",他的编号为" + d.number + ",索引值为" + i);
+                    })
                 //加内容模块 背景、宽高、位置
                 var nodeItem = node.append("rect")
                     .attr("width",90)
                     .attr("height",25)
                     .attr("x",0)
                     .attr("y",0)
-                    .attr("style","fill:#35AD5B;");
-                nodeItem.on("mouseover",function(){
-                    console.log(1);
-                })
+                    .attr("style","fill:#35AD5B;")
 
                 //加文字 dx左右位置 dy上下位置
                 var nodeTxt = node.append("text")
@@ -89,10 +90,7 @@
                     .style("fill","#fff")
                     .text(function(d) {
                         return d.name;
-                    });
-                nodeTxt.on("mouseover",function(){
-                    console.log(1);
-                })
+                    })
                 //加数量
                 var nodeNum = node.append("text")
                     .attr("dx", function(d) {
@@ -105,10 +103,7 @@
                     .style("fill","#fff")
                     .text(function(d) {
                         return d.number;
-                    });
-                nodeNum.on("mouseover",function(){
-                    console.log(1);
-                })
+                    })
             })
         })
     </script>

@@ -15,7 +15,7 @@
 
 <body>
 	<div style="padding:10px 0px 5px 10px;">
-	    <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'">保存</a>
+	    <a href="#" class="easyui-linkbutton" id="SaveBtn" data-options="iconCls:'icon-save'">保存</a>
 	</div>
 
 	<div style="position:absolute;display:inline-block;margin:0px;width:180px;border:1px solid #ccc;padding:10px;left:10px;">
@@ -68,31 +68,26 @@
 <script type="text/javascript">
     $(function(){
         $("#tree").tree({
-            url:'/permission/rolelist',
+            url:'/Permission/SelectRoles',
             method: 'get',
+            checkbox:"true",
             animate:true,
-            formatter:function(data){
-                return data.RoleName;
+            loadFilter:function(data){
+                console.log(data)
+                return data;
             },
             onClick :function(node){
                 $('#tab').datagrid('load',{
-                    RoleCode: node.RoleCode
+                    ID: node.ID
                 });
             }
         })
+        $("#SaveBtn").on("click",function () {
+            console.log($("#tree").tree('getSelected').ID)
+            $.post(url,function(res){
+
+            })
+        })
     })
-	var toolbar = [{
-		text: '添加',
-		iconCls: 'icon-add',
-		handler: function () { alert('add') }
-	}, {
-		text: '删除',
-		iconCls: 'icon-cut',
-		handler: function () { alert('cut') }
-	}, {
-		text: '保存',
-		iconCls: 'icon-save',
-		handler: function () { alert('save') }
-	}];
 
 </script>
