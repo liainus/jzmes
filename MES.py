@@ -192,13 +192,19 @@ def MyUserSelect():
                 rowsnumber = int(odata['rows'])  # 行数
                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
-                OrganizationCode = odata['OrganizationCode']
-                if OrganizationCode == '':
-                    total = session.query(User).count()
-                    oclass = session.query(User)[inipage:endpage]
+                ID = odata['id']
+                if ID != '':
+                    OrganizationCodeData = session.query(Organization).filter_by(ID=ID).first()
+                    if OrganizationCodeData != None:
+                        OrganizationCode = str(OrganizationCodeData.OrganizationCode)
+                        total = session.query(User).filter(User.OrganizationCode == OrganizationCode).count()
+                        oclass = session.query(User).filter(User.OrganizationCode == OrganizationCode)[inipage:endpage]
+                    else:
+                        total = session.query(User).count()
+                        oclass = session.query(User).all()[inipage:endpage]
                 else:
-                    total = session.query(User).filter(User.OrganizationCode == OrganizationCode).count()
-                    oclass = session.query(User).filter(User.OrganizationCode == OrganizationCode)[inipage:endpage]
+                    total = session.query(User).count()
+                    oclass = session.query(User).all()[inipage:endpage]
                 jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonoclass = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
             print(jsonoclass)

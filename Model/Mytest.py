@@ -1,4 +1,4 @@
-import Model.core
+import MicroMES.Model.core
 import json
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
@@ -6,7 +6,7 @@ from sqlalchemy import create_engine, Column,ForeignKey, Table, DateTime, Intege
 from sqlalchemy import Column, DateTime, Float, Integer, String, Unicode,BigInteger
 from sqlalchemy.dialects.mssql.base import BIT
 from sqlalchemy import func
-import Model.Global
+import MicroMES.Model.Global
 from collections import Counter
 import datetime
 import json
@@ -14,13 +14,18 @@ import re
 import sys
 from enum import Enum
 from datetime import datetime, date, timedelta
-
+from sqlalchemy import Table, Column, Integer, String, MetaData, ForeignKey
+from sqlalchemy_views import CreateView, DropView
+from sqlalchemy.sql import select
+from prettytable import PrettyTable
+import types
+from MicroMES.Model.BSFramwork import AlchemyEncoder
 
 #引入mssql数据库引擎
 import pymssql
 
 # 创建对象的基类
-engine = create_engine(Model.Global.GLOBAL_DATABASE_CONNECT_STRING, deprecate_large_types=True)
+engine = create_engine(MicroMES.Model.Global.GLOBAL_DATABASE_CONNECT_STRING, deprecate_large_types=True)
 # Session = sessionmaker(bind=engine)
 # session = Session()
 # Base = declarative_base(engine)
@@ -28,476 +33,75 @@ engine = create_engine(Model.Global.GLOBAL_DATABASE_CONNECT_STRING, deprecate_la
 Base = declarative_base(engine)
 session = sessionmaker(engine)()
 
-class ctrlPlan:
-    def __init__(self,name):
-        try:
-            self.name = name
-            # self.productrule = Model.core.ProductRule("1")
-            # self.productunit = Model.core.ProductUnit("2")
-            # self.productcontrltask = Model.core.ProductContrlTask("3")
-            # self.productparameter = Model.core.ProductParameter("4")
-            # self.materialbom = Model.core.MaterialBOM("5")
-            # self.productunitroute = Model.core.ProductUnitRoute("6")
-            # self.scheduleplan = Model.core.SchedulePlan("7")
-            # self.planmanager = Model.core.PlanManager("8")
-            # self.unit = Model.core.Unit("9")
-        except Exception as e:
-            print(e)
+class MaterialBOMQuery:
+    def __init__(self,ID, MATName, BatchTotalWeight,BatchSingleMATWeight, Unit, BatchPercentage,Seq,PRName,PUName,MATTypeName):
+        # self.Name = Name
+        self.ID = ID
+        self.MATName = MATName
+        self.BatchTotalWeight=BatchTotalWeight
+        self.BatchSingleMATWeight = BatchSingleMATWeight
+        self.Unit = Unit
+        self.BatchPercentage = BatchPercentage
+        self.Seq = Seq
+        self.PRName= PRName
+        self.PUName = PUName
+        self.MATTypeName = MATTypeName
 
-    def getjsondata(self):
-        f = open("Plan.json", encoding='utf-8')
-        setting = json.load(f)
-        productdate = setting['productdate']
-        brand = setting['brand']
-        planweight = setting['planweight']
-        unit = setting['unit']
-        unitcode = setting['unitcode']
+    def __repr__(self):
+        return repr((self.ID, self.MATName, self.BatchTotalWeight, self.BatchSingleMATWeight, self.Unit,self.BatchPercentage,self.Seq,self.BatchSingleMATWeight,self.PRName,self.PUName,self.MATTypeName))
 
-    def queryPlanDate(self,AProductDate):
-        bReturn = True
-        try:
-            oclass = session.query(Model.core.SchedulePlan).filter_by(SchedulePlanCode=AProductDate).first()
-            if oclass is None:
-                bReturn = False
-            else:
-                session.add(Model.core.SchedulePlan(SchedulePlanCode=AProductDate, Desc="", PlanBeginTime="2018-05-04 08:00:00",
-                                                             PlanEndTime="2018-05-05 07:59:59", Type="天"))
-                session.commit()
-            return (bReturn,oclass)
-        except Exception as e:
-            bReturn = False
-            print(e)
-            return (bReturn, oclass)
+qDatas = session.query(MicroMES.Model.core.MaterialBOM.ID , MicroMES.Model.core.Material.MATName,
+								  MicroMES.Model.core.MaterialBOM.BatchTotalWeight, MicroMES.Model.core.MaterialBOM.BatchSingleMATWeight,
+								  MicroMES.Model.core.MaterialBOM.Unit, MicroMES.Model.core.MaterialBOM.BatchPercentage, MicroMES.Model.core.MaterialBOM.Seq,
+								  MicroMES.Model.core.ProductRule.PRName, MicroMES.Model.core.ProcessUnit.PUName,MicroMES.Model.core.MaterialType.MATTypeName)\
+                    .outerjoin(MicroMES.Model.core.ProductRule,MicroMES.Model.core.MaterialBOM.ProductRuleID == MicroMES.Model.core.ProductRule.ID)\
+                    .join(MicroMES.Model.core.ProcessUnit,MicroMES.Model.core.MaterialBOM.PUID == MicroMES.Model.core.ProcessUnit.ID)\
+				.join(MicroMES.Model.core.Material,MicroMES.Model.core.MaterialBOM.MATID == MicroMES.Model.core.Material.ID)\
+				.join(MicroMES.Model.core.MaterialType,MicroMES.Model.core.MaterialBOM.MATTypeID == MicroMES.Model.core.MaterialType.ID)\
+				.filter(MicroMES.Model.core.MaterialBOM.ProductRuleID == 1).all()[0:10]
 
-    def queryProductRule(self,AID):
-        bReturn = True
-        try:
-            oclass = session.query(Model.core.ProductRule).filter_by(ID=AID).first()
-            if oclass is None:
-                bReturn = False
-            else:
-                bReturn = True
-            return (bReturn,oclass)
-        except Exception as e:
-            print(e)
-            return (bReturn, oclass)
-
-    def queryProductUnit(self,AID):
-        bReturn = True
-        try:
-            oclass = session.query(Model.core.ProductUnit).filter_by(ProductRuleID=AID).all()
-            if oclass is None:
-                bReturn = False
-            else:
-                bReturn = True
-            return (bReturn,oclass)
-        except Exception as e:
-            print(e)
-            return (bReturn, oclass)
-
-    def queryProductUnitRoute(self,AID):
-        bReturn = True
-        try:
-            oclass = session.query(Model.core.ProductUnitRoute).filter_by(ProductRuleID=AID).all()
-            if oclass is None:
-                bReturn = False
-            else:
-                bReturn = True
-            return (bReturn,oclass)
-        except Exception as e:
-            print(e)
-
-            return (bReturn, oclass)
-
-    def queryProductContrlTask(self, AID,APUID, AWeight):
-        bReturn = True
-        iTaskCount = 0
-        try:
-            oclass = session.query(Model.core.ProductControlTask)\
-                .filter(Model.core.ProductControlTask.ProductRuleID==AID) \
-                .filter(Model.core.ProductControlTask.PUID == APUID) \
-                .filter(Model.core.ProductControlTask.LowLimit<=AWeight)\
-                .filter(Model.core.ProductControlTask.HighLimit > AWeight).first()
-            if oclass is None:
-                bReturn = False
-            else:
-                bReturn = True
-                iTaskCount = int(oclass.RelateTaskCount)
-            return (bReturn,iTaskCount)
-        except Exception as e:
-            print(e)
-            return (bReturn, iTaskCount)
-
-    def createPUPlan(self,APUID,ABatchID, ABrandID, ABrandName, APlanWeight,ATaskNO,ASeq, APlanDate, AUnit,APlanBeginTime,APlanEndTime):
-        bReturn = True;
-        try:
-            session.add(
-                Model.core.ZYPlan(
-                    PlanDate=APlanDate,
-                    PlanNo=ATaskNO,
-                    BatchID=ABatchID,
-                    PlanSeq=ASeq,
-                    PUID=APUID,
-                    PlanType=Model.Global.PLANTYPE.SCHEDULE.value,
-                    BrandID=ABrandID,
-                    BrandName=ABrandName,
-                    ERPOrderNo="",
-                    PlanQuantity=APlanWeight,
-                    # ActQuantity=0,
-                    Unit=AUnit,
-                    EnterTime=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-                    PlanBeginTime=APlanBeginTime,
-                    PlanEndTime=APlanEndTime,
-                    ActBeginTime="",
-                    ActEndTime="",
-                    TaskStatus=Model.Global.TASKSTATUS.COMPILE.value,
-                    LockStatus=Model.Global.TASKLOCKSTATUS.LOCKED.value,
-                    INFStatus=Model.Global.TASKSTATUS.COMPILE.value,
-                    WMSStatus=Model.Global.TASKSTATUS.COMPILE.value))
-            session.commit()
-        except Exception as e:
-            session.rollback()
-            bReturn = False
-            print(e)
-            return bReturn
+__listBOM = []
+for obj in qDatas:
+    a =  MaterialBOMQuery(obj.ID,obj.MATName,obj.BatchTotalWeight,obj.BatchSingleMATWeight,obj.Unit,obj.BatchPercentage,obj.Seq,obj.PRName,obj.PUName,obj.MATTypeName)
+    __listBOM.append(a)
+json = json.dumps(__listBOM, default=lambda o: o.__dict__, sort_keys=True, indent=4)
+print(json)
 
 
-    def createPUTask(self,APUID,ABatchID, ABrandID, ABrandName, APlanWeight,ATaskNO,ASeq, APlanDate, AUnit,ASetRepeatCount):
-        bReturn = True;
-        try:
-            session.add(
-                Model.core.ZYTask(
-                    PlanDate=APlanDate,
-                    TaskID=ATaskNO,
-                    BatchID=ABatchID,
-                    PlanSeq=ASeq,
-                    PUID=APUID,
-                    PlanType=Model.Global.PLANTYPE.SCHEDULE.value,
-                    BrandID=ABrandID,
-                    BrandName=ABrandName,
-                    PlanQuantity=APlanWeight,
-                    # ActQuantity="",
-                    Unit=AUnit,
-                    EnterTime=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-                    ActBeginTime="",
-                    ActEndTime="",
-                    SetRepeatCount=ASetRepeatCount,
-                    # CurretnRepeatCount=odata['CurretnRepeatCount'],
-                    # ActTank=odata['ActTank'],
-                    TaskStatus=Model.Global.TASKSTATUS.COMPILE.value,
-                    LockStatus=Model.Global.TASKLOCKSTATUS.LOCKED.value))
-            session.commit()
-            return bReturn
-        except Exception as e:
-            session.rollback()
-            bReturn = False
-            print(e)
-            return  bReturn
 
-    def getPUPara(self,APUID,ABrandID, APUPara):
-        bReturn = True
-        try:
-            oclass = session.query(Model.core.ProductParameter).filter(
-                Model.core.ProductParameter.ProductRuleID == ABrandID).filter(
-                Model.core.ProductParameter.PUID == APUID).filter(
-                Model.core.ProductParameter.PDParaCode ==APUPara).first()
-            if oclass is None:
-                bReturn = True
-                paraValue = 0
-            else:
-                paraValue = int(oclass.Value)
-            return bReturn, paraValue
-        except Exception as e:
-            bReturn = False
-            print(e)
-            return  bReturn,paraValue
+# x = PrettyTable(["ID", "BatchTotalWeight", "BatchSingleMATWeight", "Unit","BatchPercentage","Seq","PRName","PUName","MATName","MATTypeName"])
+#
+# import pandas as pd
+# # conn = pymssql.connect(host='127.0.0.1', port=1433, user='sa', passwd='Qcsw@123', db='MES')
+# conn = conn=pymssql.connect(server='127.0.0.1:1433',user='sa',password='Qcsw@123',database='MES')
+# cursor = conn.cursor()
+# # cursor.execute("DROP TABLE IF EXISTS test")#必须用cursor才行
+#
+# sql = "SELECT   MaterialBOM.ID, MaterialBOM.BatchTotalWeight, MaterialBOM.BatchSingleMATWeight, MaterialBOM.Unit, "\
+#                 "MaterialBOM.BatchPercentage, MaterialBOM.Seq, MaterialBOM.Grade, Material.MATName, "\
+#                 "MaterialType.MATTypeName, ProcessUnit.PUName, ProductRule.PRName "\
+# "FROM      MaterialBOM INNER JOIN "\
+#                 "Material ON MaterialBOM.MATID = Material.ID INNER JOIN "\
+#                 "MaterialType ON MaterialBOM.MATTypeID = MaterialType.ID INNER JOIN "\
+#                 "ProcessUnit ON MaterialBOM.PUID = ProcessUnit.ID INNER JOIN "\
+#                 "ProductRule ON MaterialBOM.ProductRuleID = ProductRule.ID"
+#
+# df = pd.read_sql(sql,conn,)
+#
+# aa=pd.DataFrame(df)
 
-    def getLineInfo(self):
-        bReturn = True
-        try:
-            oclass = session.query(Model.core.ProductLine).filter(
-                Model.core.ProductLine.PLineName == "江中罗亭生产线1").first()
-            if oclass is None:
-                bReturn = False
-                return bReturn, "", ""
-            else:
-                return bReturn, str(oclass.ID),str(oclass.PLineName)
-        except Exception as e:
-            bReturn = False
-            print(e)
-            return  bReturn,"",""
-
-    def getPlanSeq(self,APUID,APlanDate):
-        bReturn = True
-        iSeq = 0
-        try:
-            oclass = session.query(func.max(Model.core.ZYPlan.PlanSeq)).filter(
-                Model.core.ZYPlan.PlanDate == APlanDate).filter(
-                Model.core.ZYPlan.PUID == APUID).all()
-            if oclass[0][0] is None:
-                bReturn = True
-                iSeq = 1
-            else:
-                iSeq = int(oclass[0][0]) + 1
-            return bReturn, iSeq
-        except Exception as e:
-            bReturn = False
-            print(e)
-            return  bReturn,iSeq
-
-    def getProductUnitRoute(self,AProductRuleID):
-        bReturn = True
-        try:
-            oclass = session.query(Model.core.ProductUnitRoute).filter(
-                Model.core.ProductUnitRoute.ProductRuleID == AProductRuleID).all()
-            if oclass is None:
-                bReturn = False
-            else:
-                bReturn = True
-            return bReturn, oclass
-        except Exception as e:
-            bReturn = False
-            print(e)
-            return  bReturn,oclass
-
-    def getTaskSeq(self,APUID,ABatchID):
-        bReturn = True
-        iSeq = 0
-        try:
-            oclass = session.query(Model.core.ZYTask).filter(
-                Model.core.ZYTask.BatchID == ABatchID).filter(
-                Model.core.ZYTask.PUID == APUID).last()
-            if oclass is None:
-                bReturn = True
-                iSeq = 1
-            else:
-                iSeq = int(oclass["PlanSeq"])
-            return bReturn, iSeq + 1
-        except Exception as e:
-            bReturn = False
-            print(e)
-            return  bReturn,iSeq
-
-    def getPlanManagerSeq(self,APLineID,APlanDate):
-        bReturn = True
-        iSeq = 0
-        try:
-            oclass = session.query(func.max(Model.core.PlanManager.Seq)).filter(
-                Model.core.PlanManager.SchedulePlanCode == APlanDate).filter(
-                Model.core.PlanManager.PLineID == APLineID).all()
-            if oclass[0][0] is None:
-                bReturn = True
-                iSeq = 1
-            else:
-                iSeq = int(oclass[0][0]) + 1
-            return bReturn, iSeq
-        except Exception as e:
-            bReturn = False
-            print(e)
-            return  bReturn,iSeq
-
-    def IsExistBatchID(self,ABatchID):
-        iReturn = 0
-        iIsExist = 0
-        try:
-            oclass = session.query(Model.core.PlanManager).filter(
-                Model.core.PlanManager.BatchID == ABatchID).first()
-            if oclass is None:
-                iReturn = 0
-                iIsExist = 0
-            else:
-                iReturn = 0
-                iIsExist = 1
-            return iReturn, iIsExist,Model.Global.GLOBAL_NULL_STRING
-        except Exception as e:
-            iReturn = -1
-            print(e)
-            return iReturn, iIsExist,str(e)
-
-    def createPlanManager(self, APlanDate, ABatchID,ABrandID,ABrandName,ASeq,AType,APlanQuantity,AUnit,APLineID,APlineName):
-        bReturn = True;
-        try:
-            session.add(
-                Model.core.PlanManager(
-                    SchedulePlanCode=APlanDate,
-                    BatchID = ABatchID,
-                    BrandID = ABrandID,
-                    BrandName = ABrandName,
-                    Seq = ASeq,
-                    PlanBeginTime = APlanDate + " " + Model.Global.GLOBAL_PLANSTARTTIME,
-                    Type = AType,
-                    PlanQuantity = APlanQuantity,
-                    Unit = AUnit,
-                    PLineID = APLineID,
-                    PLineName = APlineName))
-            session.commit()
-            return bReturn
-        except Exception as e:
-            session.rollback()
-            bReturn = False
-            print(e)
-            return bReturn
-
-    def IsExistSchedulePlanDate(self,APlanDate):
-        bReturn = False
-        IsExist = False
-        oclass = None
-        try:
-            oclass = session.query(Model.core.SchedulePlan).filter(
-                Model.core.SchedulePlan.SchedulePlanCode == APlanDate).first()
-            if oclass is None:
-                bReturn = True
-                IsExist = False
-            else:
-                bReturn = True
-                IsExist = True
-            return bReturn, IsExist
-        except Exception as e:
-            bReturn = False
-            print(e)
-            return bReturn, IsExist
-
-    def createSchedulePlan(self,APlanDate,ADesc,AType,APlanBeginTime,APlanEndTime):
-        bReturn = True
-        try:
-            session.add(
-                Model.core.SchedulePlan(
-                    SchedulePlanCode=APlanDate,
-                    Desc=ADesc,
-                    PlanBeginTime=APlanBeginTime,
-                    PlanEndTime=APlanEndTime,
-                    Type=AType))
-            session.commit()
-            return bReturn
-        except Exception as e:
-            session.rollback()
-            bReturn = False
-            print(e)
-            return  bReturn
-
-    def createLinePUPlan(self, AProductRuleID, APlanWeight,APlanDate,ABatchID,ABrandID,ABrandName,AUnit):
-        bReturn = True
-        bIsExist = True
-        iPlanSeq = 0
-        iTaskCount = 0
-        iTaskSeq = 0
-        iPlanManageSeq = 0
-        iPLineID = 0
-        sPLineName = ""
-        iReturn = 0
-        iIsExist = 0
-        try:
-            strPlanStarTime = str(APlanDate) + " " + Model.Global.GLOBAL_PLANSTARTTIME
-            dEndTime = datetime.strptime(APlanDate, '%Y-%m-%d') + timedelta(days=1)
-            strPlanEndTime = dEndTime.strftime('%Y-%m-%d') + " " + Model.Global.GLOBAL_PLANENDTIME
-            bReturn,bIsExist = self.IsExistSchedulePlanDate(APlanDate)
-            if (bReturn == True) and (bIsExist == False):
-                bReturn = self.createSchedulePlan(APlanDate, Model.Global.SCHEDULETYPE.DAY.value,
-                                                  Model.Global.SCHEDULETYPE.DAY.value, strPlanStarTime,strPlanEndTime)
-                if bReturn == False:
-                    return False
-
-            bReturn, iPLineID, sPLineName = self.getLineInfo()
-            if bReturn == False:
-                return False
-            bReturn,oRoutes = self.getProductUnitRoute(AProductRuleID)
-            if bReturn == False:
-                return False
-            else:
-                for obj in oRoutes:
-                    iPUID = int(obj.PUID)
-                    iProductRuleID = int(obj.ProductRuleID)
-                    bReturn, strTaskNo = self.getTaskNo()
-                    if (bReturn == True):
-                        try:
-                            bReturn,iPlanSeq = self.getPlanSeq(iPUID, APlanDate)
-                            if bReturn == False:
-                                return False
-
-                            bReturn, iSetReatCount = self.getPUPara(iPUID, ABrandID, "SetReatCount")
-                            if bReturn == False:
-                                return False
-
-                            bReturn, iTaskCount = self.queryProductContrlTask(ABrandID, iPUID, APlanWeight)
-                            if bReturn == False:
-                                return False
-
-                            bReturn,iPlanManageSeq = self.getPlanManagerSeq(iPLineID,APlanDate)
-                            if bReturn == False:
-                                return False
-
-                            iReturn,iIsExist,sErr = self.IsExistBatchID(ABatchID)
-                            if iReturn == -1:
-                                return False
-                            elif iIsExist == 0:
-                                bReturn = self.createPlanManager(APlanDate,ABatchID,ABrandID,ABrandName,iPlanManageSeq,"",APlanWeight,AUnit,iPLineID,sPLineName)
-                            else:
-                                pass
-
-                            bReturn = self.createPUPlan(iPUID, ABatchID, ABrandID, ABrandName, APlanWeight, strTaskNo,
-                                                        iPlanSeq, APlanDate, AUnit, strPlanStarTime, Model.Global.GLOBAL_PLANENDTIME)
-                            if bReturn == False:
-                                return False
-
-                            if iTaskCount >= 1:
-                                iTaskSeq = 0
-                                for num in range(0,iTaskCount):
-                                    iTaskSeq = iTaskSeq + 1
-                                    bReturn, strTaskNo = self.getTaskNo()
-                                    if bReturn == False:
-                                        return False
-                                    bReturn = self.createPUTask(iPUID, ABatchID, ABrandID, ABrandName, APlanWeight,
-                                                                strTaskNo, iTaskSeq, APlanDate, AUnit,iSetReatCount)
-                                    if bReturn == False:
-                                        return False
-                        except Exception as e:
-                            session.rollback()
-                            print (e)
-                            return False
-            return True
-        except Exception as e:
-            print(e)
-            return bReturn
-
-    def getTaskNo(self):
-        bReturn = True
-        qry = session.query(func.max(Model.core.TaskNoGenerator.TaskNoInt)).all();
-        intTaskNo = int(qry[0][0])
-        varTaskNo = str(intTaskNo + 1)
-        if len(varTaskNo) == 1:
-            varTaskNo = "00000" + varTaskNo
-        elif len(varTaskNo) == 2:
-            varTaskNo = "0000" + varTaskNo
-        if len(varTaskNo) == 3:
-            varTaskNo = "000" + varTaskNo
-        if len(varTaskNo) == 4:
-            varTaskNo = "00" + varTaskNo
-        if len(varTaskNo) == 5:
-            varTaskNo = "0" + varTaskNo
-        else:
-            varTaskNo = varTaskNo
-        try:
-            session.add(
-                Model.core.TaskNoGenerator(
-                    TaskNoInt=intTaskNo + 1,
-                    TaskNoVar=varTaskNo,
-                    Desc=""))
-            session.commit()
-            return bReturn,varTaskNo
-        except Exception as e:
-            bReturn = False
-            print(e)
-            return  bReturn,varTaskNo
+# print (aa)
+sRetruen = ""
+icount = 0
+for obj in qDatas:
+     icount = len(obj)
+     for x in range(0,icount):
+         if isinstance(obj[x], int):
+             sRetruen = sRetruen + "\""+obj._fieds[x]+"\":"+str(obj[x])
+             print(sRetruen)
 
 
-if __name__ == "__main__":
-    mytest = ctrlPlan("a")
-    mytest.getjsondata()
-    mytest.queryPlanDate("2018-05-04")
-    # mytest.queryproductrule(1)
-    # mytest.queryproductunit(1)
-    # mytest.queryProductunitroute(1)
-    # mytest.queryProductContrlTask(1,4500)
-    # mytest.createPUPlan(1,4500.0,"2018-05-04","201805040001",1,"健胃消食片",1,1)
-    mytest.createLinePUPlan(1,4500.0,"2018-05-05","201805050001",1,"健胃消食片","h")
-    print(mytest.getjsondata())
+
+
+
+

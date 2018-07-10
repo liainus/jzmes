@@ -80,6 +80,9 @@
                 </form>
             </div>
 			<table class="easyui-datagrid" id="tab" title="" style="width:99%" data-options="
+                queryParams: {
+                    id: ''
+                },
 			    rownumbers:true,
                 singleSelect:true,
                 autoRowHeight:false,
@@ -121,9 +124,9 @@
             return data
         },
         onClick :function(node){
-            var code = node.OrganizationCode
+            var code = node.id
             $('#tab').datagrid('load',{
-                OrganizationCode: code
+                id: code
             });
         }
     })
