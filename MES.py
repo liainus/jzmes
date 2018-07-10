@@ -221,19 +221,12 @@ def roleright():
 def roleList():
     if request.method == 'GET':
         try:
-<<<<<<< HEAD
             roles = session.query(Role).all()
             print(roles)
             #ORM模型转换json格式
             #jsonoroles = jsonify(roles)
             jsonoroles = json.dumps(roles, cls=AlchemyEncoder, ensure_ascii=False)  #加ensure_ascii=False能够防止中文乱码
             print(jsonoroles)
-=======
-            roles = session.query(Role.RoleName, Role.ID).all()
-            # ORM模型转换json格式
-            jsonoroles = json.dumps(roles, cls=AlchemyEncoder, ensure_ascii=False)
-            print(jsonoroles, type(jsonoroles))
->>>>>>> 8fb953be4fbc468b526a1907d7b8a2cb55ecf51f
             return jsonoroles
         except Exception as e:
             print(e)
