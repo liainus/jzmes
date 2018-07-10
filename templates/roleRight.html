@@ -68,11 +68,12 @@
 <script type="text/javascript">
     $(function(){
         $("#tree").tree({
-            url:'/permission/rolelist',
+            url:'/Permission/SelectRoles',
             method: 'get',
             checkbox:"true",
             animate:true,
             loadFilter:function(data){
+                console.log(data)
                 return data;
             },
             onClick :function(node){
@@ -82,6 +83,7 @@
             }
         })
         $("#SaveBtn").on("click",function () {
+            console.log($("#tree").tree('getSelected').ID)
             $.post(url,function(res){
 
             })
