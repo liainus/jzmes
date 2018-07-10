@@ -20,6 +20,7 @@ from tools.MESLogger import MESLogger
 from Model.core import SysLog
 from sqlalchemy import create_engine, Column,ForeignKey, Table, DateTime, Integer, String
 from sqlalchemy import func
+from sqlalchemy.ext.declarative import DeclarativeMeta
 import string
 import re
 from collections import Counter
@@ -212,10 +213,12 @@ def roleright():
 def roleList():
     if request.method == 'GET':
         try:
-            roles = session.query(Role.RoleName, Role.ID).all()
+            roles = session.query(Role).all()
+            print(roles)
             #ORM模型转换json格式
-            jsonoroles = json.dumps(roles, cls=AlchemyEncoder, ensure_ascii=False)
-            print(jsonoroles,type(jsonoroles))
+            #jsonoroles = jsonify(roles)
+            jsonoroles = json.dumps(roles, cls=AlchemyEncoder, ensure_ascii=False)  #加ensure_ascii=False能够防止中文乱码
+            print(jsonoroles)
             return jsonoroles
         except Exception as e:
             print(e)
@@ -236,10 +239,13 @@ def userList():
                 rowsnumber = int(data['rows'])  # 行数
                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
-                # 获取当前角色名字
+                # 通过角色ID获取当前角色对应的用户
                 role_id = data['ID']
+                role = session.query(Role).filter_by(ID=role_id).first()
+                if role is None:  # 判断当前角色是否存在
+                    return
                 total = session.query(User).filter_by(ID=role_id).count()
-                users_data = session.query(User).filter_by(ID=role_id).all()[inipage:endpage]
+                users_data = session.query(User).filter(Role.ID==role_id).all()[inipage:endpage]
                 # ORM模型转换json格式
                 jsonusers = json.dumps(users_data, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonusers = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonusers + "}"
