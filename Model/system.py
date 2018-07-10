@@ -13,7 +13,8 @@
 #引入必要的类库
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker, backref
-from sqlalchemy import create_engine, Column,ForeignKey, Table, DateTime, Integer, String
+from sqlalchemy import create_engine, \
+    Column,ForeignKey, Table, DateTime, Integer, String
 from sqlalchemy import Column, DateTime, Float, Integer, String, Unicode
 from sqlalchemy.dialects.mssql.base import BIT
 import Model.Global
@@ -34,6 +35,14 @@ Base = declarative_base(engine)
 
 #引入mssql数据库引擎
 import pymssql
+
+# 菜单与权限关联表
+Permission_Menu = Table(
+    "permission_menu",
+    Base.metadata,
+    Column("Permission_ID", Integer, ForeignKey("permission.Per_ID"), nullable=False, primary_key=True),
+    Column("Menu_ID", Integer, ForeignKey("menu.ID"), nullable=False, primary_key=True)
+)
 
 
 # 模块菜单表
@@ -60,8 +69,14 @@ class Menu(Base):
     # 创建人
     Creator = Column(String(50), nullable=True)
 
-    # 与权限建立一对一
-    # Permission_ID = Column(Integer, ForeignKey('permission.Per_ID'))
+    # 父节点
+    ParentNode = Column(Integer, nullable=True)
+
+    # 与权限建立多对多
+    Permissions = relationship("Permission", secondary=Permission_Menu)
+
+    def __repr__(self):
+        return "<Menu ID='%s' ModuleName='%s' ModuleCode=%s Url=%s ParentNode=%s>" % (self.ID, self.ModuleName, self.ModuleCode, self.Url, self.Permission)
 
 
 # 权限与角色关联表
@@ -91,9 +106,11 @@ class Permission(Base):
     # 查询角色
     Roles = relationship("Role", secondary=Permission_Role)
 
-    # 与菜单表建立一对一关系
-    # Menu = relationship('Menu', back_populates='permission', uselist=False)
+    # 查询菜单
+    menus = relationship('Menu', secondary=Permission_Menu)
 
+    def __repr__(self):
+        return "<Permission ID='%s' Per_Name='%s'>" % (self.ID, self.RoleName)
 
 # 角色与用户关联表
 user_role = Table(
@@ -131,10 +148,12 @@ class Role(Base):
     ParentNode = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
 
     # 查询角色
-    roles = relationship("Role", secondary=user_role)
+    users = relationship("User", secondary=user_role)
 
     # 查询权限
-    Permissions = relationship("Permission", secondary=Permission_Role)
+    permissions = relationship("Permission", secondary=Permission_Role)
+
+
     def __repr__(self):
         return "<Role ID='%s' RoleName='%s' RoleCode=%s>" % (self.ID, self.RoleName, self.RoleCode)
 
@@ -173,10 +192,10 @@ class User(Base):
     OrganizationCode = Column(Unicode(100), primary_key=False, autoincrement=False, nullable=True)
 
     # 查询角色
-    users = relationship("User", secondary=user_role)
+    roles = relationship("Role", secondary=user_role)
 
-    def __repr__(self):
-        return "<User ID='%s' Name='%s'>" % (self.ID, self.Name)
+    # def __repr__(self):
+    #     return "<User ID='%s' Name='%s'>" % (self.ID, self.Name)
 
     # 将password字段定义为User类的一个属性，其中设置该属性不可读，若读取抛出AttributeError。
     @property
@@ -238,3 +257,4 @@ class Organization(Base):
 
 # 生成表单的执行语句
 Base.metadata.create_all(engine)
+
