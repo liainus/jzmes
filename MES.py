@@ -15,7 +15,7 @@ from sqlalchemy.orm import sessionmaker, relationship
 import Model.Global
 from Model.BSFramwork import AlchemyEncoder
 from Model.core import Enterprise, Area, Factory, ProductLine, ProcessUnit, Equipment
-from Model.system import Role, Organization, User
+from Model.system import Role, Organization, User, Permission
 from tools.MESLogger import MESLogger
 from Model.core import SysLog
 from sqlalchemy import create_engine, Column, ForeignKey, Table, DateTime, Integer, String
@@ -210,24 +210,39 @@ def MyUserSelect():
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
+
 # 权限分配
 @app.route('/roleright')
 def roleright():
     return render_template('roleRight.html')
 
+def getRoleList(id=0):
+    sz = []
+    try:
+        roles = session.query(Role).filter().all()
+        for obj in roles:
+            if obj.ParentNode == id:
+                sz.append({"id": obj.ID, "text": obj.RoleName, "children": getRoleList(obj.ID)})
+        srep = ',' + 'items' + ':' + '[]'
+        # data = string(sz)
+        # data.replace(srep, '')
+
+        return sz
+    except Exception as e:
+        print(e)
+        return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 # 权限分配下的角色列表
-@app.route('/permission/rolelist')
-def roleList():
+@app.route('/Permission/SelectRoles')
+def SelectRoles():
     if request.method == 'GET':
         try:
-            roles = session.query(Role).all()
-            print(roles)
-            #ORM模型转换json格式
-            #jsonoroles = jsonify(roles)
-            jsonoroles = json.dumps(roles, cls=AlchemyEncoder, ensure_ascii=False)  #加ensure_ascii=False能够防止中文乱码
-            print(jsonoroles)
-            return jsonoroles
+            # data = load()
+            data = getRoleList(id=0)
+            # organizations = session.query(Organization).filter().all()
+            jsondata = json.dumps(data, cls=AlchemyEncoder, ensure_ascii=False)
+            print(jsondata)
+            return jsondata
         except Exception as e:
             print(e)
             logger.error(e)

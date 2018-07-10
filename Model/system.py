@@ -127,6 +127,9 @@ class Role(Base):
     # 创建时间:
     CreateDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
 
+    # 父节点
+    ParentNode = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
+
     # 查询角色
     roles = relationship("Role", secondary=user_role)
 
