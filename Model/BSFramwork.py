@@ -1,7 +1,8 @@
 from sqlalchemy.ext.declarative import DeclarativeMeta
 import time,datetime,decimal
 import json
-
+from sqlalchemy.orm.collections import InstrumentedList
+import types
 class AlchemyEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj.__class__, DeclarativeMeta):
@@ -14,7 +15,11 @@ class AlchemyEncoder(json.JSONEncoder):
                     fields[field] = data
                 except TypeError:    # 添加了对datetime的处理
                     # print(type(data),data)
-                    if isinstance(data, datetime.datetime):
+                    if isinstance(data, InstrumentedList):
+                        fields[field] = data
+                    elif isinstance(data,types.MethodType):
+                        pass
+                    elif isinstance(data, datetime.datetime):
                         fields[field] = data.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3] #SQLserver数据库中毫秒是3位，日期格式;2015-05-12 11:13:58.543
                     elif isinstance(data, datetime.date):
                         fields[field] = data.strftime("%Y-%m-%d")
