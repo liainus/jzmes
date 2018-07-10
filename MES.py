@@ -271,11 +271,14 @@ def userList():
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
                 # 通过角色ID获取当前角色对应的用户
                 role_id = data['ID']
+                print(role_id,type(role_id))
                 role = session.query(Role).filter_by(ID=role_id).first()
+                print(role)
                 if role is None:  # 判断当前角色是否存在
                     return
                 total = session.query(User).filter_by(ID=role_id).count()
-                users_data = session.query(User).filter(Role.ID==role_id).all()[inipage:endpage]
+                users_data = session.query(User).filter_by(ID=role_id).all()[inipage:endpage]
+                print(users_data)
                 # ORM模型转换json格式
                 jsonusers = json.dumps(users_data, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonusers = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonusers + "}"

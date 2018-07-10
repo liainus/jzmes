@@ -19,7 +19,6 @@ from sqlalchemy import Column, DateTime, Float, Integer, String, Unicode
 from sqlalchemy.dialects.mssql.base import BIT
 import Model.Global
 from datetime import datetime
-from werkzeug.security import generate_password_hash, check_password_hash
 
 
 #引入mssql数据库引擎
@@ -194,22 +193,8 @@ class User(Base):
     # 查询角色
     roles = relationship("Role", secondary=user_role)
 
-    # def __repr__(self):
-    #     return "<User ID='%s' Name='%s'>" % (self.ID, self.Name)
-
-    # 将password字段定义为User类的一个属性，其中设置该属性不可读，若读取抛出AttributeError。
-    @property
-    def password(self):
-        raise AttributeError('password cannot be read')
-
-    # 定义password字段的写方法，我们调用generate_password_hash将明文密码password转成密文Shadow
-    @password.setter
-    def password(self, password):
-        self.Shadow = generate_password_hash(password)
-
-    # 定义验证密码的函数confirm_password
-    def confirm_password(self, password):
-        return check_password_hash(self.Shadow, password)
+    def __repr__(self):
+        return "<User ID='%s' Name='%s'>" % (self.ID, self.Name)
 
 
 # 生成表单的执行语句
