@@ -98,7 +98,7 @@
 				singleSelect:false,
                 url:'/MyUser/Select',
                 method:'get',
-                toolbar:toolbar">
+                toolbar:'#toolbar'">
 				<thead>
 					<tr>
                         <th field="ck" checkbox="true"></th>
@@ -121,6 +121,16 @@
 					</tr>
 				</thead>
 			</table>
+            <div id="toolbar" style="padding:0 10px;">
+                用户名:
+                <input type="text" id="NameSearchVal" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
+                placeholder="">
+                <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="doSearch();">查询</a>
+                <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="doAdd()">添加</a>
+	            <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="doUpdata()">编辑</a>
+	            <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="doDelete()">删除</a>
+	            <a href="#" class="easyui-linkbutton" iconCls="icon-reload" onclick="doReload()">刷新</a>
+            </div>
 		</div>
 	</div>
 </body>
@@ -145,109 +155,94 @@
             });
         }
     })
-	var toolbar = [
-    {
-		text: '添加',
-		iconCls: 'icon-add',
-		handler: function () {
-		    $("#saveAdd").show()
-            $("#saveUpdata").hide()
-		    $("#userClassDialog").dialog('open').dialog('setTitle','添加用户');
-		    $('input[name="ID"]').val(); //ID
-		    $('input[name="Name"]').val("");//用户名
-		    $('input[name="Password"]').val("");//密码
-		    $('input[name="LoginName"]').val("");//登录名
-		    $('input[name="Creater"]').val($(window.parent.document).find(".pf-user-name").html());//创建用户
-		    $('input[name="CreateTime"]').val(Bee.DateUtils.getCurrentTime());//创建时间
-		    $('input[name="LastLoginTime"]').val("");//上次登录时间
-		    $('input[name="OrganizationName"]').val("");//所属部门
-		}
-	}, {
-		text: '修改',
-		iconCls: 'icon-edit',
-		handler: function () {
-		    $("#saveAdd").hide()
-            $("#saveUpdata").show()
-		    var rows = $("#tab").datagrid('getSelections');
-		    if (rows.length > 1) {
-                $.messager.alert('警告操作！', '编辑记录只能选定一条数据！', 'warning');
-            }else if(rows.length == 1){
-		        var row = $("#tab").datagrid('getSelected');
-		        if(row){
-                    $("#userClassDialog").dialog('open').dialog('setTitle','修改信息');
-                    $('input[name="ID"]').val(row.ID); //ID
-                    $('input[name="Name"]').val(row.Name);//用户名
-                    $('input[name="Password"]').val(row.Password);//密码
-                    $('input[name="LoginName"]').val(row.LoginName);//登录名
-                    $('input[name="Creater"]').val(row.Creater);//创建用户
-                    $('input[name="CreateTime"]').val(row.CreateTime);//创建时间
-                    $('input[name="LastLoginTime"]').val(row.LastLoginTime);//上次登录时间
-                    $('input[name="OrganizationName"]').val(row.OrganizationName);//所属部门
-                }
-            } else if (rows.length == 0) {
-                $.messager.alert('警告操作！', '请至少选定一条数据进行编辑！', 'warning');
+    function doSearch(){
+        $.ajax({
+            url: '/queryUserByName',
+            method: 'get',
+            data: {
+                Name: $('#NameSearchVal').val()
+            },
+            dataType: 'json',
+            success: function (data) {
+                console.log(data)
+                $('#tab').datagrid('load');
             }
-		}
-	},{
-		text: '删除',
-		iconCls: 'icon-remove',
-		handler: function () {
-		    var rows = $("#tab").datagrid('getSelections');
-		    if (rows.length > 0) {
-                var jsonarray=[];
-                $.messager.confirm('确定操作', '您正在删除所选的记录吗？', function (flag) {
-                    if (flag) {
-                        var PrimaryKey = "ID";
-                        var a = "";
-                        for (var i = 0; i < rows.length; i++) {
-                            // ids.push(parseInt((rows[i].id)));
-                            var obj=createKeyIDObj(parseInt(rows[i].ID));
-                            jsonarray.push(obj);
-                        }
-                        a = JSON.stringify(jsonarray);
-                        $.ajax({
-                            url: '/allroles/Delete',
-                            method: 'POST',
-                            traditional: true,
-                            data: a,
-                            dataType: 'json',
-                            beforeSend: function () {
-                                $.messager.progress({
-                                    text: '正在删除中...'
-                                });
-                            },
-                            success: function (data) {
-                                $.messager.progress('close');
-                                if (data) {
-                                    $(tableId).datagrid('loaded');
-                                    $(tableId).datagrid('load');
-                                    $(tableId).datagrid('unselectAll');
-                                    $.messager.show({
-                                        title: '提示',
-                                        timeout:1000,
-                                        msg: '删除' + titleText + '成功',
-                                        style: {
-                                            right: '',
-                                            top: document.body.scrollTop + document.documentElement.scrollTop,
-                                            bottom: ''
-                                        }
-                                    });
-                                }
-                            }
-                        });
+        })
+    }
+    function doAdd() {
+        $("#saveAdd").show()
+        $("#saveUpdata").hide()
+        $("#userClassDialog").dialog('open').dialog('setTitle','添加用户');
+        $('input[name="ID"]').val(); //ID
+        $('input[name="Name"]').val("");//用户名
+        $('input[name="Password"]').val("");//密码
+        $('input[name="LoginName"]').val("");//登录名
+        $('input[name="Creater"]').val($(window.parent.document).find(".pf-user-name").html());//创建用户
+        $('input[name="CreateTime"]').val(Bee.DateUtils.getCurrentTime());//创建时间
+        $('input[name="LastLoginTime"]').val("");//上次登录时间
+        $('input[name="OrganizationName"]').val("");//所属部门
+    }
+    function doUpdata(){
+        $("#saveAdd").hide()
+        $("#saveUpdata").show()
+        var rows = $("#tab").datagrid('getSelections');
+        if (rows.length > 1) {
+            $.messager.alert('警告操作！', '编辑记录只能选定一条数据！', 'warning');
+        }else if(rows.length == 1){
+            var row = $("#tab").datagrid('getSelected');
+            if(row){
+                $("#userClassDialog").dialog('open').dialog('setTitle','修改信息');
+                $('input[name="ID"]').val(row.ID); //ID
+                $('input[name="Name"]').val(row.Name);//用户名
+                $('input[name="Password"]').val(row.Password);//密码
+                $('input[name="LoginName"]').val(row.LoginName);//登录名
+                $('input[name="Creater"]').val(row.Creater);//创建用户
+                $('input[name="CreateTime"]').val(row.CreateTime);//创建时间
+                $('input[name="LastLoginTime"]').val(row.LastLoginTime);//上次登录时间
+                $('input[name="OrganizationName"]').val(row.OrganizationName);//所属部门
+            }
+        } else if (rows.length == 0) {
+            $.messager.alert('警告操作！', '请至少选定一条数据进行编辑！', 'warning');
+        }
+    }
+    function doDelete(){
+        var rows = $("#tab").datagrid('getSelections');
+        if (rows.length > 0) {
+            var jsonarray=[];
+            $.messager.confirm('确定操作', '您正在删除所选的记录吗？', function (flag) {
+                if (flag) {
+                    var PrimaryKey = "ID";
+                    var a = "";
+                    for (var i = 0; i < rows.length; i++) {
+                        // ids.push(parseInt((rows[i].id)));
+                        var obj=createKeyIDObj(parseInt(rows[i].ID));
+                        jsonarray.push(obj);
                     }
-                });
-            } else {
-                $.messager.alert('提示', '请选择要删除的记录！', 'info');
-            }
-		}
-	},{
-		text: '刷新',
-		iconCls: 'icon-reload',
-		handler: function () {
-            $('#tab').datagrid('reload');
-		}
-	}];
+                    a = JSON.stringify(jsonarray);
+                    $.ajax({
+                        url: '/allroles/Delete',
+                        method: 'POST',
+                        traditional: true,
+                        data: a,
+                        dataType: 'json',
+{#                        beforeSend: function () {#}
+{#                            $.messager.progress({#}
+{#                                text: '正在删除中...'#}
+{#                            });#}
+{#                        },#}
+                        success: function (data) {
+
+                        }
+                    });
+                }
+            });
+        } else {
+            $.messager.alert('提示', '请选择要删除的记录！', 'info');
+        }
+    }
+    function doReload(){
+        $('#tab').datagrid('reload');
+    }
     UserClassToolbar = {
         saveAdd : function () {
              if(Bee.StringUtils.isEmpty($('input[name="Name"]').val())) {

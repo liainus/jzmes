@@ -198,8 +198,8 @@ def MyUserSelect():
                     OrganizationCodeData = session.query(Organization).filter_by(ID=ID).first()
                     if OrganizationCodeData != None:
                         OrganizationName = str(OrganizationCodeData.OrganizationName)
-                        total = session.query(User).filter(User.OrganizationName == OrganizationName).count()
-                        oclass = session.query(User).filter(User.OrganizationName == OrganizationName)[inipage:endpage]
+                        total = session.query(User).filter(User.OrganizationName.like("%" + OrganizationName + "%") if OrganizationName is not None else "").count()
+                        oclass = session.query(User).filter(User.OrganizationName.like("%" + OrganizationName + "%") if OrganizationName is not None else "")[inipage:endpage]
                     else:
                         total = session.query(User).count()
                         oclass = session.query(User).all()[inipage:endpage]
