@@ -157,7 +157,7 @@
 		    $('input[name="Name"]').val("");//用户名
 		    $('input[name="Password"]').val("");//密码
 		    $('input[name="LoginName"]').val("");//登录名
-		    $('input[name="Creater"]').val("");//创建用户
+		    $('input[name="Creater"]').val($(window.parent.document).find(".pf-user-name").html());//创建用户
 		    $('input[name="CreateTime"]').val(Bee.DateUtils.getCurrentTime());//创建时间
 		    $('input[name="LastLoginTime"]').val("");//上次登录时间
 		    $('input[name="OrganizationName"]').val("");//所属部门
@@ -271,6 +271,7 @@
                     Name :$('input[name="Name"]').val(),
                     Password :$('input[name="Password"]').val(),
                     LoginName :$('input[name="LoginName"]').val(),
+                    Creater : $('input[name="Creater"]').val(),
                     OrganizationName :$('input[name="OrganizationName"]').val()
                 },
                 dataType: 'json',
@@ -305,6 +306,7 @@
                     Name :$('input[name="Name"]').val(),
                     Password :$('input[name="Password"]').val(),
                     LoginName :$('input[name="LoginName"]').val(),
+                    Creater : $('input[name="Creater"]').val(),
                     OrganizationName :$('input[name="OrganizationName"]').val()
                 },
                 dataType: 'json',
@@ -318,5 +320,4 @@
              })
         }
     }
-
 </script>
