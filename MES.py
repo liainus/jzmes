@@ -231,8 +231,8 @@ def queryUserByName():
                     total = session.query(User).count()
                     oclass = session.query(User).all()[inipage:endpage]
                 else:
-                    total = session.query(User).filter(User.Name == Name).count()
-                    oclass = session.query(User).filter(User.Name == Name)[inipage:endpage]
+                    total = session.query(User).filter(User.Name.like("%" + Name + "%") if Name is not None else "").count()
+                    oclass = session.query(User).filter(User.Name.like("%" + Name + "%") if Name is not None else "")[inipage:endpage]
                 # ORM模型转换json格式
                 jsonuser = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonjsonusers = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonuser + "}"
@@ -253,9 +253,12 @@ def addUser():
                 session.add(
                     User(Name=data['Name'],
                          Password=data['Password'], LoginName=data['LoginName'],
-                         Status=data['Status'],
-                         Creater=data['Creater'], CreateTime=data['CreateTime'],
-                         LastLoginTime=datetime.datetime.now(), IsLock=data['IsLock'], OrganizationName=data['OrganizationName']))
+                         Status="1", #登录状态先设置一个默认值1：已登录，0：未登录
+                         Creater=data['Creater'],
+                         CreateTime=data['CreateTime'],
+                         LastLoginTime=datetime.datetime.now(),
+                         IsLock=data['IsLock'],
+                         OrganizationName=data['OrganizationName']))
                 session.commit()
                 return json.dumps([{"status": "OK"}], cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
