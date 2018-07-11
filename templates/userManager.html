@@ -80,8 +80,8 @@
                         </tbody>
                     </table>
                     <div id="userClassDialogButtons" >
-                        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'"  onclick="UserClassToolbar.saveAdd()" >保存</a>
-                        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'"  onclick="UserClassToolbar.saveUpdata()" >保存</a>
+                        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" id="saveAdd" onclick="UserClassToolbar.saveAdd()" >保存</a>
+                        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" id="saveUpdata" onclick="UserClassToolbar.saveUpdata()" >保存</a>
                         <a href="#" class="easyui-linkbutton" onclick="$('#userClassDialog').dialog('close')">关闭</a>
                     </div>
                 </form>
@@ -150,6 +150,8 @@
 		text: '添加',
 		iconCls: 'icon-add',
 		handler: function () {
+		    $("#saveAdd").show()
+            $("#saveUpdata").hide()
 		    $("#userClassDialog").dialog('open').dialog('setTitle','添加用户');
 		    $('input[name="ID"]').val(); //ID
 		    $('input[name="Name"]').val("");//用户名
@@ -164,6 +166,8 @@
 		text: '修改',
 		iconCls: 'icon-edit',
 		handler: function () {
+		    $("#saveAdd").hide()
+            $("#saveUpdata").show()
 		    var rows = $("#tab").datagrid('getSelections');
 		    if (rows.length > 1) {
                 $.messager.alert('警告操作！', '编辑记录只能选定一条数据！', 'warning');
@@ -267,7 +271,7 @@
                     Name :$('input[name="Name"]').val(),
                     Password :$('input[name="Password"]').val(),
                     LoginName :$('input[name="LoginName"]').val(),
-                    OrganizationName :$('input[name="OrganizationName"]').val(),
+                    OrganizationName :$('input[name="OrganizationName"]').val()
                 },
                 dataType: 'json',
                 cache: false,
@@ -281,7 +285,39 @@
              })
         },
         saveUpdata :function () {
-
+            if(Bee.StringUtils.isEmpty($('input[name="Name"]').val())) {
+                 $.messager.alert('提示', '用户名不能为空！', 'info');
+                 return false;
+             }else if(Bee.StringUtils.isEmpty($('input[name="Password"]').val())){
+                 $.messager.alert('提示', '密码不能为空！', 'info');
+                 return false;
+             }else if(Bee.StringUtils.isEmpty($('input[name="LoginName"]').val())){
+                 $.messager.alert('提示', '登录名不能为空！', 'info');
+                 return false;
+             }else if(Bee.StringUtils.isEmpty($('input[name="OrganizationName"]').val())){
+                 $.messager.alert('提示', '所属部门不能为空！', 'info');
+                 return false;
+             }
+             $.ajax({
+                url: "/updateUser",
+                method: 'POST',
+                traditional: true,
+                data: {
+                    Name :$('input[name="Name"]').val(),
+                    Password :$('input[name="Password"]').val(),
+                    LoginName :$('input[name="LoginName"]').val(),
+                    OrganizationName :$('input[name="OrganizationName"]').val()
+                },
+                dataType: 'json',
+                cache: false,
+                success: function (data,response,status) {
+                    $.messager.progress('close');
+                },
+                 error: function(data){
+                       console.log(data.responseText)
+                       alert(hintinfo+ "异常，请刷新后重试...");
+                 },
+             })
         }
     }
 
