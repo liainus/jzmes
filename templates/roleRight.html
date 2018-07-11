@@ -27,6 +27,9 @@
             <div style="width:100%;margin:0px;padding-bottom:5px;border-bottom:1px solid green;font-weight:bold;"><h3>用户列表</h3></div>
 			<div style="margin:10px;"></div>
 			<table class="easyui-datagrid" id="tab" title="" style="width:100%" data-options="
+                queryParams: {
+                    id: ''
+                },
                 rownumbers:true,
                 singleSelect:true,
                 url:'/permission/userlist',
@@ -75,17 +78,6 @@
             loadFilter:function(data){
                 console.log(data)
                 return data;
-            },
-            onSelect:function(node){},
-            onLoadSuccess: function (node, data) {
-                if (data.length > 0) {
-                    //找到第一个元素
-                    var n = $('#tree').tree('find', data[0].id);
-                    $('#tree').tree('select', n.target);
-                    $('#tab').datagrid('load',{
-                        ID: n.id
-                    });
-                 }
             },
             onClick :function(node){
                 $('#tab').datagrid('load',{

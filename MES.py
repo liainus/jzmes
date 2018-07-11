@@ -15,7 +15,7 @@ from sqlalchemy.orm import sessionmaker, relationship
 import Model.Global
 from Model.BSFramwork import AlchemyEncoder
 from Model.core import Enterprise, Area, Factory, ProductLine, ProcessUnit, Equipment
-from Model.system import Role, Organization, User, Permission, Menu
+from Model.system import Role, Organization, User, Permission, Menu, user_role
 from tools.MESLogger import MESLogger
 from Model.core import SysLog
 from sqlalchemy import create_engine, Column, ForeignKey, Table, DateTime, Integer, String
@@ -348,7 +348,7 @@ def SelectRoles():
             # organizations = session.query(Organization).filter().all()
             jsondata = json.dumps(data, cls=AlchemyEncoder, ensure_ascii=False)
             print(jsondata)
-            return jsondata
+            return jsondata.encode("utf8")
         except Exception as e:
             print(e)
             logger.error(e)
@@ -361,6 +361,18 @@ def userList():
     # 获取用户列表
     if request.method == 'GET':
         data = request.values  # 返回请求中的参数和form
+        # 默认返回所有用户
+        first_ID = data['ID']
+        if first_ID == '':
+            try:
+                users_data = session.query(User).all()
+                users_data = json.dumps(users_data, cls=AlchemyEncoder, ensure_ascii=False)
+                return users_data.encode("utf8")
+            except Exception as e:
+                print(e)
+                logger.error(e)
+                return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+        # 通过点击角色查询用户
         try:
             json_str = json.dumps(data.to_dict())
             print(json_str)
@@ -376,8 +388,8 @@ def userList():
                 print(role)
                 if role is None:  # 判断当前角色是否存在
                     return
-                total = session.query(User).filter_by(ID=role_id).count()
-                users_data = session.query(User).filter_by(ID=role_id).all()[inipage:endpage]
+                total = session.query(User).join(user_role, isouter=True).filter_by(Role_ID=1).count()
+                users_data = session.query(User).join(user_role, isouter=True).filter_by(Role_ID=1).all()[inipage:endpage]
                 print(users_data)
                 # ORM模型转换json格式
                 jsonusers = json.dumps(users_data, cls=AlchemyEncoder, ensure_ascii=False)
@@ -412,28 +424,28 @@ def menulist():
             data = getMenuList(id=0)
             jsondata = json.dumps(data, cls=AlchemyEncoder, ensure_ascii=False)
             print(jsondata)
-            return jsondata
+            return jsondata.encode("utf8")
         except Exception as e:
             print(e)
             logger.error(e)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 # 权限分配下为角色添加权限
-@app.route('/permission/permissionToRole')
-def permissionToRole():
+@app.route('/permission/permissionToUser')
+def permissionToUser():
     if request.method == 'GET':
         data = request.values  # 返回请求中的参数和form
         try:
-            # 获取权限和角色并存入数据库
-            role_id = data['ID']  # 获取角色ID
-            permission_id = data['Per_ID']  # 获取权限ID
-            permission = session.query(Permission).filter_by(Per_ID=permission_id).first()  # 查询当前权限
-            role = session.query(Role).filter_by(ID=role_id).first()  # 查询当前角色
-            if permission is None or role is None:  # 判断当前角色或权限是否为空
+            # 获取菜单和用户并存入数据库
+            user_id = data['user_id']  # 获取角色ID
+            menu_id = data['menu_id']  # 获取权限ID
+            user = session.query(User).filter_by(ID=user_id).first()  # 查询当前权限
+            menu = session.query(Menu).filter_by(ID=menu_id).first()  # 查询当前角色
+            if user is None or menu is None:  # 判断当前角色或权限是否为空
                 return
             # 将权限ID和角色ID存入PermissionToRole
-            permission.Roles.append(role)
-            session.add(permission)
+            menu.Roles.append(user)
+            session.add(menu)
             session.commit()
             # 存入数据库后跳转到权限分配页面
             return redirect(url_for("roleright"))

@@ -35,6 +35,14 @@ Base = declarative_base(engine)
 #引入mssql数据库引擎
 import pymssql
 
+# 用户与菜单关联表
+User_Menu = Table(
+    "user_menu",
+    Base.metadata,
+    Column("User_ID", Integer, ForeignKey("user.ID"), nullable=False, primary_key=True),
+    Column("Menu_ID", Integer, ForeignKey("menu.ID"), nullable=False, primary_key=True)
+)
+
 # 菜单与权限关联表
 Permission_Menu = Table(
     "permission_menu",
@@ -71,6 +79,12 @@ class Menu(Base):
     # 父节点
     ParentNode = Column(Integer, nullable=True)
 
+    # 开放与关闭状态
+    state = Column(String(20), nullable=False)
+
+    # 与用户建立多对多
+    Users = relationship("User", secondary=User_Menu)
+
     # 与权限建立多对多
     Permissions = relationship("Permission", secondary=Permission_Menu)
 
@@ -79,11 +93,11 @@ class Menu(Base):
 
 
 # 权限与角色关联表
-Permission_Role = Table(
-    "Permission_Role",
+Permission_User = Table(
+    "permission_user",
     Base.metadata,
     Column("Permission_ID", Integer, ForeignKey("permission.Per_ID"), nullable=False, primary_key=True),
-    Column("Role_ID", Integer, ForeignKey("role.ID"), nullable=False, primary_key=True)
+    Column("User_ID", Integer, ForeignKey("user.ID"), nullable=False, primary_key=True)
 )
 
 
@@ -103,7 +117,7 @@ class Permission(Base):
     Creator = Column(String(50), nullable=True)
 
     # 查询角色
-    Roles = relationship("Role", secondary=Permission_Role)
+    users = relationship("User", secondary=Permission_User)
 
     # 查询菜单
     menus = relationship('Menu', secondary=Permission_Menu)
@@ -146,12 +160,8 @@ class Role(Base):
     # 父节点
     ParentNode = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
 
-    # 查询角色
+    # 查询用户
     users = relationship("User", secondary=user_role)
-
-    # 查询权限
-    permissions = relationship("Permission", secondary=Permission_Role)
-
 
     def __repr__(self):
         return "<Role ID='%s' RoleName='%s' RoleCode=%s>" % (self.ID, self.RoleName, self.RoleCode)
@@ -192,6 +202,12 @@ class User(Base):
 
     # 查询角色
     roles = relationship("Role", secondary=user_role)
+
+    # 查询菜单
+    menu = relationship("Menu", secondary=User_Menu)
+
+    # 查询权限
+    permissions = relationship("Permission", secondary=Permission_User)
 
     def __repr__(self):
         return "<User ID='%s' Name='%s'>" % (self.ID, self.Name)
