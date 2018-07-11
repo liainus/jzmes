@@ -15,7 +15,7 @@ from sqlalchemy.orm import sessionmaker, relationship
 import Model.Global
 from Model.BSFramwork import AlchemyEncoder
 from Model.core import Enterprise, Area, Factory, ProductLine, ProcessUnit, Equipment
-from Model.system import Role, Organization, User, Permission, Menu, user_role
+from Model.system import Role, Organization,User,Permission, Menu, User_Role
 from tools.MESLogger import MESLogger
 from Model.core import SysLog
 from sqlalchemy import create_engine, Column, ForeignKey, Table, DateTime, Integer, String
@@ -198,8 +198,8 @@ def MyUserSelect():
                     OrganizationCodeData = session.query(Organization).filter_by(ID=ID).first()
                     if OrganizationCodeData != None:
                         OrganizationName = str(OrganizationCodeData.OrganizationName)
-                        total = session.query(User).filter(User.OrganizationName == OrganizationName).count()
-                        oclass = session.query(User).filter(User.OrganizationName == OrganizationName)[inipage:endpage]
+                        total = session.query(User).filter(User.OrganizationName.like("%" + OrganizationName + "%") if OrganizationName is not None else "").count()
+                        oclass = session.query(User).filter(User.OrganizationName.like("%" + OrganizationName + "%") if OrganizationName is not None else "")[inipage:endpage]
                     else:
                         total = session.query(User).count()
                         oclass = session.query(User).all()[inipage:endpage]
@@ -231,8 +231,8 @@ def queryUserByName():
                     total = session.query(User).count()
                     oclass = session.query(User).all()[inipage:endpage]
                 else:
-                    total = session.query(User).filter(User.Name == Name).count()
-                    oclass = session.query(User).filter(User.Name == Name)[inipage:endpage]
+                    total = session.query(User).filter(User.Name.like("%" + Name + "%") if Name is not None else "").count()
+                    oclass = session.query(User).filter(User.Name.like("%" + Name + "%") if Name is not None else "")[inipage:endpage]
                 # ORM模型转换json格式
                 jsonuser = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonjsonusers = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonuser + "}"
@@ -253,9 +253,12 @@ def addUser():
                 session.add(
                     User(Name=data['Name'],
                          Password=data['Password'], LoginName=data['LoginName'],
-                         Status=data['Status'],
-                         Creater=data['Creater'], CreateTime=data['CreateTime'],
-                         LastLoginTime=datetime.datetime.now(), IsLock=data['IsLock'], OrganizationName=data['OrganizationName']))
+                         Status="1", #登录状态先设置一个默认值1：已登录，0：未登录
+                         Creater=data['Creater'],
+                         CreateTime=data['CreateTime'],
+                         LastLoginTime=datetime.datetime.now(),
+                         IsLock=data['IsLock'],
+                         OrganizationName=data['OrganizationName']))
                 session.commit()
                 return json.dumps([{"status": "OK"}], cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
@@ -319,6 +322,7 @@ def deleteUser():
 def roleright():
     return render_template('roleRight.html')
 
+# 角色列表树形图
 def getRoleList(id=0):
     sz = []
     try:
@@ -359,12 +363,21 @@ def userList():
     if request.method == 'GET':
         data = request.values  # 返回请求中的参数和form
         # 默认返回所有用户
-        first_ID = data['ID']
+        first_ID = data['id']
         if first_ID == '':
             try:
-                users_data = session.query(User).all()
-                users_data = json.dumps(users_data, cls=AlchemyEncoder, ensure_ascii=False)
-                return users_data.encode("utf8")
+                json_str = json.dumps(data.to_dict())
+                print(json_str)
+                if len(json_str) > 10:
+                    pages = int(data['page'])  # 页数
+                    rowsnumber = int(data['rows'])  # 行数
+                    inipage = (pages - 1) * rowsnumber + 0  # 起始页
+                    endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+                    total = session.query(User).filter().count()
+                    users_data = session.query(User).filter().all()[inipage:endpage]
+                    users_data = json.dumps(users_data, cls=AlchemyEncoder, ensure_ascii=False)
+                    users_data = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + users_data + "}"
+                    return users_data.encode("utf8")
             except Exception as e:
                 print(e)
                 logger.error(e)
@@ -385,8 +398,8 @@ def userList():
                 print(role)
                 if role is None:  # 判断当前角色是否存在
                     return
-                total = session.query(User).join(user_role, isouter=True).filter_by(Role_ID=1).count()
-                users_data = session.query(User).join(user_role, isouter=True).filter_by(Role_ID=1).all()[inipage:endpage]
+                total = session.query(User).join(User_Role, isouter=True).filter_by(Role_ID=1).count()
+                users_data = session.query(User).join(User_Role, isouter=True).filter_by(Role_ID=1).all()[inipage:endpage]
                 print(users_data)
                 # ORM模型转换json格式
                 jsonusers = json.dumps(users_data, cls=AlchemyEncoder, ensure_ascii=False)
@@ -413,7 +426,7 @@ def getMenuList(id=0):
     except Exception as e:
         print(e)
         return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
-
+# 加载菜单列表
 @app.route('/permission/menulist')
 def menulist():
     if request.method == 'GET':
@@ -434,14 +447,15 @@ def permissionToUser():
         data = request.values  # 返回请求中的参数和form
         try:
             # 获取菜单和用户并存入数据库
-            user_id = data['user_id']  # 获取角色ID
+            per_id = data['per_id']  # 获取角色ID
             menu_id = data['menu_id']  # 获取权限ID
-            user = session.query(User).filter_by(ID=user_id).first()  # 查询当前权限
-            menu = session.query(Menu).filter_by(ID=menu_id).first()  # 查询当前角色
-            if user is None or menu is None:  # 判断当前角色或权限是否为空
+            permission = session.query(Permission).filter_by(Per_ID=per_id).first()
+            menu = session.query(Menu).filter_by(ID=menu_id).first()
+            if permission is None or menu is None:# 判断当前角色或权限是否为空
                 return
+
             # 将权限ID和角色ID存入PermissionToRole
-            menu.Roles.append(user)
+            menu.permission.append()
             session.add(menu)
             session.commit()
             # 存入数据库后跳转到权限分配页面

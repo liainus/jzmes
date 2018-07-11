@@ -35,19 +35,12 @@ Base = declarative_base(engine)
 #引入mssql数据库引擎
 import pymssql
 
-# 用户与菜单关联表
-User_Menu = Table(
-    "user_menu",
-    Base.metadata,
-    Column("User_ID", Integer, ForeignKey("user.ID"), nullable=False, primary_key=True),
-    Column("Menu_ID", Integer, ForeignKey("menu.ID"), nullable=False, primary_key=True)
-)
 
 # 菜单与权限关联表
 Permission_Menu = Table(
     "permission_menu",
     Base.metadata,
-    Column("Permission_ID", Integer, ForeignKey("permission.Per_ID"), nullable=False, primary_key=True),
+    Column("Permission_ID", Integer, ForeignKey("permission.ID"), nullable=False, primary_key=True),
     Column("Menu_ID", Integer, ForeignKey("menu.ID"), nullable=False, primary_key=True)
 )
 
@@ -82,9 +75,6 @@ class Menu(Base):
     # 开放与关闭状态
     state = Column(String(20), nullable=False)
 
-    # 与用户建立多对多
-    Users = relationship("User", secondary=User_Menu)
-
     # 与权限建立多对多
     Permissions = relationship("Permission", secondary=Permission_Menu)
 
@@ -93,19 +83,18 @@ class Menu(Base):
 
 
 # 权限与角色关联表
-Permission_User = Table(
-    "permission_user",
+Permission_Role = Table(
+    "permission_role",
     Base.metadata,
-    Column("Permission_ID", Integer, ForeignKey("permission.Per_ID"), nullable=False, primary_key=True),
-    Column("User_ID", Integer, ForeignKey("user.ID"), nullable=False, primary_key=True)
+    Column("Permission_ID", Integer, ForeignKey("permission.ID"), nullable=False, primary_key=True),
+    Column("Role_ID", Integer, ForeignKey("role.ID"), nullable=False, primary_key=True)
 )
-
 
 # 权限表
 class Permission(Base):
     __tablename__ = 'permission'
     # ID
-    Per_ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
 
     # 权限名称
     Per_Name = Column(String(100), nullable=False)
@@ -117,16 +106,16 @@ class Permission(Base):
     Creator = Column(String(50), nullable=True)
 
     # 查询角色
-    users = relationship("User", secondary=Permission_User)
+    roles = relationship("Role", secondary=Permission_Role)
 
     # 查询菜单
     menus = relationship('Menu', secondary=Permission_Menu)
 
     def __repr__(self):
-        return "<Permission ID='%s' Per_Name='%s'>" % (self.ID, self.RoleName)
+        return "<Permission Per_ID='%s' Per_Name='%s'>" % (self.Per_ID, self.Per_Name)
 
 # 角色与用户关联表
-user_role = Table(
+User_Role = Table(
     "user_role",
     Base.metadata,
     Column("User_ID", Integer, ForeignKey("user.ID"), nullable=False, primary_key=True),
@@ -161,7 +150,10 @@ class Role(Base):
     ParentNode = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
 
     # 查询用户
-    users = relationship("User", secondary=user_role)
+    users = relationship("User", secondary=User_Role)
+
+    # 查询权限
+    permissions = relationship("Permission", secondary=Permission_Role)
 
     def __repr__(self):
         return "<Role ID='%s' RoleName='%s' RoleCode=%s>" % (self.ID, self.RoleName, self.RoleCode)
@@ -201,13 +193,7 @@ class User(Base):
     OrganizationName = Column(Unicode(100), primary_key=False, autoincrement=False, nullable=True)
 
     # 查询角色
-    roles = relationship("Role", secondary=user_role)
-
-    # 查询菜单
-    menu = relationship("Menu", secondary=User_Menu)
-
-    # 查询权限
-    permissions = relationship("Permission", secondary=Permission_User)
+    roles = relationship("Role", secondary=User_Role)
 
     def __repr__(self):
         return "<User ID='%s' Name='%s'>" % (self.ID, self.Name)
@@ -259,3 +245,7 @@ class Organization(Base):
 # 生成表单的执行语句
 Base.metadata.create_all(engine)
 
+# users_data = session.query(User).join(user_role, isouter=True).filter_by(Role_ID=1).all()
+# print(users_data)
+# per_data = session.query(Permission.Per_ID).join(Permission_User, isouter=True).filter_by(User_ID=1).all()
+# print(per_data)
