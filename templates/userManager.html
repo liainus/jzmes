@@ -88,7 +88,8 @@
             </div>
 			<table class="easyui-datagrid" id="tab" title="" style="width:99%" data-options="
                 queryParams: {
-                    id: ''
+                    id: '',
+                    Name:''
                 },
 			    rownumbers:true,
                 singleSelect:true,
@@ -141,6 +142,7 @@
 <script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
 <script type="text/javascript">
 {#    树形菜单点击事件#}
+    var code = ""
     $("#tree").tree({
         url:'/MyOp',
         method: 'get',
@@ -149,25 +151,18 @@
             return data
         },
         onClick :function(node){
-            var code = node.id
+            code = node.id
             $('#tab').datagrid('load',{
-                id: code
+                id: code,
+                Name:''
             });
         }
     })
     function doSearch(){
-        $.ajax({
-            url: '/queryUserByName',
-            method: 'get',
-            data: {
-                Name: $('#NameSearchVal').val()
-            },
-            dataType: 'json',
-            success: function (data) {
-                console.log(data)
-                $('#tab').datagrid('load');
-            }
-        })
+        $('#tab').datagrid('load',{
+            id:code,
+            Name: $('#NameSearchVal').val()
+        });
     }
     function doAdd() {
         $("#saveAdd").show()

@@ -47,7 +47,6 @@
                 pageSize:10">
 				<thead>
 					<tr>
-                        <th field="ck" checkbox="true"></th>
 						<th data-options="field:'UserName',width:140,align:'center'">用户名</th>
 						<th data-options="field:'LoginName',width:100,align:'center'">登录账号</th>
 						<th data-options="field:'Status',width:80,align:'center'">状态</th>
@@ -75,6 +74,7 @@
             url:'/Permission/SelectRoles',
             method: 'get',
             animate:true,
+            checkbox:"true",
             loadFilter:function(data){
                 console.log(data)
                 return data;

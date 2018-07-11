@@ -7,7 +7,7 @@ import time
 from collections import Counter
 from flask import Flask, jsonify, redirect, url_for
 from flask import render_template, request
-from sqlalchemy import create_engine, Column, ForeignKey, Table, DateTime, Integer, String
+from sqlalchemy import create_engine, Column, ForeignKey, Table, DateTime, Integer, String, and_, or_
 from sqlalchemy import func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
@@ -194,53 +194,56 @@ def MyUserSelect():
                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
                 ID = odata['id']
+                Name = odata['Name']
                 if ID != '':
                     OrganizationCodeData = session.query(Organization).filter_by(ID=ID).first()
                     if OrganizationCodeData != None:
                         OrganizationName = str(OrganizationCodeData.OrganizationName)
-                        total = session.query(User).filter(User.OrganizationName.like("%" + OrganizationName + "%") if OrganizationName is not None else "").count()
-                        oclass = session.query(User).filter(User.OrganizationName.like("%" + OrganizationName + "%") if OrganizationName is not None else "")[inipage:endpage]
+                        total = session.query(User).filter(and_(User.OrganizationName.like("%" + OrganizationName + "%") if OrganizationName is not None else "",
+                                                           User.Name.like("%" + Name + "%") if Name is not None else "")).count()
+                        oclass = session.query(User).filter(and_(User.OrganizationName.like("%" + OrganizationName + "%") if OrganizationName is not None else "",
+                                                           User.Name.like("%" + Name + "%") if Name is not None else ""))[inipage:endpage]
                     else:
-                        total = session.query(User).count()
-                        oclass = session.query(User).all()[inipage:endpage]
+                        total = session.query(User).filter(User.Name.like("%" + Name + "%") if Name is not None else "").count()
+                        oclass = session.query(User).filter(User.Name.like("%" + Name + "%") if Name is not None else "")[inipage:endpage]
                 else:
-                    total = session.query(User).count()
-                    oclass = session.query(User).all()[inipage:endpage]
+                    total = session.query(User).filter(User.Name.like("%" + Name + "%") if Name is not None else "").count()
+                    oclass = session.query(User).filter(User.Name.like("%" + Name + "%") if Name is not None else "")[inipage:endpage]
                 jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonoclass = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
-            return jsonoclass
+            return jsonoclass.encode("UTF-8")
         except Exception as e:
             print(e)
             logger.error(e)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
-@app.route('/queryUserByName')
-def queryUserByName():
-    if request.method == 'GET':
-        data = request.values  # 返回请求中的参数和form
-        try:
-            json_str = json.dumps(data.to_dict())
-            print(json_str)
-            if len(json_str) > 10:
-                pages = int(data['page'])  # 页数
-                rowsnumber = int(data['rows'])  # 行数
-                inipage = (pages - 1) * rowsnumber + 0  # 起始页
-                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
-                Name = data['Name']
-                if Name == '':
-                    total = session.query(User).count()
-                    oclass = session.query(User).all()[inipage:endpage]
-                else:
-                    total = session.query(User).filter(User.Name.like("%" + Name + "%") if Name is not None else "").count()
-                    oclass = session.query(User).filter(User.Name.like("%" + Name + "%") if Name is not None else "")[inipage:endpage]
-                # ORM模型转换json格式
-                jsonuser = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
-                jsonjsonusers = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonuser + "}"
-                return jsonjsonusers
-        except Exception as e:
-            print(e)
-            logger.error(e)
-            return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+# @app.route('/queryUserByName')#通过用户名Name进行全表查询
+# def queryUserByName():
+#     if request.method == 'GET':
+#         data = request.values  # 返回请求中的参数和form
+#         try:
+#             json_str = json.dumps(data.to_dict())
+#             print(json_str)
+#             if len(json_str) > 10:
+#                 pages = int(data['page'])  # 页数
+#                 rowsnumber = int(data['rows'])  # 行数
+#                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
+#                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+#                 Name = data['Name']
+#                 if Name == '':
+#                     total = session.query(User).count()
+#                     oclass = session.query(User).all()[inipage:endpage]
+#                 else:
+#                     total = session.query(User).filter(User.Name.like("%" + Name + "%") if Name is not None else "").count()
+#                     oclass = session.query(User).filter(User.Name.like("%" + Name + "%") if Name is not None else "")[inipage:endpage]
+#                 # ORM模型转换json格式
+#                 jsonuser = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
+#                 jsonjsonusers = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonuser + "}"
+#                 return jsonjsonusers
+#         except Exception as e:
+#             print(e)
+#             logger.error(e)
+#             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 @app.route('/user/addUser', methods=['POST', 'GET'])
 def addUser():
