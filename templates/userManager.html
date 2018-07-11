@@ -163,11 +163,6 @@
                 Name: $('#NameSearchVal').val()
             },
             dataType: 'json',
-            beforeSend: function () {
-                $.messager.progress({
-                    text: '正在查询中...'
-                });
-            },
             success: function (data) {
                 console.log(data)
                 $('#tab').datagrid('load');
@@ -230,28 +225,13 @@
                         traditional: true,
                         data: a,
                         dataType: 'json',
-                        beforeSend: function () {
-                            $.messager.progress({
-                                text: '正在删除中...'
-                            });
-                        },
+{#                        beforeSend: function () {#}
+{#                            $.messager.progress({#}
+{#                                text: '正在删除中...'#}
+{#                            });#}
+{#                        },#}
                         success: function (data) {
-                            $.messager.progress('close');
-                            if (data) {
-                                $(tableId).datagrid('loaded');
-                                $(tableId).datagrid('load');
-                                $(tableId).datagrid('unselectAll');
-                                $.messager.show({
-                                    title: '提示',
-                                    timeout:1000,
-                                    msg: '删除' + titleText + '成功',
-                                    style: {
-                                        right: '',
-                                        top: document.body.scrollTop + document.documentElement.scrollTop,
-                                        bottom: ''
-                                    }
-                                });
-                            }
+
                         }
                     });
                 }
