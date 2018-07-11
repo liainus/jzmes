@@ -88,7 +88,8 @@
             </div>
 			<table class="easyui-datagrid" id="tab" title="" style="width:99%" data-options="
                 queryParams: {
-                    id: ''
+                    id: '',
+                    Name:''
                 },
 			    rownumbers:true,
                 singleSelect:true,
@@ -156,18 +157,9 @@
         }
     })
     function doSearch(){
-        $.ajax({
-            url: '/queryUserByName',
-            method: 'get',
-            data: {
-                Name: $('#NameSearchVal').val()
-            },
-            dataType: 'json',
-            success: function (data) {
-                console.log(data)
-                $('#tab').datagrid('load');
-            }
-        })
+        $('#tab').datagrid('load',{
+            Name: $('#NameSearchVal').val()
+        });
     }
     function doAdd() {
         $("#saveAdd").show()
