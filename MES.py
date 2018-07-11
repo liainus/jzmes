@@ -373,9 +373,9 @@ def userList():
                     rowsnumber = int(data['rows'])  # 行数
                     inipage = (pages - 1) * rowsnumber + 0  # 起始页
                     endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
-                    total = session.query(User).filter().count()
-                    users_data = session.query(User).filter().all()[inipage:endpage]
-                    users_data = json.dumps(users_data, cls=AlchemyEncoder, ensure_ascii=False)
+                    total = session.query(User).count()
+                    users_data = session.query(User).all()[inipage:endpage]
+                    jsonusers = json.dumps(users_data, cls=AlchemyEncoder, ensure_ascii=False)
                     users_data = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + users_data + "}"
                     return users_data.encode("utf8")
             except Exception as e:
