@@ -15,7 +15,7 @@ from sqlalchemy.orm import sessionmaker, relationship
 import Model.Global
 from Model.BSFramwork import AlchemyEncoder
 from Model.core import Enterprise, Area, Factory, ProductLine, ProcessUnit, Equipment
-from Model.system import Role, Organization, User, Permission
+from Model.system import Role, Organization, User, Permission, Menu
 from tools.MESLogger import MESLogger
 from Model.core import SysLog
 from sqlalchemy import create_engine, Column, ForeignKey, Table, DateTime, Integer, String
@@ -385,6 +385,35 @@ def userList():
             logger.error(e)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
+# 权限分配下的功能模块列表
+def getMenuList(id=0):
+    sz = []
+    try:
+        menus = session.query(Menu).filter().all()
+        for obj in menus:
+            if obj.ParentNode == id:
+                sz.append({"id": obj.ID, "text": obj.ModuleName, "children": getMenuList(obj.ID)})
+        srep = ',' + 'items' + ':' + '[]'
+        # data = string(sz)
+        # data.replace(srep, '')
+
+        return sz
+    except Exception as e:
+        print(e)
+        return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
+@app.route('/permission/menulist')
+def menulist():
+    if request.method == 'GET':
+        try:
+            data = getMenuList(id=0)
+            jsondata = json.dumps(data, cls=AlchemyEncoder, ensure_ascii=False)
+            print(jsondata)
+            return jsondata
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 # 权限分配下为角色添加权限
 @app.route('/permission/permissionToRole')

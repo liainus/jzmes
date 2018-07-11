@@ -26,55 +26,62 @@
                             <tr>
                                 <td class="kv-label">ID</td>
                                 <td class="kv-content">
-                                    <input name="iID" type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="" disabled="disabled">
+                                    <input name="ID" type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="" disabled="disabled">
                                 </td>
                             </tr>
                             <tr>
                                 <td class="kv-label">用户名</td>
                                 <td class="kv-content">
-                                    <input name="iRoleCode" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                                    <input name="Name" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
                                 </td>
                             </tr>
                             <tr>
-                                <td class="kv-label">登录账号</td>
+                                <td class="kv-label">密码</td>
                                 <td class="kv-content">
-                                    <input name="iRoleName" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                                    <input name="Password" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
                                 </td>
                             </tr>
                             <tr>
-                                <td class="kv-label">状态</td>
+                                <td class="kv-label">登录名</td>
                                 <td class="kv-content">
-                                    <input name="iRoleSeq" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                                    <input name="LoginName" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
                                 </td>
                             </tr>
                             <tr>
                                 <td class="kv-label">创建用户</td>
                                 <td class="kv-content">
-                                    <input name="iDescription" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                                    <input name="Creater" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder="" disabled="disabled"  >
                                 </td>
                             </tr>
                             <tr>
                                 <td class="kv-label">创建时间</td>
                                 <td class="kv-content">
-                                    <input name="iCreatePerson" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder="" disabled="disabled" >
+                                    <input name="CreateTime" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder="" disabled="disabled" >
                                 </td>
                             </tr>
                             <tr>
                                 <td class="kv-label">上次登录时间</td>
                                 <td class="kv-content">
-                                    <input name="iCreateDate" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder="" disabled="disabled" >
+                                    <input name="LastLoginTime" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder="" disabled="disabled" >
                                 </td>
                             </tr>
                             <tr>
-                                <td class="kv-label">是否锁定</td>
+                                <td class="kv-label">所属部门</td>
                                 <td class="kv-content">
-                                    <input name="iCreateDate" type="checkbox" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder="">
+                                    <input name="OrganizationName" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder="">
                                 </td>
                             </tr>
+{#                            <tr>#}
+{#                                <td class="kv-label">是否锁定</td>#}
+{#                                <td class="kv-content">#}
+{#                                    <input name="IsLock" type="checkbox" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder="">#}
+{#                                </td>#}
+{#                            </tr>#}
                         </tbody>
                     </table>
                     <div id="userClassDialogButtons" >
-                        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'"  onclick="RoleClassToolbar.save()" >保存</a>
+                        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'"  onclick="UserClassToolbar.saveAdd()" >保存</a>
+                        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'"  onclick="UserClassToolbar.saveUpdata()" >保存</a>
                         <a href="#" class="easyui-linkbutton" onclick="$('#userClassDialog').dialog('close')">关闭</a>
                     </div>
                 </form>
@@ -95,15 +102,22 @@
 				<thead>
 					<tr>
                         <th field="ck" checkbox="true"></th>
-						<th data-options="field:'UserName',width:140,align:'center'">用户名</th>
-						<th data-options="field:'LoginName',width:100,align:'center'">登录账号</th>
-						<th data-options="field:'Status',width:80,align:'center'">状态</th>
+						<th data-options="field:'Name',width:120,align:'center'">用户名</th>
+						<th data-options="field:'Password',width:120,align:'center'">密码</th>
+						<th data-options="field:'LoginName',width:100,align:'center'">登录名</th>
+						<th data-options="field:'Status',width:80,align:'center'">登录状态</th>
 						<th data-options="field:'Creater',width:120,align:'center'">创建用户</th>
-						<th data-options="field:'CreateTime',width:120,align:'center'">创建时间</th>
+						<th data-options="field:'CreateTime',width:150,align:'center'">创建时间</th>
 						<th data-options="field:'LastLoginTime',width:120,align:'center'">上次登录时间</th>
-						<th data-options="field:'OrganizationCode',width:100,align:'center'">所属组织</th>
-						<th data-options="field:'RoleCode',width:80,align:'center'">角色编码</th>
-						<th data-options="field:'IsLock',width:80,align:'center'">是否锁定</th>
+						<th data-options="field:'OrganizationName',width:100,align:'center'">所属部门</th>
+{#						<th data-options="field:'IsLock',width:80,align:'center',#}
+{#						    formatter : function(value,row,index){#}
+{#                                if(value == true){#}
+{#                                    return '是'#}
+{#                                }else{#}
+{#                                    return '否'#}
+{#                                }#}
+{#                        }">是否锁定</th>#}
 					</tr>
 				</thead>
 			</table>
@@ -121,7 +135,7 @@
         url:'/MyOp',
         method: 'get',
         animate:true,
-        loadfilter:function(data){
+        loadFilter:function(data){
             return data
         },
         onClick :function(node){
@@ -137,13 +151,14 @@
 		iconCls: 'icon-add',
 		handler: function () {
 		    $("#userClassDialog").dialog('open').dialog('setTitle','添加用户');
-		    $('input[name="iID"]').val(""); //ID
-		    $('input[name="iRoleCode"]').val("");//用户名
-		    $('input[name="iRoleName"]').val("");//登录账号
-		    $('input[name="iRoleSeq"]').val("");//状态
-		    $('input[name="iDescription"]').val("");//创建用户
-		    $('input[name="iCreatePerson"]').val(Bee.DateUtils.getCurrentTime());//创建时间
-		    $('input[name="iCreateDate"]').val("");//上次登录时间
+		    $('input[name="ID"]').val(); //ID
+		    $('input[name="Name"]').val("");//用户名
+		    $('input[name="Password"]').val("");//密码
+		    $('input[name="LoginName"]').val("");//登录名
+		    $('input[name="Creater"]').val("");//创建用户
+		    $('input[name="CreateTime"]').val(Bee.DateUtils.getCurrentTime());//创建时间
+		    $('input[name="LastLoginTime"]').val("");//上次登录时间
+		    $('input[name="OrganizationName"]').val("");//所属部门
 		}
 	}, {
 		text: '修改',
@@ -156,13 +171,14 @@
 		        var row = $("#tab").datagrid('getSelected');
 		        if(row){
                     $("#userClassDialog").dialog('open').dialog('setTitle','修改信息');
-                    $('input[name="iID"]').val(row.id); //ID
-                    $('input[name="iRoleCode"]').val(row.username);//用户名
-                    $('input[name="iRoleName"]').val(row.loginname);//登录账号
-                    $('input[name="iRoleSeq"]').val(row.status);//状态
-                    $('input[name="iDescription"]').val(row.creater);//创建用户
-                    $('input[name="iCreatePerson"]').val(row.createtime);//创建时间
-                    $('input[name="iCreateDate"]').val(row.lastlogintime);//上次登录时间
+                    $('input[name="ID"]').val(row.ID); //ID
+                    $('input[name="Name"]').val(row.Name);//用户名
+                    $('input[name="Password"]').val(row.Password);//密码
+                    $('input[name="LoginName"]').val(row.LoginName);//登录名
+                    $('input[name="Creater"]').val(row.Creater);//创建用户
+                    $('input[name="CreateTime"]').val(row.CreateTime);//创建时间
+                    $('input[name="LastLoginTime"]').val(row.LastLoginTime);//上次登录时间
+                    $('input[name="OrganizationName"]').val(row.OrganizationName);//所属部门
                 }
             } else if (rows.length == 0) {
                 $.messager.alert('警告操作！', '请至少选定一条数据进行编辑！', 'warning');
@@ -228,5 +244,45 @@
             $('#tab').datagrid('reload');
 		}
 	}];
+    UserClassToolbar = {
+        saveAdd : function () {
+             if(Bee.StringUtils.isEmpty($('input[name="Name"]').val())) {
+                 $.messager.alert('提示', '用户名不能为空！', 'info');
+                 return false;
+             }else if(Bee.StringUtils.isEmpty($('input[name="Password"]').val())){
+                 $.messager.alert('提示', '密码不能为空！', 'info');
+                 return false;
+             }else if(Bee.StringUtils.isEmpty($('input[name="LoginName"]').val())){
+                 $.messager.alert('提示', '登录名不能为空！', 'info');
+                 return false;
+             }else if(Bee.StringUtils.isEmpty($('input[name="OrganizationName"]').val())){
+                 $.messager.alert('提示', '所属部门不能为空！', 'info');
+                 return false;
+             }
+             $.ajax({
+                url: "/addUser",
+                method: 'POST',
+                traditional: true,
+                data: {
+                    Name :$('input[name="Name"]').val(),
+                    Password :$('input[name="Password"]').val(),
+                    LoginName :$('input[name="LoginName"]').val(),
+                    OrganizationName :$('input[name="OrganizationName"]').val(),
+                },
+                dataType: 'json',
+                cache: false,
+                success: function (data,response,status) {
+                    $.messager.progress('close');
+                },
+                 error: function(data){
+                       console.log(data.responseText)
+                       alert(hintinfo+ "异常，请刷新后重试...");
+                 },
+             })
+        },
+        saveUpdata :function () {
+
+        }
+    }
 
 </script>
