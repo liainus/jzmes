@@ -242,7 +242,7 @@ def queryUserByName():
             logger.error(e)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
-@app.route('/addUser', methods=['POST', 'GET'])
+@app.route('/user/addUser', methods=['POST', 'GET'])
 def addUser():
     if request.method == 'POST':
         data = request.values
@@ -263,7 +263,7 @@ def addUser():
             logger.error(e)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
-@app.route('/updateUser', methods=['POST', 'GET'])
+@app.route('/user/updateUser', methods=['POST', 'GET'])
 def UpdateUser():
     if request.method == 'POST':
         data = request.values
