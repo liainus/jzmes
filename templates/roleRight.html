@@ -71,11 +71,21 @@
         $("#tree").tree({
             url:'/Permission/SelectRoles',
             method: 'get',
-            checkbox:"true",
             animate:true,
             loadFilter:function(data){
                 console.log(data)
                 return data;
+            },
+            onSelect:function(node){},
+            onLoadSuccess: function (node, data) {
+                if (data.length > 0) {
+                    //找到第一个元素
+                    var n = $('#tree').tree('find', data[0].id);
+                    $('#tree').tree('select', n.target);
+                    $('#tab').datagrid('load',{
+                        ID: n.id
+                    });
+                 }
             },
             onClick :function(node){
                 $('#tab').datagrid('load',{
