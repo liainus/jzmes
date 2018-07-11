@@ -39,7 +39,7 @@
                 .attr("transform","translate(40,0)")
 
             //读取json文件，进行绘图
-            d3.json("../static/data/tree_test.json",function(error,root){
+            d3.json("/MyOp",function(error,root){
                 var nodes = cluster.nodes(root);
                 var links = cluster.links(nodes);
                 //为关系集合设置贝塞尔曲线连接

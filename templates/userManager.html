@@ -142,6 +142,7 @@
 <script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
 <script type="text/javascript">
 {#    树形菜单点击事件#}
+    var code = ""
     $("#tree").tree({
         url:'/MyOp',
         method: 'get',
@@ -150,7 +151,7 @@
             return data
         },
         onClick :function(node){
-            var code = node.id
+            code = node.id
             $('#tab').datagrid('load',{
                 id: code
             });
@@ -158,6 +159,7 @@
     })
     function doSearch(){
         $('#tab').datagrid('load',{
+            id:code,
             Name: $('#NameSearchVal').val()
         });
     }
