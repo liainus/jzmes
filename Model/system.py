@@ -78,8 +78,7 @@ class Menu(Base):
     # 与权限建立多对多
     Permissions = relationship("Permission", secondary=Permission_Menu)
 
-    def __repr__(self):
-        return "<Menu ID='%s' ModuleName='%s' ModuleCode=%s Url=%s ParentNode=%s>" % (self.ID, self.ModuleName, self.ModuleCode, self.Url, self.Permission)
+
 
 
 # 权限与角色关联表
@@ -111,8 +110,6 @@ class Permission(Base):
     # 查询菜单
     menus = relationship('Menu', secondary=Permission_Menu)
 
-    def __repr__(self):
-        return "<Permission Per_ID='%s' Per_Name='%s'>" % (self.Per_ID, self.Per_Name)
 
 # 角色与用户关联表
 User_Role = Table(
@@ -155,8 +152,6 @@ class Role(Base):
     # 查询权限
     permissions = relationship("Permission", secondary=Permission_Role)
 
-    def __repr__(self):
-        return "<Role ID='%s' RoleName='%s' RoleCode=%s>" % (self.ID, self.RoleName, self.RoleCode)
 
 # 用户表
 class User(Base):
@@ -190,13 +185,11 @@ class User(Base):
     IsLock = Column(BIT, primary_key=False, autoincrement=False, nullable=True)
 
     #所属部门
-    OrganizationName = Column(Unicode(100), primary_key=False, autoincrement=False, nullable=True)
+    OrganizationName = Column(String(100), primary_key=False, autoincrement=False, nullable=True)
 
     # 查询角色
     roles = relationship("Role", secondary=User_Role)
 
-    def __repr__(self):
-        return "<User ID='%s' Name='%s'>" % (self.ID, self.Name)
 
 
 # 生成表单的执行语句
