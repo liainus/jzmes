@@ -264,7 +264,7 @@
                  return false;
              }
              $.ajax({
-                url: "/addUser",
+                url: "/user/addUser",
                 method: 'POST',
                 traditional: true,
                 data: {
@@ -279,8 +279,7 @@
                     $.messager.progress('close');
                 },
                  error: function(data){
-                       console.log(data.responseText)
-                       alert(hintinfo+ "异常，请刷新后重试...");
+                       alert("异常，请刷新后重试...");
                  },
              })
         },
@@ -299,7 +298,7 @@
                  return false;
              }
              $.ajax({
-                url: "/updateUser",
+                url: "/user/updateUser",
                 method: 'POST',
                 traditional: true,
                 data: {
@@ -314,8 +313,7 @@
                     $.messager.progress('close');
                 },
                  error: function(data){
-                       console.log(data.responseText)
-                       alert(hintinfo+ "异常，请刷新后重试...");
+                       alert("异常，请刷新后重试...");
                  },
              })
         }
