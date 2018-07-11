@@ -19,7 +19,7 @@ class AlchemyEncoder(json.JSONEncoder):
                 except TypeError:    # 添加了对datetime的处理
                     # print(type(data),data)
                     if isinstance(data, InstrumentedList):
-                        fields[field] = data
+                        fields[field] = ''
                     elif isinstance(data,types.MethodType):
                         pass
                     elif isinstance(data, datetime.datetime):
