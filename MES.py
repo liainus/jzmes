@@ -7,7 +7,7 @@ import time
 from collections import Counter
 from flask import Flask, jsonify, redirect, url_for
 from flask import render_template, request
-from sqlalchemy import create_engine, Column, ForeignKey, Table, DateTime, Integer, String
+from sqlalchemy import create_engine, Column, ForeignKey, Table, DateTime, Integer, String, and_, or_
 from sqlalchemy import func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
@@ -199,19 +199,19 @@ def MyUserSelect():
                     OrganizationCodeData = session.query(Organization).filter_by(ID=ID).first()
                     if OrganizationCodeData != None:
                         OrganizationName = str(OrganizationCodeData.OrganizationName)
-                        total = session.query(User).filter(User.OrganizationName.like("%" + OrganizationName + "%") if OrganizationName is not None else "",
-                                                           filter(User.Name.like("%" + Name + "%") if Name is not None else "")).count()
-                        oclass = session.query(User).filter(User.OrganizationName.like("%" + OrganizationName + "%") if OrganizationName is not None else "",
-                                                            filter(User.Name.like("%" + Name + "%") if Name is not None else ""))[inipage:endpage]
+                        total = session.query(User).filter(and_(User.OrganizationName.like("%" + OrganizationName + "%") if OrganizationName is not None else "",
+                                                           User.Name.like("%" + Name + "%") if Name is not None else "")).count()
+                        oclass = session.query(User).filter(and_(User.OrganizationName.like("%" + OrganizationName + "%") if OrganizationName is not None else "",
+                                                           User.Name.like("%" + Name + "%") if Name is not None else ""))[inipage:endpage]
                     else:
-                        total = session.query(User).count()
-                        oclass = session.query(User).all()[inipage:endpage]
+                        total = session.query(User).filter(User.Name.like("%" + Name + "%") if Name is not None else "").count()
+                        oclass = session.query(User).filter(User.Name.like("%" + Name + "%") if Name is not None else "")[inipage:endpage]
                 else:
-                    total = session.query(User).count()
-                    oclass = session.query(User).all()[inipage:endpage]
+                    total = session.query(User).filter(User.Name.like("%" + Name + "%") if Name is not None else "").count()
+                    oclass = session.query(User).filter(User.Name.like("%" + Name + "%") if Name is not None else "")[inipage:endpage]
                 jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonoclass = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
-            return jsonoclass
+            return jsonoclass.encode("UTF-8")
         except Exception as e:
             print(e)
             logger.error(e)
