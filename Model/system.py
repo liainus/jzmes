@@ -197,8 +197,8 @@ class User(Base):
     #是否锁定
     IsLock = Column(BIT, primary_key=False, autoincrement=False, nullable=True)
 
-    #所属组织
-    OrganizationCode = Column(Unicode(100), primary_key=False, autoincrement=False, nullable=True)
+    #所属部门
+    OrganizationName = Column(Unicode(100), primary_key=False, autoincrement=False, nullable=True)
 
     # 查询角色
     roles = relationship("Role", secondary=user_role)
