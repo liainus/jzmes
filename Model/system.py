@@ -88,10 +88,6 @@ class Menu(Base):
     # 与权限建立多对多
     Permissions = relationship("Permission", secondary=Permission_Menu)
 
-    __table_args__ = {
-        "mysql_charset": "utf8"
-    }
-
     def __repr__(self):
         return "<Menu ID='%s' ModuleName='%s' ModuleCode=%s Url=%s ParentNode=%s>" % (self.ID, self.ModuleName, self.ModuleCode, self.Url, self.Permission)
 
@@ -263,5 +259,3 @@ class Organization(Base):
 # 生成表单的执行语句
 Base.metadata.create_all(engine)
 
-users_data = session.query(User).join(user_role,isouter=True).filter_by(Role_ID=1).all()
-print(users_data)
