@@ -83,6 +83,15 @@
                 $('#tab').datagrid('load',{
                     ID: node.id
                 });
+                if(node.checked){//如果该节点被勾选
+                    $(this).tree('uncheck',node.target);//设置该节点被取消勾选
+                }else{
+                    $(this).tree('check',node.target);//设置该节点被勾选
+                }
+            },
+            onlyLeafCheck: true,
+            onCheck :function(node){
+
             }
         })
         $("#SaveBtn").on("click",function () {

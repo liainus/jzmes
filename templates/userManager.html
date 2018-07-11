@@ -215,18 +215,13 @@
                     }
                     a = JSON.stringify(jsonarray);
                     $.ajax({
-                        url: '/allroles/Delete',
+                        url: '/deleteUser',
                         method: 'POST',
                         traditional: true,
                         data: a,
                         dataType: 'json',
-{#                        beforeSend: function () {#}
-{#                            $.messager.progress({#}
-{#                                text: '正在删除中...'#}
-{#                            });#}
-{#                        },#}
                         success: function (data) {
-
+                            
                         }
                     });
                 }
