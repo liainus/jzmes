@@ -197,9 +197,9 @@ def MyUserSelect():
                 if ID != '':
                     OrganizationCodeData = session.query(Organization).filter_by(ID=ID).first()
                     if OrganizationCodeData != None:
-                        OrganizationCode = str(OrganizationCodeData.OrganizationCode)
-                        total = session.query(User).filter(User.OrganizationCode == OrganizationCode).count()
-                        oclass = session.query(User).filter(User.OrganizationCode == OrganizationCode)[inipage:endpage]
+                        OrganizationName = str(OrganizationCodeData.OrganizationName)
+                        total = session.query(User).filter(User.OrganizationName == OrganizationName).count()
+                        oclass = session.query(User).filter(User.OrganizationName == OrganizationName)[inipage:endpage]
                     else:
                         total = session.query(User).count()
                         oclass = session.query(User).all()[inipage:endpage]
@@ -214,7 +214,105 @@ def MyUserSelect():
             logger.error(e)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
+@app.route('/queryUserByName')
+def queryUserByName():
+    if request.method == 'GET':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            json_str = json.dumps(data.to_dict())
+            print(json_str)
+            if len(json_str) > 10:
+                pages = int(data['page'])  # 页数
+                rowsnumber = int(data['rows'])  # 行数
+                inipage = (pages - 1) * rowsnumber + 0  # 起始页
+                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+                Name = data['Name']
+                if Name == '':
+                    total = session.query(User).count()
+                    oclass = session.query(User).all()[inipage:endpage]
+                else:
+                    total = session.query(User).filter(User.Name == Name).count()
+                    oclass = session.query(User).filter(User.Name == Name)[inipage:endpage]
+                # ORM模型转换json格式
+                jsonuser = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
+                jsonjsonusers = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonuser + "}"
+                return jsonjsonusers
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
+@app.route('/addUser', methods=['POST', 'GET'])
+def addUser():
+    if request.method == 'POST':
+        data = request.values
+        str = request.get_json()
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                session.add(
+                    User(Name=data['Name'],
+                         Password=data['Password'], LoginName=data['LoginName'],
+                         Status=data['Status'],
+                         Creater=data['Creater'], CreateTime=data['CreateTime'],
+                         LastLoginTime=datetime.datetime.now(), IsLock=data['IsLock'], OrganizationName=data['OrganizationName']))
+                session.commit()
+                return json.dumps([{"status": "OK"}], cls=AlchemyEncoder, ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
+@app.route('/updateUser', methods=['POST', 'GET'])
+def UpdateUser():
+    if request.method == 'POST':
+        data = request.values
+        str = request.get_json()
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                ID = int(data['ID'])
+                user = session.query(User).filter_by(ID=ID).first()
+                user.Name = data['Name']
+                user.Password = data['Password']
+                user.LoginName = data['LoginName']
+                user.Status = data['Status']
+                user.Creater = data['Creater']
+                user.CreateTime = data['CreateTime']
+                user.LastLoginTime = data['LastLoginTime']
+                user.IsLock = data['IsLock']
+                user.OrganizationName = data['OrganizationName']
+                session.commit()
+                return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=AlchemyEncoder,
+                                  ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
+@app.route('/deleteUser', methods=['POST', 'GET'])
+def deleteUser():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
+                for key in jsonnumber:
+                    ID = int(key)
+                    try:
+                        organization = session.query(User).filter_by(ID=ID).delete()
+                    except Exception as ee:
+                        print(ee)
+                        logger.error(ee)
+                        return json.dumps([{"status": "error:" + string(ee)}], cls=AlchemyEncoder,
+                                          ensure_ascii=False)
+                return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=AlchemyEncoder,
+                                  ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 # 权限分配
 @app.route('/roleright')
@@ -1792,7 +1890,6 @@ def getMyOrganizationChildren(id=0):
         srep = ',' + 'items' + ':' + '[]'
         # data = string(sz)
         # data.replace(srep, '')
-
         return sz
     except Exception as e:
         print(e)
