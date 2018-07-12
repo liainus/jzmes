@@ -10,6 +10,9 @@
 	<link href="../static/css/basic_info.css" rel="stylesheet">
 	<link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
 	<link href="../static/js/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
+    <link href="../static/css/datagridpanel_customer.css" rel="stylesheet">
+    <link href="../static/css/dialogpanel.css" type="text/css" rel="stylesheet">
+    <link href="../static/css/datagrid_customer.css" type="text/css" rel="stylesheet">
 </head>
 <body>
 	<div class="container">
@@ -215,16 +218,11 @@
                     }
                     a = JSON.stringify(jsonarray);
                     $.ajax({
-                        url: '/allroles/Delete',
+                        url: '/deleteUser',
                         method: 'POST',
                         traditional: true,
                         data: a,
                         dataType: 'json',
-{#                        beforeSend: function () {#}
-{#                            $.messager.progress({#}
-{#                                text: '正在删除中...'#}
-{#                            });#}
-{#                        },#}
                         success: function (data) {
 
                         }
@@ -262,6 +260,7 @@
                     Password :$('input[name="Password"]').val(),
                     LoginName :$('input[name="LoginName"]').val(),
                     Creater : $('input[name="Creater"]').val(),
+                    CreaterTime : $('input[name="CreaterTime"]').val(),
                     OrganizationName :$('input[name="OrganizationName"]').val()
                 },
                 dataType: 'json',

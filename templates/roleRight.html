@@ -61,7 +61,7 @@
         <div style="position:absolute;display:inline-block;margin:0px;left:760px;width:300px;border:1px solid #ccc;padding:10px;">
             <div style="width:100%;margin:0px;padding-bottom:5px;border-bottom:1px solid green;font-weight:bold;"><h3>功能模块列表</h3></div>
             <div style="margin:10px;"></div>
-            <ul id="tt" class="easyui-tree" data-options="url:'/permission/menulist',method:'get',animate:true,checkbox:true"></ul>
+            <ul id="tt" class="easyui-tree"></ul>
         </div>
 </body>
 </html>
@@ -70,27 +70,77 @@
 <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
 <script type="text/javascript">
     $(function(){
+        var treeId = ""
         $("#tree").tree({
             url:'/Permission/SelectRoles',
             method: 'get',
+            checkbox:true,
             animate:true,
-            checkbox:"true",
+            cascadeCheck:false, //取消菜单联级
             loadFilter:function(data){
-                console.log(data)
                 return data;
             },
             onClick :function(node){
                 $('#tab').datagrid('load',{
                     ID: node.id
                 });
+                treeId = node.id
+            },
+            onSelect:function(node){
+                var ckNodes = $('#tree').tree("getChecked");
+                for (var i = 0; i < ckNodes.length; i++) {
+                    if (ckNodes[i].id != node.id) {
+                        $('#tree').tree("uncheck", ckNodes[i].target);
+                    }
+                }
+                if (node.checked) {
+                    $('#tree').tree('uncheck', node.target);
+
+                } else {
+                    $('#tree').tree('check', node.target);
+
+                }
+            },
+            onLoadSuccess: function (node, data) {
+                $(this).find('span.tree-checkbox').unbind().click(function () {
+                    $('#tree').tree('select', $(this).parent());
+                    return false;
+                });
+            }
+        })
+        $("#tt").tree({
+            url:'/permission/menulist',
+            method: 'get',
+            animate:true,
+            checkbox:true,
+            onlyLeafCheck:true,//去掉父节点复选框
+            loadFilter:function(data){
+                return data;
             }
         })
         $("#SaveBtn").on("click",function () {
-            console.log($("#tree").tree('getSelected').ID)
-            $.post(url,function(res){
+            var nodes = $("#tt").tree('getChecked')
+            var s = ""
+            for (var i = 0; i < nodes.length; i++) {
+                if (s != '') s += ',';
+                s += nodes[i].id;
+            }
+            console.log(s)
+            console.log(treeId)
+            $.post("/permission/MenuToRole",{role_id:treeId,menu_id:s},function(res){
 
             })
         })
+        //获取选中节点
+        function getClassChecked(tvClassId) {
+            var nodes = $('#' + tvClassId).tree('getChecked');
+            var s = '';
+            for (var i = 0; i < nodes.length; i++) {
+                if (s != '') s += ',';
+                s += nodes[i].id;
+            }
+            return s;
+        }
     })
 
 </script>
