@@ -168,6 +168,8 @@ $(function () {
             })
         },
         create: function () {
+            $("#saveRoleAdd").show()
+            $("#saveRoleUpdata").hide()
             $(dialogId).dialog('open').dialog('setTitle', '新增' + titleText);
             $(formTitleId).text(titleText);
             $('input[name="Name"]').focus();
@@ -190,6 +192,8 @@ $(function () {
             // });
         },
         update: function () {
+            $("#saveRoleAdd").hide()
+            $("#saveRoleUpdata").show()
             var rows = $(tableId).datagrid('getSelections');
             if (rows.length > 1) {
                 $.messager.alert('警告操作！', '编辑记录只能选定一条数据！', 'warning');
@@ -277,7 +281,7 @@ $(function () {
                 $.messager.alert('提示', '请选择要删除的记录！', 'info');
             }
         },
-        save: function () {
+        saveRoleAdd: function () {
             var validate=$(formId).form('validate');
             var strID = $('input[name="iID"]').val();
             var msg = ""
@@ -318,8 +322,7 @@ $(function () {
                     CreateDate:$('input[name="iCreateDate"]').val()
                 };
                 $.ajax({
-                    url: urlAddr,
-                    //url: '/allroles/Create',
+                    url: '/allroles/Create',
                     method: 'POST',
                     traditional: true,
                     data: entity,
@@ -356,7 +359,93 @@ $(function () {
                             $(formId).form('reset');
                             $(dialogId).dialog('close');
                             $(tableId).datagrid('reload',{ url: "/allroles/Find?_t=" + new Date().getTime() });
-                            $(tableid).datagrid('clearSelections');
+                            $(tableId).datagrid('clearSelections');
+                        } else {
+                            $.messager.alert(obj1[0].status + '失败！', '未知错误导致失败，请重试！', 'warning');
+                        }
+                    }
+                });
+            // }
+        },
+        saveRoleUpdata: function () {
+            var validate=$(formId).form('validate');
+            var strID = $('input[name="iID"]').val();
+            var msg = ""
+            var urlAddr = ""
+            var stmp = $('input[name="iRoleCode"]').val();
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：角色编号不能为空！');
+               return false;
+            }
+            stmp = $('input[name="iRoleName"]').val();
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：角色名称不能为空！');
+               return false;
+            }
+            stmp = $('input[name="iRoleSeq"]').val();
+            if(Bee.StringUtils.isInteger(stmp)) {
+            //
+            }else{
+                $('input[name="iRoleSeq"]').val("");
+                alert('Warning：角色顺序输入错误,请输入数字！');
+                return false;
+            }
+            if (strID.length > 1){
+                urlAddr = urlPrefix + 'Update'
+                hintinfo = "更新数据"
+            }
+            else {
+                urlAddr = urlPrefix + 'Create'
+                hintinfo = "新增数据"
+            }
+                var entity = {
+                    ID:$('input[name="iID"]').val(),
+                    RoleCode:$('input[name="iRoleCode"]').val(),
+                    RoleName:$('input[name="iRoleName"]').val(),
+                    RoleSeq:$('input[name="iRoleSeq"]').val(),
+                    Description:$('input[name="iDescription"]').val(),
+                    CreatePerson:$('input[name="iCreatePerson"]').val(),
+                    CreateDate:$('input[name="iCreateDate"]').val()
+                };
+                $.ajax({
+                    url: '/allroles/Update',
+                    method: 'POST',
+                    traditional: true,
+                    data: entity,
+                    dataType: 'json',
+                    cache: false,
+
+                    // beforeSend: function () {
+                    //
+                    //     $.messager.progress({
+                    //         text: '正在' + message + '中...'
+                    //     });
+                    // },
+                    error: function(data){
+                           console.log(data.responseText)
+                           alert(hintinfo+ "异常，请刷新后重试...");
+                             },
+                    success: function (data,response,status) {
+                        $.messager.progress('close');
+                        {
+                }
+                        var obj1 = eval(data);
+                        if(obj1[0].status == "OK"){
+                            $.messager.show({
+                                title: '提示',
+                                msg: message + hintinfo  + '成功',
+                                timeout:1000,
+                                style: {
+                                    right: '',
+                                    top: document.body.scrollTop + document.documentElement.scrollTop,
+                                    bottom: ''
+                                }
+                            });
+
+                            $(formId).form('reset');
+                            $(dialogId).dialog('close');
+                            $(tableId).datagrid('reload',{ url: "/allroles/Find?_t=" + new Date().getTime() });
+                            $(tableId).datagrid('clearSelections');
                         } else {
                             $.messager.alert(obj1[0].status + '失败！', '未知错误导致失败，请重试！', 'warning');
                         }
