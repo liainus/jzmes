@@ -36,11 +36,11 @@ Base = declarative_base(engine)
 import pymssql
 
 
-# 菜单与权限关联表
-Permission_Menu = Table(
-    "permission_menu",
+# 菜单与角色关联表
+Role_Menu = Table(
+    "role_menu",
     Base.metadata,
-    Column("Permission_ID", Integer, ForeignKey("permission.ID"), nullable=False, primary_key=True),
+    Column("Role_ID", Integer, ForeignKey("role.ID"), nullable=False, primary_key=True),
     Column("Menu_ID", Integer, ForeignKey("menu.ID"), nullable=False, primary_key=True)
 )
 
@@ -52,7 +52,7 @@ class Menu(Base):
     ID = Column(Integer, primary_key=True, autoincrement=True)
 
     # 模块名称
-    ModuleName = Column(String(60), nullable=False)
+    ModuleName = Column(Unicode(32), nullable=False)
 
     # 模块编码
     ModuleCode = Column(String(100),nullable=False)
@@ -61,54 +61,51 @@ class Menu(Base):
     Url = Column(String(100), nullable=True)
 
     # 描述
-    Description = Column(String(1024), nullable=True)
+    Description = Column(Unicode(1024), nullable=True)
 
     # 创建时间
     CreateDate = Column(DateTime, default=datetime.now, nullable=True)
 
     # 创建人
-    Creator = Column(String(50), nullable=True)
+    Creator = Column(Unicode(50), nullable=True)
 
     # 父节点
     ParentNode = Column(Integer, nullable=True)
 
-    # 开放与关闭状态
-    state = Column(String(20), nullable=False)
-
-    # 与权限建立多对多
-    Permissions = relationship("Permission", secondary=Permission_Menu)
+    # 查询角色
+    roles = relationship("Role", secondary=Role_Menu)
 
 
 
 
 # 权限与角色关联表
-Permission_Role = Table(
-    "permission_role",
-    Base.metadata,
-    Column("Permission_ID", Integer, ForeignKey("permission.ID"), nullable=False, primary_key=True),
-    Column("Role_ID", Integer, ForeignKey("role.ID"), nullable=False, primary_key=True)
-)
+# Permission_Role = Table(
+#     "permission_role",
+#     Base.metadata,
+#     Column("Permission_ID", Integer, ForeignKey("permission.ID"), nullable=False, primary_key=True),
+#     Column("Role_ID", Integer, ForeignKey("role.ID"), nullable=False, primary_key=True)
+# )
 
 # 权限表
-class Permission(Base):
-    __tablename__ = 'permission'
-    # ID
-    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
-
-    # 权限名称
-    Per_Name = Column(String(100), nullable=False)
-
-    # 创建时间
-    CreateData = Column(DateTime, default=datetime.now)
-
-    # 创建人
-    Creator = Column(String(50), nullable=True)
-
-    # 查询角色
-    roles = relationship("Role", secondary=Permission_Role)
-
-    # 查询菜单
-    menus = relationship('Menu', secondary=Permission_Menu)
+# class Permission(Base):
+#     __tablename__ = 'permission'
+#     # ID
+#     ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+#
+#     # 权限名称
+#     Per_Name = Column(String(100), nullable=False)
+#
+#     # 创建时间
+#     CreateData = Column(DateTime, default=datetime.now)
+#
+#     # 创建人
+#     Creator = Column(String(50), nullable=True)
+#
+#     # 查询角色
+#     roles = relationship("Role", secondary=Permission_Role)
+#
+#     # 查询菜单
+#     menus = relationship('Menu', secondary=Permission_Menu)
 
 
 # 角色与用户关联表
@@ -132,13 +129,13 @@ class Role(Base):
     RoleSeq = Column(String(10), primary_key=False, autoincrement=False, nullable=True)
 
     # 角色名称:
-    RoleName = Column(String(200), primary_key=False, autoincrement=False, nullable=True)
+    RoleName = Column(Unicode(128), primary_key=False, autoincrement=False, nullable=True)
 
     # 角色说明:
-    Description = Column(String(2048), primary_key=False, autoincrement=False, nullable=True)
+    Description = Column(Unicode(2048), primary_key=False, autoincrement=False, nullable=True)
 
     # 创建人:
-    CreatePerson = Column(String(20), primary_key=False, autoincrement=False, nullable=True)
+    CreatePerson = Column(Unicode(20), primary_key=False, autoincrement=False, nullable=True)
 
     # 创建时间:
     CreateDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
@@ -150,7 +147,7 @@ class Role(Base):
     users = relationship("User", secondary=User_Role)
 
     # 查询权限
-    permissions = relationship("Permission", secondary=Permission_Role)
+    menus = relationship("Menu", secondary=Role_Menu)
 
 
 # 用户表
@@ -185,7 +182,7 @@ class User(Base):
     IsLock = Column(BIT, primary_key=False, autoincrement=False, nullable=True)
 
     #所属部门
-    OrganizationName = Column(String(100), primary_key=False, autoincrement=False, nullable=True)
+    OrganizationName = Column(Unicode(100), primary_key=False, autoincrement=False, nullable=True)
 
     # 查询角色
     roles = relationship("Role", secondary=User_Role)

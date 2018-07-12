@@ -15,7 +15,7 @@ from sqlalchemy.orm import sessionmaker, relationship
 import Model.Global
 from Model.BSFramwork import AlchemyEncoder
 from Model.core import Enterprise, Area, Factory, ProductLine, ProcessUnit, Equipment
-from Model.system import Role, Organization,User,Permission, Menu, User_Role
+from Model.system import Role, Organization,User,Menu, User_Role
 from tools.MESLogger import MESLogger
 from Model.core import SysLog
 from sqlalchemy import create_engine, Column, ForeignKey, Table, DateTime, Integer, String
@@ -450,23 +450,27 @@ def menulist():
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 # 权限分配下为角色添加权限
-@app.route('/permission/permissionToUser')
-def permissionToUser():
+@app.route('/permission/MenuToRole')
+def menuToUser():
     if request.method == 'GET':
         data = request.values  # 返回请求中的参数和form
         try:
             # 获取菜单和用户并存入数据库
-            per_id = data['per_id']  # 获取角色ID
-            menu_id = data['menu_id']  # 获取权限ID
-            permission = session.query(Permission).filter_by(Per_ID=per_id).first()
-            menu = session.query(Menu).filter_by(ID=menu_id).first()
-            if permission is None or menu is None:# 判断当前角色或权限是否为空
+            role_id = data['role_id']  # 获取角色ID
+            if role_id is None:
                 return
-
-            # 将权限ID和角色ID存入PermissionToRole
-            menu.permission.append()
-            session.add(menu)
-            session.commit()
+            menu_id = data['menu_id']  # 获取菜单ID
+            if menu_id is None:
+                return
+            for r in menu_id:
+                role = session.query(Role).filter_by(ID=role_id).first()
+                menu = session.query(Menu).filter_by(ID=r).first()
+                if role is None or menu is None:# 判断当前角色或权限是否为空
+                    return
+                # 将菜单ID和角色ID存入User_Role
+                menu.roles.append(role)
+                session.add(menu)
+                session.commit()
             # 存入数据库后跳转到权限分配页面
             return redirect(url_for("roleright"))
         except Exception as e:
