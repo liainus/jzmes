@@ -211,7 +211,7 @@ def MyUserSelect():
                     oclass = session.query(User).filter(User.Name.like("%" + Name + "%") if Name is not None else "")[inipage:endpage]
                 jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonoclass = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
-            return jsonoclass.encode("UTF-8")
+            return jsonoclass
         except Exception as e:
             print(e)
             logger.error(e)
@@ -260,7 +260,7 @@ def addUser():
                          Creater=data['Creater'],
                          CreateTime=data['CreateTime'],
                          LastLoginTime=datetime.datetime.now(),
-                         IsLock=data['IsLock'],
+                         IsLock='false',#data['IsLock'],
                          OrganizationName=data['OrganizationName']))
                 session.commit()
                 return json.dumps([{"status": "OK"}], cls=AlchemyEncoder, ensure_ascii=False)
