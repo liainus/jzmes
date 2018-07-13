@@ -455,11 +455,12 @@ def menuToUser():
     if request.method == 'GET':
         data = request.values  # 返回请求中的参数和form
         try:
+            arry = json.loads(data)
             # 获取菜单和用户并存入数据库
             role_id = data['role_id']  # 获取角色ID
             if role_id is None:
                 return
-            menu_id = data['menu_id']  # 获取菜单ID
+            menu_id = [menu_id for menu_id in arry] # 获取菜单ID
             if menu_id is None:
                 return
             for r in menu_id:
