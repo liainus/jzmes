@@ -127,7 +127,7 @@
             }
             console.log(s)
             console.log(treeId)
-            $.post("/permission/MenuToRole",{role_id:treeId,menu_id:s},function(res){
+            $.get("/permission/MenuToRole",{role_id:treeId,menu_id:s},function(res){
 
             })
         })
