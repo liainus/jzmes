@@ -230,6 +230,7 @@
                         dataType: 'json',
                         success: function (data) {
                             $.messager.progress('close');
+                            $("#tab").datagrid('reload');
                         }
                     });
                 }
