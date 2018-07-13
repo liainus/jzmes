@@ -455,18 +455,17 @@ def menuToUser():
     if request.method == 'GET':
         data = request.values  # 返回请求中的参数和form
         try:
+            arry = json.loads(data)
             # 获取菜单和用户并存入数据库
             role_id = data['role_id']  # 获取角色ID
             if role_id is None:
                 return
-            menu_id = data['menu_id']  # 获取菜单ID
+            menu_id = [menu_id for menu_id in arry] # 获取菜单ID
             if menu_id is None:
                 return
             for r in menu_id:
                 role = session.query(Role).filter_by(ID=role_id).first()
                 menu = session.query(Menu).filter_by(ID=r).first()
-                if role is None or menu is None:# 判断当前角色或权限是否为空
-                    return
                 # 将菜单ID和角色ID存入User_Role
                 menu.roles.append(role)
                 session.add(menu)
