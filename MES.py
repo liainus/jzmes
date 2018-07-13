@@ -282,11 +282,11 @@ def UpdateUser():
                 user.Name = data['Name']
                 user.Password = data['Password']
                 user.LoginName = data['LoginName']
-                user.Status = data['Status']
+                # user.Status = data['Status']
                 user.Creater = data['Creater']
-                user.CreateTime = data['CreateTime']
-                user.LastLoginTime = data['LastLoginTime']
-                user.IsLock = data['IsLock']
+                # user.CreateTime = data['CreateTime']
+                # user.LastLoginTime = data['LastLoginTime']
+                # user.IsLock = data['IsLock']
                 user.OrganizationName = data['OrganizationName']
                 session.commit()
                 return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=AlchemyEncoder,
@@ -296,7 +296,7 @@ def UpdateUser():
             logger.error(e)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
-@app.route('/deleteUser', methods=['POST', 'GET'])
+@app.route('/user/deleteUser', methods=['POST', 'GET'])
 def deleteUser():
     if request.method == 'POST':
         data = request.values
