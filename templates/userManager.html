@@ -203,6 +203,11 @@
             $.messager.alert('警告操作！', '请至少选定一条数据进行编辑！', 'warning');
         }
     }
+    function createKeyIDObj(keyID){
+        return {
+            ID:keyID
+        }
+    }
     function doDelete(){
         var rows = $("#tab").datagrid('getSelections');
         if (rows.length > 0) {
@@ -218,13 +223,13 @@
                     }
                     a = JSON.stringify(jsonarray);
                     $.ajax({
-                        url: '/deleteUser',
+                        url: '/user/deleteUser',
                         method: 'POST',
                         traditional: true,
                         data: a,
                         dataType: 'json',
                         success: function (data) {
-
+                            $.messager.progress('close');
                         }
                     });
                 }
@@ -292,6 +297,7 @@
                 method: 'POST',
                 traditional: true,
                 data: {
+                    ID: $('input[name="ID"]').val(),
                     Name :$('input[name="Name"]').val(),
                     Password :$('input[name="Password"]').val(),
                     LoginName :$('input[name="LoginName"]').val(),
