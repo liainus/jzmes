@@ -69,6 +69,11 @@
 <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
 <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
 <script type="text/javascript">
+    function createKeyIDObj(keyID){
+        return {
+            menu_id:keyID
+        }
+    }
     $(function(){
         var treeId = ""
         $("#tree").tree({
@@ -120,14 +125,16 @@
         })
         $("#SaveBtn").on("click",function () {
             var nodes = $("#tt").tree('getChecked')
-            var s = ""
+            var jsonarray = []
+            var menu_id = ""
             for (var i = 0; i < nodes.length; i++) {
-                if (s != '') s += ',';
-                s += nodes[i].id;
+                var obj=createKeyIDObj(parseInt(nodes[i].id));
+                    jsonarray.push(obj);
             }
-            console.log(s)
+            menu_id = JSON.stringify(jsonarray);
             console.log(treeId)
-            $.get("/permission/MenuToRole",{role_id:treeId,menu_id:s},function(res){
+            console.log(menu_id)
+            $.get("/permission/MenuToRole",{role_id:treeId,menu_id:menu_id},function(res){
 
             })
         })
