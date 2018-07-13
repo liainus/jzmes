@@ -465,8 +465,6 @@ def menuToUser():
             for r in menu_id:
                 role = session.query(Role).filter_by(ID=role_id).first()
                 menu = session.query(Menu).filter_by(ID=r).first()
-                if role is None or menu is None:# 判断当前角色或权限是否为空
-                    return
                 # 将菜单ID和角色ID存入User_Role
                 menu.roles.append(role)
                 session.add(menu)
