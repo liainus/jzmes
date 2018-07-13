@@ -98,13 +98,11 @@
                         $('#tree').tree("uncheck", ckNodes[i].target);
                     }
                 }
-                if (node.checked) {
-                    $('#tree').tree('uncheck', node.target);
-
-                } else {
-                    $('#tree').tree('check', node.target);
-
-                }
+                $('#tree').tree('check', node.target);
+                $('#tab').datagrid('load',{
+                    ID: node.id
+                });
+                treeId = node.id
             },
             onLoadSuccess: function (node, data) {
                 $(this).find('span.tree-checkbox').unbind().click(function () {
