@@ -153,7 +153,6 @@ $(function () {
                 dataType: 'json',
                 success: function (data) {
                     $.messager.progress('close');
-
                     if (data) {
                         // $(tableId).datagrid('loaded');
                         // $(tableId).datagrid('load');
@@ -417,7 +416,7 @@ $(function () {
                 width: 200
             },
              {
-                field: 'ParentNode',
+                field: 'ParentNodeName',
                 title: '父节点',
                 align: 'center',
                 width: 200
@@ -446,7 +445,7 @@ $(function () {
         ]]
     });
             $(tableId).datagrid('reload');
-            $(tableid).datagrid('clearSelections');
+            $(tableId).datagrid('clearSelections');
            
         }
 
