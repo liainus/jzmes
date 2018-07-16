@@ -154,9 +154,6 @@ $(function () {
                 success: function (data) {
                     $.messager.progress('close');
                     if (data) {
-                        // $(tableId).datagrid('loaded');
-                        // $(tableId).datagrid('load');
-                        // $(tableId).datagrid('unselectAll');
                         $(tableId).datagrid('loadData', data);
                         $.messager.show({
                             title: '提示',
@@ -253,29 +250,9 @@ $(function () {
                             // data: JSON.stringify(ids),
                             data: a,
                             dataType: 'json',
-                            beforeSend: function () {
-                                $.messager.progress({
-                                    text: '正在删除中...'
-                                });
-                            },
                             success: function (data) {
-                                $.messager.progress('close');
-
-                                if (data) {
-                                    $(tableId).datagrid('loaded');
-                                    $(tableId).datagrid('load');
-                                    $(tableId).datagrid('unselectAll');
-                                    $.messager.show({
-                                        title: '提示',
-                                        timeout:1000,
-                                        msg: '删除' + titleText + '成功',
-                                        style: {
-                                            right: '',
-                                            top: document.body.scrollTop + document.documentElement.scrollTop,
-                                            bottom: ''
-                                        }
-                                    });
-                                }
+                                $(tableId).datagrid('loadData', data);
+                                $(tableId).datagrid('load');
                             }
                         });
                     }
