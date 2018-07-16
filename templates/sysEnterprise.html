@@ -15,11 +15,6 @@
     <link href="../static/css/datagridpanel_customer.css" rel="stylesheet">
     <link href="../static/css/dialogpanel.css" type="text/css" rel="stylesheet">
     <link href="../static/css/datagrid_customer.css" type="text/css" rel="stylesheet">
-    <script type="text/javascript">
-        $(function () {
-            $('#EnterpriseName').attr("disabled", true);
-        });
-    </script>
 </head>
 
 <body>
@@ -78,7 +73,7 @@
                 <tr>
                     <td class="kv-label">父节点</td>
                     <td class="kv-content">
-                        <input  name="iParentNode" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                        <select class="easyui-combotree" id="iParentNode" name="iParentNode" style="width:156px;"/>
                     </td>
                 </tr>
                 <tr>
@@ -128,4 +123,15 @@
 <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
 <script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
 <script type="text/javascript" src="../static/js/system/EnterpriseClass.js" charset="utf-8"></script>
+<script type="text/javascript">
+    $(function () {
+        $('#EnterpriseName').attr("disabled", true);
+
+        $("#iParentNode").combotree({
+            url:'/Enterprize/parentNode',
+            method:'get',
+            required: true
+        })
+    });
+</script>
 
