@@ -99,17 +99,11 @@ $(function () {
                 align: 'center',
                 width: 200
             },
-             {
-                field: 'ParentNode',
-                title: '父节点ID',
-                align: 'center',
-                width: 100
-            },
             {
                 field: 'ParentNodeName',
                 title: '父节点',
                 align: 'center',
-                width: 120
+                width: 130
             },
             {
                 field: 'Seq',
