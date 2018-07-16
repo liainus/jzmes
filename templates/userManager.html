@@ -70,7 +70,7 @@
                             <tr>
                                 <td class="kv-label">所属部门</td>
                                 <td class="kv-content">
-                                    <select name="OrganizationName" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder="">
+                                    <select name="OrganizationName" id="OrganizationName" type="text" style="width:157px;" autocomplete="off" placeholder="">
                                         <option value="">请选择</option>
                                         {% for department in departments %}
                                             <option value="{{ department['ID'] }}">{{ department['OrganizationName'] }}</option>
@@ -182,9 +182,10 @@
         $('input[name="Creater"]').val($(window.parent.document).find(".pf-user-name").html());//创建用户
         $('input[name="CreateTime"]').val(Bee.DateUtils.getCurrentTime());//创建时间
         $('input[name="LastLoginTime"]').val("");//上次登录时间
-        $('input[name="OrganizationName"]').val("");//所属部门
+        $('#OrganizationName option[value=""]').prop("selected", 'selected');//所属部门
     }
     function doUpdata(){
+
         $("#saveAdd").hide()
         $("#saveUpdata").show()
         var rows = $("#tab").datagrid('getSelections');
@@ -201,7 +202,7 @@
                 $('input[name="Creater"]').val(row.Creater);//创建用户
                 $('input[name="CreateTime"]').val(row.CreateTime);//创建时间
                 $('input[name="LastLoginTime"]').val(row.LastLoginTime);//上次登录时间
-                $('input[name="OrganizationName"]').val(row.OrganizationName);//所属部门
+                $('#OrganizationName option:contains('+row.OrganizationName+')').prop("selected", 'selected');//所属部门
             }
         } else if (rows.length == 0) {
             $.messager.alert('警告操作！', '请至少选定一条数据进行编辑！', 'warning');
@@ -257,7 +258,7 @@
              }else if(Bee.StringUtils.isEmpty($('input[name="LoginName"]').val())){
                  $.messager.alert('提示', '登录名不能为空！', 'info');
                  return false;
-             }else if(Bee.StringUtils.isEmpty($('input[name="OrganizationName"]').val())){
+             }else if($('#OrganizationName').find("option:selected").val() == ""){
                  $.messager.alert('提示', '所属部门不能为空！', 'info');
                  return false;
              }
@@ -271,12 +272,13 @@
                     LoginName :$('input[name="LoginName"]').val(),
                     Creater : $('input[name="Creater"]').val(),
                     CreateTime : $('input[name="CreateTime"]').val(),
-                    OrganizationName :$('input[name="OrganizationName"]').val()
+                    OrganizationName :$('#OrganizationName').find("option:selected").html()
                 },
                 dataType: 'json',
                 cache: false,
                 success: function (data,response,status) {
-                    $.messager.progress('close');
+                    $('#userClassDialog').dialog('close');
+                    $("#tab").datagrid('reload');
                 },
                  error: function(data){
                        alert("异常，请刷新后重试...");
@@ -293,7 +295,7 @@
              }else if(Bee.StringUtils.isEmpty($('input[name="LoginName"]').val())){
                  $.messager.alert('提示', '登录名不能为空！', 'info');
                  return false;
-             }else if(Bee.StringUtils.isEmpty($('input[name="OrganizationName"]').val())){
+             }else if($('#OrganizationName').find("option:selected").val() == ""){
                  $.messager.alert('提示', '所属部门不能为空！', 'info');
                  return false;
              }
@@ -307,12 +309,13 @@
                     Password :$('input[name="Password"]').val(),
                     LoginName :$('input[name="LoginName"]').val(),
                     Creater : $('input[name="Creater"]').val(),
-                    OrganizationName :$('input[name="OrganizationName"]').val()
+                    OrganizationName :$('#OrganizationName').find("option:selected").html()
                 },
                 dataType: 'json',
                 cache: false,
                 success: function (data,response,status) {
-                    $.messager.progress('close');
+                    $('#userClassDialog').dialog('close');
+                    $("#tab").datagrid('reload');
                 },
                  error: function(data){
                        alert("异常，请刷新后重试...");
