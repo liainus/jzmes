@@ -694,7 +694,7 @@ def getOrganizationList(id=0):
         organizations = session.query(Organization).filter().all()
         for obj in organizations:
             if obj.ParentNode == id:
-                sz.append({"id": obj.ID, "text": obj.ModuleName, "children": getOrganizationList(obj.ID)})
+                sz.append({"id": obj.ID, "text": obj.OrganizationName, "children": getOrganizationList(obj.ID)})
         srep = ',' + 'items' + ':' + '[]'
         # data = string(sz)
         # data.replace(srep, '')
