@@ -1159,6 +1159,9 @@ class Enterprise(Base):
 	
 	#企业代码:
 	EnterpriseNo = Column(Unicode(64), primary_key = False, autoincrement = False, nullable = True)
+
+	#父节点名称
+	ParentNodeName = Column(Unicode(64), primary_key = False, autoincrement = False, nullable = True)
 	
 	#描述:
 	Desc = Column(Unicode(64), primary_key = False, autoincrement = False, nullable = True)
@@ -1185,6 +1188,7 @@ class EnterpriseWebIFS(object):
 						EnterpriseCode=odata['EnterpriseCode'],
 						EnterpriseName=odata['EnterpriseName'],
 						EnterpriseNo = odata['EnterpriseNo'],
+						ParentNodeName = odata['ParentNodeName'],
 						ParentNode = odata['ParentNode'],
 						Seq=odata['Seq'],
 						Desc=odata['Desc'],
