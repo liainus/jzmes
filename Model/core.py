@@ -1261,6 +1261,7 @@ class EnterpriseWebIFS(object):
 				oclass.EnterpriseCode = odata['EnterpriseCode']
 				oclass.EnterpriseName = odata['EnterpriseName']
 				oclass.EnterpriseNo = odata['EnterpriseNo']
+				oclass.ParentNodeName = odata['ParentNodeName']
 				oclass.ParentNode = odata['ParentNode']
 				oclass.Seq = odata['Seq']
 				oclass.Desc = odata['Desc']

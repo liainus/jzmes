@@ -687,7 +687,6 @@ def allEnterprisesCreate():
         return re
 
 # 父节点树形结构图
-# 权限分配下的功能模块列表
 def getOrganizationList(id=0):
     sz = []
     try:
