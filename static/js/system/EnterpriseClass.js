@@ -175,6 +175,11 @@ $(function () {
         },
         create: function () {
             $(dialogId).dialog('open').dialog('setTitle', '新增' + titleText);
+            $("#iParentNode").combotree({
+                url:'/Enterprize/parentNode',
+                method:'get',
+                required: true
+            })
             $(formTitleId).text(titleText);
             $('input[name="Name"]').focus();
             $('input[name="iID"]').attr("disabled", "disabled");
@@ -182,9 +187,7 @@ $(function () {
             $('input[name="iEnterpriseCode"]').val("");
             $('input[name="iEnterpriseName"]').val("");
             $('input[name="iEnterpriseNo"]').val("");
-            $('input[name="iParentNode"]').val("");
             $('input[name="iSeq"]').val("");
-            // $('input[name="iEnterpriseSeq"]').onChange()
             $('input[name="iDesc"]').val("");
             $('input[name="iType"]').val("");
 
@@ -209,14 +212,13 @@ $(function () {
                     $('input[name="iEnterpriseCode"]').val(row.EnterpriseCode);
                     $('input[name="iEnterpriseName"]').val(row.EnterpriseName);
                     $('input[name="iEnterpriseNo"]').val(row.EnterpriseNo);
-                    $('input[name="iParentNode"]').val(row.ParentFactory);
+                    $("#iParentNode").combotree('setValue',row.ParentNode);
                     $('input[name="iSeq"]').val(row.Seq);
                     $('input[name="iDesc"]').val(row.Desc);
                     $('input[name="iType"]').val(row.Type);
 
                     //var thisSwitchbuttonObj = $(".switchstatus").find("[switchbuttonName='IsEnable']");//获取switchbutton对象  
                     if (row.IsEnable == '禁用') {
-
                         $("[switchbuttonName='IsEnable']").switchbutton("uncheck");
                     }else {
                         $("[switchbuttonName='IsEnable']").switchbutton("check");
@@ -284,6 +286,8 @@ $(function () {
             }
         },
         save: function () {
+            var iParentNodeTree = $("#iParentNode").combotree('tree')
+            var iParentNodeTreeNode = iParentNodeTree.tree('getSelected')//获取下拉树结构选中的值
             var validate=$(formId).form('validate');
             var strID = $('input[name="iID"]').val();
             var msg = ""
@@ -319,7 +323,7 @@ $(function () {
                     EnterpriseCode:$('input[name="iEnterpriseCode"]').val(),
                     EnterpriseName:$('input[name="iEnterpriseName"]').val(),
                     EnterpriseNo:$('input[name="iEnterpriseNo"]').val(),
-                    ParentNode:$('input[name="iParentNode"]').val(),
+                    ParentNode:iParentNodeTreeNode.id,
                     Seq:$('input[name="iSeq"]').val(),
                     Desc:$('input[name="iDesc"]').val(),
                     Type:$('input[name="iType"]').val()
@@ -332,21 +336,12 @@ $(function () {
                     data: entity,
                     dataType: 'json',
                     cache: false,
-
-                    // beforeSend: function () {
-                    //
-                    //     $.messager.progress({
-                    //         text: '正在' + message + '中...'
-                    //     });
-                    // },
                     error: function(data){
-                           console.log(data.responseText)
-                           alert(hintinfo+ "异常，请刷新后重试...");
-                             },
+                       console.log(data.responseText)
+                       alert(hintinfo+ "异常，请刷新后重试...");
+                     },
                     success: function (data,response,status) {
                         $.messager.progress('close');
-                        {
-                }
                         var obj1 = eval(data);
                         if(obj1[0].status == "OK"){
                             $.messager.show({
@@ -363,7 +358,7 @@ $(function () {
                             $(formId).form('reset');
                             $(dialogId).dialog('close');
                             $(tableId).datagrid('reload',{ url: "/allEnterprises/Find?_t=" + new Date().getTime() });
-                            $(tableid).datagrid('clearSelections');
+                            //$(tableid).datagrid('clearSelections');
                         } else {
                             $.messager.alert(obj1[0].status + '失败！', '未知错误导致失败，请重试！', 'warning');
                         }
