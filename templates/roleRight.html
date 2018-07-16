@@ -133,19 +133,9 @@
             console.log(treeId)
             console.log(menu_id)
             $.get("/permission/MenuToRole",{role_id:treeId,menu_id:menu_id},function(res){
-
+                $.messager.alert('提示','保存成功！');
             })
         })
-        //获取选中节点
-        function getClassChecked(tvClassId) {
-            var nodes = $('#' + tvClassId).tree('getChecked');
-            var s = '';
-            for (var i = 0; i < nodes.length; i++) {
-                if (s != '') s += ',';
-                s += nodes[i].id;
-            }
-            return s;
-        }
     })
 
 </script>
