@@ -101,9 +101,15 @@ $(function () {
             },
              {
                 field: 'ParentNode',
-                title: '父节点',
+                title: '父节点ID',
                 align: 'center',
                 width: 100
+            },
+            {
+                field: 'ParentNodeName',
+                title: '父节点',
+                align: 'center',
+                width: 120
             },
             {
                 field: 'Seq',
@@ -324,6 +330,7 @@ $(function () {
                     EnterpriseName:$('input[name="iEnterpriseName"]').val(),
                     EnterpriseNo:$('input[name="iEnterpriseNo"]').val(),
                     ParentNode:iParentNodeTreeNode.id,
+                    ParentNodeName:iParentNodeTreeNode.text,
                     Seq:$('input[name="iSeq"]').val(),
                     Desc:$('input[name="iDesc"]').val(),
                     Type:$('input[name="iType"]').val()
