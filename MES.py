@@ -185,7 +185,7 @@ def userManager():
     data = []
     for tu in departments:
         li = list(tu)
-        id = str(li[0])
+        id = li[0]
         name = li[1]
         department = {'ID':id,'OrganizationName':name}
         data.append(department)
@@ -639,13 +639,14 @@ def allOrganizationsSearch():
             logger.error(e)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
-
+# 生产建模
 # 加载工作台
 @app.route('/Enterprise')
 def Enterprise():
     return render_template('sysEnterprise.html')
 
 
+# 查找
 @app.route('/allEnterprises/Find')
 def EnterprisesFind():
     if request.method == 'GET':
@@ -684,6 +685,37 @@ def allEnterprisesCreate():
         EnterpriseIFS = Model.core.EnterpriseWebIFS("EnterpriseCreate")
         re = EnterpriseIFS.allEnterprisesCreate(data)
         return re
+
+# 父节点树形结构图
+# 权限分配下的功能模块列表
+def getOrganizationList(id=0):
+    sz = []
+    try:
+        organizations = session.query(Organization).filter().all()
+        for obj in organizations:
+            if obj.ParentNode == id:
+                sz.append({"id": obj.ID, "text": obj.ModuleName, "children": getOrganizationList(obj.ID)})
+        srep = ',' + 'items' + ':' + '[]'
+        # data = string(sz)
+        # data.replace(srep, '')
+
+        return sz
+    except Exception as e:
+        print(e)
+        return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+# 加载菜单列表
+@app.route('/Enterprize/parentNode')
+def parentNode():
+    if request.method == 'GET':
+        try:
+            data = getOrganizationList(id=0)
+            jsondata = json.dumps(data, cls=AlchemyEncoder, ensure_ascii=False)
+            print(jsondata)
+            return jsondata.encode("utf8")
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
 @app.route('/allEnterprises/Search', methods=['POST', 'GET'])
