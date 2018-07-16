@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -71,7 +70,12 @@
                             <tr>
                                 <td class="kv-label">所属部门</td>
                                 <td class="kv-content">
-                                    <input name="OrganizationName" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder="">
+                                    <select name="OrganizationName" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder="">
+                                        <option value="">请选择</option>
+                                        {% for department in departments %}
+                                            <option value="{{ department['ID'] }}">{{ department['OrganizationName'] }}</option>
+                                        {% endfor %}
+                                    </select>
                                 </td>
                             </tr>
 {#                            <tr>#}

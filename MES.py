@@ -179,7 +179,17 @@ def syslogsFindByDate():
 # 用户管理
 @app.route('/userManager')
 def userManager():
-    return render_template('userManager.html')
+    departments = session.query(Organization.ID, Organization.OrganizationName).all()
+    print(departments)
+    # departments = json.dumps(departments, cls=AlchemyEncoder, ensure_ascii=False)
+    data = []
+    for tu in departments:
+        li = list(tu)
+        id = str(li[0])
+        name = li[1]
+        department = {'ID':id,'OrganizationName':name}
+        data.append(department)
+    return render_template('userManager.html',departments=data)
 
 
 @app.route('/MyUser/Select')
