@@ -101,9 +101,15 @@ $(function () {
             },
              {
                 field: 'ParentEnterprise',
-                title: '父节点',
+                title: '父节点ID',
                 align: 'center',
                 width: 100
+            },
+            {
+                field: 'ParentNodeName',
+                title: '父节点',
+                align: 'center',
+                width: 120
             },
             {
                 field: 'Seq',
@@ -175,6 +181,11 @@ $(function () {
         },
         create: function () {
             $(dialogId).dialog('open').dialog('setTitle', '新增' + titleText);
+            $("#iParentNode").combotree({
+                url:'/Enterprize/parentNode',
+                method:'get',
+                required: true
+            })
             $(formTitleId).text(titleText);
             $('input[name="Name"]').focus();
             $('input[name="iID"]').attr("disabled", "disabled");
@@ -182,7 +193,6 @@ $(function () {
             $('input[name="iFactoryCode"]').val("");
             $('input[name="iFactoryName"]').val("");
             $('input[name="iFactoryNo"]').val("");
-            $('input[name="iParentEnterprise"]').val("");
             $('input[name="iSeq"]').val("");
             // $('input[name="iFactorySeq"]').onChange()
             $('input[name="iDesc"]').val("");
@@ -209,7 +219,7 @@ $(function () {
                     $('input[name="iFactoryCode"]').val(row.FactoryCode);
                     $('input[name="iFactoryName"]').val(row.FactoryName);
                     $('input[name="iFactoryNo"]').val(row.FactoryNo);
-                    $('input[name="iParentEnterprise"]').val(row.ParentEnterprise);
+                    $("#iParentNode").combotree('setValue',row.ParentNode);
                     $('input[name="iSeq"]').val(row.Seq);
                     $('input[name="iDesc"]').val(row.Desc);
                     $('input[name="iType"]').val(row.Type);
@@ -252,28 +262,11 @@ $(function () {
                             // data: JSON.stringify(ids),
                             data: a,
                             dataType: 'json',
-                            beforeSend: function () {
-                                $.messager.progress({
-                                    text: '正在删除中...'
-                                });
-                            },
                             success: function (data) {
                                 $.messager.progress('close');
-
                                 if (data) {
-                                    $(tableId).datagrid('loaded');
+                                    $(tableId).datagrid('loadData', data);
                                     $(tableId).datagrid('load');
-                                    $(tableId).datagrid('unselectAll');
-                                    $.messager.show({
-                                        title: '提示',
-                                        timeout:1000,
-                                        msg: '删除' + titleText + '成功',
-                                        style: {
-                                            right: '',
-                                            top: document.body.scrollTop + document.documentElement.scrollTop,
-                                            bottom: ''
-                                        }
-                                    });
                                 }
                             }
                         });
@@ -284,6 +277,8 @@ $(function () {
             }
         },
         save: function () {
+            var iParentNodeTree = $("#iParentNode").combotree('tree')
+            var iParentNodeTreeNode = iParentNodeTree.tree('getSelected')//获取下拉树结构选中的值
             var validate=$(formId).form('validate');
             var strID = $('input[name="iID"]').val();
             var msg = ""
@@ -319,7 +314,8 @@ $(function () {
                     FactoryCode:$('input[name="iFactoryCode"]').val(),
                     FactoryName:$('input[name="iFactoryName"]').val(),
                     FactoryNo:$('input[name="iFactoryNo"]').val(),
-                    ParentEnterprise:$('input[name="iParentEnterprise"]').val(),
+                    ParentEnterprise:iParentNodeTreeNode.id,
+                    ParentNodeName:iParentNodeTreeNode.text,
                     Seq:$('input[name="iSeq"]').val(),
                     Desc:$('input[name="iDesc"]').val(),
                     Type:$('input[name="iType"]').val()
@@ -363,7 +359,7 @@ $(function () {
                             $(formId).form('reset');
                             $(dialogId).dialog('close');
                             $(tableId).datagrid('reload',{ url: "/allFactorys/Find?_t=" + new Date().getTime() });
-                            $(tableid).datagrid('clearSelections');
+                            //$(tableid).datagrid('clearSelections');
                         } else {
                             $.messager.alert(obj1[0].status + '失败！', '未知错误导致失败，请重试！', 'warning');
                         }
@@ -450,7 +446,7 @@ $(function () {
         ]]
     });
             $(tableId).datagrid('reload');
-            $(tableid).datagrid('clearSelections');
+            $(tableId).datagrid('clearSelections');
            
         }
 

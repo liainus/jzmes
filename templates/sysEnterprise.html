@@ -79,13 +79,13 @@
                 <tr>
                     <td class="kv-label">说明</td>
                     <td class="kv-content">
-                        <input  name="iDesc" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                        <input  name="iDesc" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
                     </td>
                 </tr>
                 <tr>
                     <td class="kv-label">类型</td>
                     <td class="kv-content">
-                        <input  name="iType" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                        <input  name="iType" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
                     </td>
                 </tr>
             </tbody>
@@ -127,10 +127,10 @@
     $(function () {
         $('#EnterpriseName').attr("disabled", true);
         $("#iParentNode").combotree({
-                url:'/Enterprize/parentNode',
-                method:'get',
-                required: true
-            })
+            url:'/Enterprize/parentNode',
+            method:'get',
+            required: true
+        })
     });
 </script>
 

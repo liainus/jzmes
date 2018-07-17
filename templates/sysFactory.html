@@ -15,11 +15,6 @@
     <link href="../static/css/datagridpanel_customer.css" rel="stylesheet">
     <link href="../static/css/dialogpanel.css" type="text/css" rel="stylesheet">
     <link href="../static/css/datagrid_customer.css" type="text/css" rel="stylesheet">
-    <script type="text/javascript">
-        $(function () {
-            $('#FactoryName').attr("disabled", true);
-        });
-    </script>
 </head>
 
 <body>
@@ -78,19 +73,19 @@
                 <tr>
                     <td class="kv-label">父节点</td>
                     <td class="kv-content">
-                        <input  name="iParentEnterprise" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                        <select class="easyui-combotree" id="iParentEnterprise" name="iParentEnterprise" style="width:156px;"/>
                     </td>
                 </tr>
                 <tr>
                     <td class="kv-label">说明</td>
                     <td class="kv-content">
-                        <input  name="iDesc" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                        <input  name="iDesc" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
                     </td>
                 </tr>
                 <tr>
                     <td class="kv-label">类型</td>
                     <td class="kv-content">
-                        <input  name="iType" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                        <input  name="iType" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
                     </td>
                 </tr>
             </tbody>
@@ -128,4 +123,13 @@
 <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
 <script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
 <script type="text/javascript" src="../static/js/system/FactoryClass.js" charset="utf-8"></script>
-
+<script type="text/javascript">
+        $(function () {
+            $('#FactoryName').attr("disabled", true);
+            $("#iParentEnterprise").combotree({
+                url:'/Enterprize/parentNode',
+                method:'get',
+                required: true
+            })
+        });
+    </script>
