@@ -930,7 +930,15 @@ def allProductLinesSearch():
 # 加载工作台
 @app.route('/ProcessUnit')
 def ProcessUnit():
-    return render_template('sysProcessUnit.html')
+    ID = session.query(ProductLine.ID).all()
+    print(ID)
+    data = []
+    for tu in ID:
+        li = list(tu)
+        id = li[0]
+        ProductLine_id = {'ID': id}
+        data.append(ProductLine_id)
+    return render_template('sysProcessUnit.html', ProductLine_id=data)
 
 
 @app.route('/allProcessUnits/Find')
@@ -981,11 +989,19 @@ def allProcessUnitsSearch():
         re = ProcessUnitIFS.allProcessUnitsSearch(data)
         return re
 
-
+# 设备建模
 # 加载工作台
 @app.route('/Equipment')
 def Equipment():
-    return render_template('sysEquipment.html')
+    ID = session.query(ProcessUnit.ID).all()
+    print(ID)
+    data = []
+    for tu in ID:
+        li = list(tu)
+        id = li[0]
+        processUnit_id = {'ID': id}
+        data.append(processUnit_id)
+    return render_template('sysEquipment.html', ProcessUnit_id=data)
 
 
 @app.route('/allEquipments/Find')
