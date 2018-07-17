@@ -139,27 +139,10 @@
         $(function () {
             $('#OrganizationName').attr("disabled", true);
             $('#iParentNode').combobox({
-                //url:'/Enterprize/parentNode',
+                url:'/allOrganizations/parentNode',
                 valueField:'id',
                 textField:'text',
-                required:true,
-                data:[{
-                        "id":1,
-                        "text":"text1"
-                    },{
-                        "id":2,
-                        "text":"text2"
-                    },{
-                        "id":3,
-                        "text":"text3",
-                        "selected":true
-                    },{
-                        "id":4,
-                        "text":"text4"
-                    },{
-                        "id":5,
-                        "text":"text5"
-                    }]
+                required:true
             });
         });
     </script>
