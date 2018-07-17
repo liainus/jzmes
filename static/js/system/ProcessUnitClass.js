@@ -85,13 +85,13 @@ $(function () {
                 field: 'PUCode',
                 title: '工艺段编码',
                 align: 'center',
-                width: 100
+                width: 150
             },
             {
                 field: 'PUName',
                 title: '工艺段名称',
                 align: 'center',
-                width: 100
+                width: 150
             },
              {
                 field: 'PLineID',
@@ -206,6 +206,7 @@ $(function () {
             $('input[name="iPUCode"]').val("");
             $('input[name="iPUName"]').val("");
             $('input[name="iPLineID"]').val("");
+            $('#iPLineID option[value=""]').prop("selected", 'selected');//ID默认空
             $('input[name="iPURateCapacity"]').val("");
             $('input[name="iPUPLanCapacity"]').val("");
             $('input[name="iCapacityUnit"]').val("");
@@ -236,7 +237,7 @@ $(function () {
                     $('input[name="iID"]').val(row.ID);
                     $('input[name="iPUCode"]').val(row.PUCode);
                     $('input[name="iPUName"]').val(row.PUName);
-                    $('input[name="iPLineID"]').val(row.PLineID);
+                    $('#iPLineID option:contains('+row.PLineID+')').prop("selected", 'selected');//ID赋值
                     $('input[name="iPURateCapacity"]').val(row.PURateCapacity);
                     $('input[name="iPUPLanCapacity"]').val(row.PUPLanCapacity);
                     $('input[name="iCapacityUnit"]').val(row.CapacityUnit);
@@ -284,11 +285,6 @@ $(function () {
                             // data: JSON.stringify(ids),
                             data: a,
                             dataType: 'json',
-                            beforeSend: function () {
-                                $.messager.progress({
-                                    text: '正在删除中...'
-                                });
-                            },
                             success: function (data) {
                                 $.messager.progress('close');
 
@@ -322,12 +318,17 @@ $(function () {
             var urlAddr = ""
             var stmp = $('input[name="iPUCode"]').val();
             if(Bee.StringUtils.isEmpty(stmp)) {
-               alert('Warning：组织机构编号不能为空！');
+               alert('Warning：工艺段编码不能为空！');
                return false;
             }
             stmp = $('input[name="iPUName"]').val();
             if(Bee.StringUtils.isEmpty(stmp)) {
-               alert('Warning：组织机构名称不能为空！');
+               alert('Warning：工艺段名称不能为空！');
+               return false;
+            }
+            stmp = $('#iPLineID').find("option:selected").val()
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：生产线ID不能为空！');
                return false;
             }
             stmp = $('input[name="iSeq"]').val();
@@ -350,7 +351,7 @@ $(function () {
                     ID:$('input[name="iID"]').val(),
                     PUCode:$('input[name="iPUCode"]').val(),
                     PUName:$('input[name="iPUName"]').val(),
-                    PLineID:$('input[name="iPLineID"]').val(),
+                    PLineID:$('#iPLineID').find("option:selected").html(),
                     PURateCapacity:$('input[name="iPURateCapacity"]').val(),
                     PUPLanCapacity:$('input[name="iPUPLanCapacity"]').val(),
                     CapacityUnit:$('input[name="iCapacityUnit"]').val(),
@@ -399,7 +400,7 @@ $(function () {
                             $(formId).form('reset');
                             $(dialogId).dialog('close');
                             $(tableId).datagrid('reload',{ url: "/allProcessUnits/Find?_t=" + new Date().getTime() });
-                            $(tableid).datagrid('clearSelections');
+                            //$(tableid).datagrid('clearSelections');
                         } else {
                             $.messager.alert(obj1[0].status + '失败！', '未知错误导致失败，请重试！', 'warning');
                         }
@@ -442,13 +443,13 @@ $(function () {
                 field: 'PUCode',
                 title: '工艺段编码',
                 align: 'center',
-                width: 100
+                width: 150
             },
             {
                 field: 'PUName',
                 title: '工艺段名称',
                 align: 'center',
-                width: 100
+                width: 150
             },
              {
                 field: 'PLineID',
@@ -490,7 +491,7 @@ $(function () {
                 align: 'center'
             },
             {
-                field: 'PlaceTime ',
+                field: 'PlaceTime',
                 title: '静置时间',
                 align: 'center',
                 width: 150
@@ -510,7 +511,7 @@ $(function () {
         ]]
     });
             $(tableId).datagrid('reload');
-            $(tableid).datagrid('clearSelections');
+            $(tableId).datagrid('clearSelections');
            
         }
 
