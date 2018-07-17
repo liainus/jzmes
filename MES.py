@@ -27,6 +27,7 @@ from collections import Counter
 from Model.account import login_security
 from flask import session as cli_session
 from Model.system import User
+from random import randint
 
 # from flask_cache import Cache
 #
@@ -643,23 +644,24 @@ def allOrganizationsSearch():
             logger.error(e)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
-@app.route('/allOrganizations/parentNode')
-def getParentNode():
-    if request.method == 'GET':
-        parentNode = session.query(Organization.ParentNode).all()
-        print(parentNode)
-        data = []
-        for tu in parentNode:
-            li = list(tu)
-            node = li[0]
-            data.append(node)
-        parent_node = []
-        data = set(data)  # 取出重复
-        for node in data:
-            text = {'text': node}
-            parent_node.append(text)
-        parentNode = json.dumps(parent_node, cls=AlchemyEncoder, ensure_ascii=False)
-        return parentNode
+
+# @app.route('/allOrganizations/parentNode')
+# def getParentNode():
+#     if request.method == 'GET':
+#         parentNode = session.query(Organization.ID, Organization.ParentNode).all()
+#         print(parentNode)
+#         data = []
+#         for tu in parentNode:
+#             li = list(tu)
+#             node = li[0]
+#             data.append(node)
+#         parent_node = []
+#         data = set(data)  #去除重复
+#         for node in data:
+#             text = {'text': node}
+#             parent_node.append(text)
+#         parentNode = json.dumps(parent_node, cls=AlchemyEncoder, ensure_ascii=False)
+#         return parentNode
 
 # 生产建模
 # 加载工作台
@@ -861,12 +863,24 @@ def allAreasSearch():
         re = AreaIFS.allAreasSearch(data)
         return re
 
-
+# 生产线
 # 加载工作台
 @app.route('/ProductLine')
 def ProductLine():
     return render_template('sysProductLine.html')
 
+@app.route('/ProductLine/area_ID')
+def area_ID():
+    ID = session.query(Area.ID).all()
+    print(ID)
+    # departments = json.dumps(departments, cls=AlchemyEncoder, ensure_ascii=False)
+    data = []
+    for tu in ID:
+        li = list(tu)
+        id = li[0]
+        area_id = {'ID':id}
+        data.append(area_id)
+    return render_template('sysProductLine.html',area_id=data)
 
 @app.route('/allProductLines/Find')
 def ProductLinesFind():
