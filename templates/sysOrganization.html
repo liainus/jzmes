@@ -140,6 +140,7 @@
             $('#OrganizationName').attr("disabled", true);
             $('#iParentNode').combobox({
                 url:'/allOrganizations/parentNode',
+                method:'get',
                 valueField:'id',
                 textField:'text',
                 required:true
