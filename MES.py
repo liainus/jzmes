@@ -645,20 +645,21 @@ def allOrganizationsSearch():
 
 @app.route('/allOrganizations/parentNode')
 def getParentNode():
-    parentNode = session.query(Organization.ParentNode).all()
-    print(parentNode)
-    data = []
-    for tu in parentNode:
-        li = list(tu)
-        node = li[0]
-        data.append(node)
-    parent_node = []
-    data = set(data)  # 取出重复
-    for node in data:
-        text = {'text': node}
-        parent_node.append(text)
-    parentNode = json.dumps(parent_node, cls=AlchemyEncoder, ensure_ascii=False)
-    return parentNode
+    if request.method == 'GET':
+        parentNode = session.query(Organization.ParentNode).all()
+        print(parentNode)
+        data = []
+        for tu in parentNode:
+            li = list(tu)
+            node = li[0]
+            data.append(node)
+        parent_node = []
+        data = set(data)  # 取出重复
+        for node in data:
+            text = {'text': node}
+            parent_node.append(text)
+        parentNode = json.dumps(parent_node, cls=AlchemyEncoder, ensure_ascii=False)
+        return parentNode
 
 # 生产建模
 # 加载工作台
