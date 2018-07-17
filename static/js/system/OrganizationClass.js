@@ -286,6 +286,7 @@ $(function () {
             }
         },
         save: function () {
+            console.log($('input[name="iParentNode"]').val())
             var validate=$(formId).form('validate');
             var strID = $('input[name="iID"]').val();
             var msg = ""
@@ -306,6 +307,14 @@ $(function () {
             }else{
                 $('input[name="iOrganizationSeq"]').val("");
                 alert('Warning：组织机构顺序输入错误,请输入数字！');
+                return false;
+            }
+            iParentNode = $('input[name="iParentNode"]').val();
+            if(Bee.StringUtils.isInteger(iParentNode)) {
+            //
+            }else{
+                $('input[name="iParentNode"]').val("");
+                alert('Warning：父节点ID输入错误,请输入数字！');
                 return false;
             }
             if (strID.length >= 1){
