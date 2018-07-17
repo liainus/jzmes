@@ -1453,6 +1453,9 @@ class Area(Base):
 	
 	#Varchar(200):
 	AreaNo = Column(Unicode(64), primary_key = False, autoincrement = False, nullable = True)
+
+	##Varchar(200):
+	ParentNodeName = Column(Unicode(64), primary_key = False, autoincrement = False, nullable = True)
 	
 	#varchar(32):
 	Desc = Column(Unicode(64), primary_key = False, autoincrement = False, nullable = True)
@@ -1479,6 +1482,7 @@ class AreaWebIFS(object):
 						AreaCode=odata['AreaCode'],
 						AreaName=odata['AreaName'],
 						AreaNo = odata['AreaNo'],
+						ParentNodeName = odata['ParentNodeName'],
 						ParentFactory = odata['ParentFactory'],
 						Seq=odata['Seq'],
 						Desc=odata['Desc'],
@@ -1551,6 +1555,7 @@ class AreaWebIFS(object):
 				oclass.AreaCode = odata['AreaCode']
 				oclass.AreaName = odata['AreaName']
 				oclass.AreaNo = odata['AreaNo']
+				oclass.ParentNodeName = odata['ParentNodeName']
 				oclass.ParentFactory = odata['ParentFactory']
 				oclass.Seq = odata['Seq']
 				oclass.Desc = odata['Desc']
