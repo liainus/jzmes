@@ -213,7 +213,7 @@ $(function () {
                     $('input[name="iAreaCode"]').val(row.AreaCode);
                     $('input[name="iAreaName"]').val(row.AreaName);
                     $('input[name="iAreaNo"]').val(row.AreaNo);
-                    $("#iParentFactory").combotree('setValue',row.ParentFactory);
+                    $("#iParentFactory").combotree('setValue',row.ParentEnterprise);
                     $('input[name="iSeq"]').val(row.Seq);
                     $('input[name="iDesc"]').val(row.Desc);
                     $('input[name="iType"]').val(row.Type);
@@ -440,7 +440,7 @@ $(function () {
         ]]
     });
             $(tableId).datagrid('reload');
-            $(tableid).datagrid('clearSelections');
+            $(tableId).datagrid('clearSelections');
            
         }
 
