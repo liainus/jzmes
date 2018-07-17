@@ -643,6 +643,23 @@ def allOrganizationsSearch():
             logger.error(e)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
+@app.route('/allOrganizations/parentNode')
+def getParentNode():
+    parentNode = session.query(Organization.ParentNode).all()
+    print(parentNode)
+    data = []
+    for tu in parentNode:
+        li = list(tu)
+        node = li[0]
+        data.append(node)
+    parent_node = []
+    data = set(data)  # 取出重复
+    for node in data:
+        text = {'text': node}
+        parent_node.append(text)
+    parentNode = json.dumps(parent_node, cls=AlchemyEncoder, ensure_ascii=False)
+    return parentNode
+
 # 生产建模
 # 加载工作台
 @app.route('/Enterprise')
@@ -706,6 +723,7 @@ def getOrganizationList(id=0):
     except Exception as e:
         print(e)
         return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
 # 加载菜单列表
 @app.route('/Enterprize/parentNode')
 def parentNode():
