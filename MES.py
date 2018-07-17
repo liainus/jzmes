@@ -867,20 +867,16 @@ def allAreasSearch():
 # 加载工作台
 @app.route('/ProductLine')
 def ProductLine():
-    return render_template('sysProductLine.html')
-
-@app.route('/ProductLine/area_ID')
-def area_ID():
     ID = session.query(Area.ID).all()
     print(ID)
-    # departments = json.dumps(departments, cls=AlchemyEncoder, ensure_ascii=False)
     data = []
     for tu in ID:
         li = list(tu)
         id = li[0]
-        area_id = {'ID':id}
+        area_id = {'ID': id}
         data.append(area_id)
-    return render_template('sysProductLine.html',area_id=data)
+    return render_template('sysProductLine.html', area_id=data)
+
 
 @app.route('/allProductLines/Find')
 def ProductLinesFind():
