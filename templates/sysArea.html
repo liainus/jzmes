@@ -72,19 +72,19 @@
                 <tr>
                     <td class="kv-label">父节点</td>
                     <td class="kv-content">
-                        <input  name="iParentFactory" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                        <select class="easyui-combotree" id="iParentFactory" name="iParentFactory" style="width:156px;"/>
                     </td>
                 </tr>
                 <tr>
                     <td class="kv-label">说明</td>
                     <td class="kv-content">
-                        <input  name="iDesc" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                        <input  name="iDesc" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
                     </td>
                 </tr>
                 <tr>
                     <td class="kv-label">类型</td>
                     <td class="kv-content">
-                        <input  name="iType" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                        <input  name="iType" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
                     </td>
                 </tr>
             </tbody>
@@ -123,7 +123,12 @@
 <script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
 <script type="text/javascript" src="../static/js/system/AreaClass.js" charset="utf-8"></script>
 <script type="text/javascript">
-        $(function () {
-            $('#AreaName').attr("disabled", true);
-        });
-    </script>
+    $(function () {
+        $('#AreaName').attr("disabled", true);
+         $("#iParentFactory").combotree({
+            url:'/Enterprize/parentNode',
+            method:'get',
+            required: true
+        })
+    });
+</script>

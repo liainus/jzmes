@@ -392,29 +392,29 @@ $(function () {
                 align: 'center',
                 width: 100
             },
-           {
+            {
                 field: 'FactoryCode',
-                title: '区域编码',
+                title: '工厂编码',
                 align: 'center',
                 width: 200
             },
             {
                 field: 'FactoryName',
-                title: '区域名称',
+                title: '工厂名称',
                 align: 'center',
                 width: 200
             },
              {
                 field: 'FactoryNo',
-                title: '区域编号',
+                title: '工厂编号',
                 align: 'center',
                 width: 200
             },
-             {
-                field: 'ParentEnterprise',
+            {
+                field: 'ParentNodeName',
                 title: '父节点',
                 align: 'center',
-                width: 200
+                width: 120
             },
             {
                 field: 'Seq',
@@ -434,7 +434,7 @@ $(function () {
             {
                 field: 'Type',
                 title: '类型',
-                width: 200,
+                width: 100,
                 align: 'center'
             }
         ]]
