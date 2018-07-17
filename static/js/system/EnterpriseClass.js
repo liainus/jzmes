@@ -318,8 +318,10 @@ $(function () {
                        alert(hintinfo+ "异常，请刷新后重试...");
                      },
                     success: function (data,response,status) {
+                        console.log(data)
                         $.messager.progress('close');
                         var obj1 = eval(data);
+                        console.log(obj1)
                         if(obj1[0].status == "OK"){
                             $.messager.show({
                                 title: '提示',
@@ -374,29 +376,29 @@ $(function () {
                 align: 'center',
                 width: 100
             },
-           {
+            {
                 field: 'EnterpriseCode',
-                title: '区域编码',
+                title: '企业编码',
                 align: 'center',
                 width: 200
             },
             {
                 field: 'EnterpriseName',
-                title: '区域名称',
+                title: '企业名称',
                 align: 'center',
                 width: 200
             },
              {
                 field: 'EnterpriseNo',
-                title: '区域编号',
+                title: '企业编号',
                 align: 'center',
                 width: 200
             },
-             {
+            {
                 field: 'ParentNodeName',
                 title: '父节点',
                 align: 'center',
-                width: 200
+                width: 130
             },
             {
                 field: 'Seq',
@@ -416,7 +418,7 @@ $(function () {
             {
                 field: 'Type',
                 title: '类型',
-                width: 200,
+                width: 100,
                 align: 'center'
             }
         ]]
