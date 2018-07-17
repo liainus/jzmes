@@ -501,7 +501,7 @@ def batchmanager():
 def organizationMap():
     return render_template('index_organization.html')
 
-
+# 组织机构建模
 # 加载工作台
 @app.route('/organization')
 def organization():
@@ -610,9 +610,13 @@ def allOrganizationsCreate():
                 else:
                     DspColor = data['Color']
                 session.add(
-                    Organization(OrganizationCode=data['OrganizationCode'], OrganizationName=data['OrganizationName'],ParentNode=data['ParentNode'], OrganizationSeq=data['OrganizationSeq'],
-                                     Description=data['Description'], CreatePerson=data['CreatePerson'],
-                                     CreateDate=datetime.datetime.now(),Img = DspImg,Color = DspColor))
+                    Organization(OrganizationCode=data['OrganizationCode'],
+                                 OrganizationName=data['OrganizationName'],
+                                 ParentNode=data['ParentNode'],
+                                 OrganizationSeq=data['OrganizationSeq'],
+                                 Description=data['Description'],
+                                 CreatePerson=data['CreatePerson'],
+                                 CreateDate=datetime.datetime.now(),Img = DspImg,Color = DspColor))
                 session.commit()
                 return json.dumps([{"status": "OK"}], cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
