@@ -1306,6 +1306,9 @@ class Factory(Base):
 	
 	#工厂代码:
 	FactoryNo = Column(Unicode(64), primary_key = False, autoincrement = False, nullable = True)
+
+	# 父节点名称
+	ParentNodeName = Column(Unicode(64), primary_key = False, autoincrement = False, nullable = True)
 	
 	#描述:
 	Desc = Column(Unicode(64), primary_key = False, autoincrement = False, nullable = True)
@@ -1332,6 +1335,7 @@ class FactoryWebIFS(object):
 						FactoryCode=odata['FactoryCode'],
 						FactoryName=odata['FactoryName'],
 						FactoryNo = odata['FactoryNo'],
+						ParentNodeName = odata['ParentNodeName'],
 						ParentEnterprise = odata['ParentEnterprise'],
 						Seq=odata['Seq'],
 						Desc=odata['Desc'],
@@ -1404,6 +1408,7 @@ class FactoryWebIFS(object):
 				oclass.FactoryCode = odata['FactoryCode']
 				oclass.FactoryName = odata['FactoryName']
 				oclass.FactoryNo = odata['FactoryNo']
+				oclass.ParentNodeName = odata['ParentNodeName']
 				oclass.ParentEnterprise = odata['ParentEnterprise']
 				oclass.Seq = odata['Seq']
 				oclass.Desc = odata['Desc']
