@@ -15,11 +15,6 @@
     <link href="../static/css/datagridpanel_customer.css" rel="stylesheet">
     <link href="../static/css/dialogpanel.css" type="text/css" rel="stylesheet">
     <link href="../static/css/datagrid_customer.css" type="text/css" rel="stylesheet">
-    <script type="text/javascript">
-        $(function () {
-            $('#ProductLineName').attr("disabled", true);
-        });
-    </script>
 </head>
 
 <body>
@@ -66,7 +61,12 @@
                 <tr>
                     <td class="kv-label">区域ID</td>
                     <td class="kv-content">
-                        <input  name="iAreaID" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                        <select name="iAreaID" id="iAreaID" type="text" style="width:157px;" autocomplete="off" placeholder="">
+                            <option value="">请选择</option>
+                            {% for department in departments %}
+                                <option value="{{ department['ID'] }}">{{ department['OrganizationName'] }}</option>
+                            {% endfor %}
+                        </select>
                     </td>
                 </tr>
                 <tr>
@@ -78,19 +78,19 @@
                 <tr>
                     <td class="kv-label">说明</td>
                     <td class="kv-content">
-                        <input  name="iDesc" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                        <input  name="iDesc" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
                     </td>
                 </tr>
                 <tr>
                     <td class="kv-label">生产能力</td>
                     <td class="kv-content">
-                        <input  name="iPLineCapacity" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                        <input  name="iPLineCapacity" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
                     </td>
                 </tr>
                 <tr>
                     <td class="kv-label">单位</td>
                     <td class="kv-content">
-                        <input  name="iUnit" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                        <input  name="iUnit" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
                     </td>
                 </tr>
             </tbody>
@@ -128,4 +128,8 @@
 <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
 <script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
 <script type="text/javascript" src="../static/js/system/ProductLineClass.js" charset="utf-8"></script>
-
+<script type="text/javascript">
+    $(function () {
+        $('#ProductLineName').attr("disabled", true);
+    });
+</script>
