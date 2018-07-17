@@ -99,12 +99,6 @@ $(function () {
                 align: 'center',
                 width: 200
             },
-             {
-                field: 'ParentEnterprise',
-                title: '父节点ID',
-                align: 'center',
-                width: 100
-            },
             {
                 field: 'ParentNodeName',
                 title: '父节点',
@@ -181,7 +175,7 @@ $(function () {
         },
         create: function () {
             $(dialogId).dialog('open').dialog('setTitle', '新增' + titleText);
-            $("#iParentNode").combotree({
+            $("#iParentEnterprise").combotree({
                 url:'/Enterprize/parentNode',
                 method:'get',
                 required: true
@@ -219,7 +213,7 @@ $(function () {
                     $('input[name="iFactoryCode"]').val(row.FactoryCode);
                     $('input[name="iFactoryName"]').val(row.FactoryName);
                     $('input[name="iFactoryNo"]').val(row.FactoryNo);
-                    $("#iParentNode").combotree('setValue',row.ParentNode);
+                    $("#iParentEnterprise").combotree('setValue',row.ParentEnterprise);
                     $('input[name="iSeq"]').val(row.Seq);
                     $('input[name="iDesc"]').val(row.Desc);
                     $('input[name="iType"]').val(row.Type);
@@ -277,7 +271,7 @@ $(function () {
             }
         },
         save: function () {
-            var iParentNodeTree = $("#iParentNode").combotree('tree')
+            var iParentNodeTree = $("#iParentEnterprise").combotree('tree')
             var iParentNodeTreeNode = iParentNodeTree.tree('getSelected')//获取下拉树结构选中的值
             var validate=$(formId).form('validate');
             var strID = $('input[name="iID"]').val();
