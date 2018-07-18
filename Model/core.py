@@ -3238,7 +3238,7 @@ class SysLog(Base):
 	OperationDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
 
 	# 操作内容:
-	OperationContent = Column(Unicode(800), primary_key=False, autoincrement=False, nullable=True)
+	OperationContent = Column(Unicode(2048), primary_key=False, autoincrement=False, nullable=True)
 
 	# 类型:
 	OperationType = Column(Unicode(64), primary_key=False, autoincrement=False, nullable=True)
