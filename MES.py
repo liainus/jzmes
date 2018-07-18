@@ -310,7 +310,7 @@ def deleteUser():
                     ID = int(key)
                     try:
                         organization = session.query(User).filter_by(ID=ID).delete()
-                        insertSyslog("success", "删除ID是" + ID + "的用户删除成功", "AAAAAAadmin")
+                        insertSyslog("success", "删除ID是" + string(ID) + "的用户删除成功", "AAAAAAadmin")
                     except Exception as ee:
                         print(ee)
                         logger.error(ee)
