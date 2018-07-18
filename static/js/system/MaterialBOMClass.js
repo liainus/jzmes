@@ -196,14 +196,18 @@ $(function () {
             $('input[name="Name"]').focus();
             $('input[name="iID"]').attr("disabled", "disabled");
             $('input[name="iID"]').val();
-            $('input[name="iMATID"]').val();
+            //$('input[name="iMATID"]').val();
+            $('#iMATID option[value=""]').prop("selected", 'selected');//ID默认空
             $('input[name="iBatchTotalWeight"]').val();
             $('input[name="iBatchSingleMATWeight"]').val();
             $('input[name="iUnit"]').val();
             $('input[name="iBatchPercentage"]').val();
-            $('input[name="iProductRuleID"]').val();
-            $('input[name="iPUID"]').val();
-            $('input[name="iMATTypeID"]').val();
+            //$('input[name="iProductRuleID"]').val();
+            $('#iProductRuleID option[value=""]').prop("selected", 'selected');//ID默认空
+            //$('input[name="iPUID"]').val();
+            $('#iPUID option[value=""]').prop("selected", 'selected');//ID默认空
+            //$('input[name="iMATTypeID"]').val();
+            $('#iMATTypeID option[value=""]').prop("selected", 'selected');//ID默认空
             $('input[name="iSeq"]').val();
             $('input[name="iGrade"]').val();   // $('input[name="iMaterialBOMSeq"]').onChange()
             // $(formId).form('clear');
@@ -224,14 +228,14 @@ $(function () {
                     //$(formId).form('load', row);
                     $('input[name="iID"]').attr("disabled", "disabled");
                     $('input[name="iID"]').val(row.ID);
-                    $('input[name="iMATID"]').val(row.MATID);
+                    $('#iMATID option:contains('+row.MATID+')').prop("selected", 'selected');//区域ID赋值
                     $('input[name="iBatchTotalWeight"]').val(row.BatchTotalWeight);
                     $('input[name="iBatchSingleMATWeight"]').val(row.BatchSingleMATWeight);
                     $('input[name="iUnit"]').val(row.Unit);
                     $('input[name="iBatchPercentage"]').val(row.BatchPercentage);
-                    $('input[name="iProductRuleID"]').val(row.ProductRuleID);
-                    $('input[name="iPUID"]').val(row.PUID);
-                    $('input[name="iMATTypeID"]').val(row.MATTypeID);
+                    $('#iProductRuleID option:contains('+row.ProductRuleID+')').prop("selected", 'selected');//区域ID赋值
+                    $('#iPUID option:contains('+row.PUID+')').prop("selected", 'selected');//区域ID赋值
+                    $('#iMATTypeID option:contains('+row.MATTypeID+')').prop("selected", 'selected');//区域ID赋值
                     $('input[name="iSeq"]').val(row.Seq);
                     $('input[name="iGrade"]').val(row.Grade);
                     //var thisSwitchbuttonObj = $(".switchstatus").find("[switchbuttonName='IsEnable']");//获取switchbutton对象  
@@ -272,11 +276,6 @@ $(function () {
                             // data: JSON.stringify(ids),
                             data: a,
                             dataType: 'json',
-                            beforeSend: function () {
-                                $.messager.progress({
-                                    text: '正在删除中...'
-                                });
-                            },
                             success: function (data) {
                                 $.messager.progress('close');
 
@@ -308,7 +307,26 @@ $(function () {
             var strID = $('input[name="iID"]').val();
             var msg = ""
             var urlAddr = ""
-           
+            var stmp = $('#iMATID').find("option:selected").val();
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：物料ID不能为空！');
+               return false;
+            }
+            stmp = $('#iProductRuleID').find("option:selected").val();
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：产品定义ID不能为空！');
+               return false;
+            }
+            stmp = $('#iPUID').find("option:selected").val();
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：工艺段ID不能为空！');
+               return false;
+            }
+            stmp = $('#iMATTypeID').find("option:selected").val();
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：物料类型ID不能为空！');
+               return false;
+            }
             stmp = $('input[name="iSeq"]').val();
             if(Bee.StringUtils.isInteger(stmp)) {
             //
@@ -327,14 +345,14 @@ $(function () {
             }
                 var entity = {
                     ID:$('input[name="iID"]').val(),
-                    MATID:$('input[name="iMATID"]').val(),
+                    MATID:$('#iMATID').find("option:selected").html(),
                     BatchTotalWeight:$('input[name="iBatchTotalWeight"]').val(),
                     BatchSingleMATWeight:$('input[name="iBatchSingleMATWeight"]').val(),
                     Unit:$('input[name="iUnit"]').val(),
                     BatchPercentage:$('input[name="iBatchPercentage"]').val(),
-                    ProductRuleID:$('input[name="iProductRuleID"]').val(),
-                    PUID:$('input[name="iPUID"]').val(),
-                    MATTypeID:$('input[name="iMATTypeID"]').val(),
+                    ProductRuleID:$('#iProductRuleID').find("option:selected").html(),
+                    PUID:$('#iPUID').find("option:selected").html(),
+                    MATTypeID:$('#iMATTypeID').find("option:selected").html(),
                     Seq:$('input[name="iSeq"]').val(),
                     Grade:$('input[name="iGrade"]').val()
                 };
@@ -377,7 +395,7 @@ $(function () {
                             $(formId).form('reset');
                             $(dialogId).dialog('close');
                             $(tableId).datagrid('reload',{ url: "/allMaterialBOMs/Find?_t=" + new Date().getTime() });
-                            $(tableid).datagrid('clearSelections');
+                            //$(tableid).datagrid('clearSelections');
                         } else {
                             $.messager.alert(obj1[0].status + '失败！', '未知错误导致失败，请重试！', 'warning');
                         }
@@ -481,7 +499,7 @@ $(function () {
         ]]
     });
             $(tableId).datagrid('reload');
-            $(tableid).datagrid('clearSelections');
+            $(tableId).datagrid('clearSelections');
            
         }
 
