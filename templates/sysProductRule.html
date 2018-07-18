@@ -15,11 +15,6 @@
     <link href="../static/css/datagridpanel_customer.css" rel="stylesheet">
     <link href="../static/css/dialogpanel.css" type="text/css" rel="stylesheet">
     <link href="../static/css/datagrid_customer.css" type="text/css" rel="stylesheet">
-    <script type="text/javascript">
-        $(function () {
-            $('#ProductRuleName').attr("disabled", true);
-        });
-    </script>
 </head>
 
 <body>
@@ -78,13 +73,13 @@
                 <tr>
                     <td class="kv-label">发行日期</td>
                     <td class="kv-content">
-                        <input  name="iPublish_date" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                        <input  name="iPublish_date" id="iPublish_date" type="text" class="easyui-datebox" autocomplete="off" placeholder=""  >
                     </td>
                 </tr>
                 <tr>
                     <td class="kv-label">应用日期</td>
                     <td class="kv-content">
-                        <input  name="iAppy_date" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                        <input  name="iAppy_date" id="iAppy_date" type="text" class="easyui-datebox" autocomplete="off" placeholder=""  >
                     </td>
                 </tr>
                 <tr>
@@ -128,4 +123,8 @@
 <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
 <script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
 <script type="text/javascript" src="../static/js/system/ProductRuleClass.js" charset="utf-8"></script>
-
+<script type="text/javascript">
+    $(function () {
+        $('#ProductRuleName').attr("disabled", true);
+    });
+</script>

@@ -109,12 +109,12 @@ $(function () {
                 field: 'Publish_date',
                 title: '发行日期',
                 align: 'center',
-                width: 150
+                width: 220
             },
             {
                 field: 'Appy_date',
                 title: '使用日期',
-                width: 150,
+                width: 220,
                 // type: validatebox,
                 // options:{required:true},
                 align: 'center'
@@ -250,11 +250,6 @@ $(function () {
                             // data: JSON.stringify(ids),
                             data: a,
                             dataType: 'json',
-                            beforeSend: function () {
-                                $.messager.progress({
-                                    text: '正在删除中...'
-                                });
-                            },
                             success: function (data) {
                                 $.messager.progress('close');
 
@@ -318,8 +313,8 @@ $(function () {
                     PRName:$('input[name="iPRName"]').val(),
                     Version:$('input[name="iVersion"]').val(),
                     Desc:$('input[name="iDesc"]').val(),
-                    Publish_date:$('input[name="iPublish_date"]').val(),
-                    Appy_date:$('input[name="iAppy_date"]').val(),
+                    Publish_date:$('#iPublish_date').datebox('getValue'),
+                    Appy_date:$('#iAppy_date').datebox('getValue'),
                     IsUsed:$('input[name="iIsUsed"]').val()
                 };
                 $.ajax({
@@ -343,8 +338,6 @@ $(function () {
                              },
                     success: function (data,response,status) {
                         $.messager.progress('close');
-                        {
-                }
                         var obj1 = eval(data);
                         if(obj1[0].status == "OK"){
                             $.messager.show({
@@ -361,7 +354,7 @@ $(function () {
                             $(formId).form('reset');
                             $(dialogId).dialog('close');
                             $(tableId).datagrid('reload',{ url: "/allProductRules/Find?_t=" + new Date().getTime() });
-                            $(tableid).datagrid('clearSelections');
+                            //$(tableid).datagrid('clearSelections');
                         } else {
                             $.messager.alert(obj1[0].status + '失败！', '未知错误导致失败，请重试！', 'warning');
                         }
@@ -428,12 +421,12 @@ $(function () {
                 field: 'Publish_date',
                 title: '发行日期',
                 align: 'center',
-                width: 150
+                width: 220
             },
             {
                 field: 'Appy_date',
                 title: '使用日期',
-                width: 150,
+                width: 220,
                 // type: validatebox,
                 // options:{required:true},
                 align: 'center'
@@ -447,7 +440,7 @@ $(function () {
         ]]
     });
             $(tableId).datagrid('reload');
-            $(tableid).datagrid('clearSelections');
+            $(tableId).datagrid('clearSelections');
            
         }
 
