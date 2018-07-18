@@ -1580,7 +1580,7 @@ def productUnit():
             pro_def_id = {'ID': id}
             data1.append(pro_def_id)
 
-        productUnit_ID = session.query(ProductUnit.ID).all()
+        productUnit_ID = session.query(ProcessUnit.ID).all()
         print(productUnit_ID)
         data = []
         for tu in productUnit_ID:

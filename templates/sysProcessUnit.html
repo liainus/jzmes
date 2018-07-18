@@ -34,7 +34,7 @@
         </div>
     </div>
 
-    <div id="ProcessUnitClassDialog" class="easyui-dialog" style="width:520px;height:550px;padding:10px;"
+    <div id="ProcessUnitClassDialog" class="easyui-dialog" style="width:520px;height:600px;padding:10px;"
      data-options="closed:'true',buttons:'#ProcessUnitClassDialogButtons',modal:true">
     <!-- <div id="ProcessUnitClassFormTitle" class="field-title">Title</div> -->
     <form id="ProcessUnitClassForm" method="post" class="dialog-form">
@@ -82,21 +82,9 @@
                     </td>
                 </tr>
                 <tr>
-                    <td class="kv-label">能力单位</td>
-                    <td class="kv-content">
-                        <input name="iCapacityUnit" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
-                    </td>
-                </tr>
-                <tr>
                     <td class="kv-label">顺序</td>
                     <td class="kv-content">
                         <input  name="iSeq" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
-                    </td>
-                </tr>
-                <tr>
-                    <td class="kv-label">说明</td>
-                    <td class="kv-content">
-                        <input  name="iDesc" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
                     </td>
                 </tr>
                 <tr>
@@ -106,15 +94,28 @@
                     </td>
                 </tr>
                 <tr>
-                    <td class="kv-label">时间单位</td>
-                    <td class="kv-content">
-                        <input name="iTimeUnit" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
-                    </td>
-                </tr>
-                <tr>
                     <td class="kv-label">批运行时间</td>
                     <td class="kv-content">
                         <input required="true" name="iBatchRunTime" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                    </td>
+                </tr>
+                <tr>
+                    <td class="kv-label">说明</td>
+                    <td class="kv-content">
+                        <input  name="iDesc" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                    </td>
+                </tr>
+                <tr>
+                    <td class="kv-label">能力单位</td>
+                    <td class="kv-content">
+                        <input name="iCapacityUnit" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="kv-label">时间单位</td>
+                    <td class="kv-content">
+                        <input name="iTimeUnit" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
                     </td>
                 </tr>
             </tbody>

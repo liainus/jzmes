@@ -59,6 +59,34 @@
                     </td>
                 </tr>
                 <tr>
+                    <td class="kv-label">产品定义ID</td>
+                    <td class="kv-content">
+                        <select name="iProductRuleID" id="iProductRuleID" type="text" style="width:157px;" autocomplete="off" placeholder="">
+                            <option value="">请选择</option>
+                            {% for id in Product_def_ID %}
+                                <option value="{{ id['ID'] }}">{{ id['ID'] }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="kv-label">工艺段ID</td>
+                    <td class="kv-content">
+                        <select name="iPUID" id="iPUID" type="text" style="width:157px;" autocomplete="off" placeholder="">
+                            <option value="">请选择</option>
+                            {% for id in Product_unit_ID %}
+                                <option value="{{ id['ID'] }}">{{ id['ID'] }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="kv-label">顺序</td>
+                    <td class="kv-content">
+                        <input  name="iSeq" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                    </td>
+                </tr>
+                <tr>
                     <td class="kv-label">说明</td>
                     <td class="kv-content">
                         <input  name="iDesc" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
@@ -74,34 +102,6 @@
                     <td class="kv-label">单位</td>
                     <td class="kv-content">
                         <input  name="iUnit" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
-                    </td>
-                </tr>
-                <tr>
-                    <td class="kv-label">产品定义ID</td>
-                    <td class="kv-content">
-                        <select name="iProductRuleID" id="iProductRuleID" type="text" style="width:157px;" autocomplete="off" placeholder="">
-                            <option value="">请选择</option>
-                            {% for id in area_id %}
-                                <option value="{{ id['ID'] }}">{{ id['ID'] }}</option>
-                            {% endfor %}
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="kv-label">工艺段ID</td>
-                    <td class="kv-content">
-                        <select name="iPUID" id="iPUID" type="text" style="width:157px;" autocomplete="off" placeholder="">
-                            <option value="">请选择</option>
-                            {% for id in area_id %}
-                                <option value="{{ id['ID'] }}">{{ id['ID'] }}</option>
-                            {% endfor %}
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="kv-label">顺序</td>
-                    <td class="kv-content">
-                        <input  name="iSeq" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
                     </td>
                 </tr>
             </tbody>
