@@ -39,7 +39,7 @@
         </div>
     </div>
 
-    <div id="ProductParameterClassDialog" class="easyui-dialog" style="width:520px;height:700px;padding:10px;"
+    <div id="ProductParameterClassDialog" class="easyui-dialog" style="width:520px;height:500px;padding:10px;"
      data-options="closed:'true',buttons:'#ProductParameterClassDialogButtons',modal:true">
     <!-- <div id="ProductParameterClassFormTitle" class="field-title">Title</div> -->
     <form id="ProductParameterClassForm" method="post" class="dialog-form">
@@ -48,7 +48,7 @@
                 <tr>
                     <td class="kv-label">ID</td>
                     <td class="kv-content">
-                        <input  name="iID" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                        <input  name="iID" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
                     </td>
                 </tr>
                 <tr>
@@ -64,33 +64,25 @@
                     </td>
                 </tr>
                 <tr>
-                    <td class="kv-label">说明</td>
-                    <td class="kv-content">
-                        <input  name="iDesc" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="kv-label">参数值</td>
-                    <td class="kv-content">
-                        <input  name="iValue" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="kv-label">单位</td>
-                    <td class="kv-content">
-                        <input  name="iUnit" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
-                    </td>
-                </tr>
-                <tr>
                     <td class="kv-label">产品定义ID</td>
                     <td class="kv-content">
-                        <input  name="iProductRuleID" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                        <select name="iProductRuleID" id="iProductRuleID" type="text" style="width:157px;" autocomplete="off" placeholder="">
+                            <option value="">请选择</option>
+                            {% for id in Product_def_ID %}
+                                <option value="{{ id['ID'] }}">{{ id['ID'] }}</option>
+                            {% endfor %}
+                        </select>
                     </td>
                 </tr>
                 <tr>
                     <td class="kv-label">工艺段ID</td>
                     <td class="kv-content">
-                        <input  name="iPUID" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                        <select name="iPUID" id="iPUID" type="text" style="width:157px;" autocomplete="off" placeholder="">
+                            <option value="">请选择</option>
+                            {% for id in Product_unit_ID %}
+                                <option value="{{ id['ID'] }}">{{ id['ID'] }}</option>
+                            {% endfor %}
+                        </select>
                     </td>
                 </tr>
                 <tr>
@@ -99,6 +91,36 @@
                         <input  name="iSeq" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
                     </td>
                 </tr>
+                <tr>
+                    <td class="kv-label">说明</td>
+                    <td class="kv-content">
+                        <input  name="iDesc" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="kv-label">参数值</td>
+                    <td class="kv-content">
+                        <input  name="iValue" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="kv-label">单位</td>
+                    <td class="kv-content">
+                        <input  name="iUnit" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                    </td>
+                </tr>
+{#                <tr>#}
+{#                    <td class="kv-label">产品定义ID</td>#}
+{#                    <td class="kv-content">#}
+{#                        <input  name="iProductRuleID" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>#}
+{#                    </td>#}
+{#                </tr>#}
+{#                <tr>#}
+{#                    <td class="kv-label">工艺段ID</td>#}
+{#                    <td class="kv-content">#}
+{#                        <input  name="iPUID" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>#}
+{#                    </td>#}
+{#                </tr>#}
             </tbody>
         </table>
         <div id="ProductParameterClassDialogButtons" >
