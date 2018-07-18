@@ -15,11 +15,6 @@
     <link href="../static/css/datagridpanel_customer.css" rel="stylesheet">
     <link href="../static/css/dialogpanel.css" type="text/css" rel="stylesheet">
     <link href="../static/css/datagrid_customer.css" type="text/css" rel="stylesheet">
-    <script type="text/javascript">
-        $(function () {
-            $('#ProductControlTaskName').attr("disabled", true);
-        });
-    </script>
 </head>
 
 <body>
@@ -39,7 +34,7 @@
         </div>
     </div>
 
-    <div id="ProductControlTaskClassDialog" class="easyui-dialog" style="width:520px;height:700px;padding:10px;"
+    <div id="ProductControlTaskClassDialog" class="easyui-dialog" style="width:520px;height:520px;padding:10px;"
      data-options="closed:'true',buttons:'#ProductControlTaskClassDialogButtons',modal:true">
     <!-- <div id="ProductControlTaskClassFormTitle" class="field-title">Title</div> -->
     <form id="ProductControlTaskClassForm" method="post" class="dialog-form">
@@ -48,7 +43,7 @@
                <tr>
                     <td class="kv-label">ID</td>
                     <td class="kv-content">
-                        <input  name="iID" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                        <input  name="iID" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
                     </td>
                 </tr>
                 <tr>
@@ -64,45 +59,55 @@
                     </td>
                 </tr>
                 <tr>
-                    <td class="kv-label">说明</td>
-                    <td class="kv-content">
-                        <input  name="iDesc" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="kv-label">设定低限</td>
-                    <td class="kv-content">
-                        <input  name="iLowLimit" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="kv-label">设定高限</td>
-                    <td class="kv-content">
-                        <input  name="iHighLimit" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="kv-label">相关任务次数</td>
-                    <td class="kv-content">
-                        <input  name="iRelateTaskCount" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
-                    </td>
-                </tr>
-                <tr>
                     <td class="kv-label">产品定义ID</td>
                     <td class="kv-content">
-                        <input  name="iProductRuleID" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                        <select name="iProductRuleID" id="iProductRuleID" type="text" style="width:157px;" autocomplete="off" placeholder="">
+                            <option value="">请选择</option>
+                            {% for id in Product_def_ID %}
+                                <option value="{{ id['ID'] }}">{{ id['ID'] }}</option>
+                            {% endfor %}
+                        </select>
                     </td>
                 </tr>
                 <tr>
                     <td class="kv-label">工艺段ID</td>
                     <td class="kv-content">
-                        <input  name="iPUID" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                        <select name="iPUID" id="iPUID" type="text" style="width:157px;" autocomplete="off" placeholder="">
+                            <option value="">请选择</option>
+                            {% for id in Product_unit_ID %}
+                                <option value="{{ id['ID'] }}">{{ id['ID'] }}</option>
+                            {% endfor %}
+                        </select>
                     </td>
                 </tr>
                 <tr>
                     <td class="kv-label">顺序</td>
                     <td class="kv-content">
                         <input  name="iSeq" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="kv-label">说明</td>
+                    <td class="kv-content">
+                        <input  name="iDesc" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="kv-label">设定低限</td>
+                    <td class="kv-content">
+                        <input required="true" name="iLowLimit" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder="例如：1.0">
+                    </td>
+                </tr>
+                <tr>
+                    <td class="kv-label">设定高限</td>
+                    <td class="kv-content">
+                        <input required="true" name="iHighLimit" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder="例如：1.0">
+                    </td>
+                </tr>
+                <tr>
+                    <td class="kv-label">相关任务次数</td>
+                    <td class="kv-content">
+                        <input  name="iRelateTaskCount" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
                     </td>
                 </tr>
             </tbody>
@@ -140,4 +145,8 @@
 <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
 <script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
 <script type="text/javascript" src="../static/js/system/ProductControlTaskClass.js" charset="utf-8"></script>
-
+<script type="text/javascript">
+    $(function () {
+        $('#ProductControlTaskName').attr("disabled", true);
+    });
+</script>

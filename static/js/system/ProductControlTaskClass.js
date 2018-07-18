@@ -196,8 +196,8 @@ $(function () {
             $('input[name="iLowLimit"]').val();
             $('input[name="iHighLimit"]').val();
             $('input[name="iRelateTaskCount"]').val();
-            $('input[name="iProductRuleID"]').val();
-            $('input[name="iPUID"]').val();
+            $('#iProductRuleID option[value=""]').prop("selected", 'selected');//ID默认空
+            $('#iPUID option[value=""]').prop("selected", 'selected');//ID默认空
             $('input[name="iSeq"]').val();         // $('input[name="iProductControlTaskSeq"]').onChange()
             // $(formId).form('clear');
             message = '新增' + titleText;
@@ -223,8 +223,8 @@ $(function () {
                     $('input[name="iLowLimit"]').val(row.LowLimit);
                     $('input[name="iHighLimit"]').val(row.HighLimit);
                     $('input[name="iRelateTaskCount"]').val(row.RelateTaskCount);
-                    $('input[name="iProductRuleID"]').val(row.ProductRuleID);
-                    $('input[name="iPUID"]').val(row.PUID);
+                    $('#iProductRuleID option:contains('+row.ProductRuleID+')').prop("selected", 'selected');//区域ID赋值
+                    $('#iPUID option:contains('+row.PUID+')').prop("selected", 'selected');//区域ID赋值
                     $('input[name="iSeq"]').val(row.Seq);
                     //var thisSwitchbuttonObj = $(".switchstatus").find("[switchbuttonName='IsEnable']");//获取switchbutton对象  
                     if (row.IsEnable == '禁用') {
@@ -264,11 +264,6 @@ $(function () {
                             // data: JSON.stringify(ids),
                             data: a,
                             dataType: 'json',
-                            beforeSend: function () {
-                                $.messager.progress({
-                                    text: '正在删除中...'
-                                });
-                            },
                             success: function (data) {
                                 $.messager.progress('close');
 
@@ -300,7 +295,42 @@ $(function () {
             var strID = $('input[name="iID"]').val();
             var msg = ""
             var urlAddr = ""
-           
+            var stmp = $('input[name="iPDCtrlTaskCode"]').val();
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：产品段任务编号不能为空！');
+               return false;
+            }
+            stmp = $('input[name="iPDCtrlTaskName"]').val();
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：产品段任务名称不能为空！');
+               return false;
+            }
+           stmp = $('#iProductRuleID').find("option:selected").val();
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：产品定义ID不能为空！');
+               return false;
+            }
+            stmp = $('#iPUID').find("option:selected").val();
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：工艺段ID不能为空！');
+               return false;
+            }
+            stmp = $('input[name="iLowLimit"]').val();
+            if(Bee.StringUtils.isDecimal(stmp)) {
+
+            }else{
+                $('input[name="iLowLimit"]').val("")
+                alert('Warning：设定低限输入错误！');
+                return false;
+            }
+            stmp = $('input[name="iHighLimit"]').val();
+            if(Bee.StringUtils.isDecimal(stmp)) {
+
+            }else{
+                $('input[name="iHighLimit"]').val("")
+                alert('Warning：设定高限输入错误！');
+                return false;
+            }
             stmp = $('input[name="iSeq"]').val();
             if(Bee.StringUtils.isInteger(stmp)) {
             //
@@ -325,8 +355,8 @@ $(function () {
                     LowLimit:$('input[name="iLowLimit"]').val(),
                     HighLimit:$('input[name="iHighLimit"]').val(),
                     RelateTaskCount:$('input[name="iRelateTaskCount"]').val(),
-                    ProductRuleID:$('input[name="iProductRuleID"]').val(),
-                    PUID:$('input[name="iPUID"]').val(),
+                    ProductRuleID:$('#iProductRuleID').find("option:selected").html(),
+                    PUID:$('#iPUID').find("option:selected").html(),
                     Seq:$('input[name="iSeq"]').val()
                 };
                 $.ajax({
@@ -368,7 +398,7 @@ $(function () {
                             $(formId).form('reset');
                             $(dialogId).dialog('close');
                             $(tableId).datagrid('reload',{ url: "/allProductControlTasks/Find?_t=" + new Date().getTime() });
-                            $(tableid).datagrid('clearSelections');
+                            //$(tableid).datagrid('clearSelections');
                         } else {
                             $.messager.alert(obj1[0].status + '失败！', '未知错误导致失败，请重试！', 'warning');
                         }
@@ -466,7 +496,7 @@ $(function () {
         ]]
     });
             $(tableId).datagrid('reload');
-            $(tableid).datagrid('clearSelections');
+            $(tableId).datagrid('clearSelections');
            
         }
 
