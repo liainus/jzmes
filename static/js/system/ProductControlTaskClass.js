@@ -315,6 +315,22 @@ $(function () {
                alert('Warning：工艺段ID不能为空！');
                return false;
             }
+            stmp = $('input[name="iLowLimit"]').val();
+            if(Bee.StringUtils.isDecimal(stmp)) {
+
+            }else{
+                $('input[name="iLowLimit"]').val("")
+                alert('Warning：设定低限输入错误！');
+                return false;
+            }
+            stmp = $('input[name="iHighLimit"]').val();
+            if(Bee.StringUtils.isDecimal(stmp)) {
+
+            }else{
+                $('input[name="iHighLimit"]').val("")
+                alert('Warning：设定高限输入错误！');
+                return false;
+            }
             stmp = $('input[name="iSeq"]').val();
             if(Bee.StringUtils.isInteger(stmp)) {
             //

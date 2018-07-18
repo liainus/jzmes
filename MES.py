@@ -1233,7 +1233,29 @@ def allZYTasksSearch():
 # 加载工作台
 @app.route('/ProductControlTask')
 def ProductControlTask():
-    return render_template('sysProductControlTask.html')
+    try:
+        product_def_ID = session.query(ProductRule.ID).all()
+        print(product_def_ID)
+        data1 = []
+        for tu in product_def_ID:
+            li = list(tu)
+            id = li[0]
+            pro_def_id = {'ID': id}
+            data1.append(pro_def_id)
+
+        productUnit_ID = session.query(ProcessUnit.ID).all()
+        print(productUnit_ID)
+        data = []
+        for tu in productUnit_ID:
+            li = list(tu)
+            id = li[0]
+            pro_unit_id = {'ID': id}
+            data.append(pro_unit_id)
+        return render_template('sysProductControlTask.html', Product_def_ID= data1, Product_unit_ID=data)
+    except Exception as e:
+        print(e)
+        logger.error(e)
+        return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
 @app.route('/allProductControlTasks/Find')
@@ -1288,7 +1310,29 @@ def allProductControlTasksSearch():
 # 加载工作台
 @app.route('/ProductParameter')
 def ProductParameter():
-    return render_template('sysProductParameter.html')
+    try:
+        product_def_ID = session.query(ProductRule.ID).all()
+        print(product_def_ID)
+        data1 = []
+        for tu in product_def_ID:
+            li = list(tu)
+            id = li[0]
+            pro_def_id = {'ID': id}
+            data1.append(pro_def_id)
+
+        productUnit_ID = session.query(ProcessUnit.ID).all()
+        print(productUnit_ID)
+        data = []
+        for tu in productUnit_ID:
+            li = list(tu)
+            id = li[0]
+            pro_unit_id = {'ID': id}
+            data.append(pro_unit_id)
+        return render_template('sysProductParameter.html', Product_def_ID= data1, Product_unit_ID=data)
+    except Exception as e:
+        print(e)
+        logger.error(e)
+    return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
 @app.route('/allProductParameters/Find')
