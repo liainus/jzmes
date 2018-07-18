@@ -311,6 +311,14 @@ $(function () {
                alert('Warning：工艺段ID不能为空！');
                return false;
             }
+            stmp = $('input[name="iValue"]').val();
+            if(Bee.StringUtils.isDecimal(stmp)) {
+
+            }else{
+                $('input[name="iLowLimit"]').val("")
+                alert('Warning：参数值输入错误！');
+                return false;
+            }
             stmp = $('input[name="iSeq"]').val();
             if(Bee.StringUtils.isInteger(stmp)) {
             //
