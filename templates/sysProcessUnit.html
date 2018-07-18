@@ -63,7 +63,7 @@
                     <td class="kv-content">
                         <select name="iPLineID" id="iPLineID" type="text" style="width:157px;" autocomplete="off" placeholder="">
                             <option value="">请选择</option>
-                            {% for id in area_id %}
+                            {% for id in productLine_id %}
                                 <option value="{{ id['ID'] }}">{{ id['ID'] }}</option>
                             {% endfor %}
                         </select>
@@ -72,19 +72,19 @@
                 <tr>
                     <td class="kv-label">额定能力</td>
                     <td class="kv-content">
-                        <input  name="iPURateCapacity" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                        <input required="true" name="iPURateCapacity" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
                     </td>
                 </tr>
                 <tr>
                     <td class="kv-label">计划能力</td>
                     <td class="kv-content">
-                        <input  name="iPUPLanCapacity" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                        <input required="true" name="iPUPLanCapacity" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
                     </td>
                 </tr>
                 <tr>
                     <td class="kv-label">能力单位</td>
                     <td class="kv-content">
-                        <input  name="iCapacityUnit" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                        <input name="iCapacityUnit" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
                     </td>
                 </tr>
                 <tr>
@@ -102,19 +102,19 @@
                 <tr>
                     <td class="kv-label">静置时间</td>
                     <td class="kv-content">
-                        <input  name="iPlaceTime" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                        <input required="true" name="iPlaceTime" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
                     </td>
                 </tr>
                 <tr>
                     <td class="kv-label">时间单位</td>
                     <td class="kv-content">
-                        <input  name="iTimeUnit" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                        <input name="iTimeUnit" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
                     </td>
                 </tr>
                 <tr>
                     <td class="kv-label">批运行时间</td>
                     <td class="kv-content">
-                        <input  name="iBatchRunTime" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                        <input required="true" name="iBatchRunTime" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
                     </td>
                 </tr>
             </tbody>

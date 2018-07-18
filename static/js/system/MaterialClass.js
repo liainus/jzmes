@@ -180,7 +180,8 @@ $(function () {
             $('input[name="iID"]').val();
             $('input[name="iMATCode"]').val();
             $('input[name="iMATName"]').val();
-            $('input[name="iMATTypeID"]').val();
+            //$('input[name="iMATTypeID"]').val();
+            $('#iMATTypeID option[value=""]').prop("selected", 'selected');//ID默认空
             $('input[name="iDesc"]').val();
             $('input[name="iSeq"]').val();
             $('input[name="iGrade"]').val();
@@ -205,7 +206,8 @@ $(function () {
                     $('input[name="iID"]').val(row.ID);
                     $('input[name="iMATCode"]').val(row.MATCode);
                     $('input[name="iMATName"]').val(row.MATName);
-                    $('input[name="iMATTypeID"]').val(row.MATTypeID);
+                    //$('input[name="iMATTypeID"]').val(row.MATTypeID);
+                    $('#iMATTypeID option:contains('+row.ID+')').prop("selected", 'selected');//ID赋值
                     $('input[name="iDesc"]').val(row.Desc);
                     $('input[name="iSeq"]').val(row.Seq);
                     $('input[name="iGrade"]').val(row.Grade);
@@ -248,11 +250,6 @@ $(function () {
                             // data: JSON.stringify(ids),
                             data: a,
                             dataType: 'json',
-                            beforeSend: function () {
-                                $.messager.progress({
-                                    text: '正在删除中...'
-                                });
-                            },
                             success: function (data) {
                                 $.messager.progress('close');
 
@@ -284,7 +281,21 @@ $(function () {
             var strID = $('input[name="iID"]').val();
             var msg = ""
             var urlAddr = ""
-           
+            var stmp = $('input[name="iMATCode"]').val();
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：物料类型编码不能为空！');
+               return false;
+            }
+            stmp = $('input[name="iMATName"]').val();
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：物料类型名称不能为空！');
+               return false;
+            }
+            stmp = $('#iMATTypeID').find("option:selected").val()
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：物料类型ID不能为空！');
+               return false;
+            }
             stmp = $('input[name="iSeq"]').val();
             if(Bee.StringUtils.isInteger(stmp)) {
             //
@@ -305,7 +316,7 @@ $(function () {
                     ID:$('input[name="iID"]').val(),
                     MATCode:$('input[name="iMATCode"]').val(),
                     MATName:$('input[name="iMATName"]').val(),
-                    MATTypeID:$('input[name="iMATTypeID"]').val(),
+                    MATTypeID:$('#iMATTypeID').find("option:selected").html(),
                     Desc:$('input[name="iDesc"]').val(),
                     Seq:$('input[name="iSeq"]').val(),
                     Grade:$('input[name="iGrade"]').val(),
@@ -350,7 +361,7 @@ $(function () {
                             $(formId).form('reset');
                             $(dialogId).dialog('close');
                             $(tableId).datagrid('reload',{ url: "/allMaterials/Find?_t=" + new Date().getTime() });
-                            $(tableid).datagrid('clearSelections');
+                            //$(tableid).datagrid('clearSelections');
                         } else {
                             $.messager.alert(obj1[0].status + '失败！', '未知错误导致失败，请重试！', 'warning');
                         }
@@ -436,7 +447,7 @@ $(function () {
         ]]
     });
             $(tableId).datagrid('reload');
-            $(tableid).datagrid('clearSelections');
+            $(tableId).datagrid('clearSelections');
            
         }
 

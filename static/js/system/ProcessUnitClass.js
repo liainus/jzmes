@@ -237,7 +237,7 @@ $(function () {
                     $('input[name="iID"]').val(row.ID);
                     $('input[name="iPUCode"]').val(row.PUCode);
                     $('input[name="iPUName"]').val(row.PUName);
-                    $('#iPLineID option:contains('+row.PLineID+')').prop("selected", 'selected');//ID赋值
+                    $('#iPLineID option:contains('+row.ID+')').prop("selected", 'selected');//ID赋值
                     $('input[name="iPURateCapacity"]').val(row.PURateCapacity);
                     $('input[name="iPUPLanCapacity"]').val(row.PUPLanCapacity);
                     $('input[name="iCapacityUnit"]').val(row.CapacityUnit);
@@ -336,7 +336,39 @@ $(function () {
             //
             }else{
                 $('input[name="iSeq"]').val("");
-                alert('Warning：组织机构顺序输入错误,请输入数字！');
+                alert('Warning：顺序输入错误,请输入数字！');
+                return false;
+            }
+            stmp = $('input[name="iPURateCapacity"]').val();
+            if(Bee.StringUtils.isInteger(stmp)) {
+            //
+            }else{
+                $('input[name="iPURateCapacity"]').val("");
+                alert('Warning：额定能力输入错误,请输入数字！');
+                return false;
+            }
+            stmp = $('input[name="iPUPLanCapacity"]').val();
+            if(Bee.StringUtils.isInteger(stmp)) {
+            //
+            }else{
+                $('input[name="iPUPLanCapacity"]').val("");
+                alert('Warning：计划能力输入错误,请输入数字！');
+                return false;
+            }
+            stmp = $('input[name="iPlaceTime"]').val();
+            if(Bee.StringUtils.isInteger(stmp)) {
+            //
+            }else{
+                $('input[name="iPlaceTime"]').val("");
+                alert('Warning：静置时间输入错误,请输入数字！');
+                return false;
+            }
+            stmp = $('input[name="iBatchRunTime"]').val();
+            if(Bee.StringUtils.isInteger(stmp)) {
+            //
+            }else{
+                $('input[name="iBatchRunTime"]').val("");
+                alert('Warning：批运行时间输入错误,请输入数字！');
                 return false;
             }
             if (strID.length >= 1){
@@ -382,8 +414,6 @@ $(function () {
                              },
                     success: function (data,response,status) {
                         $.messager.progress('close');
-                        {
-                }
                         var obj1 = eval(data);
                         if(obj1[0].status == "OK"){
                             $.messager.show({

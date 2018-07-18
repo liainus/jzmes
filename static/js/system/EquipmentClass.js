@@ -184,8 +184,7 @@ $(function () {
                     $('input[name="iID"]').val(row.ID);
                     $('input[name="iEQPCode"]').val(row.EQPCode);
                     $('input[name="iEQPName"]').val(row.EQPName);
-                    $('input[name="iPUID"]').val(row.PUID);
-                    $('#iPUID option:contains('+row.PLineID+')').prop("selected", 'selected');//ID赋值
+                    $('#iPUID option:contains('+row.ID+')').prop("selected", 'selected');//ID赋值
                     $('input[name="iDesc"]').val(row.Desc);
 
                     //var thisSwitchbuttonObj = $(".switchstatus").find("[switchbuttonName='IsEnable']");//获取switchbutton对象  
@@ -269,7 +268,7 @@ $(function () {
             }
              stmp = $('#iPUID').find("option:selected").val()
             if(Bee.StringUtils.isEmpty(stmp)) {
-               alert('Warning：工艺段不能为空！');
+               alert('Warning：工艺段ID不能为空！');
                return false;
             }
 

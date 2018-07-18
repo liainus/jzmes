@@ -63,7 +63,7 @@
                     <td class="kv-content">
                         <select name="iPUID" id="iPUID" type="text" style="width:157px;" autocomplete="off" placeholder="">
                             <option value="">请选择</option>
-                            {% for id in area_id %}
+                            {% for id in ProcessUnit_id %}
                                 <option value="{{ id['ID'] }}">{{ id['ID'] }}</option>
                             {% endfor %}
                         </select>
@@ -72,7 +72,7 @@
                 <tr>
                     <td class="kv-label">说明</td>
                     <td class="kv-content">
-                        <input  name="iDesc" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                        <input  name="iDesc" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
                     </td>
                 </tr>
             </tbody>

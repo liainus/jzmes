@@ -208,8 +208,7 @@ $(function () {
                     $('input[name="iID"]').val(row.ID);
                     $('input[name="iPLineCode"]').val(row.PLineCode);
                     $('input[name="iPLineName"]').val(row.PLineName);
-                    $('input[name="iAreaID"]').val(row.AreaID);
-                    $('#iAreaID option:contains('+row.AreaID+')').prop("selected", 'selected');//区域ID赋值
+                    $('#iAreaID option:contains('+row.ID+')').prop("selected", 'selected');//区域ID赋值
                     $('input[name="iSeq"]').val(row.Seq);
                     $('input[name="iDesc"]').val(row.Desc);
                     $('input[name="iPLineCapacity"]').val(row.PLineCapacity);

@@ -14,7 +14,8 @@ from sqlalchemy.orm import sessionmaker, relationship
 
 import Model.Global
 from Model.BSFramwork import AlchemyEncoder
-from Model.core import Enterprise, Area, Factory, ProductLine, ProcessUnit, Equipment
+from Model.core import Enterprise, Area, Factory, ProductLine, ProcessUnit, Equipment, Material, MaterialType, \
+    ProductUnit, ProductRule
 from Model.system import Role, Organization,User,Menu, User_Role
 from tools.MESLogger import MESLogger
 from Model.core import SysLog
@@ -866,7 +867,7 @@ def allAreasSearch():
 # 生产线
 # 加载工作台
 @app.route('/ProductLine')
-def ProductLine():
+def productLine():
     ID = session.query(Area.ID).all()
     print(ID)
     data = []
@@ -929,7 +930,7 @@ def allProductLinesSearch():
 
 # 加载工作台
 @app.route('/ProcessUnit')
-def ProcessUnit():
+def processUnit():
     ID = session.query(ProductLine.ID).all()
     print(ID)
     data = []
@@ -938,7 +939,7 @@ def ProcessUnit():
         id = li[0]
         ProductLine_id = {'ID': id}
         data.append(ProductLine_id)
-    return render_template('sysProcessUnit.html', ProductLine_id=data)
+    return render_template('sysProcessUnit.html', productLine_id=data)
 
 
 @app.route('/allProcessUnits/Find')
@@ -1055,7 +1056,7 @@ def allEquipmentsSearch():
 
 # 加载工作台
 @app.route('/ProductRule')
-def ProductRule():
+def productRule():
     return render_template('sysProductRule.html')
 
 
@@ -1330,7 +1331,7 @@ def allProductParametersSearch():
 
 # 加载工作台
 @app.route('/MaterialType')
-def MaterialType():
+def materialType():
     return render_template('sysMaterialType.html')
 
 
@@ -1385,8 +1386,16 @@ def allMaterialTypesSearch():
 
 # 加载工作台
 @app.route('/Material')
-def Material():
-    return render_template('sysMaterial.html')
+def material():
+    ID = session.query(MaterialType.ID).all()
+    print(ID)
+    data = []
+    for tu in ID:
+        li = list(tu)
+        id = li[0]
+        materialType_id = {'ID': id}
+        data.append(materialType_id)
+    return render_template('sysMaterial.html', Material_ID=data)
 
 
 @app.route('/allMaterials/Find')
@@ -1560,8 +1569,30 @@ def allZYPlanMaterialsSearch():
 
 # 加载工作台
 @app.route('/ProductUnit')
-def ProductUnit():
-    return render_template('sysProductUnit.html')
+def productUnit():
+    try:
+        product_def_ID = session.query(ProductRule.ID).all()
+        print(product_def_ID)
+        data1 = []
+        for tu in product_def_ID:
+            li = list(tu)
+            id = li[0]
+            pro_def_id = {'ID': id}
+            data1.append(pro_def_id)
+
+        productUnit_ID = session.query(ProductUnit.ID).all()
+        print(productUnit_ID)
+        data = []
+        for tu in productUnit_ID:
+            li = list(tu)
+            id = li[0]
+            pro_unit_id = {'ID': id}
+            data.append(pro_unit_id)
+        return render_template('sysProductUnit.html', Product_def_ID= data1, Product_unit_ID=data)
+    except Exception as e:
+        print(e)
+        logger.error(e)
+        return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
 @app.route('/allProductUnits/Find')
