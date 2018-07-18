@@ -51,7 +51,7 @@
                     <td class="kv-content">
                         <select name="iMATID" id="iMATID" type="text" style="width:157px;" autocomplete="off" placeholder="">
                             <option value="">请选择</option>
-                            {% for id in Product_unit_ID %}
+                            {% for id in Material_ID %}
                                 <option value="{{ id['ID'] }}">{{ id['ID'] }}</option>
                             {% endfor %}
                         </select>
@@ -62,7 +62,7 @@
                     <td class="kv-content">
                         <select name="iProductRuleID" id="iProductRuleID" type="text" style="width:157px;" autocomplete="off" placeholder="">
                             <option value="">请选择</option>
-                            {% for id in Product_unit_ID %}
+                            {% for id in Product_def_ID %}
                                 <option value="{{ id['ID'] }}">{{ id['ID'] }}</option>
                             {% endfor %}
                         </select>
@@ -84,7 +84,7 @@
                     <td class="kv-content">
                         <select name="iMATTypeID" id="iMATTypeID" type="text" style="width:157px;" autocomplete="off" placeholder="">
                             <option value="">请选择</option>
-                            {% for id in Product_unit_ID %}
+                            {% for id in MaterialType_ID %}
                                 <option value="{{ id['ID'] }}">{{ id['ID'] }}</option>
                             {% endfor %}
                         </select>
