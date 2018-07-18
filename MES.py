@@ -28,6 +28,8 @@ from Model.account import login_security
 from flask import session as cli_session
 from Model.system import User
 
+import socket
+
 # from flask_cache import Cache
 #
 # # redis配置
@@ -132,7 +134,7 @@ def register():
 def syslogs():
     return render_template('syslogs.html')
 
-
+# 日志查询
 @app.route('/syslogs/findByDate')
 def syslogsFindByDate():
     if request.method == 'GET':
@@ -147,33 +149,44 @@ def syslogsFindByDate():
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
                 startTime = data['startTime']  # 开始时间
                 endTime = data['endTime']  # 结束时间
-                # startTime = datetime.datetime.strptime(startTime, "%Y-%m-%d %H:%M:%S")
-                # endTime = datetime.datetime.strptime(endTime, "%Y-%m-%d %H:%M:%S")
-
-
                 if startTime == "" and endTime == "":
                     total = session.query(SysLog).count()
-                    syslogs = session.query(SysLog).all()[inipage:endpage]
+                    syslogs = session.query(SysLog).order_by("OperationDate desc").all()[inipage:endpage]
                 elif startTime != "" and endTime == "":
                     nowTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                     total = session.query(SysLog).filter(SysLog.OperationDate.between(startTime, nowTime)).count()
-                    syslogs = session.query(SysLog).filter(SysLog.OperationDate.between(startTime, nowTime))[
+                    syslogs = session.query(SysLog).filter(SysLog.OperationDate.between(startTime, nowTime)).order_by("OperationDate desc")[
                               inipage:endpage]
                 else:
                     total = session.query(SysLog).filter(SysLog.OperationDate.between(startTime, endTime)).count()
-                    syslogs = session.query(SysLog).filter(SysLog.OperationDate.between(startTime, endTime))[
+                    syslogs = session.query(SysLog).filter(SysLog.OperationDate.between(startTime, endTime)).order_by("OperationDate desc")[
                               inipage:endpage]
-                    # sql = 'select *  from SysLog where Syslog.OperationDate BETWEEN '+"'"+ startTime +"'"+ ' AND '+"'" + endTime +"'"
-
-                # ORM模型转换json格式
                 jsonsyslogs = json.dumps(syslogs, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonsyslogs = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonsyslogs + "}"
-
                 return jsonsyslogs
         except Exception as e:
             print(e)
             logger.error(e)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
+#插入日志OperationType OperationContent OperationDate UserName ComputerName IP
+def insertSyslog(operationType, operationContent, userName):
+        try:
+            if operationType == None: operationType = ""
+            if operationContent == None:
+                operationContent = ""
+            else:
+                operationContent = str(operationContent)
+            if userName == None: userName = ""
+            ComputerName = socket.gethostname()
+            session.add(
+                SysLog(OperationType=operationType, OperationContent=operationContent,OperationDate=datetime.datetime.now(), UserName=userName,
+                       ComputerName=ComputerName, IP=socket.gethostbyname(ComputerName)))
+            session.commit()
+        except Exception as e:
+            print(e)
+            logger.error(e)
+
 
 
 # 用户管理
@@ -225,35 +238,8 @@ def MyUserSelect():
         except Exception as e:
             print(e)
             logger.error(e)
+            insertSyslog("error", "查询用户列表报错Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
-
-# @app.route('/queryUserByName')#通过用户名Name进行全表查询
-# def queryUserByName():
-#     if request.method == 'GET':
-#         data = request.values  # 返回请求中的参数和form
-#         try:
-#             json_str = json.dumps(data.to_dict())
-#             print(json_str)
-#             if len(json_str) > 10:
-#                 pages = int(data['page'])  # 页数
-#                 rowsnumber = int(data['rows'])  # 行数
-#                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
-#                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
-#                 Name = data['Name']
-#                 if Name == '':
-#                     total = session.query(User).count()
-#                     oclass = session.query(User).all()[inipage:endpage]
-#                 else:
-#                     total = session.query(User).filter(User.Name.like("%" + Name + "%") if Name is not None else "").count()
-#                     oclass = session.query(User).filter(User.Name.like("%" + Name + "%") if Name is not None else "")[inipage:endpage]
-#                 # ORM模型转换json格式
-#                 jsonuser = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
-#                 jsonjsonusers = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonuser + "}"
-#                 return jsonjsonusers
-#         except Exception as e:
-#             print(e)
-#             logger.error(e)
-#             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 @app.route('/user/addUser', methods=['POST', 'GET'])
 def addUser():
@@ -273,10 +259,12 @@ def addUser():
                          IsLock='false',#data['IsLock'],
                          OrganizationName=data['OrganizationName']))
                 session.commit()
+                insertSyslog("添加用户", "添加用户"+data['Name']+"添加成功", "AAAAAAadmin")
                 return json.dumps([{"status": "OK"}], cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
             logger.error(e)
+            insertSyslog("error", "添加用户报错Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 @app.route('/user/updateUser', methods=['POST', 'GET'])
@@ -299,11 +287,13 @@ def UpdateUser():
                 # user.IsLock = data['IsLock']
                 user.OrganizationName = data['OrganizationName']
                 session.commit()
+                insertSyslog("success", "更新用户" + data['Name'] + "成功", "AAAAAAadmin")
                 return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=AlchemyEncoder,
                                   ensure_ascii=False)
         except Exception as e:
             print(e)
             logger.error(e)
+            insertSyslog("error", "更新用户报错Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 @app.route('/user/deleteUser', methods=['POST', 'GET'])
@@ -318,9 +308,11 @@ def deleteUser():
                     ID = int(key)
                     try:
                         organization = session.query(User).filter_by(ID=ID).delete()
+                        insertSyslog("success", "删除ID是" + ID + "的用户删除成功", "AAAAAAadmin")
                     except Exception as ee:
                         print(ee)
                         logger.error(ee)
+                        insertSyslog("error", "删除户ID为"+string(ID)+"报错Error：" + string(ee), "AAAAAAadmin")
                         return json.dumps([{"status": "error:" + string(ee)}], cls=AlchemyEncoder,
                                           ensure_ascii=False)
                 return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=AlchemyEncoder,
@@ -328,6 +320,7 @@ def deleteUser():
         except Exception as e:
             print(e)
             logger.error(e)
+            insertSyslog("error", "删除用户报错Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 # 权限分配
@@ -350,6 +343,7 @@ def getRoleList(id=0):
         return sz
     except Exception as e:
         print(e)
+        insertSyslog("error", "查询角色报错Error：" + str(e), "AAAAAAadmin")
         return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 # 权限分配下的角色列表
@@ -366,6 +360,7 @@ def SelectRoles():
         except Exception as e:
             print(e)
             logger.error(e)
+            insertSyslog("error", "查询权限分配下的角色列表报错Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
@@ -395,6 +390,7 @@ def userList():
             except Exception as e:
                 print(e)
                 logger.error(e)
+                insertSyslog("error", "查询权限分配下的用户列表报错Error：" + str(e), "AAAAAAadmin")
                 return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 # 通过点击角色查询用户
@@ -426,6 +422,7 @@ def roleFindUser():
         except Exception as e:
             print(e)
             logger.error(e)
+            insertSyslog("error", "通过点击角色查询用户报错Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
@@ -444,6 +441,7 @@ def getMenuList(id=0):
         return sz
     except Exception as e:
         print(e)
+        insertSyslog("error", "查询权限分配下的功能模块列表Error：" + str(e), "AAAAAAadmin")
         return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 # 加载菜单列表
 @app.route('/permission/menulist')
@@ -457,6 +455,7 @@ def menulist():
         except Exception as e:
             print(e)
             logger.error(e)
+            insertSyslog("error", "加载菜单列表Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 # 权限分配下为角色添加权限
@@ -486,6 +485,7 @@ def menuToUser():
         except Exception as e:
             print(e)
             logger.error(e)
+            insertSyslog("error", "权限分配下为角色添加权限Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
@@ -529,6 +529,7 @@ def OrganizationsFind():
         except Exception as e:
             print(e)
             logger.error(e)
+            insertSyslog("error", "查询组织报错Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error:"+ str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 # role更新数据，通过传入的json数据，解析之后进行相应更新
@@ -553,11 +554,13 @@ def allOrganizationsUpdate():
                 organization.Img = data['Img']
                 organization.Color = data['Color']
                 session.commit()
+                insertSyslog("success", "更新组织" + data['OrganizationName'] + "的组织更新成功", "AAAAAAadmin")
                 return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=AlchemyEncoder,
                                   ensure_ascii=False)
         except Exception as e:
             print(e)
             logger.error(e)
+            insertSyslog("error", "更新组织报错Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
@@ -577,9 +580,11 @@ def allOrganizationsDelete():
                     Organizationid = int(key)
                     try:
                         organization = session.query(Organization).filter_by(ID=Organizationid).delete()
+                        insertSyslog("success", "删除组织ID为" + str(Organizationid) + "的组织删除成功", "AAAAAAadmin")
                     except Exception as ee:
                         print(ee)
                         logger.error(ee)
+                        insertSyslog("error", "删除组织报错Error：" + str(ee), "AAAAAAadmin")
                         return json.dumps([{"status": "error:" + string(ee)}], cls=AlchemyEncoder,
                                           ensure_ascii=False)
                 return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=AlchemyEncoder,
@@ -587,6 +592,7 @@ def allOrganizationsDelete():
         except Exception as e:
             print(e)
             logger.error(e)
+            insertSyslog("error", "删除组织报错Error：" + str(e), "AAAAAAadmin")
             # return json.dumps([{"status": "Error"+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
@@ -614,10 +620,12 @@ def allOrganizationsCreate():
                                      Description=data['Description'], CreatePerson=data['CreatePerson'],
                                      CreateDate=datetime.datetime.now(),Img = DspImg,Color = DspColor))
                 session.commit()
+                insertSyslog("success", "新增组织" + data['OrganizationName'] + "的组织新增成功", "AAAAAAadmin")
                 return json.dumps([{"status": "OK"}], cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
             logger.error(e)
+            insertSyslog("error", "新增组织报错Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
@@ -637,6 +645,7 @@ def allOrganizationsSearch():
         except Exception as e:
             print(e)
             logger.error(e)
+            insertSyslog("error", "查询组织报错Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 # 生产建模
@@ -701,6 +710,7 @@ def getOrganizationList(id=0):
         return sz
     except Exception as e:
         print(e)
+        insertSyslog("error", "查询组织树形结构报错Error：" + str(e), "AAAAAAadmin")
         return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 # 加载菜单列表
 @app.route('/Enterprize/parentNode')
@@ -714,6 +724,7 @@ def parentNode():
         except Exception as e:
             print(e)
             logger.error(e)
+            insertSyslog("error", "加父级载菜单列表报错Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
@@ -1799,6 +1810,7 @@ def getOrganizationChildren(id=0):
     except Exception as e:
         print(e)
         logger.error(e)
+        insertSyslog("error", "获取树形结构菜单报错Error：" + str(e), "AAAAAAadmin")
         return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
@@ -1859,6 +1871,7 @@ def allrolesUpdate():
         except Exception as e:
             print(e)
             logger.error(e)
+            insertSyslog("error", "更新角色报错Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error" + string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
@@ -1881,11 +1894,13 @@ def allrolesDelete():
                     except Exception as ee:
                         print(ee)
                         logger.error(ee)
+                        insertSyslog("error", "删除角色报错Error：" + str(ee), "AAAAAAadmin")
                         return json.dumps([{"status": "error:" + string(ee)}], cls=AlchemyEncoder, ensure_ascii=False)
                 return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
             logger.error(e)
+            insertSyslog("error", "删除角色报错Error：" + str(e), "AAAAAAadmin")
             # return json.dumps([{"status": "Error"+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
@@ -1905,6 +1920,7 @@ def allrolesCreate():
         except Exception as e:
             print(e)
             logger.error(e)
+            insertSyslog("error", "创建角色报错Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error:"+ str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
@@ -1932,6 +1948,7 @@ def allrolesFind():
         except Exception as e:
             print(e)
             logger.error(e)
+            insertSyslog("error", "擦护心角色列表报错Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error：" + string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
@@ -1951,6 +1968,7 @@ def allrolesSearch():
         except Exception as e:
             print(e)
             logger.error(e)
+            insertSyslog("error", "擦护心角色列表报错Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error：" + string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
@@ -1988,6 +2006,7 @@ def getMyEnterprise(id=0):
     except Exception as e:
         print(e)
         logger.error(e)
+        insertSyslog("error", "获取树形结构报错Error：" + str(e), "AAAAAAadmin")
         return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
