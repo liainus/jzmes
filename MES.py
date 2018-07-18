@@ -1762,7 +1762,7 @@ def ProductUnitRoute():
             id = li[0]
             pro_unit_id = {'ID': id}
             data.append(pro_unit_id)
-        return render_template('sysProductUnitRoute.html', )
+        return render_template('sysProductUnitRoute.html', Product_def_ID=data1, ProductUnit_ID=data)
     except Exception as e:
         print(e)
         logger.error(e)

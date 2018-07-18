@@ -292,7 +292,7 @@ $(function () {
                alert('Warning：工艺路线编码不能为空！');
                return false;
             }
-            stmp = $('input[name="iPDUnitRouteCode"]').val();
+            stmp = $('input[name="iPDUnitRouteName"]').val();
             if(Bee.StringUtils.isEmpty(stmp)) {
                alert('Warning：工艺路线名称不能为空！');
                return false;
