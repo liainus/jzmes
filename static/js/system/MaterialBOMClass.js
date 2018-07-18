@@ -335,6 +335,38 @@ $(function () {
                 alert('Warning：顺序号输入错误,请输入数字！');
                 return false;
             }
+            stmp = $('input[name="iBatchTotalWeight"]').val();
+            if(Bee.StringUtils.isInteger(stmp)) {
+            //
+            }else{
+                $('input[name="iBatchTotalWeight"]').val("");
+                alert('Warning：批物料重量输入错误,请输入数字！');
+                return false;
+            }
+            stmp = $('input[name="iBatchPercentage"]').val();
+            if(Bee.StringUtils.isDecimal(stmp)) {
+
+            }else{
+                $('input[name="iBatchPercentage"]').val("")
+                alert('Warning：批次百分比输入错误！');
+                return false;
+            }
+            stmp = $('input[name="iGrade"]').val();
+            if(Bee.StringUtils.isInteger(stmp)) {
+            //
+            }else{
+                $('input[name="iGrade"]').val("");
+                alert('Warning：等级输入错误,请输入数字！');
+                return false;
+            }
+            stmp = $('input[name="iBatchSingleMATWeight"]').val();
+            if(Bee.StringUtils.isInteger(stmp)) {
+            //
+            }else{
+                $('input[name="iBatchSingleMATWeight"]').val("");
+                alert('Warning：批次单个单位输入错误,请输入数字！');
+                return false;
+            }
             if (strID.length >= 1){
                 urlAddr = urlPrefix + 'Update'
                 hintinfo = "更新数据"
