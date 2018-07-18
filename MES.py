@@ -1515,7 +1515,49 @@ def allMaterialsSearch():
 # 加载工作台
 @app.route('/MaterialBOM')
 def MaterialBOM():
-    return render_template('sysMaterialBOM.html')
+    try:
+        material_ID = session.query(Material.ID).all()
+        print(material_ID)
+        data_material = []
+        for tu in material_ID:
+            li = list(tu)
+            id = li[0]
+            material_id = {'ID': id}
+            data_material.append(material_id)
+
+        product_def_ID = session.query(ProductRule.ID).all()
+        print(product_def_ID)
+        data1 = []
+        for tu in product_def_ID:
+            li = list(tu)
+            id = li[0]
+            pro_def_id = {'ID': id}
+            data1.append(pro_def_id)
+
+        productUnit_ID = session.query(ProcessUnit.ID).all()
+        print(productUnit_ID)
+        data = []
+        for tu in productUnit_ID:
+            li = list(tu)
+            id = li[0]
+            pro_unit_id = {'ID': id}
+            data.append(pro_unit_id)
+
+        material_Type_ID = session.query(MaterialType.ID).all()
+        print(material_Type_ID)
+        data_material_typeID = []
+        for tu in material_Type_ID:
+            li = list(tu)
+            id = li[0]
+            material_type_id = {'ID': id}
+            data_material_typeID.append(material_type_id)
+        return render_template('sysMaterialBOM.html', Material_ID=data_material,
+                               Product_def_ID= data1, Product_unit_ID=data,
+                               MaterialType_ID=data_material_typeID)
+    except Exception as e:
+        print(e)
+        logger.error(e)
+        return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
 @app.route('/allMaterialBOMs/Find')
@@ -1702,7 +1744,30 @@ def allProductUnitsSearch():
 # 加载工作台
 @app.route('/ProductUnitRoute')
 def ProductUnitRoute():
-    return render_template('sysProductUnitRoute.html')
+    try:
+        product_def_ID = session.query(ProductRule.ID).all()
+        print(product_def_ID)
+        data1 = []
+        for tu in product_def_ID:
+            li = list(tu)
+            id = li[0]
+            pro_def_id = {'ID': id}
+            data1.append(pro_def_id)
+
+        productUnit_ID = session.query(ProcessUnit.ID).all()
+        print(productUnit_ID)
+        data = []
+        for tu in productUnit_ID:
+            li = list(tu)
+            id = li[0]
+            pro_unit_id = {'ID': id}
+            data.append(pro_unit_id)
+        return render_template('sysProductUnitRoute.html', )
+    except Exception as e:
+        print(e)
+        logger.error(e)
+        return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
 
 
 @app.route('/allProductUnitRoutes/Find')
