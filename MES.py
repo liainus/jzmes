@@ -14,7 +14,8 @@ from sqlalchemy.orm import sessionmaker, relationship
 
 import Model.Global
 from Model.BSFramwork import AlchemyEncoder
-from Model.core import Enterprise, Area, Factory, ProductLine, ProcessUnit, Equipment
+from Model.core import Enterprise, Area, Factory, ProductLine, ProcessUnit, Equipment, Material, MaterialType, \
+    ProductUnit, ProductRule
 from Model.system import Role, Organization,User,Menu, User_Role
 from tools.MESLogger import MESLogger
 from Model.core import SysLog
@@ -27,6 +28,7 @@ from collections import Counter
 from Model.account import login_security
 from flask import session as cli_session
 from Model.system import User
+from random import randint
 
 import socket
 
@@ -501,7 +503,7 @@ def batchmanager():
 def organizationMap():
     return render_template('index_organization.html')
 
-
+# 组织机构建模
 # 加载工作台
 @app.route('/organization')
 def organization():
@@ -616,9 +618,13 @@ def allOrganizationsCreate():
                 else:
                     DspColor = data['Color']
                 session.add(
-                    Organization(OrganizationCode=data['OrganizationCode'], OrganizationName=data['OrganizationName'],ParentNode=data['ParentNode'], OrganizationSeq=data['OrganizationSeq'],
-                                     Description=data['Description'], CreatePerson=data['CreatePerson'],
-                                     CreateDate=datetime.datetime.now(),Img = DspImg,Color = DspColor))
+                    Organization(OrganizationCode=data['OrganizationCode'],
+                                 OrganizationName=data['OrganizationName'],
+                                 ParentNode=data['ParentNode'],
+                                 OrganizationSeq=data['OrganizationSeq'],
+                                 Description=data['Description'],
+                                 CreatePerson=data['CreatePerson'],
+                                 CreateDate=datetime.datetime.now(),Img = DspImg,Color = DspColor))
                 session.commit()
                 insertSyslog("success", "新增组织" + data['OrganizationName'] + "的组织新增成功", "AAAAAAadmin")
                 return json.dumps([{"status": "OK"}], cls=AlchemyEncoder, ensure_ascii=False)
@@ -647,6 +653,25 @@ def allOrganizationsSearch():
             logger.error(e)
             insertSyslog("error", "查询组织报错Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
+
+# @app.route('/allOrganizations/parentNode')
+# def getParentNode():
+#     if request.method == 'GET':
+#         parentNode = session.query(Organization.ID, Organization.ParentNode).all()
+#         print(parentNode)
+#         data = []
+#         for tu in parentNode:
+#             li = list(tu)
+#             node = li[0]
+#             data.append(node)
+#         parent_node = []
+#         data = set(data)  #去除重复
+#         for node in data:
+#             text = {'text': node}
+#             parent_node.append(text)
+#         parentNode = json.dumps(parent_node, cls=AlchemyEncoder, ensure_ascii=False)
+#         return parentNode
 
 # 生产建模
 # 加载工作台
@@ -712,6 +737,7 @@ def getOrganizationList(id=0):
         print(e)
         insertSyslog("error", "查询组织树形结构报错Error：" + str(e), "AAAAAAadmin")
         return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
 # 加载菜单列表
 @app.route('/Enterprize/parentNode')
 def parentNode():
@@ -849,11 +875,19 @@ def allAreasSearch():
         re = AreaIFS.allAreasSearch(data)
         return re
 
-
+# 生产线
 # 加载工作台
 @app.route('/ProductLine')
-def ProductLine():
-    return render_template('sysProductLine.html')
+def productLine():
+    ID = session.query(Area.ID).all()
+    print(ID)
+    data = []
+    for tu in ID:
+        li = list(tu)
+        id = li[0]
+        area_id = {'ID': id}
+        data.append(area_id)
+    return render_template('sysProductLine.html', area_id=data)
 
 
 @app.route('/allProductLines/Find')
@@ -907,8 +941,16 @@ def allProductLinesSearch():
 
 # 加载工作台
 @app.route('/ProcessUnit')
-def ProcessUnit():
-    return render_template('sysProcessUnit.html')
+def processUnit():
+    ID = session.query(ProductLine.ID).all()
+    print(ID)
+    data = []
+    for tu in ID:
+        li = list(tu)
+        id = li[0]
+        ProductLine_id = {'ID': id}
+        data.append(ProductLine_id)
+    return render_template('sysProcessUnit.html', productLine_id=data)
 
 
 @app.route('/allProcessUnits/Find')
@@ -959,11 +1001,19 @@ def allProcessUnitsSearch():
         re = ProcessUnitIFS.allProcessUnitsSearch(data)
         return re
 
-
+# 设备建模
 # 加载工作台
 @app.route('/Equipment')
 def Equipment():
-    return render_template('sysEquipment.html')
+    ID = session.query(ProcessUnit.ID).all()
+    print(ID)
+    data = []
+    for tu in ID:
+        li = list(tu)
+        id = li[0]
+        processUnit_id = {'ID': id}
+        data.append(processUnit_id)
+    return render_template('sysEquipment.html', ProcessUnit_id=data)
 
 
 @app.route('/allEquipments/Find')
@@ -1017,7 +1067,7 @@ def allEquipmentsSearch():
 
 # 加载工作台
 @app.route('/ProductRule')
-def ProductRule():
+def productRule():
     return render_template('sysProductRule.html')
 
 
@@ -1292,7 +1342,7 @@ def allProductParametersSearch():
 
 # 加载工作台
 @app.route('/MaterialType')
-def MaterialType():
+def materialType():
     return render_template('sysMaterialType.html')
 
 
@@ -1347,8 +1397,16 @@ def allMaterialTypesSearch():
 
 # 加载工作台
 @app.route('/Material')
-def Material():
-    return render_template('sysMaterial.html')
+def material():
+    ID = session.query(MaterialType.ID).all()
+    print(ID)
+    data = []
+    for tu in ID:
+        li = list(tu)
+        id = li[0]
+        materialType_id = {'ID': id}
+        data.append(materialType_id)
+    return render_template('sysMaterial.html', Material_ID=data)
 
 
 @app.route('/allMaterials/Find')
@@ -1522,8 +1580,30 @@ def allZYPlanMaterialsSearch():
 
 # 加载工作台
 @app.route('/ProductUnit')
-def ProductUnit():
-    return render_template('sysProductUnit.html')
+def productUnit():
+    try:
+        product_def_ID = session.query(ProductRule.ID).all()
+        print(product_def_ID)
+        data1 = []
+        for tu in product_def_ID:
+            li = list(tu)
+            id = li[0]
+            pro_def_id = {'ID': id}
+            data1.append(pro_def_id)
+
+        productUnit_ID = session.query(ProductUnit.ID).all()
+        print(productUnit_ID)
+        data = []
+        for tu in productUnit_ID:
+            li = list(tu)
+            id = li[0]
+            pro_unit_id = {'ID': id}
+            data.append(pro_unit_id)
+        return render_template('sysProductUnit.html', Product_def_ID= data1, Product_unit_ID=data)
+    except Exception as e:
+        print(e)
+        logger.error(e)
+        return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
 @app.route('/allProductUnits/Find')

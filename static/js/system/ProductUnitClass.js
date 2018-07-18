@@ -85,7 +85,7 @@ $(function () {
                 field: 'PDUnitCode',
                 title: '产品段编码',
                 align: 'center',
-                width: 100
+                width: 150
             },
             {
                 field: 'PDUnitName',
@@ -129,14 +129,14 @@ $(function () {
             {
                 field: 'ProductRuleID',
                 title: '产品定义ID',
-                width: 300,
+                width: 100,
                 align: 'center'
             },
             {
                 field: 'PUID',
                 title: '工艺段ID',
                 align: 'center',
-                width: 150
+                width: 100
             }
         ]]
     });
@@ -196,8 +196,8 @@ $(function () {
             $('input[name="iDesc"]').val("");
             $('input[name="iDuration"]').val("");
             $('input[name="iUnit"]').val("");
-            $('input[name="iProductRuleID"]').val("");
-            $('input[name="iPUID"]').val("");
+            $('#iProductRuleID option[value=""]').prop("selected", 'selected');//ID默认空
+            $('#iPUID option[value=""]').prop("selected", 'selected');//ID默认空
             $('input[name="iSeq"]').val("");
             // $('input[name="iProductUnitSeq"]').onChange()
             // $(formId).form('clear');
@@ -223,8 +223,8 @@ $(function () {
                     $('input[name="iDesc"]').val(row.Desc);
                     $('input[name="iDuration"]').val(row.Duration);
                     $('input[name="iUnit"]').val(row.Unit);
-                    $('input[name="iProductRuleID"]').val(row.ProductRuleID);
-                    $('input[name="iPUID"]').val(row.PUID);
+                    $('#iProductRuleID option:contains('+row.ProductRuleID+')').prop("selected", 'selected');//区域ID赋值
+                    $('#iPUID option:contains('+row.PUID+')').prop("selected", 'selected');//区域ID赋值
                     $('input[name="iSeq"]').val(row.Seq);
 
                     //var thisSwitchbuttonObj = $(".switchstatus").find("[switchbuttonName='IsEnable']");//获取switchbutton对象  
@@ -265,11 +265,6 @@ $(function () {
                             // data: JSON.stringify(ids),
                             data: a,
                             dataType: 'json',
-                            beforeSend: function () {
-                                $.messager.progress({
-                                    text: '正在删除中...'
-                                });
-                            },
                             success: function (data) {
                                 $.messager.progress('close');
 
@@ -311,6 +306,16 @@ $(function () {
                alert('Warning：产品段名称不能为空！');
                return false;
             }
+            stmp = $('#iProductRuleID').find("option:selected").val();
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：产品定义ID不能为空！');
+               return false;
+            }
+            stmp = $('#iPUID').find("option:selected").val();
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：工艺段ID不能为空！');
+               return false;
+            }
             stmp = $('input[name="iSeq"]').val();
             if(Bee.StringUtils.isInteger(stmp)) {
             //
@@ -334,8 +339,8 @@ $(function () {
                     Desc:$('input[name="iDesc"]').val(),
                     Duration:$('input[name="iDuration"]').val(),
                     Unit:$('input[name="iUnit"]').val(),
-                    ProductRuleID:$('input[name="iProductRuleID"]').val(),
-                    PUID:$('input[name="iPUID"]').val(),
+                    ProductRuleID:$('#iProductRuleID').find("option:selected").html(),
+                    PUID:$('#iPUID').find("option:selected").html(),
                     Seq:$('input[name="iSeq"]').val()
                 };
                 $.ajax({
@@ -377,7 +382,7 @@ $(function () {
                             $(formId).form('reset');
                             $(dialogId).dialog('close');
                             $(tableId).datagrid('reload',{ url: "/allProductUnits/Find?_t=" + new Date().getTime() });
-                            $(tableid).datagrid('clearSelections');
+                            //$(tableid).datagrid('clearSelections');
                         } else {
                             $.messager.alert(obj1[0].status + '失败！', '未知错误导致失败，请重试！', 'warning');
                         }
@@ -420,7 +425,7 @@ $(function () {
                 field: 'PDUnitCode',
                 title: '产品段编码',
                 align: 'center',
-                width: 100
+                width: 150
             },
             {
                 field: 'PDUnitName',
@@ -464,19 +469,19 @@ $(function () {
             {
                 field: 'ProductRuleID',
                 title: '产品定义ID',
-                width: 300,
+                width: 100,
                 align: 'center'
             },
             {
                 field: 'PUID',
                 title: '工艺段ID',
                 align: 'center',
-                width: 150
+                width: 100
             }
         ]]
     });
             $(tableId).datagrid('reload');
-            $(tableid).datagrid('clearSelections');
+            $(tableId).datagrid('clearSelections');
            
         }
 

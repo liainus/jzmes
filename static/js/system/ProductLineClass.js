@@ -181,7 +181,7 @@ $(function () {
             $('input[name="iID"]').val("");
             $('input[name="iPLineCode"]').val("");
             $('input[name="iPLineName"]').val("");
-            $('input[name="iAreaID"]').val("");
+            $('#iAreaID option[value=""]').prop("selected", 'selected');//区域ID默认空
             $('input[name="iSeq"]').val("");
             // $('input[name="iProductLineSeq"]').onChange()
             $('input[name="iDesc"]').val("");
@@ -208,7 +208,7 @@ $(function () {
                     $('input[name="iID"]').val(row.ID);
                     $('input[name="iPLineCode"]').val(row.PLineCode);
                     $('input[name="iPLineName"]').val(row.PLineName);
-                    $('input[name="iAreaID"]').val(row.AreaID);
+                    $('#iAreaID option:contains('+row.ID+')').prop("selected", 'selected');//区域ID赋值
                     $('input[name="iSeq"]').val(row.Seq);
                     $('input[name="iDesc"]').val(row.Desc);
                     $('input[name="iPLineCapacity"]').val(row.PLineCapacity);
@@ -252,11 +252,6 @@ $(function () {
                             // data: JSON.stringify(ids),
                             data: a,
                             dataType: 'json',
-                            beforeSend: function () {
-                                $.messager.progress({
-                                    text: '正在删除中...'
-                                });
-                            },
                             success: function (data) {
                                 $.messager.progress('close');
 
@@ -290,12 +285,17 @@ $(function () {
             var urlAddr = ""
             var stmp = $('input[name="iPLineCode"]').val();
             if(Bee.StringUtils.isEmpty(stmp)) {
-               alert('Warning：组织机构编号不能为空！');
+               alert('Warning：生产线编码不能为空！');
                return false;
             }
             stmp = $('input[name="iPLineName"]').val();
             if(Bee.StringUtils.isEmpty(stmp)) {
-               alert('Warning：组织机构名称不能为空！');
+               alert('Warning：生产线名称不能为空！');
+               return false;
+            }
+            stmp = $('#iAreaID').find("option:selected").val();
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：区域ID不能为空！');
                return false;
             }
             stmp = $('input[name="iSeq"]').val();
@@ -318,7 +318,7 @@ $(function () {
                     ID:$('input[name="iID"]').val(),
                     PLineCode:$('input[name="iPLineCode"]').val(),
                     PLineName:$('input[name="iPLineName"]').val(),
-                    AreaID:$('input[name="iAreaID"]').val(),
+                    AreaID:$('#iAreaID').find("option:selected").html(),
                     Seq:$('input[name="iSeq"]').val(),
                     Desc:$('input[name="iDesc"]').val(),
                     PLineCapacity:$('input[name="iPLineCapacity"]').val(),

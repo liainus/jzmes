@@ -100,7 +100,7 @@ $(function () {
                 width: 200
             },
             {
-                field: 'ParentFactory',
+                field: 'ParentNodeName',
                 title: '父节点',
                 align: 'center',
                 width: 100
@@ -213,7 +213,7 @@ $(function () {
                     $('input[name="iAreaCode"]').val(row.AreaCode);
                     $('input[name="iAreaName"]').val(row.AreaName);
                     $('input[name="iAreaNo"]').val(row.AreaNo);
-                    $("#iParentFactory").combotree('setValue',row.ParentEnterprise);
+                    $("#iParentFactory").combotree('setValue',row.ParentFactory);
                     $('input[name="iSeq"]').val(row.Seq);
                     $('input[name="iDesc"]').val(row.Desc);
                     $('input[name="iType"]').val(row.Type);
@@ -309,7 +309,8 @@ $(function () {
                     AreaCode:$('input[name="iAreaCode"]').val(),
                     AreaName:$('input[name="iAreaName"]').val(),
                     AreaNo:$('input[name="iAreaNo"]').val(),
-                    ParentFactory:$('input[name="iParentFactory"]').val(),
+                    ParentFactory:iParentNodeTreeNode.id,
+                    ParentNodeName:iParentNodeTreeNode.text,
                     Seq:$('input[name="iSeq"]').val(),
                     Desc:$('input[name="iDesc"]').val(),
                     Type:$('input[name="iType"]').val()
@@ -411,7 +412,7 @@ $(function () {
                 width: 200
             },
             {
-                field: 'ParentFactory',
+                field: 'ParentNodeName',
                 title: '父节点',
                 align: 'center',
                 width: 100

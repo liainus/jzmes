@@ -270,28 +270,12 @@ $(function () {
                             // data: JSON.stringify(ids),
                             data: a,
                             dataType: 'json',
-                            beforeSend: function () {
-                                $.messager.progress({
-                                    text: '正在删除中...'
-                                });
-                            },
                             success: function (data) {
                                 $.messager.progress('close');
 
                                 if (data) {
-                                    $(tableId).datagrid('loaded');
+                                    $(tableId).datagrid('loadData', data);
                                     $(tableId).datagrid('load');
-                                    $(tableId).datagrid('unselectAll');
-                                    $.messager.show({
-                                        title: '提示',
-                                        timeout:1000,
-                                        msg: '删除' + titleText + '成功',
-                                        style: {
-                                            right: '',
-                                            top: document.body.scrollTop + document.documentElement.scrollTop,
-                                            bottom: ''
-                                        }
-                                    });
                                 }
                             }
                         });
@@ -302,6 +286,7 @@ $(function () {
             }
         },
         save: function () {
+            console.log($('input[name="iParentNode"]').val())
             var validate=$(formId).form('validate');
             var strID = $('input[name="iID"]').val();
             var msg = ""
@@ -322,6 +307,14 @@ $(function () {
             }else{
                 $('input[name="iOrganizationSeq"]').val("");
                 alert('Warning：组织机构顺序输入错误,请输入数字！');
+                return false;
+            }
+            iParentNode = $('input[name="iParentNode"]').val();
+            if(Bee.StringUtils.isInteger(iParentNode)) {
+            //
+            }else{
+                $('input[name="iParentNode"]').val("");
+                alert('Warning：父节点ID输入错误,请输入数字！');
                 return false;
             }
             if (strID.length >= 1){
@@ -383,7 +376,7 @@ $(function () {
                             $(formId).form('reset');
                             $(dialogId).dialog('close');
                             $(tableId).datagrid('reload',{ url: "/allOrganizations/Find?_t=" + new Date().getTime() });
-                            $(tableid).datagrid('clearSelections');
+                            //$(tableid).datagrid('clearSelections');
                         } else {
                             $.messager.alert(obj1[0].status + '失败！', '未知错误导致失败，请重试！', 'warning');
                         }
@@ -436,9 +429,9 @@ $(function () {
             },
              {
                 field: 'ParentNode',
-                title: '父节点',
+                title: '父节点ID',
                 align: 'center',
-                width: 200
+                width: 100
             },
             {
                 field: 'OrganizationSeq',
@@ -458,7 +451,7 @@ $(function () {
             {
                 field: 'CreatePerson',
                 title: '创建人',
-                width: 200,
+                width: 100,
                 align: 'center'
             },
             {

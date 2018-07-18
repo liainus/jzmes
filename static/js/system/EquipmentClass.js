@@ -160,7 +160,7 @@ $(function () {
             $('input[name="iID"]').val("");
             $('input[name="iEQPCode"]').val("");
             $('input[name="iEQPName"]').val("");
-            $('input[name="iPUID"]').val("");
+            $('#iPUID option[value=""]').prop("selected", 'selected');//ID默认空
             // $('input[name="iEquipmentSeq"]').onChange()
             $('input[name="iDesc"]').val("");
 
@@ -184,7 +184,7 @@ $(function () {
                     $('input[name="iID"]').val(row.ID);
                     $('input[name="iEQPCode"]').val(row.EQPCode);
                     $('input[name="iEQPName"]').val(row.EQPName);
-                    $('input[name="iPUID"]').val(row.PUID);
+                    $('#iPUID option:contains('+row.ID+')').prop("selected", 'selected');//ID赋值
                     $('input[name="iDesc"]').val(row.Desc);
 
                     //var thisSwitchbuttonObj = $(".switchstatus").find("[switchbuttonName='IsEnable']");//获取switchbutton对象  
@@ -225,11 +225,6 @@ $(function () {
                             // data: JSON.stringify(ids),
                             data: a,
                             dataType: 'json',
-                            beforeSend: function () {
-                                $.messager.progress({
-                                    text: '正在删除中...'
-                                });
-                            },
                             success: function (data) {
                                 $.messager.progress('close');
 
@@ -263,12 +258,17 @@ $(function () {
             var urlAddr = ""
             var stmp = $('input[name="iEQPCode"]').val();
             if(Bee.StringUtils.isEmpty(stmp)) {
-               alert('Warning：组织机构编号不能为空！');
+               alert('Warning：设备编码不能为空！');
                return false;
             }
             stmp = $('input[name="iEQPName"]').val();
             if(Bee.StringUtils.isEmpty(stmp)) {
-               alert('Warning：组织机构名称不能为空！');
+               alert('Warning：设备名称不能为空！');
+               return false;
+            }
+             stmp = $('#iPUID').find("option:selected").val()
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：工艺段ID不能为空！');
                return false;
             }
 
@@ -284,7 +284,7 @@ $(function () {
                     ID:$('input[name="iID"]').val(),
                     EQPCode:$('input[name="iEQPCode"]').val(),
                     EQPName:$('input[name="iEQPName"]').val(),
-                    PUID:$('input[name="iPUID"]').val(),
+                    PUID:$('#iPUID').find("option:selected").html(),
                     Desc:$('input[name="iDesc"]').val()
                 };
                 $.ajax({
@@ -326,7 +326,7 @@ $(function () {
                             $(formId).form('reset');
                             $(dialogId).dialog('close');
                             $(tableId).datagrid('reload',{ url: "/allEquipments/Find?_t=" + new Date().getTime() });
-                            $(tableid).datagrid('clearSelections');
+                            //$(tableid).datagrid('clearSelections');
                         } else {
                             $.messager.alert(obj1[0].status + '失败！', '未知错误导致失败，请重试！', 'warning');
                         }
@@ -392,7 +392,7 @@ $(function () {
         ]]
     });
             $(tableId).datagrid('reload');
-            $(tableid).datagrid('clearSelections');
+            $(tableId).datagrid('clearSelections');
            
         }
 
