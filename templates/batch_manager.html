@@ -12,7 +12,32 @@
     <link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
     <link href="../static/js/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
     <link href="../static/css/BATCH_MANAGER.css" type="text/css" rel="stylesheet">
-
+    <script type="text/javascript " src="../static/custom/jquery.min.js "></script>
+    <script type="text/javascript " src="../static/custom/jquery.easyui.min.js "></script>
+    <script  type="text/javascript " >
+        $('#tt').datagrid({
+            rowStyler:function(index,row){
+                if (row.N=='任务编制'){
+                    return 'background-color:blue; color:white !important;font-weight:bold;';
+                }
+                if (row.N=='任务执行'){
+                    return 'background-color:green; color:white;font-weight:bold;';
+                }
+                if (row.N=='任务完成'){
+                    return 'background-color:gray; color:white;font-weight:bold;';
+                }
+                if (row.N=='任务错误'){
+                    return 'background-color:red; color:white;font-weight:bold;';
+                }
+                if (row.N=='任务中止'){
+                    return 'background-color:deeppink; color:white;font-weight:bold;';
+                }
+                if (row.N=='任务暂停'){
+                    return 'background-color:darksalmon; color:white;font-weight:bold;';
+                }
+            }
+        });
+    </script>
 </head>
 
 <body>
@@ -149,60 +174,7 @@
                 </thead>
             </table>
             </div>
-            
         </div>
-
-
- 
-
- 
-   
     </div>
-
-
-        <!-- <div id="pf-ft ">
-            <div class="system-name ">
-                <i class="iconfont ">&#xe6fe;</i>
-                <span>版本信息：1.0 版权所有</span>
-            </div>
-            <div class="copyright-name ">
-                <span>当前登录用户：操作员001&nbsp;&nbsp;</span>
-                <i class="iconfont " >&#xe6ff;</i>
-            </div>
-        </div>  -->
-
 </body>
-
 </html>
-    <script type="text/javascript " src="../static/custom/jquery.min.js "></script>
-    <script type="text/javascript " src="../static/custom/jquery.easyui.min.js "></script>
-<script  type="text/javascript " >
-	$('#tt').datagrid({
-		rowStyler:function(index,row){
-			if (row.N=='任务编制'){
-				return 'background-color:blue; color:white !important;font-weight:bold;';
-            }
-            if (row.N=='任务执行'){
-				return 'background-color:green; color:white;font-weight:bold;';
-            }
-            if (row.N=='任务完成'){
-				return 'background-color:gray; color:white;font-weight:bold;';
-            }
-            if (row.N=='任务错误'){
-				return 'background-color:red; color:white;font-weight:bold;';
-            }
-            if (row.N=='任务中止'){
-				return 'background-color:deeppink; color:white;font-weight:bold;';
-            }
-            if (row.N=='任务暂停'){
-				return 'background-color:darksalmon; color:white;font-weight:bold;';
-            }
-		}
-	});
-
- 
-
-
-  
-
-        </script>

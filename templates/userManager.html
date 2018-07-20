@@ -12,6 +12,187 @@
     <link href="../static/css/datagridpanel_customer.css" rel="stylesheet">
     <link href="../static/css/dialogpanel.css" type="text/css" rel="stylesheet">
     <link href="../static/css/datagrid_customer.css" type="text/css" rel="stylesheet">
+    <script type="text/javascript" src="../static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
+    <script type="text/javascript">
+    {#    树形菜单点击事件#}
+        var code = ""
+        $("#tree").tree({
+            url:'/MyOp',
+            method: 'get',
+            animate:true,
+            loadFilter:function(data){
+                return data
+            },
+            onClick :function(node){
+                code = node.id
+                $('#tab').datagrid('load',{
+                    id: code,
+                    Name:''
+                });
+            }
+        })
+        function doSearch(){
+            $('#tab').datagrid('load',{
+                id:code,
+                Name: $('#NameSearchVal').val()
+            });
+        }
+        function doAdd() {
+            $("#saveAdd").show()
+            $("#saveUpdata").hide()
+            $("#userClassDialog").dialog('open').dialog('setTitle','添加用户');
+            $('input[name="ID"]').val(); //ID
+            $('input[name="Name"]').val("");//用户名
+            $('input[name="Password"]').val("");//密码
+            $('input[name="LoginName"]').val("");//登录名
+            $('input[name="Creater"]').val($(window.parent.document).find(".pf-user-name").html());//创建用户
+            $('input[name="CreateTime"]').val(Bee.DateUtils.getCurrentTime());//创建时间
+            $('input[name="LastLoginTime"]').val("");//上次登录时间
+            $('#OrganizationName option[value=""]').prop("selected", 'selected');//所属部门
+        }
+        function doUpdata(){
+
+            $("#saveAdd").hide()
+            $("#saveUpdata").show()
+            var rows = $("#tab").datagrid('getSelections');
+            if (rows.length > 1) {
+                $.messager.alert('警告操作！', '编辑记录只能选定一条数据！', 'warning');
+            }else if(rows.length == 1){
+                var row = $("#tab").datagrid('getSelected');
+                if(row){
+                    $("#userClassDialog").dialog('open').dialog('setTitle','修改信息');
+                    $('input[name="ID"]').val(row.ID); //ID
+                    $('input[name="Name"]').val(row.Name);//用户名
+                    $('input[name="Password"]').val(row.Password);//密码
+                    $('input[name="LoginName"]').val(row.LoginName);//登录名
+                    $('input[name="Creater"]').val(row.Creater);//创建用户
+                    $('input[name="CreateTime"]').val(row.CreateTime);//创建时间
+                    $('input[name="LastLoginTime"]').val(row.LastLoginTime);//上次登录时间
+                    $('#OrganizationName option:contains('+row.OrganizationName+')').prop("selected", 'selected');//所属部门
+                }
+            } else if (rows.length == 0) {
+                $.messager.alert('警告操作！', '请至少选定一条数据进行编辑！', 'warning');
+            }
+        }
+        function createKeyIDObj(keyID){
+            return {
+                ID:keyID
+            }
+        }
+        function doDelete(){
+            var rows = $("#tab").datagrid('getSelections');
+            if (rows.length > 0) {
+                var jsonarray=[];
+                $.messager.confirm('确定操作', '您正在删除所选的记录吗？', function (flag) {
+                    if (flag) {
+                        var PrimaryKey = "ID";
+                        var a = "";
+                        for (var i = 0; i < rows.length; i++) {
+                            // ids.push(parseInt((rows[i].id)));
+                            var obj=createKeyIDObj(parseInt(rows[i].ID));
+                            jsonarray.push(obj);
+                        }
+                        a = JSON.stringify(jsonarray);
+                        $.ajax({
+                            url: '/user/deleteUser',
+                            method: 'POST',
+                            traditional: true,
+                            data: a,
+                            dataType: 'json',
+                            success: function (data) {
+                                $.messager.progress('close');
+                                $("#tab").datagrid('reload');
+                            }
+                        });
+                    }
+                });
+            } else {
+                $.messager.alert('提示', '请选择要删除的记录！', 'info');
+            }
+        }
+        function doReload(){
+            $('#tab').datagrid('reload');
+        }
+        UserClassToolbar = {
+            saveAdd : function () {
+                 if(Bee.StringUtils.isEmpty($('input[name="Name"]').val())) {
+                     $.messager.alert('提示', '用户名不能为空！', 'info');
+                     return false;
+                 }else if(Bee.StringUtils.isEmpty($('input[name="Password"]').val())){
+                     $.messager.alert('提示', '密码不能为空！', 'info');
+                     return false;
+                 }else if(Bee.StringUtils.isEmpty($('input[name="LoginName"]').val())){
+                     $.messager.alert('提示', '登录名不能为空！', 'info');
+                     return false;
+                 }else if($('#OrganizationName').find("option:selected").val() == ""){
+                     $.messager.alert('提示', '所属部门不能为空！', 'info');
+                     return false;
+                 }
+                 $.ajax({
+                    url: "/user/addUser",
+                    method: 'POST',
+                    traditional: true,
+                    data: {
+                        Name :$('input[name="Name"]').val(),
+                        Password :$('input[name="Password"]').val(),
+                        LoginName :$('input[name="LoginName"]').val(),
+                        Creater : $('input[name="Creater"]').val(),
+                        CreateTime : $('input[name="CreateTime"]').val(),
+                        OrganizationName :$('#OrganizationName').find("option:selected").html()
+                    },
+                    dataType: 'json',
+                    cache: false,
+                    success: function (data,response,status) {
+                        $('#userClassDialog').dialog('close');
+                        $("#tab").datagrid('reload');
+                    },
+                     error: function(data){
+                           alert("异常，请刷新后重试...");
+                     },
+                 })
+            },
+            saveUpdata :function () {
+                if(Bee.StringUtils.isEmpty($('input[name="Name"]').val())) {
+                     $.messager.alert('提示', '用户名不能为空！', 'info');
+                     return false;
+                 }else if(Bee.StringUtils.isEmpty($('input[name="Password"]').val())){
+                     $.messager.alert('提示', '密码不能为空！', 'info');
+                     return false;
+                 }else if(Bee.StringUtils.isEmpty($('input[name="LoginName"]').val())){
+                     $.messager.alert('提示', '登录名不能为空！', 'info');
+                     return false;
+                 }else if($('#OrganizationName').find("option:selected").val() == ""){
+                     $.messager.alert('提示', '所属部门不能为空！', 'info');
+                     return false;
+                 }
+                 $.ajax({
+                    url: "/user/updateUser",
+                    method: 'POST',
+                    traditional: true,
+                    data: {
+                        ID: $('input[name="ID"]').val(),
+                        Name :$('input[name="Name"]').val(),
+                        Password :$('input[name="Password"]').val(),
+                        LoginName :$('input[name="LoginName"]').val(),
+                        Creater : $('input[name="Creater"]').val(),
+                        OrganizationName :$('#OrganizationName').find("option:selected").html()
+                    },
+                    dataType: 'json',
+                    cache: false,
+                    success: function (data,response,status) {
+                        $('#userClassDialog').dialog('close');
+                        $("#tab").datagrid('reload');
+                    },
+                     error: function(data){
+                           alert("异常，请刷新后重试...");
+                     },
+                 })
+            }
+        }
+    </script>
 </head>
 <body>
 	<div class="container">
@@ -143,184 +324,3 @@
 	</div>
 </body>
 </html>
-<script type="text/javascript" src="../static/js/jquery.min.js"></script>
-<script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
-<script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
-<script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
-<script type="text/javascript">
-{#    树形菜单点击事件#}
-    var code = ""
-    $("#tree").tree({
-        url:'/MyOp',
-        method: 'get',
-        animate:true,
-        loadFilter:function(data){
-            return data
-        },
-        onClick :function(node){
-            code = node.id
-            $('#tab').datagrid('load',{
-                id: code,
-                Name:''
-            });
-        }
-    })
-    function doSearch(){
-        $('#tab').datagrid('load',{
-            id:code,
-            Name: $('#NameSearchVal').val()
-        });
-    }
-    function doAdd() {
-        $("#saveAdd").show()
-        $("#saveUpdata").hide()
-        $("#userClassDialog").dialog('open').dialog('setTitle','添加用户');
-        $('input[name="ID"]').val(); //ID
-        $('input[name="Name"]').val("");//用户名
-        $('input[name="Password"]').val("");//密码
-        $('input[name="LoginName"]').val("");//登录名
-        $('input[name="Creater"]').val($(window.parent.document).find(".pf-user-name").html());//创建用户
-        $('input[name="CreateTime"]').val(Bee.DateUtils.getCurrentTime());//创建时间
-        $('input[name="LastLoginTime"]').val("");//上次登录时间
-        $('#OrganizationName option[value=""]').prop("selected", 'selected');//所属部门
-    }
-    function doUpdata(){
-
-        $("#saveAdd").hide()
-        $("#saveUpdata").show()
-        var rows = $("#tab").datagrid('getSelections');
-        if (rows.length > 1) {
-            $.messager.alert('警告操作！', '编辑记录只能选定一条数据！', 'warning');
-        }else if(rows.length == 1){
-            var row = $("#tab").datagrid('getSelected');
-            if(row){
-                $("#userClassDialog").dialog('open').dialog('setTitle','修改信息');
-                $('input[name="ID"]').val(row.ID); //ID
-                $('input[name="Name"]').val(row.Name);//用户名
-                $('input[name="Password"]').val(row.Password);//密码
-                $('input[name="LoginName"]').val(row.LoginName);//登录名
-                $('input[name="Creater"]').val(row.Creater);//创建用户
-                $('input[name="CreateTime"]').val(row.CreateTime);//创建时间
-                $('input[name="LastLoginTime"]').val(row.LastLoginTime);//上次登录时间
-                $('#OrganizationName option:contains('+row.OrganizationName+')').prop("selected", 'selected');//所属部门
-            }
-        } else if (rows.length == 0) {
-            $.messager.alert('警告操作！', '请至少选定一条数据进行编辑！', 'warning');
-        }
-    }
-    function createKeyIDObj(keyID){
-        return {
-            ID:keyID
-        }
-    }
-    function doDelete(){
-        var rows = $("#tab").datagrid('getSelections');
-        if (rows.length > 0) {
-            var jsonarray=[];
-            $.messager.confirm('确定操作', '您正在删除所选的记录吗？', function (flag) {
-                if (flag) {
-                    var PrimaryKey = "ID";
-                    var a = "";
-                    for (var i = 0; i < rows.length; i++) {
-                        // ids.push(parseInt((rows[i].id)));
-                        var obj=createKeyIDObj(parseInt(rows[i].ID));
-                        jsonarray.push(obj);
-                    }
-                    a = JSON.stringify(jsonarray);
-                    $.ajax({
-                        url: '/user/deleteUser',
-                        method: 'POST',
-                        traditional: true,
-                        data: a,
-                        dataType: 'json',
-                        success: function (data) {
-                            $.messager.progress('close');
-                            $("#tab").datagrid('reload');
-                        }
-                    });
-                }
-            });
-        } else {
-            $.messager.alert('提示', '请选择要删除的记录！', 'info');
-        }
-    }
-    function doReload(){
-        $('#tab').datagrid('reload');
-    }
-    UserClassToolbar = {
-        saveAdd : function () {
-             if(Bee.StringUtils.isEmpty($('input[name="Name"]').val())) {
-                 $.messager.alert('提示', '用户名不能为空！', 'info');
-                 return false;
-             }else if(Bee.StringUtils.isEmpty($('input[name="Password"]').val())){
-                 $.messager.alert('提示', '密码不能为空！', 'info');
-                 return false;
-             }else if(Bee.StringUtils.isEmpty($('input[name="LoginName"]').val())){
-                 $.messager.alert('提示', '登录名不能为空！', 'info');
-                 return false;
-             }else if($('#OrganizationName').find("option:selected").val() == ""){
-                 $.messager.alert('提示', '所属部门不能为空！', 'info');
-                 return false;
-             }
-             $.ajax({
-                url: "/user/addUser",
-                method: 'POST',
-                traditional: true,
-                data: {
-                    Name :$('input[name="Name"]').val(),
-                    Password :$('input[name="Password"]').val(),
-                    LoginName :$('input[name="LoginName"]').val(),
-                    Creater : $('input[name="Creater"]').val(),
-                    CreateTime : $('input[name="CreateTime"]').val(),
-                    OrganizationName :$('#OrganizationName').find("option:selected").html()
-                },
-                dataType: 'json',
-                cache: false,
-                success: function (data,response,status) {
-                    $('#userClassDialog').dialog('close');
-                    $("#tab").datagrid('reload');
-                },
-                 error: function(data){
-                       alert("异常，请刷新后重试...");
-                 },
-             })
-        },
-        saveUpdata :function () {
-            if(Bee.StringUtils.isEmpty($('input[name="Name"]').val())) {
-                 $.messager.alert('提示', '用户名不能为空！', 'info');
-                 return false;
-             }else if(Bee.StringUtils.isEmpty($('input[name="Password"]').val())){
-                 $.messager.alert('提示', '密码不能为空！', 'info');
-                 return false;
-             }else if(Bee.StringUtils.isEmpty($('input[name="LoginName"]').val())){
-                 $.messager.alert('提示', '登录名不能为空！', 'info');
-                 return false;
-             }else if($('#OrganizationName').find("option:selected").val() == ""){
-                 $.messager.alert('提示', '所属部门不能为空！', 'info');
-                 return false;
-             }
-             $.ajax({
-                url: "/user/updateUser",
-                method: 'POST',
-                traditional: true,
-                data: {
-                    ID: $('input[name="ID"]').val(),
-                    Name :$('input[name="Name"]').val(),
-                    Password :$('input[name="Password"]').val(),
-                    LoginName :$('input[name="LoginName"]').val(),
-                    Creater : $('input[name="Creater"]').val(),
-                    OrganizationName :$('#OrganizationName').find("option:selected").html()
-                },
-                dataType: 'json',
-                cache: false,
-                success: function (data,response,status) {
-                    $('#userClassDialog').dialog('close');
-                    $("#tab").datagrid('reload');
-                },
-                 error: function(data){
-                       alert("异常，请刷新后重试...");
-                 },
-             })
-        }
-    }
-</script>

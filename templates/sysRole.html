@@ -5,7 +5,6 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>角色管理</title>
-
     <link href="../static/css/base.css" rel="stylesheet">
     <link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
     <link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
@@ -15,8 +14,12 @@
     <link href="../static/css/datagridpanel_customer.css" rel="stylesheet">
     <link href="../static/css/dialogpanel.css" type="text/css" rel="stylesheet">
     <link href="../static/css/datagrid_customer.css" type="text/css" rel="stylesheet">
+    <script type="text/javascript" src="../static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
+    <script type="text/javascript" src="../static/js/role/roleClass.js" charset="utf-8"></script>
 </head>
-
 <body>
     <div class="container">
         <table id="RoleClassTable"></table>
@@ -26,9 +29,8 @@
             <input type="text" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
                 placeholder="">
             <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="RoleClassToolbar.search();">查询</a>
-            
             <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add'" onclick="RoleClassToolbar.create();">添加</a>
-              <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit'" onclick="RoleClassToolbar.update();">修改</a>
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit'" onclick="RoleClassToolbar.update();">修改</a>
             <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove'" onclick="RoleClassToolbar.delete();">删除</a>
             <a href="#" class="easyui-linkbutton" id="reload" data-options="iconCls:'icon-reload'" onclick="RoleClassToolbar.refresh();">刷新</a>
         </div>
@@ -59,6 +61,12 @@
                     </td>
                 </tr>
                 <tr>
+                    <td class="kv-label">父节点</td>
+                    <td class="kv-content">
+                        <input  name="iParentNode" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                    </td>
+                </tr>
+                <tr>
                     <td class="kv-label">角色顺序</td>
                     <td class="kv-content">
                         <input name="iRoleSeq" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
@@ -67,7 +75,7 @@
                 <tr>
                     <td class="kv-label">说明</td>
                     <td class="kv-content">
-                        <input name="iDescription" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                        <input name="iDescription" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
                     </td>
                 </tr>
                 <tr>
@@ -109,13 +117,5 @@
     		</div>
         </div>
     </div>
-
 </body>
-
 </html>
-
-<script type="text/javascript" src="../static/js/jquery.min.js"></script>
-<script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
-<script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
-<script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
-<script type="text/javascript" src="../static/js/role/roleClass.js" charset="utf-8"></script>

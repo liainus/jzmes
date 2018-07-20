@@ -10,7 +10,79 @@
 	<link href="../static/css/basic_info.css" rel="stylesheet">
 	<link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
 	<link href="../static/js/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
-
+    <script type="text/javascript" src="../static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript">
+        function createKeyIDObj(keyID){
+            return {
+                menu_id:keyID
+            }
+        }
+        $(function(){
+            var treeId = ""
+            $("#tree").tree({
+                url:'/Permission/SelectRoles',
+                method: 'get',
+                checkbox:true,
+                animate:true,
+                cascadeCheck:false, //取消菜单联级
+                loadFilter:function(data){
+                    return data;
+                },
+                onClick :function(node){
+                    $('#tab').datagrid('load',{
+                        ID: node.id
+                    });
+                    treeId = node.id
+                },
+                onSelect:function(node){
+                    var ckNodes = $('#tree').tree("getChecked");
+                    for (var i = 0; i < ckNodes.length; i++) {
+                        if (ckNodes[i].id != node.id) {
+                            $('#tree').tree("uncheck", ckNodes[i].target);
+                        }
+                    }
+                    $('#tree').tree('check', node.target);
+                    $('#tab').datagrid('load',{
+                        ID: node.id
+                    });
+                    treeId = node.id
+                },
+                onLoadSuccess: function (node, data) {
+                    $(this).find('span.tree-checkbox').unbind().click(function () {
+                        $('#tree').tree('select', $(this).parent());
+                        return false;
+                    });
+                }
+            })
+            $("#tt").tree({
+                url:'/permission/menulist',
+                method: 'get',
+                animate:true,
+                checkbox:true,
+                onlyLeafCheck:true,//去掉父节点复选框
+                loadFilter:function(data){
+                    return data;
+                }
+            })
+            $("#SaveBtn").on("click",function () {
+                var nodes = $("#tt").tree('getChecked')
+                var jsonarray = []
+                var menu_id = ""
+                for (var i = 0; i < nodes.length; i++) {
+                    var obj=createKeyIDObj(parseInt(nodes[i].id));
+                        jsonarray.push(obj);
+                }
+                menu_id = JSON.stringify(jsonarray);
+                console.log(treeId)
+                console.log(menu_id)
+                $.get("/permission/MenuToRole",{role_id:treeId,menu_id:menu_id},function(res){
+                    $.messager.alert('提示','保存成功！');
+                })
+            })
+        })
+    </script>
 </head>
 
 <body>
@@ -65,77 +137,3 @@
         </div>
 </body>
 </html>
-<script type="text/javascript" src="../static/js/jquery.min.js"></script>
-<script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
-<script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
-<script type="text/javascript">
-    function createKeyIDObj(keyID){
-        return {
-            menu_id:keyID
-        }
-    }
-    $(function(){
-        var treeId = ""
-        $("#tree").tree({
-            url:'/Permission/SelectRoles',
-            method: 'get',
-            checkbox:true,
-            animate:true,
-            cascadeCheck:false, //取消菜单联级
-            loadFilter:function(data){
-                return data;
-            },
-            onClick :function(node){
-                $('#tab').datagrid('load',{
-                    ID: node.id
-                });
-                treeId = node.id
-            },
-            onSelect:function(node){
-                var ckNodes = $('#tree').tree("getChecked");
-                for (var i = 0; i < ckNodes.length; i++) {
-                    if (ckNodes[i].id != node.id) {
-                        $('#tree').tree("uncheck", ckNodes[i].target);
-                    }
-                }
-                $('#tree').tree('check', node.target);
-                $('#tab').datagrid('load',{
-                    ID: node.id
-                });
-                treeId = node.id
-            },
-            onLoadSuccess: function (node, data) {
-                $(this).find('span.tree-checkbox').unbind().click(function () {
-                    $('#tree').tree('select', $(this).parent());
-                    return false;
-                });
-            }
-        })
-        $("#tt").tree({
-            url:'/permission/menulist',
-            method: 'get',
-            animate:true,
-            checkbox:true,
-            onlyLeafCheck:true,//去掉父节点复选框
-            loadFilter:function(data){
-                return data;
-            }
-        })
-        $("#SaveBtn").on("click",function () {
-            var nodes = $("#tt").tree('getChecked')
-            var jsonarray = []
-            var menu_id = ""
-            for (var i = 0; i < nodes.length; i++) {
-                var obj=createKeyIDObj(parseInt(nodes[i].id));
-                    jsonarray.push(obj);
-            }
-            menu_id = JSON.stringify(jsonarray);
-            console.log(treeId)
-            console.log(menu_id)
-            $.get("/permission/MenuToRole",{role_id:treeId,menu_id:menu_id},function(res){
-                $.messager.alert('提示','保存成功！');
-            })
-        })
-    })
-
-</script>

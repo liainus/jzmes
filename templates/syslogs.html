@@ -8,6 +8,32 @@
     <link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
     <link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
     <link rel="stylesheet" href="../static/css/providers.css">
+    <script type="text/javascript" src="../static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
+    <script>
+        $(function(){
+            var curr_time = new Date();
+            var startDate = curr_time.getFullYear()+"-";
+            startDate += curr_time.getMonth()+1+"-";
+            startDate += curr_time.getDate()-1+"-";
+            var endData = curr_time.getFullYear()+"-";
+            endData += curr_time.getMonth()+1+"-";
+            endData += curr_time.getDate()+"-";
+            $("#startTime").datebox("setValue", startDate);
+            $("#endTime").datebox("setValue", endData);
+            $('#tab').datagrid('load',{
+                startTime: $('#startTime').datebox('getValue'),
+                endTime: $('#endTime').datebox('getValue')
+            });
+        })
+        function doSearch(){
+                $('#tab').datagrid('load',{
+                    startTime: $('#startTime').datebox('getValue'),
+                    endTime: $('#endTime').datebox('getValue')
+                });
+            }
+    </script>
 </head> 
 <body>
     <div class="container">
@@ -45,29 +71,3 @@
     </div>
 </body> 
 </html>
-<script type="text/javascript" src="../static/js/jquery.min.js"></script>
-<script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
-<script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
-<script>
-    $(function(){
-        var curr_time = new Date();
-        var startDate = curr_time.getFullYear()+"-";
-        startDate += curr_time.getMonth()+1+"-";
-        startDate += curr_time.getDate()-1+"-";
-        var endData = curr_time.getFullYear()+"-";
-        endData += curr_time.getMonth()+1+"-";
-        endData += curr_time.getDate()+"-";
-        $("#startTime").datebox("setValue", startDate);
-        $("#endTime").datebox("setValue", endData);
-        $('#tab').datagrid('load',{
-            startTime: $('#startTime').datebox('getValue'),
-            endTime: $('#endTime').datebox('getValue')
-        });
-    })
-    function doSearch(){
-            $('#tab').datagrid('load',{
-                startTime: $('#startTime').datebox('getValue'),
-                endTime: $('#endTime').datebox('getValue')
-            });
-        }
-</script>

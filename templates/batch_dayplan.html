@@ -12,9 +12,33 @@
     <link rel="stylesheet" type="text/css" href="../../custom/uimaker/icon.css">
     <link href="../js/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
     <link href="../css/BATCH_MANAGER.css" type="text/css" rel="stylesheet">
-
+    <script type="text/javascript " src="../../custom/jquery.min.js "></script>
+    <script type="text/javascript " src="../../custom/jquery.easyui.min.js "></script>
+    <script  type="text/javascript " >
+        $('#tt').datagrid({
+            rowStyler:function(index,row){
+                if (row.N=='任务编制'){
+                    return 'background-color:blue; color:white !important;font-weight:bold;';
+                }
+                if (row.N=='任务执行'){
+                    return 'background-color:green; color:white;font-weight:bold;';
+                }
+                if (row.N=='任务完成'){
+                    return 'background-color:gray; color:white;font-weight:bold;';
+                }
+                if (row.N=='任务错误'){
+                    return 'background-color:red; color:white;font-weight:bold;';
+                }
+                if (row.N=='任务中止'){
+                    return 'background-color:deeppink; color:white;font-weight:bold;';
+                }
+                if (row.N=='任务暂停'){
+                    return 'background-color:darksalmon; color:white;font-weight:bold;';
+                }
+            }
+        });
+    </script>
 </head>
-
 <body>
     <div class="container" style="margin:3px;">
         <!-- <div style="margin:3px;">
@@ -131,10 +155,7 @@
                 </tr>
             </thead>
         </table>
-   
     </div>
-
-
         <!-- <div id="pf-ft ">
             <div claModelstem-name ">
                 <i class="iconfont ">&#xe6fe;</i>
@@ -145,33 +166,5 @@
                 <i class="iconfont " >&#xe6ff;</i>
             </div>
         </div>  -->
-
 </body>
-
 </html>
-    <script type="text/javascript " src="../../custom/jquery.min.js "></script>
-    <script type="text/javascript " src="../../custom/jquery.easyui.min.js "></script>
-<script  type="text/javascript " >
-	$('#tt').datagrid({
-		rowStyler:function(index,row){
-			if (row.N=='任务编制'){
-				return 'background-color:blue; color:white !important;font-weight:bold;';
-            }
-            if (row.N=='任务执行'){
-				return 'background-color:green; color:white;font-weight:bold;';
-            }
-            if (row.N=='任务完成'){
-				return 'background-color:gray; color:white;font-weight:bold;';
-            }
-            if (row.N=='任务错误'){
-				return 'background-color:red; color:white;font-weight:bold;';
-            }
-            if (row.N=='任务中止'){
-				return 'background-color:deeppink; color:white;font-weight:bold;';
-            }
-            if (row.N=='任务暂停'){
-				return 'background-color:darksalmon; color:white;font-weight:bold;';
-            }
-		}
-	});
-        </script>
