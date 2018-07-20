@@ -879,13 +879,14 @@ def allAreasSearch():
 # 加载工作台
 @app.route('/ProductLine')
 def productLine():
-    ID = session.query(Area.ID).all()
+    ID = session.query(Area.ID, Area.AreaName).all()
     print(ID)
     data = []
     for tu in ID:
         li = list(tu)
         id = li[0]
-        area_id = {'ID': id}
+        name = li[1]
+        area_id = {'ID': id,'text':name}
         data.append(area_id)
     return render_template('sysProductLine.html', area_id=data)
 
@@ -942,13 +943,14 @@ def allProductLinesSearch():
 # 加载工作台
 @app.route('/ProcessUnit')
 def processUnit():
-    ID = session.query(ProductLine.ID).all()
+    ID = session.query(ProductLine.ID, ProductLine.PLineName).all()
     print(ID)
     data = []
     for tu in ID:
         li = list(tu)
         id = li[0]
-        ProductLine_id = {'ID': id}
+        name = li[1]
+        ProductLine_id = {'ID': id, 'text':name}
         data.append(ProductLine_id)
     return render_template('sysProcessUnit.html', productLine_id=data)
 
@@ -1005,13 +1007,14 @@ def allProcessUnitsSearch():
 # 加载工作台
 @app.route('/Equipment')
 def Equipment():
-    ID = session.query(ProcessUnit.ID).all()
+    ID = session.query(ProcessUnit.ID, ProcessUnit.PUName).all()
     print(ID)
     data = []
     for tu in ID:
         li = list(tu)
         id = li[0]
-        processUnit_id = {'ID': id}
+        name = li[1]
+        processUnit_id = {'ID': id, 'text':name}
         data.append(processUnit_id)
     return render_template('sysEquipment.html', ProcessUnit_id=data)
 
@@ -1234,22 +1237,24 @@ def allZYTasksSearch():
 @app.route('/ProductControlTask')
 def ProductControlTask():
     try:
-        product_def_ID = session.query(ProductRule.ID).all()
+        product_def_ID = session.query(ProductRule.ID,ProductRule.PRName).all()
         print(product_def_ID)
         data1 = []
         for tu in product_def_ID:
             li = list(tu)
             id = li[0]
-            pro_def_id = {'ID': id}
+            name = li[1]
+            pro_def_id = {'ID': id, 'text':name}
             data1.append(pro_def_id)
 
-        productUnit_ID = session.query(ProcessUnit.ID).all()
+        productUnit_ID = session.query(ProcessUnit.ID, ProcessUnit.PUName).all()
         print(productUnit_ID)
         data = []
         for tu in productUnit_ID:
             li = list(tu)
             id = li[0]
-            pro_unit_id = {'ID': id}
+            name = li[1]
+            pro_unit_id = {'ID': id, 'text':name}
             data.append(pro_unit_id)
         return render_template('sysProductControlTask.html', Product_def_ID= data1, Product_unit_ID=data)
     except Exception as e:
@@ -1311,22 +1316,24 @@ def allProductControlTasksSearch():
 @app.route('/ProductParameter')
 def ProductParameter():
     try:
-        product_def_ID = session.query(ProductRule.ID).all()
+        product_def_ID = session.query(ProductRule.ID, ProductRule.PRName).all()
         print(product_def_ID)
         data1 = []
         for tu in product_def_ID:
             li = list(tu)
             id = li[0]
-            pro_def_id = {'ID': id}
+            name = li[1]
+            pro_def_id = {'ID': id, 'text':name}
             data1.append(pro_def_id)
 
-        productUnit_ID = session.query(ProcessUnit.ID).all()
+        productUnit_ID = session.query(ProcessUnit.ID, ProcessUnit.PUName).all()
         print(productUnit_ID)
         data = []
         for tu in productUnit_ID:
             li = list(tu)
             id = li[0]
-            pro_unit_id = {'ID': id}
+            name = li[1]
+            pro_unit_id = {'ID': id, 'text':name}
             data.append(pro_unit_id)
         return render_template('sysProductParameter.html', Product_def_ID= data1, Product_unit_ID=data)
     except Exception as e:
@@ -1442,13 +1449,14 @@ def allMaterialTypesSearch():
 # 加载工作台
 @app.route('/Material')
 def material():
-    ID = session.query(MaterialType.ID).all()
+    ID = session.query(MaterialType.ID, Material.MATName).all()
     print(ID)
     data = []
     for tu in ID:
         li = list(tu)
         id = li[0]
-        materialType_id = {'ID': id}
+        name = li[1]
+        materialType_id = {'ID': id,'text':name}
         data.append(materialType_id)
     return render_template('sysMaterial.html', Material_ID=data)
 
@@ -1516,40 +1524,44 @@ def allMaterialsSearch():
 @app.route('/MaterialBOM')
 def MaterialBOM():
     try:
-        material_ID = session.query(Material.ID).all()
+        material_ID = session.query(Material.ID,Material.MATName).all()
         print(material_ID)
         data_material = []
         for tu in material_ID:
             li = list(tu)
             id = li[0]
-            material_id = {'ID': id}
+            name = li[1]
+            material_id = {'ID': id,'text':name}
             data_material.append(material_id)
 
-        product_def_ID = session.query(ProductRule.ID).all()
+        product_def_ID = session.query(ProductRule.ID, ProductRule.PRName).all()
         print(product_def_ID)
         data1 = []
         for tu in product_def_ID:
             li = list(tu)
             id = li[0]
-            pro_def_id = {'ID': id}
+            name = li[1]
+            pro_def_id = {'ID': id, 'text':name}
             data1.append(pro_def_id)
 
-        productUnit_ID = session.query(ProcessUnit.ID).all()
+        productUnit_ID = session.query(ProcessUnit.ID, ProcessUnit.PUName).all()
         print(productUnit_ID)
         data = []
         for tu in productUnit_ID:
             li = list(tu)
             id = li[0]
-            pro_unit_id = {'ID': id}
+            name = li[1]
+            pro_unit_id = {'ID': id, 'text':name}
             data.append(pro_unit_id)
 
-        material_Type_ID = session.query(MaterialType.ID).all()
+        material_Type_ID = session.query(MaterialType.ID, MaterialType.MATTypeName).all()
         print(material_Type_ID)
         data_material_typeID = []
         for tu in material_Type_ID:
             li = list(tu)
             id = li[0]
-            material_type_id = {'ID': id}
+            name = li[1]
+            material_type_id = {'ID': id, 'text':name}
             data_material_typeID.append(material_type_id)
         return render_template('sysMaterialBOM.html', Material_ID=data_material,
                                Product_def_ID= data1, Product_unit_ID=data,
@@ -1668,22 +1680,24 @@ def allZYPlanMaterialsSearch():
 @app.route('/ProductUnit')
 def productUnit():
     try:
-        product_def_ID = session.query(ProductRule.ID).all()
+        product_def_ID = session.query(ProductRule.ID, ProductRule.PRName).all()
         print(product_def_ID)
         data1 = []
         for tu in product_def_ID:
             li = list(tu)
             id = li[0]
-            pro_def_id = {'ID': id}
+            name = li[1]
+            pro_def_id = {'ID': id, 'text':name}
             data1.append(pro_def_id)
 
-        productUnit_ID = session.query(ProcessUnit.ID).all()
+        productUnit_ID = session.query(ProcessUnit.ID, ProcessUnit.PUName).all()
         print(productUnit_ID)
         data = []
         for tu in productUnit_ID:
             li = list(tu)
             id = li[0]
-            pro_unit_id = {'ID': id}
+            name = li[1]
+            pro_unit_id = {'ID': id, 'text':name}
             data.append(pro_unit_id)
         return render_template('sysProductUnit.html', Product_def_ID= data1, Product_unit_ID=data)
     except Exception as e:
@@ -1745,22 +1759,24 @@ def allProductUnitsSearch():
 @app.route('/ProductUnitRoute')
 def ProductUnitRoute():
     try:
-        product_def_ID = session.query(ProductRule.ID).all()
+        product_def_ID = session.query(ProductRule.ID, ProductRule.PRName).all()
         print(product_def_ID)
         data1 = []
         for tu in product_def_ID:
             li = list(tu)
             id = li[0]
-            pro_def_id = {'ID': id}
+            name = li[1]
+            pro_def_id = {'ID': id, 'text':name}
             data1.append(pro_def_id)
 
-        productUnit_ID = session.query(ProcessUnit.ID).all()
+        productUnit_ID = session.query(ProcessUnit.ID, ProcessUnit.PUName).all()
         print(productUnit_ID)
         data = []
         for tu in productUnit_ID:
             li = list(tu)
             id = li[0]
-            pro_unit_id = {'ID': id}
+            name = li[1]
+            pro_unit_id = {'ID': id, 'text':name}
             data.append(pro_unit_id)
         return render_template('sysProductUnitRoute.html', Product_def_ID=data1, ProductUnit_ID=data)
     except Exception as e:

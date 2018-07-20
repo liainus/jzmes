@@ -318,7 +318,7 @@ $(function () {
                     ID:$('input[name="iID"]').val(),
                     PLineCode:$('input[name="iPLineCode"]').val(),
                     PLineName:$('input[name="iPLineName"]').val(),
-                    AreaID:$('#iAreaID').find("option:selected").html(),
+                    AreaID:$('#iAreaID').find("option:selected").val(),
                     Seq:$('input[name="iSeq"]').val(),
                     Desc:$('input[name="iDesc"]').val(),
                     PLineCapacity:$('input[name="iPLineCapacity"]').val(),
@@ -402,7 +402,7 @@ $(function () {
                 align: 'center',
                 width: 100
             },
-           {
+            {
                 field: 'PLineCode',
                 title: '生产线编码',
                 align: 'center',
@@ -416,7 +416,7 @@ $(function () {
             },
              {
                 field: 'AreaID',
-                title: '区域ID',
+                title: '区域编号',
                 align: 'center',
                 width: 200
             },
@@ -439,12 +439,12 @@ $(function () {
                 field: 'PLineCapacity',
                 title: '产线能力',
                 align: 'center',
-                width: 200
+                width: 100
             },
             {
                 field: 'Unit',
                 title: '单位',
-                width: 200,
+                width: 100,
                 align: 'center'
             }
         ]]

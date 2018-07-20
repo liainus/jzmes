@@ -339,8 +339,8 @@ $(function () {
                     Desc:$('input[name="iDesc"]').val(),
                     Duration:$('input[name="iDuration"]').val(),
                     Unit:$('input[name="iUnit"]').val(),
-                    ProductRuleID:$('#iProductRuleID').find("option:selected").html(),
-                    PUID:$('#iPUID').find("option:selected").html(),
+                    ProductRuleID:$('#iProductRuleID').find("option:selected").val(),
+                    PUID:$('#iPUID').find("option:selected").val(),
                     Seq:$('input[name="iSeq"]').val()
                 };
                 $.ajax({

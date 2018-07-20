@@ -61,7 +61,7 @@
                         <select name="iMATID" id="iMATID" type="text" style="width:157px;" autocomplete="off" placeholder="">
                             <option value="">请选择</option>
                             {% for id in Material_ID %}
-                                <option value="{{ id['ID'] }}">{{ id['ID'] }}</option>
+                                <option value="{{ id['ID'] }}">{{ id['text'] }}</option>
                             {% endfor %}
                         </select>
                     </td>
@@ -72,7 +72,7 @@
                         <select name="iProductRuleID" id="iProductRuleID" type="text" style="width:157px;" autocomplete="off" placeholder="">
                             <option value="">请选择</option>
                             {% for id in Product_def_ID %}
-                                <option value="{{ id['ID'] }}">{{ id['ID'] }}</option>
+                                <option value="{{ id['ID'] }}">{{ id['text'] }}</option>
                             {% endfor %}
                         </select>
                     </td>
@@ -83,7 +83,7 @@
                         <select name="iPUID" id="iPUID" type="text" style="width:157px;" autocomplete="off" placeholder="">
                             <option value="">请选择</option>
                             {% for id in Product_unit_ID %}
-                                <option value="{{ id['ID'] }}">{{ id['ID'] }}</option>
+                                <option value="{{ id['ID'] }}">{{ id['text'] }}</option>
                             {% endfor %}
                         </select>
                     </td>
@@ -94,7 +94,7 @@
                         <select name="iMATTypeID" id="iMATTypeID" type="text" style="width:157px;" autocomplete="off" placeholder="">
                             <option value="">请选择</option>
                             {% for id in MaterialType_ID %}
-                                <option value="{{ id['ID'] }}">{{ id['ID'] }}</option>
+                                <option value="{{ id['ID'] }}">{{ id['text'] }}</option>
                             {% endfor %}
                         </select>
                     </td>

@@ -383,7 +383,7 @@ $(function () {
                     ID:$('input[name="iID"]').val(),
                     PUCode:$('input[name="iPUCode"]').val(),
                     PUName:$('input[name="iPUName"]').val(),
-                    PLineID:$('#iPLineID').find("option:selected").html(),
+                    PLineID:$('#iPLineID').find("option:selected").val(),
                     PURateCapacity:$('input[name="iPURateCapacity"]').val(),
                     PUPLanCapacity:$('input[name="iPUPLanCapacity"]').val(),
                     CapacityUnit:$('input[name="iCapacityUnit"]').val(),

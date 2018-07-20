@@ -377,14 +377,14 @@ $(function () {
             }
                 var entity = {
                     ID:$('input[name="iID"]').val(),
-                    MATID:$('#iMATID').find("option:selected").html(),
+                    MATID:$('#iMATID').find("option:selected").val(),
                     BatchTotalWeight:$('input[name="iBatchTotalWeight"]').val(),
                     BatchSingleMATWeight:$('input[name="iBatchSingleMATWeight"]').val(),
                     Unit:$('input[name="iUnit"]').val(),
                     BatchPercentage:$('input[name="iBatchPercentage"]').val(),
-                    ProductRuleID:$('#iProductRuleID').find("option:selected").html(),
-                    PUID:$('#iPUID').find("option:selected").html(),
-                    MATTypeID:$('#iMATTypeID').find("option:selected").html(),
+                    ProductRuleID:$('#iProductRuleID').find("option:selected").val(),
+                    PUID:$('#iPUID').find("option:selected").val(),
+                    MATTypeID:$('#iMATTypeID').find("option:selected").val(),
                     Seq:$('input[name="iSeq"]').val(),
                     Grade:$('input[name="iGrade"]').val()
                 };

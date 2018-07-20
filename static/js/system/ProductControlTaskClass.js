@@ -355,8 +355,8 @@ $(function () {
                     LowLimit:$('input[name="iLowLimit"]').val(),
                     HighLimit:$('input[name="iHighLimit"]').val(),
                     RelateTaskCount:$('input[name="iRelateTaskCount"]').val(),
-                    ProductRuleID:$('#iProductRuleID').find("option:selected").html(),
-                    PUID:$('#iPUID').find("option:selected").html(),
+                    ProductRuleID:$('#iProductRuleID').find("option:selected").val(),
+                    PUID:$('#iPUID').find("option:selected").val(),
                     Seq:$('input[name="iSeq"]').val()
                 };
                 $.ajax({
