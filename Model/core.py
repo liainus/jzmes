@@ -11,9 +11,9 @@
 
 import json
 # 引入mssql数据库引擎
-import pymssql
 import re
 import sys
+import pymssql
 from collections import Counter
 # -coding:utf-8--
 # 引入必要的类库
@@ -779,6 +779,7 @@ class ProductLineWebIFS(object):
 				qDatas = session.query(Model.core.ProductLine).all()[inipage:endpage]
 				if total > 0:
 					qDatas = session.query(Model.core.ProductLine).all()[inipage:endpage]
+
 					# ORM模型转换json格式
 					jsonorganzitions = json.dumps(qDatas,cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 					jsonorganzitions = '{"total"' + ":" + str(

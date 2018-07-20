@@ -316,7 +316,7 @@ $(function () {
                     ID:$('input[name="iID"]').val(),
                     MATCode:$('input[name="iMATCode"]').val(),
                     MATName:$('input[name="iMATName"]').val(),
-                    MATTypeID:$('#iMATTypeID').find("option:selected").html(),
+                    MATTypeID:$('#iMATTypeID').find("option:selected").val(),
                     Desc:$('input[name="iDesc"]').val(),
                     Seq:$('input[name="iSeq"]').val(),
                     Grade:$('input[name="iGrade"]').val(),
