@@ -284,7 +284,7 @@ $(function () {
                     ID:$('input[name="iID"]').val(),
                     EQPCode:$('input[name="iEQPCode"]').val(),
                     EQPName:$('input[name="iEQPName"]').val(),
-                    PUID:$('#iPUID').find("option:selected").html(),
+                    PUID:$('#iPUID').find("option:selected").val(),
                     Desc:$('input[name="iDesc"]').val()
                 };
                 $.ajax({
