@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>批次管理</title>
     <link href="../static/css/base.css" rel="stylesheet">
@@ -13,8 +12,9 @@
     <link href="../static/js/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
     <link href="../static/css/BATCH_MANAGER.css" type="text/css" rel="stylesheet">
     <script type="text/javascript " src="../static/custom/jquery.min.js "></script>
-    <script type="text/javascript " src="../static/custom/jquery.easyui.min.js "></script>
-    <script  type="text/javascript " >
+    <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript">
         $('#tt').datagrid({
             rowStyler:function(index,row){
                 if (row.N=='任务编制'){
@@ -39,7 +39,6 @@
         });
     </script>
 </head>
-
 <body>
     <div class="container" style="margin:3px;">
         <div style="margin:3px;">
@@ -48,8 +47,8 @@
                 <a href="#" class="easyui-linkbutton">批生产开始</a>
                 <a href="#" class="easyui-linkbutton">批生产结束</a>
                 <a href="#" class="easyui-linkbutton">批次计划中止</a>
-                <a href="#" class="easyui-linkbutton">刷新</a>
                 <a href="#" class="easyui-linkbutton">切换工艺段</a>
+                <a href="#" class="easyui-linkbutton">刷新</a>
             </div>
         </div>
         <div style="margin:3px;">
@@ -99,8 +98,6 @@
                 </tbody>
             </table>
         </div>
-
-
         <table id="tt" class="easyui-datagrid" style="width:100%;height:300px;" title="批次计划信息" data-options="url:'../static/data/datagrid_batch_manager_list1.json',
                 method:'get',
                 rownumbers:true,
@@ -115,6 +112,7 @@
                 pageSize:10">
             <thead>
                 <tr>
+                    <th data-options="field: 'A',align: 'center',"></th>
                     <th data-options="field: 'A',align: 'center',">调度状态</th>
                     <th data-options="field: 'B',align: 'center' ">生产日期</th>
                     <th data-options="field: 'C',align: 'center' ">生产线</th>

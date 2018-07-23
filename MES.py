@@ -2153,7 +2153,7 @@ def allrolesFind():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "擦护心角色列表报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "查询角色列表报错Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error：" + string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 

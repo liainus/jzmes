@@ -166,76 +166,126 @@
             border-top: 10px solid #5cb85c;
         }
     </style>
+    <script src="../static/kendo/js/jquery.min.js"></script>
+    <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
+	<script type="text/javascript" src="../static/js/jquery.smartWizard.min.js"></script>
+	<script type="text/javascript" src="../static/js/bee.js" charset="utf-8"></script>
+	<script type="text/javascript">
+        $(function () {
+            $("#prodDate").datebox("setValue", myformatter(new Date()));
+            // Toolbar extra buttons
+            var btnCancel = $('<button></button>').text('取消')
+                 .addClass('btn btn-danger')
+                 .on('click', function(){ $('#wizard').smartWizard("reset"); });
+            // Smart Wizard
+            $('#wizard').smartWizard({
+                    selected: 0,
+                    theme: 'arrows',
+                    lang: {
+                        next: '下一步',
+                        previous: '上一步'
+                    },
+                    transitionEffect:'fade',
+                    showStepURLhash: true,
+                    transitionSpeed:400,
+                    keyNavigation:true,
+                    enableAllAnchors:true,
+                    toolbarSettings: {
+                        //toolbarButtonPosition: 'end',
+                        toolbarExtraButtons: [btnCancel]
+                    }
+            });
+            $("#wizard").on("showStep", function(e, anchorObject, stepNumber, stepDirection) {
+                if(stepNumber == 1){
+                    setTimeout(function() {
+                        $("#batchDetails").datagrid('reload')
+                    },200);
+                }
+            });
+        });
+        function myformatter(date){
+            var y = date.getFullYear();
+            var m = date.getMonth()+1;
+            var d = date.getDate();
+            return y+'-'+(m<10?('0'+m):m)+'-'+( d<10?('0'+d):d);
+        }
+
+        function myparser(s){
+            if (!s) return new Date();
+            var ss = (s.split('-'));
+            var y = parseInt(ss[0],10);
+            var m = parseInt(ss[1],10);
+            var d = parseInt(ss[2],10);
+            if (!isNaN(y) && !isNaN(m) && !isNaN(d)){
+                return new Date(y,m-1,d);
+            } else {
+                return new Date();
+            }
+        }
+	</script>
 </head>
 <body>
     <div id="wizard" class="sw-main sw-theme-arrows">
         <ul style="margin:10px;">
-            <li><a href="#step-1">Step 1<br /><small>计划日期选择</small></a></li>
-            <li><a href="#step-2">Step 2<br /><small>批次号品名录入</small></a></li>
-            <li><a href="#step-3">Step 3<br /><small>物料明细</small></a></li>
-            <li><a href="#step-4">Step 4<br /><small>计划效验结果</small></a></li>
+            <li><a href="#step-1">Step 1<br /><small>批次号品名录入</small></a></li>
+            <li><a href="#step-2">Step 2<br /><small>物料明细</small></a></li>
+            <li><a href="#step-3">Step 3<br /><small>计划效验结果</small></a></li>
         </ul>
         <div>
             <div id="step-1">
-                <h3 class="border-bottom border-gray pb-2">计划日期选择</h3>
+                <h3 class="border-bottom border-gray pb-2">计划实际信息</h3>
                 <a>生产日期选择:</a>
                 <input class="easyui-datebox" id = "prodDate" labelPosition="top" data-options="formatter:myformatter,parser:myparser" style="width:200px;height:40px;line-height:70px;">
-            </div>
-            <div id="step-2">
-                <h3 class="border-bottom border-gray pb-2">计划实际信息</h3>
-                <div>
-    {#				<div class="container">#}
-                        <div class="content">
-                            <div class="column">
-                                <span class="current">基本信息</span>
-                                <span id="selectedNodeId" style="display:none;"></span>
-                            </div>
-                            <form id="orgForm" method="post" class="dialog-form">
-                                <table class="kv-table">
-                                    <tbody>
-                                        <tr>
-                                            <td class="kv-label">批次号</td>
-                                            <td class="kv-content">
-                                                <input type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="">
-                                            </td>
-                                            <td class="kv-label">品名</td>
-                                            <td class="kv-content">
-                                                <input id="unittypelist" class="easyui-combobox" name="单位类型" style="height:35px;width:120px" data-options="
-                                                           url:'treeProductRule',
-                                                           method:'get',
-                                                           valueField: 'id',
-                                                           textField: 'text'"
-                                            }>
-                                            </td>
-                                            <td class="kv-label">计划重量</td>
-                                            <td class="kv-content">
-                                                <input id="unittypelist" class="easyui-combobox" name="单位类型" style="height:35px;width:80px" data-options="
-                                                           url:'../static/data/combobox_defaultWeight.json',
-                                                           method:'get',
-                                                           valueField: 'id',
-                                                           textField: 'text'"
-                                            }>
+                <div class="content">
+                    <div class="column">
+                        <span class="current">基本信息</span>
+                        <span id="selectedNodeId" style="display:none;"></span>
+                    </div>
+                    <form id="orgForm" method="post" class="dialog-form">
+                        <table class="kv-table">
+                            <tbody>
+                                <tr>
+                                    <td class="kv-label">批次号</td>
+                                    <td class="kv-content">
+                                        <input type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="">
+                                    </td>
+                                    <td class="kv-label">品名</td>
+                                    <td class="kv-content">
+                                        <input id="unittypelist" class="easyui-combobox" name="单位类型" style="height:35px;width:120px" data-options="
+                                                   url:'treeProductRule',
+                                                   method:'get',
+                                                   valueField: 'id',
+                                                   textField: 'text'"
+                                    }>
+                                    </td>
+                                    <td class="kv-label">计划重量</td>
+                                    <td class="kv-content">
+                                        <input id="unittypelist" class="easyui-combobox" name="单位类型" style="height:35px;width:80px" data-options="
+                                                   url:'../static/data/combobox_defaultWeight.json',
+                                                   method:'get',
+                                                   valueField: 'id',
+                                                   textField: 'text'"
+                                    }>
 
-                                            </td>
-                                            <td class="kv-label">单位</td>
-                                            <td class="kv-content">
-                                                <select id="parentlist" class="easyui-combobox" name="language" style="height:35px;;width:50px" data-options="
-                                                            url:'getUnitByKg',
-                                                           method:'get',
-                                                           valueField: 'ID',
-                                                           textField: 'text'">
-                                                </select>
+                                    </td>
+                                    <td class="kv-label">单位</td>
+                                    <td class="kv-content">
+                                        <select id="parentlist" class="easyui-combobox" name="language" style="height:35px;;width:50px" data-options="
+                                                    url:'getUnitByKg',
+                                                   method:'get',
+                                                   valueField: 'ID',
+                                                   textField: 'text'">
+                                        </select>
 
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </form>
-                        </div>
-    {#				</div>#}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </form>
                 </div>
             </div>
-            <div id="step-3">
+            <div id="step-2">
                 <h3 class="border-bottom border-gray pb-2">物料BOM</h3>
                 <div id="tab" class="easyui-tabs" style="width:100%;height:250px;">
                     <div title="批次任务明细" data-options="closable:false"  style="padding:0px;">
@@ -297,7 +347,7 @@
                     </div>
                 </div>
             </div>
-            <div id="step-4">
+            <div id="step-3">
                 <h3 class="border-bottom border-gray pb-2">计划校验结果</h3>
                 <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
                     Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute
@@ -306,70 +356,5 @@
             </div>
         </div>
     </div>
-    <script src="../static/kendo/js/jquery.min.js"></script>
-{#    <script src="../static/kendo/js/kendo.all.min.js"></script>#}
-    <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
-    <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
-	<script type="text/javascript" src="../static/js/jquery.smartWizard.min.js"></script>
-	<script type="text/javascript" src="../static/js/bee.js" charset="utf-8"></script>
-	<script type="text/javascript">
-        $(function () {
-            //Smart Wizard
-            $("#prodDate").datebox("setValue", myformatter(new Date()));
-
-
-            // Toolbar extra buttons
-            var btnCancel = $('<button></button>').text('取消')
-                 .addClass('btn btn-danger')
-                 .on('click', function(){ $('#wizard').smartWizard("reset"); });
-            // Smart Wizard
-            $('#wizard').smartWizard({
-                    selected: 0,
-                    theme: 'arrows',
-                    lang: {
-                        next: '下一步',
-                        previous: '上一步'
-                    },
-                    transitionEffect:'fade',
-                    showStepURLhash: true,
-                    transitionSpeed:400,
-                    keyNavigation:true,
-                    enableAllAnchors:true,
-                    toolbarSettings: {
-                        //toolbarButtonPosition: 'end',
-                        toolbarExtraButtons: [btnCancel]
-                    }
-            });
-            $("#wizard").on("showStep", function(e, anchorObject, stepNumber, stepDirection) {
-                if(stepNumber == 2){
-                    setTimeout(function() {
-                        $("#batchDetails").datagrid('reload')
-                    },200);
-                }
-            });
-        });
-        function myformatter(date){
-            var y = date.getFullYear();
-            var m = date.getMonth()+1;
-            var d = date.getDate();
-            return y+'-'+(m<10?('0'+m):m)+'-'+( d<10?('0'+d):d);
-        }
-
-        function myparser(s){
-            if (!s) return new Date();
-            var ss = (s.split('-'));
-            var y = parseInt(ss[0],10);
-            var m = parseInt(ss[1],10);
-            var d = parseInt(ss[2],10);
-            if (!isNaN(y) && !isNaN(m) && !isNaN(d)){
-                return new Date(y,m-1,d);
-            } else {
-                return new Date();
-            }
-        }
-	</script>
-{#	<script type="text/javascript" charset="utf-8" src="../static/js/umeditor/umeditor.config.js"></script>#}
-{#	<script type="text/javascript" charset="utf-8" src="../static/js/umeditor/umeditor.min.js"></script>#}
-{#	<script type="text/javascript" src="../static/js/umeditor/lang/zh-cn/zh-cn.js"></script>#}
 </body>
 </html>

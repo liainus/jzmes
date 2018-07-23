@@ -183,7 +183,7 @@ class ZYPlanWebIFS(object):
 						PlanSeq= odata['PlanSeq'],
 						PUID= odata['PUID'],
 						PlanType= odata['PlanType'],
-						BrandID= odata['BrandID'],
+						BrandID= '',#odata['BrandID'],
 						BrandName= odata['BrandName'],
 						ERPOrderNo= odata['ERPOrderNo'],
 						PlanQuantity= odata['PlanQuantity'],
@@ -268,7 +268,7 @@ class ZYPlanWebIFS(object):
 				oclass.PlanSeq = odata['PlanSeq']
 				oclass.PUID = odata['PUID']
 				oclass.PlanType = odata['PlanType']
-				oclass.BrandID= odata['BrandID']
+				# oclass.BrandID= odata['BrandID']
 				oclass.BrandName = odata['BrandName']
 				oclass.ERPOrderNo = odata['ERPOrderNo']
 				oclass.PlanQuantity = odata['PlanQuantity']
