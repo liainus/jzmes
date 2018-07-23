@@ -10,34 +10,12 @@
     <link href="../static/css/platform.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
     <link href="../static/js/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
-    <link href="../static/css/BATCH_MANAGER.css" type="text/css" rel="stylesheet">
+    <style>
+        .colorBox {color:#fff;border-color:black;margin:0px;padding:5px 10px 5px 10px; text-align:center;display:inline;cursor: default;}
+    </style>
     <script type="text/javascript " src="../static/custom/jquery.min.js "></script>
     <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
     <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
-    <script type="text/javascript">
-        $('#tt').datagrid({
-            rowStyler:function(index,row){
-                if (row.N=='任务编制'){
-                    return 'background-color:blue; color:white !important;font-weight:bold;';
-                }
-                if (row.N=='任务执行'){
-                    return 'background-color:green; color:white;font-weight:bold;';
-                }
-                if (row.N=='任务完成'){
-                    return 'background-color:gray; color:white;font-weight:bold;';
-                }
-                if (row.N=='任务错误'){
-                    return 'background-color:red; color:white;font-weight:bold;';
-                }
-                if (row.N=='任务中止'){
-                    return 'background-color:deeppink; color:white;font-weight:bold;';
-                }
-                if (row.N=='任务暂停'){
-                    return 'background-color:darksalmon; color:white;font-weight:bold;';
-                }
-            }
-        });
-    </script>
 </head>
 <body>
     <div class="container" style="margin:3px;">
@@ -57,23 +35,20 @@
                     <tr>
                         <td class="kv-label" style="white-space:nowrap;">当前工作日</td>
                         <td class="kv-content">
-                            <input type="text" class="textbox-text validatebox-text textbox-prompt" value="2017-8-8" autocomplete="off"
+                            <input type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off"
                                 placeholder="">
                         </td>
                         <td class="kv-label" style="white-space:nowrap;">工艺段名称</td>
                         <td class="kv-content">
-                            <input type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder=""
-                                value="ZS1A-A叶片加料段">
+                            <input type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="">
                         </td>
                         <td class="kv-label" style="white-space:nowrap;">调度模式</td>
                         <td class="kv-content">
-                            <input type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder=""
-                                value="10-调度">
+                            <input type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="">
                         </td>
                         <td class="kv-label" style="white-space:nowrap;">控制模式</td>
                         <td class="kv-content">
-                            <input type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder=""
-                                value="10-本地">
+                            <input type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="">
                         </td>
                     </tr>
                 </tbody>
@@ -83,15 +58,15 @@
                     <tr>
                         <td class="kv-label">计划状态色卡</td>
                         <td class="kv-content" style="width:80%">
-                            <div class="colorBox" style="background-color:blue;">任务编制</div>
-                            <div class="colorBox" style="background-color:chartreuse;">任务下达</div>
-                            <div class="colorBox" style="background-color:darkcyan">任务新建</div>
-                            <div class="colorBox" style="background-color:goldenrod;">任务确认</div>
-                            <div class="colorBox" style="background-color:green;">任务执行</div>
-                            <div class="colorBox" style="background-color:gray;">任务完成</div>
-                            <div class="colorBox" style="background-color:darksalmon;">任务暂停</div>
-                            <div class="colorBox" style="background-color:red;">任务错误</div>
-                            <div class="colorBox" style="background-color:deeppink;">任务中止</div>
+                            <div class="colorBox pp1" style="background-color:#007bff;">任务编制</div>
+                            <div class="colorBox pp2" style="background-color:#17a2b8;">任务下达</div>
+                            <div class="colorBox pp3" style="background-color:#009688">任务新建</div>
+                            <div class="colorBox pp4" style="background-color:#01aaed;">任务确认</div>
+                            <div class="colorBox pp5" style="background-color:#2F4056;">任务执行</div>
+                            <div class="colorBox pp6" style="background-color:#28a745;">任务完成</div>
+                            <div class="colorBox pp7" style="background-color:#ffc107;">任务暂停</div>
+                            <div class="colorBox pp8" style="background-color:#dc3545;">任务错误</div>
+                            <div class="colorBox pp9" style="background-color:#6c757d;">任务中止</div>
 
                         </td>
                     </tr>
@@ -105,14 +80,14 @@
                 autoRowHeight:false,
                 pagination:true,
                 striped:false,
-                checkOnSelect:false,
-                selectOnCheck:false,
+                checkOnSelect:true,
+                selectOnCheck:true,
                 collapsible:true,
                 toolbar:'#tb',
                 pageSize:10">
             <thead>
                 <tr>
-                    <th data-options="field: 'A',align: 'center',"></th>
+                    <th data-options="field: 'checked',align: 'center', checkbox:'true'"></th>
                     <th data-options="field: 'A',align: 'center',">调度状态</th>
                     <th data-options="field: 'B',align: 'center' ">生产日期</th>
                     <th data-options="field: 'C',align: 'center' ">生产线</th>
@@ -129,7 +104,6 @@
                     <th data-options="field: 'N',align: 'center' ">任务状态</th>
                     <th data-options="field: 'O',align: 'center' ">投料状态</th>
                     <th data-options="field: 'P',align: 'center' ">计划完成时间</th>
-
                 </tr>
             </thead>
         </table>
@@ -174,5 +148,149 @@
             </div>
         </div>
     </div>
+<script type="text/javascript">
+        $('#tt').datagrid({
+            onClickRow:function(rowIndex,rowData){
+                if(rowData.N == '任务编制'){
+                    $('.pp1').tooltip({
+                        position: 'bottom',
+                        content: '<span style="color:#fff">您当前选择的是任务编制</span>',
+                        onShow: function(){
+                            $(this).tooltip('tip').css({
+                                backgroundColor: '#666',
+                                borderColor: '#666'
+                            })
+                        }
+                    });
+                    $('.pp1').mouseenter().siblings().tooltip('destroy')
+                }else if(rowData.N == '任务下达'){
+                    $('.pp2').tooltip({
+                        position: 'bottom',
+                        content: '<span style="color:#fff">您当前选择的是任务下达</span>',
+                        onShow: function(){
+                            $(this).tooltip('tip').css({
+                                backgroundColor: '#666',
+                                borderColor: '#666'
+                            })
+                        }
+                    });
+                    $('.pp2').mouseenter().siblings().tooltip('destroy')
+                }else if(rowData.N == '任务新建'){
+                    $('.pp3').tooltip({
+                        position: 'bottom',
+                        content: '<span style="color:#fff">您当前选择的是任务新建</span>',
+                        onShow: function(){
+                            $(this).tooltip('tip').css({
+                                backgroundColor: '#666',
+                                borderColor: '#666'
+                            })
+                        }
+                    });
+                    $('.pp3').mouseenter().siblings().tooltip('destroy')
+                }else if(rowData.N == '任务确认'){
+                    $('.pp4').tooltip({
+                        position: 'bottom',
+                        content: '<span style="color:#fff">您当前选择的是任务确认</span>',
+                        onShow: function(){
+                            $(this).tooltip('tip').css({
+                                backgroundColor: '#666',
+                                borderColor: '#666'
+                            })
+                        }
+                    });
+                    $('.pp4').mouseenter().siblings().tooltip('destroy')
+                }else if(rowData.N == '任务执行'){
+                    $('.pp5').tooltip({
+                        position: 'bottom',
+                        content: '<span style="color:#fff">您当前选择的是任务执行</span>',
+                        onShow: function(){
+                            $(this).tooltip('tip').css({
+                                backgroundColor: '#666',
+                                borderColor: '#666'
+                            })
+                        }
+                    });
+                    $('.pp5').mouseenter().siblings().tooltip('destroy')
+                }else if(rowData.N == '任务完成'){
+                    $('.pp6').tooltip({
+                        position: 'bottom',
+                        content: '<span style="color:#fff">您当前选择的是任务完成</span>',
+                        onShow: function(){
+                            $(this).tooltip('tip').css({
+                                backgroundColor: '#666',
+                                borderColor: '#666'
+                            })
+                        }
+                    });
+                    $('.pp6').mouseenter().siblings().tooltip('destroy')
+                }else if(rowData.N == '任务暂停'){
+                    $('.pp7').tooltip({
+                        position: 'bottom',
+                        content: '<span style="color:#fff">您当前选择的是任务暂停</span>',
+                        onShow: function(){
+                            $(this).tooltip('tip').css({
+                                backgroundColor: '#666',
+                                borderColor: '#666'
+                            })
+                        }
+                    });
+                    $('.pp7').mouseenter().siblings().tooltip('destroy')
+                }else if(rowData.N == '任务错误'){
+                    $('.pp8').tooltip({
+                        position: 'bottom',
+                        content: '<span style="color:#fff">您当前选择的是任务错误</span>',
+                        onShow: function(){
+                            $(this).tooltip('tip').css({
+                                backgroundColor: '#666',
+                                borderColor: '#666'
+                            })
+                        }
+                    });
+                    $('.pp8').mouseenter().siblings().tooltip('destroy')
+                }else if(rowData.N == '任务中止'){
+                    $('.pp9').tooltip({
+                        position: 'bottom',
+                        content: '<span style="color:#fff">您当前选择的是任务中止</span>',
+                        onShow: function(){
+                            $(this).tooltip('tip').css({
+                                backgroundColor: '#666',
+                                borderColor: '#666'
+                            })
+                        }
+                    });
+                    $('.pp9').mouseenter().siblings().tooltip('destroy')
+                }
+            },
+            rowStyler:function(index,row){
+                if (row.N=='任务编制'){
+                    return 'background-color:#007bff; color:white;font-weight:bold;';
+                }
+                if (row.N=='任务下达'){
+                    return 'background-color:#17a2b8; color:white;font-weight:bold;';
+                }
+                if (row.N=='任务新建'){
+                    return 'background-color:#009688; color:white;font-weight:bold;';
+                }
+                if (row.N=='任务确认'){
+                    return 'background-color:#01aaed; color:white;font-weight:bold;';
+                }
+                if (row.N=='任务执行'){
+                    return 'background-color:#2F4056; color:white;font-weight:bold;';
+                }
+                if (row.N=='任务完成'){
+                    return 'background-color:#28a745; color:white;font-weight:bold;';
+                }
+                if (row.N=='任务暂停'){
+                    return 'background-color:#ffc107; color:white;font-weight:bold;';
+                }
+                if (row.N=='任务错误'){
+                    return 'background-color:#dc3545; color:white;font-weight:bold;';
+                }
+                if (row.N=='任务中止'){
+                    return 'background-color:#6c757d; color:white;font-weight:bold;';
+                }
+            }
+        });
+    </script>
 </body>
 </html>
