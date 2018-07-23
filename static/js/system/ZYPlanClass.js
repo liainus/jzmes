@@ -82,16 +82,10 @@ $(function () {
                 width: 100
             },
             {
-                field: 'PlanDate',
-                title: '生产日期',
-                align: 'center',
-                width: 100
-            },
-            {
                 field: 'PlanNo',
                 title: '计划单号',
                 align: 'center',
-                width: 100
+                width: 200
             },
             {
                 field: 'BatchID',
@@ -100,28 +94,10 @@ $(function () {
                 width: 200
             },
             {
-                field: 'PlanSeq',
-                title: '顺序号',
-                align: 'center',
-                width: 200
-            },
-            {
-                field: 'PUID',
-                title: '工艺段编号',
-                align: 'center',
-                width: 200
-            },
-            {
                 field: 'PlanType',
                 title: '计划类型',
                 align: 'center',
-                width: 200
-            },
-            {
-                field: 'BrandCode',
-                title: '品牌编号',
-                align: 'center',
-                width: 200
+                width: 150
             },
             {
                 field: 'BrandName',
@@ -139,73 +115,19 @@ $(function () {
                 field: 'PlanQuantity',
                 title: '计划数量',
                 align: 'center',
-                width: 200
+                width: 100
             },
             {
                 field: 'ActQuantity',
                 title: '实际数量',
                 align: 'center',
-                width: 200
-            },
-            {
-                field: 'Unit',
-                title: '单位',
-                align: 'center',
-                width: 200
-            },
-            {
-                field: 'EnterTime',
-                title: '录入时间',
-                align: 'center',
-                width: 200
-            },
-            {
-                field: 'PlanBeginTime',
-                title: '计划开始时间',
-                align: 'center',
-                width: 200
-            },
-            {
-                field: 'PlanEndTime',
-                title: '计划结束时间',
-                align: 'center',
-                width: 200
-            },
-            {
-                field: 'ActBeginTime',
-                title: '实际结束时间',
-                align: 'center',
-                width: 200
-            },
-            {
-                field: 'ActEndTime',
-                title: '实际结束时间',
-                align: 'center',
-                width: 200
+                width: 100
             },
             {
                 field: 'TaskStatus',
                 title: '任务状态',
                 align: 'center',
-                width: 200
-            },
-            {
-                field: 'LockStatus',
-                title: '锁定状态',
-                align: 'center',
-                width: 200
-            },
-            {
-                field: 'INFStatus',
-                title: '接口状态',
-                align: 'center',
-                width: 200
-            },
-            {
-                field: 'WMSStatus',
-                title: '投料状态',
-                align: 'center',
-                width: 200
+                width: 100
             }
         ]]
     });
@@ -525,12 +447,6 @@ $(function () {
                 width: 100
             },
             {
-                field: 'PlanDate',
-                title: '生产日期',
-                align: 'center',
-                width: 200
-            },
-            {
                 field: 'PlanNo',
                 title: '计划单号',
                 align: 'center',
@@ -543,28 +459,10 @@ $(function () {
                 width: 200
             },
             {
-                field: 'PlanSeq',
-                title: '顺序号',
-                align: 'center',
-                width: 200
-            },
-            {
-                field: 'PUID',
-                title: '工艺段编号',
-                align: 'center',
-                width: 200
-            },
-            {
                 field: 'PlanType',
                 title: '计划类型',
                 align: 'center',
-                width: 200
-            },
-            {
-                field: 'BrandCode',
-                title: '品牌编号',
-                align: 'center',
-                width: 200
+                width: 150
             },
             {
                 field: 'BrandName',
@@ -582,78 +480,24 @@ $(function () {
                 field: 'PlanQuantity',
                 title: '计划数量',
                 align: 'center',
-                width: 200
+                width: 100
             },
             {
                 field: 'ActQuantity',
                 title: '实际数量',
                 align: 'center',
-                width: 200
-            },
-            {
-                field: 'Unit',
-                title: '单位',
-                align: 'center',
-                width: 200
-            },
-            {
-                field: 'EnterTime',
-                title: '录入时间',
-                align: 'center',
-                width: 200
-            },
-            {
-                field: 'PlanBeginTime',
-                title: '计划开始时间',
-                align: 'center',
-                width: 200
-            },
-            {
-                field: 'PlanEndTime',
-                title: '计划结束时间',
-                align: 'center',
-                width: 200
-            },
-            {
-                field: 'ActBeginTime',
-                title: '实际结束时间',
-                align: 'center',
-                width: 200
-            },
-            {
-                field: 'ActEndTime',
-                title: '实际结束时间',
-                align: 'center',
-                width: 200
+                width: 100
             },
             {
                 field: 'TaskStatus',
                 title: '任务状态',
                 align: 'center',
                 width: 100
-            },
-            {
-                field: 'LockStatus',
-                title: '锁定状态',
-                align: 'center',
-                width: 200
-            },
-            {
-                field: 'INFStatus',
-                title: '接口状态',
-                align: 'center',
-                width: 200
-            },
-            {
-                field: 'WMSStatus',
-                title: '投料状态',
-                align: 'center',
-                width: 200
             }
         ]]
     });
             $(tableId).datagrid('reload');
-            $(tableid).datagrid('clearSelections');
+            $(tableId).datagrid('clearSelections');
            
         }
 
