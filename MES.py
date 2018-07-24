@@ -29,6 +29,7 @@ from Model.account import login_security
 from flask import session as cli_session
 from Model.system import User
 from random import randint
+from Model.Global import WeightUnit
 
 import socket
 
@@ -2268,7 +2269,21 @@ def MyenterpriseSelect():
 # 加载工作台
 @app.route('/createPlanWizard')
 def createPlanWizard():
-    return render_template('createPlanWizard.html')
+    try:
+        product_info = session.query(ProductLine.ID, ProductLine.PLineName).all()
+        print(product_info)
+        data = []
+        for tu in product_info:
+            li = list(tu)
+            id = li[0]
+            name = li[1]
+            pro_def_id = {'ID': id, 'text':name}
+            data.append(pro_def_id)
+        return render_template('createPlanWizard.html', Product_info=data, Unit=WeightUnit)
+    except Exception as e:
+        print(e)
+        logger.error(e)
+    return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
 @app.route('/getUnitByKg')
