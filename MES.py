@@ -2277,8 +2277,8 @@ def createPlanWizard():
             li = list(tu)
             id = li[0]
             name = li[1]
-            pro_def_id = {'ID': id, 'text':name}
-            data.append(pro_def_id)
+            pro_info = {'ID': id, 'text':name}
+            data.append(pro_info)
         return render_template('createPlanWizard.html', Product_info=data, Unit=WeightUnit)
     except Exception as e:
         print(e)
