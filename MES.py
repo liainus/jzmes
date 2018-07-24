@@ -335,7 +335,7 @@ def roleright():
 def getRoleList(id=0):
     sz = []
     try:
-        roles = session.query(Role).filter().all()
+        roles = session.query(Role).all()
         for obj in roles:
             if obj.ParentNode == id:
                 sz.append({"id": obj.ID, "text": obj.RoleName, "children": getRoleList(obj.ID)})
@@ -2271,7 +2271,7 @@ def MyenterpriseSelect():
 def createPlanWizard():
     try:
         product_info = session.query(ProductLine.ID, ProductLine.PLineName).all()
-        print(product_info)
+        # print(product_info)
         data = []
         for tu in product_info:
             li = list(tu)
@@ -2351,10 +2351,26 @@ def treeProductRule():
             logger.error(e)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
+# 生产制药计划
+@app.route('/ZYPlanGuid/makePlan')
+def makePlan():
+    if request.method == 'POST':
+        try:
+            recv_data = request.values()
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
+
+
+
+
+
+
+
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-
-
-
