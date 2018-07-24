@@ -22,6 +22,27 @@
     <script type="text/javascript">
         $(function () {
             $('#ProductRuleName').attr("disabled", true);
+            $("#iPublish_date").datebox("setValue", myformatter(new Date()));
+            $("#iAppy_date").datebox("setValue", myformatter(new Date()));
+            function myformatter(date){
+                var y = date.getFullYear();
+                var m = date.getMonth()+1;
+                var d = date.getDate();
+                return y+'-'+(m<10?('0'+m):m)+'-'+( d<10?('0'+d):d);
+            }
+
+            function myparser(s){
+                if (!s) return new Date();
+                var ss = (s.split('-'));
+                var y = parseInt(ss[0],10);
+                var m = parseInt(ss[1],10);
+                var d = parseInt(ss[2],10);
+                if (!isNaN(y) && !isNaN(m) && !isNaN(d)){
+                    return new Date(y,m-1,d);
+                } else {
+                    return new Date();
+                }
+            }
         });
     </script>
 </head>
@@ -86,7 +107,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td class="kv-label">应用日期</td>
+                    <td class="kv-label">使用日期</td>
                     <td class="kv-content">
                         <input  name="iAppy_date" id="iAppy_date" type="text" class="easyui-datebox" autocomplete="off" placeholder=""  >
                     </td>
@@ -94,7 +115,10 @@
                 <tr>
                     <td class="kv-label">是否使用</td>
                     <td class="kv-content">
-                        <input  name="iIsUsed" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                        <select name="iIsUsed" id="iIsUsed" type="text" style="width:157px;" autocomplete="off">
+                            <option value="0" checked>否</option>
+                            <option value="1">是</option>
+                        </select>
                     </td>
                 </tr>
             </tbody>
