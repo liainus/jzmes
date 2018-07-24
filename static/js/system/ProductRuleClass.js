@@ -315,7 +315,7 @@ $(function () {
                     Desc:$('input[name="iDesc"]').val(),
                     Publish_date:$('#iPublish_date').datebox('getValue'),
                     Appy_date:$('#iAppy_date').datebox('getValue'),
-                    IsUsed:$('input[name="iIsUsed"]').val()
+                    IsUsed:$("#iIsUsed").find("option:selected").val()
                 };
                 $.ajax({
                     url: urlAddr,
