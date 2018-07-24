@@ -1506,7 +1506,7 @@ def allMaterialPlanBOMS():
     if request.method == 'GET':
         data = request.values
         MaterialBOMIFS = Model.core.MaterialBOMWebIFS("MaterialCreate")
-        re = MaterialBOMIFS.MaterialPlanBOMsFind(data)
+        re = MaterialBOMIFS.MaterialBOMsFind(data)
         print(re)
         return re
 

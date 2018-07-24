@@ -18,7 +18,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import Model.Global
 import Model.core
 from tools.MESLogger import MESLogger
-from Model.system import User,Role,Permission,Menu
+from Model.system import User,Role,Menu
 
 # 创建对象的基类
 engine = create_engine(Model.Global.GLOBAL_DATABASE_CONNECT_STRING, deprecate_large_types=True)
