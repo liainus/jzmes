@@ -2360,6 +2360,23 @@ def treeProductRule():
             logger.error(e)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
+# 生产制药计划
+@app.route('/ZYPlanGuid/makePlan')
+def makePlan():
+    if request.method == 'POST':
+        try:
+            recv_data = request.values
+            # UnitIFS = Model.core.UnitWebIFS("UnitSearch")
+            # re = UnitIFS.allUnitsSearch(recv_data)
+            # return re
+            ZYPlanIFS = Model.core.ZYPlanWebIFS("ZYPlansCreate")
+            re = ZYPlanIFS
+            return re
+
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 #生产线监控
 @app.route('/processMonitorLine')
