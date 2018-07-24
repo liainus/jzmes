@@ -374,8 +374,8 @@ def userList():
     if request.method == 'GET':
         data = request.values  # 返回请求中的参数和form
         # 默认返回所有用户
-        first_ID = data['id']
-        if first_ID == '':
+        ID = data['ID']
+        if ID == '':
             try:
                 json_str = json.dumps(data.to_dict())
                 print(json_str)
@@ -395,6 +395,36 @@ def userList():
                 logger.error(e)
                 insertSyslog("error", "查询权限分配下的用户列表报错Error：" + str(e), "AAAAAAadmin")
                 return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+        if ID != '':
+            data = request.values  # 返回请求中的参数和form
+            try:
+                json_str = json.dumps(data.to_dict())
+                print(json_str)
+                if len(json_str) > 10:
+                    pages = int(data['page'])  # 页数
+                    rowsnumber = int(data['rows'])  # 行数
+                    inipage = (pages - 1) * rowsnumber + 0  # 起始页
+                    endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+                    # 通过角色ID获取当前角色对应的用户
+                    role_id = data['ID']
+                    role = session.query(Role).filter_by(ID=role_id).first()
+                    print(role)
+                    if role is None:  # 判断当前角色是否存在
+                        return
+                    total = session.query(User).join(User_Role, isouter=True).filter_by(Role_ID=role_id).count()
+                    users_data = session.query(User).join(User_Role, isouter=True).filter_by(Role_ID=role_id).all()[
+                                 inipage:endpage]
+                    print(users_data)
+                    # ORM模型转换json格式
+                    jsonusers = json.dumps(users_data, cls=AlchemyEncoder, ensure_ascii=False)
+                    jsonusers = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonusers + "}"
+                    return jsonusers
+            except Exception as e:
+                print(e)
+                logger.error(e)
+                insertSyslog("error", "通过点击角色查询用户报错Error：" + str(e), "AAAAAAadmin")
+                return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
 
 # 通过点击角色查询用户
 @app.route('/permission/RoleFindUser')
