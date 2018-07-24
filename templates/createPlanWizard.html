@@ -235,51 +235,42 @@
         <div>
             <div id="step-1">
                 <h3 class="border-bottom border-gray pb-2">计划实际信息</h3>
-                <a>生产日期选择:</a>
-                <input class="easyui-datebox" id = "prodDate" labelPosition="top" data-options="formatter:myformatter,parser:myparser" style="width:200px;height:40px;line-height:70px;">
                 <div class="content">
-                    <div class="column">
-                        <span class="current">基本信息</span>
-                        <span id="selectedNodeId" style="display:none;"></span>
-                    </div>
                     <form id="orgForm" method="post" class="dialog-form">
                         <table class="kv-table">
                             <tbody>
                                 <tr>
+                                    <td class="kv-label">生产日期</td>
+                                    <td class="kv-content">
+                                        <input class="easyui-datebox" id="prodDate" labelPosition="top" data-options="formatter:myformatter,parser:myparser" style="height:29px;">
+                                    </td>
                                     <td class="kv-label">批次号</td>
                                     <td class="kv-content">
-                                        <input type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="">
+                                        <input type="text" name="" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="">
                                     </td>
                                     <td class="kv-label">品名</td>
                                     <td class="kv-content">
-                                        <input id="unittypelist" class="easyui-combobox" name="单位类型" style="height:35px;width:120px" data-options="
-                                                   url:'treeProductRule',
-                                                   method:'get',
-                                                   valueField: 'id',
-                                                   textField: 'text'"
-                                    }>
+                                        <select name="proName" id="proName" type="text" autocomplete="off" placeholder="" style="height:29px;width:150px;">
+                                            <option value="">请选择</option>
+                                            {% for id in Product_info %}
+                                                <option value="{{ id['ID'] }}">{{ id['text'] }}</option>
+                                            {% endfor %}
+                                        </select>
                                     </td>
-                                    <td class="kv-label">计划重量</td>
+                                </tr>
+                            <tr>
+                                <td class="kv-label">计划重量</td>
                                     <td class="kv-content">
-                                        <input id="unittypelist" class="easyui-combobox" name="单位类型" style="height:35px;width:80px" data-options="
-                                                   url:'../static/data/combobox_defaultWeight.json',
-                                                   method:'get',
-                                                   valueField: 'id',
-                                                   textField: 'text'"
-                                    }>
-
+                                        <input id="planWeight" class="textbox-text validatebox-text textbox-prompt" name="单位类型" type="text">
                                     </td>
                                     <td class="kv-label">单位</td>
                                     <td class="kv-content">
-                                        <select id="parentlist" class="easyui-combobox" name="language" style="height:35px;;width:50px" data-options="
-                                                    url:'getUnitByKg',
-                                                   method:'get',
-                                                   valueField: 'ID',
-                                                   textField: 'text'">
+                                        <select name="Unit" id="Unit" type="text" autocomplete="off" placeholder="" style="height:29px;width:150px;">
+                                            <option value="">请选择</option>
+                                            <option value="{{ Unit }}">{{ Unit }}</option>
                                         </select>
-
                                     </td>
-                                </tr>
+                            </tr>
                             </tbody>
                         </table>
                     </form>
