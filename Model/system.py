@@ -122,8 +122,8 @@ class Role(Base):
     # id:
     ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
 
-    # 角色编码:
-    RoleCode = Column(String(100), primary_key=False, autoincrement=False, nullable=True)
+    # # 角色编码:
+    # RoleCode = Column(String(100), primary_key=False, autoincrement=False, nullable=True)
 
     # 角色顺序:
     RoleSeq = Column(String(10), primary_key=False, autoincrement=False, nullable=True)
@@ -143,8 +143,8 @@ class Role(Base):
     # 父节点
     ParentNode = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
 
-    # 查询用户
-    users = relationship("User", secondary=User_Role)
+    # # 查询用户
+    # users = relationship("User", secondary=User_Role)
 
     # 查询权限
     menus = relationship("Menu", secondary=Role_Menu)
@@ -184,8 +184,11 @@ class User(Base):
     #所属部门
     OrganizationName = Column(Unicode(100), primary_key=False, autoincrement=False, nullable=True)
 
-    # 查询角色
-    roles = relationship("Role", secondary=User_Role)
+    # 角色名称:
+    RoleName = Column(Unicode(128), primary_key=False, autoincrement=False, nullable=True)
+
+    # # 查询角色
+    # roles = relationship("Role", secondary=User_Role)
 
 
 

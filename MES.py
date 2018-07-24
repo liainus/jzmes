@@ -203,9 +203,18 @@ def userManager():
         li = list(tu)
         id = li[0]
         name = li[1]
-        department = {'ID':id,'OrganizationName':name}
+        department = {'OrganizationID':id,'OrganizationName':name}
         data.append(department)
-    return render_template('userManager.html',departments=data)
+
+    dataRoleName = []
+    roleNames = session.query(Role.ID, Role.RoleName).all()
+    for role in roleNames:
+        li = list(role)
+        id = li[0]
+        name = li[1]
+        roleName = {'RoleID': id, 'RoleName': name}
+        dataRoleName.append(roleName)
+    return render_template('userManager.html',departments=data,roleNames=dataRoleName)
 
 
 @app.route('/MyUser/Select')
@@ -2350,6 +2359,13 @@ def treeProductRule():
             print(e)
             logger.error(e)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
+
+#生产线监控
+@app.route('/processMonitorLine')
+def processMonitor():
+    return render_template('processMonitorLine.html')
+
 
 
 if __name__ == '__main__':
