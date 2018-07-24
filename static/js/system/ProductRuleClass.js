@@ -182,9 +182,28 @@ $(function () {
             $('input[name="iPRName"]').val("");
             $('input[name="iVersion"]').val("");
             $('input[name="iDesc"]').val("");
-            $('input[name="iPublish_date"]').val("");
-            $('input[name="iAppy_date"]').val("");
             $('input[name="iIsUsed"]').val("");
+            $("#iPublish_date").datebox("setValue", myformatter(new Date()));
+            $("#iAppy_date").datebox("setValue", myformatter(new Date()));
+            function myformatter(date){
+                var y = date.getFullYear();
+                var m = date.getMonth()+1;
+                var d = date.getDate();
+                return y+'-'+(m<10?('0'+m):m)+'-'+( d<10?('0'+d):d);
+            }
+
+            function myparser(s){
+                if (!s) return new Date();
+                var ss = (s.split('-'));
+                var y = parseInt(ss[0],10);
+                var m = parseInt(ss[1],10);
+                var d = parseInt(ss[2],10);
+                if (!isNaN(y) && !isNaN(m) && !isNaN(d)){
+                    return new Date(y,m-1,d);
+                } else {
+                    return new Date();
+                }
+            }
 
             // $(formId).form('clear');
             message = '新增' + titleText;
@@ -289,6 +308,16 @@ $(function () {
             stmp = $('input[name="iPRName"]').val();
             if(Bee.StringUtils.isEmpty(stmp)) {
                alert('Warning：组织机构名称不能为空！');
+               return false;
+            }
+            stmp = $('#iPublish_date').datebox('getValue');
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：发行日期不能为空！');
+               return false;
+            }
+            stmp = $('#iAppy_date').datebox('getValue');
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：使用日期不能为空！');
                return false;
             }
             // stmp = $('input[name="iSeq"]').val();
