@@ -13,6 +13,58 @@
     <script type="text/javascript" src="../static/js/jquery.min.js"></script>
     <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
     <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
+</head>
+
+<body>
+	<div style="padding:10px 0px 5px 10px;">
+	    <a href="#" class="easyui-linkbutton" id="SaveBtn" data-options="iconCls:'icon-save'">保存</a>
+	</div>
+
+	<div style="display:inline-block;border:1px solid #ccc;padding:10px;vertical-align: top;">
+        <div style="width:100%;margin:0px;padding-bottom:5px;border-bottom:1px solid green;font-weight:bold;"><h3>职位列表</h3></div>
+        <div style="margin:10px;"></div>
+            <ul class="easyui-tree" id="tree"></ul>
+    </div>
+    <div style="display:inline-block;border:1px solid #ccc;padding:10px;vertical-align: top;">
+        <div style="width:100%;margin:0px;padding-bottom:5px;border-bottom:1px solid green;font-weight:bold;"><h3>用户列表</h3></div>
+        <div style="margin:10px;"></div>
+        <table class="easyui-datagrid" id="tab" title="" style="width:100%" data-options="
+            queryParams: {
+                ID: ''
+            },
+            rownumbers:true,
+            singleSelect:true,
+            url:'/permission/userlist',
+            method:'get',
+            rownumbers:true,
+            singleSelect:true,
+            autoRowHeight:false,
+            pagination:true,
+            fitColumns:true,
+            striped:true,
+            checkOnSelect:true,
+            selectOnCheck:true,
+            collapsible:true,
+            toolbar:'#tb',
+            pageSize:10">
+            <thead>
+                <tr>
+                    <th data-options="field:'UserName',width:140,align:'center'">用户名</th>
+                    <th data-options="field:'LoginName',width:100,align:'center'">登录账号</th>
+                    <th data-options="field:'Status',width:80,align:'center'">状态</th>
+                    <th data-options="field:'Creater',width:120,align:'center'">创建用户</th>
+                    <th data-options="field:'CreateTime',width:120,align:'center'">创建时间</th>
+                    <th data-options="field:'OrganizationCode',width:100,align:'center'">所属组织</th>
+                    <th data-options="field:'RoleCode',width:80,align:'center'">角色编码</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+    <div style="display:inline-block;border:1px solid #ccc;padding:10px;vertical-align: top;">
+        <div style="width:100%;margin:0px;padding-bottom:5px;border-bottom:1px solid green;font-weight:bold;"><h3>功能模块列表</h3></div>
+        <div style="margin:10px;"></div>
+        <ul id="tt" class="easyui-tree"></ul>
+    </div>
     <script type="text/javascript">
         function createKeyIDObj(keyID){
             return {
@@ -83,57 +135,5 @@
             })
         })
     </script>
-</head>
-
-<body>
-	<div style="padding:10px 0px 5px 10px;">
-	    <a href="#" class="easyui-linkbutton" id="SaveBtn" data-options="iconCls:'icon-save'">保存</a>
-	</div>
-
-	<div style="position:absolute;display:inline-block;margin:0px;width:180px;border:1px solid #ccc;padding:10px;left:10px;">
-        <div style="width:100%;margin:0px;padding-bottom:5px;border-bottom:1px solid green;font-weight:bold;"><h3>职位列表</h3></div>
-			<div style="margin:10px;"></div>
-                <ul class="easyui-tree" id="tree"></ul>
-			</div>
-        <div style="position:absolute;display:inline-block;margin:0px;width:500px;left:220px;border:1px solid #ccc;padding:10px;">
-            <div style="width:100%;margin:0px;padding-bottom:5px;border-bottom:1px solid green;font-weight:bold;"><h3>用户列表</h3></div>
-			<div style="margin:10px;"></div>
-			<table class="easyui-datagrid" id="tab" title="" style="width:100%" data-options="
-                queryParams: {
-                    id: ''
-                },
-                rownumbers:true,
-                singleSelect:true,
-                url:'/permission/userlist',
-                method:'get',
-                rownumbers:true,
-                singleSelect:true,
-                autoRowHeight:false,
-                pagination:true,
-                fitColumns:true,
-                striped:true,
-                checkOnSelect:true,
-                selectOnCheck:true,
-                collapsible:true,
-                toolbar:'#tb',
-                pageSize:10">
-				<thead>
-					<tr>
-						<th data-options="field:'UserName',width:140,align:'center'">用户名</th>
-						<th data-options="field:'LoginName',width:100,align:'center'">登录账号</th>
-						<th data-options="field:'Status',width:80,align:'center'">状态</th>
-						<th data-options="field:'Creater',width:120,align:'center'">创建用户</th>
-						<th data-options="field:'CreateTime',width:120,align:'center'">创建时间</th>
-						<th data-options="field:'OrganizationCode',width:100,align:'center'">所属组织</th>
-						<th data-options="field:'RoleCode',width:80,align:'center'">角色编码</th>
-					</tr>
-				</thead>
-			</table>
-        </div>
-        <div style="position:absolute;display:inline-block;margin:0px;left:760px;width:300px;border:1px solid #ccc;padding:10px;">
-            <div style="width:100%;margin:0px;padding-bottom:5px;border-bottom:1px solid green;font-weight:bold;"><h3>功能模块列表</h3></div>
-            <div style="margin:10px;"></div>
-            <ul id="tt" class="easyui-tree"></ul>
-        </div>
 </body>
 </html>
