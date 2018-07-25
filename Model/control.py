@@ -152,7 +152,7 @@ class ctrlPlan:
                     PlanQuantity=APlanWeight,
                     # ActQuantity=0,
                     Unit=AUnit,
-                    EnterTime=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                    EnterTime=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
                     PlanBeginTime=APlanBeginTime,
                     PlanEndTime=APlanEndTime,
                     ActBeginTime="",
@@ -186,7 +186,7 @@ class ctrlPlan:
                     PlanQuantity=APlanWeight,
                     # ActQuantity="",
                     Unit=AUnit,
-                    EnterTime=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                    EnterTime=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
                     ActBeginTime="",
                     ActEndTime="",
                     SetRepeatCount=ASetRepeatCount,
@@ -203,13 +203,12 @@ class ctrlPlan:
             logger.error(e)
             return  bReturn
 
-    def getPUPara(self,APUID,ABrandID, APUPara):
+    def getPUPara(self,APUID,ABrandID):#, APUPara
         bReturn = True
         try:
             oclass = session.query(Model.core.ProductParameter).filter(
                 Model.core.ProductParameter.ProductRuleID == ABrandID).filter(
-                Model.core.ProductParameter.PUID == APUID).filter(
-                Model.core.ProductParameter.PDParaCode ==APUPara).first()
+                Model.core.ProductParameter.PUID == APUID).first() #.filter(Model.core.ProductParameter.PDParaCode ==APUPara)
             if oclass is None:
                 bReturn = True
                 paraValue = 0
@@ -222,11 +221,11 @@ class ctrlPlan:
             logger.error(e)
             return  bReturn,paraValue
 
-    def getLineInfo(self):
+    def getLineInfo(self,ABrandName):
         bReturn = True
         try:
             oclass = session.query(Model.core.ProductLine).filter(
-                Model.core.ProductLine.PLineName == "江中罗亭生产线1").first()
+                Model.core.ProductLine.PLineName == ABrandName).first() #"江中罗亭生产线1"
             if oclass is None:
                 bReturn = False
                 return bReturn, "", ""
@@ -416,7 +415,7 @@ class ctrlPlan:
                 if bReturn == False:
                     return False
 
-            bReturn, iPLineID, sPLineName = self.getLineInfo()
+            bReturn, iPLineID, sPLineName = self.getLineInfo(ABrandName)
             if bReturn == False:
                 return False
             bReturn,oRoutes = self.getProductUnitRoute(AProductRuleID)
@@ -433,7 +432,7 @@ class ctrlPlan:
                             if bReturn == False:
                                 return False
 
-                            bReturn, iSetReatCount = self.getPUPara(iPUID, ABrandID, "SetReatCount")
+                            bReturn, iSetReatCount = self.getPUPara(iPUID, ABrandID) #, "SetReatCount"
                             if bReturn == False:
                                 return False
 
@@ -445,8 +444,12 @@ class ctrlPlan:
                             if bReturn == False:
                                 return False
                             iReturn,iIsExist,sErr = self.IsExistBatchID(ABatchID)
+                            print(iIsExist)
                             if iReturn == -1:
                                 return False
+
+
+
                             elif iIsExist == 0:
                                 bReturn = self.createPlanManager(APlanDate,ABatchID,ABrandID,ABrandName,iPlanManageSeq,"",APlanWeight,AUnit,iPLineID,sPLineName)
                                 if bReturn == False:

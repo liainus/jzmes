@@ -16,7 +16,7 @@ import Model.Global
 from Model.BSFramwork import AlchemyEncoder
 from Model.core import Enterprise, Area, Factory, ProductLine, ProcessUnit, Equipment, Material, MaterialType, \
     ProductUnit, ProductRule
-from Model.system import Role, Organization,User,Menu, User_Role
+from Model.system import Role, Organization,User,Menu
 from tools.MESLogger import MESLogger
 from Model.core import SysLog
 from sqlalchemy import create_engine, Column, ForeignKey, Table, DateTime, Integer, String
@@ -30,6 +30,7 @@ from flask import session as cli_session
 from Model.system import User
 from random import randint
 from Model.Global import WeightUnit
+from Model.control import ctrlPlan
 
 import socket
 
@@ -2394,19 +2395,25 @@ def treeProductRule():
 @app.route('/ZYPlanGuid/makePlan')
 def makePlan():
     if request.method == 'POST':
+        data = request.values  # 返回请求中的参数和form
         try:
-            recv_data = request.values
-            # UnitIFS = Model.core.UnitWebIFS("UnitSearch")
-            # re = UnitIFS.allUnitsSearch(recv_data)
-            # return re
-            ZYPlanIFS = Model.core.ZYPlanWebIFS("ZYPlansCreate")
-            re = ZYPlanIFS
-            return re
-
+            json_str = json.dumps(data.to_dict())
+            print(json_str)
+            if len(json_str) > 10:
+                AProductRuleID = int(data['AProductRuleID'])# 产品定义ID
+                APlanWeight = data['APlanWeight']# 计划重量
+                APlanDate = data['APlanDate']# 计划生产日期
+                ABatchID = data['ABatchID']# 批次号
+                ABrandName = data['ABrandName'] # 产品名称
+                AUnit = data['AUnit']#d单位
+                PlanCreate = ctrlPlan('PlanCreate')
+                ABrandID = session.query(ProductRule.ID).filter(ProductRule.PRName.like("%" + ABrandName + "%")).first()# 产品ID
+                re = PlanCreate.createLinePUPlan(AProductRuleID, APlanWeight, APlanDate, ABatchID, ABrandID, ABrandName, AUnit)
+                return re
         except Exception as e:
             print(e)
             logger.error(e)
-            return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+            return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 #生产线监控
 @app.route('/processMonitorLine')

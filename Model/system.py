@@ -107,15 +107,6 @@ class Menu(Base):
 #     # 查询菜单
 #     menus = relationship('Menu', secondary=Permission_Menu)
 
-
-# 角色与用户关联表
-User_Role = Table(
-    "user_role",
-    Base.metadata,
-    Column("User_ID", Integer, ForeignKey("user.ID"), nullable=False, primary_key=True),
-    Column("Role_ID", Integer, ForeignKey("role.ID"), nullable=False, primary_key=True)
-)
-
 # 角色表
 class Role(Base):
     __tablename__ = 'role'
