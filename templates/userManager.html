@@ -16,7 +16,149 @@
     <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
     <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
     <script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
-    <script type="text/javascript">
+</head>
+<body>
+	<div class="">
+		<div class="left-tree" style="display: inline-block;vertical-align: top;border: 1px solid #ccc;margin: 10px;padding: 15px;">
+            <ul class="easyui-tree" id="tree"></ul>
+		</div>
+		<div class="content" style="width:800px;display: inline-block;vertical-align: top;">
+			<div style="margin-top: 20px;margin-bottom: 10px;border-bottom: 1px solid #ccc;padding-bottom: 10px;">
+                <span style="color:#1da02b;">用户列表</span>
+            </div>
+			<div id="userClassDialog" class="easyui-dialog" style="width:800px;height:440px;padding:10px;"
+                 data-options="closed:'true',buttons:'#userClassDialogButtons',modal:true">
+                <form id="userClassForm" method="post" class="dialog-form">
+                    <table class="kv-table">
+                        <tbody>
+                            <tr>
+                                <td class="kv-label">ID</td>
+                                <td class="kv-content">
+                                    <input name="ID" type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="" disabled="disabled">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="kv-label">用户名</td>
+                                <td class="kv-content">
+                                    <input name="Name" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="kv-label">密码</td>
+                                <td class="kv-content">
+                                    <input name="Password" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="kv-label">登录名</td>
+                                <td class="kv-content">
+                                    <input name="LoginName" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="kv-label">创建用户</td>
+                                <td class="kv-content">
+                                    <input name="Creater" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder="" disabled="disabled"  >
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="kv-label">所属部门</td>
+                                <td class="kv-content">
+                                    <select name="OrganizationName" id="OrganizationName" type="text" style="width:157px;" autocomplete="off" placeholder="">
+                                        <option value="">请选择</option>
+                                        {% for department in departments %}
+                                            <option value="{{ department['ID'] }}">{{ department['OrganizationName'] }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="kv-label">所属角色</td>
+                                <td class="kv-content">
+                                    <select name="RoleName" id="RoleName" type="text" style="width:157px;" autocomplete="off" placeholder="">
+                                        <option value="">请选择</option>
+                                        {% for roleName in roleNames %}
+                                            <option value="{{ roleName['RoleID'] }}">{{ roleName['RoleName'] }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="kv-label">创建时间</td>
+                                <td class="kv-content">
+                                    <input name="CreateTime" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder="" disabled="disabled" >
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="kv-label">上次登录时间</td>
+                                <td class="kv-content">
+                                    <input name="LastLoginTime" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder="" disabled="disabled" >
+                                </td>
+                            </tr>
+{#                            <tr>#}
+{#                                <td class="kv-label">是否锁定</td>#}
+{#                                <td class="kv-content">#}
+{#                                    <input name="IsLock" type="checkbox" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder="">#}
+{#                                </td>#}
+{#                            </tr>#}
+                        </tbody>
+                    </table>
+                    <div id="userClassDialogButtons" >
+                        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" id="saveAdd" onclick="UserClassToolbar.saveAdd()" >保存</a>
+                        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" id="saveUpdata" onclick="UserClassToolbar.saveUpdata()" >保存</a>
+                        <a href="#" class="easyui-linkbutton" onclick="$('#userClassDialog').dialog('close')">关闭</a>
+                    </div>
+                </form>
+            </div>
+			<table class="easyui-datagrid" id="tab" title="" style="width:100%" data-options="
+                queryParams: {
+                    id: '',
+                    Name:''
+                },
+			    rownumbers:true,
+                singleSelect:true,
+                autoRowHeight:false,
+				pagination:true,
+				pageSize:10,
+				singleSelect:false,
+                url:'/MyUser/Select',
+                method:'get',
+                toolbar:'#toolbar'">
+				<thead>
+					<tr>
+                        <th field="ck" checkbox="true"></th>
+						<th data-options="field:'Name',width:120,align:'center'">用户名</th>
+						<th data-options="field:'Password',width:120,align:'center'">密码</th>
+						<th data-options="field:'LoginName',width:100,align:'center'">登录名</th>
+						<th data-options="field:'Status',width:80,align:'center'">登录状态</th>
+						<th data-options="field:'Creater',width:120,align:'center'">创建用户</th>
+						<th data-options="field:'CreateTime',width:150,align:'center'">创建时间</th>
+						<th data-options="field:'LastLoginTime',width:120,align:'center'">上次登录时间</th>
+						<th data-options="field:'OrganizationName',width:100,align:'center'">所属部门</th>
+{#						<th data-options="field:'IsLock',width:80,align:'center',#}
+{#						    formatter : function(value,row,index){#}
+{#                                if(value == true){#}
+{#                                    return '是'#}
+{#                                }else{#}
+{#                                    return '否'#}
+{#                                }#}
+{#                        }">是否锁定</th>#}
+					</tr>
+				</thead>
+			</table>
+            <div id="toolbar" style="padding:0 10px;">
+                用户名:
+                <input type="text" id="NameSearchVal" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
+                placeholder="">
+                <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="doSearch();">查询</a>
+                <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="doAdd()">添加</a>
+	            <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="doUpdata()">编辑</a>
+	            <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="doDelete()">删除</a>
+	            <a href="#" class="easyui-linkbutton" iconCls="icon-reload" onclick="doReload()">刷新</a>
+            </div>
+		</div>
+	</div>
+ <script type="text/javascript">
     {#    树形菜单点击事件#}
         var code = ""
         $("#tree").tree({
@@ -193,134 +335,5 @@
             }
         }
     </script>
-</head>
-<body>
-	<div class="container">
-		<div class="left-tree" >
-            <ul class="easyui-tree" id="tree"></ul>
-		</div>
-		<div class="content">
-			<div class="column"><span class="current">用户列表</span></div>
-			<div id="userClassDialog" class="easyui-dialog" style="width:520px;height:440px;padding:10px;"
-                 data-options="closed:'true',buttons:'#userClassDialogButtons',modal:true">
-                <form id="userClassForm" method="post" class="dialog-form">
-                    <table class="kv-table">
-                        <tbody>
-                            <tr>
-                                <td class="kv-label">ID</td>
-                                <td class="kv-content">
-                                    <input name="ID" type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="" disabled="disabled">
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="kv-label">用户名</td>
-                                <td class="kv-content">
-                                    <input name="Name" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="kv-label">密码</td>
-                                <td class="kv-content">
-                                    <input name="Password" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="kv-label">登录名</td>
-                                <td class="kv-content">
-                                    <input name="LoginName" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="kv-label">创建用户</td>
-                                <td class="kv-content">
-                                    <input name="Creater" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder="" disabled="disabled"  >
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="kv-label">创建时间</td>
-                                <td class="kv-content">
-                                    <input name="CreateTime" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder="" disabled="disabled" >
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="kv-label">上次登录时间</td>
-                                <td class="kv-content">
-                                    <input name="LastLoginTime" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder="" disabled="disabled" >
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="kv-label">所属部门</td>
-                                <td class="kv-content">
-                                    <select name="OrganizationName" id="OrganizationName" type="text" style="width:157px;" autocomplete="off" placeholder="">
-                                        <option value="">请选择</option>
-                                        {% for department in departments %}
-                                            <option value="{{ department['ID'] }}">{{ department['OrganizationName'] }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </td>
-                            </tr>
-{#                            <tr>#}
-{#                                <td class="kv-label">是否锁定</td>#}
-{#                                <td class="kv-content">#}
-{#                                    <input name="IsLock" type="checkbox" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder="">#}
-{#                                </td>#}
-{#                            </tr>#}
-                        </tbody>
-                    </table>
-                    <div id="userClassDialogButtons" >
-                        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" id="saveAdd" onclick="UserClassToolbar.saveAdd()" >保存</a>
-                        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" id="saveUpdata" onclick="UserClassToolbar.saveUpdata()" >保存</a>
-                        <a href="#" class="easyui-linkbutton" onclick="$('#userClassDialog').dialog('close')">关闭</a>
-                    </div>
-                </form>
-            </div>
-			<table class="easyui-datagrid" id="tab" title="" style="width:99%" data-options="
-                queryParams: {
-                    id: '',
-                    Name:''
-                },
-			    rownumbers:true,
-                singleSelect:true,
-                autoRowHeight:false,
-				pagination:true,
-				pageSize:10,
-				singleSelect:false,
-                url:'/MyUser/Select',
-                method:'get',
-                toolbar:'#toolbar'">
-				<thead>
-					<tr>
-                        <th field="ck" checkbox="true"></th>
-						<th data-options="field:'Name',width:120,align:'center'">用户名</th>
-						<th data-options="field:'Password',width:120,align:'center'">密码</th>
-						<th data-options="field:'LoginName',width:100,align:'center'">登录名</th>
-						<th data-options="field:'Status',width:80,align:'center'">登录状态</th>
-						<th data-options="field:'Creater',width:120,align:'center'">创建用户</th>
-						<th data-options="field:'CreateTime',width:150,align:'center'">创建时间</th>
-						<th data-options="field:'LastLoginTime',width:120,align:'center'">上次登录时间</th>
-						<th data-options="field:'OrganizationName',width:100,align:'center'">所属部门</th>
-{#						<th data-options="field:'IsLock',width:80,align:'center',#}
-{#						    formatter : function(value,row,index){#}
-{#                                if(value == true){#}
-{#                                    return '是'#}
-{#                                }else{#}
-{#                                    return '否'#}
-{#                                }#}
-{#                        }">是否锁定</th>#}
-					</tr>
-				</thead>
-			</table>
-            <div id="toolbar" style="padding:0 10px;">
-                用户名:
-                <input type="text" id="NameSearchVal" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
-                placeholder="">
-                <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="doSearch();">查询</a>
-                <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="doAdd()">添加</a>
-	            <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="doUpdata()">编辑</a>
-	            <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="doDelete()">删除</a>
-	            <a href="#" class="easyui-linkbutton" iconCls="icon-reload" onclick="doReload()">刷新</a>
-            </div>
-		</div>
-	</div>
 </body>
 </html>
