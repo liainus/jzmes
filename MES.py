@@ -7,7 +7,7 @@ import time
 from collections import Counter
 from flask import Flask, jsonify, redirect, url_for
 from flask import render_template, request
-from sqlalchemy import create_engine, Column, ForeignKey, Table, DateTime, Integer, String, and_, or_
+from sqlalchemy import create_engine, Column, ForeignKey, Table, Integer, String, and_, or_
 from sqlalchemy import func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
@@ -19,7 +19,7 @@ from Model.core import Enterprise, Area, Factory, ProductLine, ProcessUnit, Equi
 from Model.system import Role, Organization,User,Menu
 from tools.MESLogger import MESLogger
 from Model.core import SysLog
-from sqlalchemy import create_engine, Column, ForeignKey, Table, DateTime, Integer, String
+from sqlalchemy import create_engine, Column, ForeignKey, Table, Integer, String
 from sqlalchemy import func
 from sqlalchemy.ext.declarative import DeclarativeMeta
 import string
@@ -267,10 +267,11 @@ def addUser():
                          Password=data['Password'], LoginName=data['LoginName'],
                          Status="1", #登录状态先设置一个默认值1：已登录，0：未登录
                          Creater=data['Creater'],
-                         CreateTime=data['CreateTime'],
+                         CreateTime=datetime.datetime.now(),
                          LastLoginTime=datetime.datetime.now(),
                          IsLock='false',#data['IsLock'],
-                         OrganizationName=data['OrganizationName']))
+                         OrganizationName=data['OrganizationName'],
+                         RoleName=data['RoleName']))
                 session.commit()
                 insertSyslog("添加用户", "添加用户"+data['Name']+"添加成功", "AAAAAAadmin")
                 return json.dumps([{"status": "OK"}], cls=AlchemyEncoder, ensure_ascii=False)
@@ -352,8 +353,6 @@ def getRoleList(id=0):
             if obj.ParentNode == id:
                 sz.append({"id": obj.ID, "text": obj.RoleName, "children": getRoleList(obj.ID)})
         srep = ',' + 'items' + ':' + '[]'
-        # data = string(sz)
-        # data.replace(srep, '')
 
         return sz
     except Exception as e:
@@ -401,6 +400,7 @@ def userList():
                     # ORM模型转换json格式
                     jsonusers = json.dumps(users_data, cls=AlchemyEncoder, ensure_ascii=False)
                     jsonusers = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonusers + "}"
+
                     return jsonusers.encode("utf8")
             except Exception as e:
                 print(e)
@@ -419,12 +419,12 @@ def userList():
                     endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
                     # 通过角色ID获取当前角色对应的用户
                     role_id = data['ID']
-                    role = session.query(Role).filter_by(ID=role_id).first()
-                    print(role)
-                    if role is None:  # 判断当前角色是否存在
+                    role_name= session.query(Role.RoleName).filter_by(ID=role_id).first()
+                    # print(role)
+                    if role_name is None:  # 判断当前角色是否存在
                         return
-                    total = session.query(User).join(User_Role, isouter=True).filter_by(Role_ID=role_id).count()
-                    users_data = session.query(User).join(User_Role, isouter=True).filter_by(Role_ID=role_id).all()[
+                    total = session.query(User).filter_by(RoleName=role_name).count()
+                    users_data = session.query(User).filter_by(RoleName=role_name).all()[
                                  inipage:endpage]
                     print(users_data)
                     # ORM模型转换json格式
@@ -2110,7 +2110,6 @@ def allrolesUpdate():
             if len(json_str) > 10:
                 Roleid = int(data['ID'])
                 role = session.query(Role).filter_by(ID=Roleid).first()
-                role.RoleCode = data['RoleCode']
                 role.RoleName = data['RoleName']
                 role.RoleSeq = data['RoleSeq']
                 role.Description = data['Description']
@@ -2166,7 +2165,8 @@ def allrolesCreate():
         try:
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 10:
-                session.add(Role(RoleCode = data['RoleCode'],RoleName=data['RoleName'],RoleSeq=data['RoleSeq'],Description=data['Description'],CreatePerson=data['CreatePerson'],CreateDate= datetime.datetime.now()))
+                session.add(Role(RoleName=data['RoleName'],RoleSeq=data['RoleSeq'],Description=data['Description'],CreatePerson=data['CreatePerson'],
+                                 CreateDate= datetime.datetime.now()))
                 session.commit()
                 return json.dumps([{"status": "OK"}], cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
@@ -2397,8 +2397,8 @@ def treeProductRule():
             logger.error(e)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
-# 生产制药计划
-@app.route('/ZYPlanGuid/makePlan')
+# 计划向导生成计划、任务
+@app.route('/ZYPlanGuid/makePlan', methods=['POST', 'GET'])
 def makePlan():
     if request.method == 'POST':
         data = request.values  # 返回请求中的参数和form
