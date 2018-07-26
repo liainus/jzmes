@@ -211,7 +211,6 @@
                     $.ajax({
                         url: "/ZYPlanGuid/makePlan",
                         method: 'POST',
-                        traditional: true,
                         data: {
                             APlanDate :$('#APlanDate').datebox('getValue'),
                             ABatchID :$('#ABatchID').val(),
@@ -220,8 +219,7 @@
                             APlanWeight :$('#APlanWeight').val(),
                             AUnit : $('#AUnit').find("option:selected").val()
                         },
-                        dataType: 'json',
-                        cache: false,
+                        //dataType: 'json',
                         success: function (data,response,status) {
                             console.log(data)
                         },
@@ -343,7 +341,7 @@
                     </div>
                     <div title="批次物料明细" data-options="closable:false" style="overflow:auto;padding:0px;">
                         <table id="TasksTab" class="easyui-datagrid" style="width:100%;" data-options="
-                             url:'/ZYPlanGuid/CriticalMaterials',
+{#                             url:'/ZYPlanGuid/CriticalMaterials',#}
                              method: 'get',
                              rownumbers:true,
                              singleSelect:false,
