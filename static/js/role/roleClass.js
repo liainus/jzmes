@@ -388,7 +388,7 @@ $(function () {
                 var entity = {
                     ID:$('input[name="iID"]').val(),
                     RoleName:$('input[name="iRoleName"]').val(),
-                    RoleID:$('#iParentNode').find("option:selected").val(),
+                    ParentNode:$('#iParentNode').find("option:selected").val(),
                     RoleSeq:$('input[name="iRoleSeq"]').val(),
                     Description:$('input[name="iDescription"]').val(),
                     CreatePerson:$('input[name="iCreatePerson"]').val(),
