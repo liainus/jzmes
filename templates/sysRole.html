@@ -57,7 +57,12 @@
                 <tr>
                     <td class="kv-label">父节点</td>
                     <td class="kv-content">
-                        <input  name="iParentNode" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                        <select name="iParentNode" id="iParentNode" type="text" style="width:157px;" autocomplete="off" placeholder="">
+                            <option value="">请选择</option>
+                            {% for RoleInfo in RoleInfos %}
+                                <option value="{{ RoleInfo['RoleID'] }}">{{ RoleInfo['RoleName'] }}</option>
+                            {% endfor %}
+                        </select>
                     </td>
                 </tr>
                 <tr>
@@ -75,7 +80,7 @@
                 <tr>
                     <td class="kv-label">创建人</td>
                     <td class="kv-content">
-                        <input name="iCreatePerson" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                        <input name="iCreatePerson" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
                     </td>
                 </tr>
                 <tr>
