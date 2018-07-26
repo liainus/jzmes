@@ -2123,6 +2123,7 @@ def allrolesUpdate():
                 role.Description = data['Description']
                 role.CreatePerson = data['CreatePerson']
                 role.CreateDate = data['CreateDate']
+                role.ParentNode = data['ParentNode']
                 session.commit()
                 return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
@@ -2173,8 +2174,13 @@ def allrolesCreate():
         try:
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 10:
-                session.add(Role(RoleName=data['RoleName'],RoleSeq=data['RoleSeq'],Description=data['Description'],CreatePerson=data['CreatePerson'],
-                                 CreateDate= datetime.datetime.now()))
+                session.add(Role(RoleName=data['RoleName'],
+                                 RoleSeq=data['RoleSeq'],
+                                 Description=data['Description'],
+                                 CreatePerson=data['CreatePerson'],
+                                 CreateDate= datetime.datetime.now(),
+                                 ParentNode = data['ParentNode']
+                                 ))
                 session.commit()
                 return json.dumps([{"status": "OK"}], cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
