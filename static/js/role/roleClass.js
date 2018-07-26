@@ -82,12 +82,6 @@ $(function () {
                 width: 100
             },
             {
-                field: 'RoleCode',
-                title: '角色编码',
-                align: 'center',
-                width: 100
-            },
-            {
                 field: 'RoleName',
                 title: '角色名称',
                 align: 'center',
@@ -175,7 +169,6 @@ $(function () {
             $('input[name="Name"]').focus();
             $('input[name="iID"]').attr("disabled", "disabled");
             $('input[name="iID"]').val("");
-            $('input[name="iRoleCode"]').val("");
             $('input[name="iRoleName"]').val("");
             $('input[name="iRoleSeq"]').val("");
             // $('input[name="iRoleSeq"]').onChange()
@@ -205,7 +198,6 @@ $(function () {
                     //$(formId).form('load', row);
                     $('input[name="iID"]').attr("disabled", "disabled");
                     $('input[name="iID"]').val(row.ID);
-                    $('input[name="iRoleCode"]').val(row.RoleCode);
                     $('input[name="iRoleName"]').val(row.RoleName);
                     $('input[name="iRoleSeq"]').val(row.RoleSeq);
                     $('input[name="iDescription"]').val(row.Description);
@@ -286,12 +278,7 @@ $(function () {
             var strID = $('input[name="iID"]').val();
             var msg = ""
             var urlAddr = ""
-            var stmp = $('input[name="iRoleCode"]').val();
-            if(Bee.StringUtils.isEmpty(stmp)) {
-               alert('Warning：角色编号不能为空！');
-               return false;
-            }
-            stmp = $('input[name="iRoleName"]').val();
+            var stmp = $('input[name="iRoleName"]').val();
             if(Bee.StringUtils.isEmpty(stmp)) {
                alert('Warning：角色名称不能为空！');
                return false;
@@ -372,14 +359,14 @@ $(function () {
             var strID = $('input[name="iID"]').val();
             var msg = ""
             var urlAddr = ""
-            var stmp = $('input[name="iRoleCode"]').val();
-            if(Bee.StringUtils.isEmpty(stmp)) {
-               alert('Warning：角色编号不能为空！');
-               return false;
-            }
-            stmp = $('input[name="iRoleName"]').val();
+            var stmp = $('input[name="iRoleName"]').val();
             if(Bee.StringUtils.isEmpty(stmp)) {
                alert('Warning：角色名称不能为空！');
+               return false;
+            }
+            stmp = $('#iParentNode').find("option:selected").val();
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：父节点不能为空！');
                return false;
             }
             stmp = $('input[name="iRoleSeq"]').val();
@@ -400,8 +387,8 @@ $(function () {
             }
                 var entity = {
                     ID:$('input[name="iID"]').val(),
-                    RoleCode:$('input[name="iRoleCode"]').val(),
                     RoleName:$('input[name="iRoleName"]').val(),
+                    ParentNode:$('#iParentNode').find("option:selected").val(),
                     RoleSeq:$('input[name="iRoleSeq"]').val(),
                     Description:$('input[name="iDescription"]').val(),
                     CreatePerson:$('input[name="iCreatePerson"]').val(),
@@ -481,12 +468,6 @@ $(function () {
             {
                 field: 'ID',
                 title: 'ID',
-                align: 'center',
-                width: 100
-            },
-            {
-                field: 'RoleCode',
-                title: '角色编码',
                 align: 'center',
                 width: 100
             },

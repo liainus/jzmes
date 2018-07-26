@@ -191,13 +191,11 @@ def insertSyslog(operationType, operationContent, userName):
             print(e)
             logger.error(e)
 
-
-
 # 用户管理
 @app.route('/userManager')
 def userManager():
     departments = session.query(Organization.ID, Organization.OrganizationName).all()
-    print(departments)
+    # print(departments)
     # departments = json.dumps(departments, cls=AlchemyEncoder, ensure_ascii=False)
     data = []
     for tu in departments:
@@ -253,6 +251,8 @@ def MyUserSelect():
             logger.error(e)
             insertSyslog("error", "查询用户列表报错Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
+
 
 @app.route('/user/addUser', methods=['POST', 'GET'])
 def addUser():
@@ -2096,7 +2096,15 @@ def workbenck():
 # 工作台菜单role
 @app.route('/sysrole')
 def sysrole():
-    return render_template('sysRole.html')
+    dataRoleInfo = []
+    roleNames = session.query(Role.ID, Role.RoleName).all()
+    for role in roleNames:
+        li = list(role)
+        id = li[0]
+        name = li[1]
+        roleName = {'RoleID': id, 'RoleName': name}
+        dataRoleInfo.append(roleName)
+    return render_template('sysRole.html', RoleInfos=dataRoleInfo)
 
 
 # role更新数据，通过传入的json数据，解析之后进行相应更新
