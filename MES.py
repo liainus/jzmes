@@ -320,7 +320,9 @@ def deleteUser():
                 for key in jsonnumber:
                     ID = int(key)
                     try:
-                        organization = session.query(User).filter_by(ID=ID).delete()
+                        oclass = session.query(User).filter_by(ID=ID).first()
+                        session.delete(oclass)
+                        session.commit()
                         insertSyslog("success", "删除ID是" + string(ID) + "的用户删除成功", "AAAAAAadmin")
                     except Exception as ee:
                         print(ee)
@@ -437,36 +439,36 @@ def userList():
 
 
 # 通过点击角色查询用户
-@app.route('/permission/RoleFindUser')
-def roleFindUser():
-    if request.method == 'GET':
-        data = request.values  # 返回请求中的参数和form
-        try:
-            json_str = json.dumps(data.to_dict())
-            print(json_str)
-            if len(json_str) > 10:
-                pages = int(data['page'])  # 页数
-                rowsnumber = int(data['rows'])  # 行数
-                inipage = (pages - 1) * rowsnumber + 0  # 起始页
-                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
-                # 通过角色ID获取当前角色对应的用户
-                role_id = data['id']
-                role = session.query(Role).filter_by(ID=role_id).first()
-                print(role)
-                if role is None:  # 判断当前角色是否存在
-                    return
-                total = session.query(User).join(User_Role, isouter=True).filter_by(Role_ID=role_id).count()
-                users_data = session.query(User).join(User_Role, isouter=True).filter_by(Role_ID=role_id).all()[inipage:endpage]
-                print(users_data)
-                # ORM模型转换json格式
-                jsonusers = json.dumps(users_data, cls=AlchemyEncoder, ensure_ascii=False)
-                jsonusers = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonusers + "}"
-                return jsonusers
-        except Exception as e:
-            print(e)
-            logger.error(e)
-            insertSyslog("error", "通过点击角色查询用户报错Error：" + str(e), "AAAAAAadmin")
-            return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+# @app.route('/permission/RoleFindUser')
+# def roleFindUser():
+#     if request.method == 'GET':
+#         data = request.values  # 返回请求中的参数和form
+#         try:
+#             json_str = json.dumps(data.to_dict())
+#             print(json_str)
+#             if len(json_str) > 10:
+#                 pages = int(data['page'])  # 页数
+#                 rowsnumber = int(data['rows'])  # 行数
+#                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
+#                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+#                 # 通过角色ID获取当前角色对应的用户
+#                 role_id = data['id']
+#                 role = session.query(Role).filter_by(ID=role_id).first()
+#                 print(role)
+#                 if role is None:  # 判断当前角色是否存在
+#                     return
+#                 total = session.query(User).join(User_Role, isouter=True).filter_by(Role_ID=role_id).count()
+#                 users_data = session.query(User).join(User_Role, isouter=True).filter_by(Role_ID=role_id).all()[inipage:endpage]
+#                 print(users_data)
+#                 # ORM模型转换json格式
+#                 jsonusers = json.dumps(users_data, cls=AlchemyEncoder, ensure_ascii=False)
+#                 jsonusers = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonusers + "}"
+#                 return jsonusers
+#         except Exception as e:
+#             print(e)
+#             logger.error(e)
+#             insertSyslog("error", "通过点击角色查询用户报错Error：" + str(e), "AAAAAAadmin")
+#             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
 # 权限分配下的功能模块列表
@@ -622,7 +624,9 @@ def allOrganizationsDelete():
                     # for subkey in list(key):
                     Organizationid = int(key)
                     try:
-                        organization = session.query(Organization).filter_by(ID=Organizationid).delete()
+                        oclass = session.query(Organization).filter_by(ID=Organizationid).first()
+                        session.delete(oclass)
+                        session.commit()
                         insertSyslog("success", "删除组织ID为" + str(Organizationid) + "的组织删除成功", "AAAAAAadmin")
                     except Exception as ee:
                         print(ee)
@@ -2136,7 +2140,9 @@ def allrolesDelete():
                     # for subkey in list(key):
                     Roleid = int(key)
                     try:
-                        role = session.query(Role).filter_by(ID=Roleid).delete()
+                        oclass = session.query(Role).filter_by(ID=Roleid).first()
+                        session.delete(oclass)
+                        session.commit()
                     except Exception as ee:
                         print(ee)
                         logger.error(ee)
@@ -2414,6 +2420,11 @@ def makePlan():
             print(e)
             logger.error(e)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
+# 批次任务明细
+@app.route('/ZYPlanGuid/CriticalTasks')
+def criticalTasks():
+    pass
 
 #生产线监控
 @app.route('/processMonitorLine')
