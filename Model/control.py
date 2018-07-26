@@ -162,6 +162,7 @@ class ctrlPlan:
                     INFStatus=Model.Global.TASKSTATUS.COMPILE.value,
                     WMSStatus=Model.Global.TASKSTATUS.COMPILE.value))
             session.commit()
+            return bReturn
         except Exception as e:
             session.rollback()
             bReturn = False
@@ -473,6 +474,7 @@ class ctrlPlan:
                                                                 strTaskNo, iTaskSeq, APlanDate, AUnit,iSetReatCount)
                                     if bReturn == False:
                                         return False
+                            return bReturn
                         except Exception as e:
                             session.rollback()
                             print (e)
