@@ -173,7 +173,7 @@
 	<script type="text/javascript" src="../static/js/bee.js" charset="utf-8"></script>
     <script type="text/javascript">
         $(function () {
-            $("#APlanDate ").datebox("setValue", myformatter(new Date()));
+            $("#APlanDate ").datetimebox("setValue", myformatter(new Date()))
             // Toolbar extra buttons
             var btnCancel = $('<button></button>').text('取消')
                  .addClass('btn btn-danger')
@@ -189,20 +189,52 @@
                     transitionEffect:'fade',
                     showStepURLhash: true,
                     transitionSpeed:400,
-                    keyNavigation:true,
                     enableAllAnchors:true,
                     toolbarSettings: {
                         //toolbarButtonPosition: 'end',
                         toolbarExtraButtons: [btnCancel]
                     }
             });
-            $("#wizard").on("showStep", function(e, anchorObject, stepNumber, stepDirection) {
-                return false;
-                if(stepNumber == 1){
-
-                    $.post('/ZYPlanGuid/makePlan',{},function(result){
-
+            $("#wizard").on("leaveStep", function(e, anchorObject, stepNumber, stepDirection) {
+                if(stepNumber == 0){
+                    if(Bee.StringUtils.isEmpty($('#ABatchID').val())) {
+                        $.messager.alert('提示', '批次号不能为空！', 'info');
+                        return false;
+                    }
+                    if(Bee.StringUtils.isEmpty($('#ABrandName').find("option:selected").val())) {
+                        $.messager.alert('提示', '品名不能为空！', 'info');
+                        return false;
+                    }
+                    if(Bee.StringUtils.isEmpty($('#APlanWeight').val())) {
+                        $.messager.alert('提示', '计划重量不能为空！', 'info');
+                        return false;
+                    }
+                    if(Bee.StringUtils.isEmpty($('#AUnit').find("option:selected").val())) {
+                        $.messager.alert('提示', '单位不能为空！', 'info');
+                        return false;
+                    }
+                    $.ajax({
+                        url: "/ZYPlanGuid/makePlan",
+                        method: 'POST',
+                        traditional: true,
+                        data: {
+                            APlanDate :$('#APlanDate').datetimebox('getValue'),
+                            ABatchID :$('#ABatchID').val(),
+                            ABrandName :$('#ABrandName').find("option:selected").val(),
+                            APlanWeight :$('#APlanWeight').val(),
+                            AUnit : $('#AUnit').find("option:selected").val()
+                        },
+                        dataType: 'json',
+                        cache: false,
+                        success: function (data,response,status) {
+                            console.log(data)
+                        },
+                         error: function(data){
+                               alert("异常，请刷新后重试...");
+                         }
                     })
+                }
+                if(stepNumber == 1){
                     setTimeout(function() {
                         $("#batchDetails").datagrid('reload')
                     },200);
@@ -214,19 +246,6 @@
             var m = date.getMonth()+1;
             var d = date.getDate();
             return y+'-'+(m<10?('0'+m):m)+'-'+( d<10?('0'+d):d);
-        }
-
-        function myparser(s){
-            if (!s) return new Date();
-            var ss = (s.split('-'));
-            var y = parseInt(ss[0],10);
-            var m = parseInt(ss[1],10);
-            var d = parseInt(ss[2],10);
-            if (!isNaN(y) && !isNaN(m) && !isNaN(d)){
-                return new Date(y,m-1,d);
-            } else {
-                return new Date();
-            }
         }
 	</script>
 </head>
@@ -247,7 +266,7 @@
                                 <tr>
                                     <td class="kv-label">生产日期</td>
                                     <td class="kv-content">
-                                        <input class="easyui-datebox" name="APlanDate" id="APlanDate" labelPosition="top" data-options="formatter:myformatter,parser:myparser" style="height:29px;">
+                                        <input class="easyui-datetimebox" name="APlanDate" id="APlanDate" labelPosition="top" data-options="required:true,showSeconds:false,editable:false" style="height:29px;">
                                     </td>
                                     <td class="kv-label">批次号</td>
                                     <td class="kv-content">
