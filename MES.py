@@ -2415,6 +2415,11 @@ def makePlan():
             logger.error(e)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
+# 批次任务明细
+@app.route('/ZYPlanGuid/CriticalTasks')
+def criticalTasks():
+    pass
+
 #生产线监控
 @app.route('/processMonitorLine')
 def processMonitor():
