@@ -208,14 +208,13 @@
                         $.messager.alert('提示', '单位不能为空！', 'info');
                         return false;
                     }
-                    var ABatchID = $('#ABatchID').val()
                     $.ajax({
                         url: "/ZYPlanGuid/makePlan",
                         method: 'POST',
                         traditional: true,
                         data: {
                             APlanDate :$('#APlanDate').datebox('getValue'),
-                            ABatchID :ABatchID,
+                            ABatchID :$('#ABatchID').val(),
                             AProductRuleID :$('#ABrandName').find("option:selected").val(),
                             ABrandName :$('#ABrandName').find("option:selected").html(),
                             APlanWeight :$('#APlanWeight').val(),
@@ -231,17 +230,19 @@
                          }
                     })
                 }
+            });
+            $("#wizard").on("showStep", function(e, anchorObject, stepNumber, stepDirection) {
                 if(stepNumber == 1){
                     setTimeout(function() {
                         $("#MaterialsTab").datagrid('load',{
-                            ABatchID :ABatchID
+                            ABatchID :$('#ABatchID').val()
                         })
                         $("#TasksTab").datagrid('load',{
-                            ABatchID :ABatchID
+                            ABatchID :$('#ABatchID').val()
                         })
                     },200);
                 }
-            });
+            })
         });
         function myformatter(date){
             var y = date.getFullYear();
