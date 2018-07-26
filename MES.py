@@ -2436,7 +2436,7 @@ def makePlan():
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 # 计划向导获取批次任务明细
-@app.route('/ZYPlanGuid/CriticalTasks')
+@app.route('/ZYPlanGuid/CriticalTasks', methods=['POST', 'GET'])
 def criticalTasks():
     if request.method == 'GET':
         data = request.values  # 返回请求中的参数和form
@@ -2460,7 +2460,7 @@ def criticalTasks():
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 # 计划向导获取批次物料明细
-@app.route('/ZYPlanGuid/CriticalMaterials')
+@app.route('/ZYPlanGuid/CriticalMaterials', methods=['POST', 'GET'])
 def criticalMaterials():
     if request.method == 'GET':
         data = request.values  # 返回请求中的参数和form
