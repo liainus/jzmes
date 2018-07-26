@@ -267,10 +267,11 @@ def addUser():
                          Password=data['Password'], LoginName=data['LoginName'],
                          Status="1", #登录状态先设置一个默认值1：已登录，0：未登录
                          Creater=data['Creater'],
-                         CreateTime=data['CreateTime'],
+                         CreateTime=datetime.datetime.now(),
                          LastLoginTime=datetime.datetime.now(),
                          IsLock='false',#data['IsLock'],
-                         OrganizationName=data['OrganizationName']))
+                         OrganizationName=data['OrganizationName'],
+                         RoleName=data['RoleName']))
                 session.commit()
                 insertSyslog("添加用户", "添加用户"+data['Name']+"添加成功", "AAAAAAadmin")
                 return json.dumps([{"status": "OK"}], cls=AlchemyEncoder, ensure_ascii=False)
