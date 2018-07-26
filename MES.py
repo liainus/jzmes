@@ -2330,7 +2330,7 @@ def MyenterpriseSelect():
 @app.route('/createPlanWizard')
 def createPlanWizard():
     try:
-        product_info = session.query(ProductLine.ID, ProductLine.PLineName).all()
+        product_info = session.query(ProductRule.PRCode, ProductRule.PRName).all()
         print(product_info)
         data = []
         for tu in product_info:
@@ -2427,7 +2427,7 @@ def makePlan():
                 ABrandName = data['ABrandName'] # 产品名称
                 AUnit = data['AUnit']#d单位
                 PlanCreate = ctrlPlan('PlanCreate')
-                ABrandID = session.query(ProductRule.ID).filter(ProductRule.PRName.like("%" + ABrandName + "%")).first()# 产品ID
+                ABrandID = AProductRuleID
                 re = PlanCreate.createLinePUPlan(AProductRuleID, APlanWeight, APlanDate, ABatchID, ABrandID, ABrandName, AUnit)
                 return re
         except Exception as e:
@@ -2435,10 +2435,53 @@ def makePlan():
             logger.error(e)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
-# 批次任务明细
+# 计划向导获取批次任务明细
 @app.route('/ZYPlanGuid/CriticalTasks')
 def criticalTasks():
-    pass
+    if request.method == 'GET':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            json_str = json.dumps(data.to_dict())
+            print(json_str)
+            if len(json_str) > 10:
+                pages = int(data['page'])  # 页数
+                rowsnumber = int(data['rows'])  # 行数
+                inipage = (pages - 1) * rowsnumber + 0  # 起始页
+                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+                ABatchID = data['ABatchID']
+                total = session.query(ZYTask).filter(ZYTask.ABatchID == ABatchID).count()
+                zyTasks = session.query(ZYTask).filter(ZYTask.ABatchID == ABatchID).all()[inipage:endpage]
+                jsonzyTasks = json.dumps(zyTasks, cls=AlchemyEncoder, ensure_ascii=False)
+                jsonzyTasks = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonzyTasks + "}"
+                return jsonzyTasks
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
+# 计划向导获取批次物料明细
+@app.route('/ZYPlanGuid/CriticalMaterials')
+def criticalMaterials():
+    if request.method == 'GET':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            json_str = json.dumps(data.to_dict())
+            print(json_str)
+            if len(json_str) > 10:
+                pages = int(data['page'])  # 页数
+                rowsnumber = int(data['rows'])  # 行数
+                inipage = (pages - 1) * rowsnumber + 0  # 起始页
+                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+                ABatchID = data['ABatchID']
+                total = session.query(ZYPlanMaterial).filter(ZYPlanMaterial.ABatchID == ABatchID).count()
+                zyMaterials = session.query(ZYPlanMaterial).filter(ZYPlanMaterial.ABatchID == ABatchID).all()[inipage:endpage]
+                jsonzyMaterials = json.dumps(zyMaterials, cls=AlchemyEncoder, ensure_ascii=False)
+                jsonzyMaterials = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonzyMaterials + "}"
+                return jsonzyMaterials
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 #生产线监控
 @app.route('/processMonitorLine')
