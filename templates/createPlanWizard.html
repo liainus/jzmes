@@ -173,7 +173,7 @@
 	<script type="text/javascript" src="../static/js/bee.js" charset="utf-8"></script>
     <script type="text/javascript">
         $(function () {
-            $("#APlanDate ").datetimebox("setValue", myformatter(new Date()))
+            $("#APlanDate ").datebox("setValue", myformatter(new Date()))
             // Toolbar extra buttons
             var btnCancel = $('<button></button>').text('取消')
                  .addClass('btn btn-danger')
@@ -218,9 +218,10 @@
                         method: 'POST',
                         traditional: true,
                         data: {
-                            APlanDate :$('#APlanDate').datetimebox('getValue'),
+                            APlanDate :$('#APlanDate').datebox('getValue'),
                             ABatchID :$('#ABatchID').val(),
-                            ABrandName :$('#ABrandName').find("option:selected").val(),
+                            AProductRuleID :$('#ABrandName').find("option:selected").val(),
+                            ABrandName :$('#ABrandName').find("option:selected").html(),
                             APlanWeight :$('#APlanWeight').val(),
                             AUnit : $('#AUnit').find("option:selected").val()
                         },
@@ -266,7 +267,7 @@
                                 <tr>
                                     <td class="kv-label">生产日期</td>
                                     <td class="kv-content">
-                                        <input class="easyui-datetimebox" name="APlanDate" id="APlanDate" labelPosition="top" data-options="required:true,showSeconds:false,editable:false" style="height:29px;">
+                                        <input class="easyui-datebox" name="APlanDate" id="APlanDate" labelPosition="top" data-options="required:true,showSeconds:false,editable:false" style="height:29px;">
                                     </td>
                                     <td class="kv-label">批次号</td>
                                     <td class="kv-content">
