@@ -26,7 +26,7 @@
 			<div style="margin-top: 20px;margin-bottom: 10px;border-bottom: 1px solid #ccc;padding-bottom: 10px;">
                 <span style="color:#1da02b;">用户列表</span>
             </div>
-			<div id="userClassDialog" class="easyui-dialog" style="width:800px;height:440px;padding:10px;"
+			<div id="userClassDialog" class="easyui-dialog" style="width:400px;height:480px;padding:10px;"
                  data-options="closed:'true',buttons:'#userClassDialogButtons',modal:true">
                 <form id="userClassForm" method="post" class="dialog-form">
                     <table class="kv-table">
@@ -67,7 +67,7 @@
                                     <select name="OrganizationName" id="OrganizationName" type="text" style="width:157px;" autocomplete="off" placeholder="">
                                         <option value="">请选择</option>
                                         {% for department in departments %}
-                                            <option value="{{ department['ID'] }}">{{ department['OrganizationName'] }}</option>
+                                            <option value="{{ department['OrganizationID'] }}">{{ department['OrganizationName'] }}</option>
                                         {% endfor %}
                                     </select>
                                 </td>
@@ -81,18 +81,6 @@
                                             <option value="{{ roleName['RoleID'] }}">{{ roleName['RoleName'] }}</option>
                                         {% endfor %}
                                     </select>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="kv-label">创建时间</td>
-                                <td class="kv-content">
-                                    <input name="CreateTime" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder="" disabled="disabled" >
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="kv-label">上次登录时间</td>
-                                <td class="kv-content">
-                                    <input name="LastLoginTime" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder="" disabled="disabled" >
                                 </td>
                             </tr>
 {#                            <tr>#}
@@ -194,9 +182,9 @@
             $('input[name="CreateTime"]').val(Bee.DateUtils.getCurrentTime());//创建时间
             $('input[name="LastLoginTime"]').val("");//上次登录时间
             $('#OrganizationName option[value=""]').prop("selected", 'selected');//所属部门
+            $('#RoleName option[value=""]').prop("selected", 'selected');//所属角色
         }
         function doUpdata(){
-
             $("#saveAdd").hide()
             $("#saveUpdata").show()
             var rows = $("#tab").datagrid('getSelections');
@@ -214,6 +202,7 @@
                     $('input[name="CreateTime"]').val(row.CreateTime);//创建时间
                     $('input[name="LastLoginTime"]').val(row.LastLoginTime);//上次登录时间
                     $('#OrganizationName option:contains('+row.OrganizationName+')').prop("selected", 'selected');//所属部门
+                    $('#RoleName option:contains('+row.RoleName+')').prop("selected", 'selected');//所属角色
                 }
             } else if (rows.length == 0) {
                 $.messager.alert('警告操作！', '请至少选定一条数据进行编辑！', 'warning');
@@ -272,6 +261,9 @@
                  }else if($('#OrganizationName').find("option:selected").val() == ""){
                      $.messager.alert('提示', '所属部门不能为空！', 'info');
                      return false;
+                 }else if($('#RoleName').find("option:selected").val() == ""){
+                     $.messager.alert('提示', '所属角色不能为空！', 'info');
+                     return false;
                  }
                  $.ajax({
                     url: "/user/addUser",
@@ -308,6 +300,9 @@
                      return false;
                  }else if($('#OrganizationName').find("option:selected").val() == ""){
                      $.messager.alert('提示', '所属部门不能为空！', 'info');
+                     return false;
+                 }else if($('#RoleName').find("option:selected").val() == ""){
+                     $.messager.alert('提示', '所属角色不能为空！', 'info');
                      return false;
                  }
                  $.ajax({

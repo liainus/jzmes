@@ -171,9 +171,9 @@
     <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
 	<script type="text/javascript" src="../static/js/jquery.smartWizard.min.js"></script>
 	<script type="text/javascript" src="../static/js/bee.js" charset="utf-8"></script>
-	<script type="text/javascript">
+    <script type="text/javascript">
         $(function () {
-            $("#prodDate").datebox("setValue", myformatter(new Date()));
+            $("#APlanDate ").datebox("setValue", myformatter(new Date()));
             // Toolbar extra buttons
             var btnCancel = $('<button></button>').text('取消')
                  .addClass('btn btn-danger')
@@ -197,7 +197,12 @@
                     }
             });
             $("#wizard").on("showStep", function(e, anchorObject, stepNumber, stepDirection) {
+                return false;
                 if(stepNumber == 1){
+
+                    $.post('/ZYPlanGuid/makePlan',{},function(result){
+
+                    })
                     setTimeout(function() {
                         $("#batchDetails").datagrid('reload')
                     },200);
@@ -242,15 +247,15 @@
                                 <tr>
                                     <td class="kv-label">生产日期</td>
                                     <td class="kv-content">
-                                        <input class="easyui-datebox" id="prodDate" labelPosition="top" data-options="formatter:myformatter,parser:myparser" style="height:29px;">
+                                        <input class="easyui-datebox" name="APlanDate" id="APlanDate" labelPosition="top" data-options="formatter:myformatter,parser:myparser" style="height:29px;">
                                     </td>
                                     <td class="kv-label">批次号</td>
                                     <td class="kv-content">
-                                        <input type="text" name="" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="">
+                                        <input type="text" name="ABatchID" id="ABatchID" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="">
                                     </td>
                                     <td class="kv-label">品名</td>
                                     <td class="kv-content">
-                                        <select name="proName" id="proName" type="text" autocomplete="off" placeholder="" style="height:29px;width:150px;">
+                                        <select name="ABrandName" id="ABrandName" type="text" autocomplete="off" placeholder="" style="height:29px;width:150px;">
                                             <option value="">请选择</option>
                                             {% for id in Product_info %}
                                                 <option value="{{ id['ID'] }}">{{ id['text'] }}</option>
@@ -261,11 +266,11 @@
                             <tr>
                                 <td class="kv-label">计划重量</td>
                                     <td class="kv-content">
-                                        <input id="planWeight" class="textbox-text validatebox-text textbox-prompt" name="单位类型" type="text">
+                                        <input id="APlanWeight" class="textbox-text validatebox-text textbox-prompt" name="APlanWeight" type="text">
                                     </td>
                                     <td class="kv-label">单位</td>
                                     <td class="kv-content">
-                                        <select name="Unit" id="Unit" type="text" autocomplete="off" placeholder="" style="height:29px;width:150px;">
+                                        <select name="AUnit" id="AUnit" type="text" autocomplete="off" placeholder="" style="height:29px;width:150px;">
                                             <option value="">请选择</option>
                                             <option value="{{ Unit }}">{{ Unit }}</option>
                                         </select>
