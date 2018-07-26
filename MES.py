@@ -7,7 +7,7 @@ import time
 from collections import Counter
 from flask import Flask, jsonify, redirect, url_for
 from flask import render_template, request
-from sqlalchemy import create_engine, Column, ForeignKey, Table, DateTime, Integer, String, and_, or_
+from sqlalchemy import create_engine, Column, ForeignKey, Table, Integer, String, and_, or_
 from sqlalchemy import func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
@@ -19,7 +19,7 @@ from Model.core import Enterprise, Area, Factory, ProductLine, ProcessUnit, Equi
 from Model.system import Role, Organization,User,Menu
 from tools.MESLogger import MESLogger
 from Model.core import SysLog
-from sqlalchemy import create_engine, Column, ForeignKey, Table, DateTime, Integer, String
+from sqlalchemy import create_engine, Column, ForeignKey, Table, Integer, String
 from sqlalchemy import func
 from sqlalchemy.ext.declarative import DeclarativeMeta
 import string
@@ -2110,7 +2110,6 @@ def allrolesUpdate():
             if len(json_str) > 10:
                 Roleid = int(data['ID'])
                 role = session.query(Role).filter_by(ID=Roleid).first()
-                role.RoleCode = data['RoleCode']
                 role.RoleName = data['RoleName']
                 role.RoleSeq = data['RoleSeq']
                 role.Description = data['Description']
@@ -2166,7 +2165,8 @@ def allrolesCreate():
         try:
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 10:
-                session.add(Role(RoleCode = data['RoleCode'],RoleName=data['RoleName'],RoleSeq=data['RoleSeq'],Description=data['Description'],CreatePerson=data['CreatePerson'],CreateDate= datetime.datetime.now()))
+                session.add(Role(RoleName=data['RoleName'],RoleSeq=data['RoleSeq'],Description=data['Description'],CreatePerson=data['CreatePerson'],
+                                 CreateDate= datetime.datetime.now()))
                 session.commit()
                 return json.dumps([{"status": "OK"}], cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
@@ -2397,8 +2397,8 @@ def treeProductRule():
             logger.error(e)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
-# 生产制药计划
-@app.route('/ZYPlanGuid/makePlan')
+# 计划向导生成计划、任务
+@app.route('/ZYPlanGuid/makePlan', methods=['POST', 'GET'])
 def makePlan():
     if request.method == 'POST':
         data = request.values  # 返回请求中的参数和form
