@@ -216,7 +216,9 @@ class ZYPlanWebIFS(object):
 					# for subkey in list(key):
 					ZYPlanid = int(key)
 					try:
-						oclass = session.query(Model.core.ZYPlan).filter_by(ID=ZYPlanid).delete()
+						oclass = session.query(Model.core.ZYPlan).filter_by(ID=ZYPlanid).first()
+						session.delete(oclass)
+						session.commit()
 					except Exception as ee:
 						print(ee)
 						return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
@@ -399,7 +401,9 @@ class ZYPlanMaterialWebIFS(object):
 					# for subkey in list(key):
 					ZYPlanMaterialid = int(key)
 					try:
-						oclass = session.query(Model.core.ZYPlanMaterial).filter_by(ID=ZYPlanMaterialid).delete()
+						oclass = session.query(Model.core.ZYPlanMaterial).filter_by(ID=ZYPlanMaterialid).first()
+						session.delete(oclass)
+						session.commit()
 					except Exception as ee:
 						print(ee)
 						logger.error(ee)
@@ -597,7 +601,9 @@ class ZYTaskWebIFS(object):
 					# for subkey in list(key):
 					ZYTaskid = int(key)
 					try:
-						oclass = session.query(Model.core.ZYTask).filter_by(ID=ZYTaskid).delete()
+						oclass = session.query(Model.core.ZYTask).filter_by(ID=ZYTaskid).first()
+						session.delete(oclass)
+						session.commit()
 					except Exception as ee:
 						print(ee)
 						return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
@@ -751,7 +757,9 @@ class ProductLineWebIFS(object):
 					# for subkey in list(key):
 					ProductLineid = int(key)
 					try:
-						oclass = session.query(Model.core.ProductLine).filter_by(ID=ProductLineid).delete()
+						oclass = session.query(Model.core.ProductLine).filter_by(ID=ProductLineid).first()
+						session.delete(oclass)
+						session.commit()
 					except Exception as ee:
 						print(ee)
 						logger.error(ee)
@@ -911,7 +919,9 @@ class ProcessUnitWebIFS(object):
 					# for subkey in list(key):
 					ProcessUnitid = int(key)
 					try:
-						oclass = session.query(Model.core.ProcessUnit).filter_by(ID=ProcessUnitid).delete()
+						oclass = session.query(Model.core.ProcessUnit).filter_by(ID=ProcessUnitid).first()
+						session.delete(oclass)
+						session.commit()
 					except Exception as ee:
 						print(ee)
 						logger.error(ee)
@@ -1046,7 +1056,9 @@ class EquipmentWebIFS(object):
 					# for subkey in list(key):
 					Equipmentid = int(key)
 					try:
-						oclass = session.query(Model.core.Equipment).filter_by(ID=Equipmentid).delete()
+						oclass = session.query(Model.core.Equipment).filter_by(ID=Equipmentid).first()
+						session.delete(oclass)
+						session.commit()
 					except Exception as ee:
 						print(ee)
 						logger.error(ee)
@@ -1212,7 +1224,9 @@ class EnterpriseWebIFS(object):
 					# for subkey in list(key):
 					Enterpriseid = int(key)
 					try:
-						oclass = session.query(Model.core.Enterprise).filter_by(ID=Enterpriseid).delete()
+						oclass = session.query(Model.core.Enterprise).filter_by(ID=Enterpriseid).first()
+						session.delete(oclass)
+						session.commit()
 					except Exception as ee:
 						print(ee)
 						logger.error(ee)
@@ -1359,7 +1373,9 @@ class FactoryWebIFS(object):
 					# for subkey in list(key):
 					Factoryid = int(key)
 					try:
-						oclass = session.query(Model.core.Factory).filter_by(ID=Factoryid).delete()
+						oclass = session.query(Model.core.Factory).filter_by(ID=Factoryid).first()
+						session.delete(oclass)
+						session.commit()
 					except Exception as ee:
 						print(ee)
 						logger.error(ee)
@@ -1506,7 +1522,9 @@ class AreaWebIFS(object):
 					# for subkey in list(key):
 					Areaid = int(key)
 					try:
-						oclass = session.query(Model.core.Area).filter_by(ID=Areaid).delete()
+						oclass = session.query(Model.core.Area).filter_by(ID=Areaid).first()
+						session.delete(oclass)
+						session.commit()
 					except Exception as ee:
 						print(ee)
 						logger.error(ee)
@@ -1649,7 +1667,9 @@ class ProductRuleWebIFS(object):
 					# for subkey in list(key):
 					ProductRuleid = int(key)
 					try:
-						oclass = session.query(Model.core.ProductRule).filter_by(ID=ProductRuleid).delete()
+						oclass = session.query(Model.core.ProductRule).filter_by(ID=ProductRuleid).first()
+						session.delete(oclass)
+						session.commit()
 					except Exception as ee:
 						print(ee)
 						logger.error(ee)
@@ -1795,7 +1815,9 @@ class ProductUnitWebIFS(object):
 					# for subkey in list(key):
 					ProductUnitid = int(key)
 					try:
-						oclass = session.query(Model.core.ProductUnit).filter_by(ID=ProductUnitid).delete()
+						oclass = session.query(Model.core.ProductUnit).filter_by(ID=ProductUnitid).first()
+						session.delete(oclass)
+						session.commit()
 					except Exception as ee:
 						print(ee)
 						logger.error(ee)
@@ -1946,7 +1968,9 @@ class ProductControlTaskWebIFS(object):
 					# for subkey in list(key):
 					ProductControlTaskid = int(key)
 					try:
-						oclass = session.query(Model.core.ProductControlTask).filter_by(ID=ProductControlTaskid).delete()
+						oclass = session.query(Model.core.ProductControlTask).filter_by(ID=ProductControlTaskid).first()
+						session.delete(oclass)
+						session.commit()
 					except Exception as ee:
 						print(ee)
 						logger.error(ee)
@@ -2094,7 +2118,9 @@ class ProductParameterWebIFS(object):
 					# for subkey in list(key):
 					ProductParameterid = int(key)
 					try:
-						oclass = session.query(Model.core.ProductParameter).filter_by(ID=ProductParameterid).delete()
+						oclass = session.query(Model.core.ProductParameter).filter_by(ID=ProductParameterid).first()
+						session.delete(oclass)
+						session.commit()
 					except Exception as ee:
 						print(ee)
 						logger.error(ee)
@@ -2225,7 +2251,9 @@ class MaterialTypeWebIFS(object):
 					# for subkey in list(key):
 					MaterialTypeid = int(key)
 					try:
-						oclass = session.query(Model.core.MaterialType).filter_by(ID=MaterialTypeid).delete()
+						oclass = session.query(Model.core.MaterialType).filter_by(ID=MaterialTypeid).first()
+						session.delete(oclass)
+						session.commit()
 					except Exception as ee:
 						print(ee)
 						logger.error(ee)
@@ -2364,7 +2392,9 @@ class MaterialWebIFS(object):
 					# for subkey in list(key):
 					Materialid = int(key)
 					try:
-						oclass = session.query(Model.core.Material).filter_by(ID=Materialid).delete()
+						oclass = session.query(Model.core.Material).filter_by(ID=Materialid).first()
+						session.delete(oclass)
+						session.commit()
 					except Exception as ee:
 						print(ee)
 						logger.error(ee)
@@ -2518,7 +2548,9 @@ class MaterialBOMWebIFS(object):
 					# for subkey in list(key):
 					MaterialBOMid = int(key)
 					try:
-						oclass = session.query(Model.core.MaterialBOM).filter_by(ID=MaterialBOMid).delete()
+						oclass = session.query(Model.core.MaterialBOM).filter_by(ID=MaterialBOMid).first()
+						session.delete(oclass)
+						session.commit()
 					except Exception as ee:
 						print(ee)
 						return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
@@ -2666,7 +2698,9 @@ class ProductUnitRouteWebIFS(object):
 					# for subkey in list(key):
 					ProductUnitRouteid = int(key)
 					try:
-						oclass = session.query(Model.core.ProductUnitRoute).filter_by(ID=ProductUnitRouteid).delete()
+						oclass = session.query(Model.core.ProductUnitRoute).filter_by(ID=ProductUnitRouteid).first()
+						session.delete(oclass)
+						session.commit()
 					except Exception as ee:
 						print(ee)
 						return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
@@ -2800,7 +2834,9 @@ class SchedulePlanWebIFS(object):
 					# for subkey in list(key):
 					SchedulePlanid = int(key)
 					try:
-						oclass = session.query(Model.core.SchedulePlan).filter_by(ID=SchedulePlanid).delete()
+						oclass = session.query(Model.core.SchedulePlan).filter_by(ID=SchedulePlanid).first()
+						session.delete(oclass)
+						session.commit()
 					except Exception as ee:
 						print(ee)
 						return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
@@ -2955,8 +2991,9 @@ class PlanManagerWebIFS(object):
 					# for subkey in list(key):
 					PlanManagerid = int(key)
 					try:
-						oclass = session.query(Model.core.PlanManager).filter_by(
-							ID=PlanManagerid).delete()
+						oclass = session.query(Model.core.PlanManager).filter_by(ID=PlanManagerid).first()
+						session.delete(oclass)
+						session.commit()
 					except Exception as ee:
 						print(ee)
 						logger.error(ee)
@@ -3096,7 +3133,9 @@ class UnitWebIFS(object):
 					# for subkey in list(key):
 					Unitid = int(key)
 					try:
-						oclass = session.query(Model.core.Unit).filter_by(ID=Unitid).delete()
+						oclass = session.query(Model.core.Unit).filter_by(ID=Unitid).first()
+						session.delete(oclass)
+						session.commit()
 					except Exception as ee:
 						print(ee)
 						logger.error(ee)

@@ -320,7 +320,9 @@ def deleteUser():
                 for key in jsonnumber:
                     ID = int(key)
                     try:
-                        organization = session.query(User).filter_by(ID=ID).delete()
+                        oclass = session.query(User).filter_by(ID=ID).first()
+                        session.delete(oclass)
+                        session.commit()
                         insertSyslog("success", "删除ID是" + string(ID) + "的用户删除成功", "AAAAAAadmin")
                     except Exception as ee:
                         print(ee)
@@ -622,7 +624,9 @@ def allOrganizationsDelete():
                     # for subkey in list(key):
                     Organizationid = int(key)
                     try:
-                        organization = session.query(Organization).filter_by(ID=Organizationid).delete()
+                        oclass = session.query(Organization).filter_by(ID=Organizationid).first()
+                        session.delete(oclass)
+                        session.commit()
                         insertSyslog("success", "删除组织ID为" + str(Organizationid) + "的组织删除成功", "AAAAAAadmin")
                     except Exception as ee:
                         print(ee)
@@ -2136,7 +2140,9 @@ def allrolesDelete():
                     # for subkey in list(key):
                     Roleid = int(key)
                     try:
-                        role = session.query(Role).filter_by(ID=Roleid).delete()
+                        oclass = session.query(Role).filter_by(ID=Roleid).first()
+                        session.delete(oclass)
+                        session.commit()
                     except Exception as ee:
                         print(ee)
                         logger.error(ee)
