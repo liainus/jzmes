@@ -208,13 +208,14 @@
                         $.messager.alert('提示', '单位不能为空！', 'info');
                         return false;
                     }
+                    var ABatchID = $('#ABatchID').val()
                     $.ajax({
                         url: "/ZYPlanGuid/makePlan",
                         method: 'POST',
                         traditional: true,
                         data: {
                             APlanDate :$('#APlanDate').datebox('getValue'),
-                            ABatchID :$('#ABatchID').val(),
+                            ABatchID :ABatchID,
                             AProductRuleID :$('#ABrandName').find("option:selected").val(),
                             ABrandName :$('#ABrandName').find("option:selected").html(),
                             APlanWeight :$('#APlanWeight').val(),
@@ -232,7 +233,12 @@
                 }
                 if(stepNumber == 1){
                     setTimeout(function() {
-                        $("#batchDetails").datagrid('reload')
+                        $("#MaterialsTab").datagrid('load',{
+                            ABatchID :ABatchID
+                        })
+                        $("#TasksTab").datagrid('load',{
+                            ABatchID :ABatchID
+                        })
                     },200);
                 }
             });
@@ -300,8 +306,8 @@
                 <h3 class="border-bottom border-gray pb-2">物料BOM</h3>
                 <div id="tab" class="easyui-tabs" style="width:100%;height:250px;">
                     <div title="批次任务明细" data-options="closable:false"  style="padding:0px;">
-                        <table id="batchDetails" class="easyui-datagrid" style="width:100%;"  data-options="
-                             url:'../static/data/datagrid_batch_manager_list2.json',
+                        <table id="MaterialsTab" class="easyui-datagrid" style="width:100%;"  data-options="
+                             url:'/ZYPlanGuid/CriticalMaterials',
                              method: 'get',
                              rownumbers:true,
                              singleSelect:false,
@@ -315,24 +321,28 @@
                              pageSize:10 " >
                             <thead>
                                 <tr>
-                                    <th data-options="field: 'A',align: 'center' ">顺序号</th>
-                                    <th data-options="field: 'B',align: 'center' ">任务号</th>
-                                    <th data-options="field: 'C',align: 'center' ">投入物料</th>
-                                    <th data-options="field: 'D',align: 'center' ">投入物料名称</th>
-                                    <th data-options="field: 'E',align: 'center' ">投入量</th>
-                                    <th data-options="field: 'F',align: 'center' ">投入比例</th>
-                                    <th data-options="field: 'G',align: 'center' ">来料批号</th>
-                                    <th data-options="field: 'H',align: 'center' ">来料柜号</th>
-                                    <th data-options="field: 'I',align: 'center' ">来料工单号</th>
-                                    <th data-options="field: 'J',align: 'center' ">来料类型</th>
-                                    <th data-options="field: 'K',align: 'center' ">实际来料柜号</th>
+                                    <th data-options="field: 'ID',align: 'center' ">ID</th>
+                                    <th data-options="field: 'PlanDate',align: 'center' ">计划日期</th>
+                                    <th data-options="field: 'PlanID',align: 'center' ">制药计划单号</th>
+                                    <th data-options="field: 'BatchID',align: 'center' ">批次号</th>
+                                    <th data-options="field: 'PlanSeq',align: 'center' ">顺序号</th>
+                                    <th data-options="field: 'PUID',align: 'center' ">工艺段</th>
+                                    <th data-options="field: 'PlanType',align: 'center' ">计划类型</th>
+                                    <th data-options="field: 'BrandCode',align: 'center' ">牌号编码</th>
+                                    <th data-options="field: 'BrandName',align: 'center' ">牌号名称</th>
+                                    <th data-options="field: 'MaterialID',align: 'center' ">物料ID</th>
+                                    <th data-options="field: 'MaterialName',align: 'center' ">物料名称名称</th>
+                                    <th data-options="field: 'PlanQuantity',align: 'center' ">计划重量</th>
+                                    <th data-options="field: 'ActQuantity',align: 'center' ">实际重量</th>
+                                    <th data-options="field: 'Unit',align: 'center' ">单位</th>
+                                    <th data-options="field: 'EnterTime',align: 'center' ">录入时间</th>
                                 </tr>
                             </thead>
                         </table>
                     </div>
                     <div title="批次物料明细" data-options="closable:false" style="overflow:auto;padding:0px;">
-                        <table class="easyui-datagrid" style="width:100%;" data-options="
-                             url:'../static/data/datagrid_batch_manager_list2.json',
+                        <table id="TasksTab" class="easyui-datagrid" style="width:100%;" data-options="
+                             url:'/ZYPlanGuid/CriticalTasks',
                              method: 'get',
                              rownumbers:true,
                              singleSelect:false,
@@ -346,12 +356,26 @@
                              pageSize:10 " >
                             <thead>
                                 <tr>
-                                    <th data-options="field: 'A',align: 'center' ">顺序号</th>
-                                    <th data-options="field: 'B',align: 'center' ">任务号</th>
-                                    <th data-options="field: 'C',align: 'center' ">投入物料</th>
-                                    <th data-options="field: 'D',align: 'center' ">投入物料名称</th>
-                                    <th data-options="field: 'E',align: 'center' ">投入量</th>
-                                    <th data-options="field: 'F',align: 'center' ">投入比例</th>
+                                    <th data-options="field: 'ID',align: 'center' ">ID</th>
+                                    <th data-options="field: 'PlanDate',align: 'center' ">计划日期</th>
+                                    <th data-options="field: 'TaskID',align: 'center' ">制药计划单号</th>
+                                    <th data-options="field: 'BatchID',align: 'center' ">批次号</th>
+                                    <th data-options="field: 'PlanSeq',align: 'center' ">顺序号</th>
+                                    <th data-options="field: 'PUID',align: 'center' ">工艺段</th>
+                                    <th data-options="field: 'PlanType',align: 'center' ">计划类型</th>
+                                    <th data-options="field: 'BrandID',align: 'center' ">牌号编码</th>
+                                    <th data-options="field: 'BrandName',align: 'center' ">牌号名称</th>
+                                    <th data-options="field: 'PlanQuantity',align: 'center' ">计划重量</th>
+                                    <th data-options="field: 'ActQuantity',align: 'center' ">实际重量</th>
+                                    <th data-options="field: 'Unit',align: 'center' ">单位</th>
+                                    <th data-options="field: 'EnterTime',align: 'center' ">录入时间</th>
+                                    <th data-options="field: 'ActBeginTime',align: 'center' ">实际开始时间</th>
+                                    <th data-options="field: 'ActEndTime',align: 'center' ">实际完成时间</th>
+                                    <th data-options="field: 'SetRepeatCount',align: 'center' ">设定重复次数</th>
+                                    <th data-options="field: 'CurretnRepeatCount',align: 'center' ">当前重复次数</th>
+                                    <th data-options="field: 'ActTank',align: 'center' ">实际罐号</th>
+                                    <th data-options="field: 'TaskStatus',align: 'center' ">任务状态</th>
+                                    <th data-options="field: 'LockStatus',align: 'center' ">任务锁定状态</th>
                                 </tr>
                             </thead>
                         </table>
