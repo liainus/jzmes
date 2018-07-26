@@ -15,7 +15,7 @@ from sqlalchemy.orm import sessionmaker, relationship
 import Model.Global
 from Model.BSFramwork import AlchemyEncoder
 from Model.core import Enterprise, Area, Factory, ProductLine, ProcessUnit, Equipment, Material, MaterialType, \
-    ProductUnit, ProductRule
+    ProductUnit, ProductRule, ZYTask
 from Model.system import Role, Organization,User,Menu
 from tools.MESLogger import MESLogger
 from Model.core import SysLog
@@ -1224,8 +1224,8 @@ def allZYPlansSearch():
 
 
 # 加载工作台
-@app.route('/ZYTask')
-def ZYTask():
+@app.route('/zYTask')
+def zYTask():
     return render_template('sysZYTask.html')
 
 
@@ -2429,6 +2429,7 @@ def makePlan():
                 PlanCreate = ctrlPlan('PlanCreate')
                 ABrandID = AProductRuleID
                 re = PlanCreate.createLinePUPlan(AProductRuleID, APlanWeight, APlanDate, ABatchID, ABrandID, ABrandName, AUnit)
+                re = json.dumps(re)
                 return re
         except Exception as e:
             print(e)
@@ -2449,8 +2450,8 @@ def criticalTasks():
                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
                 ABatchID = data['ABatchID']
-                total = session.query(ZYTask).filter(ZYTask.ABatchID == ABatchID).count()
-                zyTasks = session.query(ZYTask).filter(ZYTask.ABatchID == ABatchID).all()[inipage:endpage]
+                total = session.query(ZYTask).filter(ZYTask.BatchID == ABatchID).count()
+                zyTasks = session.query(ZYTask).filter(ZYTask.BatchID == ABatchID).all()[inipage:endpage]
                 jsonzyTasks = json.dumps(zyTasks, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonzyTasks = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonzyTasks + "}"
                 return jsonzyTasks
