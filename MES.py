@@ -1183,7 +1183,7 @@ def zYPlan():
             pro_info = {'PRCode': prcode, 'text': name}
             data_pro.append(pro_info)
 
-        proUnit_info = session.query(ProcessUnit.PUCode, ProductRule.PRName).all()
+        proUnit_info = session.query(ProcessUnit.PUCode, ProcessUnit.PUName).all()
         # print(proUnit_info)
         data_pucode = []
         for tu in proUnit_info:
