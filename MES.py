@@ -1174,15 +1174,25 @@ def allProductRulesSearch():
 def zYPlan():
     try:
         product_info = session.query(ProductRule.PRCode, ProductRule.PRName).all()
-        print(product_info)
-        data = []
+        # print(product_info)
+        data_pro = []
         for tu in product_info:
             li = list(tu)
             prcode = li[0]
             name = li[1]
             pro_info = {'PRCode': prcode, 'text': name}
-            data.append(pro_info)
-        return render_template('sysZYPlan.html', Product_info=data)
+            data_pro.append(pro_info)
+
+        proUnit_info = session.query(ProcessUnit.PUCode, ProductRule.PRName).all()
+        # print(proUnit_info)
+        data_pucode = []
+        for tu in proUnit_info:
+            li = list(tu)
+            pucode = li[0]
+            name = li[1]
+            pro_info = {'PUCode': pucode, 'text': name}
+            data_pucode.append(pro_info)
+        return render_template('sysZYPlan.html', Product_info=data_pro, ProcessUnit_info=data_pucode)
     except Exception as e:
         print(e)
         logger.error(e)
