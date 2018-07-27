@@ -2496,10 +2496,12 @@ def isBatchNumber():
             json_str = json.dumps(data.to_dict())
             print(json_str)
             if len(json_str) > 10:
-                isExist = 'OK'#前台判断标识：OK为批次号可用，NO为此批次号已存在
+                isExist = ''#前台判断标识：OK为批次号可用，NO为此批次号已存在
                 ABatchID = data['ABatchID']
                 BatchID = session.query(ZYPlan.BatchID).filter(ZYPlan.BatchID == ABatchID).first()
-                if(BatchID != None or BatchID != ''):
+                if(BatchID == None):
+                    isExist = 'OK'
+                else:
                     isExist = 'NO'
                 isExist = json.dumps(isExist)
                 return isExist
