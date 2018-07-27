@@ -15,7 +15,7 @@ from sqlalchemy.orm import sessionmaker, relationship
 import Model.Global
 from Model.BSFramwork import AlchemyEncoder
 from Model.core import Enterprise, Area, Factory, ProductLine, ProcessUnit, Equipment, Material, MaterialType, \
-    ProductUnit, ProductRule, ZYTask
+    ProductUnit, ProductRule, ZYTask, ZYPlanMaterial
 from Model.system import Role, Organization,User,Menu
 from tools.MESLogger import MESLogger
 from Model.core import SysLog
@@ -721,7 +721,7 @@ def allOrganizationsSearch():
 # 生产建模
 # 加载工作台
 @app.route('/Enterprise')
-def Enterprise():
+def enterprise():
     return render_template('sysEnterprise.html')
 
 
@@ -811,7 +811,7 @@ def allEnterprisesSearch():
 
 
 @app.route('/Factory')
-def Factory():
+def factory():
     return render_template('sysFactory.html')
 
 
@@ -1051,7 +1051,7 @@ def allProcessUnitsSearch():
 # 设备建模
 # 加载工作台
 @app.route('/Equipment')
-def Equipment():
+def equipment():
     ID = session.query(ProcessUnit.ID, ProcessUnit.PUName).all()
     print(ID)
     data = []
@@ -1170,7 +1170,7 @@ def allProductRulesSearch():
 
 # 加载工作台
 @app.route('/ZYPlan')
-def ZYPlan():
+def zYPlan():
     return render_template('sysZYPlan.html')
 
 
@@ -1224,7 +1224,7 @@ def allZYPlansSearch():
 
 
 # 加载工作台
-@app.route('/zYTask')
+@app.route('/ZYTask')
 def zYTask():
     return render_template('sysZYTask.html')
 
@@ -1282,7 +1282,7 @@ def allZYTasksSearch():
 @app.route('/ProductControlTask')
 def ProductControlTask():
     try:
-        product_def_ID = session.query(ProductRule.ID,ProductRule.PRName).all()
+        product_def_ID = session.query(ProductRule.PRCode,ProductRule.PRName).all()
         print(product_def_ID)
         data1 = []
         for tu in product_def_ID:
@@ -1292,7 +1292,7 @@ def ProductControlTask():
             pro_def_id = {'ID': id, 'text':name}
             data1.append(pro_def_id)
 
-        productUnit_ID = session.query(ProcessUnit.ID, ProcessUnit.PUName).all()
+        productUnit_ID = session.query(ProcessUnit.PUCode, ProcessUnit.PUName).all()
         print(productUnit_ID)
         data = []
         for tu in productUnit_ID:
@@ -1359,9 +1359,9 @@ def allProductControlTasksSearch():
 
 # 加载工作台
 @app.route('/ProductParameter')
-def ProductParameter():
+def productParameter():
     try:
-        product_def_ID = session.query(ProductRule.ID, ProductRule.PRName).all()
+        product_def_ID = session.query(ProductRule.PRCode, ProductRule.PRName).all()
         print(product_def_ID)
         data1 = []
         for tu in product_def_ID:
@@ -1371,7 +1371,7 @@ def ProductParameter():
             pro_def_id = {'ID': id, 'text':name}
             data1.append(pro_def_id)
 
-        productUnit_ID = session.query(ProcessUnit.ID, ProcessUnit.PUName).all()
+        productUnit_ID = session.query(ProcessUnit.PUCode, ProcessUnit.PUName).all()
         print(productUnit_ID)
         data = []
         for tu in productUnit_ID:
@@ -1567,7 +1567,7 @@ def allMaterialsSearch():
 
 # 加载工作台
 @app.route('/MaterialBOM')
-def MaterialBOM():
+def materialBOM():
     try:
         material_ID = session.query(Material.ID,Material.MATName).all()
         print(material_ID)
@@ -1667,8 +1667,8 @@ def allMaterialBOMsSearch():
 
 
 # 加载工作台
-@app.route('/ZYPlanMaterial')
-def ZYPlanMaterial():
+@app.route('/zYPlanMaterial')
+def zYPlanMaterial():
     return render_template('sysZYPlanMaterial.html')
 
 
@@ -1802,7 +1802,7 @@ def allProductUnitsSearch():
 
 # 加载工作台
 @app.route('/ProductUnitRoute')
-def ProductUnitRoute():
+def productUnitRoute():
     try:
         product_def_ID = session.query(ProductRule.ID, ProductRule.PRName).all()
         print(product_def_ID)
@@ -1882,7 +1882,7 @@ def allProductUnitRoutesSearch():
 
 # 加载工作台
 @app.route('/SchedulePlan')
-def SchedulePlan():
+def schedulePlan():
     return render_template('sysSchedulePlan.html')
 
 
@@ -1937,7 +1937,7 @@ def allSchedulePlansSearch():
 
 # 加载工作台
 @app.route('/PlanManager')
-def PlanManager():
+def planManager():
     return render_template('sysPlanManager.html')
 
 
@@ -1992,7 +1992,7 @@ def allPlanManagersSearch():
 
 # 加载工作台
 @app.route('/Unit')
-def Unit():
+def unit():
     return render_template('sysUnit.html')
 
 
@@ -2240,7 +2240,7 @@ def allrolesSearch():
 
 # 加载工作台
 @app.route('/Myorganization')
-def Myorganization():
+def myorganization():
     return render_template('Myorganization.html')
 
 
@@ -2293,7 +2293,7 @@ def MyOpFind():
 
 
 @app.route('/Myenterprise')
-def Myenterprise():
+def myenterprise():
     if request.method == 'GET':
         try:
             # data = load()
@@ -2474,8 +2474,8 @@ def criticalMaterials():
                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
                 ABatchID = data['ABatchID']
-                total = session.query(ZYPlanMaterial).filter(ZYPlanMaterial.ABatchID == ABatchID).count()
-                zyMaterials = session.query(ZYPlanMaterial).filter(ZYPlanMaterial.ABatchID == ABatchID).all()[inipage:endpage]
+                total = session.query(ZYPlanMaterial).filter(ZYPlanMaterial.BatchID == ABatchID).count()
+                zyMaterials = session.query(ZYPlanMaterial).filter(ZYPlanMaterial.BatchID == ABatchID).all()[inipage:endpage]
                 jsonzyMaterials = json.dumps(zyMaterials, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonzyMaterials = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonzyMaterials + "}"
                 return jsonzyMaterials
