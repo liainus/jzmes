@@ -15,7 +15,7 @@ from sqlalchemy.orm import sessionmaker, relationship
 import Model.Global
 from Model.BSFramwork import AlchemyEncoder
 from Model.core import Enterprise, Area, Factory, ProductLine, ProcessUnit, Equipment, Material, MaterialType, \
-    ProductUnit, ProductRule, ZYTask, ZYPlanMaterial
+    ProductUnit, ProductRule, ZYTask, ZYPlanMaterial, ZYPlan
 from Model.system import Role, Organization,User,Menu
 from tools.MESLogger import MESLogger
 from Model.core import SysLog
@@ -2434,6 +2434,7 @@ def makePlan():
         except Exception as e:
             print(e)
             logger.error(e)
+            insertSyslog("error", "生成计划、任务报错Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 # 计划向导获取批次任务明细
@@ -2458,6 +2459,7 @@ def criticalTasks():
         except Exception as e:
             print(e)
             logger.error(e)
+            insertSyslog("error", "计划向导获取批次任务明细报错Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 # 计划向导获取批次物料明细
@@ -2482,7 +2484,29 @@ def criticalMaterials():
         except Exception as e:
             print(e)
             logger.error(e)
+            insertSyslog("error", "计划向导获取批次物料明细报错Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
+# 批次号判重
+@app.route('/ZYPlanGuid/isBatchNumber', methods=['POST', 'GET'])
+def isBatchNumber():
+    if request.method == 'GET':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            json_str = json.dumps(data.to_dict())
+            print(json_str)
+            if len(json_str) > 10:
+                isExist = 'OK'#前台判断标识：OK为批次号可用，NO为此批次号已存在
+                ABatchID = data['ABatchID']
+                BatchID = session.query(ZYPlan.BatchID).filter(ZYPlan.BatchID == ABatchID).first()
+                if(BatchID != None and BatchID != ''):
+                    isExist = 'NO'
+                isExist = json.dumps(isExist)
+                return isExist
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "批次号判重报错Error：" + str(e), "AAAAAAadmin")
 
 #生产线监控
 @app.route('/processMonitorLine')
