@@ -1192,7 +1192,7 @@ def zYPlan():
             name = li[1]
             pro_info = {'PUCode': pucode, 'text': name}
             data_pucode.append(pro_info)
-        return render_template('sysZYPlan.html', Product_info=data_pro, ProcessUnit_info=data_pucode)
+        return render_template('sysZYPlan.html', Product_info=data_pro, ProcessUnit_info=data_pucode, Unit=WeightUnit)
     except Exception as e:
         print(e)
         logger.error(e)
