@@ -48,8 +48,21 @@ $(function () {
         //     alert('序号要为整数！:');
         //    return true;
         // }})
-
- });
+     });
+    var task = true
+    $('#iBatchID').blur(function(){
+        $.ajax({
+            url:"/ZYPlanGuid/isBatchNumber",
+            data:{ABatchID:$('#iBatchID').val()},
+            type:"get",
+            success:function(res){
+                console.log(res)
+            },
+            error:function(){
+                alert("请求错误，请刷新后重试！")
+            }
+        })
+    })
 
     $(tableId).datagrid({
         url: urlPrefix + 'Find', // urlPrefix + 'findAll',
@@ -182,7 +195,8 @@ $(function () {
             $('input[name="Name"]').focus();
             $('input[name="iID"]').attr("disabled", "disabled");
             $('input[name="iID"]').val();
-            $('input[name="iPlanDate"]').val();
+            var nowdate = new Date;
+            $('#iPlanDate').datetimebox({value: ""});
             $('input[name="iPlanNo"]').val();
             $('input[name="iBatchID"]').val();
             $('input[name="iPlanSeq"]').val();
@@ -194,11 +208,10 @@ $(function () {
             $('input[name="iPlanQuantity"]').val();
             $('input[name="iActQuantity"]').val();
             $('input[name="iUnit"]').val();
-            $('input[name="iEnterTime"]').val();
-            $('input[name="iPlanBeginTime"]').val();
-            $('input[name="iPlanEndTime"]').val();
-            $('input[name="iActBeginTime"]').val();
-            $('input[name="iActEndTime"]').val();
+            $('#iPlanBeginTime').datetimebox({value: ""});
+            $('#iPlanEndTime').datetimebox({value: ""});
+            $('#iActBeginTime').datetimebox({value: ""});
+            $('#iActEndTime').datetimebox({value: ""});
             $('input[name="iTaskStatus"]').val();
             $('input[name="iLockStatus"]').val();
             $('input[name="iINFStatus"]').val();
@@ -234,7 +247,7 @@ $(function () {
                     $('input[name="iPlanQuantity"]').val(row.PlanQuantity);
                     $('input[name="iActQuantity"]').val(row.ActQuantity);
                     $('input[name="iUnit"]').val(row.Unit);
-                    $('input[name="iEnterTime"]').val(row.EnterTime);
+                    //$('input[name="iEnterTime"]').val(row.EnterTime);
                     $('input[name="iPlanBeginTime"]').val(row.PlanBeginTime);
                     $('input[name="iPlanEndTime"]').val(row.PlanEndTime);
                     $('input[name="iActBeginTime"]').val(row.ActBeginTime);
@@ -318,14 +331,23 @@ $(function () {
             var strID = $('input[name="iID"]').val();
             var msg = ""
             var urlAddr = ""
-            var stmp = $('input[name="iPlanNo"]').val();
+            var stmp = $('#iPlanDate').datetimebox('getValue');
             if(Bee.StringUtils.isEmpty(stmp)) {
-               alert('Warning：计划单号号不能为空！');
+               alert('Warning：生产日期不能为空！');
+               return false;
+            }
+            stmp = $('input[name="iPlanNo"]').val();
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：计划单号不能为空！');
                return false;
             }
             stmp = $('input[name="iBatchID"]').val();
             if(Bee.StringUtils.isEmpty(stmp)) {
                alert('Warning：批次号不能为空！');
+               return false;
+            }
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：计划单号不能为空！');
                return false;
             }
             stmp = $('input[name="iPlanSeq"]').val();
