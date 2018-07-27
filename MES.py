@@ -2499,7 +2499,7 @@ def isBatchNumber():
                 isExist = 'OK'#前台判断标识：OK为批次号可用，NO为此批次号已存在
                 ABatchID = data['ABatchID']
                 BatchID = session.query(ZYPlan.BatchID).filter(ZYPlan.BatchID == ABatchID).first()
-                if(BatchID != None and BatchID != ''):
+                if(BatchID != None or BatchID != ''):
                     isExist = 'NO'
                 isExist = json.dumps(isExist)
                 return isExist
