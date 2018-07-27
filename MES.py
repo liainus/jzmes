@@ -1169,7 +1169,7 @@ def allProductRulesSearch():
 
 
 # 加载工作台
-@app.route('/zYPlan')
+@app.route('/ZYPlan')
 def zYPlan():
     return render_template('sysZYPlan.html')
 
@@ -1224,7 +1224,7 @@ def allZYPlansSearch():
 
 
 # 加载工作台
-@app.route('/zYTask')
+@app.route('/ZYTask')
 def zYTask():
     return render_template('sysZYTask.html')
 
