@@ -1168,10 +1168,25 @@ def allProductRulesSearch():
         return re
 
 
+
 # 加载工作台
 @app.route('/ZYPlan')
 def zYPlan():
-    return render_template('sysZYPlan.html')
+    try:
+        product_info = session.query(ProductRule.PRCode, ProductRule.PRName).all()
+        print(product_info)
+        data = []
+        for tu in product_info:
+            li = list(tu)
+            prcode = li[0]
+            name = li[1]
+            pro_info = {'PRCode': prcode, 'text': name}
+            data.append(pro_info)
+        return render_template('sysZYPlan.html', Product_info=data)
+    except Exception as e:
+        print(e)
+        logger.error(e)
+    return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
 @app.route('/allZYPlans/Find')
