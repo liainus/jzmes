@@ -170,7 +170,7 @@
         $(function () {
             $("#APlanDate ").datebox("setValue", myformatter(new Date()))
             // Toolbar extra buttons
-            var btnCancel = $('<button></button>').text('取消')
+            var btnCancel = $('<button></button>').text('重置')
                  .addClass('btn btn-danger')
                  .on('click', function(){ $('#wizard').smartWizard("reset"); });
             // Smart Wizard
@@ -178,16 +178,18 @@
                     selected: 0,
                     theme: 'arrows',
                     lang: {
-                        next: '下一步',
-                        previous: '上一步'
+                        next: '下一步'
                     },
                     transitionEffect:'fade',
-                    showStepURLhash: true,
                     transitionSpeed:400,
-                    enableAllAnchors:true,
+                    //enableAllAnchors:true,
                     toolbarSettings: {
                         //toolbarButtonPosition: 'end',
-                        toolbarExtraButtons: [btnCancel]
+                        toolbarExtraButtons: [btnCancel],
+                        showPreviousButton:false
+                    },
+                    anchorSettings:{
+                        anchorClickable:false
                     }
             });
             $("#wizard").on("leaveStep", function(e, anchorObject, stepNumber, stepDirection) {
@@ -208,6 +210,7 @@
                         $.messager.alert('提示', '单位不能为空！', 'info');
                         return false;
                     }
+
                     $.ajax({
                         url: "/ZYPlanGuid/makePlan",
                         method: 'POST',
@@ -303,7 +306,7 @@
             </div>
             <div id="step-2">
                 <h3 class="border-bottom border-gray pb-2">物料BOM</h3>
-                <div id="tab" class="easyui-tabs" style="width:100%;height:250px;">
+                <div id="tab" class="easyui-tabs" style="width:100%;height:500px;">
                     <div title="批次任务明细" data-options="closable:false"  style="padding:0px;">
                         <table id="MaterialsTab" class="easyui-datagrid" style="width:100%;"  data-options="
                              url:'/ZYPlanGuid/CriticalTasks',

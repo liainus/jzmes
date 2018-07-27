@@ -43,7 +43,7 @@
         </div>
     </div>
 
-    <div id="ZYTaskClassDialog" class="easyui-dialog" style="width:600px;height:530px;padding:10px;"
+    <div id="ZYTaskClassDialog" class="easyui-dialog" style="width:760px;height:530px;padding:10px;"
      data-options="closed:'true',buttons:'#ZYTaskClassDialogButtons',modal:true">
     <!-- <div id="ZYTaskClassFormTitle" class="field-title">Title</div> -->
     <form id="ZYTaskClassForm" method="post" class="dialog-form">
@@ -52,11 +52,11 @@
                 <tr>
                     <td class="kv-label">ID</td>
                     <td class="kv-content">
-                        <input  name="iID" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                        <input  name="iID" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
                     </td>
                     <td class="kv-label">生产日期</td>
                     <td class="kv-content">
-                        <input  name="iPlanDate" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                        <input  name="iPlanDate" required="true" type="text" class="easyui-datebox" data-options="required:true,showSeconds:false,editable:false" autocomplete="off" placeholder=>
                     </td>
                 </tr>
                 <tr>
@@ -110,40 +110,36 @@
                     </td>
                 </tr>
                 <tr>
-                    <td class="kv-label">录入时间</td>
-                    <td class="kv-content">
-                        <input  name="iEnterTime" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
-                    </td>
                     <td class="kv-label">实际开始时间</td>
                     <td class="kv-content">
                         <input  name="iActBeginTime" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
                     </td>
-                </tr>
-                <tr>
                     <td class="kv-label">实际结束时间</td>
                     <td class="kv-content">
                         <input  name="iActEndTime" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
                     </td>
+                </tr>
+                <tr>
                     <td class="kv-label">设定重复次数</td>
                     <td class="kv-content">
                         <input  name="iSetRepeatCount" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
                     </td>
-                </tr>
-                <tr>
                     <td class="kv-label">当前重复次数</td>
                     <td class="kv-content">
                         <input  name="iCurretnRepeatCount" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
                     </td>
+                </tr>
+                <tr>
                     <td class="kv-label">实际罐号</td>
                     <td class="kv-content">
                         <input  name="iActTank" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
                     </td>
-                </tr>
-                <tr>
                     <td class="kv-label">任务状态</td>
                     <td class="kv-content">
                         <input  name="iTaskStatus" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
                     </td>
+                </tr>
+                <tr>
                     <td class="kv-label">锁定状态</td>
                     <td class="kv-content">
                         <input  name="iLockStatus" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
