@@ -1667,7 +1667,7 @@ def allMaterialBOMsSearch():
 
 
 # 加载工作台
-@app.route('/zYPlanMaterial')
+@app.route('/ZYPlanMaterial')
 def zYPlanMaterial():
     return render_template('sysZYPlanMaterial.html')
 
