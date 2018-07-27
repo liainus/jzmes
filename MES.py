@@ -1282,7 +1282,7 @@ def allZYTasksSearch():
 @app.route('/ProductControlTask')
 def ProductControlTask():
     try:
-        product_def_ID = session.query(ProductRule.ID,ProductRule.PRName).all()
+        product_def_ID = session.query(ProductRule.PRCode,ProductRule.PRName).all()
         print(product_def_ID)
         data1 = []
         for tu in product_def_ID:
@@ -1292,7 +1292,7 @@ def ProductControlTask():
             pro_def_id = {'ID': id, 'text':name}
             data1.append(pro_def_id)
 
-        productUnit_ID = session.query(ProcessUnit.ID, ProcessUnit.PUName).all()
+        productUnit_ID = session.query(ProcessUnit.PUCode, ProcessUnit.PUName).all()
         print(productUnit_ID)
         data = []
         for tu in productUnit_ID:
@@ -1361,7 +1361,7 @@ def allProductControlTasksSearch():
 @app.route('/ProductParameter')
 def ProductParameter():
     try:
-        product_def_ID = session.query(ProductRule.ID, ProductRule.PRName).all()
+        product_def_ID = session.query(ProductRule.PRCode, ProductRule.PRName).all()
         print(product_def_ID)
         data1 = []
         for tu in product_def_ID:
@@ -1371,7 +1371,7 @@ def ProductParameter():
             pro_def_id = {'ID': id, 'text':name}
             data1.append(pro_def_id)
 
-        productUnit_ID = session.query(ProcessUnit.ID, ProcessUnit.PUName).all()
+        productUnit_ID = session.query(ProcessUnit.PUCode, ProcessUnit.PUName).all()
         print(productUnit_ID)
         data = []
         for tu in productUnit_ID:
