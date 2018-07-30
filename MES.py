@@ -1251,7 +1251,40 @@ def allZYPlansSearch():
 # 加载工作台
 @app.route('/ZYTask')
 def zYTask():
-    return render_template('sysZYTask.html')
+    try:
+        product_info = session.query(ProductRule.ID, ProductRule.PRName).all()
+        # print(product_info)
+        data_pro = []
+        for tu in product_info:
+            li = list(tu)
+            id = li[0]
+            name = li[1]
+            pro_info = {'ID': id, 'text': name}
+            data_pro.append(pro_info)
+
+        productUnit_info = session.query(ProductUnit.PUID, ProductUnit.PDUnitName).all()
+        # print(product_info)
+        data_proUnit = []
+        for tu in productUnit_info:
+            li = list(tu)
+            id = li[0]
+            name = li[1]
+            pro_info = {'ID': id, 'text': name}
+            data_proUnit.append(pro_info)
+
+        batch_id = session.query(ZYPlan.BatchID).all()
+        # print(product_info)
+        data_batch = []
+        for tu in batch_id:
+            li = list(tu)
+            id = li[0]
+            pro_info = {'ID': id}
+            data_batch.append(pro_info)
+        return render_template('sysZYTask.html', Data_pro=data_pro, Unit=WeightUnit, Data_proUnit=data_proUnit, Data_batch=data_batch)
+    except Exception as e:
+        print(e)
+        logger.error(e)
+    return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
 @app.route('/allZYTasks/Find')
