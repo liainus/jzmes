@@ -49,21 +49,6 @@ $(function () {
         //    return true;
         // }})
      });
-    var task = true
-    $('#iBatchID').blur(function(){
-        $.ajax({
-            url:"/ZYPlanGuid/isBatchNumber",
-            data:{ABatchID:$('#iBatchID').val()},
-            type:"get",
-            success:function(res){
-                console.log(res)
-            },
-            error:function(){
-                alert("请求错误，请刷新后重试！")
-            }
-        })
-    })
-
     $(tableId).datagrid({
         url: urlPrefix + 'Find', // urlPrefix + 'findAll',
         method: 'get',
@@ -235,23 +220,22 @@ $(function () {
                     //$(formId).form('load', row);
                     $('input[name="iID"]').attr("disabled", "disabled");
                     $('input[name="iID"]').val(row.ID);
-                    $('input[name="iPlanDate"]').val(row.PlanDate);
+                    $("#iPlanDate").datebox("setValue",row.PlanDate)
                     $('input[name="iPlanNo"]').val(row.PlanNo);
                     $('input[name="iBatchID"]').val(row.BatchID);
                     $('input[name="iPlanSeq"]').val(row.PlanSeq);
-                    $('input[name="iPUID"]').val(row.PUID);
+                    $('#iPUID option:contains('+row.PUID+')').prop("selected", 'selected');
                     $('input[name="iPlanType"]').val(row.PlanType);
-                    $('input[name="iBrandCode"]').val(row.BrandCode);
-                    $('input[name="iBrandName"]').val(row.BrandName);
+                    $('#iBrandName option:contains('+row.BrandName+')').prop("selected", 'selected');
                     $('input[name="iERPOrderNo"]').val(row.ERPOrderNo);
                     $('input[name="iPlanQuantity"]').val(row.PlanQuantity);
                     $('input[name="iActQuantity"]').val(row.ActQuantity);
-                    $('input[name="iUnit"]').val(row.Unit);
+                    $('#iUnit option:contains('+row.Unit+')').prop("selected", 'selected');
                     //$('input[name="iEnterTime"]').val(row.EnterTime);
-                    $('input[name="iPlanBeginTime"]').val(row.PlanBeginTime);
-                    $('input[name="iPlanEndTime"]').val(row.PlanEndTime);
-                    $('input[name="iActBeginTime"]').val(row.ActBeginTime);
-                    $('input[name="iActEndTime"]').val(row.ActEndTime);
+                    $('#iPlanBeginTime').datetimebox("setValue",row.PlanBeginTime);
+                    $('#iPlanEndTime').datetimebox("setValue",row.PlanEndTime);
+                    $('#iActBeginTime').datetimebox("setValue",row.ActBeginTime);
+                    $('#iActEndTime').datetimebox("setValue",row.ActEndTime);
                     $('input[name="iTaskStatus"]').val(row.TaskStatus);
                     $('input[name="iLockStatus"]').val(row.LockStatus);
                     $('input[name="iINFStatus"]').val(row.INFStatus);
@@ -346,17 +330,94 @@ $(function () {
                alert('Warning：批次号不能为空！');
                return false;
             }
+            stmp = $('#iBrandName').find("option:selected").val();
             if(Bee.StringUtils.isEmpty(stmp)) {
-               alert('Warning：计划单号不能为空！');
+               alert('Warning：品牌名称不能为空！');
                return false;
             }
-            stmp = $('input[name="iPlanSeq"]').val();
+            stmp = $('#iPUID').find("option:selected").val();
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：工艺段编号不能为空！');
+               return false;
+            }
+            stmp = $('input[name="iPlanType"]').val();
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：计划类型不能为空！');
+               return false;
+            }
+             stmp = $('input[name="iPlanSeq"]').val();
             if(Bee.StringUtils.isInteger(stmp)) {
             //
             }else{
-                $('input[name="iSeq"]').val("");
+                $('input[name="iPlanSeq"]').val("");
                 alert('Warning：计划顺序号输入错误,请输入数字！');
                 return false;
+            }
+            stmp = $('input[name="iERPOrderNo"]').val();
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：ERP订单号不能为空！');
+               return false;
+            }
+            stmp = $('input[name="iPlanQuantity"]').val();
+            if(Bee.StringUtils.isInteger(stmp)) {
+            //
+            }else{
+                $('input[name="iPlanQuantity"]').val("");
+                alert('Warning：计划数量输入错误,请输入数字！');
+                return false;
+            }
+            stmp = $('input[name="iActQuantity"]').val();
+            if(Bee.StringUtils.isInteger(stmp)) {
+            //
+            }else{
+                $('input[name="iActQuantity"]').val("");
+                alert('Warning：实际数量输入错误,请输入数字！');
+                return false;
+            }
+            stmp = $('#iUnit').find("option:selected").val();
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：单位不能为空！');
+               return false;
+            }
+            stmp = $('#iPlanBeginTime').datetimebox('getValue');
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：计划开始时间不能为空！');
+               return false;
+            }
+            stmp = $('#iPlanEndTime').datetimebox('getValue');
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：计划结束时间不能为空！');
+               return false;
+            }
+            stmp = $('#iActBeginTime').datetimebox('getValue');
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：实际开始时间不能为空！');
+               return false;
+            }
+            stmp = $('#iActEndTime').datetimebox('getValue');
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：实际结束时间不能为空！');
+               return false;
+            }
+            stmp = $('input[name="iTaskStatus"]').val();
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：任务状态不能为空！');
+               return false;
+            }
+            stmp = $('input[name="iLockStatus"]').val();
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：锁定状态不能为空！');
+               return false;
+            }
+            stmp = $('input[name="iINFStatus"]').val();
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：接口状态不能为空！');
+               return false;
+            }
+            stmp = $('input[name="iWMSStatus"]').val();
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：投料状态不能为空！');
+               return false;
             }
             if (strID.length >= 1){
                 urlAddr = urlPrefix + 'Update'
@@ -366,75 +427,89 @@ $(function () {
                 urlAddr = urlPrefix + 'Create'
                 hintinfo = "新增数据"
             }
-                var entity = {
-                    ID:$('input[name="iID"]').val(),
-                    PlanDate:$('input[name="iPlanDate"]').val(),
-                    PlanNo:$('input[name="iPlanNo"]').val(),
-                    BatchID:$('input[name="iBatchID"]').val(),
-                    PlanSeq:$('input[name="iPlanSeq"]').val(),
-                    PUID:$('input[name="iPUID"]').val(),
-                    PlanType:$('input[name="iPlanType"]').val(),
-                    BrandCode:$('input[name="iBrandCode"]').val(),
-                    BrandName:$('input[name="iBrandName"]').val(),
-                    ERPOrderNo:$('input[name="iERPOrderNo"]').val(),
-                    PlanQuantity:$('input[name="iPlanQuantity"]').val(),
-                    ActQuantity:$('input[name="iActQuantity"]').val(),
-                    Unit:$('input[name="iUnit"]').val(),
-                    EnterTime:$('input[name="iEnterTime"]').val(),
-                    PlanBeginTime:$('input[name="iPlanBeginTime"]').val(),
-                    PlanEndTime:$('input[name="iPlanEndTime"]').val(),
-                    ActBeginTime:$('input[name="iActBeginTime"]').val(),
-                    ActEndTime:$('input[name="iActEndTime"]').val(),
-                    TaskStatus:$('input[name="iTaskStatus"]').val(),
-                    LockStatus:$('input[name="iLockStatus"]').val(),
-                    INFStatus:$('input[name="iINFStatus"]').val(),
-                    WMSStatus:$('input[name="iWMSStatus"]').val()
-                };
-                $.ajax({
-                    url: urlAddr,
-                    //url: '/allZYPlans/Create',
-                    method: 'POST',
-                    traditional: true,
-                    data: entity,
-                    dataType: 'json',
-                    cache: false,
+            var entity = {
+                ID:$('input[name="iID"]').val(),
+                PlanDate:$('#iPlanDate').datetimebox('getValue'),
+                PlanNo:$('input[name="iPlanNo"]').val(),
+                BatchID:$('input[name="iBatchID"]').val(),
+                PlanSeq:$('input[name="iPlanSeq"]').val(),
+                PUID:$('#iPUID').find("option:selected").val(),
+                PlanType:$('input[name="iPlanType"]').val(),
+                BrandCode:$('#iBrandName').find("option:selected").val(),
+                BrandName:$('#iBrandName').find("option:selected").html(),
+                ERPOrderNo:$('input[name="iERPOrderNo"]').val(),
+                PlanQuantity:$('input[name="iPlanQuantity"]').val(),
+                ActQuantity:$('input[name="iActQuantity"]').val(),
+                Unit:$('#iUnit').find("option:selected").val(),
+                PlanBeginTime:$('#iPlanBeginTime').datetimebox('getValue'),
+                PlanEndTime:$('#iPlanEndTime').datetimebox('getValue'),
+                ActBeginTime:$('#iActBeginTime').datetimebox('getValue'),
+                ActEndTime:$('#iActEndTime').datetimebox('getValue'),
+                TaskStatus:$('input[name="iTaskStatus"]').val(),
+                LockStatus:$('input[name="iLockStatus"]').val(),
+                INFStatus:$('input[name="iINFStatus"]').val(),
+                WMSStatus:$('input[name="iWMSStatus"]').val()
+            };
+             $.ajax({
+                url:"/ZYPlanGuid/isBatchNumber",
+                data:{ABatchID:$("#iBatchID").val()},
+                type:"get",
+                success:function(res){
+                    console.log(typeof res)
+                    if(res == '"NO"'){
+                        alert('Warning：批次号重复！');
+                        return false
+                    }else if(res == '"OK"'){
+                        $.ajax({
+                            url: urlAddr,
+                            //url: '/allZYPlans/Create',
+                            method: 'POST',
+                            traditional: true,
+                            data: entity,
+                            dataType: 'json',
+                            cache: false,
 
-                    // beforeSend: function () {
-                    //
-                    //     $.messager.progress({
-                    //         text: '正在' + message + '中...'
-                    //     });
-                    // },
-                    error: function(data){
-                           console.log(data.responseText)
-                           alert(hintinfo+ "异常，请刷新后重试...");
+                            // beforeSend: function () {
+                            //
+                            //     $.messager.progress({
+                            //         text: '正在' + message + '中...'
+                            //     });
+                            // },
+                            error: function(data){
+                               console.log(data.responseText)
+                               alert(hintinfo+ "异常，请刷新后重试...");
                              },
-                    success: function (data,response,status) {
-                        $.messager.progress('close');
-                        {
-                }
-                        var obj1 = eval(data);
-                        if(obj1[0].status == "OK"){
-                            $.messager.show({
-                                title: '提示',
-                                msg: message + hintinfo  + '成功',
-                                timeout:1000,
-                                style: {
-                                    right: '',
-                                    top: document.body.scrollTop + document.documentElement.scrollTop,
-                                    bottom: ''
-                                }
-                            });
+                            success: function (data,response,status) {
+                                $.messager.progress('close');
+                                var obj1 = eval(data);
+                                if(obj1[0].status == "OK"){
+                                    $.messager.show({
+                                        title: '提示',
+                                        msg: message + hintinfo  + '成功',
+                                        timeout:1000,
+                                        style: {
+                                            right: '',
+                                            top: document.body.scrollTop + document.documentElement.scrollTop,
+                                            bottom: ''
+                                        }
+                                    });
 
-                            $(formId).form('reset');
-                            $(dialogId).dialog('close');
-                            $(tableId).datagrid('reload',{ url: "/allZYPlans/Find?_t=" + new Date().getTime() });
-                            $(tableid).datagrid('clearSelections');
-                        } else {
-                            $.messager.alert(obj1[0].status + '失败！', '未知错误导致失败，请重试！', 'warning');
-                        }
+                                    $(formId).form('reset');
+                                    $(dialogId).dialog('close');
+                                    $(tableId).datagrid('reload',{ url: "/allZYPlans/Find?_t=" + new Date().getTime() });
+                                    //$(tableid).datagrid('clearSelections');
+                                } else {
+                                    $.messager.alert(obj1[0].status + '失败！', '未知错误导致失败，请重试！', 'warning');
+                                }
+                            }
+                        });
                     }
-                });
+                },
+                error:function(){
+                    alert("请求错误，请刷新后重试！")
+                }
+            })
+
             // }
         },
         refresh: function () {

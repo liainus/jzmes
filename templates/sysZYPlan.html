@@ -44,7 +44,7 @@
         </div>
     </div>
 
-    <div id="ZYPlanClassDialog" class="easyui-dialog" style="width:620px;height:560px;padding:10px;"
+    <div id="ZYPlanClassDialog" class="easyui-dialog" style="width:760px;height:560px;padding:10px;"
      data-options="closed:'true',buttons:'#ZYPlanClassDialogButtons',modal:true">
     <!-- <div id="ZYPlanClassFormTitle" class="field-title">Title</div> -->
     <form id="ZYPlanClassForm" method="post" class="dialog-form">
@@ -71,13 +71,23 @@
                     </td>
                 </tr>
                 <tr>
-                    <td class="kv-label">顺序号</td>
+                    <td class="kv-label">品牌名称</td>
                     <td class="kv-content">
-                        <input  name="iPlanSeq" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                        <select name="iBrandName" id="iBrandName" type="text" autocomplete="off" placeholder="" style="height:29px;width:162px;">
+                            <option value="">请选择</option>
+                            {% for id in Product_info %}
+                                <option value="{{ id['PRCode'] }}">{{ id['text'] }}</option>
+                            {% endfor %}
+                        </select>
                     </td>
                     <td class="kv-label">工艺段编号</td>
                     <td class="kv-content">
-                        <input  name="iPUID" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                        <select name="iPUID" id="iPUID" type="text" autocomplete="off" placeholder="" style="height:29px;width:162px;">
+                            <option value="">请选择</option>
+                            {% for id in ProcessUnit_info %}
+                                <option value="{{ id['PUCode'] }}">{{ id['text'] }}</option>
+                            {% endfor %}
+                        </select>
                     </td>
                 </tr>
                 <tr>
@@ -85,14 +95,9 @@
                     <td class="kv-content">
                         <input  name="iPlanType" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
                     </td>
-                    <td class="kv-label">品牌名称</td>
+                    <td class="kv-label">顺序号</td>
                     <td class="kv-content">
-                        <select name="iBrandName" id="iBrandName" type="text" autocomplete="off" placeholder="" style="height:29px;width:150px;">
-                            <option value="">请选择</option>
-                            {% for id in Product_info %}
-                                <option value="{{ id['ID'] }}">{{ id['text'] }}</option>
-                            {% endfor %}
-                        </select>
+                        <input  name="iPlanSeq" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
                     </td>
                 </tr>
                 <tr>
@@ -112,7 +117,10 @@
                     </td>
                     <td class="kv-label">单位</td>
                     <td class="kv-content">
-                        <input  name="iUnit" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                        <select name="iUnit" id="iUnit" type="text" autocomplete="off" placeholder="" style="height:29px;width:162px;">
+                            <option value="">请选择</option>
+                            <option value="{{ Unit }}">{{ Unit }}</option>
+                        </select>
                     </td>
                 </tr>
                 <tr>
@@ -122,17 +130,17 @@
                     </td>
                     <td class="kv-label">计划结束时间</td>
                     <td class="kv-content">
-                        <input  name="iPlanEndTime" required="true" type="text" class="easyui-datetimebox" data-options="required:true,showSeconds:false,editable:false" autocomplete="off" placeholder=>
+                        <input  name="iPlanEndTime" id="iPlanEndTime" required="true" type="text" class="easyui-datetimebox" data-options="required:true,showSeconds:false,editable:false" autocomplete="off" placeholder=>
                     </td>
                 </tr>
                 <tr>
-                    <td class="kv-label">实际结束时间</td>
+                    <td class="kv-label">实际开始时间</td>
                     <td class="kv-content">
-                        <input  name="iActBeginTime" required="true" type="text" class="easyui-datetimebox" data-options="required:true,showSeconds:false,editable:false" autocomplete="off" placeholder=>
+                        <input id="iActBeginTime" name="iActBeginTime" required="true" type="text" class="easyui-datetimebox" data-options="required:true,showSeconds:false,editable:false" autocomplete="off" placeholder=>
                     </td>
                     <td class="kv-label">实际结束时间</td>
                     <td class="kv-content">
-                        <input  name="iActEndTime" required="true" type="text" class="easyui-datetimebox" data-options="required:true,showSeconds:false,editable:false" autocomplete="off" placeholder=>
+                        <input id="iActEndTime" name="iActEndTime" required="true" type="text" class="easyui-datetimebox" data-options="required:true,showSeconds:false,editable:false" autocomplete="off" placeholder=>
                     </td>
                 </tr>
                 <tr>
