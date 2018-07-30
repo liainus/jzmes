@@ -189,7 +189,7 @@ class ZYPlanWebIFS(object):
 						PlanQuantity= odata['PlanQuantity'],
 						ActQuantity= odata['ActQuantity'],
 						Unit= odata['Unit'],
-						EnterTime= odata['EnterTime'],
+						# EnterTime= odata['EnterTime'],
 						PlanBeginTime= odata['PlanBeginTime'],
 						PlanEndTime= odata['PlanEndTime'],
 						ActBeginTime= odata['ActBeginTime'],
@@ -276,7 +276,7 @@ class ZYPlanWebIFS(object):
 				oclass.PlanQuantity = odata['PlanQuantity']
 				oclass.ActQuantity = odata['ActQuantity']
 				oclass.Unit = odata['Unit']
-				oclass.EnterTime = odata['EnterTime']
+				# oclass.EnterTime = odata['EnterTime']
 				oclass.PlanBeginTime = odata['PlanBeginTime']
 				oclass.PlanEndTime = odata['PlanEndTime']
 				oclass.ActBeginTime = odata['ActBeginTime']
