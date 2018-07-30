@@ -90,26 +90,26 @@ $(function () {
                 width: 100
             },
             {
-                field: 'Desc',
-                title: '说明',
-                align: 'center',
-                width: 100
-            },
-            {
                 field: 'PlanBeginTime',
                 title: '计划开始时间',
                 align: 'center',
-                width: 100
+                width: 180
             },
             {
                 field: 'PlanEndTime',
                 title: '计划结束时间',
                 align: 'center',
-                width: 100
+                width: 180
             },
             {
                 field: 'Type',
                 title: '类型',
+                align: 'center',
+                width: 100
+            },
+            {
+                field: 'Desc',
+                title: '说明',
                 align: 'center',
                 width: 100
             }
@@ -165,12 +165,12 @@ $(function () {
             $(formTitleId).text(titleText);
             $('input[name="Name"]').focus();
             $('input[name="iID"]').attr("disabled", "disabled");
-            $('input[name="iID"]').val();
-            $('input[name="iSchedulePlanCode"]').val();
-            $('input[name="iDesc"]').val();
-            $('input[name="iPlanBeginTime"]').val();
-            $('input[name="iPlanEndTime"]').val();
-            $('input[name="iType"]').val();// $('input[name="iSchedulePlanSeq"]').onChange()
+            $('input[name="iID"]').val("");
+            $('input[name="iSchedulePlanCode"]').val("");
+            $('input[name="iDesc"]').val("");
+            $('#iPlanBeginTime').datetimebox({value: ""});
+            $('#iPlanEndTime').datetimebox({value: ""});
+            $('input[name="iType"]').val("");// $('input[name="iSchedulePlanSeq"]').onChange()
             // $(formId).form('clear');
             message = '新增' + titleText;
             // $('#SchedulePlanClassCombobox').combobox('textbox').bind('focus', function () {
@@ -191,8 +191,8 @@ $(function () {
                     $('input[name="iID"]').val(row.ID);
                     $('input[name="iSchedulePlanCode"]').val(row.SchedulePlanCode);
                     $('input[name="iDesc"]').val(row.Desc);
-                    $('input[name="iPlanBeginTime"]').val(row.PlanBeginTime);
-                    $('input[name="iPlanEndTime"]').val(row.PlanEndTime);
+                    $('#iPlanBeginTime').datetimebox("setValue",row.PlanBeginTime);
+                    $('#iPlanEndTime').datetimebox("setValue",row.PlanEndTime);
                     $('input[name="iType"]').val(row.Type);
                     //var thisSwitchbuttonObj = $(".switchstatus").find("[switchbuttonName='IsEnable']");//获取switchbutton对象  
                     if (row.IsEnable == '禁用') {
@@ -268,8 +268,21 @@ $(function () {
             var strID = $('input[name="iID"]').val();
             var msg = ""
             var urlAddr = ""
-           
-
+             var stmp = $('input[name="iSchedulePlanCode"]').val()
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：调度计划编码不能为空！');
+               return false;
+            }
+            stmp = $('#iPlanBeginTime').datetimebox('getValue');
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：计划开始时间不能为空！');
+               return false;
+            }
+            stmp = $('#iPlanEndTime').datetimebox('getValue');
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：计划结束时间不能为空！');
+               return false;
+            }
             if (strID.length >= 1){
                 urlAddr = urlPrefix + 'Update'
                 hintinfo = "更新数据"
@@ -282,8 +295,8 @@ $(function () {
                     ID:$('input[name="iID"]').val(),
                     SchedulePlanCode:$('input[name="iSchedulePlanCode"]').val(),
                     Desc:$('input[name="iDesc"]').val(),
-                    PlanBeginTime:$('input[name="iPlanBeginTime"]').val(),
-                    PlanEndTime:$('input[name="iPlanEndTime"]').val(),
+                    PlanBeginTime:$('#iPlanBeginTime').datetimebox('getValue'),
+                    PlanEndTime:$('#iPlanEndTime').datetimebox('getValue'),
                     Type:$('input[name="iType"]').val()
                 };
                 $.ajax({
@@ -325,7 +338,7 @@ $(function () {
                             $(formId).form('reset');
                             $(dialogId).dialog('close');
                             $(tableId).datagrid('reload',{ url: "/allSchedulePlans/Find?_t=" + new Date().getTime() });
-                            $(tableid).datagrid('clearSelections');
+                            //$(tableid).datagrid('clearSelections');
                         } else {
                             $.messager.alert(obj1[0].status + '失败！', '未知错误导致失败，请重试！', 'warning');
                         }
@@ -373,33 +386,33 @@ $(function () {
                 width: 100
             },
             {
-                field: 'Desc',
-                title: '说明',
-                align: 'center',
-                width: 100
-            },
-            {
                 field: 'PlanBeginTime',
                 title: '计划开始时间',
                 align: 'center',
-                width: 100
+                width: 180
             },
             {
                 field: 'PlanEndTime',
                 title: '计划结束时间',
                 align: 'center',
-                width: 100
+                width: 180
             },
             {
                 field: 'Type',
                 title: '类型',
                 align: 'center',
                 width: 100
+            },
+            {
+                field: 'Desc',
+                title: '说明',
+                align: 'center',
+                width: 100
             }
         ]]
     });
             $(tableId).datagrid('reload');
-            $(tableid).datagrid('clearSelections');
+            $(tableId).datagrid('clearSelections');
            
         }
 

@@ -488,8 +488,6 @@ $(function () {
                 urlAddr = urlPrefix + 'Create'
                 hintinfo = "新增数据"
             }
-            console.log($('#iActBeginTime').datetimebox('getValue'))
-            console.log($('#iActEndTime').datetimebox('getValue'))
                 var entity = {
                     ID:$('input[name="iID"]').val(),
                     PlanDate:$('#iPlanDate').datetimebox('getValue'),

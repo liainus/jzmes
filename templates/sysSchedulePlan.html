@@ -32,7 +32,7 @@
         <table id="SchedulePlanClassTable"></table>
 
         <div id="SchedulePlanClassToolbar" style="padding:0 10px;">
-            名称:
+            调度计划编码:
             <input type="text" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
                 placeholder="">
             <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="SchedulePlanClassToolbar.search();">查询</a>
@@ -43,7 +43,7 @@
         </div>
     </div>
 
-    <div id="SchedulePlanClassDialog" class="easyui-dialog" style="width:520px;height:700px;padding:10px;"
+    <div id="SchedulePlanClassDialog" class="easyui-dialog" style="width:520px;height:360px;padding:10px;"
      data-options="closed:'true',buttons:'#SchedulePlanClassDialogButtons',modal:true">
     <!-- <div id="SchedulePlanClassFormTitle" class="field-title">Title</div> -->
     <form id="SchedulePlanClassForm" method="post" class="dialog-form">
@@ -52,7 +52,7 @@
                 <tr>
                     <td class="kv-label">ID</td>
                     <td class="kv-content">
-                        <input  name="iID" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                        <input  name="iID" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
                     </td>
                 </tr>
                 <tr>
@@ -62,27 +62,27 @@
                     </td>
                 </tr>
                 <tr>
-                    <td class="kv-label">说明</td>
-                    <td class="kv-content">
-                        <input  name="iDesc" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
-                    </td>
-                </tr>
-                <tr>
                     <td class="kv-label">计划开始时间</td>
                     <td class="kv-content">
-                        <input  name="iPlanBeginTime" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                        <input id="iPlanBeginTime" name="iPlanBeginTime" required="true" type="text" class="easyui-datetimebox" data-options="required:true,showSeconds:false,editable:false" autocomplete="off" placeholder=>
                     </td>
                 </tr>
                 <tr>
                     <td class="kv-label">计划结束时间</td>
                     <td class="kv-content">
-                        <input  name="iPlanEndTime" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                        <input id="iPlanEndTime" name="iPlanEndTime" required="true" type="text" class="easyui-datetimebox" data-options="required:true,showSeconds:false,editable:false" autocomplete="off" placeholder=>
                     </td>
                 </tr>
                 <tr>
                     <td class="kv-label">类型</td>
                     <td class="kv-content">
                         <input  name="iType" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="kv-label">说明</td>
+                    <td class="kv-content">
+                        <input  name="iDesc" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
                     </td>
                 </tr>
             </tbody>

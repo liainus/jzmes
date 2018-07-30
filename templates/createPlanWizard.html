@@ -212,38 +212,40 @@
                     }
                     $.ajax({
                         url:"/ZYPlanGuid/isBatchNumber",
-                        data:{ABatchID:$("#iBatchID").val()},
+                        data:{ABatchID:$("#ABatchID").val()},
                         type:"get",
+                        async:false,
                         success:function(res){
-                            console.log(typeof res)
                             if(res == '"NO"'){
                                 alert('Warning：批次号重复！');
+                                xhr.abort()
                                 return false
                             }else if(res == '"OK"'){
-                                $.ajax({
-                                    url: "/ZYPlanGuid/makePlan",
-                                    method: 'POST',
-                                    data: {
-                                        APlanDate :$('#APlanDate').datebox('getValue'),
-                                        ABatchID :$('#ABatchID').val(),
-                                        AProductRuleID :$('#ABrandName').find("option:selected").val(),
-                                        ABrandName :$('#ABrandName').find("option:selected").html(),
-                                        APlanWeight :$('#APlanWeight').val(),
-                                        AUnit : $('#AUnit').find("option:selected").val()
-                                    },
-                                    //dataType: 'json',
-                                    success: function (data,response,status) {
-                                        console.log(data)
-                                    },
-                                     error: function(data){
-                                           alert("异常，请刷新后重试...");
-                                     }
-                                })
+                                return true
                             }
                         },
                         error:function(){
                             alert("请求错误，请刷新后重试！")
                         }
+                    })
+                    var xhr = $.ajax({
+                        url: "/ZYPlanGuid/makePlan",
+                        method: 'POST',
+                        data: {
+                            APlanDate :$('#APlanDate').datebox('getValue'),
+                            ABatchID :$('#ABatchID').val(),
+                            AProductRuleID :$('#ABrandName').find("option:selected").val(),
+                            ABrandName :$('#ABrandName').find("option:selected").html(),
+                            APlanWeight :$('#APlanWeight').val(),
+                            AUnit : $('#AUnit').find("option:selected").val()
+                        },
+                        //dataType: 'json',
+                        success: function (data,response,status) {
+                            console.log(data)
+                        },
+                         error: function(data){
+                               alert("异常，请刷新后重试...");
+                         }
                     })
                 }
             });
@@ -321,7 +323,7 @@
             </div>
             <div id="step-2">
                 <h3 class="border-bottom border-gray pb-2">物料BOM</h3>
-                <div id="tab" class="easyui-tabs" style="width:100%;height:500px;">
+                <div id="tab" class="easyui-tabs" style="width:100%;height:520px;">
                     <div title="批次任务明细" data-options="closable:false"  style="padding:0px;">
                         <table id="MaterialsTab" class="easyui-datagrid" style="width:100%;"  data-options="
                              url:'/ZYPlanGuid/CriticalTasks',
