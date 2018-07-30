@@ -575,7 +575,7 @@ class ZYTaskWebIFS(object):
 						PlanQuantity=odata['PlanQuantity'],
 						ActQuantity=odata['ActQuantity'],
 						Unit=odata['Unit'],
-						EnterTime=odata['EnterTime'],
+						# EnterTime=odata['EnterTime'],
 						ActBeginTime=odata['ActBeginTime'],
 						ActEndTime=odata['ActEndTime'],
 						SetRepeatCount=odata['SetRepeatCount'],

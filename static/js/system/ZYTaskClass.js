@@ -250,20 +250,18 @@ $(function () {
             $('input[name="Name"]').focus();
             $('input[name="iID"]').attr("disabled", "disabled");
             $('input[name="iID"]').val();
-            $('input[name="iPlanDate"]').val();
+            $('#iPlanDate').datetimebox({value: ""});;
             $('input[name="iTaskID"]').val();
-            $('input[name="iBatchID"]').val();
+            $('#iBatchID option:contains("请选择")').prop("selected", 'selected');
             $('input[name="iPlanSeq"]').val();
-            $('input[name="iPUID"]').val();
+            $('#iPUID option:contains("请选择")').prop("selected", 'selected');
             $('input[name="iPlanType"]').val();
-            $('input[name="iBrandID"]').val();
-            $('input[name="iBrandName"]').val();
+            $('#iBrandName option:contains("请选择")').prop("selected", 'selected');
             $('input[name="iPlanQuantity"]').val();
             $('input[name="iActQuantity"]').val();
-            $('input[name="iUnit"]').val();
-            $('input[name="iEnterTime"]').val();
-            $('input[name="iActBeginTime"]').val();
-            $('input[name="iActEndTime"]').val();
+            $('#iUnit option:contains("请选择")').prop("selected", 'selected');
+            $('#iActBeginTime').datetimebox({value: ""});
+            $('#iActEndTime').datetimebox({value: ""});
             $('input[name="iSetRepeatCount"]').val();
             $('input[name="iCurretnRepeatCount"]').val();
             $('input[name="iActTank"]').val();
@@ -288,20 +286,18 @@ $(function () {
                     //$(formId).form('load', row);
                     $('input[name="iID"]').attr("disabled", "disabled");
                     $('input[name="iID"]').val(row.ID);
-                    $('input[name="iPlanDate"]').val(row.PlanDate);
+                    $("#iPlanDate").datebox("setValue",row.PlanDate)
                     $('input[name="iTaskID"]').val(row.TaskID);
-                    $('input[name="iBatchID"]').val(row.BatchID);
+                    $('#iBatchID option:contains('+row.BatchID+')').prop("selected", 'selected');
                     $('input[name="iPlanSeq"]').val(row.PlanSeq);
-                    $('input[name="iPUID"]').val(row.PUID);
+                    $('#iPUID option:contains('+row.PUID+')').prop("selected", 'selected');
                     $('input[name="iPlanType"]').val(row.PlanType);
-                    $('input[name="iBrandID"]').val(row.BrandID);
-                    $('input[name="iBrandName"]').val(row.BrandName);
+                    $('#iBrandName option:contains('+row.BrandName+')').prop("selected", 'selected');
                     $('input[name="iPlanQuantity"]').val(row.PlanQuantity);
                     $('input[name="iActQuantity"]').val(row.ActQuantity);
-                    $('input[name="iUnit"]').val(row.Unit);
-                    $('input[name="iEnterTime"]').val(row.EnterTime);
-                    $('input[name="iActBeginTime"]').val(row.ActBeginTime);
-                    $('input[name="iActEndTime"]').val(row.ActEndTime);
+                    $('#iUnit option:contains('+row.Unit+')').prop("selected", 'selected');
+                    $('#iActBeginTime').datetimebox("setValue",row.ActBeginTime);
+                    $('#iActEndTime').datetimebox("setValue",row.ActEndTime);
                     $('input[name="iSetRepeatCount"]').val(row.SetRepeatCount);
                     $('input[name="iCurretnRepeatCount"]').val(row.CurretnRepeatCount);
                     $('input[name="iActTank"]').val(row.ActTank);
@@ -381,12 +377,20 @@ $(function () {
             var strID = $('input[name="iID"]').val();
             var msg = ""
             var urlAddr = ""
-            var stmp = $('input[name="iTaskID"]').val();
+             var stmp = $('#iPlanDate').datetimebox('getValue');
             if(Bee.StringUtils.isEmpty(stmp)) {
-               alert('Warning：任务号不能为空！');
+               alert('Warning：生产日期不能为空！');
                return false;
             }
-            stmp = $('input[name="iBatchID"]').val();
+            stmp = $('input[name="iTaskID"]').val();
+            if(Bee.StringUtils.isInteger(stmp)) {
+            //
+            }else{
+                $('input[name="iTaskID"]').val("");
+                alert('Warning：任务ID输入错误,请输入数字！');
+                return false;
+            }
+            stmp = $('#iBatchID').find("option:selected").val();
             if(Bee.StringUtils.isEmpty(stmp)) {
                alert('Warning：批次号不能为空！');
                return false;
@@ -395,9 +399,86 @@ $(function () {
             if(Bee.StringUtils.isInteger(stmp)) {
             //
             }else{
-                $('input[name="iSeq"]').val("");
-                alert('Warning：计划顺序号输入错误,请输入数字！');
+                $('input[name="iPlanSeq"]').val("");
+                alert('Warning：顺序号输入错误,请输入数字！');
                 return false;
+            }
+            stmp = $('#iPUID').find("option:selected").val();
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：工艺段编号不能为空！');
+               return false;
+            }
+            stmp = $('input[name="iPlanType"]').val();
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：计划类型不能为空！');
+               return false;
+            }
+            stmp = $('#iBrandName').find("option:selected").val();
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：品牌名称不能为空！');
+               return false;
+            }
+            stmp = $('input[name="iPlanQuantity"]').val();
+            if(Bee.StringUtils.isInteger(stmp)) {
+            //
+            }else{
+                $('input[name="iPlanQuantity"]').val("");
+                alert('Warning：计划重量输入错误,请输入数字！');
+                return false;
+            }
+            stmp = $('input[name="iActQuantity"]').val();
+            if(Bee.StringUtils.isInteger(stmp)) {
+            //
+            }else{
+                $('input[name="iActQuantity"]').val("");
+                alert('Warning：实际重量输入错误,请输入数字！');
+                return false;
+            }
+            stmp = $('#iUnit').find("option:selected").val();
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：单位不能为空！');
+               return false;
+            }
+            stmp = $('input[name="iActTank"]').val();
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：实际罐号不能为空！');
+               return false;
+            }
+            stmp = $('#iActBeginTime').datetimebox('getValue');
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：实际开始时间不能为空！');
+               return false;
+            }
+            stmp = $('#iActEndTime').datetimebox('getValue');
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：实际结束时间不能为空！');
+               return false;
+            }
+            stmp = $('input[name="iSetRepeatCount"]').val();
+            if(Bee.StringUtils.isInteger(stmp)) {
+            //
+            }else{
+                $('input[name="iSetRepeatCount"]').val("");
+                alert('Warning：设定重复次数输入错误,请输入数字！');
+                return false;
+            }
+            stmp = $('input[name="iCurretnRepeatCount"]').val();
+            if(Bee.StringUtils.isInteger(stmp)) {
+            //
+            }else{
+                $('input[name="iCurretnRepeatCount"]').val("");
+                alert('Warning：当前重复次数输入错误,请输入数字！');
+                return false;
+            }
+            stmp = $('input[name="iTaskStatus"]').val();
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：任务状态不能为空！');
+               return false;
+            }
+            stmp = $('input[name="iLockStatus"]').val();
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：锁定状态不能为空！');
+               return false;
             }
             if (strID.length >= 1){
                 urlAddr = urlPrefix + 'Update'
@@ -407,22 +488,24 @@ $(function () {
                 urlAddr = urlPrefix + 'Create'
                 hintinfo = "新增数据"
             }
+            console.log($('#iActBeginTime').datetimebox('getValue'))
+            console.log($('#iActEndTime').datetimebox('getValue'))
                 var entity = {
                     ID:$('input[name="iID"]').val(),
-                    PlanDate:$('input[name="iPlanDate"]').val(),
+                    PlanDate:$('#iPlanDate').datetimebox('getValue'),
                     TaskID:$('input[name="iTaskID"]').val(),
-                    BatchID:$('input[name="iBatchID"]').val(),
+                    BatchID:$('#iBatchID').find("option:selected").val(),
                     PlanSeq:$('input[name="iPlanSeq"]').val(),
-                    PUID:$('input[name="iPUID"]').val(),
+                    PUID:$('#iPUID').find("option:selected").val(),
                     PlanType:$('input[name="iPlanType"]').val(),
-                    BrandID:$('input[name="iBrandID"]').val(),
-                    BrandName:$('input[name="iBrandName"]').val(),
+                    BrandID:$('#iBrandName').find("option:selected").val(),
+                    BrandName:$('#iBrandName').find("option:selected").html(),
                     PlanQuantity:$('input[name="iPlanQuantity"]').val(),
                     ActQuantity:$('input[name="iActQuantity"]').val(),
-                    Unit:$('input[name="iUnit"]').val(),
-                    EnterTime:$('input[name="iEnterTime"]').val(),
-                    ActBeginTime:$('input[name="iActBeginTime"]').val(),
-                    ActEndTime:$('input[name="iActEndTime"]').val(),
+                    Unit:$('#iUnit').find("option:selected").val(),
+                    //EnterTime:$('input[name="iEnterTime"]').val(),
+                    ActBeginTime:$('#iActBeginTime').datetimebox('getValue'),
+                    ActEndTime:$('#iActEndTime').datetimebox('getValue'),
                     SetRepeatCount:$('input[name="iSetRepeatCount"]').val(),
                     CurretnRepeatCount:$('input[name="iCurretnRepeatCount"]').val(),
                     ActTank:$('input[name="iActTank"]').val(),
@@ -468,7 +551,7 @@ $(function () {
                             $(formId).form('reset');
                             $(dialogId).dialog('close');
                             $(tableId).datagrid('reload',{ url: "/allZYTasks/Find?_t=" + new Date().getTime() });
-                            $(tableid).datagrid('clearSelections');
+                            //$(tableid).datagrid('clearSelections');
                         } else {
                             $.messager.alert(obj1[0].status + '失败！', '未知错误导致失败，请重试！', 'warning');
                         }
@@ -627,7 +710,7 @@ $(function () {
         ]]
     });
             $(tableId).datagrid('reload');
-            $(tableid).datagrid('clearSelections');
+            $(tableId).datagrid('clearSelections');
            
         }
 

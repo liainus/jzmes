@@ -210,25 +210,40 @@
                         $.messager.alert('提示', '单位不能为空！', 'info');
                         return false;
                     }
-
                     $.ajax({
-                        url: "/ZYPlanGuid/makePlan",
-                        method: 'POST',
-                        data: {
-                            APlanDate :$('#APlanDate').datebox('getValue'),
-                            ABatchID :$('#ABatchID').val(),
-                            AProductRuleID :$('#ABrandName').find("option:selected").val(),
-                            ABrandName :$('#ABrandName').find("option:selected").html(),
-                            APlanWeight :$('#APlanWeight').val(),
-                            AUnit : $('#AUnit').find("option:selected").val()
+                        url:"/ZYPlanGuid/isBatchNumber",
+                        data:{ABatchID:$("#iBatchID").val()},
+                        type:"get",
+                        success:function(res){
+                            console.log(typeof res)
+                            if(res == '"NO"'){
+                                alert('Warning：批次号重复！');
+                                return false
+                            }else if(res == '"OK"'){
+                                $.ajax({
+                                    url: "/ZYPlanGuid/makePlan",
+                                    method: 'POST',
+                                    data: {
+                                        APlanDate :$('#APlanDate').datebox('getValue'),
+                                        ABatchID :$('#ABatchID').val(),
+                                        AProductRuleID :$('#ABrandName').find("option:selected").val(),
+                                        ABrandName :$('#ABrandName').find("option:selected").html(),
+                                        APlanWeight :$('#APlanWeight').val(),
+                                        AUnit : $('#AUnit').find("option:selected").val()
+                                    },
+                                    //dataType: 'json',
+                                    success: function (data,response,status) {
+                                        console.log(data)
+                                    },
+                                     error: function(data){
+                                           alert("异常，请刷新后重试...");
+                                     }
+                                })
+                            }
                         },
-                        //dataType: 'json',
-                        success: function (data,response,status) {
-                            console.log(data)
-                        },
-                         error: function(data){
-                               alert("异常，请刷新后重试...");
-                         }
+                        error:function(){
+                            alert("请求错误，请刷新后重试！")
+                        }
                     })
                 }
             });

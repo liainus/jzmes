@@ -32,7 +32,7 @@
         <table id="ZYTaskClassTable"></table>
 
         <div id="ZYTaskClassToolbar" style="padding:0 10px;">
-            名称:
+            任务ID:
             <input type="text" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
                 placeholder="">
             <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="ZYTaskClassToolbar.search();">查询</a>
@@ -43,7 +43,7 @@
         </div>
     </div>
 
-    <div id="ZYTaskClassDialog" class="easyui-dialog" style="width:760px;height:530px;padding:10px;"
+    <div id="ZYTaskClassDialog" class="easyui-dialog" style="width:760px;height:480px;padding:10px;"
      data-options="closed:'true',buttons:'#ZYTaskClassDialogButtons',modal:true">
     <!-- <div id="ZYTaskClassFormTitle" class="field-title">Title</div> -->
     <form id="ZYTaskClassForm" method="post" class="dialog-form">
@@ -56,7 +56,7 @@
                     </td>
                     <td class="kv-label">生产日期</td>
                     <td class="kv-content">
-                        <input  name="iPlanDate" required="true" type="text" class="easyui-datebox" data-options="required:true,showSeconds:false,editable:false" autocomplete="off" placeholder=>
+                        <input id="iPlanDate" name="iPlanDate" required="true" type="text" class="easyui-datebox" data-options="required:true,showSeconds:false,editable:false" autocomplete="off" placeholder=>
                     </td>
                 </tr>
                 <tr>
@@ -66,7 +66,12 @@
                     </td>
                     <td class="kv-label">批次号</td>
                     <td class="kv-content">
-                        <input  name="iBatchID" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                        <select name="iBatchID" id="iBatchID" type="text" autocomplete="off" placeholder="" style="height:29px;width:162px;">
+                            <option value="">请选择</option>
+                            {% for id in Data_batch %}
+                                <option value="{{ id['ID'] }}">{{ id['ID'] }}</option>
+                            {% endfor %}
+                        </select>
                     </td>
                 </tr>
                 <tr>
@@ -76,7 +81,12 @@
                     </td>
                     <td class="kv-label">工艺段编号</td>
                     <td class="kv-content">
-                        <input  name="iPUID" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                        <select name="iPUID" id="iPUID" type="text" autocomplete="off" placeholder="" style="height:29px;width:162px;">
+                            <option value="">请选择</option>
+                            {% for id in Data_proUnit %}
+                                <option value="{{ id['ID'] }}">{{ id['text'] }}</option>
+                            {% endfor %}
+                        </select>
                     </td>
                 </tr>
                 <tr>
@@ -84,39 +94,47 @@
                     <td class="kv-content">
                         <input  name="iPlanType" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
                     </td>
-                    <td class="kv-label">品牌ID</td>
+                    <td class="kv-label">品牌名称</td>
                     <td class="kv-content">
-                        <input  name="iBrandID" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                        <select name="iBrandName" id="iBrandName" type="text" autocomplete="off" placeholder="" style="height:29px;width:162px;">
+                            <option value="">请选择</option>
+                            {% for id in Data_pro %}
+                                <option value="{{ id['ID'] }}">{{ id['text'] }}</option>
+                            {% endfor %}
+                        </select>
                     </td>
                 </tr>
                 <tr>
-                    <td class="kv-label">品牌名称</td>
-                    <td class="kv-content">
-                        <input  name="iBrandName" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
-                    </td>
                     <td class="kv-label">计划重量</td>
                     <td class="kv-content">
                         <input  name="iPlanQuantity" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
                     </td>
-                </tr>
-                <tr>
                     <td class="kv-label">实际重量</td>
                     <td class="kv-content">
                         <input  name="iActQuantity" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
                     </td>
+                </tr>
+                <tr>
                     <td class="kv-label">单位</td>
                     <td class="kv-content">
-                        <input  name="iUnit" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                        <select name="iUnit" id="iUnit" type="text" autocomplete="off" placeholder="" style="height:29px;width:162px;">
+                            <option value="">请选择</option>
+                            <option value="{{ Unit }}">{{ Unit }}</option>
+                        </select>
+                    </td>
+                    <td class="kv-label">实际罐号</td>
+                    <td class="kv-content">
+                        <input  name="iActTank" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
                     </td>
                 </tr>
                 <tr>
                     <td class="kv-label">实际开始时间</td>
                     <td class="kv-content">
-                        <input  name="iActBeginTime" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                        <input id="iActBeginTime" name="iActBeginTime" required="true" type="text" class="easyui-datetimebox" data-options="required:true,showSeconds:false,editable:false" autocomplete="off" placeholder=>
                     </td>
                     <td class="kv-label">实际结束时间</td>
                     <td class="kv-content">
-                        <input  name="iActEndTime" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                        <input id="iActEndTime" name="iActEndTime" required="true" type="text" class="easyui-datetimebox" data-options="required:true,showSeconds:false,editable:false" autocomplete="off" placeholder=>
                     </td>
                 </tr>
                 <tr>
@@ -130,16 +148,10 @@
                     </td>
                 </tr>
                 <tr>
-                    <td class="kv-label">实际罐号</td>
-                    <td class="kv-content">
-                        <input  name="iActTank" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
-                    </td>
                     <td class="kv-label">任务状态</td>
                     <td class="kv-content">
                         <input  name="iTaskStatus" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
                     </td>
-                </tr>
-                <tr>
                     <td class="kv-label">锁定状态</td>
                     <td class="kv-content">
                         <input  name="iLockStatus" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
