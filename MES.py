@@ -544,8 +544,21 @@ def batchmanager():
 # 加载工作台
 @app.route('/organizationMap')
 def organizationMap():
-    return render_template('index_organization.html')
-
+    data = getMyOrganizationChildren(id=0)
+    jsondata = json.dumps(data, cls=AlchemyEncoder, ensure_ascii=False)
+    return render_template('index_organization.html', productLine_id=jsondata)
+def getMyOrganizationChildren(id=0):
+    sz = []
+    try:
+        orgs = session.query(Organization).filter().all()
+        for obj in orgs:
+            if obj.ParentNode == id:
+                sz.append(
+                    {"name": obj.OrganizationName, "value": obj.ID, "children": getMyOrganizationChildren(obj.ID)})
+        return sz
+    except Exception as e:
+        print(e)
+        return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 # 组织机构建模
 # 加载工作台
 @app.route('/organization')
@@ -1340,7 +1353,7 @@ def allZYTasksSearch():
 @app.route('/ProductControlTask')
 def ProductControlTask():
     try:
-        product_def_ID = session.query(ProductRule.PRCode,ProductRule.PRName).all()
+        product_def_ID = session.query(ProductRule.ID,ProductRule.PRName).all()
         print(product_def_ID)
         data1 = []
         for tu in product_def_ID:
@@ -1350,7 +1363,7 @@ def ProductControlTask():
             pro_def_id = {'ID': id, 'text':name}
             data1.append(pro_def_id)
 
-        productUnit_ID = session.query(ProcessUnit.PUCode, ProcessUnit.PUName).all()
+        productUnit_ID = session.query(ProcessUnit.ID, ProcessUnit.PUName).all()
         print(productUnit_ID)
         data = []
         for tu in productUnit_ID:
@@ -1419,7 +1432,7 @@ def allProductControlTasksSearch():
 @app.route('/ProductParameter')
 def productParameter():
     try:
-        product_def_ID = session.query(ProductRule.PRCode, ProductRule.PRName).all()
+        product_def_ID = session.query(ProductRule.ID, ProductRule.PRName).all()
         print(product_def_ID)
         data1 = []
         for tu in product_def_ID:
@@ -1429,7 +1442,7 @@ def productParameter():
             pro_def_id = {'ID': id, 'text':name}
             data1.append(pro_def_id)
 
-        productUnit_ID = session.query(ProcessUnit.PUCode, ProcessUnit.PUName).all()
+        productUnit_ID = session.query(ProcessUnit.ID, ProcessUnit.PUName).all()
         print(productUnit_ID)
         data = []
         for tu in productUnit_ID:
@@ -2388,7 +2401,7 @@ def MyenterpriseSelect():
 @app.route('/createPlanWizard')
 def createPlanWizard():
     try:
-        product_info = session.query(ProductRule.PRCode, ProductRule.PRName).all()
+        product_info = session.query(ProductRule.ID, ProductRule.PRName).all()
         print(product_info)
         data = []
         for tu in product_info:

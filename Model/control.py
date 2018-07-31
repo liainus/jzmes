@@ -433,7 +433,7 @@ class ctrlPlan:
                             if bReturn == False:
                                 return False
 
-                            bReturn, iSetReatCount = self.getPUPara(iPUID, ABrandID) #, "SetReatCount"
+                            bReturn, iSetReatCount = self.getPUPara(iPUID, ABrandID) #, "SetReatCount"#比如六个任务，每个任务罐子里的煎煮次数
                             if bReturn == False:
                                 return False
 
@@ -474,7 +474,6 @@ class ctrlPlan:
                                                                 strTaskNo, iTaskSeq, APlanDate, AUnit,iSetReatCount)
                                     if bReturn == False:
                                         return False
-                            return bReturn
                         except Exception as e:
                             session.rollback()
                             print (e)
