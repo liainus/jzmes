@@ -3,221 +3,117 @@
 <head>
     <meta charset="utf-8">
     <title>组织结构</title>
-    <style>
-        .node {
-          font: 14px sans-serif;
-        }
-        .link {
-          fill: none;
-          stroke: #ccc;
-          stroke-width: 1.5px;
-        }
-    </style>
+    <link href="../static/css/base.css" rel="stylesheet">
+
 </head>
 <body>
-    <div id="example" style="text-align: center;"></div>
-    <script src="../static/js/jquery.min.js"></script>
-    <script src="../static/js/echarts.js"></script>
+    <div id="example" style="width: 800px;height: 500px;"></div>
+    <a href="javascript:;" onclick="refresh(true)">刷新</a>
+    <script src="../static/js/echarts-all.js"></script>
     <script type="text/javascript">
-        option = {
-            title : {
-                text: '手机品牌',
-                subtext: '线、节点样式'
-            },
-            tooltip : {
-                trigger: 'item',
-                formatter: "{b}: {c}"
-            },
-            toolbox: {
-                show : true,
-                feature : {
-                    mark : {show: true},
-                    dataView : {show: true, readOnly: false},
-                    restore : {show: true},
-                    saveAsImage : {show: true}
-                }
-            },
-            calculable : false,
-
-            series : [
-                {
-                    name:'树图',
-                    type:'tree',
-                    orient: 'horizontal',  // vertical horizontal
-                    rootLocation: {x: 100, y: '60%'}, // 根节点位置  {x: 'center',y: 10}
-                    nodePadding: 20,
-                    symbol: 'circle',
-                    symbolSize: 40,
-                    itemStyle: {
-                        normal: {
-                            label: {
-                                show: true,
-                                position: 'inside',
-                                textStyle: {
-                                    color: '#cc9999',
-                                    fontSize: 15,
-                                    fontWeight:  'bolder'
+        var domMain = document.getElementById('example')
+        var myChart = echarts.init(domMain, 'macarons');
+            option = {
+                title : {
+                    text: '江中集团',
+                    subtext: '组织结构树形图'
+                },
+                tooltip : {
+                    trigger: 'item',
+                    formatter: "{b}: {c}"
+                },
+                toolbox: {
+                    show : true,
+                    feature : {
+                        mark : {show: true},
+                        dataView : {show: true, readOnly: false},
+                        restore : {show: true},
+                        saveAsImage : {show: true}
+                    }
+                },
+                calculable : false,
+                series : [
+                    {
+                        name:'树图',
+                        type:'tree',
+                        orient: 'horizontal',  //树的方向
+                        rootLocation: {x: 100, y: '50%'}, // 根节点位置  {x: 'center',y: 10}
+                        nodePadding: 20, //节点间距
+                        layerPadding:150,
+                        symbol: 'rectangle',
+                        symbolSize: [100,40],
+                        borderColor:'black',
+                        itemStyle: {
+                            normal: {
+                                label: {
+                                    show: true,
+                                    position: 'inside',
+                                    textStyle: {
+                                        color: '#ffffff',
+                                        fontSize: 12
+                                    }
+                                },
+                                lineStyle: {
+                                    color: '#000',
+                                    width: 1,
+                                    type: 'broken' // 'curve'|'broken'|'solid'|'dotted'|'dashed'
                                 }
                             },
-                            lineStyle: {
-                                color: '#000',
-                                width: 1,
-                                type: 'broken' // 'curve'|'broken'|'solid'|'dotted'|'dashed'
+                            emphasis: {
+                                color: '#0e546d',
+                                label: {
+                                    show: true
+                                }
                             }
                         },
-                        emphasis: {
-                            label: {
-                                show: true
-                            }
-                        }
-                    },
-                    data: [
-                        {
-                            name: '手机',
-                            value: 6,
-                            symbolSize: [90, 70],
-                            symbol: 'image://http://www.iconpng.com/png/ecommerce-business/iphone.png',
-                            itemStyle: {
-                                normal: {
-                                    label: {
-                                        show: false
+                        data: [{
+                                name: '组织名称',
+                                value: 6,
+                                children: [
+                                    {
+                                        name: '小米',
+                                        value: 40,
+                                        children: [
+                                            {
+                                                name: '小米1',
+                                                value: '3',
+                                            },
+                                            {
+                                                name: '小米2',
+                                                value: 4,
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        name: '苹果',
+                                        value: 4,
                                     }
-                                }
-                            },
-                            children: [
-                                {
-                                    name: '小米',
-                                    value: 4,
-                                    symbol: 'image://http://pic.58pic.com/58pic/12/36/51/66d58PICMUV.jpg',
-                                    itemStyle: {
-                                        normal: {
-                                            label: {
-                                                show: false
-                                            }
-                                        }
-                                    },
-                                    symbolSize: [60, 60],
-                                    children: [
-                                        {
-                                            name: '小米1',
-                                            symbol: 'circle',
-                                            symbolSize: 20,
-                                            value: 4,
-                                            itemStyle: {
-                                                normal: {
-                                                    color: '#fa6900',
-                                                    label: {
-                                                        show: true,
-                                                        position: 'right'
-                                                    },
-
-                                                },
-                                                emphasis: {
-                                                    label: {
-                                                        show: false
-                                                    },
-                                                    borderWidth: 0
-                                                }
-                                            }
-                                        },
-                                        {
-                                            name: '小米2',
-                                            value: 4,
-                                            symbol: 'circle',
-                                            symbolSize: 20,
-                                            itemStyle: {
-                                                normal: {
-                                                    label: {
-                                                        show: true,
-                                                        position: 'right',
-                                                        formatter: "{b}"
-                                                    },
-                                                    color: '#fa6900',
-                                                    borderWidth: 2,
-                                                    borderColor: '#cc66ff'
-
-                                                },
-                                                emphasis: {
-                                                    borderWidth: 0
-                                                }
-                                            }
-                                        },
-                                        {
-                                            name: '小米3',
-                                            value: 2,
-                                            symbol: 'circle',
-                                            symbolSize: 20,
-                                            itemStyle: {
-                                                normal: {
-                                                    label: {
-                                                        position: 'right'
-                                                    },
-                                                    color: '#fa6900',
-                                                    brushType: 'stroke',
-                                                    borderWidth: 1,
-                                                    borderColor: '#999966',
-                                                },
-                                                emphasis: {
-                                                    borderWidth: 0
-                                                }
-                                            }
-                                        }
-                                    ]
-                                },
-                                {
-                                    name: '苹果',
-                                    symbol: 'image://http://www.viastreaming.com/images/apple_logo2.png',
-                                    symbolSize: [60, 60],
-                                    itemStyle: {
-                                        normal: {
-                                            label: {
-                                                show: false
-                                            }
-
-                                        }
-                                    },
-                                    value: 4
-                                },
-                                {
-                                    name: '华为',
-                                    symbol: 'image://http://market.huawei.com/hwgg/logo_cn/download/logo.jpg',
-                                    symbolSize: [60, 60],
-                                    itemStyle: {
-                                        normal: {
-                                            label: {
-                                                show: false
-                                            }
-
-                                        }
-                                    },
-                                    value: 2
-                                },
-                                {
-                                    name: '联想',
-                                    symbol: 'image://http://www.lenovo.com.cn/HomeUpload/Home001/6d94ee9a20140714.jpg',
-                                    symbolSize: [100, 40],
-                                    itemStyle: {
-                                        normal: {
-                                            label: {
-                                                show: false
-                                            }
-
-                                        }
-                                    },
-                                    value: 2
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ]
-        };
-    </script>
-    <script type="text/javascript">
-        $(document).ready(function () {
-            //定义echarts容器
-
-        })
+                                ]
+                            }]
+                    }
+                ]
+            };
+        myChart.setOption(option);
+        function focusGraphic() {
+            if (needRefresh) {
+                myChart.showLoading();
+                setTimeout(refresh, 1000);
+            }
+        }
+        function refresh(isBtnRefresh){
+            if (isBtnRefresh) {
+                needRefresh = true;
+                focusGraphic();
+                return;
+            }
+            needRefresh = false;
+            if (myChart && myChart.dispose) {
+                myChart.dispose();
+            }
+            myChart = echarts.init(domMain);
+            window.onresize = myChart.resize;
+            myChart.setOption(option, true)
+        }
     </script>
 </body>
 </html>
