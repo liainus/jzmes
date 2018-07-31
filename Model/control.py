@@ -518,27 +518,27 @@ class ctrlPlan:
             return  bReturn,varTaskNo
 
 
-class SystemCtrol:
-    def __init__(self,name):
-        try:
-            self.name = name
-        except Exception as e:
-            print(e)
-            logger.error(e)
-
-    # 将password字段定义为User类的一个属性，其中设置该属性不可读，若读取抛出AttributeError。
-    @property
-    def password(self):
-        raise AttributeError('password cannot be read')
-
-    # 定义password字段的写方法，我们调用generate_password_hash将明文密码password转成密文Shadow
-    @password.setter
-    def password(self, password):
-        self.Shadow = generate_password_hash(password)
-
-    # 定义验证密码的函数confirm_password
-    def confirm_password(self, password):
-        return check_password_hash(self.Shadow, password)
+# class SystemCtrol:
+#     def __init__(self,name):
+#         try:
+#             self.name = name
+#         except Exception as e:
+#             print(e)
+#             logger.error(e)
+#
+#     # 将password字段定义为User类的一个属性，其中设置该属性不可读，若读取抛出AttributeError。
+#     @property
+#     def password(self):
+#         raise AttributeError('password cannot be read')
+#
+#     # 定义password字段的写方法，我们调用generate_password_hash将明文密码password转成密文Shadow
+#     @password.setter
+#     def password(self, password):
+#         self.Shadow = generate_password_hash(password)
+#
+#     # 定义验证密码的函数confirm_password
+#     def confirm_password(self, password):
+#         return check_password_hash(self.Shadow, password)
 
 if __name__ == "__main__":
     mytest = ctrlPlan("a")

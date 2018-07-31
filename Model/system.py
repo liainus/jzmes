@@ -17,8 +17,11 @@ from sqlalchemy import create_engine, \
     Column,ForeignKey, Table, DateTime, Integer, String
 from sqlalchemy import Column, DateTime, Float, Integer, String, Unicode
 from sqlalchemy.dialects.mssql.base import BIT
+from werkzeug.security import generate_password_hash, check_password_hash
+
 import Model.Global
 from datetime import datetime
+from flask_login import UserMixin,login_manager
 
 
 #引入mssql数据库引擎
@@ -135,11 +138,12 @@ class Role(Base):
     ParentNode = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
 
     # 查询权限
-    menus = relationship("Menu", secondary=Role_Menu)
+    menus = relationship("Menu", secondary=Role_Menu,  backref='role',lazy='dynamic')
+
 
 
 # 用户表
-class User(Base):
+class User(Base,UserMixin):
     __tablename__ = 'user'
 
     # ID
@@ -151,8 +155,8 @@ class User(Base):
     # 密码
     Password = Column(String(128), nullable=False)
 
-    # 登录名
-    LoginName = Column(Unicode(64), primary_key=False, autoincrement=False, nullable=True)
+    # 工号
+    WorkNumber = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
 
     #登录状态
     Status = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
@@ -175,7 +179,24 @@ class User(Base):
     # 角色名称:
     RoleName = Column(Unicode(128), primary_key=False, autoincrement=False, nullable=True)
 
+    # @property
+    # def password(self):
+    #     raise AttributeError('password cannot be read')
 
+    # 定义password字段的写方法，我们调用generate_password_hash将明文密码password转成密文Shadow
+    # @password.setter
+    def password(self, value):
+        self.Shadow = generate_password_hash(value)
+        return self.Shadow
+
+    # 定义验证密码的函数confirm_password
+    def confirm_password(self, password):
+        return check_password_hash(self.Shadow, password)
+
+# 加载用户的回调函数
+@login_manager.user_loader
+def user_load(user_id):
+    return User.query.get(int(user_id))
 
 
 # 生成表单的执行语句

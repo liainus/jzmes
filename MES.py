@@ -7,6 +7,7 @@ import time
 from collections import Counter
 from flask import Flask, jsonify, redirect, url_for
 from flask import render_template, request
+from flask import session as login_session
 from sqlalchemy import create_engine, Column, ForeignKey, Table, Integer, String, and_, or_
 from sqlalchemy import func
 from sqlalchemy.ext.declarative import declarative_base
@@ -16,37 +17,32 @@ import Model.Global
 from Model.BSFramwork import AlchemyEncoder
 from Model.core import Enterprise, Area, Factory, ProductLine, ProcessUnit, Equipment, Material, MaterialType, \
     ProductUnit, ProductRule, ZYTask, ZYPlanMaterial, ZYPlan
-from Model.system import Role, Organization,User,Menu
+from Model.system import Role, Organization, User, Menu, Role_Menu
 from tools.MESLogger import MESLogger
 from Model.core import SysLog
-from sqlalchemy import create_engine, Column, ForeignKey, Table, Integer, String
 from sqlalchemy import func
 from sqlalchemy.ext.declarative import DeclarativeMeta
 import string
 import re
 from collections import Counter
-from Model.account import login_security
 from flask import session as cli_session
 from Model.system import User
 from random import randint
 from Model.Global import WeightUnit
 from Model.control import ctrlPlan
-
+from flask_login import LoginManager, current_user
+from flask.ext.login import login_required, logout_user
 import socket
 
-# from flask_cache import Cache
-#
-# # redis配置
-# cache = Cache()
-# config = {
-#     'CACHE_TYPE': 'redis',
-#     'CACHE_REDIS_HPST': 'localhost',
-#     'CAHCE_REDIS_DB': '',
-#     'CACHE_REDIS_PASSWORD': ''
-# }
+#flask_login的初始化
+loginmanager = LoginManager()
+loginmanager.session_protection = 'strong'
+loginmanager.login_view ='app.login'
+
 # 获取本文件名实例化一个flask对象
 app = Flask(__name__)
-# app.config['SECRET_KEY'] = 'AHAHAAHAHAHA'
+loginmanager.init_app(app)
+
 
 
 engine = create_engine(Model.Global.GLOBAL_DATABASE_CONNECT_STRING, deprecate_large_types=True)
@@ -73,64 +69,80 @@ def load():
 
 '''登录'''
 
+# 保护路由只让已认证的用户访问，如果未认证的用户访问这个路由，Flask-Login 会拦截请求，把用户发往登录页面。
+@app.route('/secret')
+@login_required
+def secret():
+    return 'Only authenticated users are allowed!'
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if request.method == 'Get':
-        return render_template('login.html')
+    try:
+        if request.method == 'POST':
+            data = request.values
+            work_number = data['WorkNumber']
+            password = data['password']
+                # 验证账户与密码
+            user = session.query(User).filter_by(WorkNumber=work_number).first()
+            # hash_password = user.password(password)
+            if user and user.confirm_password(password):
+                login_session['username'] = user.Name
+                login_session.permanent = True
+                # 查询用户当前菜单权限
+                roles = session.query(User.RoleName).filter_by(WorkNumber=work_number).all()
+                menus = []
+                for role in roles:
+                    for index in role:
+                        print(index)
+                        role_id = session.query(Role.ID).filter_by(RoleName=index).first()
+                        # role = session.query(Role).filter_by(RoleName=index).first
+                        menu = session.query(Menu).join(Role_Menu, isouter=True).filter_by(Role_ID=role_id).all()
+                        menus.append(menu)
+                print(menus)
+                return render_template('main.html', Menus=menus)
+            # 认证失败返回登录页面
+            return redirect(url_for('app.login'))
+    except Exception as e:
+        print(e)
+        logger.error(e)
+        return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
-    if request.method == 'POST':
-        job_number = request.form['job_number']
-        password = request.form['password']
-        security_status = request.form['security_status']  # 获取ajax传的验证码状态码
 
-        # 判断验证码是否正确
-        result = login_security.security(security_status)
-        if result['status'] is False:
-            return json.dumps({'status': False})
-
-        # 验证账户与密码
-        result = login_security.login_handler(job_number, password)
-        if result['status'] is True:
-            cli_session['username'] = User.job_number
-            return render_template('main.html')
-        return json.dumps({'status': 400, 'msg': result['msg']})
-
-
-# 退出
-@app.route('/logout', methods=['GET', 'POST'])
+# 退出登录
+@app.route('/logout')
+@login_required
 def logout():
-    cli_session.pop('job_number', None)
-    return render_template('login.html')
+    login_session.clear()
+    return redirect(url_for('app.login'))
 
 
-'''注册'''
-
-
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    if request.method == 'GET':
-        render_template('register.html')
-
-    if request.method == 'POST':
-        user_name = request.form['user_name']
-        job_number = request.form['job_number']
-        password1 = request.form['password1']
-        password2 = request.form['password2']
-        email = request.form['email']
-        tel = request.form['tel']
-        security_status = request.form['security_status']  # 获取ajax传的验证码状态码
-
-        # 判断验证码是否正确
-        result = login_security.security(security_status)
-        if result['status'] is False:
-            return json.dumps({'status': False})
-
-        # 用户注册
-        result = login_security.register_handler(user_name, job_number, password1, password2, email, tel)
-        if result['status'] is True:
-            return render_template('login.html')
-        return render_template('register.html', message=result['msg'])
+# '''注册'''
+#
+#
+# @app.route('/register', methods=['GET', 'POST'])
+# def register():
+#     if request.method == 'GET':
+#         render_template('register.html')
+#
+#     if request.method == 'POST':
+#         user_name = request.form['user_name']
+#         job_number = request.form['job_number']
+#         password1 = request.form['password1']
+#         password2 = request.form['password2']
+#         email = request.form['email']
+#         tel = request.form['tel']
+#         security_status = request.form['security_status']  # 获取ajax传的验证码状态码
+#
+#         # 判断验证码是否正确
+#         result = login_security.security(security_status)
+#         if result['status'] is False:
+#             return json.dumps({'status': False})
+#
+#         # 用户注册
+#         result = login_security.register_handler(user_name, job_number, password1, password2, email, tel)
+#         if result['status'] is True:
+#             return render_template('login.html')
+#         return render_template('register.html', message=result['msg'])
 
 
 # 系统日志
@@ -262,16 +274,19 @@ def addUser():
         try:
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 10:
-                session.add(
-                    User(Name=data['Name'],
-                         Password=data['Password'], LoginName=data['LoginName'],
-                         Status="1", #登录状态先设置一个默认值1：已登录，0：未登录
-                         Creater=data['Creater'],
-                         CreateTime=datetime.datetime.now(),
-                         LastLoginTime=datetime.datetime.now(),
-                         IsLock='false',#data['IsLock'],
-                         OrganizationName=data['OrganizationName'],
-                         RoleName=data['RoleName']))
+                user = User()
+                user.Name=data['Name']
+                user.Password=user.password(data['Password'])
+                # print(user.Password)
+                user.WorkNumber=data['WorkNumber']
+                user.Status="1" # 登录状态先设置一个默认值1：已登录，0：未登录
+                user.Creater=data['Creater']
+                user.CreateTime=datetime.datetime.now()
+                user.LastLoginTime=datetime.datetime.now()
+                user.IsLock='false' # data['IsLock'],
+                user.OrganizationName=data['OrganizationName']
+                user.RoleName=data['RoleName']
+                session.add(user)
                 session.commit()
                 insertSyslog("添加用户", "添加用户"+data['Name']+"添加成功", "AAAAAAadmin")
                 return json.dumps([{"status": "OK"}], cls=AlchemyEncoder, ensure_ascii=False)
@@ -293,7 +308,7 @@ def UpdateUser():
                 user = session.query(User).filter_by(ID=ID).first()
                 user.Name = data['Name']
                 user.Password = data['Password']
-                user.LoginName = data['LoginName']
+                user.Password = user.password(data['Password'])
                 # user.Status = data['Status']
                 user.Creater = data['Creater']
                 # user.CreateTime = data['CreateTime']
@@ -2142,7 +2157,8 @@ def OrganizationFind():
 # 主页面路由
 @app.route('/')
 def hello_world():
-    return render_template('main.html')
+    current_user = login_session.get('username')
+    return render_template('main.html',current_user=current_user)
 
 
 # 加载工作台
