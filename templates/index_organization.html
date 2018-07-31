@@ -5,114 +5,83 @@
     <title>组织结构</title>
     <link href="../static/css/base.css" rel="stylesheet">
     <link href="../static/css/bootstrap.min.css" rel="stylesheet">
-    <script src="../static/js/jquery.min.js"></script>
     <script src="../static/js/echarts-all.js"></script>
+    <script src="../static/js/jquery.min.js"></script>
 </head>
 <body>
     <div id="example" style="width: 100%;height: 600px;"></div>
-    <a href="javascript:;" class="btn" onclick="refresh(true)">刷新</a>
 
     <script type="text/javascript">
         var domMain = document.getElementById('example')
         var myChart = echarts.init(domMain, 'macarons');
-            option = {
-                title : {
-                    text: '江中集团',
-                    subtext: '组织结构树形图'
-                },
-                tooltip : {
-                    trigger: 'item',
-                    formatter: "{b}: {c}"
-                },
-                toolbox: {
-                    show : true,
-                    feature : {
-                        mark : {show: true},
-                        dataView : {show: true, readOnly: false},
-                        restore : {show: true},
-                        saveAsImage : {show: true}
-                    }
-                },
-                calculable : false,
-                series : [
-                    {
-                        name:'树图',
-                        type:'tree',
-                        orient: 'horizontal',  //树的方向
-                        rootLocation: {x: 100, y: '50%'}, // 根节点位置  {x: 'center',y: 10}
-                        nodePadding: 20, //节点间距
-                        layerPadding:150,
-                        symbol: 'rectangle',
-                        symbolSize: [100,40],
-                        borderColor:'black',
-                        itemStyle: {
-                            normal: {
-                                label: {
-                                    show: true,
-                                    position: 'inside',
-                                    textStyle: {
-                                        color: '#ffffff',
-                                        fontSize: 12
-                                    }
-                                },
-                                lineStyle: {
-                                    color: '#000',
-                                    width: 1,
-                                    type: 'broken' // 'curve'|'broken'|'solid'|'dotted'|'dashed'
-                                }
-                            },
-                            emphasis: {
-                                color: '#0e546d',
-                                label: {
-                                    show: true
-                                }
-                            }
-                        },
-                        data: [
-{#                            {#}
-{#                                name: '组织名称',#}
-{#                                value: 6,#}
-{#                                children: [#}
-{#                                    {#}
-{#                                        name: '小米',#}
-{#                                        value: 40,#}
-{#                                        children: [#}
-{#                                            {#}
-{#                                                name: '小米1',#}
-{#                                                value: '3',#}
-{#                                            },#}
-{#                                            {#}
-{#                                                name: '小米2',#}
-{#                                                value: 4,#}
-{#                                            }#}
-{#                                        ]#}
-{#                                    },#}
-{#                                    {#}
-{#                                        name: '苹果',#}
-{#                                        value: 4,#}
-{#                                    }#}
-{#                                ]#}
-{#                            }#}
-                        ]
-                    }
-                ]
-            };
-        //myChart.setOption(option);
         myChart.showLoading()
         $.ajax({
-             type : "post",
+             type : "get",
              async : true, //异步请求（同步请求将会锁住浏览器，用户其他操作必须等待请求完成才可以执行）
              url : "/organizationMap/selectAll",
              data : {},
              dataType : "json",
              success : function(result) {
+                 console.log(result)
                  if (result) {
-                    myChart.hideLoading(); //隐藏加载动画
-                    myChart.setOption({  //加载数据图表
-                        series: {
-                            data: result
-                        }
-                    });
+                     myChart.hideLoading(); //隐藏加载动画
+                     myChart.setOption({  //加载数据图表
+                         title : {
+                            text: '江中集团',
+                            subtext: '组织结构树形图'
+                        },
+                        tooltip : {
+                            trigger: 'item',
+                            formatter: "{b}: {c}"
+                        },
+                        toolbox: {
+                            show : true,
+                            feature : {
+                                mark : {show: true},
+                                dataView : {show: true, readOnly: false},
+                                restore : {show: true},
+                                saveAsImage : {show: true}
+                            }
+                        },
+                        calculable : false,
+                        series : [
+                            {
+                                name:'树图',
+                                type:'tree',
+                                orient: 'horizontal',  //树的方向
+                                rootLocation: {x: 100, y: '50%'}, // 根节点位置  {x: 'center',y: 10}
+                                nodePadding: 20, //节点间距
+                                layerPadding:150,
+                                symbol: 'rectangle',
+                                symbolSize: [100,40],
+                                borderColor:'black',
+                                itemStyle: {
+                                    normal: {
+                                        label: {
+                                            show: true,
+                                            position: 'inside',
+                                            textStyle: {
+                                                color: '#ffffff',
+                                                fontSize: 12
+                                            }
+                                        },
+                                        lineStyle: {
+                                            color: '#000',
+                                            width: 1,
+                                            type: 'broken' // 'curve'|'broken'|'solid'|'dotted'|'dashed'
+                                        }
+                                    },
+                                    emphasis: {
+                                        color: '#0e546d',
+                                        label: {
+                                            show: true
+                                        }
+                                    }
+                                },
+                                data: result
+                            }
+                        ]
+                     });
                  }
             },
              error : function(errorMsg) {
@@ -121,26 +90,6 @@
                 myChart.hideLoading();
              }
         })
-        function focusGraphic() {
-            if (needRefresh) {
-                myChart.showLoading();
-                setTimeout(refresh, 1000);
-            }
-        }
-        function refresh(isBtnRefresh){
-            if (isBtnRefresh) {
-                needRefresh = true;
-                focusGraphic();
-                return;
-            }
-            needRefresh = false;
-            if (myChart && myChart.dispose) {
-                myChart.dispose();
-            }
-            myChart = echarts.init(domMain);
-            window.onresize = myChart.resize;
-            myChart.setOption(option, true)
-        }
     </script>
 </body>
 </html>
