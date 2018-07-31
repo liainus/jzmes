@@ -78,6 +78,8 @@ def secret():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     try:
+        if request.method == 'GET':
+            return render_template('login.html')
         if request.method == 'POST':
             data = request.values
             work_number = data['WorkNumber']
