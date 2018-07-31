@@ -50,7 +50,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td class="kv-label">登录名</td>
+                                <td class="kv-label">工号</td>
                                 <td class="kv-content">
                                     <input name="LoginName" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
                                 </td>
@@ -117,7 +117,7 @@
                         <th field="ck" checkbox="true"></th>
 						<th data-options="field:'Name',width:120,align:'center'">用户名</th>
 						<th data-options="field:'Password',width:120,align:'center'">密码</th>
-						<th data-options="field:'LoginName',width:100,align:'center'">登录名</th>
+						<th data-options="field:'WorkNumber',width:100,align:'center'">工号</th>
 						<th data-options="field:'Status',width:80,align:'center'">登录状态</th>
 						<th data-options="field:'Creater',width:120,align:'center'">创建用户</th>
 						<th data-options="field:'CreateTime',width:150,align:'center'">创建时间</th>
@@ -197,7 +197,7 @@
                     $('input[name="ID"]').val(row.ID); //ID
                     $('input[name="Name"]').val(row.Name);//用户名
                     $('input[name="Password"]').val(row.Password);//密码
-                    $('input[name="LoginName"]').val(row.LoginName);//登录名
+                    $('input[name="LoginName"]').val(row.WorkNumber);//登录名
                     $('input[name="Creater"]').val(row.Creater);//创建用户
                     $('input[name="CreateTime"]').val(row.CreateTime);//创建时间
                     $('input[name="LastLoginTime"]').val(row.LastLoginTime);//上次登录时间
@@ -256,7 +256,7 @@
                      $.messager.alert('提示', '密码不能为空！', 'info');
                      return false;
                  }else if(Bee.StringUtils.isEmpty($('input[name="LoginName"]').val())){
-                     $.messager.alert('提示', '登录名不能为空！', 'info');
+                     $.messager.alert('提示', '工号不能为空！', 'info');
                      return false;
                  }else if($('#OrganizationName').find("option:selected").val() == ""){
                      $.messager.alert('提示', '所属部门不能为空！', 'info');
@@ -272,7 +272,7 @@
                     data: {
                         Name :$('input[name="Name"]').val(),
                         Password :$('input[name="Password"]').val(),
-                        LoginName :$('input[name="LoginName"]').val(),
+                        WorkNumber :$('input[name="LoginName"]').val(),
                         Creater : $('input[name="Creater"]').val(),
                         CreateTime : $('input[name="CreateTime"]').val(),
                         OrganizationName :$('#OrganizationName').find("option:selected").html(),
@@ -297,7 +297,7 @@
                      $.messager.alert('提示', '密码不能为空！', 'info');
                      return false;
                  }else if(Bee.StringUtils.isEmpty($('input[name="LoginName"]').val())){
-                     $.messager.alert('提示', '登录名不能为空！', 'info');
+                     $.messager.alert('提示', '工号不能为空！', 'info');
                      return false;
                  }else if($('#OrganizationName').find("option:selected").val() == ""){
                      $.messager.alert('提示', '所属部门不能为空！', 'info');
@@ -314,7 +314,7 @@
                         ID: $('input[name="ID"]').val(),
                         Name :$('input[name="Name"]').val(),
                         Password :$('input[name="Password"]').val(),
-                        LoginName :$('input[name="LoginName"]').val(),
+                        WorkNumber :$('input[name="LoginName"]').val(),
                         Creater : $('input[name="Creater"]').val(),
                         OrganizationName :$('#OrganizationName').find("option:selected").html(),
                         RoleName :$('#RoleName').find("option:selected").html()
