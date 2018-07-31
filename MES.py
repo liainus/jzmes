@@ -544,17 +544,27 @@ def batchmanager():
 # 加载工作台
 @app.route('/organizationMap')
 def organizationMap():
-    data = getMyOrganizationChildren(id=0)
-    jsondata = json.dumps(data, cls=AlchemyEncoder, ensure_ascii=False)
-    return render_template('index_organization.html', productLine_id=jsondata)
-def getMyOrganizationChildren(id=0):
+    return render_template('index_organization.html')
+@app.route('/organizationMap/selectAll')#组织结构
+def selectAll():
+    if request.method == 'GET':
+        try:
+            data = getMyOrganizationChildrenMap(id=0)
+            jsondata = json.dumps(data, cls=AlchemyEncoder, ensure_ascii=False)
+            print(jsondata)
+            return jsondata
+        except Exception as e:
+            print(e)
+            insertSyslog("error", "查询组织结构报错Error：" + str(e), "AAAAAAadmin")
+            return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+def getMyOrganizationChildrenMap(id):
     sz = []
     try:
         orgs = session.query(Organization).filter().all()
         for obj in orgs:
             if obj.ParentNode == id:
                 sz.append(
-                    {"name": obj.OrganizationName, "value": obj.ID, "children": getMyOrganizationChildren(obj.ID)})
+                    {"name": obj.OrganizationName, "value": obj.ID, "children": getMyOrganizationChildrenMap(obj.ID)})
         return sz
     except Exception as e:
         print(e)
