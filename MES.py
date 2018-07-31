@@ -550,9 +550,10 @@ def selectAll():
     if request.method == 'GET':
         try:
             data = getMyOrganizationChildrenMap(id=0)
-            jsondata = json.dumps(data, cls=AlchemyEncoder, ensure_ascii=False)
-            print(jsondata)
-            return jsondata
+            jsondata = [{"name":"江中集团","value":"0","children":data}]
+            jsondatas = json.dumps(jsondata, cls=AlchemyEncoder, ensure_ascii=False)
+            print(jsondatas)
+            return jsondatas
         except Exception as e:
             print(e)
             insertSyslog("error", "查询组织结构报错Error：" + str(e), "AAAAAAadmin")
