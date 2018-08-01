@@ -331,6 +331,9 @@ class ZYPlanMaterial(Base):
 	
 	#工艺段:
 	PUID = Column(Integer, primary_key = False, autoincrement = False, nullable = True)
+
+	# 工艺路线名称:
+	PDUnitRouteName = Column(Unicode(64), primary_key=False, autoincrement=False, nullable=True)
 	
 	#计划类型:
 	PlanType = Column(Unicode(16), primary_key = False, autoincrement = False, nullable = True)
@@ -511,7 +514,10 @@ class ZYTask(Base):
 	
 	#工艺段:
 	PUID = Column(Integer, primary_key = False, autoincrement = False, nullable = True)
-	
+
+	# 工艺路线名称:
+	PDUnitRouteName = Column(Unicode(64), primary_key=False, autoincrement=False, nullable=True)
+
 	#计划类型:
 	PlanType = Column(Unicode(64), primary_key = False, autoincrement = False, nullable = True)
 	
@@ -2643,7 +2649,7 @@ class ProductUnitRoute(Base):
 
 	#工艺路线名称:
 	PDUnitRouteName = Column(Unicode(64), primary_key = False, autoincrement = False, nullable = True)
-	
+
 	#描述:
 	Desc = Column(Unicode(64), primary_key = False, autoincrement = False, nullable = True)
 	
