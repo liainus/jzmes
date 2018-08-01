@@ -41,6 +41,7 @@ login_manager.login_view ='login'
 
 # 获取本文件名实例化一个flask对象
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'qeqhqiqd131'
 login_manager.init_app(app)
 
 
