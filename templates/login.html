@@ -148,17 +148,15 @@
 								<i class="iconfont">&#xe634;</i>
 								<input type="password" name="password" placeholder="请输入密码">
 							</div>
-							<div class="lg-check clearfix">
+							<div class="lg-check clearfix" style="margin: 0;">
 								<div class="input-item">
 									<i class="iconfont">&#xe633;</i>
 									<input type="text" placeholder="验证码" id="Txtcode" name="txtCode">
 								</div>
                                 <canvas id="canvas" width="114" height="40"></canvas>
 							</div>
-							<div class="tips clearfix">
-								<label><input type="checkbox" checked="checked">记住用户名</label>
-								<a href="javascript:;" class="register">立即注册</a>
-								<a href="javascript:;" class="forget-pwd">忘记密码？</a>
+							<div style="height: 20px;">
+								<span class="" style="margin-left: 34px;color: red;">{{ error }}</span>
 							</div>
 							<div class="enter">
                                 <input type="submit" id="submit-btn" value="登录">
