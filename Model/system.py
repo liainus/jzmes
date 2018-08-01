@@ -194,9 +194,9 @@ class User(Base,UserMixin):
         return check_password_hash(self.Shadow, password)
 
 # 加载用户的回调函数
-@login_manager.user_loader
-def user_load(user_id):
-    return User.query.get(int(user_id))
+# @login_manager.user_loader
+# def user_load(user_id):
+#     return User.query.get(int(user_id))
 
 
 # 生成表单的执行语句
