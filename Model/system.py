@@ -21,9 +21,10 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 import Model.Global
 from datetime import datetime
-from flask_login import UserMixin,login_manager
+from flask_login import UserMixin,LoginManager
 
 
+login_manager = LoginManager()
 #引入mssql数据库引擎
 import pymssql
 
@@ -138,7 +139,7 @@ class Role(Base):
     ParentNode = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
 
     # 查询权限
-    menus = relationship("Menu", secondary=Role_Menu,  backref='role',lazy='dynamic')
+    menus = relationship("Menu", secondary=Role_Menu)
 
 
 
@@ -193,10 +194,10 @@ class User(Base,UserMixin):
     def confirm_password(self, password):
         return check_password_hash(self.Shadow, password)
 
-# 加载用户的回调函数
-# @login_manager.user_loader
-# def user_load(user_id):
-#     return User.query.get(int(user_id))
+# 用户回调的回调函数
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 
 # 生成表单的执行语句
