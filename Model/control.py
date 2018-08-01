@@ -171,7 +171,7 @@ class ctrlPlan:
             return bReturn
 
 
-    def createPUTask(self,APUID,ABatchID, ABrandID, ABrandName, APlanWeight,ATaskNO,ASeq, APlanDate, AUnit,ASetRepeatCount):
+    def createPUTask(self,APUID, iPDUnitRouteName, ABatchID, ABrandID, ABrandName, APlanWeight,ATaskNO,ASeq, APlanDate, AUnit,ASetRepeatCount):
         bReturn = True;
         try:
             session.add(
@@ -181,6 +181,7 @@ class ctrlPlan:
                     BatchID=ABatchID,
                     PlanSeq=ASeq,
                     PUID=APUID,
+                    PDUnitRouteName=iPDUnitRouteName,
                     PlanType=Model.Global.PLANTYPE.SCHEDULE.value,
                     BrandID=ABrandID,
                     BrandName=ABrandName,
@@ -426,6 +427,7 @@ class ctrlPlan:
                 for obj in oRoutes:
                     iPUID = int(obj.PUID)
                     iProductRuleID = int(obj.ProductRuleID)
+                    iPDUnitRouteName = obj.PDUnitRouteName
                     bReturn, strTaskNo = self.getTaskNo()
                     if (bReturn == True):
                         try:
@@ -470,7 +472,7 @@ class ctrlPlan:
                                     bReturn, strTaskNo = self.getTaskNo()
                                     if bReturn == False:
                                         return False
-                                    bReturn = self.createPUTask(iPUID, ABatchID, ABrandID, ABrandName, APlanWeight,
+                                    bReturn = self.createPUTask(iPUID, iPDUnitRouteName, ABatchID, ABrandID, ABrandName, APlanWeight,
                                                                 strTaskNo, iTaskSeq, APlanDate, AUnit,iSetReatCount)
                                     if bReturn == False:
                                         return False
