@@ -103,8 +103,8 @@ def login():
                 # login_user(user)  # login_user(user)其实是调用user_loader()把用户设置到session中
                 return render_template('main.html', Menus=menus)
             # 认证失败返回登录页面
-            flash('用户名或密码错误')
-            return redirect(url_for('login'))
+            error = '用户名或密码错误'
+            return render_template('login.html', error= error)
     except Exception as e:
         print(e)
         logger.error(e)
