@@ -31,17 +31,17 @@ from random import randint
 from Model.Global import WeightUnit
 from Model.control import ctrlPlan
 from flask_login import LoginManager, current_user
-from flask.ext.login import login_required, logout_user
+from flask.ext.login import login_required, logout_user, login_user
 import socket
 
 #flask_login的初始化
-loginmanager = LoginManager()
-loginmanager.session_protection = 'strong'
-loginmanager.login_view ='app.login'
+login_manager = LoginManager()
+login_manager.session_protection = 'strong'
+login_manager.login_view ='login'
 
 # 获取本文件名实例化一个flask对象
 app = Flask(__name__)
-loginmanager.init_app(app)
+login_manager.init_app(app)
 
 
 
@@ -88,8 +88,6 @@ def login():
             user = session.query(User).filter_by(WorkNumber=work_number).first()
             # hash_password = user.password(password)
             if user and user.confirm_password(password):
-                login_session['username'] = user.Name
-                login_session.permanent = True
                 # 查询用户当前菜单权限
                 roles = session.query(User.RoleName).filter_by(WorkNumber=work_number).all()
                 menus = []
@@ -101,9 +99,10 @@ def login():
                         menu = session.query(Menu).join(Role_Menu, isouter=True).filter_by(Role_ID=role_id).all()
                         menus.append(menu)
                 print(menus)
+                login_user(user)  # login_user(user)其实是调用user_loader()把用户设置到session中
                 return render_template('main.html', Menus=menus)
             # 认证失败返回登录页面
-            return redirect(url_for('app.login'))
+            return redirect(url_for('/login'))
     except Exception as e:
         print(e)
         logger.error(e)
@@ -111,11 +110,12 @@ def login():
 
 
 # 退出登录
+# 使用login_required装饰路由函数,未登录的请求将会跳转到上面login_manger.login_view设置的登录页面路由
 @app.route('/logout')
 @login_required
 def logout():
-    login_session.clear()
-    return redirect(url_for('app.login'))
+    logout_user()
+    return redirect(url_for('/login'))
 
 
 # '''注册'''
