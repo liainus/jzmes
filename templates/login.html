@@ -49,7 +49,6 @@
                 var val = $("#Txtcode").val().toLowerCase();
                 var num = show_num.join("");
                 if(val == num){
-                    alert('提交成功！');
                     $("#Txtidcode").val('');
                     draw(show_num);
                     return loginSubmit(true);
@@ -140,19 +139,19 @@
 			            </div>
 						//-->
 						
-						<form action="/" id="loginForm">
+						<form action="/login" id="loginForm" method="post">
 							<div class="lg-username input-item clearfix">
 								<i class="iconfont">&#xe60d;</i>
-								<input type="text" placeholder="账号">
+								<input type="text" name="WorkNumber" placeholder="账号">
 							</div>
 							<div class="lg-password input-item clearfix">
 								<i class="iconfont">&#xe634;</i>
-								<input type="password" placeholder="请输入密码">
+								<input type="password" name="password" placeholder="请输入密码">
 							</div>
 							<div class="lg-check clearfix">
 								<div class="input-item">
 									<i class="iconfont">&#xe633;</i>
-									<input type="text" placeholder="验证码" id="Txtcode">
+									<input type="text" placeholder="验证码" id="Txtcode" name="txtCode">
 								</div>
                                 <canvas id="canvas" width="114" height="40"></canvas>
 							</div>
