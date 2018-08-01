@@ -180,19 +180,18 @@ class User(Base,UserMixin):
     # 角色名称:
     RoleName = Column(Unicode(128), primary_key=False, autoincrement=False, nullable=True)
 
-    # @property
-    # def password(self):
-    #     raise AttributeError('password cannot be read')
+    @property
+    def password(self):
+        raise AttributeError('password is not a readable attribute')
 
     # 定义password字段的写方法，我们调用generate_password_hash将明文密码password转成密文Shadow
-    # @password.setter
-    def password(self, value):
-        self.Shadow = generate_password_hash(value)
-        return self.Shadow
+    @password.setter
+    def password(self, password):
+        self.Password = generate_password_hash(password)
 
     # 定义验证密码的函数confirm_password
     def confirm_password(self, password):
-        return check_password_hash(self.Shadow, password)
+        return check_password_hash(self.Password, password)
 
 # 用户回调的回调函数
 @login_manager.user_loader

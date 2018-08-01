@@ -100,7 +100,7 @@ def login():
                         menu = session.query(Menu).join(Role_Menu, isouter=True).filter_by(Role_ID=role_id).all()
                         menus.append(menu)
                 print(menus)
-                login_user(user)  # login_user(user)其实是调用user_loader()把用户设置到session中
+                # login_user(user)  # login_user(user)其实是调用user_loader()把用户设置到session中
                 return render_template('main.html', Menus=menus)
             # 认证失败返回登录页面
             return redirect(url_for('/login'))
@@ -2184,8 +2184,7 @@ def OrganizationFind():
 # 主页面路由
 @app.route('/')
 def hello_world():
-    current_user = login_session.get('username')
-    return render_template('main.html',current_user=current_user)
+    return render_template('main.html')
 
 
 # 加载工作台
