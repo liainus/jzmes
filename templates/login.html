@@ -49,7 +49,6 @@
                 var val = $("#Txtcode").val().toLowerCase();
                 var num = show_num.join("");
                 if(val == num){
-                    alert('提交成功！');
                     $("#Txtidcode").val('');
                     draw(show_num);
                     return loginSubmit(true);
@@ -140,7 +139,7 @@
 			            </div>
 						//-->
 						
-						<form action="/" id="loginForm">
+						<form action="/" id="loginForm" method="post">
 							<div class="lg-username input-item clearfix">
 								<i class="iconfont">&#xe60d;</i>
 								<input type="text" placeholder="账号">
