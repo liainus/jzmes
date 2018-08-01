@@ -5,7 +5,7 @@ import re
 import string
 import time
 from collections import Counter
-from flask import Flask, jsonify, redirect, url_for
+from flask import Flask, jsonify, redirect, url_for, flash
 from flask import render_template, request
 from flask import session as login_session
 from sqlalchemy import create_engine, Column, ForeignKey, Table, Integer, String, and_, or_
@@ -103,7 +103,8 @@ def login():
                 # login_user(user)  # login_user(user)其实是调用user_loader()把用户设置到session中
                 return render_template('main.html', Menus=menus)
             # 认证失败返回登录页面
-            return redirect(url_for('/login'))
+            error = '用户名或密码错误'
+            return render_template('login.html', error= error)
     except Exception as e:
         print(e)
         logger.error(e)
