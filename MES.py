@@ -244,10 +244,10 @@ def MyUserSelect():
                 rowsnumber = int(odata['rows'])  # 行数
                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
-                ID = odata['id']
+                id = odata['id']
                 Name = odata['Name']
-                if ID != '':
-                    OrganizationCodeData = session.query(Organization).filter_by(ID=ID).first()
+                if id != '':
+                    OrganizationCodeData = session.query(Organization).filter_by(id=id).first()
                     if OrganizationCodeData != None:
                         OrganizationName = str(OrganizationCodeData.OrganizationName)
                         total = session.query(User).filter(and_(User.OrganizationName.like("%" + OrganizationName + "%") if OrganizationName is not None else "",
@@ -309,8 +309,8 @@ def UpdateUser():
         try:
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 10:
-                ID = int(data['ID'])
-                user = session.query(User).filter_by(ID=ID).first()
+                id = int(data['id'])
+                user = session.query(User).filter_by(id=id).first()
                 user.Name = data['Name']
                 user.Password = data['Password']
                 user.Password = user.password(data['Password'])
@@ -339,16 +339,16 @@ def deleteUser():
             if len(jsonstr) > 10:
                 jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
                 for key in jsonnumber:
-                    ID = int(key)
+                    id = int(key)
                     try:
-                        oclass = session.query(User).filter_by(ID=ID).first()
+                        oclass = session.query(User).filter_by(id=id).first()
                         session.delete(oclass)
                         session.commit()
-                        insertSyslog("success", "删除ID是" + string(ID) + "的用户删除成功", "AAAAAAadmin")
+                        insertSyslog("success", "删除ID是" + string(id) + "的用户删除成功", "AAAAAAadmin")
                     except Exception as ee:
                         print(ee)
                         logger.error(ee)
-                        insertSyslog("error", "删除户ID为"+string(ID)+"报错Error：" + string(ee), "AAAAAAadmin")
+                        insertSyslog("error", "删除户ID为"+string(id)+"报错Error：" + string(ee), "AAAAAAadmin")
                         return json.dumps([{"status": "error:" + string(ee)}], cls=AlchemyEncoder,
                                           ensure_ascii=False)
                 return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=AlchemyEncoder,
@@ -1251,6 +1251,33 @@ def ZYPlansFind():
         re = ZYPlanIFS.ZYPlansFind(data)
         return re
 
+#批次管理查询
+@app.route('/batchManager/SearchBatchManager')
+def SearchBatchManager():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                pages = int(data['page'])  # 页数
+                rowsnumber = int(data['rows'])  # 行数
+                inipage = (pages - 1) * rowsnumber + 0  # 起始页
+                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+                currentWorkdate = data["currentWorkdate"]
+                if(currentWorkdate == "" or currentWorkdate == None):
+                    total = session.query(ZYPlan).count()
+                    zYPlans = session.query(ZYPlan).order_by("EnterTime desc").all()[inipage:endpage]
+                else:
+                    total = session.query(ZYPlan).filer(ZYPlan.PlanBeginTime == currentWorkdate).count()
+                    zYPlans = session.query(ZYPlan).filer(ZYPlan.PlanBeginTime == currentWorkdate).order_by("PlanBeginTime desc").all()[inipage:endpage]
+                jsonzyplans = json.dumps(zYPlans, cls=AlchemyEncoder, ensure_ascii=False)
+                jsonzyplans = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonzyplans + "}"
+                return jsonzyplans
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "批次管理查询报错Error：" + str(e), "AAAAAAadmin")
+            return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 # role更新数据，通过传入的json数据，解析之后进行相应更新
 @app.route('/allZYPlans/Update', methods=['POST', 'GET'])
