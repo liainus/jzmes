@@ -243,10 +243,10 @@ def MyUserSelect():
                 rowsnumber = int(odata['rows'])  # 行数
                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
-                ID = odata['id']
+                id = odata['id']
                 Name = odata['Name']
-                if ID != '':
-                    OrganizationCodeData = session.query(Organization).filter_by(ID=ID).first()
+                if id != '':
+                    OrganizationCodeData = session.query(Organization).filter_by(id=id).first()
                     if OrganizationCodeData != None:
                         OrganizationName = str(OrganizationCodeData.OrganizationName)
                         total = session.query(User).filter(and_(User.OrganizationName.like("%" + OrganizationName + "%") if OrganizationName is not None else "",
@@ -308,8 +308,8 @@ def UpdateUser():
         try:
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 10:
-                ID = int(data['ID'])
-                user = session.query(User).filter_by(ID=ID).first()
+                id = int(data['id'])
+                user = session.query(User).filter_by(id=id).first()
                 user.Name = data['Name']
                 user.Password = data['Password']
                 user.Password = user.password(data['Password'])
@@ -338,16 +338,16 @@ def deleteUser():
             if len(jsonstr) > 10:
                 jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
                 for key in jsonnumber:
-                    ID = int(key)
+                    id = int(key)
                     try:
-                        oclass = session.query(User).filter_by(ID=ID).first()
+                        oclass = session.query(User).filter_by(id=id).first()
                         session.delete(oclass)
                         session.commit()
-                        insertSyslog("success", "删除ID是" + string(ID) + "的用户删除成功", "AAAAAAadmin")
+                        insertSyslog("success", "删除ID是" + string(id) + "的用户删除成功", "AAAAAAadmin")
                     except Exception as ee:
                         print(ee)
                         logger.error(ee)
-                        insertSyslog("error", "删除户ID为"+string(ID)+"报错Error：" + string(ee), "AAAAAAadmin")
+                        insertSyslog("error", "删除户ID为"+string(id)+"报错Error：" + string(ee), "AAAAAAadmin")
                         return json.dumps([{"status": "error:" + string(ee)}], cls=AlchemyEncoder,
                                           ensure_ascii=False)
                 return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=AlchemyEncoder,

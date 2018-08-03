@@ -147,8 +147,8 @@ class Role(Base):
 class User(Base,UserMixin):
     __tablename__ = 'user'
 
-    # ID
-    ID = Column(Integer, primary_key=True, autoincrement=True)
+    # id
+    id = Column(Integer, primary_key=True, autoincrement=True)
 
     # 用户名
     Name = Column(Unicode(64), primary_key=False, autoincrement=False, nullable=True)
