@@ -18,7 +18,6 @@ from sqlalchemy import create_engine, \
 from sqlalchemy import Column, DateTime, Float, Integer, String, Unicode
 from sqlalchemy.dialects.mssql.base import BIT
 from werkzeug.security import generate_password_hash, check_password_hash
-
 import Model.Global
 from datetime import datetime
 from flask_login import UserMixin,LoginManager
@@ -147,8 +146,8 @@ class Role(Base):
 class User(Base,UserMixin):
     __tablename__ = 'user'
 
-    # ID
-    ID = Column(Integer, primary_key=True, autoincrement=True)
+    # id
+    id = Column(Integer, primary_key=True, autoincrement=True)
 
     # 用户名
     Name = Column(Unicode(64), primary_key=False, autoincrement=False, nullable=True)
@@ -180,14 +179,15 @@ class User(Base,UserMixin):
     # 角色名称:
     RoleName = Column(Unicode(128), primary_key=False, autoincrement=False, nullable=True)
 
-    @property
-    def password(self):
-        raise AttributeError('password is not a readable attribute')
+    # @property
+    # def password(self):
+    #     raise AttributeError('password is not a readable attribute')
 
     # 定义password字段的写方法，我们调用generate_password_hash将明文密码password转成密文Shadow
-    @password.setter
+    # @password.setter
     def password(self, password):
         self.Password = generate_password_hash(password)
+        return self.Password
 
     # 定义验证密码的函数confirm_password
     def confirm_password(self, password):
