@@ -195,6 +195,8 @@ class User(Base,UserMixin):
 
 # 用户回调的回调函数
 @login_manager.user_loader
+###加载用户的回调函数接收以Unicode字符串形式表示的用户标示符
+###如果能找到用户，这个函数必须返回用户对象，否则返回None。
 def load_user(user_id):
     return User.query.get(int(user_id))
 
