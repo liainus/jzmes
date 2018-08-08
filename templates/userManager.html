@@ -19,22 +19,22 @@
 </head>
 <body>
 	<div class="">
-		<div class="left-tree" style="display: inline-block;vertical-align: top;border: 1px solid #ccc;margin: 10px;padding: 15px;">
+		<div class="left-tree" style="width:15%;float:left;vertical-align: top;border: 1px solid #ccc;margin: 1%;padding: 1%;">
             <ul class="easyui-tree" id="tree"></ul>
 		</div>
-		<div class="content" style="width:800px;display: inline-block;vertical-align: top;">
+		<div class="content" style="width:80%;float:left;vertical-align: top;">
 			<div style="margin-top: 20px;margin-bottom: 10px;border-bottom: 1px solid #ccc;padding-bottom: 10px;">
                 <span style="color:#1da02b;">用户列表</span>
             </div>
-			<div id="userClassDialog" class="easyui-dialog" style="width:400px;height:480px;padding:10px;"
+			<div id="userClassDialog" class="easyui-dialog" style="width:400px;height:400px;padding:10px;"
                  data-options="closed:'true',buttons:'#userClassDialogButtons',modal:true">
                 <form id="userClassForm" method="post" class="dialog-form">
                     <table class="kv-table">
                         <tbody>
                             <tr>
-                                <td class="kv-label">ID</td>
+                                <td class="kv-label">id</td>
                                 <td class="kv-content">
-                                    <input name="ID" type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="" disabled="disabled">
+                                    <input name="id" type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="" disabled="disabled">
                                 </td>
                             </tr>
                             <tr>
@@ -174,7 +174,7 @@
             $("#saveAdd").show()
             $("#saveUpdata").hide()
             $("#userClassDialog").dialog('open').dialog('setTitle','添加用户');
-            $('input[name="ID"]').val(); //ID
+            $('input[name="id"]').val(); //ID
             $('input[name="Name"]').val("");//用户名
             $('input[name="Password"]').val("");//密码
             $('input[name="LoginName"]').val("");//登录名
@@ -194,7 +194,7 @@
                 var row = $("#tab").datagrid('getSelected');
                 if(row){
                     $("#userClassDialog").dialog('open').dialog('setTitle','修改信息');
-                    $('input[name="ID"]').val(row.ID); //ID
+                    $('input[name="id"]').val(row.id); //id
                     $('input[name="Name"]').val(row.Name);//用户名
                     $('input[name="Password"]').val(row.Password);//密码
                     $('input[name="LoginName"]').val(row.WorkNumber);//登录名
@@ -210,7 +210,7 @@
         }
         function createKeyIDObj(keyID){
             return {
-                ID:keyID
+                id:keyID
             }
         }
         function doDelete(){
@@ -219,11 +219,11 @@
                 var jsonarray=[];
                 $.messager.confirm('确定操作', '您正在删除所选的记录吗？', function (flag) {
                     if (flag) {
-                        var PrimaryKey = "ID";
+                        var PrimaryKey = "id";
                         var a = "";
                         for (var i = 0; i < rows.length; i++) {
                             // ids.push(parseInt((rows[i].id)));
-                            var obj=createKeyIDObj(parseInt(rows[i].ID));
+                            var obj=createKeyIDObj(parseInt(rows[i].id));
                             jsonarray.push(obj);
                         }
                         a = JSON.stringify(jsonarray);
@@ -311,7 +311,7 @@
                     method: 'POST',
                     traditional: true,
                     data: {
-                        ID: $('input[name="ID"]').val(),
+                        id: $('input[name="id"]').val(),
                         Name :$('input[name="Name"]').val(),
                         Password :$('input[name="Password"]').val(),
                         WorkNumber :$('input[name="LoginName"]').val(),

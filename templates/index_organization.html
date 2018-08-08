@@ -22,7 +22,6 @@
              data : {},
              dataType : "json",
              success : function(result) {
-                 console.log(result)
                  if (result) {
                      myChart.hideLoading(); //隐藏加载动画
                      myChart.setOption({  //加载数据图表
@@ -48,8 +47,8 @@
                             {
                                 name:'树图',
                                 type:'tree',
-                                orient: 'horizontal',  //树的方向
-                                rootLocation: {x: 100, y: '60%'}, // 根节点位置  {x: 'center',y: 10}
+                                orient: 'vertical',  //树的方向
+                                rootLocation: {x: '50%', y: '100'}, // 根节点位置  {x: 'center',y: 10}
                                 nodePadding: 1, //节点间距
                                 layerPadding:150,
                                 symbol: 'rectangle',
