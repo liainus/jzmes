@@ -91,16 +91,22 @@ def login():
             password = data['password']
                 # 验证账户与密码
             user = session.query(User).filter_by(WorkNumber=work_number).first()
-            # user_json = json.dumps(user, cls=AlchemyEncoder, ensure_ascii=False)
-            # currentUser = session.query(User.Name).filter_by(WorkNumber=work_number).first()
             # hash_password = user.password(password)
             if user and user.confirm_password(password):
-                # cli_session['user'] = user
+                # 查询用户当前菜单权限
+                roles = session.query(User.RoleName).filter_by(WorkNumber=work_number).all()
+                menus = []
+                for role in roles:
+                    for index in role:
+                        print(index)
+                        role_id = session.query(Role.ID).filter_by(RoleName=index).first()
+                        # role = session.query(Role).filter_by(RoleName=index).first
+                        menu = session.query(Menu).join(Role_Menu, isouter=True).filter_by(Role_ID=role_id).all()
+                        menus.append(menu)
                 login_user(user)  # login_user(user)其实是调用user_loader()把用户设置到session中
-                return redirect('/')
+                return redirect('/') and render_template('main.html', Menus=menus)
             # 认证失败返回登录页面
             error = '用户名或密码错误'
-            error_json = json.dumps(error, cls=AlchemyEncoder, ensure_ascii=False)
             return render_template('login.html', error=error)
     except Exception as e:
         print(e)
@@ -116,34 +122,6 @@ def logout():
     logout_user()
     return redirect(url_for('login'))
 
-
-# '''注册'''
-#
-#
-# @app.route('/register', methods=['GET', 'POST'])
-# def register():
-#     if request.method == 'GET':
-#         render_template('register.html')
-#
-#     if request.method == 'POST':
-#         user_name = request.form['user_name']
-#         job_number = request.form['job_number']
-#         password1 = request.form['password1']
-#         password2 = request.form['password2']
-#         email = request.form['email']
-#         tel = request.form['tel']
-#         security_status = request.form['security_status']  # 获取ajax传的验证码状态码
-#
-#         # 判断验证码是否正确
-#         result = login_security.security(security_status)
-#         if result['status'] is False:
-#             return json.dumps({'status': False})
-#
-#         # 用户注册
-#         result = login_security.register_handler(user_name, job_number, password1, password2, email, tel)
-#         if result['status'] is True:
-#             return render_template('login.html')
-#         return render_template('register.html', message=result['msg'])
 
 
 # 系统日志
@@ -2209,16 +2187,6 @@ def OrganizationFind():
 # 主页面路由
 @app.route('/')
 def hello_world():
-    # # 查询用户当前菜单权限
-    # roles = session.query(User.RoleName).filter_by(WorkNumber=work_number).all()
-    # menus = []
-    # for role in roles:
-    #     for index in role:
-    #         print(index)
-    #         role_id = session.query(Role.ID).filter_by(RoleName=index).first()
-    #         # role = session.query(Role).filter_by(RoleName=index).first
-    #         menu = session.query(Menu).join(Role_Menu, isouter=True).filter_by(Role_ID=role_id).all()
-    #         menus.append(menu)
     return render_template('main.html')
 
 
