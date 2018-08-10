@@ -69,13 +69,6 @@ def load():
 
 
 '''登录'''
-
-# 保护路由只让已认证的用户访问，如果未认证的用户访问这个路由，Flask-Login 会拦截请求，把用户发往登录页面。
-@app.route('/secret')
-@login_required
-def secret():
-    return 'Only authenticated users are allowed!'
-
 @login_manager.user_loader
 def load_user(user_id):
     return session.query(User).filter_by(id=int(user_id)).first()
