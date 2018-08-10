@@ -143,7 +143,7 @@ class Role(Base):
 
 
 # 用户表
-class User(Base,UserMixin):
+class User(Base):
     __tablename__ = 'user'
 
     # id
@@ -193,12 +193,25 @@ class User(Base,UserMixin):
     def confirm_password(self, password):
         return check_password_hash(self.Password, password)
 
+    @property
+    def is_authenticated(self):
+        return True
+
+    @property
+    def is_active(self):
+        return True
+
+    @property
+    def is_anonymous(self):
+        return False
+
+    def get_id(self):
+        return str(self.id)  # python 3
+
 # 用户回调的回调函数
-@login_manager.user_loader
 ###加载用户的回调函数接收以Unicode字符串形式表示的用户标示符
 ###如果能找到用户，这个函数必须返回用户对象，否则返回None。
-def load_user(user_id):
-    return User.query.get(int(user_id))
+
 
 
 # 生成表单的执行语句

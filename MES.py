@@ -76,6 +76,10 @@ def load():
 def secret():
     return 'Only authenticated users are allowed!'
 
+@login_manager.user_loader
+def load_user(user_id):
+    return session.query(User).filter_by(id=int(user_id)).first()
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     try:
@@ -87,25 +91,16 @@ def login():
             password = data['password']
                 # 验证账户与密码
             user = session.query(User).filter_by(WorkNumber=work_number).first()
+            user_json = json.dumps(user, cls=AlchemyEncoder, ensure_ascii=False)
             currentUser = session.query(User.Name).filter_by(WorkNumber=work_number).first()
             # hash_password = user.password(password)
             if user and user.confirm_password(password):
-                # 查询用户当前菜单权限
-                roles = session.query(User.RoleName).filter_by(WorkNumber=work_number).all()
-                menus = []
-                for role in roles:
-                    for index in role:
-                        print(index)
-                        role_id = session.query(Role.ID).filter_by(RoleName=index).first()
-                        # role = session.query(Role).filter_by(RoleName=index).first
-                        menu = session.query(Menu).join(Role_Menu, isouter=True).filter_by(Role_ID=role_id).all()
-                        menus.append(menu)
-                print(menus)
+                # cli_session['user'] = user
                 login_user(user)  # login_user(user)其实是调用user_loader()把用户设置到session中
-                return render_template('main.html', Menus=menus, currentUser=currentUser)
+                return redirect('/')
             # 认证失败返回登录页面
             error = '用户名或密码错误'
-            return render_template('login.html', error= error)
+            return redirect(url_for('login')), error
     except Exception as e:
         print(e)
         logger.error(e)
@@ -2213,6 +2208,16 @@ def OrganizationFind():
 # 主页面路由
 @app.route('/')
 def hello_world():
+    # # 查询用户当前菜单权限
+    # roles = session.query(User.RoleName).filter_by(WorkNumber=work_number).all()
+    # menus = []
+    # for role in roles:
+    #     for index in role:
+    #         print(index)
+    #         role_id = session.query(Role.ID).filter_by(RoleName=index).first()
+    #         # role = session.query(Role).filter_by(RoleName=index).first
+    #         menu = session.query(Menu).join(Role_Menu, isouter=True).filter_by(Role_ID=role_id).all()
+    #         menus.append(menu)
     return render_template('main.html')
 
 
