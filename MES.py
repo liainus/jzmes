@@ -91,8 +91,8 @@ def login():
             password = data['password']
                 # 验证账户与密码
             user = session.query(User).filter_by(WorkNumber=work_number).first()
-            user_json = json.dumps(user, cls=AlchemyEncoder, ensure_ascii=False)
-            currentUser = session.query(User.Name).filter_by(WorkNumber=work_number).first()
+            # user_json = json.dumps(user, cls=AlchemyEncoder, ensure_ascii=False)
+            # currentUser = session.query(User.Name).filter_by(WorkNumber=work_number).first()
             # hash_password = user.password(password)
             if user and user.confirm_password(password):
                 # cli_session['user'] = user
@@ -100,7 +100,8 @@ def login():
                 return redirect('/')
             # 认证失败返回登录页面
             error = '用户名或密码错误'
-            return redirect(url_for('login')), error
+            error_json = json.dumps(error, cls=AlchemyEncoder, ensure_ascii=False)
+            return render_template('login.html', error=error)
     except Exception as e:
         print(e)
         logger.error(e)
@@ -113,7 +114,7 @@ def login():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('/login'))
+    return redirect(url_for('login'))
 
 
 # '''注册'''
