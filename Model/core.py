@@ -1357,10 +1357,11 @@ class FactoryWebIFS(object):
 						FactoryName=odata['FactoryName'],
 						FactoryNo = odata['FactoryNo'],
 						ParentNodeName = odata['ParentNodeName'],
-						ParentEnterprise = odata['ParentEnterprise'],
-						Seq=odata['Seq'],
 						Desc=odata['Desc'],
-						Type=odata['Type']))
+						Type=odata['Type'],
+						ParentEnterprise = odata['ParentEnterprise'],
+					    Seq = odata['Seq']
+				))
 				session.commit()
 				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 								  ensure_ascii=False)

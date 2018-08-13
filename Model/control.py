@@ -395,7 +395,7 @@ class ctrlPlan:
             logger.error(e)
             return  bReturn
 
-    def createLinePUPlan(self, AProductRuleID, APlanWeight,APlanDate,ABatchID,ABrandID,ABrandName,AUnit):
+    def createLinePUPlan(self, AProductRuleID, APlanWeight,APlanDate,ABatchID,ABrandID,ABrandName,PLineName,AUnit):
         bReturn = True
         bIsExist = True
         iPlanSeq = 0
@@ -417,7 +417,7 @@ class ctrlPlan:
                 if bReturn == False:
                     return False
 
-            bReturn, iPLineID, sPLineName = self.getLineInfo(ABrandName)
+            bReturn, iPLineID, sPLineName = self.getLineInfo(PLineName)
             if bReturn == False:
                 return False
             bReturn,oRoutes = self.getProductUnitRoute(AProductRuleID)
