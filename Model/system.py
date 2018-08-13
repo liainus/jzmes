@@ -31,7 +31,7 @@ import pymssql
 # 创建对象的基类
 engine = create_engine(Model.Global.GLOBAL_DATABASE_CONNECT_STRING, deprecate_large_types=True)
 Session = sessionmaker(bind=engine)
-session = Session()
+db_session= Session()
 Base = declarative_base(engine)
 
 
@@ -217,7 +217,7 @@ class User(Base):
 # 生成表单的执行语句
 # Base.metadata.create_all(engine)
 # import json
-# UnReadMsg = session.query(Role).all()
+# UnReadMsg = db_session.query(Role).all()
 # print (UnReadMsg[0].RoleName.encode('utf-8').decode('utf-8'))
 
 # Organization:
@@ -260,7 +260,7 @@ class Organization(Base):
 # 生成表单的执行语句
 Base.metadata.create_all(engine)
 
-# users_data = session.query(User).join(user_role, isouter=True).filter_by(Role_ID=1).all()
+# users_data = db_session.query(User).join(user_role, isouter=True).filter_by(Role_ID=1).all()
 # print(users_data)
-# per_data = session.query(Permission.Per_ID).join(Permission_User, isouter=True).filter_by(User_ID=1).all()
+# per_data = db_session.query(Permission.Per_ID).join(Permission_User, isouter=True).filter_by(User_ID=1).all()
 # print(per_data)

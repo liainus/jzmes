@@ -7,11 +7,11 @@ import time
 from collections import Counter
 from flask import Flask, jsonify, redirect, url_for, flash
 from flask import render_template, request
-from flask import session as login_session
+from flask import session
 from sqlalchemy import create_engine, Column, ForeignKey, Table, Integer, String, and_, or_
 from sqlalchemy import func
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, relationship
+from sqlalchemy.orm import Session, relationship, sessionmaker
 
 import Model.Global
 from Model.BSFramwork import AlchemyEncoder
@@ -21,13 +21,10 @@ from Model.system import Role, Organization, User, Menu, Role_Menu
 from tools.MESLogger import MESLogger
 from Model.core import SysLog
 from sqlalchemy import func
-from sqlalchemy.ext.declarative import DeclarativeMeta
 import string
 import re
 from collections import Counter
-from flask import session as cli_session
 from Model.system import User
-from random import randint
 from Model.Global import WeightUnit
 from Model.control import ctrlPlan
 from flask_login import LoginManager, current_user
@@ -36,7 +33,7 @@ import socket
 
 #flask_login的初始化
 login_manager = LoginManager()
-login_manager.session_protection = 'strong'
+login_manager.db_session_protection = 'strong'
 login_manager.login_view ='login'
 
 # 获取本文件名实例化一个flask对象
@@ -48,8 +45,7 @@ login_manager.init_app(app)
 
 engine = create_engine(Model.Global.GLOBAL_DATABASE_CONNECT_STRING, deprecate_large_types=True)
 Session = sessionmaker(bind=engine)
-session = Session()
-
+db_session = Session()
 logger = MESLogger('../logs', 'log')
 
 
@@ -69,16 +65,9 @@ def load():
 
 
 '''登录'''
-
-# 保护路由只让已认证的用户访问，如果未认证的用户访问这个路由，Flask-Login 会拦截请求，把用户发往登录页面。
-@app.route('/secret')
-@login_required
-def secret():
-    return 'Only authenticated users are allowed!'
-
 @login_manager.user_loader
 def load_user(user_id):
-    return session.query(User).filter_by(id=int(user_id)).first()
+    return db_session.query(User).filter_by(id=int(user_id)).first()
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -90,17 +79,26 @@ def login():
             work_number = data['WorkNumber']
             password = data['password']
                 # 验证账户与密码
-            user = session.query(User).filter_by(WorkNumber=work_number).first()
-            user_json = json.dumps(user, cls=AlchemyEncoder, ensure_ascii=False)
-            currentUser = session.query(User.Name).filter_by(WorkNumber=work_number).first()
+            user = db_session.query(User).filter_by(WorkNumber=work_number).first()
             # hash_password = user.password(password)
             if user and user.confirm_password(password):
-                # cli_session['user'] = user
-                login_user(user)  # login_user(user)其实是调用user_loader()把用户设置到session中
+                login_user(user)  # login_user(user)调用user_loader()把用户设置到db_session中
+                # 查询用户当前菜单权限
+                roles = db_session.query(User.RoleName).filter_by(WorkNumber=work_number).all()
+                menus = []
+                for role in roles:
+                    for index in role:
+                        print(index)
+                        role_id = db_session.query(Role.ID).filter_by(RoleName=index).first()
+                        menu = db_session.query(Menu.ModuleCode).join(Role_Menu, isouter=True).filter_by(Role_ID=role_id).all()
+                        for li in menu:
+                            menus.append(li[0])
+                session['menus'] = menus
+                print(session['menus'])
                 return redirect('/')
             # 认证失败返回登录页面
             error = '用户名或密码错误'
-            return redirect(url_for('login')), error
+            return render_template('login.html', error=error)
     except Exception as e:
         print(e)
         logger.error(e)
@@ -113,36 +111,8 @@ def login():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('/login'))
+    return redirect(url_for('login'))
 
-
-# '''注册'''
-#
-#
-# @app.route('/register', methods=['GET', 'POST'])
-# def register():
-#     if request.method == 'GET':
-#         render_template('register.html')
-#
-#     if request.method == 'POST':
-#         user_name = request.form['user_name']
-#         job_number = request.form['job_number']
-#         password1 = request.form['password1']
-#         password2 = request.form['password2']
-#         email = request.form['email']
-#         tel = request.form['tel']
-#         security_status = request.form['security_status']  # 获取ajax传的验证码状态码
-#
-#         # 判断验证码是否正确
-#         result = login_security.security(security_status)
-#         if result['status'] is False:
-#             return json.dumps({'status': False})
-#
-#         # 用户注册
-#         result = login_security.register_handler(user_name, job_number, password1, password2, email, tel)
-#         if result['status'] is True:
-#             return render_template('login.html')
-#         return render_template('register.html', message=result['msg'])
 
 
 # 系统日志
@@ -166,16 +136,16 @@ def syslogsFindByDate():
                 startTime = data['startTime']  # 开始时间
                 endTime = data['endTime']  # 结束时间
                 if startTime == "" and endTime == "":
-                    total = session.query(SysLog).count()
-                    syslogs = session.query(SysLog).order_by("OperationDate desc").all()[inipage:endpage]
+                    total = db_session.query(SysLog).count()
+                    syslogs = db_session.query(SysLog).order_by("OperationDate desc").all()[inipage:endpage]
                 elif startTime != "" and endTime == "":
                     nowTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                    total = session.query(SysLog).filter(SysLog.OperationDate.between(startTime, nowTime)).count()
-                    syslogs = session.query(SysLog).filter(SysLog.OperationDate.between(startTime, nowTime)).order_by("OperationDate desc")[
+                    total = db_session.query(SysLog).filter(SysLog.OperationDate.between(startTime, nowTime)).count()
+                    syslogs = db_session.query(SysLog).filter(SysLog.OperationDate.between(startTime, nowTime)).order_by("OperationDate desc")[
                               inipage:endpage]
                 else:
-                    total = session.query(SysLog).filter(SysLog.OperationDate.between(startTime, endTime)).count()
-                    syslogs = session.query(SysLog).filter(SysLog.OperationDate.between(startTime, endTime)).order_by("OperationDate desc")[
+                    total = db_session.query(SysLog).filter(SysLog.OperationDate.between(startTime, endTime)).count()
+                    syslogs = db_session.query(SysLog).filter(SysLog.OperationDate.between(startTime, endTime)).order_by("OperationDate desc")[
                               inipage:endpage]
                 jsonsyslogs = json.dumps(syslogs, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonsyslogs = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonsyslogs + "}"
@@ -195,10 +165,10 @@ def insertSyslog(operationType, operationContent, userName):
                 operationContent = str(operationContent)
             if userName == None: userName = ""
             ComputerName = socket.gethostname()
-            session.add(
+            db_session.add(
                 SysLog(OperationType=operationType, OperationContent=operationContent,OperationDate=datetime.datetime.now(), UserName=userName,
                        ComputerName=ComputerName, IP=socket.gethostbyname(ComputerName)))
-            session.commit()
+            db_session.commit()
         except Exception as e:
             print(e)
             logger.error(e)
@@ -206,7 +176,7 @@ def insertSyslog(operationType, operationContent, userName):
 # 用户管理
 @app.route('/userManager')
 def userManager():
-    departments = session.query(Organization.ID, Organization.OrganizationName).all()
+    departments = db_session.query(Organization.ID, Organization.OrganizationName).all()
     # print(departments)
     # departments = json.dumps(departments, cls=AlchemyEncoder, ensure_ascii=False)
     data = []
@@ -218,7 +188,7 @@ def userManager():
         data.append(department)
 
     dataRoleName = []
-    roleNames = session.query(Role.ID, Role.RoleName).all()
+    roleNames = db_session.query(Role.ID, Role.RoleName).all()
     for role in roleNames:
         li = list(role)
         id = li[0]
@@ -242,19 +212,19 @@ def MyUserSelect():
                 id = odata['id']
                 Name = odata['Name']
                 if id != '':
-                    OrganizationCodeData = session.query(Organization).filter_by(id=id).first()
+                    OrganizationCodeData = db_session.query(Organization).filter_by(id=id).first()
                     if OrganizationCodeData != None:
                         OrganizationName = str(OrganizationCodeData.OrganizationName)
-                        total = session.query(User).filter(and_(User.OrganizationName.like("%" + OrganizationName + "%") if OrganizationName is not None else "",
+                        total = db_session.query(User).filter(and_(User.OrganizationName.like("%" + OrganizationName + "%") if OrganizationName is not None else "",
                                                            User.Name.like("%" + Name + "%") if Name is not None else "")).count()
-                        oclass = session.query(User).filter(and_(User.OrganizationName.like("%" + OrganizationName + "%") if OrganizationName is not None else "",
+                        oclass = db_session.query(User).filter(and_(User.OrganizationName.like("%" + OrganizationName + "%") if OrganizationName is not None else "",
                                                            User.Name.like("%" + Name + "%") if Name is not None else ""))[inipage:endpage]
                     else:
-                        total = session.query(User).filter(User.Name.like("%" + Name + "%") if Name is not None else "").count()
-                        oclass = session.query(User).filter(User.Name.like("%" + Name + "%") if Name is not None else "")[inipage:endpage]
+                        total = db_session.query(User).filter(User.Name.like("%" + Name + "%") if Name is not None else "").count()
+                        oclass = db_session.query(User).filter(User.Name.like("%" + Name + "%") if Name is not None else "")[inipage:endpage]
                 else:
-                    total = session.query(User).filter(User.Name.like("%" + Name + "%") if Name is not None else "").count()
-                    oclass = session.query(User).filter(User.Name.like("%" + Name + "%") if Name is not None else "")[inipage:endpage]
+                    total = db_session.query(User).filter(User.Name.like("%" + Name + "%") if Name is not None else "").count()
+                    oclass = db_session.query(User).filter(User.Name.like("%" + Name + "%") if Name is not None else "")[inipage:endpage]
                 jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonoclass = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
             return jsonoclass
@@ -286,8 +256,8 @@ def addUser():
                 user.IsLock='false' # data['IsLock'],
                 user.OrganizationName=data['OrganizationName']
                 user.RoleName=data['RoleName']
-                session.add(user)
-                session.commit()
+                db_session.add(user)
+                db_session.commit()
                 insertSyslog("添加用户", "添加用户"+data['Name']+"添加成功", "AAAAAAadmin")
                 return json.dumps([{"status": "OK"}], cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
@@ -305,7 +275,7 @@ def UpdateUser():
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 10:
                 id = int(data['id'])
-                user = session.query(User).filter_by(id=id).first()
+                user = db_session.query(User).filter_by(id=id).first()
                 user.Name = data['Name']
                 user.Password = data['Password']
                 user.Password = user.password(data['Password'])
@@ -315,7 +285,7 @@ def UpdateUser():
                 # user.LastLoginTime = data['LastLoginTime']
                 # user.IsLock = data['IsLock']
                 user.OrganizationName = data['OrganizationName']
-                session.commit()
+                db_session.commit()
                 insertSyslog("success", "更新用户" + data['Name'] + "成功", "AAAAAAadmin")
                 return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=AlchemyEncoder,
                                   ensure_ascii=False)
@@ -336,9 +306,9 @@ def deleteUser():
                 for key in jsonnumber:
                     id = int(key)
                     try:
-                        oclass = session.query(User).filter_by(id=id).first()
-                        session.delete(oclass)
-                        session.commit()
+                        oclass = db_session.query(User).filter_by(id=id).first()
+                        db_session.delete(oclass)
+                        db_session.commit()
                         insertSyslog("success", "删除ID是" + string(id) + "的用户删除成功", "AAAAAAadmin")
                     except Exception as ee:
                         print(ee)
@@ -363,7 +333,7 @@ def roleright():
 def getRoleList(id=0):
     sz = []
     try:
-        roles = session.query(Role).filter().all()
+        roles = db_session.query(Role).filter().all()
         for obj in roles:
             if obj.ParentNode == id:
                 sz.append({"id": obj.ID, "text": obj.RoleName, "children": getRoleList(obj.ID)})
@@ -382,7 +352,7 @@ def SelectRoles():
         try:
             # data = load()
             data = getRoleList(id=0)
-            # organizations = session.query(Organization).filter().all()
+            # organizations = db_session.query(Organization).filter().all()
             jsondata = json.dumps(data, cls=AlchemyEncoder, ensure_ascii=False)
             print(jsondata)
             return jsondata.encode("utf8")
@@ -410,8 +380,8 @@ def userList():
                     rowsnumber = int(data['rows'])  # 行数
                     inipage = (pages - 1) * rowsnumber + 0  # 起始页
                     endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
-                    total = session.query(User).count()
-                    users_data = session.query(User)[inipage:endpage]
+                    total = db_session.query(User).count()
+                    users_data = db_session.query(User)[inipage:endpage]
                     # ORM模型转换json格式
                     jsonusers = json.dumps(users_data, cls=AlchemyEncoder, ensure_ascii=False)
                     jsonusers = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonusers + "}"
@@ -434,12 +404,12 @@ def userList():
                     endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
                     # 通过角色ID获取当前角色对应的用户
                     role_id = data['ID']
-                    role_name= session.query(Role.RoleName).filter_by(ID=role_id).first()
+                    role_name= db_session.query(Role.RoleName).filter_by(ID=role_id).first()
                     # print(role)
                     if role_name is None:  # 判断当前角色是否存在
                         return
-                    total = session.query(User).filter_by(RoleName=role_name).count()
-                    users_data = session.query(User).filter_by(RoleName=role_name).all()[
+                    total = db_session.query(User).filter_by(RoleName=role_name).count()
+                    users_data = db_session.query(User).filter_by(RoleName=role_name).all()[
                                  inipage:endpage]
                     print(users_data)
                     # ORM模型转换json格式
@@ -453,44 +423,11 @@ def userList():
                 return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
-# 通过点击角色查询用户
-# @app.route('/permission/RoleFindUser')
-# def roleFindUser():
-#     if request.method == 'GET':
-#         data = request.values  # 返回请求中的参数和form
-#         try:
-#             json_str = json.dumps(data.to_dict())
-#             print(json_str)
-#             if len(json_str) > 10:
-#                 pages = int(data['page'])  # 页数
-#                 rowsnumber = int(data['rows'])  # 行数
-#                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
-#                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
-#                 # 通过角色ID获取当前角色对应的用户
-#                 role_id = data['id']
-#                 role = session.query(Role).filter_by(ID=role_id).first()
-#                 print(role)
-#                 if role is None:  # 判断当前角色是否存在
-#                     return
-#                 total = session.query(User).join(User_Role, isouter=True).filter_by(Role_ID=role_id).count()
-#                 users_data = session.query(User).join(User_Role, isouter=True).filter_by(Role_ID=role_id).all()[inipage:endpage]
-#                 print(users_data)
-#                 # ORM模型转换json格式
-#                 jsonusers = json.dumps(users_data, cls=AlchemyEncoder, ensure_ascii=False)
-#                 jsonusers = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonusers + "}"
-#                 return jsonusers
-#         except Exception as e:
-#             print(e)
-#             logger.error(e)
-#             insertSyslog("error", "通过点击角色查询用户报错Error：" + str(e), "AAAAAAadmin")
-#             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
-
-
 # 权限分配下的功能模块列表
 def getMenuList(id=0):
     sz = []
     try:
-        menus = session.query(Menu).filter().all()
+        menus = db_session.query(Menu).filter().all()
         for obj in menus:
             if obj.ParentNode == id:
                 sz.append({"id": obj.ID, "text": obj.ModuleName, "children": getMenuList(obj.ID)})
@@ -534,12 +471,12 @@ def menuToUser():
             if menu_id is None:
                 return
             for r in menu_id:
-                role = session.query(Role).filter_by(ID=role_id).first()
-                menu = session.query(Menu).filter_by(ID=r).first()
+                role = db_session.query(Role).filter_by(ID=role_id).first()
+                menu = db_session.query(Menu).filter_by(ID=r).first()
                 # 将菜单ID和角色ID存入User_Role
                 menu.roles.append(role)
-                session.add(menu)
-                session.commit()
+                db_session.add(menu)
+                db_session.commit()
             # 存入数据库后跳转到权限分配页面
             return redirect(url_for("roleright"))
         except Exception as e:
@@ -560,6 +497,7 @@ def batchmanager():
 @app.route('/organizationMap')
 def organizationMap():
     return render_template('index_organization.html')
+
 @app.route('/organizationMap/selectAll')#组织结构
 def selectAll():
     if request.method == 'GET':
@@ -576,7 +514,7 @@ def selectAll():
 def getMyOrganizationChildrenMap(id):
     sz = []
     try:
-        orgs = session.query(Organization).filter().all()
+        orgs = db_session.query(Organization).filter().all()
         for obj in orgs:
             if obj.ParentNode == id:
                 sz.append(
@@ -604,8 +542,8 @@ def OrganizationsFind():
                 rowsnumber = int(data['rows'])  # 行数
                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
                 endpage = (pages-1) * rowsnumber + rowsnumber #截止页
-                total = session.query(func.count(Organization.ID)).scalar()
-                organiztions = session.query(Organization).all()[inipage:endpage]
+                total = db_session.query(func.count(Organization.ID)).scalar()
+                organiztions = db_session.query(Organization).all()[inipage:endpage]
                 #ORM模型转换json格式
                 jsonorganzitions = json.dumps(organiztions, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonorganzitions = '{"total"'+":"+str(total)+',"rows"' +":\n" + jsonorganzitions + "}"
@@ -627,7 +565,7 @@ def allOrganizationsUpdate():
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 10:
                 organizationid = int(data['ID'])
-                organization = session.query(Organization).filter_by(ID=organizationid).first()
+                organization = db_session.query(Organization).filter_by(ID=organizationid).first()
                 organization.OrganizationCode = data['OrganizationCode']
                 organization.OrganizationName = data['OrganizationName']
                 organization.ParentCode = data['ParentNode']
@@ -637,7 +575,7 @@ def allOrganizationsUpdate():
                 organization.CreateDate = data['CreateDate']
                 organization.Img = data['Img']
                 organization.Color = data['Color']
-                session.commit()
+                db_session.commit()
                 insertSyslog("success", "更新组织" + data['OrganizationName'] + "的组织更新成功", "AAAAAAadmin")
                 return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=AlchemyEncoder,
                                   ensure_ascii=False)
@@ -663,9 +601,9 @@ def allOrganizationsDelete():
                     # for subkey in list(key):
                     Organizationid = int(key)
                     try:
-                        oclass = session.query(Organization).filter_by(ID=Organizationid).first()
-                        session.delete(oclass)
-                        session.commit()
+                        oclass = db_session.query(Organization).filter_by(ID=Organizationid).first()
+                        db_session.delete(oclass)
+                        db_session.commit()
                         insertSyslog("success", "删除组织ID为" + str(Organizationid) + "的组织删除成功", "AAAAAAadmin")
                     except Exception as ee:
                         print(ee)
@@ -701,7 +639,7 @@ def allOrganizationsCreate():
                     DspColor = "#1696d3"
                 else:
                     DspColor = data['Color']
-                session.add(
+                db_session.add(
                     Organization(OrganizationCode=data['OrganizationCode'],
                                  OrganizationName=data['OrganizationName'],
                                  ParentNode=data['ParentNode'],
@@ -709,7 +647,7 @@ def allOrganizationsCreate():
                                  Description=data['Description'],
                                  CreatePerson=data['CreatePerson'],
                                  CreateDate=datetime.datetime.now(),Img = DspImg,Color = DspColor))
-                session.commit()
+                db_session.commit()
                 insertSyslog("success", "新增组织" + data['OrganizationName'] + "的组织新增成功", "AAAAAAadmin")
                 return json.dumps([{"status": "OK"}], cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
@@ -727,7 +665,7 @@ def allOrganizationsSearch():
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 2:
                 strconditon = "%" + data['condition'] + "%"
-                organizations = session.query(Organization).filter(Organization.OrganizationName.like(strconditon)).all()
+                organizations = db_session.query(Organization).filter(Organization.OrganizationName.like(strconditon)).all()
                 total = Counter(organizations)
                 jsonorganizations = json.dumps(organizations, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonorganizations = '{"total"' + ":" + str(total.__len__()) + ',"rows"' + ":\n" + jsonorganizations + "}"
@@ -742,7 +680,7 @@ def allOrganizationsSearch():
 # @app.route('/allOrganizations/parentNode')
 # def getParentNode():
 #     if request.method == 'GET':
-#         parentNode = session.query(Organization.ID, Organization.ParentNode).all()
+#         parentNode = db_session.query(Organization.ID, Organization.ParentNode).all()
 #         print(parentNode)
 #         data = []
 #         for tu in parentNode:
@@ -808,7 +746,7 @@ def allEnterprisesCreate():
 def getOrganizationList(id=0):
     sz = []
     try:
-        organizations = session.query(Organization).filter().all()
+        organizations = db_session.query(Organization).filter().all()
         for obj in organizations:
             if obj.ParentNode == id:
                 sz.append({"id": obj.ID, "text": obj.OrganizationName, "children": getOrganizationList(obj.ID)})
@@ -974,7 +912,7 @@ def allAreasSearch():
 # 加载工作台
 @app.route('/ProductLine')
 def productLine():
-    ID = session.query(Area.ID, Area.AreaName).all()
+    ID = db_session.query(Area.ID, Area.AreaName).all()
     print(ID)
     data = []
     for tu in ID:
@@ -1038,7 +976,7 @@ def allProductLinesSearch():
 # 加载工作台
 @app.route('/ProcessUnit')
 def processUnit():
-    ID = session.query(ProductLine.ID, ProductLine.PLineName).all()
+    ID = db_session.query(ProductLine.ID, ProductLine.PLineName).all()
     print(ID)
     data = []
     for tu in ID:
@@ -1102,7 +1040,7 @@ def allProcessUnitsSearch():
 # 加载工作台
 @app.route('/Equipment')
 def equipment():
-    ID = session.query(ProcessUnit.ID, ProcessUnit.PUName).all()
+    ID = db_session.query(ProcessUnit.ID, ProcessUnit.PUName).all()
     print(ID)
     data = []
     for tu in ID:
@@ -1223,7 +1161,7 @@ def allProductRulesSearch():
 @app.route('/ZYPlan')
 def zYPlan():
     try:
-        product_info = session.query(ProductRule.PRCode, ProductRule.PRName).all()
+        product_info = db_session.query(ProductRule.PRCode, ProductRule.PRName).all()
         # print(product_info)
         data_pro = []
         for tu in product_info:
@@ -1233,7 +1171,7 @@ def zYPlan():
             pro_info = {'PRCode': prcode, 'text': name}
             data_pro.append(pro_info)
 
-        proUnit_info = session.query(ProcessUnit.PUCode, ProcessUnit.PUName).all()
+        proUnit_info = db_session.query(ProcessUnit.PUCode, ProcessUnit.PUName).all()
         # print(proUnit_info)
         data_pucode = []
         for tu in proUnit_info:
@@ -1271,11 +1209,11 @@ def SearchBatchManager():
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
                 currentWorkdate = data["currentWorkdate"]
                 if(currentWorkdate == "" or currentWorkdate == None):
-                    total = session.query(ZYPlan).count()
-                    zYPlans = session.query(ZYPlan).order_by("EnterTime desc").all()[inipage:endpage]
+                    total = db_session.query(ZYPlan).count()
+                    zYPlans = db_session.query(ZYPlan).order_by("EnterTime desc").all()[inipage:endpage]
                 else:
-                    total = session.query(ZYPlan).filer(ZYPlan.PlanBeginTime == currentWorkdate).count()
-                    zYPlans = session.query(ZYPlan).filer(ZYPlan.PlanBeginTime == currentWorkdate).order_by("PlanBeginTime desc").all()[inipage:endpage]
+                    total = db_session.query(ZYPlan).filer(ZYPlan.PlanBeginTime == currentWorkdate).count()
+                    zYPlans = db_session.query(ZYPlan).filer(ZYPlan.PlanBeginTime == currentWorkdate).order_by("PlanBeginTime desc").all()[inipage:endpage]
                 jsonzyplans = json.dumps(zYPlans, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonzyplans = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonzyplans + "}"
                 return jsonzyplans
@@ -1329,7 +1267,7 @@ def allZYPlansSearch():
 @app.route('/ZYTask')
 def zYTask():
     try:
-        product_info = session.query(ProductRule.ID, ProductRule.PRName).all()
+        product_info = db_session.query(ProductRule.ID, ProductRule.PRName).all()
         # print(product_info)
         data_pro = []
         for tu in product_info:
@@ -1339,7 +1277,7 @@ def zYTask():
             pro_info = {'ID': id, 'text': name}
             data_pro.append(pro_info)
 
-        productUnit_info = session.query(ProductUnit.PUID, ProductUnit.PDUnitName).all()
+        productUnit_info = db_session.query(ProductUnit.PUID, ProductUnit.PDUnitName).all()
         # print(product_info)
         data_proUnit = []
         for tu in productUnit_info:
@@ -1349,7 +1287,7 @@ def zYTask():
             pro_info = {'ID': id, 'text': name}
             data_proUnit.append(pro_info)
 
-        batch_id = session.query(ZYPlan.BatchID).all()
+        batch_id = db_session.query(ZYPlan.BatchID).all()
         # print(product_info)
         data_batch = []
         for tu in batch_id:
@@ -1417,7 +1355,7 @@ def allZYTasksSearch():
 @app.route('/ProductControlTask')
 def ProductControlTask():
     try:
-        product_def_ID = session.query(ProductRule.ID,ProductRule.PRName).all()
+        product_def_ID = db_session.query(ProductRule.ID,ProductRule.PRName).all()
         print(product_def_ID)
         data1 = []
         for tu in product_def_ID:
@@ -1427,7 +1365,7 @@ def ProductControlTask():
             pro_def_id = {'ID': id, 'text':name}
             data1.append(pro_def_id)
 
-        productUnit_ID = session.query(ProcessUnit.ID, ProcessUnit.PUName).all()
+        productUnit_ID = db_session.query(ProcessUnit.ID, ProcessUnit.PUName).all()
         print(productUnit_ID)
         data = []
         for tu in productUnit_ID:
@@ -1496,7 +1434,7 @@ def allProductControlTasksSearch():
 @app.route('/ProductParameter')
 def productParameter():
     try:
-        product_def_ID = session.query(ProductRule.ID, ProductRule.PRName).all()
+        product_def_ID = db_session.query(ProductRule.ID, ProductRule.PRName).all()
         print(product_def_ID)
         data1 = []
         for tu in product_def_ID:
@@ -1506,7 +1444,7 @@ def productParameter():
             pro_def_id = {'ID': id, 'text':name}
             data1.append(pro_def_id)
 
-        productUnit_ID = session.query(ProcessUnit.ID, ProcessUnit.PUName).all()
+        productUnit_ID = db_session.query(ProcessUnit.ID, ProcessUnit.PUName).all()
         print(productUnit_ID)
         data = []
         for tu in productUnit_ID:
@@ -1629,7 +1567,7 @@ def allMaterialTypesSearch():
 # 加载工作台
 @app.route('/Material')
 def material():
-    ID = session.query(MaterialType.ID, Material.MATName).all()
+    ID = db_session.query(MaterialType.ID, Material.MATName).all()
     print(ID)
     data = []
     for tu in ID:
@@ -1704,7 +1642,7 @@ def allMaterialsSearch():
 @app.route('/MaterialBOM')
 def materialBOM():
     try:
-        material_ID = session.query(Material.ID,Material.MATName).all()
+        material_ID = db_session.query(Material.ID,Material.MATName).all()
         print(material_ID)
         data_material = []
         for tu in material_ID:
@@ -1714,7 +1652,7 @@ def materialBOM():
             material_id = {'ID': id,'text':name}
             data_material.append(material_id)
 
-        product_def_ID = session.query(ProductRule.ID, ProductRule.PRName).all()
+        product_def_ID = db_session.query(ProductRule.ID, ProductRule.PRName).all()
         print(product_def_ID)
         data1 = []
         for tu in product_def_ID:
@@ -1724,7 +1662,7 @@ def materialBOM():
             pro_def_id = {'ID': id, 'text':name}
             data1.append(pro_def_id)
 
-        productUnit_ID = session.query(ProcessUnit.ID, ProcessUnit.PUName).all()
+        productUnit_ID = db_session.query(ProcessUnit.ID, ProcessUnit.PUName).all()
         print(productUnit_ID)
         data = []
         for tu in productUnit_ID:
@@ -1734,7 +1672,7 @@ def materialBOM():
             pro_unit_id = {'ID': id, 'text':name}
             data.append(pro_unit_id)
 
-        material_Type_ID = session.query(MaterialType.ID, MaterialType.MATTypeName).all()
+        material_Type_ID = db_session.query(MaterialType.ID, MaterialType.MATTypeName).all()
         print(material_Type_ID)
         data_material_typeID = []
         for tu in material_Type_ID:
@@ -1860,7 +1798,7 @@ def allZYPlanMaterialsSearch():
 @app.route('/ProductUnit')
 def productUnit():
     try:
-        product_def_ID = session.query(ProductRule.ID, ProductRule.PRName).all()
+        product_def_ID = db_session.query(ProductRule.ID, ProductRule.PRName).all()
         print(product_def_ID)
         data1 = []
         for tu in product_def_ID:
@@ -1870,7 +1808,7 @@ def productUnit():
             pro_def_id = {'ID': id, 'text':name}
             data1.append(pro_def_id)
 
-        productUnit_ID = session.query(ProcessUnit.ID, ProcessUnit.PUName).all()
+        productUnit_ID = db_session.query(ProcessUnit.ID, ProcessUnit.PUName).all()
         print(productUnit_ID)
         data = []
         for tu in productUnit_ID:
@@ -1939,7 +1877,7 @@ def allProductUnitsSearch():
 @app.route('/ProductUnitRoute')
 def productUnitRoute():
     try:
-        product_def_ID = session.query(ProductRule.ID, ProductRule.PRName).all()
+        product_def_ID = db_session.query(ProductRule.ID, ProductRule.PRName).all()
         print(product_def_ID)
         data1 = []
         for tu in product_def_ID:
@@ -1949,7 +1887,7 @@ def productUnitRoute():
             pro_def_id = {'ID': id, 'text':name}
             data1.append(pro_def_id)
 
-        productUnit_ID = session.query(ProcessUnit.ID, ProcessUnit.PUName).all()
+        productUnit_ID = db_session.query(ProcessUnit.ID, ProcessUnit.PUName).all()
         print(productUnit_ID)
         data = []
         for tu in productUnit_ID:
@@ -2183,7 +2121,7 @@ def allUnitsSearch():
 def getOrganizationChildren(id=0):
     sz = []
     try:
-        orgs = session.query(Organization).filter().all()
+        orgs = db_session.query(Organization).filter().all()
         for obj in orgs:
             if obj.ParentNode == id:
                 sz.append({"id": obj.ID, "colorScheme": obj.Color, "image": obj.Img, "title": obj.OrganizationName,
@@ -2205,7 +2143,7 @@ def OrganizationFind():
         try:
             # data = load()
             data = getOrganizationChildren(id=0)
-            # organizations = session.query(Organization).filter().all()
+            # organizations = db_session.query(Organization).filter().all()
             jsondata = json.dumps(data, cls=AlchemyEncoder, ensure_ascii=False)
             print(jsondata)
             return jsondata
@@ -2217,18 +2155,11 @@ def OrganizationFind():
 
 # 建立会话
 # 主页面路由
+# 保护路由只让已认证的用户访问，如果未认证的用户访问这个路由，Flask-Login 会拦截请求，把用户发往登录页面。
+
 @app.route('/')
+@login_required
 def hello_world():
-    # # 查询用户当前菜单权限
-    # roles = session.query(User.RoleName).filter_by(WorkNumber=work_number).all()
-    # menus = []
-    # for role in roles:
-    #     for index in role:
-    #         print(index)
-    #         role_id = session.query(Role.ID).filter_by(RoleName=index).first()
-    #         # role = session.query(Role).filter_by(RoleName=index).first
-    #         menu = session.query(Menu).join(Role_Menu, isouter=True).filter_by(Role_ID=role_id).all()
-    #         menus.append(menu)
     return render_template('main.html')
 
 
@@ -2242,7 +2173,7 @@ def workbenck():
 @app.route('/sysrole')
 def sysrole():
     dataRoleInfo = []
-    roleNames = session.query(Role.ID, Role.RoleName).all()
+    roleNames = db_session.query(Role.ID, Role.RoleName).all()
     for role in roleNames:
         li = list(role)
         id = li[0]
@@ -2262,14 +2193,14 @@ def allrolesUpdate():
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 10:
                 Roleid = int(data['ID'])
-                role = session.query(Role).filter_by(ID=Roleid).first()
+                role = db_session.query(Role).filter_by(ID=Roleid).first()
                 role.RoleName = data['RoleName']
                 role.RoleSeq = data['RoleSeq']
                 role.Description = data['Description']
                 role.CreatePerson = data['CreatePerson']
                 role.CreateDate = data['CreateDate']
                 role.ParentNode = data['ParentNode']
-                session.commit()
+                db_session.commit()
                 return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
@@ -2293,9 +2224,9 @@ def allrolesDelete():
                     # for subkey in list(key):
                     Roleid = int(key)
                     try:
-                        oclass = session.query(Role).filter_by(ID=Roleid).first()
-                        session.delete(oclass)
-                        session.commit()
+                        oclass = db_session.query(Role).filter_by(ID=Roleid).first()
+                        db_session.delete(oclass)
+                        db_session.commit()
                     except Exception as ee:
                         print(ee)
                         logger.error(ee)
@@ -2319,14 +2250,14 @@ def allrolesCreate():
         try:
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 10:
-                session.add(Role(RoleName=data['RoleName'],
+                db_session.add(Role(RoleName=data['RoleName'],
                                  RoleSeq=data['RoleSeq'],
                                  Description=data['Description'],
                                  CreatePerson=data['CreatePerson'],
                                  CreateDate= datetime.datetime.now(),
                                  ParentNode = data['ParentNode']
                                  ))
-                session.commit()
+                db_session.commit()
                 return json.dumps([{"status": "OK"}], cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
@@ -2350,8 +2281,8 @@ def allrolesFind():
                 rowsnumber = int(data['rows'])
                 inipage = (pages - 1) * rowsnumber + 0
                 endpage = (pages - 1) * rowsnumber + rowsnumber
-                total = session.query(func.count(Role.ID)).scalar()
-                roles = session.query(Role).all()[inipage:endpage]
+                total = db_session.query(func.count(Role.ID)).scalar()
+                roles = db_session.query(Role).all()[inipage:endpage]
                 # ORM模型转换json格式
                 jsonroles = json.dumps(roles, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonroles = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonroles + "}"
@@ -2371,7 +2302,7 @@ def allrolesSearch():
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 2:
                 strconditon = "%" + data['condition'] + "%"
-                roles = session.query(Role).filter(Role.RoleName.like(strconditon)).all()
+                roles = db_session.query(Role).filter(Role.RoleName.like(strconditon)).all()
                 total = Counter(roles)
                 jsonroles = json.dumps(roles, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonroles = '{"total"' + ":" + str(total.__len__()) + ',"rows"' + ":\n" + jsonroles + "}"
@@ -2392,7 +2323,7 @@ def myorganization():
 def getMyOrganizationChildren(id=0):
     sz = []
     try:
-        orgs = session.query(Organization).filter().all()
+        orgs = db_session.query(Organization).filter().all()
         for obj in orgs:
             if obj.ParentNode == id:
                 sz.append({"id": obj.ID, "text": obj.OrganizationName, "children": getMyOrganizationChildren(obj.ID)})
@@ -2408,7 +2339,7 @@ def getMyOrganizationChildren(id=0):
 def getMyEnterprise(id=0):
     sz = []
     try:
-        orgs = session.query(Organization).filter().all()
+        orgs = db_session.query(Organization).filter().all()
         for obj in orgs:
             sz.append({"id": obj.ID, "text": obj.OrganizationName, "group": obj.ParentNode})
         # data = string(sz)"'"
@@ -2427,7 +2358,7 @@ def MyOpFind():
         try:
             # data = load()
             data = getMyOrganizationChildren(id=0)
-            # organizations = session.query(Organization).filter().all()
+            # organizations = db_session.query(Organization).filter().all()
             jsondata = json.dumps(data, cls=AlchemyEncoder, ensure_ascii=False)
             print(jsondata)
             return jsondata
@@ -2443,7 +2374,7 @@ def myenterprise():
         try:
             # data = load()
             data = getMyEnterprise(id=0)
-            # organizations = session.query(Organization).filter().all()
+            # organizations = db_session.query(Organization).filter().all()
             jsondata = json.dumps(data, cls=AlchemyEncoder, ensure_ascii=False)
             print(jsondata)
             return jsondata
@@ -2461,7 +2392,7 @@ def MyenterpriseSelect():
             json_str = json.dumps(odata.to_dict())
             if len(json_str) > 5:
                 objid = int(odata['ID'])
-                oclass = session.query(Model.system.Organization).filter_by(ID=objid).first()
+                oclass = db_session.query(Model.system.Organization).filter_by(ID=objid).first()
                 jsondata = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
             print(jsondata)
             return jsondata
@@ -2475,7 +2406,7 @@ def MyenterpriseSelect():
 @app.route('/createPlanWizard')
 def createPlanWizard():
     try:
-        product_info = session.query(ProductRule.ID, ProductRule.PRName).all()
+        product_info = db_session.query(ProductRule.ID, ProductRule.PRName).all()
         print(product_info)
         data = []
         for tu in product_info:
@@ -2538,7 +2469,7 @@ def getdefaultPlanWeight():
 def getProductRule():
     sz = []
     try:
-        objs = session.query(Model.core.ProductRule).filter().all()
+        objs = db_session.query(Model.core.ProductRule).filter().all()
         iIndex = 0
         strSelected = "true"
         for obj in objs:
@@ -2563,7 +2494,7 @@ def treeProductRule():
         try:
             # data = load()
             data = getProductRule()
-            # organizations = session.query(Organization).filter().all()
+            # organizations = db_session.query(Organization).filter().all()
             jsondata = json.dumps(data, cls=AlchemyEncoder, ensure_ascii=False)
             print(jsondata)
             return jsondata
@@ -2613,8 +2544,8 @@ def criticalTasks():
                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
                 ABatchID = data['ABatchID']
-                total = session.query(ZYTask).filter(ZYTask.BatchID == ABatchID).count()
-                zyTasks = session.query(ZYTask).filter(ZYTask.BatchID == ABatchID).all()[inipage:endpage]
+                total = db_session.query(ZYTask).filter(ZYTask.BatchID == ABatchID).count()
+                zyTasks = db_session.query(ZYTask).filter(ZYTask.BatchID == ABatchID).all()[inipage:endpage]
                 jsonzyTasks = json.dumps(zyTasks, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonzyTasks = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonzyTasks + "}"
                 return jsonzyTasks
@@ -2638,8 +2569,8 @@ def criticalMaterials():
                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
                 ABatchID = data['ABatchID']
-                total = session.query(ZYPlanMaterial).filter(ZYPlanMaterial.BatchID == ABatchID).count()
-                zyMaterials = session.query(ZYPlanMaterial).filter(ZYPlanMaterial.BatchID == ABatchID).all()[inipage:endpage]
+                total = db_session.query(ZYPlanMaterial).filter(ZYPlanMaterial.BatchID == ABatchID).count()
+                zyMaterials = db_session.query(ZYPlanMaterial).filter(ZYPlanMaterial.BatchID == ABatchID).all()[inipage:endpage]
                 jsonzyMaterials = json.dumps(zyMaterials, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonzyMaterials = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonzyMaterials + "}"
                 return jsonzyMaterials
@@ -2660,7 +2591,7 @@ def isBatchNumber():
             if len(json_str) > 10:
                 isExist = ''#前台判断标识：OK为批次号可用，NO为此批次号已存在
                 ABatchID = data['ABatchID']
-                BatchID = session.query(ZYPlan.BatchID).filter(ZYPlan.BatchID == ABatchID).first()
+                BatchID = db_session.query(ZYPlan.BatchID).filter(ZYPlan.BatchID == ABatchID).first()
                 if(BatchID == None):
                     isExist = 'OK'
                 else:

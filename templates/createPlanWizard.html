@@ -237,6 +237,7 @@
                             AProductRuleID :$('#ABrandName').find("option:selected").val(),
                             ABrandName :$('#ABrandName').find("option:selected").html(),
                             APlanWeight :$('#APlanWeight').val(),
+                            PLineName :$('#APLineName').find("option:selected").html(),
                             AUnit : $('#AUnit').find("option:selected").val()
                         },
                         //dataType: 'json',
@@ -303,10 +304,19 @@
                                         </select>
                                     </td>
                                 </tr>
-                            <tr>
-                                <td class="kv-label">计划重量</td>
+                                <tr>
+                                    <td class="kv-label">计划重量</td>
                                     <td class="kv-content">
                                         <input id="APlanWeight" class="textbox-text validatebox-text textbox-prompt" name="APlanWeight" type="text">
+                                    </td>
+                                    <td class="kv-label">生产线</td>
+                                    <td class="kv-content">
+                                        <select name="APLineName" id="APLineName" type="text" autocomplete="off" placeholder="" style="height:29px;width:150px;">
+                                            <option value="">请选择</option>
+                                            {% for id in PLine_info %}
+                                                <option value="{{ id['PLineCode'] }}">{{ id['PLineName'] }}</option>
+                                            {% endfor %}
+                                        </select>
                                     </td>
                                     <td class="kv-label">单位</td>
                                     <td class="kv-content">
@@ -315,7 +325,7 @@
                                             <option value="{{ Unit }}">{{ Unit }}</option>
                                         </select>
                                     </td>
-                            </tr>
+                                </tr>
                             </tbody>
                         </table>
                     </form>
