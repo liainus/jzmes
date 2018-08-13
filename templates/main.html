@@ -58,22 +58,22 @@
                             <i class="iconfont">&#xe642;</i>
                         </a>
                         <ul class="sider-nav-s">
-                            {% if '02' in menus %}
+                            {% if '02' in session.get('menus') %}
                                 <li>
                                     <a href="#" onclick="addTab('投料段生产监控','runstatus1.html')">投料段生产监控</a>
                                 </li>
                             {% endif %}
-                            {% if'02' in menus %}
+                            {% if '02' in session.get('menus') %}
                                 <li>
                                     <a href="#" onclick="addTab('提取段生产监控','processMonitorMap/index.html')">提取段生产监控</a>
                                 </li>
                             {% endif %}
-                            {% if '04' in menus %}
+                            {% if '04' in session.get('menus') %}
                                 <li>
                                     <a href="#" onclick="addTab('浓缩段生产监控','remain.html')">浓缩段生产监控</a>
                                 </li>
                             {% endif %}
-                            {% if '05' in menus %}
+                            {% if '05' in session.get('menus') %}
                                 <li>
                                     <a href="#" onclick="addTab('草珊瑚含片生产线','/processMonitorLine')">草珊瑚含片生产线</a>
                                 </li>
@@ -87,35 +87,51 @@
                             <i class="iconfont">&#xe642;</i>
                         </a>
                         <ul class="sider-nav-s">
-                            {% if '07' in Menus %}
+                            {% if '07' in session.get('menus') %}
                                 <li>
                                     <a href="#" onclick="addTab('组织结构建模','organization')">组织结构建模</a>
                                 </li>
                             {% endif %}
-                            <li>
-                                <a href="#" onclick="addTab('组织结构','organizationMap')">组织结构</a>
-                            </li>
-                            <li>
-                                <a href="#" onclick="addTab('区域建模','Area')">区域建模</a>
-                            </li>
-                            <li>
-                                <a href="#" onclick="addTab('用户管理','userManager')">用户管理</a>
-                            </li>
-                            <li>
-                                <a href="#" onclick="addTab('角色管理','sysrole')">角色管理</a>
-                            </li>
-                            <li>
-                                <a href="#" onclick="addTab('权限分配','roleright')">权限分配</a>
-                            </li>
-                            <li>
-                                <a href="#" onclick="addTab('组织机构','Myorganization')">组织机构</a>
-                            </li>
-                            <li>
-                                <a href="#" onclick="addTab('系统日志','syslogs')">系统日志</a>
-                            </li>
-                            <li>
-                                <a href="#" onclick="addTab('工厂日历','')">工厂日历</a>
-                            </li>
+                            {% if '08' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onclick="addTab('组织结构','organizationMap')">组织结构</a>
+                                </li>
+                            {% endif %}
+                            {% if '09' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onclick="addTab('区域建模','Area')">区域建模</a>
+                                </li>
+                            {% endif %}
+                            {% if '10' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onclick="addTab('用户管理','userManager')">用户管理</a>
+                                </li>
+                            {% endif %}
+                            {% if '11' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onclick="addTab('角色管理','sysrole')">角色管理</a>
+                                </li>
+                            {% endif %}
+                            {% if '12' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onclick="addTab('权限分配','roleright')">权限分配</a>
+                                </li>
+                            {% endif %}
+                            {% if '13' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onclick="addTab('组织机构','Myorganization')">组织机构</a>
+                                </li>
+                            {% endif %}
+                            {% if '14' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onclick="addTab('系统日志','syslogs')">系统日志</a>
+                                </li>
+                            {% endif %}
+                            {% if '15' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onclick="addTab('工厂日历','')">工厂日历</a>
+                                </li>
+                            {% endif %}
                         </ul>
                     </li>
                     <li>
@@ -125,27 +141,41 @@
                             <i class="iconfont">&#xe642;</i>
                         </a>
                         <ul class="sider-nav-s">
-                            <li>
-                                <a href="#" onclick="addTab('企业建模','Enterprise')">企业建模</a>
-                            </li>
-                            <li>
-                                <a href="#" onclick="addTab('工厂建模','Factory')">工厂建模</a>
-                            </li>
-                            <li>
-                                <a href="#" onclick="addTab('区域建模','Area')">区域建模</a>
-                            </li>
-                            <li>
-                                <a href="#" onclick="addTab('生产线建模','ProductLine')">生产线建模</a>
-                            </li>
-                            <li>
-                                <a href="#" onclick="addTab('工艺段建模','ProcessUnit')">工艺段建模</a>
-                            </li>
-                            <li>
-                                <a href="#" onclick="addTab('设备建模','Equipment')">设备建模</a>
-                            </li>
-                            <li>
-                                <a href="#" onclick="addTab('单位维护','Unit')">单位维护</a>
-                            </li>
+                            {% if '17' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onclick="addTab('企业建模','Enterprise')">企业建模</a>
+                                </li>
+                            {% endif %}
+                            {% if '18' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onclick="addTab('工厂建模','Factory')">工厂建模</a>
+                                </li>
+                            {% endif %}
+                            {% if '19' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onclick="addTab('区域建模','Area')">区域建模</a>
+                                </li>
+                            {% endif %}
+                            {% if '20' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onclick="addTab('生产线建模','ProductLine')">生产线建模</a>
+                                </li>
+                            {% endif %}
+                            {% if '21' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onclick="addTab('工艺段建模','ProcessUnit')">工艺段建模</a>
+                                </li>
+                            {% endif %}
+                            {% if '22' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onclick="addTab('设备建模','Equipment')">设备建模</a>
+                                </li>
+                            {% endif %}
+                            {% if '23' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onclick="addTab('单位维护','Unit')">单位维护</a>
+                                </li>
+                            {% endif %}
                         </ul>
                     </li>
                     <li>
@@ -155,45 +185,71 @@
                             <i class="iconfont">&#xe642;</i>
                         </a>
                         <ul class="sider-nav-s">
-                            <li>
-                                <a href="#" onclick="addTab('制药计划向导','createPlanWizard')">制药计划向导</a>
-                            </li>
-                            <li>
-                                <a href="#" onclick="addTab('制药计划','ZYPlan')">制药计划</a>
-                            </li>
-                            <li>
-                                <a href="#" onclick="addTab('制药任务','ZYTask')">制药任务</a>
-                            </li>
-                            <li>
-                                <a href="#" onclick="addTab('调度日计划','SchedulePlan')">调度日计划</a>
-                            </li>
-                            <li>
-                                <a href="#" onclick="addTab('制药计划物料','ZYPlanMaterial')">制药计划物料</a>
-                            </li>
-                            <li>
-                                <a href="#" onclick="addTab('批次管理','batchmanager')">批次管理</a>
-                            </li>
-                            <li>
-                                <a href="#" onclick="addTab('查询全天计划','PlanManager')">查询全天计划</a>
-                            </li>
-                            <li>
-                                <a href="#" onclick="addTab('出入库操作','')">出入库操作</a>
-                            </li>
-                            <li>
-                                <a href="#">信息维护</a>
-                            </li>
-                            <li>
-                                <a href="#">作业任务排程</a>
-                            </li>
-                            <li>
-                                <a href="#">作业任务调度</a>
-                            </li>
-                            <li>
-                                <a href="#">作业任务执行</a>
-                            </li>
-                            <li>
-                                <a href="#">生产路径管理</a>
-                            </li>
+                            {% if '25' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onclick="addTab('制药计划向导','createPlanWizard')">制药计划向导</a>
+                                </li>
+                            {% endif %}
+                            {% if '26' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onclick="addTab('制药计划','ZYPlan')">制药计划</a>
+                                </li>
+                            {% endif %}
+                            {% if '27' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onclick="addTab('制药任务','ZYTask')">制药任务</a>
+                                </li>
+                            {% endif %}
+                            {% if '28' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onclick="addTab('调度日计划','SchedulePlan')">调度日计划</a>
+                                </li>
+                            {% endif %}
+                            {% if '29' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onclick="addTab('制药计划物料','ZYPlanMaterial')">制药计划物料</a>
+                                </li>
+                            {% endif %}
+                            {% if '30' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onclick="addTab('批次管理','batchmanager')">批次管理</a>
+                                </li>
+                            {% endif %}
+                            {% if '31' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onclick="addTab('查询全天计划','PlanManager')">查询全天计划</a>
+                                </li>
+                            {% endif %}
+                            {% if '32' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onclick="addTab('出入库操作','')">出入库操作</a>
+                                </li>
+                            {% endif %}
+                            {% if '33' in session.get('menus') %}
+                                <li>
+                                    <a href="#">信息维护</a>
+                                </li>
+                            {% endif %}
+                            {% if '34' in session.get('menus') %}
+                                <li>
+                                    <a href="#">作业任务排程</a>
+                                </li>
+                            {% endif %}
+                            {% if '35' in session.get('menus') %}
+                                <li>
+                                    <a href="#">作业任务调度</a>
+                                </li>
+                            {% endif %}
+                            {% if '36' in session.get('menus') %}
+                                <li>
+                                    <a href="#">作业任务执行</a>
+                                </li>
+                            {% endif %}
+                            {% if '37' in session.get['menus'] %}
+                                <li>
+                                    <a href="#">生产路径管理</a>
+                                </li>
+                            {% endif %}
                         </ul>
                     </li>
                     <li>
@@ -203,7 +259,7 @@
                             <i class="iconfont">&#xe642;</i>
                         </a>
                         <ul class="sider-nav-s">
-                             <li>
+                            <li>
                                 <a href="#" onClick="addTab('产品定义','ProductRule')">产品定义</a>
                             </li>
                             <li>
