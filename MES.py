@@ -16,7 +16,7 @@ from sqlalchemy.orm import Session, relationship, sessionmaker
 import Model.Global
 from Model.BSFramwork import AlchemyEncoder
 from Model.core import Enterprise, Area, Factory, ProductLine, ProcessUnit, Equipment, Material, MaterialType, \
-    ProductUnit, ProductRule, ZYTask, ZYPlanMaterial, ZYPlan
+    ProductUnit, ProductRule, ZYTask, ZYPlanMaterial, ZYPlan, Unit
 from Model.system import Role, Organization, User, Menu, Role_Menu
 from tools.MESLogger import MESLogger
 from Model.core import SysLog
@@ -766,16 +766,27 @@ def getOrganizationList(id=0):
 def parentNode():
     if request.method == 'GET':
         try:
-            data = getOrganizationList(id=0)
+            data = getEnterprizeList(id=0)
             jsondata = json.dumps(data, cls=AlchemyEncoder, ensure_ascii=False)
-            print(jsondata)
-            return jsondata.encode("utf8")
+            return jsondata
         except Exception as e:
             print(e)
             logger.error(e)
             insertSyslog("error", "加父级载菜单列表报错Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
-
+def getEnterprizeList(id=0):
+    sz = []
+    try:
+        enterprises = session.query(Enterprise).all()
+        for obj in enterprises:
+            if obj.ParentNode == id:
+                sz.append({"id": obj.ID, "text": obj.EnterpriseName, "children": getEnterprizeList(obj.ID)})
+        return sz
+    except Exception as e:
+        print(e)
+        logger.error(e)
+        insertSyslog("error", "加父级载菜单列表报错Error：" + str(e), "AAAAAAadmin")
+        return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 @app.route('/allEnterprises/Search', methods=['POST', 'GET'])
 def allEnterprisesSearch():
@@ -2405,11 +2416,27 @@ def createPlanWizard():
             name = li[1]
             pro_info = {'ID': id, 'text':name}
             data.append(pro_info)
-        return render_template('createPlanWizard.html', Product_info=data, Unit=WeightUnit)
+        dataUnitName = []
+        unitNames = db_session.query(Unit.UnitCode, Unit.UnitName).all()
+        for unit in unitNames:
+            li = list(unit)
+            id = li[0]
+            name = li[1]
+            unitName = {'UnitCode': id, 'UnitName': name}
+            dataUnitName.append(unitName)
+        dataPLineName = []
+        pLineNames = db_session.query(ProductLine.PLineCode, ProductLine.PLineName).all()
+        for pLine in pLineNames:
+            li = list(pLine)
+            id = li[0]
+            name = li[1]
+            pLineName = {'PLineCode': id, 'PLineName': name}
+            dataPLineName.append(pLineName)
+        return render_template('createPlanWizard.html', Product_info=data, Unit=dataUnitName,PLine_info=dataPLineName)
     except Exception as e:
         print(e)
         logger.error(e)
-    return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+        return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
 @app.route('/getUnitByKg')
@@ -2491,10 +2518,11 @@ def makePlan():
                 APlanDate = data['APlanDate']# 计划生产日期
                 ABatchID = data['ABatchID']# 批次号
                 ABrandName = data['ABrandName'] # 产品名称
+                PLineName = data['PLineName']#生产线名字
                 AUnit = data['AUnit']#d单位
                 PlanCreate = ctrlPlan('PlanCreate')
                 ABrandID = AProductRuleID
-                re = PlanCreate.createLinePUPlan(AProductRuleID, APlanWeight, APlanDate, ABatchID, ABrandID, ABrandName, AUnit)
+                re = PlanCreate.createLinePUPlan(AProductRuleID, APlanWeight, APlanDate, ABatchID, ABrandID, ABrandName, PLineName, AUnit)
                 re = json.dumps(re)
                 return re
         except Exception as e:

@@ -93,9 +93,15 @@ $(function () {
                 align: 'center',
                 width: 150
             },
-             {
-                field: 'PLineID',
-                title: '生产线ID',
+            {
+                field: 'ProductRuleID',
+                title: '产品定义ID',
+                width: 100,
+                align: 'center'
+            },
+            {
+                field: 'PUID',
+                title: '工艺段ID',
                 align: 'center',
                 width: 100
             },
@@ -125,18 +131,6 @@ $(function () {
                 // options:{required:true},
                 editor:{type:'validatebox',options:{required: true }},
                 align: 'center'
-            },
-            {
-                field: 'ProductRuleID',
-                title: '产品定义ID',
-                width: 100,
-                align: 'center'
-            },
-            {
-                field: 'PUID',
-                title: '工艺段ID',
-                align: 'center',
-                width: 100
             }
         ]]
     });
@@ -433,9 +427,15 @@ $(function () {
                 align: 'center',
                 width: 150
             },
-             {
-                field: 'PLineID',
-                title: '生产线ID',
+            {
+                field: 'ProductRuleID',
+                title: '产品定义ID',
+                width: 100,
+                align: 'center'
+            },
+            {
+                field: 'PUID',
+                title: '工艺段ID',
                 align: 'center',
                 width: 100
             },
@@ -465,18 +465,6 @@ $(function () {
                 // options:{required:true},
                 editor:{type:'validatebox',options:{required: true }},
                 align: 'center'
-            },
-            {
-                field: 'ProductRuleID',
-                title: '产品定义ID',
-                width: 100,
-                align: 'center'
-            },
-            {
-                field: 'PUID',
-                title: '工艺段ID',
-                align: 'center',
-                width: 100
             }
         ]]
     });
