@@ -93,8 +93,9 @@ def login():
                         menu = db_session.query(Menu.ModuleCode).join(Role_Menu, isouter=True).filter_by(Role_ID=role_id).all()
                         for li in menu:
                             menus.append(li[0])
+                # print(menus) #['02', '03', '04', '05', '07', '08', '09', '10', '11', '12', '13', '14', '15', '17', '18', '19', '20', '21', '22', '23']
                 session['menus'] = menus
-                print(session['menus'])
+                # print(session.get('menus'))
                 return redirect('/')
             # 认证失败返回登录页面
             error = '用户名或密码错误'
