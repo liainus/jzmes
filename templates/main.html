@@ -51,6 +51,7 @@
                 </h2>
 
                 <ul class="sider-nav">
+                {% if '02', '03', '04', '05', '07' in session.get('menus') %}
                     <li>
                         <a href="javascript:;">
                             <span class="iconfont sider-nav-icon">&#xe611;</span>
@@ -63,7 +64,7 @@
                                     <a href="#" onclick="addTab('投料段生产监控','runstatus1.html')">投料段生产监控</a>
                                 </li>
                             {% endif %}
-                            {% if '02' in session.get('menus') %}
+                            {% if '03' in session.get('menus') %}
                                 <li>
                                     <a href="#" onclick="addTab('提取段生产监控','processMonitorMap/index.html')">提取段生产监控</a>
                                 </li>
@@ -80,6 +81,8 @@
                             {% endif %}
                         </ul>
                     </li>
+                {% endif %}
+                {% if '07', '08', '09', '10', '11', '12', '13', '14', '15' in session.get('menus') %}
                     <li>
                         <a href="javascript:;">
                             <span class="iconfont sider-nav-icon">&#xe6ed;</span>
@@ -134,6 +137,8 @@
                             {% endif %}
                         </ul>
                     </li>
+                {% endif %}
+                {% if '17', '18', '19', '20', '21', '22', '23' in session.get('menus') %}
                     <li>
                         <a href="javascript:;">
                             <span class="iconfont sider-nav-icon">&#xe6ea;</span>
@@ -178,6 +183,7 @@
                             {% endif %}
                         </ul>
                     </li>
+                {% endif %}
                     <li>
                         <a href="javascript:;">
                             <span class="iconfont sider-nav-icon">&#xe6c3;</span>
@@ -220,36 +226,36 @@
                                     <a href="#" onclick="addTab('查询全天计划','PlanManager')">查询全天计划</a>
                                 </li>
                             {% endif %}
-                            {% if '32' in session.get('menus') %}
+{#                            {% if '32' in session.get('menus') %}#}
                                 <li>
                                     <a href="#" onclick="addTab('出入库操作','')">出入库操作</a>
                                 </li>
-                            {% endif %}
-                            {% if '33' in session.get('menus') %}
+{#                            {% endif %}#}
+{#                            {% if '33' in session.get('menus') %}#}
                                 <li>
                                     <a href="#">信息维护</a>
                                 </li>
-                            {% endif %}
-                            {% if '34' in session.get('menus') %}
+{#                            {% endif %}#}
+{#                            {% if '34' in session.get('menus') %}#}
                                 <li>
                                     <a href="#">作业任务排程</a>
                                 </li>
-                            {% endif %}
-                            {% if '35' in session.get('menus') %}
+{#                            {% endif %}#}
+{#                            {% if '35' in session.get('menus') %}#}
                                 <li>
                                     <a href="#">作业任务调度</a>
                                 </li>
-                            {% endif %}
-                            {% if '36' in session.get('menus') %}
+{#                            {% endif %}#}
+{#                            {% if '36' in session.get('menus') %}#}
                                 <li>
                                     <a href="#">作业任务执行</a>
                                 </li>
-                            {% endif %}
-                            {% if '37' in session.get['menus'] %}
+{#                            {% endif %}#}
+{#                            {% if '37' in session.get['menus'] %}#}
                                 <li>
                                     <a href="#">生产路径管理</a>
                                 </li>
-                            {% endif %}
+{#                            {% endif %}#}
                         </ul>
                     </li>
                     <li>
