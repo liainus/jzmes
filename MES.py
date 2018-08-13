@@ -86,6 +86,7 @@ def login():
             user = session.query(User).filter_by(WorkNumber=work_number).first()
             # hash_password = user.password(password)
             if user and user.confirm_password(password):
+                login_user(user)  # login_user(user)调用user_loader()把用户设置到session中
                 # 查询用户当前菜单权限
                 roles = session.query(User.RoleName).filter_by(WorkNumber=work_number).all()
                 menus = []
@@ -94,10 +95,15 @@ def login():
                         print(index)
                         role_id = session.query(Role.ID).filter_by(RoleName=index).first()
                         # role = session.query(Role).filter_by(RoleName=index).first
-                        menu = session.query(Menu).join(Role_Menu, isouter=True).filter_by(Role_ID=role_id).all()
-                        menus.append(menu)
-                login_user(user)  # login_user(user)其实是调用user_loader()把用户设置到session中
-                return render_template('main.html', Menus=menus) and redirect('/')
+                        menu = session.query(Menu.ModuleCode).join(Role_Menu, isouter=True).filter_by(Role_ID=role_id).all()
+                        print(menu)  #[('02',), ('03',), ('04',), ('05',), ('07',), ('08',), ('09',), ('10',), ('11',), ('12',), ('13',), ('14',), ('15',), ('17',), ('18',), ('19',), ('20',), ('21',), ('22',), ('23',)]
+                        for li in menu:
+                            menus.append(li[0])
+                print(menus) #['02', '03', '04', '05', '07', '08', '09', '10', '11', '12', '13', '14', '15', '17', '18', '19', '20', '21', '22', '23']
+                # print('03' in menus)
+                # menus = json.dumps(menus, cls=AlchemyEncoder, ensure_ascii=False)
+                # return redirect(url_for('hello_world'))
+                return render_template('main.html', menus=menus)
             # 认证失败返回登录页面
             error = '用户名或密码错误'
             return render_template('login.html', error=error)

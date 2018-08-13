@@ -45,20 +45,20 @@
             $("#canvas").on('click',function(){
                 draw(show_num);
             })
-            $("#loginForm").submit(function(){
-                var val = $("#Txtcode").val().toLowerCase();
-                var num = show_num.join("");
-                if(val == num){
-                    $("#Txtidcode").val('');
-                    draw(show_num);
-                    return loginSubmit(true);
-                }else{
-                    alert('验证码错误！请重新输入！');
-                    $("#Txtidcode").val('');
-                    draw(show_num);
-                    return loginSubmit(false);
-                }
-            })
+{#            $("#loginForm").submit(function(){#}
+{#                var val = $("#Txtcode").val().toLowerCase();#}
+{#                var num = show_num.join("");#}
+{#                if(val == num){#}
+{#                    $("#Txtidcode").val('');#}
+{#                    draw(show_num);#}
+{#                    return loginSubmit(true);#}
+{#                }else{#}
+{#                    alert('验证码错误！请重新输入！');#}
+{#                    $("#Txtidcode").val('');#}
+{#                    draw(show_num);#}
+{#                    return loginSubmit(false);#}
+{#                }#}
+{#            })#}
         })
 
         function draw(show_num) {

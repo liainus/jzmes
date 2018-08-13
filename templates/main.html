@@ -58,18 +58,26 @@
                             <i class="iconfont">&#xe642;</i>
                         </a>
                         <ul class="sider-nav-s">
-                            <li>
-                                <a href="#" onclick="addTab('投料段生产监控','runstatus1.html')">投料段生产监控</a>
-                            </li>
-                            <li>
-                                <a href="#" onclick="addTab('提取段生产监控','processMonitorMap/index.html')">提取段生产监控</a>
-                            </li>
-                            <li>
-                                <a href="#" onclick="addTab('浓缩段生产监控','remain.html')">浓缩段生产监控</a>
-                            </li>
-                            <li>
-                                <a href="#" onclick="addTab('草珊瑚含片生产线','/processMonitorLine')">草珊瑚含片生产线</a>
-                            </li>
+                            {% if '02' in menus %}
+                                <li>
+                                    <a href="#" onclick="addTab('投料段生产监控','runstatus1.html')">投料段生产监控</a>
+                                </li>
+                            {% endif %}
+                            {% if'02' in menus %}
+                                <li>
+                                    <a href="#" onclick="addTab('提取段生产监控','processMonitorMap/index.html')">提取段生产监控</a>
+                                </li>
+                            {% endif %}
+                            {% if '04' in menus %}
+                                <li>
+                                    <a href="#" onclick="addTab('浓缩段生产监控','remain.html')">浓缩段生产监控</a>
+                                </li>
+                            {% endif %}
+                            {% if '05' in menus %}
+                                <li>
+                                    <a href="#" onclick="addTab('草珊瑚含片生产线','/processMonitorLine')">草珊瑚含片生产线</a>
+                                </li>
+                            {% endif %}
                         </ul>
                     </li>
                     <li>
@@ -79,9 +87,11 @@
                             <i class="iconfont">&#xe642;</i>
                         </a>
                         <ul class="sider-nav-s">
-                            <li>
-                                <a href="#" onclick="addTab('组织结构建模','organization')">组织结构建模</a>
-                            </li>
+                            {% if '07' in Menus %}
+                                <li>
+                                    <a href="#" onclick="addTab('组织结构建模','organization')">组织结构建模</a>
+                                </li>
+                            {% endif %}
                             <li>
                                 <a href="#" onclick="addTab('组织结构','organizationMap')">组织结构</a>
                             </li>
