@@ -532,6 +532,7 @@ def batchmanager():
 @app.route('/organizationMap')
 def organizationMap():
     return render_template('index_organization.html')
+
 @app.route('/organizationMap/selectAll')#组织结构
 def selectAll():
     if request.method == 'GET':
