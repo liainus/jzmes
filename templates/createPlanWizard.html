@@ -311,7 +311,7 @@
                                     </td>
                                     <td class="kv-label">生产线</td>
                                     <td class="kv-content">
-                                        <select name="APLineName" id="APLineName" type="text" autocomplete="off" placeholder="" style="height:29px;width:150px;">
+                                        <select name="APLineCode" id="APLineName" type="text" autocomplete="off" placeholder="" style="height:29px;width:150px;">
                                             <option value="">请选择</option>
                                             {% for id in PLine_info %}
                                                 <option value="{{ id['PLineCode'] }}">{{ id['PLineName'] }}</option>
@@ -322,7 +322,9 @@
                                     <td class="kv-content">
                                         <select name="AUnit" id="AUnit" type="text" autocomplete="off" placeholder="" style="height:29px;width:150px;">
                                             <option value="">请选择</option>
-                                            <option value="{{ Unit }}">{{ Unit }}</option>
+                                            {% for id in Unit %}
+                                                <option value="{{ id['UnitCode'] }}">{{ id['UnitName'] }}</option>
+                                            {% endfor %}
                                         </select>
                                     </td>
                                 </tr>

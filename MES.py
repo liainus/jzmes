@@ -2415,27 +2415,27 @@ def createPlanWizard():
             name = li[1]
             pro_info = {'ID': id, 'text':name}
             data.append(pro_info)
+        dataUnitName = []
+        unitNames = db_session.query(Unit.UnitCode, Unit.UnitName).all()
+        for unit in unitNames:
+            li = list(unit)
+            id = li[0]
+            name = li[1]
+            unitName = {'UnitCode': id, 'UnitName': name}
+            dataUnitName.append(unitName)
         dataPLineName = []
-        pLineNames = session.query(ProductLine.PLineCode, ProductLine.PLineName).all()
+        pLineNames = db_session.query(ProductLine.PLineCode, ProductLine.PLineName).all()
         for pLine in pLineNames:
             li = list(pLine)
             id = li[0]
             name = li[1]
             pLineName = {'PLineCode': id, 'PLineName': name}
             dataPLineName.append(pLineName)
-        dataUnitName = []
-        unitNames = session.query(Unit.UnitCode, Unit.UnitName).all()
-        for unit in unitNames:
-            li = list(unit)
-            id = li[0]
-            name = li[1]
-            unitName = {'UnitCode': id, 'PLineName': name}
-            dataUnitName.append(unitName)
-        return render_template('createPlanWizard.html', Product_info=data, Unit=dataUnitName,PLine_info=pLineName)
+        return render_template('createPlanWizard.html', Product_info=data, Unit=dataUnitName,PLine_info=dataPLineName)
     except Exception as e:
         print(e)
         logger.error(e)
-    return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+        return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
 @app.route('/getUnitByKg')
