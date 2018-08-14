@@ -215,14 +215,22 @@ $(function () {
         create: function () {
             $(dialogId).dialog('open').dialog('setTitle', '新增' + titleText);
             $(formTitleId).text(titleText);
-            $('input[name="Name"]').focus();
             $('input[name="iID"]').attr("disabled", "disabled");
             $('input[name="iID"]').val("");
-            $('input[name="iEQPCode"]').val("");
-            $('input[name="iEQPName"]').val("");
-            $('#iPUID option[value=""]').prop("selected", 'selected');//ID默认空
-            // $('input[name="iEquipmentSeq"]').onChange()
-            $('input[name="iDesc"]').val("");
+            $('input[name="EQPCode"]').val("");
+            $('input[name="EQPName"]').val("");
+            $('input[name="Equipment_Model"]').val("");
+            $('input[name="EnterpriseName"]').val("");
+            $('input[name="EnterpriseCode"]').val("");
+            $('input[name="Equipment_State"]').val("");
+            $('input[name="Equipment_Power"]').val("");
+            $('input[name="Equipment_Type"]').val("");
+            $('input[name="money"]').val("");
+            $('input[name="Manufactor"]').val("");
+            $('#PUID option:contains("请选择")').prop("selected", 'selected');
+            $('#Manufacture_Date').datebox({value: ""});
+            $('input[name="Desc"]').val("");
+            $('input[name="Equipment_From"]').val("");
 
             // $(formId).form('clear');
             message = '新增' + titleText;
@@ -242,20 +250,21 @@ $(function () {
                     //$(formId).form('load', row);
                     $('input[name="iID"]').attr("disabled", "disabled");
                     $('input[name="iID"]').val(row.ID);
-                    $('input[name="iEQPCode"]').val(row.EQPCode);
-                    $('input[name="iEQPName"]').val(row.EQPName);
-                    $('#iPUID option:contains('+row.ID+')').prop("selected", 'selected');//ID赋值
-                    $('input[name="iDesc"]').val(row.Desc);
+                    $('input[name="EQPCode"]').val(row.EQPCode);
+                    $('input[name="EQPName"]').val(row.EQPName);
+                    $('input[name="Equipment_Model"]').val(row.Equipment_Model);
+                    $('input[name="EnterpriseName"]').val(row.EnterpriseName);
+                    $('input[name="EnterpriseCode"]').val(row.EnterpriseCode);
+                    $('input[name="Equipment_State"]').val(row.Equipment_State);
+                    $('input[name="Equipment_Power"]').val(row.Equipment_Power);
+                    $('input[name="Equipment_Type"]').val(row.Equipment_Type);
+                    $('input[name="money"]').val(row.money);
+                    $('input[name="Manufactor"]').val(row.Manufactor);
+                    $('#PUID option:contains('+row.PUID+')').prop("selected", 'selected');
+                    $('#Manufacture_Date').datebox("setValue",row.Manufacture_Date);
+                    $('input[name="Desc"]').val(row.Desc);
+                    $('input[name="Equipment_From"]').val(row.Equipment_From);
 
-                    //var thisSwitchbuttonObj = $(".switchstatus").find("[switchbuttonName='IsEnable']");//获取switchbutton对象  
-                    if (row.IsEnable == '禁用') {
-
-                        $("[switchbuttonName='IsEnable']").switchbutton("uncheck");
-                    }else {
-                        $("[switchbuttonName='IsEnable']").switchbutton("check");
-                    }
-                    $('input[name="iEquipmentName"]').focus();
-                    // $('#EquipmentClassCombobox').combobox('setValue',row['EquipmentClass'].id);
                     message = '编辑' + titleText;
 
                 };
@@ -316,17 +325,47 @@ $(function () {
             var strID = $('input[name="iID"]').val();
             var msg = ""
             var urlAddr = ""
-            var stmp = $('input[name="iEQPCode"]').val();
+            var stmp = $('input[name="EQPCode"]').val();
             if(Bee.StringUtils.isEmpty(stmp)) {
                alert('Warning：设备编码不能为空！');
                return false;
             }
-            stmp = $('input[name="iEQPName"]').val();
+            stmp = $('input[name="EQPName"]').val();
             if(Bee.StringUtils.isEmpty(stmp)) {
                alert('Warning：设备名称不能为空！');
                return false;
             }
-             stmp = $('#iPUID').find("option:selected").val()
+            stmp = $('input[name="Equipment_Model"]').val();
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：设备型号不能为空！');
+               return false;
+            }
+            stmp = $('input[name="EnterpriseName"]').val();
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：企业名称不能为空！');
+               return false;
+            }
+            stmp = $('input[name="EnterpriseCode"]').val();
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：企业编码不能为空！');
+               return false;
+            }
+            stmp = $('input[name="Equipment_State"]').val();
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：设备状态不能为空！');
+               return false;
+            }
+            stmp = $('input[name="Equipment_Type"]').val();
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：设备类型不能为空！');
+               return false;
+            }
+            stmp = $('input[name="Equipment_Power"]').val();
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：金额(原值)不能为空！');
+               return false;
+            }
+             stmp = $('#PUID').find("option:selected").val()
             if(Bee.StringUtils.isEmpty(stmp)) {
                alert('Warning：工艺段ID不能为空！');
                return false;
@@ -342,10 +381,20 @@ $(function () {
             }
                 var entity = {
                     ID:$('input[name="iID"]').val(),
-                    EQPCode:$('input[name="iEQPCode"]').val(),
-                    EQPName:$('input[name="iEQPName"]').val(),
-                    PUID:$('#iPUID').find("option:selected").val(),
-                    Desc:$('input[name="iDesc"]').val()
+                    EQPCode:$('input[name="EQPCode"]').val(),
+                    EQPName:$('input[name="EQPName"]').val(),
+                    Equipment_Model:$('input[name="Equipment_Model"]').val(),
+                    EnterpriseName:$('input[name="EnterpriseName"]').val(),
+                    EnterpriseCode:$('input[name="EnterpriseCode"]').val(),
+                    Equipment_State:$('input[name="Equipment_State"]').val(),
+                    Equipment_Power:$('input[name="Equipment_Power"]').val(),
+                    Equipment_Type:$('input[name="Equipment_Type"]').val(),
+                    money:$('input[name="money"]').val(),
+                    Manufactor:$('input[name="Manufactor"]').val(),
+                    PUID:$('#PUID').find("option:selected").val(),
+                    Manufacture_Date:$('#Manufacture_Date').datebox('getValue'),
+                    Desc:$('input[name="Desc"]').val(),
+                    Equipment_From:$('input[name="Equipment_From"]').val()
                 };
                 $.ajax({
                     url: urlAddr,
