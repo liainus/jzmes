@@ -235,7 +235,7 @@ $(function () {
                     $('#iPlanEndTime').datetimebox("setValue",row.PlanEndTime);
                     $('#iActBeginTime').datetimebox("setValue",row.ActBeginTime);
                     $('#iActEndTime').datetimebox("setValue",row.ActEndTime);
-                    $('input[name="iPlanStatus"]').val(row.TaskStatus);
+                    $('input[name="iPlanStatus"]').val(row.PlanStatus);
                     $('input[name="iLockStatus"]').val(row.LockStatus);
                     $('input[name="iINFStatus"]').val(row.INFStatus);
                     $('input[name="iWMSStatus"]').val(row.WMSStatus);
@@ -266,7 +266,7 @@ $(function () {
                         var a = "";
                         for (var i = 0; i < rows.length; i++) {
                             // ids.push(parseInt((rows[i].id)));
-                            var obj=createKeyIDObj(parseInt(rows[i].ID));
+                            var obj=createKeyIDObj(parseInt(rows[i].PlanStatus));
                             jsonarray.push(obj);
                         }
                         // a = JSON.stringify([{"ID":9},{"ID":10}])
@@ -496,7 +496,6 @@ $(function () {
                 data:{ABatchID:$("#iBatchID").val()},
                 type:"get",
                 success:function(res){
-                    console.log(typeof res)
                     if(res == '"NO"'){
                         alert('Warning：批次号重复！');
                         return false

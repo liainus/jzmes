@@ -8,16 +8,12 @@
     <link href="../static/css/base.css" rel="stylesheet">
     <link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
     <link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
-    <link rel="stylesheet" href="../static/css/providers.css">
-    <link href="../static/css/process.css" rel="stylesheet">
-    <link href="../static/js/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
-    <link href="../static/css/datagridpanel_customer.css" rel="stylesheet">
-    <link href="../static/css/dialogpanel.css" type="text/css" rel="stylesheet">
-    <link href="../static/css/datagrid_customer.css" type="text/css" rel="stylesheet">
+    <link rel="stylesheet" href="../static/Content/echarts/css/bootstrap.min.css">
     <script type="text/javascript" src="../static/js/jquery.min.js"></script>
     <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
     <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
     <script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
+    <script type="text/javascript" src="../static/js/datagrid-dnd.js" charset="utf-8"></script>
     <script type="text/javascript" src="../static/js/system/SchedulePlanClass.js" charset="utf-8"></script>
     <script type="text/javascript">
         $(function () {
@@ -27,7 +23,7 @@
 </head>
 
 <body>
-    <div class="container">
+    <div class="">
         <textSchedulePlan id="wote"></textSchedulePlan>
         <table id="SchedulePlanClassTable"></table>
 
@@ -101,17 +97,7 @@
 
         <div data-options="iconCls:'icon-edit'" onclick="SchedulePlanClassToolbar.update();">编辑</div>
         <div data-options="iconCls:'icon-remove'" onclick="SchedulePlanClassToolbar.delete();">删除</div>
-
-        <div>
-    		<span>其他</span>
-    		<div style="width:150px;">
-    			<div data-options="" onclick="">启用</div>
-    			<div data-options="" onclick="">禁用</div>
-    		</div>
-        </div>
     </div>
-
 </body>
-
 </html>
 
