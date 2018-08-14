@@ -92,7 +92,7 @@ def login():
                         menu = db_session.query(Menu.ModuleCode).join(Role_Menu, isouter=True).filter_by(Role_ID=role_id).all()
                         for li in menu:
                             menus.append(li[0])
-                print(menus) #['02', '03', '04', '05', '07', '08', '09', '10', '11', '12', '13', '14', '15', '17', '18', '19', '20', '21', '22', '23']
+                print(menus)#['02', '03', '04', '05', '07', '08', '09', '10', '11', '12', '13', '14', '15', '17', '18', '19', '20', '21', '22', '23']
                 session['menus'] = menus
                 # print(session.get('menus'))
                 return redirect('/')
@@ -2156,6 +2156,16 @@ def OrganizationFind():
 # 建立会话
 # 主页面路由
 # 保护路由只让已认证的用户访问，如果未认证的用户访问这个路由，Flask-Login 会拦截请求，把用户发往登录页面。
+def isIn(source,target):
+    count = 0
+    for index in source:
+        if index in target:
+            count += 1
+            if count <= len(source):
+                return True
+        return False
+app.add_template_global(isIn,'isIn')
+
 
 @app.route('/')
 @login_required
