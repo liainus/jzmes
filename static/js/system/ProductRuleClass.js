@@ -11,7 +11,7 @@ $(function () {
     var dialogId = "#" + idPrefix + "Dialog";
     var formId = "#" + idPrefix + "Form";
     var formTitleId = "#" + idPrefix + "FormTitle";
-    var titleText = "组织";
+    var titleText = "产品";
 
     function createKeyIDObj(keyID){
     return {
@@ -182,9 +182,29 @@ $(function () {
             $('input[name="iPRName"]').val("");
             $('input[name="iVersion"]').val("");
             $('input[name="iDesc"]').val("");
-            $('input[name="iPublish_date"]').val("");
-            $('input[name="iAppy_date"]').val("");
             $('input[name="iIsUsed"]').val("");
+
+            $("#iPublish_date").datebox("setValue", myformatter(new Date()));
+            $("#iAppy_date").datebox("setValue", myformatter(new Date()));
+            function myformatter(date){
+                var y = date.getFullYear();
+                var m = date.getMonth()+1;
+                var d = date.getDate();
+                return y+'-'+(m<10?('0'+m):m)+'-'+( d<10?('0'+d):d);
+            }
+
+            function myparser(s){
+                if (!s) return new Date();
+                var ss = (s.split('-'));
+                var y = parseInt(ss[0],10);
+                var m = parseInt(ss[1],10);
+                var d = parseInt(ss[2],10);
+                if (!isNaN(y) && !isNaN(m) && !isNaN(d)){
+                    return new Date(y,m-1,d);
+                } else {
+                    return new Date();
+                }
+            }
 
             // $(formId).form('clear');
             message = '新增' + titleText;
@@ -208,8 +228,8 @@ $(function () {
                     $('input[name="iPRName"]').val(row.PRName);
                     $('input[name="iVersion"]').val(row.Version);
                     $('input[name="iDesc"]').val(row.Desc);
-                    $('input[name="iPublish_date"]').val(row.Publish_date);
-                    $('input[name="iAppy_date"]').val(row.Appy_date);
+                    $('input[name="iPublish_date"]').datebox('setValue', row.Publish_date);
+                    $('input[name="iAppy_date"]').datebox('setValue', row.Appy_date);
                     $('input[name="iIsUsed"]').val(row.IsUsed);
 
                     //var thisSwitchbuttonObj = $(".switchstatus").find("[switchbuttonName='IsEnable']");//获取switchbutton对象  

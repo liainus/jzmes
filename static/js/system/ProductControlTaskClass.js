@@ -11,7 +11,7 @@ $(function () {
     var dialogId = "#" + idPrefix + "Dialog";
     var formId = "#" + idPrefix + "Form";
     var formTitleId = "#" + idPrefix + "FormTitle";
-    var titleText = "计划物料信息";
+    var titleText = "任务信息";
 
     function createKeyIDObj(keyID){
     return {
