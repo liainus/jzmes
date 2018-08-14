@@ -73,7 +73,7 @@
             </table>
         </div>
         <table id="tt" class="easyui-datagrid" style="width:100%;height:300px;" title="批次计划信息" data-options="url:'/allZYPlans/Search',
-                method:'get',
+                method:'post',
                 rownumbers:true,
                 singleSelect:true,
                 autoRowHeight:false,
@@ -180,7 +180,8 @@
         </div>
     </div>
     <script type="text/javascript">
-        //无操作定时刷新 1000
+        $(function(){
+            //无操作定时刷新 1000
             var optAction = false;      //定义判断条件false，if(!optAction)来判断
             var autoTime;               //定时器
             var body = document.getElementsByTagName("body")[0];
@@ -190,19 +191,17 @@
                 clearTimeout(autoTime);     //清除自动刷新页面定时器
                 autoTime = setTimeout(function () {
                     optAction = false;      //页面无操作后3秒，重时开启定时器
-                }, 1000)
+                }, 3000)
             }
             //每三秒自执行
-            setTimeout(function () {
+            //setTimeout(function () {
                 setInterval(function () {
                     if (!optAction) {
-                        window.location.reload();
-                    }else{
                         console.log(1)
+                        $('#tt').datagrid('load').datagrid('loaded')
                     }
-                }, 1000)
-            }, 1000)
-        $(function(){
+                }, 10000)
+            //}, 1000)
             $('#tt').datagrid({
                 rowStyler:function(index,row){
                     if (row.TaskStatus=='任务编制'){
