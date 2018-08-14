@@ -2645,18 +2645,25 @@ def zYPlanXF():
     if request.method == 'GET':
         data = request.values  # 返回请求中的参数和form
         try:
-            json_str = json.dumps(data.to_dict())
-            isSuccess = ''
-            if len(json_str) > 10:
-                ID = data['ID']  # 计划ID
-                oclass = db_session.query(ZYPlan).filter_by(ID=ID).first()
-                oclass.PlanStatus = '20'#20是任务已下发
-                db_session.commit()
-                tasks = db_session.query(ZYTask).filter_by(BatchID=oclass.BatchID, PUID=oclass.PUID).all()
-                for task in tasks:
-                    task.TaskStatus = '20'
-                    db_session.commit
-                    return 'OK'
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
+                for key in jsonnumber:
+                    id = int(key)
+                    try:
+                        oclass = db_session.query(ZYPlan).filter_by(ID=id).first()
+                        oclass.PlanStatus = '20'#20是任务已下发
+                        db_session.commit()
+                        tasks = db_session.query(ZYTask).filter_by(BatchID=oclass.BatchID, PUID=oclass.PUID).all()
+                        for task in tasks:
+                            task.TaskStatus = '20'
+                            db_session.commit
+                    except Exception as ee:
+                        print(ee)
+                        logger.error(ee)
+                        insertSyslog("error", "获取批次计划信息报错Error"+ string(ee), "AAAAAAadmin")
+                        return 'NO'
+                return 'OK'
         except Exception as e:
             print(e)
             logger.error(e)
