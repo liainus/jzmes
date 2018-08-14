@@ -335,41 +335,6 @@ $(function () {
                alert('Warning：设备名称不能为空！');
                return false;
             }
-            stmp = $('input[name="Equipment_Model"]').val();
-            if(Bee.StringUtils.isEmpty(stmp)) {
-               alert('Warning：设备型号不能为空！');
-               return false;
-            }
-            stmp = $('input[name="EnterpriseName"]').val();
-            if(Bee.StringUtils.isEmpty(stmp)) {
-               alert('Warning：企业名称不能为空！');
-               return false;
-            }
-            stmp = $('input[name="EnterpriseCode"]').val();
-            if(Bee.StringUtils.isEmpty(stmp)) {
-               alert('Warning：企业编码不能为空！');
-               return false;
-            }
-            stmp = $('input[name="Equipment_State"]').val();
-            if(Bee.StringUtils.isEmpty(stmp)) {
-               alert('Warning：设备状态不能为空！');
-               return false;
-            }
-            stmp = $('input[name="Equipment_Type"]').val();
-            if(Bee.StringUtils.isEmpty(stmp)) {
-               alert('Warning：设备类型不能为空！');
-               return false;
-            }
-            stmp = $('input[name="Equipment_Power"]').val();
-            if(Bee.StringUtils.isEmpty(stmp)) {
-               alert('Warning：金额(原值)不能为空！');
-               return false;
-            }
-             stmp = $('#PUID').find("option:selected").val()
-            if(Bee.StringUtils.isEmpty(stmp)) {
-               alert('Warning：工艺段ID不能为空！');
-               return false;
-            }
 
             if (strID.length >= 1){
                 urlAddr = urlPrefix + 'Update'
@@ -404,13 +369,6 @@ $(function () {
                     data: entity,
                     dataType: 'json',
                     cache: false,
-
-                    // beforeSend: function () {
-                    //
-                    //     $.messager.progress({
-                    //         text: '正在' + message + '中...'
-                    //     });
-                    // },
                     error: function(data){
                            console.log(data.responseText)
                            alert(hintinfo+ "异常，请刷新后重试...");

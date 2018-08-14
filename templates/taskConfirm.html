@@ -2,9 +2,88 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>$Title$</title>
+    <title>任务确认</title>
+    <link href="../static/css/base.css" rel="stylesheet">
+	<link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
+	<link href="../static/css/basic_info.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
+	<link href="../static/js/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
+    <link href="../static/css/datagridpanel_customer.css" rel="stylesheet">
+    <link href="../static/css/dialogpanel.css" type="text/css" rel="stylesheet">
+    <link href="../static/css/datagrid_customer.css" type="text/css" rel="stylesheet">
+    <script type="text/javascript" src="../static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
 </head>
 <body>
-$END$
+    <div class="">
+		<div class="left-tree" style="width:15%;float:left;vertical-align: top;border: 1px solid #ccc;margin: 1%;padding: 1%;">
+            <ul class="easyui-tree" id="tree"></ul>
+		</div>
+		<div class="content" style="width:80%;float:left;vertical-align: top;">
+			<div style="margin-top: 20px;margin-bottom: 10px;border-bottom: 1px solid #ccc;padding-bottom: 10px;">
+                <span style="color:#1da02b;">下发任务列表</span>
+            </div>
+			<table class="easyui-datagrid" id="tab" title="" style="width:100%" data-options="
+                queryParams: {
+                    id: '',
+                    Name:''
+                },
+			      rownumbers:true,
+                singleSelect:true,
+                autoRowHeight:false,
+				  pagination:true,
+				  pageSize:10,
+				  singleSelect:false,
+                url:'/processMonitorLine/taskConfirmSearch',
+                method:'get'">
+				<thead>
+					<tr>
+                        <th field="ck" checkbox="true"></th>
+						<th data-options="field:'ID',width:120,align:'center'">ID</th>
+						<th data-options="field:'EQPCode',width:120,align:'center'">设备编码</th>
+						<th data-options="field:'PlanDate',width:100,align:'center'">计划日期</th>
+						<th data-options="field:'TaskID',width:80,align:'center'">制药任务单号</th>
+						<th data-options="field:'BatchID',width:120,align:'center'">批次号</th>
+						<th data-options="field:'PlanSeq',width:150,align:'center'">顺序号</th>
+						<th data-options="field:'PUID',width:120,align:'center'">工艺段</th>
+						<th data-options="field:'PDUnitRouteName',width:100,align:'center'">工艺路线名称</th>
+						<th data-options="field:'PlanType',width:100,align:'center'">计划类型</th>
+						<th data-options="field:'BrandID',width:100,align:'center'">牌号编码</th>
+						<th data-options="field:'BrandName',width:100,align:'center'">牌号名称</th>
+						<th data-options="field:'PlanQuantity',width:100,align:'center'">计划重量</th>
+						<th data-options="field:'ActQuantity',width:100,align:'center'">实际重量</th>
+						<th data-options="field:'Unit',width:100,align:'center'">单位</th>
+						<th data-options="field:'EnterTime',width:100,align:'center'">录入时间</th>
+						<th data-options="field:'ActBeginTime',width:100,align:'center'">实际开始时间</th>
+						<th data-options="field:'ActEndTime',width:100,align:'center'">实际完成时间</th>
+						<th data-options="field:'SetRepeatCount',width:100,align:'center'">设定重复次数</th>
+						<th data-options="field:'CurretnRepeatCount',width:100,align:'center'">当前重复次数</th>
+						<th data-options="field:'ActTank',width:100,align:'center'">实际罐号</th>
+						<th data-options="field:'TaskStatus',width:100,align:'center'">任务状态</th>
+						<th data-options="field:'LockStatus',width:100,align:'center'">任务锁定状态</th>
+					</tr>
+				</thead>
+			</table>
+		</div>
+	</div>
+ <script type="text/javascript">
+    {#    树形菜单点击事件#}
+        $("#tree").tree({
+            url:'/processMonitorLine/taskConfirmPuidDate',
+            method: 'get',
+            animate:true,
+            loadFilter:function(data){
+                return data
+            },
+            onClick :function(node){
+                $('#tab').datagrid('load',{
+                    APUID: node.PUID,
+                    APlanBeginTime:node.PlanBeginTime
+                });
+            }
+        })
+    </script>
 </body>
 </html>
