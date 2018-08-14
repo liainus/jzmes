@@ -214,7 +214,7 @@ class ZYPlanWebIFS(object):
 				jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
 				for key in jsonnumber:
 					# for subkey in list(key):
-					ZYPlanid = int(key)
+					ZYPlanid = key
 					try:
 						oclass = session.query(Model.core.ZYPlan).filter_by(ID=ZYPlanid).first()
 						session.delete(oclass)

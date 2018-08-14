@@ -80,7 +80,6 @@ def login():
             password = data['password']
                 # 验证账户与密码
             user = db_session.query(User).filter_by(WorkNumber=work_number).first()
-            # hash_password = user.password(password)
             if user and user.confirm_password(password):
                 login_user(user)  # login_user(user)调用user_loader()把用户设置到db_session中
                 # 查询用户当前菜单权限
@@ -92,9 +91,7 @@ def login():
                         menu = db_session.query(Menu.ModuleCode).join(Role_Menu, isouter=True).filter_by(Role_ID=role_id).all()
                         for li in menu:
                             menus.append(li[0])
-                print(menus)#['02', '03', '04', '05', '07', '08', '09', '10', '11', '12', '13', '14', '15', '17', '18', '19', '20', '21', '22', '23']
                 session['menus'] = menus
-                # print(session.get('menus'))
                 return redirect('/')
             # 认证失败返回登录页面
             error = '用户名或密码错误'
