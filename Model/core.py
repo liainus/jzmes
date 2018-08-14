@@ -155,10 +155,10 @@ class ZYPlan(Base):
 	#实际完成时间:
 	ActEndTime = Column(DateTime, primary_key = False, autoincrement = False, nullable = True)
 	
-	#任务状态:
-	TaskStatus = Column(Integer, primary_key = False, autoincrement = False, nullable = True)
+	#计划状态:
+	PlanStatus = Column(Integer, primary_key = False, autoincrement = False, nullable = True)
 	
-	#任务锁定状态:
+	#计划锁定状态:
 	LockStatus = Column(Integer, primary_key = False, autoincrement = False, nullable = True)
 	
 	#接口处理状态:
@@ -194,7 +194,7 @@ class ZYPlanWebIFS(object):
 						PlanEndTime= odata['PlanEndTime'],
 						ActBeginTime= odata['ActBeginTime'],
 						ActEndTime= odata['ActEndTime'],
-						TaskStatus= odata['TaskStatus'],
+						PlanStatus= odata['PlanStatus'],
 						LockStatus= odata['LockStatus'],
 						INFStatus= odata['INFStatus'],
 						WMSStatus= odata['WMSStatus']))
@@ -281,7 +281,7 @@ class ZYPlanWebIFS(object):
 				oclass.PlanEndTime = odata['PlanEndTime']
 				oclass.ActBeginTime = odata['ActBeginTime']
 				oclass.ActEndTime = odata['ActEndTime']
-				oclass.TaskStatus = odata['TaskStatus']
+				oclass.PlanStatus = odata['PlanStatus']
 				oclass.LockStatus = odata['LockStatus']
 				oclass.INFStatus = odata['INFStatus']
 				oclass.WMSStatus = odata['WMSStatus']
