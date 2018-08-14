@@ -196,7 +196,7 @@ $(function () {
             $('#iPlanEndTime').datetimebox({value: ""});
             $('#iActBeginTime').datetimebox({value: ""});
             $('#iActEndTime').datetimebox({value: ""});
-            $('input[name="iTaskStatus"]').val();
+            $('input[name="iPlanStatus"]').val();
             $('input[name="iLockStatus"]').val();
             $('input[name="iINFStatus"]').val();
             $('input[name="iWMSStatus"]').val();
@@ -235,7 +235,7 @@ $(function () {
                     $('#iPlanEndTime').datetimebox("setValue",row.PlanEndTime);
                     $('#iActBeginTime').datetimebox("setValue",row.ActBeginTime);
                     $('#iActEndTime').datetimebox("setValue",row.ActEndTime);
-                    $('input[name="iTaskStatus"]').val(row.TaskStatus);
+                    $('input[name="iPlanStatus"]').val(row.TaskStatus);
                     $('input[name="iLockStatus"]').val(row.LockStatus);
                     $('input[name="iINFStatus"]').val(row.INFStatus);
                     $('input[name="iWMSStatus"]').val(row.WMSStatus);
@@ -278,11 +278,6 @@ $(function () {
                             // data: JSON.stringify(ids),
                             data: a,
                             dataType: 'json',
-                            beforeSend: function () {
-                                $.messager.progress({
-                                    text: '正在删除中...'
-                                });
-                            },
                             success: function (data) {
                                 $.messager.progress('close');
 
@@ -445,9 +440,9 @@ $(function () {
                alert('Warning：实际结束时间不能为空！');
                return false;
             }
-            stmp = $('input[name="iTaskStatus"]').val();
+            stmp = $('input[name="iPlanStatus"]').val();
             if(Bee.StringUtils.isEmpty(stmp)) {
-               alert('Warning：任务状态不能为空！');
+               alert('Warning：计划状态不能为空！');
                return false;
             }
             stmp = $('input[name="iLockStatus"]').val();
@@ -491,7 +486,7 @@ $(function () {
                 PlanEndTime:$('#iPlanEndTime').datetimebox('getValue'),
                 ActBeginTime:$('#iActBeginTime').datetimebox('getValue'),
                 ActEndTime:$('#iActEndTime').datetimebox('getValue'),
-                TaskStatus:$('input[name="iTaskStatus"]').val(),
+                PlanStatus:$('input[name="iPlanStatus"]').val(),
                 LockStatus:$('input[name="iLockStatus"]').val(),
                 INFStatus:$('input[name="iINFStatus"]').val(),
                 WMSStatus:$('input[name="iWMSStatus"]').val()
@@ -514,13 +509,6 @@ $(function () {
                             data: entity,
                             dataType: 'json',
                             cache: false,
-
-                            // beforeSend: function () {
-                            //
-                            //     $.messager.progress({
-                            //         text: '正在' + message + '中...'
-                            //     });
-                            // },
                             error: function(data){
                                console.log(data.responseText)
                                alert(hintinfo+ "异常，请刷新后重试...");
@@ -632,8 +620,8 @@ $(function () {
                 width: 100
             },
             {
-                field: 'TaskStatus',
-                title: '任务状态',
+                field: 'PlanStatus',
+                title: '计划状态',
                 align: 'center',
                 width: 100
             }
