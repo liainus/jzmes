@@ -55,7 +55,7 @@ $(function () {
         url: urlPrefix + 'Find', // urlPrefix + 'findAll',
         method: 'get',
         rownumbers: true,
-        singleSelect: false,
+        singleSelect: true,
         autoRowHeight: false,
         fit: false,
         pagination: true,
@@ -70,6 +70,9 @@ $(function () {
         idField: 'ID',
         Width:'700',
         scrollbarSize:'500px',
+        onLoadSuccess:function(){
+            $(this).datagrid('enableDnd');
+        },
         columns: [[
             {
                 field: 'ck',
@@ -347,70 +350,73 @@ $(function () {
             // }
         },
         refresh: function () {
-            $(tableId).datagrid({
-        url: urlPrefix + 'Find', // urlPrefix + 'findAll',
-        method: 'get',
-        rownumbers: true,
-        singleSelect: false,
-        autoRowHeight: false,
-        fit: false,
-        pagination: true,
-        fitColumns: true,
-        striped: true,
-        checkOnSelect: true,
-        selectOnCheck: true,
-        collapsible: true,
-        toolbar: toolbarId,
-        pageSize: 10,
-        pagelist:[10,20,30,40,50],
-        idField: 'ID',
-        Width:'700',
-        scrollbarSize:'500px',
-        columns: [[
-            {
-                field: 'ck',
-                width: 100,
-                checkbox: true,
-                align: 'center'
-            },
-            {
-                field: 'ID',
-                title: 'ID',
-                align: 'center',
-                width: 100
-            },
-            {
-                field: 'SchedulePlanCode',
-                title: '调度计划编码',
-                align: 'center',
-                width: 100
-            },
-            {
-                field: 'PlanBeginTime',
-                title: '计划开始时间',
-                align: 'center',
-                width: 180
-            },
-            {
-                field: 'PlanEndTime',
-                title: '计划结束时间',
-                align: 'center',
-                width: 180
-            },
-            {
-                field: 'Type',
-                title: '类型',
-                align: 'center',
-                width: 100
-            },
-            {
-                field: 'Desc',
-                title: '说明',
-                align: 'center',
-                width: 100
-            }
-        ]]
-    });
+           $(tableId).datagrid({
+                url: urlPrefix + 'Find', // urlPrefix + 'findAll',
+                method: 'get',
+                rownumbers: true,
+                singleSelect: true,
+                autoRowHeight: false,
+                fit: false,
+                pagination: true,
+                fitColumns: true,
+                striped: true,
+                checkOnSelect: true,
+                selectOnCheck: true,
+                collapsible: true,
+                toolbar: toolbarId,
+                pageSize: 10,
+                pagelist:[10,20,30,40,50],
+                idField: 'ID',
+                Width:'700',
+                scrollbarSize:'500px',
+                onLoadSuccess:function(){
+                    $(this).datagrid('enableDnd');
+                },
+                columns: [[
+                    {
+                        field: 'ck',
+                        width: 100,
+                        checkbox: true,
+                        align: 'center'
+                    },
+                    {
+                        field: 'ID',
+                        title: 'ID',
+                        align: 'center',
+                        width: 100
+                    },
+                    {
+                        field: 'SchedulePlanCode',
+                        title: '调度计划编码',
+                        align: 'center',
+                        width: 100
+                    },
+                    {
+                        field: 'PlanBeginTime',
+                        title: '计划开始时间',
+                        align: 'center',
+                        width: 180
+                    },
+                    {
+                        field: 'PlanEndTime',
+                        title: '计划结束时间',
+                        align: 'center',
+                        width: 180
+                    },
+                    {
+                        field: 'Type',
+                        title: '类型',
+                        align: 'center',
+                        width: 100
+                    },
+                    {
+                        field: 'Desc',
+                        title: '说明',
+                        align: 'center',
+                        width: 100
+                    }
+                ]]
+            });
             $(tableId).datagrid('reload');
             $(tableId).datagrid('clearSelections');
            
