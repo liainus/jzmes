@@ -122,8 +122,8 @@ $(function () {
                 width: 100
             },
             {
-                field: 'TaskStatus',
-                title: '任务状态',
+                field: 'PlanStatus',
+                title: '计划状态',
                 align: 'center',
                 width: 100
             }
@@ -196,7 +196,7 @@ $(function () {
             $('#iPlanEndTime').datetimebox({value: ""});
             $('#iActBeginTime').datetimebox({value: ""});
             $('#iActEndTime').datetimebox({value: ""});
-            $('input[name="iTaskStatus"]').val();
+            $('input[name="iPlanStatus"]').val();
             $('input[name="iLockStatus"]').val();
             $('input[name="iINFStatus"]').val();
             $('input[name="iWMSStatus"]').val();
@@ -235,7 +235,7 @@ $(function () {
                     $('#iPlanEndTime').datetimebox("setValue",row.PlanEndTime);
                     $('#iActBeginTime').datetimebox("setValue",row.ActBeginTime);
                     $('#iActEndTime').datetimebox("setValue",row.ActEndTime);
-                    $('input[name="iTaskStatus"]').val(row.TaskStatus);
+                    $('input[name="iPlanStatus"]').val(row.PlanStatus);
                     $('input[name="iLockStatus"]').val(row.LockStatus);
                     $('input[name="iINFStatus"]').val(row.INFStatus);
                     $('input[name="iWMSStatus"]').val(row.WMSStatus);
@@ -266,7 +266,7 @@ $(function () {
                         var a = "";
                         for (var i = 0; i < rows.length; i++) {
                             // ids.push(parseInt((rows[i].id)));
-                            var obj=createKeyIDObj(parseInt(rows[i].ID));
+                            var obj=createKeyIDObj(parseInt(rows[i].PlanStatus));
                             jsonarray.push(obj);
                         }
                         // a = JSON.stringify([{"ID":9},{"ID":10}])
@@ -278,11 +278,6 @@ $(function () {
                             // data: JSON.stringify(ids),
                             data: a,
                             dataType: 'json',
-                            beforeSend: function () {
-                                $.messager.progress({
-                                    text: '正在删除中...'
-                                });
-                            },
                             success: function (data) {
                                 $.messager.progress('close');
 
@@ -294,6 +289,53 @@ $(function () {
                                         title: '提示',
                                         timeout:1000,
                                         msg: '删除' + titleText + '成功',
+                                        style: {
+                                            right: '',
+                                            top: document.body.scrollTop + document.documentElement.scrollTop,
+                                            bottom: ''
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                    }
+                });
+            } else {
+                $.messager.alert('提示', '请选择要删除的记录！', 'info');
+            }
+        },
+        send:function(){
+            var rows = $(tableId).datagrid('getSelections');
+            if (rows.length > 0) {
+                var jsonarray=[];
+                $.messager.confirm('确定操作', '确定要下发所选的记录吗？', function (flag) {
+                    if (flag) {
+                        var PrimaryKey = "ID";
+                        var a = "";
+                        for (var i = 0; i < rows.length; i++) {
+                            // ids.push(parseInt((rows[i].id)));
+                            var obj=createKeyIDObj(parseInt(rows[i].ID));
+                            jsonarray.push(obj);
+                        }
+                        // a = JSON.stringify([{"ID":9},{"ID":10}])
+                        a = JSON.stringify(jsonarray);
+                        $.ajax({
+                            url: '/ZYPlanXF/zYPlanXF',
+                            method: 'GET',
+                            traditional: true,
+                            // data: JSON.stringify(ids),
+                            data: a,
+                            dataType: 'json',
+                            success: function (data) {
+                                $.messager.progress('close')
+                                if (data) {
+                                    $(tableId).datagrid('loaded');
+                                    $(tableId).datagrid('load');
+                                    $(tableId).datagrid('unselectAll');
+                                    $.messager.show({
+                                        title: '提示',
+                                        timeout:1000,
+                                        msg: '下发' + titleText + '成功',
                                         style: {
                                             right: '',
                                             top: document.body.scrollTop + document.documentElement.scrollTop,
@@ -398,9 +440,9 @@ $(function () {
                alert('Warning：实际结束时间不能为空！');
                return false;
             }
-            stmp = $('input[name="iTaskStatus"]').val();
+            stmp = $('input[name="iPlanStatus"]').val();
             if(Bee.StringUtils.isEmpty(stmp)) {
-               alert('Warning：任务状态不能为空！');
+               alert('Warning：计划状态不能为空！');
                return false;
             }
             stmp = $('input[name="iLockStatus"]').val();
@@ -444,7 +486,7 @@ $(function () {
                 PlanEndTime:$('#iPlanEndTime').datetimebox('getValue'),
                 ActBeginTime:$('#iActBeginTime').datetimebox('getValue'),
                 ActEndTime:$('#iActEndTime').datetimebox('getValue'),
-                TaskStatus:$('input[name="iTaskStatus"]').val(),
+                PlanStatus:$('input[name="iPlanStatus"]').val(),
                 LockStatus:$('input[name="iLockStatus"]').val(),
                 INFStatus:$('input[name="iINFStatus"]').val(),
                 WMSStatus:$('input[name="iWMSStatus"]').val()
@@ -454,7 +496,6 @@ $(function () {
                 data:{ABatchID:$("#iBatchID").val()},
                 type:"get",
                 success:function(res){
-                    console.log(typeof res)
                     if(res == '"NO"'){
                         alert('Warning：批次号重复！');
                         return false
@@ -467,13 +508,6 @@ $(function () {
                             data: entity,
                             dataType: 'json',
                             cache: false,
-
-                            // beforeSend: function () {
-                            //
-                            //     $.messager.progress({
-                            //         text: '正在' + message + '中...'
-                            //     });
-                            // },
                             error: function(data){
                                console.log(data.responseText)
                                alert(hintinfo+ "异常，请刷新后重试...");
@@ -585,8 +619,8 @@ $(function () {
                 width: 100
             },
             {
-                field: 'TaskStatus',
-                title: '任务状态',
+                field: 'PlanStatus',
+                title: '计划状态',
                 align: 'center',
                 width: 100
             }

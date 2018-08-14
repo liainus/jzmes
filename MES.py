@@ -765,7 +765,7 @@ def getOrganizationList(id=0):
 def parentNode():
     if request.method == 'GET':
         try:
-            data = getEnterprizeList(id=0)
+            data = getEnterprizeList()
             jsondata = json.dumps(data, cls=AlchemyEncoder, ensure_ascii=False)
             return jsondata
         except Exception as e:
@@ -776,7 +776,7 @@ def parentNode():
 def getEnterprizeList(id=0):
     sz = []
     try:
-        enterprises = session.query(Enterprise).all()
+        enterprises = db_session.query(Enterprise).all()
         for obj in enterprises:
             if obj.ParentNode == id:
                 sz.append({"id": obj.ID, "text": obj.EnterpriseName, "children": getEnterprizeList(obj.ID)})
@@ -2612,6 +2612,56 @@ def isBatchNumber():
             print(e)
             logger.error(e)
             insertSyslog("error", "批次号判重报错Error：" + str(e), "AAAAAAadmin")
+
+# 获取批次计划信息
+@app.route('/ZYPlanGuid/searchZYPlan', methods=['POST', 'GET'])
+def searchZYPlan():
+    if request.method == 'GET':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            json_str = json.dumps(data.to_dict())
+            print(json_str)
+            if len(json_str) > 10:
+                pages = int(data['page'])  # 页数
+                rowsnumber = int(data['rows'])  # 行数
+                inipage = (pages - 1) * rowsnumber + 0  # 起始页
+                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+                ABatchID = data['ABatchID']#批次号
+                APlanDate = data['APlanDate']#计划日期
+                total = db_session.query(ZYPlan).filter(ZYPlan.BatchID == ABatchID, ZYPlan.PlanDate == APlanDate).count()
+                zYPlans = db_session.query(ZYPlan).filter(ZYPlan.BatchID == ABatchID, ZYPlan.PlanDate == APlanDate).all()[
+                              inipage:endpage]
+                jsonzYPlans = json.dumps(zYPlans, cls=AlchemyEncoder, ensure_ascii=False)
+                jsonzYPlans = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonzYPlans + "}"
+                return jsonzYPlans
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "获取批次计划信息报错Error：" + str(e), "AAAAAAadmin")
+
+# 计划下发---更改计划状态，计划下的任务状态
+@app.route('/ZYPlanXF/zYPlanXF', methods=['POST', 'GET'])
+def zYPlanXF():
+    if request.method == 'GET':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            json_str = json.dumps(data.to_dict())
+            isSuccess = ''
+            if len(json_str) > 10:
+                ID = data['ID']  # 计划ID
+                oclass = db_session.query(ZYPlan).filter_by(ID=ID).first()
+                oclass.PlanStatus = '20'#20是任务已下发
+                db_session.commit()
+                tasks = db_session.query(ZYTask).filter_by(BatchID=oclass.BatchID, PUID=oclass.PUID).all()
+                for task in tasks:
+                    task.TaskStatus = '20'
+                    db_session.commit
+                    return 'OK'
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "获取批次计划信息报错Error：" + str(e), "AAAAAAadmin")
+            return 'NO'
 
 #生产线监控
 @app.route('/processMonitorLine')

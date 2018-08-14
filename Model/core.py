@@ -155,10 +155,10 @@ class ZYPlan(Base):
 	#实际完成时间:
 	ActEndTime = Column(DateTime, primary_key = False, autoincrement = False, nullable = True)
 	
-	#任务状态:
-	TaskStatus = Column(Integer, primary_key = False, autoincrement = False, nullable = True)
+	#计划状态:
+	PlanStatus = Column(Integer, primary_key = False, autoincrement = False, nullable = True)
 	
-	#任务锁定状态:
+	#计划锁定状态:
 	LockStatus = Column(Integer, primary_key = False, autoincrement = False, nullable = True)
 	
 	#接口处理状态:
@@ -194,7 +194,7 @@ class ZYPlanWebIFS(object):
 						PlanEndTime= odata['PlanEndTime'],
 						ActBeginTime= odata['ActBeginTime'],
 						ActEndTime= odata['ActEndTime'],
-						TaskStatus= odata['TaskStatus'],
+						PlanStatus= odata['PlanStatus'],
 						LockStatus= odata['LockStatus'],
 						INFStatus= odata['INFStatus'],
 						WMSStatus= odata['WMSStatus']))
@@ -281,7 +281,7 @@ class ZYPlanWebIFS(object):
 				oclass.PlanEndTime = odata['PlanEndTime']
 				oclass.ActBeginTime = odata['ActBeginTime']
 				oclass.ActEndTime = odata['ActEndTime']
-				oclass.TaskStatus = odata['TaskStatus']
+				oclass.PlanStatus = odata['PlanStatus']
 				oclass.LockStatus = odata['LockStatus']
 				oclass.INFStatus = odata['INFStatus']
 				oclass.WMSStatus = odata['WMSStatus']
@@ -1023,12 +1023,47 @@ class Equipment(Base):
 	
 	#设备名称:
 	EQPName = Column(Unicode(50), primary_key = False, autoincrement = False, nullable = True)
-	
+
+	# 企业编码:
+	EnterpriseCode = Column(Unicode(64), primary_key=False, autoincrement=False, nullable=True)
+
+	# 企业名称:
+	EnterpriseName = Column(Unicode(64), primary_key=False, autoincrement=False, nullable=True)
+
+
+
+	# 设备型号:
+	Equipment_Model = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+
+	# 生产厂家:
+	Manufactor  = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+
+	# 设备状态:
+	Equipment_State = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+
+	# 设备编号:
+	Equipment_Number = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+
+	#金额(原值):
+	money = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+
+	# 来源:
+	Equipment_From = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+
+	# 设备类型:
+	Equipment_Type = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+
+	#  设备功率(KW/h):
+	Equipment_Power = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+
 	#工艺段ID:
 	PUID =Column(Integer, nullable=False, primary_key=False)
 
 	#描述:
 	Desc = Column(Unicode(50), primary_key = False, autoincrement = False, nullable = True)
+
+	# 生产日期:
+	Manufacture_Date = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
 
 class EquipmentWebIFS(object):
 	def __init__(self, name):

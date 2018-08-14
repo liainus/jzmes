@@ -40,6 +40,7 @@
             <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add'" onclick="ZYPlanClassToolbar.create();">添加</a>
             <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit'" onclick="ZYPlanClassToolbar.update();">修改</a>
             <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove'" onclick="ZYPlanClassToolbar.delete();">删除</a>
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-redo'" onclick="ZYPlanClassToolbar.send();">下发</a>
             <a href="#" class="easyui-linkbutton" id="reload" data-options="iconCls:'icon-reload'" onclick="ZYPlanClassToolbar.refresh();">刷新</a>
         </div>
     </div>
@@ -144,9 +145,9 @@
                     </td>
                 </tr>
                 <tr>
-                    <td class="kv-label">任务状态</td>
+                    <td class="kv-label">计划状态</td>
                     <td class="kv-content">
-                        <input  name="iTaskStatus" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                        <input  name="iPlanStatus" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
                     </td>
                     <td class="kv-label">锁定状态</td>
                     <td class="kv-content">
@@ -179,14 +180,7 @@
 
         <div data-options="iconCls:'icon-edit'" onclick="ZYPlanClassToolbar.update();">编辑</div>
         <div data-options="iconCls:'icon-remove'" onclick="ZYPlanClassToolbar.delete();">删除</div>
-
-        <div>
-    		<span>其他</span>
-    		<div style="width:150px;">
-    			<div data-options="" onclick="">启用</div>
-    			<div data-options="" onclick="">禁用</div>
-    		</div>
-        </div>
+        <div data-options="iconCls:'icon-redo'" onclick="ZYPlanClassToolbar.send();">下发</div>
     </div>
 
 </body>
