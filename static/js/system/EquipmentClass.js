@@ -83,26 +83,86 @@ $(function () {
             },
             {
                 field: 'EQPCode',
-                title: '工艺段编码',
+                title: '设备编码',
                 align: 'center',
                 width: 100
             },
             {
                 field: 'EQPName',
-                title: '工艺段名称',
+                title: '设备名称',
                 align: 'center',
                 width: 100
             },
              {
-                field: 'PUID',
-                title: '工艺段ID',
+                field: 'EnterpriseCode',
+                title: '企业编码',
                 align: 'center',
                 width: 100
             },
             {
+                field: 'EnterpriseName',
+                title: '企业名称',
+                width: 100,
+                align: 'center'
+            },
+            {
+                field: 'Equipment_Model',
+                title: '设备型号',
+                width: 100,
+                align: 'center'
+            } ,
+            {
+                field: 'Manufactor',
+                title: '生产厂家',
+                width: 100,
+                align: 'center'
+            },
+            {
+                field: 'Equipment_State',
+                title: '设备状态',
+                width: 100,
+                align: 'center'
+            },
+            {
+                field: 'money',
+                title: '金额(原值)',
+                width: 100,
+                align: 'center'
+            },
+            {
+                field: 'Equipment_Type',
+                title: '设备类型',
+                width: 100,
+                align: 'center'
+            },
+            {
+                field: 'Equipment_Power',
+                title: '设备功率(KW/h)',
+                width: 100,
+                align: 'center'
+            },
+            {
+                field: 'PUID',
+                title: '工艺段ID',
+                width: 100,
+                align: 'center'
+            },
+            {
+                field: 'Manufacture_Date',
+                title: '生产日期',
+                width: 100,
+                align: 'center'
+            },
+            {
                 field: 'Desc',
-                title: '说明',
-                width: 300,
+                title: '描述',
+                width: 100,
+                align: 'center'
+            },
+            {
+                field: 'Equipment_From',
+                title: ' 来源',
+                width: 100,
                 align: 'center'
             }
         ]]
@@ -367,26 +427,86 @@ $(function () {
             },
             {
                 field: 'EQPCode',
-                title: '工艺段编码',
+                title: '设备编码',
                 align: 'center',
                 width: 100
             },
             {
                 field: 'EQPName',
-                title: '工艺段名称',
+                title: '设备名称',
                 align: 'center',
                 width: 100
             },
              {
-                field: 'PUID',
-                title: '工艺段ID',
+                field: 'EnterpriseCode',
+                title: '企业编码',
                 align: 'center',
                 width: 100
             },
             {
+                field: 'EnterpriseName',
+                title: '企业名称',
+                width: 100,
+                align: 'center'
+            },
+            {
+                field: 'Equipment_Model',
+                title: '设备型号',
+                width: 100,
+                align: 'center'
+            } ,
+            {
+                field: 'Manufactor',
+                title: '生产厂家',
+                width: 100,
+                align: 'center'
+            },
+            {
+                field: 'Equipment_State',
+                title: '设备状态',
+                width: 100,
+                align: 'center'
+            },
+            {
+                field: 'money',
+                title: '金额(原值)',
+                width: 100,
+                align: 'center'
+            },
+            {
+                field: 'Equipment_Type',
+                title: '设备类型',
+                width: 100,
+                align: 'center'
+            },
+            {
+                field: 'Equipment_Power',
+                title: '设备功率(KW/h)',
+                width: 100,
+                align: 'center'
+            },
+            {
+                field: 'PUID',
+                title: '工艺段ID',
+                width: 100,
+                align: 'center'
+            },
+            {
+                field: 'Manufacture_Date',
+                title: '生产日期',
+                width: 100,
+                align: 'center'
+            },
+            {
                 field: 'Desc',
-                title: '说明',
-                width: 300,
+                title: '描述',
+                width: 100,
+                align: 'center'
+            },
+            {
+                field: 'Equipment_From',
+                title: ' 来源',
+                width: 100,
                 align: 'center'
             }
         ]]
