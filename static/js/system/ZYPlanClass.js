@@ -122,8 +122,8 @@ $(function () {
                 width: 100
             },
             {
-                field: 'TaskStatus',
-                title: '任务状态',
+                field: 'PlanStatus',
+                title: '计划状态',
                 align: 'center',
                 width: 100
             }
