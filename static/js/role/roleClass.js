@@ -242,11 +242,6 @@ $(function () {
                             // data: JSON.stringify(ids),
                             data: a,
                             dataType: 'json',
-                            beforeSend: function () {
-                                $.messager.progress({
-                                    text: '正在删除中...'
-                                });
-                            },
                             success: function (data) {
                                 $.messager.progress('close');
 
@@ -301,8 +296,8 @@ $(function () {
             }
                 var entity = {
                     ID:$('input[name="iID"]').val(),
-                    RoleCode:$('input[name="iRoleCode"]').val(),
                     RoleName:$('input[name="iRoleName"]').val(),
+                    ParentNode:$('#iParentNode').find("option:selected").val(),
                     RoleSeq:$('input[name="iRoleSeq"]').val(),
                     Description:$('input[name="iDescription"]').val(),
                     CreatePerson:$('input[name="iCreatePerson"]').val(),

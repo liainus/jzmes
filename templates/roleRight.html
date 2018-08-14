@@ -130,7 +130,7 @@
                 console.log(treeId)
                 console.log(menu_id)
                 $.get("/permission/MenuToRole",{role_id:treeId,menu_id:menu_id},function(res){
-                    $.messager.alert('提示','保存成功！');
+                    $.messager.alert('提示','保存成功！账户重新登录后即可正常使用。');
                 })
             })
         })

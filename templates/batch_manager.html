@@ -72,7 +72,7 @@
                 </tbody>
             </table>
         </div>
-        <table id="tt" class="easyui-datagrid" style="width:100%;height:300px;" title="批次计划信息" data-options="url:'../static/data/datagrid_batch_manager_list1.json',
+        <table id="tt" class="easyui-datagrid" style="width:100%;height:300px;" title="批次计划信息" data-options="url:'/allZYPlans/Search',
                 method:'get',
                 rownumbers:true,
                 singleSelect:true,
@@ -87,30 +87,35 @@
             <thead>
                 <tr>
                     <th data-options="field: 'checked',align: 'center', checkbox:'true'"></th>
-                    <th data-options="field: 'A',align: 'center',">调度状态</th>
-                    <th data-options="field: 'B',align: 'center' ">生产日期</th>
-                    <th data-options="field: 'C',align: 'center' ">生产线</th>
-                    <th data-options="field: 'D',align: 'center' ">工艺段</th>
-                    <th data-options="field: 'E',align: 'center' ">批次号编码</th>
-                    <th data-options="field: 'F',align: 'center' ">主物料</th>
-                    <th data-options="field: 'G',align: 'center' ">主物料名称</th>
-                    <th data-options="field: 'H',align: 'center' ">ERP订单号</th>
-                    <th data-options="field: 'I',align: 'center' ">任务号</th>
-                    <th data-options="field: 'J',align: 'center' ">批次号</th>
-                    <th data-options="field: 'K',align: 'center' ">计划量</th>
-                    <th data-options="field: 'L',align: 'center' ">完成量</th>
-                    <th data-options="field: 'M',align: 'center' ">计量单位</th>
-                    <th data-options="field: 'N',align: 'center' ">任务状态</th>
-                    <th data-options="field: 'O',align: 'center' ">投料状态</th>
-                    <th data-options="field: 'P',align: 'center' ">计划完成时间</th>
+                    <th data-options="field: 'PlanDate',align: 'center',">计划日期</th>
+                    <th data-options="field: 'PlanNo',align: 'center' ">制药计划单号</th>
+                    <th data-options="field: 'BatchID',align: 'center' ">批次号</th>
+                    <th data-options="field: 'PlanSeq',align: 'center' ">顺序号</th>
+                    <th data-options="field: 'PUID',align: 'center' ">工艺段</th>
+                    <th data-options="field: 'PlanType',align: 'center' ">计划类型</th>
+                    <th data-options="field: 'BrandID',align: 'center' ">品名</th>
+                    <th data-options="field: 'BrandName',align: 'center' ">品名名称</th>
+                    <th data-options="field: 'ERPOrderNo',align: 'center' ">ERP订单号</th>
+                    <th data-options="field: 'PlanQuantity',align: 'center' ">计划重量</th>
+                    <th data-options="field: 'ActQuantity',align: 'center' ">实际重量</th>
+                    <th data-options="field: 'Unit',align: 'center' ">单位</th>
+                    <th data-options="field: 'EnterTime',align: 'center' ">录入时间</th>
+                    <th data-options="field: 'PlanBeginTime',align: 'center' ">计划开始时间</th>
+                    <th data-options="field: 'PlanEndTime',align: 'center' ">计划结束时间</th>
+                    <th data-options="field: 'ActBeginTime',align: 'center' ">实际开始时间</th>
+                    <th data-options="field: 'ActEndTime',align: 'center' ">实际完成时间</th>
+                    <th data-options="field: 'TaskStatus',align: 'center' ">任务状态</th>
+                    <th data-options="field: 'LockStatus',align: 'center' ">任务锁定状态</th>
+                    <th data-options="field: 'INFStatus',align: 'center' ">接口处理状态</th>
+                    <th data-options="field: 'WMSStatus',align: 'center' ">仓储送料状态</th>
                 </tr>
             </thead>
         </table>
 
         <div id="tab" class="easyui-tabs" style="width:100%;height:250px;">
             <div title="批次任务明细" data-options="closable:false"  style="padding:0px;display:none;">
-                <table  class="easyui-datagrid" style="width:100%;"  data-options="url:
-                '../static/data/datagrid_batch_manager_list2.json', method: 'get', rownumbers:true, singleSelect:false, autoRowHeight:false, pagination:true, striped:true, checkOnSelect:false,
+                <table id="ttTasks" class="easyui-datagrid" style="width:100%;"  data-options="url:
+                '/ZYPlanGuid/CriticalTasks', method: 'get', rownumbers:true, singleSelect:false, autoRowHeight:false, pagination:true, striped:true, checkOnSelect:false,
                 selectOnCheck:false, collapsible:true, toolbar: '#tb', pageSize:10 " >
                 <thead>
                     <tr>
@@ -130,8 +135,8 @@
             </table>
             </div>
             <div title="批次物料明细" data-options="closable:false" style="overflow:auto;padding:0px;display:none;">
-                <table  class="easyui-datagrid" style="width:100%;" data-options="url:
-                '../static/data/datagrid_batch_manager_list2.json', method: 'get', rownumbers:true, singleSelect:false, autoRowHeight:false, pagination:true, striped:true, checkOnSelect:false,
+                <table id="ttMaterials" class="easyui-datagrid" style="width:100%;" data-options="url:
+                '/ZYPlanGuid/CriticalMaterials', method: 'get', rownumbers:true, singleSelect:false, autoRowHeight:false, pagination:true, striped:true, checkOnSelect:false,
                 selectOnCheck:false, collapsible:true, toolbar: '#tb', pageSize:10 " >
                 <thead>
                     <tr>
@@ -149,8 +154,46 @@
     </div>
     <script type="text/javascript">
         $('#tt').datagrid({
+            rowStyler:function(index,row){
+                if (row.TaskStatus=='任务编制'){
+                    return 'background-color:#007bff; color:white;font-weight:bold;';
+                }
+                if (row.TaskStatus=='任务下达'){
+                    return 'background-color:#17a2b8; color:white;font-weight:bold;';
+                }
+                if (row.TaskStatus=='任务新建'){
+                    return 'background-color:#009688; color:white;font-weight:bold;';
+                }
+                if (row.TaskStatus=='任务确认'){
+                    return 'background-color:#01aaed; color:white;font-weight:bold;';
+                }
+                if (row.TaskStatus=='任务执行'){
+                    return 'background-color:#2F4056; color:white;font-weight:bold;';
+                }
+                if (row.TaskStatus=='任务完成'){
+                    return 'background-color:#28a745; color:white;font-weight:bold;';
+                }
+                if (row.TaskStatus=='任务暂停'){
+                    return 'background-color:#ffc107; color:white;font-weight:bold;';
+                }
+                if (row.TaskStatus=='任务错误'){
+                    return 'background-color:#dc3545; color:white;font-weight:bold;';
+                }
+                if (row.TaskStatus=='任务中止'){
+                    return 'background-color:#6c757d; color:white;font-weight:bold;';
+                }
+            },
             onClickRow:function(rowIndex,rowData){
-                if(rowData.N == '任务编制'){
+                //传参到批次任务明细
+                $("#ttTasks").datagrid('load',{
+                    ABatchID:rowData.BatchID
+                })
+                //传参到批次物料明细
+                $("#ttMaterials").datagrid('load',{
+                    ABatchID:rowData.BatchID
+                })
+                //色卡状态变化
+                if(rowData.TaskStatus == '任务编制'){
                     $('.pp1').tooltip({
                         position: 'bottom',
                         content: '<span style="color:#fff">您当前选择的是任务编制</span>',
@@ -162,7 +205,7 @@
                         }
                     });
                     $('.pp1').mouseenter().siblings().tooltip('destroy')
-                }else if(rowData.N == '任务下达'){
+                }else if(rowData.TaskStatus == '任务下达'){
                     $('.pp2').tooltip({
                         position: 'bottom',
                         content: '<span style="color:#fff">您当前选择的是任务下达</span>',
@@ -174,7 +217,7 @@
                         }
                     });
                     $('.pp2').mouseenter().siblings().tooltip('destroy')
-                }else if(rowData.N == '任务新建'){
+                }else if(rowData.TaskStatus == '任务新建'){
                     $('.pp3').tooltip({
                         position: 'bottom',
                         content: '<span style="color:#fff">您当前选择的是任务新建</span>',
@@ -186,7 +229,7 @@
                         }
                     });
                     $('.pp3').mouseenter().siblings().tooltip('destroy')
-                }else if(rowData.N == '任务确认'){
+                }else if(rowData.TaskStatus == '任务确认'){
                     $('.pp4').tooltip({
                         position: 'bottom',
                         content: '<span style="color:#fff">您当前选择的是任务确认</span>',
@@ -198,7 +241,7 @@
                         }
                     });
                     $('.pp4').mouseenter().siblings().tooltip('destroy')
-                }else if(rowData.N == '任务执行'){
+                }else if(rowData.TaskStatus == '任务执行'){
                     $('.pp5').tooltip({
                         position: 'bottom',
                         content: '<span style="color:#fff">您当前选择的是任务执行</span>',
@@ -210,7 +253,7 @@
                         }
                     });
                     $('.pp5').mouseenter().siblings().tooltip('destroy')
-                }else if(rowData.N == '任务完成'){
+                }else if(rowData.TaskStatus == '任务完成'){
                     $('.pp6').tooltip({
                         position: 'bottom',
                         content: '<span style="color:#fff">您当前选择的是任务完成</span>',
@@ -222,7 +265,7 @@
                         }
                     });
                     $('.pp6').mouseenter().siblings().tooltip('destroy')
-                }else if(rowData.N == '任务暂停'){
+                }else if(rowData.TaskStatus == '任务暂停'){
                     $('.pp7').tooltip({
                         position: 'bottom',
                         content: '<span style="color:#fff">您当前选择的是任务暂停</span>',
@@ -234,7 +277,7 @@
                         }
                     });
                     $('.pp7').mouseenter().siblings().tooltip('destroy')
-                }else if(rowData.N == '任务错误'){
+                }else if(rowData.TaskStatus == '任务错误'){
                     $('.pp8').tooltip({
                         position: 'bottom',
                         content: '<span style="color:#fff">您当前选择的是任务错误</span>',
@@ -246,7 +289,7 @@
                         }
                     });
                     $('.pp8').mouseenter().siblings().tooltip('destroy')
-                }else if(rowData.N == '任务中止'){
+                }else if(rowData.TaskStatus == '任务中止'){
                     $('.pp9').tooltip({
                         position: 'bottom',
                         content: '<span style="color:#fff">您当前选择的是任务中止</span>',
@@ -258,35 +301,6 @@
                         }
                     });
                     $('.pp9').mouseenter().siblings().tooltip('destroy')
-                }
-            },
-            rowStyler:function(index,row){
-                if (row.N=='任务编制'){
-                    return 'background-color:#007bff; color:white;font-weight:bold;';
-                }
-                if (row.N=='任务下达'){
-                    return 'background-color:#17a2b8; color:white;font-weight:bold;';
-                }
-                if (row.N=='任务新建'){
-                    return 'background-color:#009688; color:white;font-weight:bold;';
-                }
-                if (row.N=='任务确认'){
-                    return 'background-color:#01aaed; color:white;font-weight:bold;';
-                }
-                if (row.N=='任务执行'){
-                    return 'background-color:#2F4056; color:white;font-weight:bold;';
-                }
-                if (row.N=='任务完成'){
-                    return 'background-color:#28a745; color:white;font-weight:bold;';
-                }
-                if (row.N=='任务暂停'){
-                    return 'background-color:#ffc107; color:white;font-weight:bold;';
-                }
-                if (row.N=='任务错误'){
-                    return 'background-color:#dc3545; color:white;font-weight:bold;';
-                }
-                if (row.N=='任务中止'){
-                    return 'background-color:#6c757d; color:white;font-weight:bold;';
                 }
             }
         });

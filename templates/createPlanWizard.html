@@ -206,6 +206,10 @@
                         $.messager.alert('提示', '计划重量不能为空！', 'info');
                         return false;
                     }
+                    if(Bee.StringUtils.isEmpty($('#APLineName').find("option:selected").val())) {
+                        $.messager.alert('提示', '生产线不能为空！', 'info');
+                        return false;
+                    }
                     if(Bee.StringUtils.isEmpty($('#AUnit').find("option:selected").val())) {
                         $.messager.alert('提示', '单位不能为空！', 'info');
                         return false;
