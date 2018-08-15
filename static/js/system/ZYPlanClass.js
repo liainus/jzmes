@@ -74,12 +74,6 @@ $(function () {
                 align: 'center'
             },
             {
-                field: 'ID',
-                title: 'ID',
-                align: 'center',
-                width: 100
-            },
-            {
                 field: 'PlanNo',
                 title: '计划单号',
                 align: 'center',
@@ -575,12 +569,6 @@ $(function () {
                 width: 100,
                 checkbox: true,
                 align: 'center'
-            },
-            {
-                field: 'ID',
-                title: 'ID',
-                align: 'center',
-                width: 100
             },
             {
                 field: 'PlanNo',

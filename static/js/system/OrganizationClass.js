@@ -76,12 +76,6 @@ $(function () {
                 align: 'center',
             },
             {
-                field: 'ID',
-                title: 'ID',
-                align: 'center',
-                width: 100
-            },
-            {
                 field: 'OrganizationCode',
                 title: '组织机构编码',
                 align: 'center',
@@ -408,12 +402,6 @@ $(function () {
                 width: 100,
                 checkbox: true,
                 align: 'center',
-            },
-            {
-                field: 'ID',
-                title: 'ID',
-                align: 'center',
-                width: 100
             },
             {
                 field: 'OrganizationCode',

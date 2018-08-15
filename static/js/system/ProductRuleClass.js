@@ -76,12 +76,6 @@ $(function () {
                 align: 'center',
             },
             {
-                field: 'ID',
-                title: 'ID',
-                align: 'center',
-                width: 100
-            },
-            {
                 field: 'PRCode',
                 title: '产品定义编码',
                 align: 'center',
@@ -406,12 +400,6 @@ $(function () {
                 width: 100,
                 checkbox: true,
                 align: 'center',
-            },
-            {
-                field: 'ID',
-                title: 'ID',
-                align: 'center',
-                width: 100
             },
             {
                 field: 'PRCode',

@@ -78,12 +78,6 @@ $(function () {
                 align: 'center'
             },
             {
-                field: 'ID',
-                title: 'ID',
-                align: 'center',
-                width: 100
-            },
-            {
                 field: 'MATID',
                 title: '物料ID',
                 align: 'center',
@@ -461,12 +455,6 @@ $(function () {
                 width: 100,
                 checkbox: true,
                 align: 'center'
-            },
-            {
-                field: 'ID',
-                title: 'ID',
-                align: 'center',
-                width: 100
             },
             {
                 field: 'MATID',

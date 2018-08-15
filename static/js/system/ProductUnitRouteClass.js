@@ -78,12 +78,6 @@ $(function () {
                 align: 'center'
             },
             {
-                field: 'ID',
-                title: 'ID',
-                align: 'center',
-                width: 100
-            },
-            {
                 field: 'PDUnitRouteCode',
                 title: '工艺路线编码',
                 align: 'center',
@@ -415,12 +409,6 @@ $(function () {
                 width: 100,
                 checkbox: true,
                 align: 'center'
-            },
-            {
-                field: 'ID',
-                title: 'ID',
-                align: 'center',
-                width: 100
             },
             {
                 field: 'PDUnitRouteCode',

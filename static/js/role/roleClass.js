@@ -76,12 +76,6 @@ $(function () {
                 align: 'center',
             },
             {
-                field: 'ID',
-                title: 'ID',
-                align: 'center',
-                width: 100
-            },
-            {
                 field: 'RoleName',
                 title: '角色名称',
                 align: 'center',
@@ -459,12 +453,6 @@ $(function () {
                 width: 100,
                 checkbox: true,
                 align: 'center',
-            },
-            {
-                field: 'ID',
-                title: 'ID',
-                align: 'center',
-                width: 100
             },
             {
                 field: 'RoleName',
