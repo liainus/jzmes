@@ -2683,11 +2683,15 @@ def taskConfirmPuidDate():
     if request.method == 'GET':
         data = request.values  # 返回请求中的参数和form
         try:
-            puids = db_session.query(ZYPlan.PUID).filter().all()
-            puids = list(set(puids))
+            puids = db_session.query(ZYPlan.PUID).filter().all()           
+            puidnews = []
+            for id in puids:
+                if id not in puidnews:
+                    puidnews.append(id)
             sz = []
             for puid in puids:
                 APUID = puid  # 工艺段编码
+                print(APUID)
                 PDCtrlTaskName = db_session.query(ProductControlTask.PDCtrlTaskName).filter_by(PUID=APUID).first()
                 # oclass = db_session.query(ZYPlan).filter_by(PUID=APUID).first()
                 # SchedulePlanCode = db_session.query(PlanManager.SchedulePlanCode).filter_by(BatchID=oclass.BatchID, BrandID=oclass.BrandID).first()
