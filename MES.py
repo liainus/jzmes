@@ -2678,7 +2678,7 @@ def taskConfirm():
     return render_template('taskConfirm.html')
 
 #任务确认获取工艺段
-@app.route('/processMonitorLine/taskConfirmPuidDate', methods=['POST', 'GET'])
+@app.route('/processMonitorLine/taskConfirmPuid', methods=['POST', 'GET'])
 def taskConfirmPuidDate():
     if request.method == 'GET':
         data = request.values  # 返回请求中的参数和form
@@ -2713,12 +2713,12 @@ def planConfirmSearch():
                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
                 APUID = data['PUID']  # 工艺段编码
-                TaskStatus = '20'  # 任务的执行状态
+                PlanStatus = '20'  # 任务的执行状态
                 # APlanBeginTime = data['PlanBeginTime']  # 调度计划开始时间
-                total = db_session.query(ZYPlan).filter(ZYPlan.TaskStatus == TaskStatus,
-                                                        ZYPlan.APUID == APUID).count()
-                ZYPlans = db_session.query(ZYPlan).filter(ZYPlan.TaskStatus == TaskStatus,
-                                                          ZYPlan.APUID == APUID).all()[inipage:endpage]
+                total = db_session.query(ZYPlan).filter(ZYPlan.PlanStatus == PlanStatus,
+                                                        ZYPlan.PUID == APUID).count()
+                ZYPlans = db_session.query(ZYPlan).filter(ZYPlan.PlanStatus == PlanStatus,
+                                                          ZYPlan.PUID == APUID).all()[inipage:endpage]
                 jsonZYPlans = json.dumps(ZYPlans, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonZYPlans = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonZYPlans + "}"
                 return jsonZYPlans
@@ -2741,12 +2741,12 @@ def taskConfirmSearch():
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
                 APUID = data['PUID']  # 工艺段编码
                 TaskStatus = '20'  # 任务的执行状态
-                BatchID = data['BatchID']
+                BatchID = data['BatchID']#批次号
                 # APlanBeginTime = data['PlanBeginTime']  # 调度计划开始时间
                 total = db_session.query(ZYTask).filter(ZYTask.BatchID == BatchID,
-                                                        ZYTask.TaskStatus == TaskStatus, ZYTask.APUID == APUID).count()
+                                                        ZYTask.TaskStatus == TaskStatus, ZYTask.PUID == APUID).count()
                 ZYTasks = db_session.query(ZYTask).filter(ZYTask.BatchID == BatchID,
-                                                        ZYTask.TaskStatus == TaskStatus, ZYTask.APUID == APUID).all()[inipage:endpage]
+                                                        ZYTask.TaskStatus == TaskStatus, ZYTask.PUID == APUID).all()[inipage:endpage]
                 jsonZYTasks = json.dumps(ZYTasks, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonZYTasks = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonZYTasks + "}"
                 return jsonZYTasks
