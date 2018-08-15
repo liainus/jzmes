@@ -1048,9 +1048,6 @@ class Equipment(Base):
 	# 设备状态:
 	Equipment_State = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
 
-	# 设备编号:
-	Equipment_Number = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
-
 	#金额(原值):
 	money = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
 
@@ -1091,7 +1088,6 @@ class EquipmentWebIFS(object):
 						Equipment_Model=odata['Equipment_Model'],
 						Manufactor=odata['Manufactor'],
 						Equipment_State=odata['Equipment_State'],
-						Equipment_Number=odata['Equipment_Number'],
 						money=odata['money'],
 						Equipment_From=odata['Equipment_From'],
 						Equipment_Type=odata['Equipment_Type'],
@@ -1176,7 +1172,6 @@ class EquipmentWebIFS(object):
 				oclass.Equipment_Model = odata['Equipment_Model']
 				oclass.Manufactor = odata['Manufactor']
 				oclass.Equipment_State = odata['Equipment_State']
-				oclass.Equipment_Number = odata['Equipment_Number']
 				oclass.money = odata['money']
 				oclass.Equipment_From = odata['Equipment_From']
 				oclass.Equipment_Type = odata['Equipment_Type']
