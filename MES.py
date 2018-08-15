@@ -16,7 +16,7 @@ from sqlalchemy.orm import Session, relationship, sessionmaker
 import Model.Global
 from Model.BSFramwork import AlchemyEncoder
 from Model.core import Enterprise, Area, Factory, ProductLine, ProcessUnit, Equipment, Material, MaterialType, \
-    ProductUnit, ProductRule, ZYTask, ZYPlanMaterial, ZYPlan, Unit
+    ProductUnit, ProductRule, ZYTask, ZYPlanMaterial, ZYPlan, Unit, PlanManager, SchedulePlan, ProductControlTask
 from Model.system import Role, Organization, User, Menu, Role_Menu
 from tools.MESLogger import MESLogger
 from Model.core import SysLog
@@ -1350,7 +1350,7 @@ def allZYTasksSearch():
 
 # 加载工作台
 @app.route('/ProductControlTask')
-def ProductControlTask():
+def productControlTask():
     try:
         product_def_ID = db_session.query(ProductRule.ID,ProductRule.PRName).all()
         print(product_def_ID)
@@ -2672,7 +2672,112 @@ def zYPlanXF():
 def processMonitor():
     return render_template('processMonitorLine.html')
 
+#任务确认
+@app.route('/taskConfirm')
+def taskConfirm():
+    return render_template('taskConfirm.html')
 
+#任务确认获取工艺段
+@app.route('/processMonitorLine/taskConfirmPuidDate', methods=['POST', 'GET'])
+def taskConfirmPuidDate():
+    if request.method == 'GET':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            puids = db_session.query(ZYPlan.PUID).filter().all()
+            puids = list(set(puids))
+            sz = []
+            for puid in puids:
+                APUID = puid  # 工艺段编码
+                PDCtrlTaskName = db_session.query(ProductControlTask.PDCtrlTaskName).filter_by(PUID=APUID).first()
+                # oclass = db_session.query(ZYPlan).filter_by(PUID=APUID).first()
+                # SchedulePlanCode = db_session.query(PlanManager.SchedulePlanCode).filter_by(BatchID=oclass.BatchID, BrandID=oclass.BrandID).first()
+                # PlanBeginTimes = db_session.query(SchedulePlan.PlanBeginTime).filter_by(SchedulePlanCode=SchedulePlanCode).first()
+                sz.append({"id": APUID, "text": PDCtrlTaskName})
+            jsonsz = json.dumps(sz, cls=AlchemyEncoder, ensure_ascii=False)
+            return jsonsz
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "任务确认获取工艺段报错Error：" + str(e), "AAAAAAadmin")
+
+# 任务确认查询计划
+@app.route('/processMonitorLine/planConfirmSearch', methods=['POST', 'GET'])
+def planConfirmSearch():
+    if request.method == 'GET':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                pages = int(data['page'])  # 页数
+                rowsnumber = int(data['rows'])  # 行数
+                inipage = (pages - 1) * rowsnumber + 0  # 起始页
+                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+                APUID = data['PUID']  # 工艺段编码
+                TaskStatus = '20'  # 任务的执行状态
+                # APlanBeginTime = data['PlanBeginTime']  # 调度计划开始时间
+                total = db_session.query(ZYPlan).filter(ZYPlan.TaskStatus == TaskStatus,
+                                                        ZYPlan.APUID == APUID).count()
+                ZYPlans = db_session.query(ZYPlan).filter(ZYPlan.TaskStatus == TaskStatus,
+                                                          ZYPlan.APUID == APUID).all()[inipage:endpage]
+                jsonZYPlans = json.dumps(ZYPlans, cls=AlchemyEncoder, ensure_ascii=False)
+                jsonZYPlans = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonZYPlans + "}"
+                return jsonZYPlans
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "任务确认查询计划报错Error：" + str(e), "AAAAAAadmin")
+
+#任务确认查询任务
+@app.route('/processMonitorLine/taskConfirmSearch', methods=['POST', 'GET'])
+def taskConfirmSearch():
+    if request.method == 'GET':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                pages = int(data['page'])  # 页数
+                rowsnumber = int(data['rows'])  # 行数
+                inipage = (pages - 1) * rowsnumber + 0  # 起始页
+                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+                APUID = data['PUID']  # 工艺段编码
+                TaskStatus = '20'  # 任务的执行状态
+                BatchID = data['BatchID']
+                # APlanBeginTime = data['PlanBeginTime']  # 调度计划开始时间
+                total = db_session.query(ZYTask).filter(ZYTask.BatchID == BatchID,
+                                                        ZYTask.TaskStatus == TaskStatus, ZYTask.APUID == APUID).count()
+                ZYTasks = db_session.query(ZYTask).filter(ZYTask.BatchID == BatchID,
+                                                        ZYTask.TaskStatus == TaskStatus, ZYTask.APUID == APUID).all()[inipage:endpage]
+                jsonZYTasks = json.dumps(ZYTasks, cls=AlchemyEncoder, ensure_ascii=False)
+                jsonZYTasks = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonZYTasks + "}"
+                return jsonZYTasks
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "获取任务确认的任务列表报错Error：" + str(e), "AAAAAAadmin")
+
+#任务确认工艺段下的所有设备
+@app.route('/processMonitorLine/searchAllEquipments', methods=['POST', 'GET'])
+def searchAllEquipments():
+    if request.method == 'GET':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                APUID = data['PUID']  # 工艺段编码
+                dataequipmentNames = []
+                equipmentNames = db_session.query(Equipment.EQPCode,Equipment.EQPName).filter(Equipment.PUID == APUID)
+                for equip in equipmentNames:
+                    li = list(equip)
+                    id = li[0]
+                    name = li[1]
+                    equipName = {'EQPCode': id, 'EQPName': name}
+                    dataequipmentNames.append(equipName)
+                    dataequipmentNames = json.dumps(dataequipmentNames, cls=AlchemyEncoder, ensure_ascii=False)
+                return dataequipmentNames
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "任务确认工艺段下的所有设备报错Error：" + str(e), "AAAAAAadmin")
 
 if __name__ == '__main__':
     app.run(debug=True)

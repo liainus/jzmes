@@ -499,11 +499,14 @@ class ZYTask(Base):
 	
 	#ID:
 	ID = Column(BigInteger, primary_key = True, autoincrement = True, nullable = True)
+
+	# 设备ID:
+	EquipmentID = Column(Integer, primary_key=False, autoincrement=True, nullable=True)
 	
 	#计划日期:
 	PlanDate = Column(Unicode(50), primary_key = False, autoincrement = False, nullable = True)
 	
-	#制药计划单号:
+	#制药任务单号:
 	TaskID = Column(Integer, primary_key = False, autoincrement = False, nullable = True)
 	
 	#批次号:
@@ -1016,10 +1019,10 @@ class Equipment(Base):
 	__tablename__ = "Equipment" 
 	
 	#ID:
-	ID = Column(BigInteger, primary_key = True, autoincrement = True, nullable = True)
+	ID = Column(Integer, primary_key = True, autoincrement = True, nullable = True)
 	
 	#设备编码:
-	EQPCode = Column(Unicode(50), primary_key = False, autoincrement = False, nullable = True)
+	EQPCode = Column(Integer, primary_key = False, autoincrement = False, nullable = True)
 	
 	#设备名称:
 	EQPName = Column(Unicode(50), primary_key = False, autoincrement = False, nullable = True)
