@@ -1033,6 +1033,12 @@ class Equipment(Base):
 	# 企业名称:
 	EnterpriseName = Column(Unicode(64), primary_key=False, autoincrement=False, nullable=True)
 
+	# 批次对应的opc变量名
+	BatchOpcTag = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+
+	# 牌号对应的opc变量名
+	BrandOpcTag = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+
 	# 设备型号:
 	Equipment_Model = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
 
