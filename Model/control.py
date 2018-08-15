@@ -158,7 +158,7 @@ class ctrlPlan:
                     ActBeginTime="",
                     ActEndTime="",
                     PlanStatus=Model.Global.TASKSTATUS.COMPILE.value,
-                    LockStatus=Model.Global.TASKLOCKSTATUS.LOCKED.value,
+                    LockStatus=Model.Global.TASKLOCKSTATUS.UNLOCK.value,
                     INFStatus=Model.Global.TASKSTATUS.COMPILE.value,
                     WMSStatus=Model.Global.TASKSTATUS.COMPILE.value))
             session.commit()
@@ -195,7 +195,7 @@ class ctrlPlan:
                     # CurretnRepeatCount=odata['CurretnRepeatCount'],
                     # ActTank=odata['ActTank'],
                     TaskStatus=Model.Global.TASKSTATUS.COMPILE.value,
-                    LockStatus=Model.Global.TASKLOCKSTATUS.LOCKED.value))
+                    LockStatus=Model.Global.TASKLOCKSTATUS.UNLOCK.value))
             session.commit()
             return bReturn
         except Exception as e:

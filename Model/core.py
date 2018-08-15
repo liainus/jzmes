@@ -217,6 +217,11 @@ class ZYPlanWebIFS(object):
 					ZYPlanid = key
 					try:
 						oclass = session.query(Model.core.ZYPlan).filter_by(ID=ZYPlanid).first()
+						taskids = session.query(Model.core.ZYTask.ID).filter_by(PUID=oclass.PUID, BatchID=oclass.BatchID)
+						for taskid in taskids:
+							taskoclass = session.query(Model.core.ZYTask).filter_by(ID=taskid).first()
+							session.delete(taskoclass)
+							session.commit()
 						session.delete(oclass)
 						session.commit()
 					except Exception as ee:
