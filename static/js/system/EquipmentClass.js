@@ -76,12 +76,6 @@ $(function () {
                 align: 'center',
             },
             {
-                field: 'ID',
-                title: 'ID',
-                align: 'center',
-                width: 100
-            },
-            {
                 field: 'EQPCode',
                 title: '设备编码',
                 align: 'center',
@@ -443,12 +437,6 @@ $(function () {
                 width: 100,
                 checkbox: true,
                 align: 'center',
-            },
-            {
-                field: 'ID',
-                title: 'ID',
-                align: 'center',
-                width: 100
             },
             {
                 field: 'EQPCode',

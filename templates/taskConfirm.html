@@ -78,6 +78,16 @@
 					<tr>
                         <th field="ck" checkbox="true"></th>
 						<th data-options="field:'EQPCode',width:120,align:'center'">设备编码</th>
+						<th data-options="field:'ActTank',width:100,align:'center'，editor:{
+							type:'combobox',
+							options:{
+								valueField:'productid',
+								textField:'productname',
+								method:'get',
+								url:'products.json',
+								required:true
+							}
+						}">实际罐号</th>
 						<th data-options="field:'PlanDate',width:100,align:'center'">计划日期</th>
 						<th data-options="field:'TaskID',width:80,align:'center'">制药任务单号</th>
 						<th data-options="field:'BatchID',width:120,align:'center'">批次号</th>
@@ -95,7 +105,6 @@
 						<th data-options="field:'ActEndTime',width:100,align:'center'">实际完成时间</th>
 						<th data-options="field:'SetRepeatCount',width:100,align:'center'">设定重复次数</th>
 						<th data-options="field:'CurretnRepeatCount',width:100,align:'center'">当前重复次数</th>
-						<th data-options="field:'ActTank',width:100,align:'center'">实际罐号</th>
 						<th data-options="field:'TaskStatus',width:100,align:'center'">任务状态</th>
 						<th data-options="field:'LockStatus',width:100,align:'center'">任务锁定状态</th>
 					</tr>
@@ -110,11 +119,9 @@
             method: 'get',
             animate:true,
             loadFilter:function(data){
-                console.log(data)
                 return data
             },
             onClick :function(node){
-                console.log(node.id)
                 $('#tab').datagrid('load',{
                     PUID: node.id
                 });
