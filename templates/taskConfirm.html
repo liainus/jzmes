@@ -110,11 +110,13 @@
             method: 'get',
             animate:true,
             loadFilter:function(data){
+                console.log(data)
                 return data
             },
             onClick :function(node){
+                console.log(node.id)
                 $('#tab').datagrid('load',{
-                    PUID: node.PUID
+                    PUID: node.id
                 });
             }
         })
