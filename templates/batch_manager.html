@@ -181,27 +181,10 @@
     </div>
     <script type="text/javascript">
         $(function(){
-            //无操作定时刷新 1000
-            var optAction = false;      //定义判断条件false，if(!optAction)来判断
-            var autoTime;               //定时器
-            var body = document.getElementsByTagName("body")[0];
-            //当有鼠标和键盘激活时清除自动刷新页面定时器
-            body.onkeydown = body.onmousemove = body.onclick = function () {
-                optAction = true;           //让判断条件为true
-                clearTimeout(autoTime);     //清除自动刷新页面定时器
-                autoTime = setTimeout(function () {
-                    optAction = false;      //页面无操作后3秒，重时开启定时器
-                }, 3000)
-            }
-            //每三秒自执行
-            //setTimeout(function () {
-                setInterval(function () {
-                    if (!optAction) {
-                        console.log(1)
-                        $('#tt').datagrid('load').datagrid('loaded')
-                    }
-                }, 10000)
-            //}, 1000)
+            //每10秒自执行
+            setInterval(function () {
+                $('#tt').datagrid('load').datagrid('loaded')
+            }, 10000)
             $('#tt').datagrid({
                 rowStyler:function(index,row){
                     if (row.TaskStatus=='任务编制'){

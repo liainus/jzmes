@@ -106,6 +106,18 @@ $(function () {
                 align: 'center'
             },
             {
+                field: 'BatchOpcTag',
+                title: 'OPC/批次',
+                width: 100,
+                align: 'center'
+            },
+            {
+                field: 'BrandOpcTag',
+                title: 'OPC/品名',
+                width: 100,
+                align: 'center'
+            },
+            {
                 field: 'Equipment_Model',
                 title: '设备型号',
                 width: 100,
@@ -222,6 +234,8 @@ $(function () {
             $('input[name="Equipment_Model"]').val("");
             $('input[name="EnterpriseName"]').val("");
             $('input[name="EnterpriseCode"]').val("");
+            $('input[name="BatchOpcTag"]').val("");
+            $('input[name="BrandOpcTag"]').val("");
             $('input[name="Equipment_State"]').val("");
             $('input[name="Equipment_Power"]').val("");
             $('input[name="Equipment_Type"]').val("");
@@ -255,6 +269,8 @@ $(function () {
                     $('input[name="Equipment_Model"]').val(row.Equipment_Model);
                     $('input[name="EnterpriseName"]').val(row.EnterpriseName);
                     $('input[name="EnterpriseCode"]').val(row.EnterpriseCode);
+                    $('input[name="BatchOpcTag"]').val(row.BatchOpcTag);
+                    $('input[name="BrandOpcTag"]').val(row.BrandOpcTag);
                     $('input[name="Equipment_State"]').val(row.Equipment_State);
                     $('input[name="Equipment_Power"]').val(row.Equipment_Power);
                     $('input[name="Equipment_Type"]').val(row.Equipment_Type);
@@ -351,6 +367,8 @@ $(function () {
                     Equipment_Model:$('input[name="Equipment_Model"]').val(),
                     EnterpriseName:$('input[name="EnterpriseName"]').val(),
                     EnterpriseCode:$('input[name="EnterpriseCode"]').val(),
+                    BatchOpcTag:$('input[name="BatchOpcTag"]').val(),
+                    BrandOpcTag:$('input[name="BrandOpcTag"]').val(),
                     Equipment_State:$('input[name="Equipment_State"]').val(),
                     Equipment_Power:$('input[name="Equipment_Power"]').val(),
                     Equipment_Type:$('input[name="Equipment_Type"]').val(),
@@ -453,6 +471,18 @@ $(function () {
             {
                 field: 'EnterpriseName',
                 title: '企业名称',
+                width: 100,
+                align: 'center'
+            },
+            {
+                field: 'BatchOpcTag',
+                title: 'OPC/批次',
+                width: 100,
+                align: 'center'
+            },
+            {
+                field: 'BrandOpcTag',
+                title: 'OPC/品名',
                 width: 100,
                 align: 'center'
             },

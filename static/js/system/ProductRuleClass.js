@@ -362,7 +362,7 @@ $(function () {
                         if(obj1[0].status == "OK"){
                             $.messager.show({
                                 title: '提示',
-                                msg: message + hintinfo  + '成功',
+                                msg: hintinfo  + '成功',
                                 timeout:1000,
                                 style: {
                                     right: '',
