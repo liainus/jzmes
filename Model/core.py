@@ -156,16 +156,16 @@ class ZYPlan(Base):
 	ActEndTime = Column(DateTime, primary_key = False, autoincrement = False, nullable = True)
 	
 	#计划状态:
-	PlanStatus = Column(Integer, primary_key = False, autoincrement = False, nullable = True)
+	PlanStatus = Column(Unicode(32), primary_key = False, autoincrement = False, nullable = True)
 	
 	#计划锁定状态:
-	LockStatus = Column(Integer, primary_key = False, autoincrement = False, nullable = True)
+	LockStatus = Column(Unicode(32), primary_key = False, autoincrement = False, nullable = True)
 	
 	#接口处理状态:
-	INFStatus = Column(Integer, primary_key = False, autoincrement = False, nullable = True)
+	INFStatus = Column(Unicode(32), primary_key = False, autoincrement = False, nullable = True)
 	
 	#仓储送料状态:
-	WMSStatus = Column(Integer, primary_key = False, autoincrement = False, nullable = True)
+	WMSStatus = Column(Unicode(32), primary_key = False, autoincrement = False, nullable = True)
 	
 class ZYPlanWebIFS(object):
 	def __init__(self, name):
@@ -558,10 +558,10 @@ class ZYTask(Base):
 	ActTank = Column(Unicode(32), primary_key = False, autoincrement = False, nullable = True)
 	
 	#任务状态:
-	TaskStatus = Column(Integer, primary_key = False, autoincrement = False, nullable = True)
+	TaskStatus = Column(Unicode(32), primary_key = False, autoincrement = False, nullable = True)
 	
 	#任务锁定状态:
-	LockStatus = Column(Integer, primary_key = False, autoincrement = False, nullable = True)
+	LockStatus = Column(Unicode(32), primary_key = False, autoincrement = False, nullable = True)
 	
 class ZYTaskWebIFS(object):
 	def __init__(self, name):
