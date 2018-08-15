@@ -22,16 +22,16 @@
             <ul class="easyui-tree" id="tree"></ul>
 		</div>
 		<div class="content" style="width:85%;float:left;vertical-align: top;padding-top: 1%;">
-			<table class="easyui-datagrid" id="tab" title="计划查询列表" style="width:100%;" data-options="
+			<table class="easyui-datagrid" id="tabPlan" title="计划查询列表" style="width:100%;" data-options="
                 queryParams: {
                     PUID: ''
                 },
-			      rownumbers:true,
+                rownumbers:true,
                 singleSelect:true,
                 autoRowHeight:false,
-				  pagination:true,
-				  pageSize:10,
-				  singleSelect:false,
+                pagination:true,
+                pageSize:10,
+                singleSelect:false,
                 url:'/processMonitorLine/planConfirmSearch',
                 method:'get'">
 				<thead>
@@ -61,33 +61,24 @@
 					</tr>
 				</thead>
 			</table>
-            <table class="easyui-datagrid" id="tab" title="任务查询列表" style="width:100%;" data-options="
+            <table class="easyui-datagrid" id="tabTask" title="任务查询列表" style="width:100%;" data-options="
                 queryParams: {
                     PUID: '',
                     BatchID:''
                 },
-			      rownumbers:true,
+                rownumbers:true,
                 singleSelect:true,
                 autoRowHeight:false,
-				  pagination:true,
-				  pageSize:10,
-				  singleSelect:false,
+                pagination:true,
+                pageSize:10,
+                singleSelect:false,
                 url:'/processMonitorLine/taskConfirmSearch',
                 method:'get'">
 				<thead>
 					<tr>
                         <th field="ck" checkbox="true"></th>
 						<th data-options="field:'EQPCode',width:120,align:'center'">设备编码</th>
-						<th data-options="field:'ActTank',width:100,align:'center'，editor:{
-							type:'combobox',
-							options:{
-								valueField:'productid',
-								textField:'productname',
-								method:'get',
-								url:'products.json',
-								required:true
-							}
-						}">实际罐号</th>
+						<th data-options="field:'ActTank',width:100,align:'center'">实际罐号</th>
 						<th data-options="field:'PlanDate',width:100,align:'center'">计划日期</th>
 						<th data-options="field:'TaskID',width:80,align:'center'">制药任务单号</th>
 						<th data-options="field:'BatchID',width:120,align:'center'">批次号</th>
@@ -122,11 +113,23 @@
                 return data
             },
             onClick :function(node){
-                $('#tab').datagrid('load',{
+                $('#tabPlan').datagrid('load',{
                     PUID: node.id
+                });
+                $('#tabTask').datagrid('load',{
+                    PUID: node.id,
+                    BatchID:""
                 });
             }
         })
+        $('#tabPlan').datagrid({
+            onClickRow:function(rowIndex,rowData){
+                $('#tabTask').datagrid('load',{
+                    PUID: rowData.PUID,
+                    BatchID:rowData.BatchID
+                });
+            }
+        });
     </script>
 </body>
 </html>
