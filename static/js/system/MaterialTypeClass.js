@@ -78,12 +78,6 @@ $(function () {
                 align: 'center'
             },
             {
-                field: 'ID',
-                title: 'ID',
-                align: 'center',
-                width: 100
-            },
-            {
                 field: 'MATTypeCode',
                 title: '物料类型编码',
                 align: 'center',
@@ -357,12 +351,6 @@ $(function () {
                 width: 100,
                 checkbox: true,
                 align: 'center'
-            },
-            {
-                field: 'ID',
-                title: 'ID',
-                align: 'center',
-                width: 100
             },
             {
                 field: 'MATTypeCode',

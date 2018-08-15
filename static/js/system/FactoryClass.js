@@ -76,12 +76,6 @@ $(function () {
                 align: 'center',
             },
             {
-                field: 'ID',
-                title: 'ID',
-                align: 'center',
-                width: 100
-            },
-            {
                 field: 'FactoryCode',
                 title: '工厂编码',
                 align: 'center',
@@ -385,12 +379,6 @@ $(function () {
                 width: 100,
                 checkbox: true,
                 align: 'center',
-            },
-            {
-                field: 'ID',
-                title: 'ID',
-                align: 'center',
-                width: 100
             },
             {
                 field: 'FactoryCode',

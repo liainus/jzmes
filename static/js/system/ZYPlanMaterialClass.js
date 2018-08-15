@@ -78,12 +78,6 @@ $(function () {
                 align: 'center'
             },
             {
-                field: 'ID',
-                title: 'ID',
-                align: 'center',
-                width: 100
-            },
-            {
                 field: 'PlanDate',
                 title: '生产日期',
                 align: 'center',
@@ -456,12 +450,6 @@ $(function () {
                 width: 100,
                 checkbox: true,
                 align: 'center'
-            },
-            {
-                field: 'ID',
-                title: 'ID',
-                align: 'center',
-                width: 100
             },
             {
                 field: 'PlanDate',
