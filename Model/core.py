@@ -1022,7 +1022,7 @@ class Equipment(Base):
 	ID = Column(Integer, primary_key = True, autoincrement = True, nullable = True)
 	
 	#设备编码:
-	EQPCode = Column(Integer, primary_key = False, autoincrement = False, nullable = True)
+	EQPCode = Column(Unicode(30), primary_key = False, autoincrement = False, nullable = True)
 	
 	#设备名称:
 	EQPName = Column(Unicode(50), primary_key = False, autoincrement = False, nullable = True)
@@ -1079,7 +1079,7 @@ class EquipmentWebIFS(object):
 			if len(json_str) > 10:
 				session.add(
 					Model.core.Equipment(
-						EQPCode=int(odata['EQPCode']),
+						EQPCode=odata['EQPCode'],
 						EQPName=odata['EQPName'],
 						EnterpriseCode=odata['EnterpriseCode'],
 						EnterpriseName=odata['EnterpriseName'],
@@ -1163,7 +1163,7 @@ class EquipmentWebIFS(object):
 			if len(json_str) > 10:
 				Equipmentid = int(odata['ID'])
 				oclass = session.query(Model.core.Equipment).filter_by(ID=Equipmentid).first()
-				oclass.EQPCode = int(odata['EQPCode'])
+				oclass.EQPCode = odata['EQPCode']
 				oclass.EQPName = odata['EQPName']
 				oclass.EnterpriseCode = odata['EnterpriseCode']
 				oclass.EnterpriseName = odata['EnterpriseName']
