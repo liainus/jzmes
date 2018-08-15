@@ -1082,10 +1082,23 @@ class EquipmentWebIFS(object):
 			if len(json_str) > 10:
 				session.add(
 					Model.core.Equipment(
-						EQPCode=odata['EQPCode'],
+						EQPCode=int(odata['EQPCode']),
 						EQPName=odata['EQPName'],
+						EnterpriseCode=odata['EnterpriseCode'],
+						EnterpriseName=odata['EnterpriseName'],
+						BatchOpcTag=odata['BatchOpcTag'],
+						BrandOpcTag=odata['BrandOpcTag'],
+						Equipment_Model=odata['Equipment_Model'],
+						Manufactor=odata['Manufactor'],
+						Equipment_State=odata['Equipment_State'],
+						Equipment_Number=odata['Equipment_Number'],
+						money=odata['money'],
+						Equipment_From=odata['Equipment_From'],
+						Equipment_Type=odata['Equipment_Type'],
+						Equipment_Power=odata['Equipment_Power'],
 						PUID=odata['PUID'],
-						Desc=odata['Desc']))
+						Desc=odata['Desc'],
+						Manufacture_Date=odata['Manufacture_Date']))
 				session.commit()
 				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 								  ensure_ascii=False)
@@ -1154,10 +1167,23 @@ class EquipmentWebIFS(object):
 			if len(json_str) > 10:
 				Equipmentid = int(odata['ID'])
 				oclass = session.query(Model.core.Equipment).filter_by(ID=Equipmentid).first()
-				oclass.EQPCode = odata['EQPCode']
+				oclass.EQPCode = int(odata['EQPCode'])
 				oclass.EQPName = odata['EQPName']
+				oclass.EnterpriseCode = odata['EnterpriseCode']
+				oclass.EnterpriseName = odata['EnterpriseName']
+				oclass.BatchOpcTag = odata['BatchOpcTag']
+				oclass.BrandOpcTag = odata['BrandOpcTag']
+				oclass.Equipment_Model = odata['Equipment_Model']
+				oclass.Manufactor = odata['Manufactor']
+				oclass.Equipment_State = odata['Equipment_State']
+				oclass.Equipment_Number = odata['Equipment_Number']
+				oclass.money = odata['money']
+				oclass.Equipment_From = odata['Equipment_From']
+				oclass.Equipment_Type = odata['Equipment_Type']
+				oclass.Equipment_Power = odata['Equipment_Power']
 				oclass.PUID = odata['PUID']
 				oclass.Desc = odata['Desc']
+				oclass.Manufacture_Date = odata['Manufacture_Date']
 				session.commit()
 				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
 										  ensure_ascii=False)
