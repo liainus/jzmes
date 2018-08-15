@@ -322,16 +322,11 @@ $(function () {
                         $.ajax({
                             url: '/ZYPlanXF/zYPlanXF',
                             method: 'GET',
-                            traditional: true,
                             // data: JSON.stringify(ids),
                             data: a,
-                            dataType: 'json',
                             success: function (data) {
                                 $.messager.progress('close')
-                                if (data) {
-                                    $(tableId).datagrid('loaded');
-                                    $(tableId).datagrid('load');
-                                    $(tableId).datagrid('unselectAll');
+                                if (data == "OK") {
                                     $.messager.show({
                                         title: '提示',
                                         timeout:1000,
@@ -342,13 +337,19 @@ $(function () {
                                             bottom: ''
                                         }
                                     });
+                                    $(tableId).datagrid('loaded');
+                                    $(tableId).datagrid('load');
+                                    $(tableId).datagrid('unselectAll');
                                 }
+                            },
+                            error:function(){
+                                alert("下发失败，请稍后重试！")
                             }
                         });
                     }
                 });
             } else {
-                $.messager.alert('提示', '请选择要删除的记录！', 'info');
+                $.messager.alert('提示', '请选择要下发的记录！', 'info');
             }
         },
         save: function () {
