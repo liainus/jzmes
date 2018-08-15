@@ -73,7 +73,7 @@
             </table>
         </div>
         <table id="tt" class="easyui-datagrid" style="width:100%;height:300px;" title="批次计划信息" data-options="url:'/allZYPlans/Search',
-                method:'get',
+                method:'post',
                 rownumbers:true,
                 singleSelect:true,
                 autoRowHeight:false,
@@ -180,157 +180,180 @@
         </div>
     </div>
     <script type="text/javascript">
-        $('#tt').datagrid({
-            rowStyler:function(index,row){
-                if (row.TaskStatus=='任务编制'){
-                    return 'background-color:#007bff; color:white;font-weight:bold;';
-                }
-                if (row.TaskStatus=='任务下达'){
-                    return 'background-color:#17a2b8; color:white;font-weight:bold;';
-                }
-                if (row.TaskStatus=='任务新建'){
-                    return 'background-color:#009688; color:white;font-weight:bold;';
-                }
-                if (row.TaskStatus=='任务确认'){
-                    return 'background-color:#01aaed; color:white;font-weight:bold;';
-                }
-                if (row.TaskStatus=='任务执行'){
-                    return 'background-color:#2F4056; color:white;font-weight:bold;';
-                }
-                if (row.TaskStatus=='任务完成'){
-                    return 'background-color:#28a745; color:white;font-weight:bold;';
-                }
-                if (row.TaskStatus=='任务暂停'){
-                    return 'background-color:#ffc107; color:white;font-weight:bold;';
-                }
-                if (row.TaskStatus=='任务错误'){
-                    return 'background-color:#dc3545; color:white;font-weight:bold;';
-                }
-                if (row.TaskStatus=='任务中止'){
-                    return 'background-color:#6c757d; color:white;font-weight:bold;';
-                }
-            },
-            onClickRow:function(rowIndex,rowData){
-                //传参到批次任务明细
-                $("#ttTasks").datagrid('load',{
-                    ABatchID:rowData.BatchID
-                })
-                //传参到批次物料明细
-                $("#ttMaterials").datagrid('load',{
-                    ABatchID:rowData.BatchID
-                })
-                //色卡状态变化
-                if(rowData.TaskStatus == '任务编制'){
-                    $('.pp1').tooltip({
-                        position: 'bottom',
-                        content: '<span style="color:#fff">您当前选择的是任务编制</span>',
-                        onShow: function(){
-                            $(this).tooltip('tip').css({
-                                backgroundColor: '#666',
-                                borderColor: '#666'
-                            })
-                        }
-                    });
-                    $('.pp1').mouseenter().siblings().tooltip('destroy')
-                }else if(rowData.TaskStatus == '任务下达'){
-                    $('.pp2').tooltip({
-                        position: 'bottom',
-                        content: '<span style="color:#fff">您当前选择的是任务下达</span>',
-                        onShow: function(){
-                            $(this).tooltip('tip').css({
-                                backgroundColor: '#666',
-                                borderColor: '#666'
-                            })
-                        }
-                    });
-                    $('.pp2').mouseenter().siblings().tooltip('destroy')
-                }else if(rowData.TaskStatus == '任务新建'){
-                    $('.pp3').tooltip({
-                        position: 'bottom',
-                        content: '<span style="color:#fff">您当前选择的是任务新建</span>',
-                        onShow: function(){
-                            $(this).tooltip('tip').css({
-                                backgroundColor: '#666',
-                                borderColor: '#666'
-                            })
-                        }
-                    });
-                    $('.pp3').mouseenter().siblings().tooltip('destroy')
-                }else if(rowData.TaskStatus == '任务确认'){
-                    $('.pp4').tooltip({
-                        position: 'bottom',
-                        content: '<span style="color:#fff">您当前选择的是任务确认</span>',
-                        onShow: function(){
-                            $(this).tooltip('tip').css({
-                                backgroundColor: '#666',
-                                borderColor: '#666'
-                            })
-                        }
-                    });
-                    $('.pp4').mouseenter().siblings().tooltip('destroy')
-                }else if(rowData.TaskStatus == '任务执行'){
-                    $('.pp5').tooltip({
-                        position: 'bottom',
-                        content: '<span style="color:#fff">您当前选择的是任务执行</span>',
-                        onShow: function(){
-                            $(this).tooltip('tip').css({
-                                backgroundColor: '#666',
-                                borderColor: '#666'
-                            })
-                        }
-                    });
-                    $('.pp5').mouseenter().siblings().tooltip('destroy')
-                }else if(rowData.TaskStatus == '任务完成'){
-                    $('.pp6').tooltip({
-                        position: 'bottom',
-                        content: '<span style="color:#fff">您当前选择的是任务完成</span>',
-                        onShow: function(){
-                            $(this).tooltip('tip').css({
-                                backgroundColor: '#666',
-                                borderColor: '#666'
-                            })
-                        }
-                    });
-                    $('.pp6').mouseenter().siblings().tooltip('destroy')
-                }else if(rowData.TaskStatus == '任务暂停'){
-                    $('.pp7').tooltip({
-                        position: 'bottom',
-                        content: '<span style="color:#fff">您当前选择的是任务暂停</span>',
-                        onShow: function(){
-                            $(this).tooltip('tip').css({
-                                backgroundColor: '#666',
-                                borderColor: '#666'
-                            })
-                        }
-                    });
-                    $('.pp7').mouseenter().siblings().tooltip('destroy')
-                }else if(rowData.TaskStatus == '任务错误'){
-                    $('.pp8').tooltip({
-                        position: 'bottom',
-                        content: '<span style="color:#fff">您当前选择的是任务错误</span>',
-                        onShow: function(){
-                            $(this).tooltip('tip').css({
-                                backgroundColor: '#666',
-                                borderColor: '#666'
-                            })
-                        }
-                    });
-                    $('.pp8').mouseenter().siblings().tooltip('destroy')
-                }else if(rowData.TaskStatus == '任务中止'){
-                    $('.pp9').tooltip({
-                        position: 'bottom',
-                        content: '<span style="color:#fff">您当前选择的是任务中止</span>',
-                        onShow: function(){
-                            $(this).tooltip('tip').css({
-                                backgroundColor: '#666',
-                                borderColor: '#666'
-                            })
-                        }
-                    });
-                    $('.pp9').mouseenter().siblings().tooltip('destroy')
-                }
+        $(function(){
+            //无操作定时刷新 1000
+            var optAction = false;      //定义判断条件false，if(!optAction)来判断
+            var autoTime;               //定时器
+            var body = document.getElementsByTagName("body")[0];
+            //当有鼠标和键盘激活时清除自动刷新页面定时器
+            body.onkeydown = body.onmousemove = body.onclick = function () {
+                optAction = true;           //让判断条件为true
+                clearTimeout(autoTime);     //清除自动刷新页面定时器
+                autoTime = setTimeout(function () {
+                    optAction = false;      //页面无操作后3秒，重时开启定时器
+                }, 3000)
             }
-        });
+            //每三秒自执行
+            //setTimeout(function () {
+                setInterval(function () {
+                    if (!optAction) {
+                        console.log(1)
+                        $('#tt').datagrid('load').datagrid('loaded')
+                    }
+                }, 10000)
+            //}, 1000)
+            $('#tt').datagrid({
+                rowStyler:function(index,row){
+                    if (row.TaskStatus=='任务编制'){
+                        return 'background-color:#007bff; color:white;font-weight:bold;';
+                    }
+                    if (row.TaskStatus=='任务下达'){
+                        return 'background-color:#17a2b8; color:white;font-weight:bold;';
+                    }
+                    if (row.TaskStatus=='任务新建'){
+                        return 'background-color:#009688; color:white;font-weight:bold;';
+                    }
+                    if (row.TaskStatus=='任务确认'){
+                        return 'background-color:#01aaed; color:white;font-weight:bold;';
+                    }
+                    if (row.TaskStatus=='任务执行'){
+                        return 'background-color:#2F4056; color:white;font-weight:bold;';
+                    }
+                    if (row.TaskStatus=='任务完成'){
+                        return 'background-color:#28a745; color:white;font-weight:bold;';
+                    }
+                    if (row.TaskStatus=='任务暂停'){
+                        return 'background-color:#ffc107; color:white;font-weight:bold;';
+                    }
+                    if (row.TaskStatus=='任务错误'){
+                        return 'background-color:#dc3545; color:white;font-weight:bold;';
+                    }
+                    if (row.TaskStatus=='任务中止'){
+                        return 'background-color:#6c757d; color:white;font-weight:bold;';
+                    }
+                },
+                onClickRow:function(rowIndex,rowData){
+                    //传参到批次任务明细
+                    $("#ttTasks").datagrid('load',{
+                        ABatchID:rowData.BatchID
+                    })
+                    //传参到批次物料明细
+                    $("#ttMaterials").datagrid('load',{
+                        ABatchID:rowData.BatchID
+                    })
+                    //色卡状态变化
+                    if(rowData.TaskStatus == '任务编制'){
+                        $('.pp1').tooltip({
+                            position: 'bottom',
+                            content: '<span style="color:#fff">您当前选择的是任务编制</span>',
+                            onShow: function(){
+                                $(this).tooltip('tip').css({
+                                    backgroundColor: '#666',
+                                    borderColor: '#666'
+                                })
+                            }
+                        });
+                        $('.pp1').mouseenter().siblings().tooltip('destroy')
+                    }else if(rowData.TaskStatus == '任务下达'){
+                        $('.pp2').tooltip({
+                            position: 'bottom',
+                            content: '<span style="color:#fff">您当前选择的是任务下达</span>',
+                            onShow: function(){
+                                $(this).tooltip('tip').css({
+                                    backgroundColor: '#666',
+                                    borderColor: '#666'
+                                })
+                            }
+                        });
+                        $('.pp2').mouseenter().siblings().tooltip('destroy')
+                    }else if(rowData.TaskStatus == '任务新建'){
+                        $('.pp3').tooltip({
+                            position: 'bottom',
+                            content: '<span style="color:#fff">您当前选择的是任务新建</span>',
+                            onShow: function(){
+                                $(this).tooltip('tip').css({
+                                    backgroundColor: '#666',
+                                    borderColor: '#666'
+                                })
+                            }
+                        });
+                        $('.pp3').mouseenter().siblings().tooltip('destroy')
+                    }else if(rowData.TaskStatus == '任务确认'){
+                        $('.pp4').tooltip({
+                            position: 'bottom',
+                            content: '<span style="color:#fff">您当前选择的是任务确认</span>',
+                            onShow: function(){
+                                $(this).tooltip('tip').css({
+                                    backgroundColor: '#666',
+                                    borderColor: '#666'
+                                })
+                            }
+                        });
+                        $('.pp4').mouseenter().siblings().tooltip('destroy')
+                    }else if(rowData.TaskStatus == '任务执行'){
+                        $('.pp5').tooltip({
+                            position: 'bottom',
+                            content: '<span style="color:#fff">您当前选择的是任务执行</span>',
+                            onShow: function(){
+                                $(this).tooltip('tip').css({
+                                    backgroundColor: '#666',
+                                    borderColor: '#666'
+                                })
+                            }
+                        });
+                        $('.pp5').mouseenter().siblings().tooltip('destroy')
+                    }else if(rowData.TaskStatus == '任务完成'){
+                        $('.pp6').tooltip({
+                            position: 'bottom',
+                            content: '<span style="color:#fff">您当前选择的是任务完成</span>',
+                            onShow: function(){
+                                $(this).tooltip('tip').css({
+                                    backgroundColor: '#666',
+                                    borderColor: '#666'
+                                })
+                            }
+                        });
+                        $('.pp6').mouseenter().siblings().tooltip('destroy')
+                    }else if(rowData.TaskStatus == '任务暂停'){
+                        $('.pp7').tooltip({
+                            position: 'bottom',
+                            content: '<span style="color:#fff">您当前选择的是任务暂停</span>',
+                            onShow: function(){
+                                $(this).tooltip('tip').css({
+                                    backgroundColor: '#666',
+                                    borderColor: '#666'
+                                })
+                            }
+                        });
+                        $('.pp7').mouseenter().siblings().tooltip('destroy')
+                    }else if(rowData.TaskStatus == '任务错误'){
+                        $('.pp8').tooltip({
+                            position: 'bottom',
+                            content: '<span style="color:#fff">您当前选择的是任务错误</span>',
+                            onShow: function(){
+                                $(this).tooltip('tip').css({
+                                    backgroundColor: '#666',
+                                    borderColor: '#666'
+                                })
+                            }
+                        });
+                        $('.pp8').mouseenter().siblings().tooltip('destroy')
+                    }else if(rowData.TaskStatus == '任务中止'){
+                        $('.pp9').tooltip({
+                            position: 'bottom',
+                            content: '<span style="color:#fff">您当前选择的是任务中止</span>',
+                            onShow: function(){
+                                $(this).tooltip('tip').css({
+                                    backgroundColor: '#666',
+                                    borderColor: '#666'
+                                })
+                            }
+                        });
+                        $('.pp9').mouseenter().siblings().tooltip('destroy')
+                    }
+                }
+            });
+        })
     </script>
 </body>
 </html>

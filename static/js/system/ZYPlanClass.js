@@ -98,6 +98,12 @@ $(function () {
                 width: 150
             },
             {
+                field: 'PUID',
+                title: '工艺段',
+                align: 'center',
+                width: 150
+            },
+            {
                 field: 'BrandName',
                 title: '品牌名称',
                 align: 'center',
@@ -266,7 +272,7 @@ $(function () {
                         var a = "";
                         for (var i = 0; i < rows.length; i++) {
                             // ids.push(parseInt((rows[i].id)));
-                            var obj=createKeyIDObj(parseInt(rows[i].PlanStatus));
+                            var obj=createKeyIDObj(parseInt(rows[i].ID));
                             jsonarray.push(obj);
                         }
                         // a = JSON.stringify([{"ID":9},{"ID":10}])
@@ -591,6 +597,12 @@ $(function () {
             {
                 field: 'PlanType',
                 title: '计划类型',
+                align: 'center',
+                width: 150
+            },
+            {
+                field: 'PUID',
+                title: '工艺段',
                 align: 'center',
                 width: 150
             },
