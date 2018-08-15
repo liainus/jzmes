@@ -3352,6 +3352,26 @@ class SysLog(Base):
 
 	# 类型:
 	OperationType = Column(Unicode(64), primary_key=False, autoincrement=False, nullable=True)
+
+
+# 服务配置
+class ServiceConfig(Base):
+    __tablename__ = 'ServiceConfig'
+
+    # ID
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+    # 服务配置名称
+    ServiceConfigName = Column(Unicode(100), nullable=True)
+
+    # IP地址
+    IP = Column(Unicode(200), nullable=True)
+
+    # 端口
+    Port = Column(Unicode(100), nullable=True)
+
+    # auth_key
+    AuthKey = Column(Unicode(100), nullable=True)
 	
 # 生成表单的执行语句
 Base.metadata.create_all(engine)

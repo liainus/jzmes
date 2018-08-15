@@ -2689,14 +2689,11 @@ def taskConfirmPuidDate():
                 if id not in puidnews:
                     puidnews.append(id)
             sz = []
-            for puid in puids:
+            for puid in puidnews:
                 APUID = puid  # 工艺段编码
-                print(APUID)
                 PDCtrlTaskName = db_session.query(ProductControlTask.PDCtrlTaskName).filter_by(PUID=APUID).first()
-                # oclass = db_session.query(ZYPlan).filter_by(PUID=APUID).first()
-                # SchedulePlanCode = db_session.query(PlanManager.SchedulePlanCode).filter_by(BatchID=oclass.BatchID, BrandID=oclass.BrandID).first()
-                # PlanBeginTimes = db_session.query(SchedulePlan.PlanBeginTime).filter_by(SchedulePlanCode=SchedulePlanCode).first()
-                sz.append({"id": APUID, "text": PDCtrlTaskName})
+                PUID = str(APUID)
+                sz.append({"id": PUID[1:-2], "text": PDCtrlTaskName})
             jsonsz = json.dumps(sz, cls=AlchemyEncoder, ensure_ascii=False)
             return jsonsz
         except Exception as e:
