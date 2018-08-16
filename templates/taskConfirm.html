@@ -313,24 +313,26 @@
                alert('Warning：设备编号不能为空！');
                return false;
             }
-            $.ajax({
-                url:"/processMonitorLine/saveEQPCode",
-                data:{EQPCode:$("#EquipmentID").val(),ID:$("#ID")},
-                type:"get",
-                success:function(res){
-                    if(res == "OK"){
-                        $.messager.show({
-                            title: '提示',
-                            msg: '保存成功',
-                        });
-                        $("#updataPlanDialog").dialog('close');
-                        $("#tabTask").datagrid('load');
-                    }
-                },
-                error:function(){
-                    alert("请求错误，请刷新后重试！")
-                }
-            })
+            var EquipmentIDVal = $("#EquipmentID").combobox('getValue')
+            console.log(EquipmentIDVal)
+{#            $.ajax({#}
+{#                url:"/processMonitorLine/saveEQPCode",#}
+{#                data:{EQPCode:$("#EquipmentID").val(),ID:$("#ID")},#}
+{#                type:"get",#}
+{#                success:function(res){#}
+{#                    if(res == "OK"){#}
+{#                        $.messager.show({#}
+{#                            title: '提示',#}
+{#                            msg: '保存成功',#}
+{#                        });#}
+{#                        $("#updataPlanDialog").dialog('close');#}
+{#                        $("#tabTask").datagrid('load');#}
+{#                    }#}
+{#                },#}
+{#                error:function(){#}
+{#                    alert("请求错误，请刷新后重试！")#}
+{#                }#}
+{#            })#}
         }
     </script>
 </body>
