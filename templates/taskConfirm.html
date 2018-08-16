@@ -299,43 +299,48 @@
                  $('#TaskStatus').val(rowData.TaskStatus);
                  $('#LockStatus').val(rowData.LockStatus);
 
-                 $("#EquipmentID").combobox({
-                     method:'GET',
-                     url:'/processMonitorLine/searchAllEquipments',
-                     valueField:'EQPCode',
-                     textField:'EQPName',
-                     data: [{
-                        PUID: rowData.PUID
-                     }]
+                 $("#EquipmentID").combobox("clear")
+                 $.getJSON("/processMonitorLine/searchAllEquipments",{PUID: rowData.PUID},function(result){
+                     $("#EquipmentID").combobox({
+                         data: result,
+                         valueField:'id',
+                         textField:'text'
+                     })
                  })
             }
         });
         function EquipmentIDSave(){
-            var stmp = $('#EquipmentID').val();
+            var EquipmentIDVal = $("#EquipmentID").combobox('getValue')
+            var stmp = EquipmentIDVal;
             if(Bee.StringUtils.isEmpty(stmp)) {
                alert('Warning：设备编号不能为空！');
                return false;
             }
-            var EquipmentIDVal = $("#EquipmentID").combobox('getValue')
-            console.log(EquipmentIDVal)
-{#            $.ajax({#}
-{#                url:"/processMonitorLine/saveEQPCode",#}
-{#                data:{EQPCode:$("#EquipmentID").val(),ID:$("#ID")},#}
-{#                type:"get",#}
-{#                success:function(res){#}
-{#                    if(res == "OK"){#}
-{#                        $.messager.show({#}
-{#                            title: '提示',#}
-{#                            msg: '保存成功',#}
-{#                        });#}
-{#                        $("#updataPlanDialog").dialog('close');#}
-{#                        $("#tabTask").datagrid('load');#}
-{#                    }#}
-{#                },#}
-{#                error:function(){#}
-{#                    alert("请求错误，请刷新后重试！")#}
-{#                }#}
-{#            })#}
+            $.ajax({
+                url:"/processMonitorLine/saveEQPCode",
+                data:{EQPCode:EquipmentIDVal,ID:$("#ID").val()},
+                type:"get",
+                success:function(res){
+                    if(res == "OK"){
+                        $.messager.show({
+                            title: '提示',
+                            msg: '保存成功',
+                            style: {
+                                right: '',
+                                top: document.body.scrollTop + document.documentElement.scrollTop,
+                                bottom: ''
+                            }
+                        });
+                        $("#updataPlanDialog").dialog('close');
+                        $("#tabTask").datagrid('load');
+                    }else{
+                        alert("保存失败！请稍后重试。")
+                    }
+                },
+                error:function(){
+                    alert("请求错误，请刷新后重试！")
+                }
+            })
         }
     </script>
 </body>
