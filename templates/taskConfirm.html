@@ -303,7 +303,10 @@
                      method:'GET',
                      url:'/processMonitorLine/searchAllEquipments',
                      valueField:'EQPCode',
-                     textField:'EQPName'
+                     textField:'EQPName',
+                     data: [{
+                        PUID: rowData.PUID
+                     }]
                  })
             }
         });
