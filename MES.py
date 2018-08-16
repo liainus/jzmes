@@ -2731,16 +2731,14 @@ def planConfirmSearch():
                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
                 APUID = data['PUID']  # 工艺段编码
-                PlanStatus = '20'  # 任务的执行状态
-                # APlanBeginTime = data['PlanBeginTime']  # 调度计划开始时间
-                if(APUID == None or APUID == ''):
-                    total = db_session.query(ZYPlan).filter(ZYPlan.PlanStatus == PlanStatus).count()
-                    ZYPlans = db_session.query(ZYPlan).filter(ZYPlan.PlanStatus == PlanStatus).all()[inipage:endpage]
+                if(APUID == "" or APUID == None):
+                    total = db_session.query(ZYPlan).filter(ZYPlan.PlanStatus.in_((20, 40, 50))).count()
+                    ZYPlans = db_session.query(ZYPlan).filter(ZYPlan.PlanStatus.in_((20, 40, 50))).all()[inipage:endpage]
                 else:
-                    total = db_session.query(ZYPlan).filter(ZYPlan.PlanStatus == PlanStatus,
+                    total = db_session.query(ZYPlan).filter(ZYPlan.PlanStatus.in_((20, 40, 50)),
                                                             ZYPlan.PUID == APUID).count()
-                    ZYPlans = db_session.query(ZYPlan).filter(ZYPlan.PlanStatus == PlanStatus,
-                                                  ZYPlan.PUID == APUID).all()[inipage:endpage]
+                    ZYPlans = db_session.query(ZYPlan).filter(ZYPlan.PlanStatus.in_((20, 40, 50)),
+                                                              ZYPlan.PUID == APUID).all()[inipage:endpage]
                 jsonZYPlans = json.dumps(ZYPlans, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonZYPlans = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonZYPlans + "}"
                 return jsonZYPlans
@@ -2762,12 +2760,24 @@ def taskConfirmSearch():
                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
                 APUID = data['PUID']  # 工艺段编码
-                TaskStatus = '20'  # 任务的执行状态
+                TaskStatus = data['TaskStatus']  # 任务的执行状态
                 BatchID = data['BatchID']#批次号
-                if (APUID == None or APUID == ''):
-                    total = db_session.query(ZYTask).filter(ZYTask.TaskStatus == TaskStatus).count()
-                    ZYTasks = db_session.query(ZYTask).filter(ZYTask.TaskStatus == TaskStatus).all()[inipage:endpage]
-                else:
+                if(APUID == "" and TaskStatus == ""):
+                    total = db_session.query(ZYTask).filter(ZYTask.TaskStatus.in_((20,40,50))).count()
+                    ZYTasks = db_session.query(ZYTask).filter(ZYTask.TaskStatus.in_((20,40,50))).all()[inipage:endpage]
+                elif(APUID != "" and TaskStatus == "" and BatchID == ""):
+                    total = db_session.query(ZYTask).filter(ZYTask.TaskStatus.in_((20, 40, 50)),
+                                                            ZYTask.PUID == APUID).count()
+                    ZYTasks = db_session.query(ZYTask).filter(ZYTask.TaskStatus.in_((20, 40, 50)),
+                                                              ZYTask.PUID == APUID).all()[inipage:endpage]
+                elif(APUID != "" and TaskStatus == "" and BatchID != ""):
+                    total = db_session.query(ZYTask).filter(ZYTask.BatchID == BatchID,
+                                                            ZYTask.TaskStatus.in_((20, 40, 50)),
+                                                            ZYTask.PUID == APUID).count()
+                    ZYTasks = db_session.query(ZYTask).filter(ZYTask.BatchID == BatchID,
+                                                              ZYTask.TaskStatus.in_((20, 40, 50)),
+                                                              ZYTask.PUID == APUID).all()[inipage:endpage]
+                elif (APUID != "" and TaskStatus != ""):
                     total = db_session.query(ZYTask).filter(ZYTask.BatchID == BatchID,
                                                             ZYTask.TaskStatus == TaskStatus,
                                                             ZYTask.PUID == APUID).count()
@@ -2817,7 +2827,10 @@ def saveEQPCode():
                 EQPCode = data['EQPCode']
                 ID = data['ID']
                 oclass = db_session.query(ZYTask).filter(ZYTask.ID == ID).first()
+                oclassplan = db_session.query(ZYPlan).filter(ZYPlan.PUID == oclass.PUID, ZYPlan.BatchID == oclass.BatchID).first()
                 oclass.EquipmentID = EQPCode
+                oclass.TaskStatus = '40'
+                oclassplan.PlanStatus = '40'
                 db_session.commit()
                 return "OK"
         except Exception as e:
