@@ -77,37 +77,37 @@ $(function () {
                 field: 'PlanNo',
                 title: '计划单号',
                 align: 'center',
-                width: 200
+                width: 150
             },
             {
                 field: 'BatchID',
                 title: '批次号',
                 align: 'center',
-                width: 200
+                width: 150
             },
             {
                 field: 'PlanType',
                 title: '计划类型',
                 align: 'center',
-                width: 150
+                width: 100
             },
             {
                 field: 'PUID',
                 title: '工艺段',
                 align: 'center',
-                width: 150
+                width: 100
             },
             {
                 field: 'BrandName',
                 title: '品牌名称',
                 align: 'center',
-                width: 200
+                width: 100
             },
             {
                 field: 'ERPOrderNo',
                 title: 'ERP订单号',
                 align: 'center',
-                width: 200
+                width: 150
             },
             {
                 field: 'PlanQuantity',
@@ -125,7 +125,30 @@ $(function () {
                 field: 'PlanStatus',
                 title: '计划状态',
                 align: 'center',
-                width: 100
+                width: 100,
+                formatter: function(value,row,index){
+                    if (value == 10){
+                        return "编制"
+                    }else if(value == 20){
+                        return "下达"
+                    }else if(value == 30){
+                        return "新增"
+                    }else if(value == 40){
+                        return "确认"
+                    }else if(value == 50){
+                        return "执行"
+                    }else if(value == 60){
+                        return "完成"
+                    }else if(value == 70){
+                        return "取消"
+                    }else if(value == 80){
+                        return "暂停"
+                    }else if(value == 85){
+                        return "故障"
+                    }else if(value == 90){
+                        return "中止"
+                    }
+                }
             }
         ]]
     });
@@ -322,16 +345,11 @@ $(function () {
                         $.ajax({
                             url: '/ZYPlanXF/zYPlanXF',
                             method: 'GET',
-                            traditional: true,
                             // data: JSON.stringify(ids),
                             data: a,
-                            dataType: 'json',
                             success: function (data) {
                                 $.messager.progress('close')
-                                if (data) {
-                                    $(tableId).datagrid('loaded');
-                                    $(tableId).datagrid('load');
-                                    $(tableId).datagrid('unselectAll');
+                                if (data == "OK") {
                                     $.messager.show({
                                         title: '提示',
                                         timeout:1000,
@@ -342,13 +360,19 @@ $(function () {
                                             bottom: ''
                                         }
                                     });
+                                    $(tableId).datagrid('loaded');
+                                    $(tableId).datagrid('load');
+                                    $(tableId).datagrid('unselectAll');
                                 }
+                            },
+                            error:function(){
+                                alert("下发失败，请稍后重试！")
                             }
                         });
                     }
                 });
             } else {
-                $.messager.alert('提示', '请选择要删除的记录！', 'info');
+                $.messager.alert('提示', '请选择要下发的记录！', 'info');
             }
         },
         save: function () {
@@ -574,37 +598,37 @@ $(function () {
                 field: 'PlanNo',
                 title: '计划单号',
                 align: 'center',
-                width: 200
+                width: 150
             },
             {
                 field: 'BatchID',
                 title: '批次号',
                 align: 'center',
-                width: 200
+                width: 150
             },
             {
                 field: 'PlanType',
                 title: '计划类型',
                 align: 'center',
-                width: 150
+                width: 100
             },
             {
                 field: 'PUID',
                 title: '工艺段',
                 align: 'center',
-                width: 150
+                width: 100
             },
             {
                 field: 'BrandName',
                 title: '品牌名称',
                 align: 'center',
-                width: 200
+                width: 100
             },
             {
                 field: 'ERPOrderNo',
                 title: 'ERP订单号',
                 align: 'center',
-                width: 200
+                width: 150
             },
             {
                 field: 'PlanQuantity',
@@ -622,7 +646,30 @@ $(function () {
                 field: 'PlanStatus',
                 title: '计划状态',
                 align: 'center',
-                width: 100
+                width: 100,
+                formatter: function(value,row,index){
+                    if (value == 10){
+                        return "编制"
+                    }else if(value == 20){
+                        return "下达"
+                    }else if(value == 30){
+                        return "新增"
+                    }else if(value == 40){
+                        return "确认"
+                    }else if(value == 50){
+                        return "执行"
+                    }else if(value == 60){
+                        return "完成"
+                    }else if(value == 70){
+                        return "取消"
+                    }else if(value == 80){
+                        return "暂停"
+                    }else if(value == 85){
+                        return "故障"
+                    }else if(value == 90){
+                        return "中止"
+                    }
+                }
             }
         ]]
     });

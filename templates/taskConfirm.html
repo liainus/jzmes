@@ -31,7 +31,6 @@
                 autoRowHeight:false,
                 pagination:true,
                 pageSize:10,
-                singleSelect:false,
                 url:'/processMonitorLine/planConfirmSearch',
                 method:'get'">
 				<thead>
@@ -61,49 +60,193 @@
 					</tr>
 				</thead>
 			</table>
-            <table class="easyui-datagrid" id="tabTask" title="任务查询列表" style="width:100%;" data-options="
-                queryParams: {
-                    PUID: '',
-                    BatchID:''
-                },
-                rownumbers:true,
-                singleSelect:true,
-                autoRowHeight:false,
-                pagination:true,
-                pageSize:10,
-                singleSelect:false,
-                url:'/processMonitorLine/taskConfirmSearch',
-                method:'get'">
-				<thead>
-					<tr>
-                        <th field="ck" checkbox="true"></th>
-						<th data-options="field:'EQPCode',width:120,align:'center'">设备编码</th>
-						<th data-options="field:'ActTank',width:100,align:'center'">实际罐号</th>
-						<th data-options="field:'PlanDate',width:100,align:'center'">计划日期</th>
-						<th data-options="field:'TaskID',width:80,align:'center'">制药任务单号</th>
-						<th data-options="field:'BatchID',width:120,align:'center'">批次号</th>
-						<th data-options="field:'PlanSeq',width:150,align:'center'">顺序号</th>
-						<th data-options="field:'PUID',width:120,align:'center'">工艺段</th>
-						<th data-options="field:'PDUnitRouteName',width:100,align:'center'">工艺路线名称</th>
-						<th data-options="field:'PlanType',width:100,align:'center'">计划类型</th>
-						<th data-options="field:'BrandID',width:100,align:'center'">牌号编码</th>
-						<th data-options="field:'BrandName',width:100,align:'center'">牌号名称</th>
-						<th data-options="field:'PlanQuantity',width:100,align:'center'">计划重量</th>
-						<th data-options="field:'ActQuantity',width:100,align:'center'">实际重量</th>
-						<th data-options="field:'Unit',width:100,align:'center'">单位</th>
-						<th data-options="field:'EnterTime',width:100,align:'center'">录入时间</th>
-						<th data-options="field:'ActBeginTime',width:100,align:'center'">实际开始时间</th>
-						<th data-options="field:'ActEndTime',width:100,align:'center'">实际完成时间</th>
-						<th data-options="field:'SetRepeatCount',width:100,align:'center'">设定重复次数</th>
-						<th data-options="field:'CurretnRepeatCount',width:100,align:'center'">当前重复次数</th>
-						<th data-options="field:'TaskStatus',width:100,align:'center'">任务状态</th>
-						<th data-options="field:'LockStatus',width:100,align:'center'">任务锁定状态</th>
-					</tr>
-				</thead>
-			</table>
+            <div style="margin-top: 1%;">
+                <table class="easyui-datagrid" id="tabTask" title="任务查询列表" style="width:100%;" data-options="
+                    queryParams: {
+                        PUID: '',
+                        BatchID:''
+                    },
+                    rownumbers:true,
+                    singleSelect:true,
+                    autoRowHeight:false,
+                    pagination:true,
+                    pageSize:10,
+                    url:'/processMonitorLine/taskConfirmSearch',
+                    method:'get'">
+                    <thead>
+                        <tr>
+                            <th field="ck" checkbox="true"></th>
+                            <th data-options="field:'EquipmentID',width:120,align:'center'">设备编码</th>
+                            <th data-options="field:'PlanDate',width:100,align:'center'">计划日期</th>
+                            <th data-options="field:'TaskID',width:80,align:'center'">制药任务单号</th>
+                            <th data-options="field:'BatchID',width:120,align:'center'">批次号</th>
+                            <th data-options="field:'PlanSeq',width:150,align:'center'">顺序号</th>
+                            <th data-options="field:'PUID',width:120,align:'center'">工艺段</th>
+                            <th data-options="field:'PDUnitRouteName',width:100,align:'center'">工艺路线名称</th>
+                            <th data-options="field:'PlanType',width:100,align:'center'">计划类型</th>
+                            <th data-options="field:'BrandID',width:100,align:'center'">牌号编码</th>
+                            <th data-options="field:'BrandName',width:100,align:'center'">牌号名称</th>
+                            <th data-options="field:'PlanQuantity',width:100,align:'center'">计划重量</th>
+                            <th data-options="field:'ActQuantity',width:100,align:'center'">实际重量</th>
+                            <th data-options="field:'Unit',width:100,align:'center'">单位</th>
+                            <th data-options="field:'EnterTime',width:100,align:'center'">录入时间</th>
+                            <th data-options="field:'ActBeginTime',width:100,align:'center'">实际开始时间</th>
+                            <th data-options="field:'ActEndTime',width:100,align:'center'">实际完成时间</th>
+                            <th data-options="field:'SetRepeatCount',width:100,align:'center'">设定重复次数</th>
+                            <th data-options="field:'CurretnRepeatCount',width:100,align:'center'">当前重复次数</th>
+                            <th data-options="field:'ActTank',width:100,align:'center'">实际罐号</th>
+                            <th data-options="field:'TaskStatus',width:100,align:'center'">任务状态</th>
+                            <th data-options="field:'LockStatus',width:100,align:'center'">任务锁定状态</th>
+                        </tr>
+                    </thead>
+                </table>
+                <div id="updataPlanDialog" class="easyui-dialog" style="width:760px;height:560px;padding:10px;"
+                     data-options="closed:'true',buttons:'#updataClassDialogButtons',modal:true">
+                    <!-- <div id="ZYPlanClassFormTitle" class="field-title">Title</div> -->
+                    <form id="ZYPlanClassForm" method="post" class="dialog-form">
+                        <table class="kv-table">
+                            <tbody>
+                                <tr>
+                                    <td class="kv-label">ID</td>
+                                    <td class="kv-content">
+                                        <input id="ID" name="ID" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                                    </td>
+                                    <td class="kv-label">设备编码</td>
+                                    <td class="kv-content">
+                                        <input id="EquipmentID" name="EquipmentID" class="easyui-combobox"
+                                            data-options="editable:false">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="kv-label">计划日期</td>
+                                    <td class="kv-content">
+                                        <input id="PlanDate" name="PlanDate" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                                    </td>
+                                    <td class="kv-label">制药任务单号</td>
+                                    <td class="kv-content">
+                                        <input id="TaskID" name="TaskID" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="kv-label">批次号</td>
+                                    <td class="kv-content">
+                                        <input id="BatchID" name="BatchID" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                                    </td>
+                                    <td class="kv-label">顺序号</td>
+                                    <td class="kv-content">
+                                        <input id="PlanSeq" name="PlanSeq" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="kv-label">工艺段</td>
+                                    <td class="kv-content">
+                                        <input id="PUID" name="PUID" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                                    </td>
+                                    <td class="kv-label">工艺路线名称</td>
+                                    <td class="kv-content">
+                                        <input id="PDUnitRouteName" name="PDUnitRouteName" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="kv-label">计划类型</td>
+                                    <td class="kv-content">
+                                        <input id="PlanType" name="PlanType" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                                    </td>
+                                    <td class="kv-label">牌号编码</td>
+                                    <td class="kv-content">
+                                        <input id="BrandID" name="BrandID" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="kv-label">牌号名称</td>
+                                    <td class="kv-content">
+                                        <input id="BrandName" name="BrandName" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                                    </td>
+                                   <td class="kv-label">计划重量</td>
+                                    <td class="kv-content">
+                                        <input id="PlanQuantity" name="PlanQuantity" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="kv-label">实际重量</td>
+                                    <td class="kv-content">
+                                        <input id="ActQuantity" name="ActQuantity" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                                    </td>
+                                    <td class="kv-label">单位</td>
+                                    <td class="kv-content">
+                                        <input id="Unit" name="Unit" id="Unit" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="kv-label">录入时间</td>
+                                    <td class="kv-content">
+                                        <input id="EnterTime" name="EnterTime" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                                    </td>
+                                    <td class="kv-label">实际开始时间</td>
+                                    <td class="kv-content">
+                                        <input id="ActBeginTime" name="ActBeginTime" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="kv-label">实际完成时间</td>
+                                    <td class="kv-content">
+                                        <input id="ActEndTime" name="ActEndTime" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                                    </td>
+                                    <td class="kv-label">设定重复次数</td>
+                                    <td class="kv-content">
+                                        <input id="CurretnRepeatCount" name="CurretnRepeatCount" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="kv-label">实际罐号</td>
+                                    <td class="kv-content">
+                                        <input id="ActTank" name="ActTank" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                                    </td>
+                                    <td class="kv-label">任务状态</td>
+                                    <td class="kv-content">
+                                        <input id="TaskStatus" name="TaskStatus" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="kv-label">任务锁定状态</td>
+                                    <td class="kv-content">
+                                        <input id="LockStatus" name="LockStatus" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div id="updataClassDialogButtons" >
+                            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'"  onclick="EquipmentIDSave()" value="submit" >保存</a>
+                            <a href="#" class="easyui-linkbutton" onclick="$('#updataPlanDialog').dialog('close')">关闭</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
 		</div>
 	</div>
- <script type="text/javascript">
+    <script type="text/javascript">
+         $('#ID').attr("disabled", true);
+         $('#EquipmentID').attr("disabled", false);
+         $('#PlanDate').attr("disabled", true);
+         $('#TaskID').attr("disabled", true);
+         $('#BatchID').attr("disabled", true);
+         $('#PlanSeq').attr("disabled", true);
+         $('#PUID').attr("disabled", true);
+         $('#PDUnitRouteName').attr("disabled", true);
+         $('#PlanType').attr("disabled", true);
+         $('#BrandID').attr("disabled", true);
+         $('#BrandName').attr("disabled", true);
+         $('#PlanQuantity').attr("disabled", true);
+         $('#ActQuantity').attr("disabled", true);
+         $('#Unit').attr("disabled", true);
+         $('#EnterTime').attr("disabled", true);
+         $('#ActBeginTime').attr("disabled", true);
+         $('#ActEndTime').attr("disabled", true);
+         $('#SetRepeatCount').attr("disabled", true);
+         $('#CurretnRepeatCount').attr("disabled", true);
+         $('#ActTank').attr("disabled", true);
+         $('#TaskStatus').attr("disabled", true);
+         $('#LockStatus').attr("disabled", true);
     {#    树形菜单点击事件#}
         $("#tree").tree({
             url:'/processMonitorLine/taskConfirmPuid',
@@ -130,6 +273,67 @@
                 });
             }
         });
+        $('#tabTask').datagrid({
+            onClickRow:function(rowIndex,rowData){
+                $('#updataPlanDialog').dialog("open").dialog('setTitle', '修改设备编码');
+                $('#ID').val(rowData.ID);
+                 $('#EquipmentID').val(rowData.EquipmentID);
+                 $('#PlanDate').val(rowData.PlanDate);
+                 $('#TaskID').val(rowData.TaskID);
+                 $('#BatchID').val(rowData.BatchID);
+                 $('#PlanSeq').val(rowData.PlanSeq);
+                 $('#PUID').val(rowData.PUID);
+                 $('#PDUnitRouteName').val(rowData.PDUnitRouteName);
+                 $('#PlanType').val(rowData.PlanType);
+                 $('#BrandID').val(rowData.BrandID);
+                 $('#BrandName').val(rowData.BrandName);
+                 $('#PlanQuantity').val(rowData.PlanQuantity);
+                 $('#ActQuantity').val(rowData.ActQuantity);
+                 $('#Unit').val(rowData.Unit);
+                 $('#EnterTime').val(rowData.EnterTime);
+                 $('#ActBeginTime').val(rowData.ActBeginTime);
+                 $('#ActEndTime').val(rowData.ActEndTime);
+                 $('#SetRepeatCount').val(rowData.SetRepeatCount);
+                 $('#CurretnRepeatCount').val(rowData.CurretnRepeatCount);
+                 $('#ActTank').val(rowData.ActTank);
+                 $('#TaskStatus').val(rowData.TaskStatus);
+                 $('#LockStatus').val(rowData.LockStatus);
+
+                 $("#EquipmentID").combobox({
+                     method:'GET',
+                     url:'/processMonitorLine/searchAllEquipments',
+                     valueField:'EQPCode',
+                     textField:'EQPName'
+                 })
+            }
+        });
+        function EquipmentIDSave(){
+            var stmp = $('#EquipmentID').val();
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：设备编号不能为空！');
+               return false;
+            }
+            var EquipmentIDVal = $("#EquipmentID").combobox('getValue')
+            console.log(EquipmentIDVal)
+{#            $.ajax({#}
+{#                url:"/processMonitorLine/saveEQPCode",#}
+{#                data:{EQPCode:$("#EquipmentID").val(),ID:$("#ID")},#}
+{#                type:"get",#}
+{#                success:function(res){#}
+{#                    if(res == "OK"){#}
+{#                        $.messager.show({#}
+{#                            title: '提示',#}
+{#                            msg: '保存成功',#}
+{#                        });#}
+{#                        $("#updataPlanDialog").dialog('close');#}
+{#                        $("#tabTask").datagrid('load');#}
+{#                    }#}
+{#                },#}
+{#                error:function(){#}
+{#                    alert("请求错误，请刷新后重试！")#}
+{#                }#}
+{#            })#}
+        }
     </script>
 </body>
 </html>
