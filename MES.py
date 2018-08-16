@@ -2792,14 +2792,14 @@ def searchAllEquipments():
             if len(jsonstr) > 10:
                 APUID = data['PUID']  # 工艺段编码
                 dataequipmentNames = []
-                equipmentNames = db_session.query(Equipment.EQPCode,Equipment.EQPName).filter(Equipment.PUID == APUID)
+                equipmentNames = db_session.query(Equipment.EQPCode,Equipment.EQPName).filter(Equipment.PUID == 1)
                 for equip in equipmentNames:
                     li = list(equip)
                     id = li[0]
                     name = li[1]
-                    equipName = {'EQPCode': id, 'EQPName': name}
+                    equipName = {'id': id, 'text': name}
                     dataequipmentNames.append(equipName)
-                    dataequipmentNames = json.dumps(dataequipmentNames, cls=AlchemyEncoder, ensure_ascii=False)
+                dataequipmentNames = json.dumps(dataequipmentNames, cls=AlchemyEncoder, ensure_ascii=False)
                 return dataequipmentNames
         except Exception as e:
             print(e)
@@ -2814,11 +2814,11 @@ def saveEQPCode():
         try:
             jsonstr = json.dumps(data.to_dict())
             if len(jsonstr) > 10:
-                EQPCode = data['EQPCode']  # 工艺段编码
+                EQPCode = data['EQPCode']
                 ID = data['ID']
-                oclass = db_session.query(ZYTask).filter(ZYTask.ID == ID)
-                db_session.add(ZYTask(EQPCode=EQPCode))
-                session.commit()
+                oclass = db_session.query(ZYTask).filter(ZYTask.ID == ID).first()
+                oclass.EquipmentID = EQPCode
+                db_session.commit()
                 return "OK"
         except Exception as e:
             print(e)

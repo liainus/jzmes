@@ -506,7 +506,7 @@ class ZYTask(Base):
 	ID = Column(BigInteger, primary_key = True, autoincrement = True, nullable = True)
 
 	# 设备ID:
-	EquipmentID = Column(Integer, primary_key=False, autoincrement=True, nullable=True)
+	EquipmentID = Column(Unicode(30), primary_key=False, autoincrement=True, nullable=True)
 	
 	#计划日期:
 	PlanDate = Column(Unicode(50), primary_key = False, autoincrement = False, nullable = True)
