@@ -1205,12 +1205,13 @@ def SearchBatchManager():
                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
                 currentWorkdate = data["currentWorkdate"]
-                if(currentWorkdate == "" or currentWorkdate == None):
+                PUID = data["PUID"]
+                if(currentWorkdate == "" and PUID == ""):
                     total = db_session.query(ZYPlan).count()
                     zYPlans = db_session.query(ZYPlan).order_by("EnterTime desc").all()[inipage:endpage]
                 else:
-                    total = db_session.query(ZYPlan).filer(ZYPlan.PlanBeginTime == currentWorkdate).count()
-                    zYPlans = db_session.query(ZYPlan).filer(ZYPlan.PlanBeginTime == currentWorkdate).order_by("PlanBeginTime desc").all()[inipage:endpage]
+                    total = db_session.query(ZYPlan).filer(ZYPlan.PlanBeginTime == currentWorkdate, ZYPlan.PUID == PUID).count()
+                    zYPlans = db_session.query(ZYPlan).filer(ZYPlan.PlanBeginTime == currentWorkdate, ZYPlan.PUID).order_by("PlanBeginTime desc").all()[inipage:endpage]
                 jsonzyplans = json.dumps(zYPlans, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonzyplans = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonzyplans + "}"
                 return jsonzyplans
@@ -2610,6 +2611,22 @@ def isBatchNumber():
             logger.error(e)
             insertSyslog("error", "批次号判重报错Error：" + str(e), "AAAAAAadmin")
 
+# 计划向导重量校验
+@app.route('/ZYPlanGuid/weightCheck', methods=['POST', 'GET'])
+def weightCheck():
+    if request.method == 'GET':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                PUID = data['PUID']
+                LowLimit,HighLimit = db_session.query(ProductControlTask.LowLimit, ProductControlTask.HighLimit).filter(ProductControlTask.PUID == PUID).first()
+                return LowLimit,HighLimit
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "计划向导重量校验报错Error：" + str(e), "AAAAAAadmin")
+
 # 获取批次计划信息
 @app.route('/ZYPlanGuid/searchZYPlan', methods=['POST', 'GET'])
 def searchZYPlan():
@@ -2788,6 +2805,26 @@ def searchAllEquipments():
             print(e)
             logger.error(e)
             insertSyslog("error", "任务确认工艺段下的所有设备报错Error：" + str(e), "AAAAAAadmin")
+
+#任务确认保存设备code
+@app.route('/processMonitorLine/saveEQPCode', methods=['POST', 'GET'])
+def saveEQPCode():
+    if request.method == 'GET':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                EQPCode = data['EQPCode']  # 工艺段编码
+                ID = data['ID']
+                oclass = db_session.query(ZYTask).filter(ZYTask.ID == ID)
+                db_session.add(ZYTask(EQPCode=EQPCode))
+                session.commit()
+                return "OK"
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "任务确认保存设备code报错Error：" + str(e), "AAAAAAadmin")
+            return "NO"
 
 if __name__ == '__main__':
     app.run(debug=True)
