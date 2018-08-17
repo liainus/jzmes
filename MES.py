@@ -2867,11 +2867,11 @@ def searchTasksByEquipmentID():
 
 # Opc服务配置
 @app.route('/OpcServer', methods=['POST', 'GET'])
-def OpcServerConfig():
+def opcServer():
     return render_template('OpcServer.html')
 
 # 返回Opc服务列表
-@app.route('/OpcServerFind')
+@app.route('/OpcServer/Find')
 def OpcServerFind():
     if request.method == 'GET':
         data = request.values
@@ -2883,7 +2883,7 @@ def OpcServerFind():
                 rowsnumber = int(data['rows'])
                 inipage = (pages - 1) * rowsnumber + 0
                 endpage = (pages - 1) * rowsnumber + rowsnumber
-                total = db_session.query(func.count(OpcServer.ID)).scalar()
+                total = db_session.query(OpcServer.ID).count()
                 if total > 0:
                     qDatas = db_session.query(OpcServer).all()[inipage:endpage]
                     # ORM模型转换json格式
@@ -2900,8 +2900,8 @@ def OpcServerFind():
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
                               ensure_ascii=False)
 # 添加Opc服务配置
-app.route('/OpcServerCreate', methods=['POST', 'GET'])
-def OpcServerCCreate():
+app.route('/OpcServer/Create', methods=['POST', 'GET'])
+def OpcServerCreate():
     if request.method == 'POST':
         try:
             data = request.values
@@ -2921,7 +2921,7 @@ def OpcServerCCreate():
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 # 删除Opc服务配置
-app.route('/OpcServerDelete', methods=['POST', 'GET'])
+app.route('/OpcServer/Delete', methods=['POST', 'GET'])
 def OpcServerDelete():
     if request.method == 'POST':
         data = request.values
@@ -2948,7 +2948,7 @@ def OpcServerDelete():
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 # 修改Opc服务
-app.route('/OpcServerUpdate', methods=['POST', 'GET'])
+app.route('/OpcServer/Update', methods=['POST', 'GET'])
 def OpcServerUpdate():
     if request.method == 'POST':
         data = request.values
@@ -2970,7 +2970,7 @@ def OpcServerUpdate():
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 # 查询Opc服务
-app.route('/OpcServerSearch', methods=['POST', 'GET'])
+app.route('/OpcServer/Search', methods=['POST', 'GET'])
 def OpcServerSearch():
     if request.method == 'POST':
         data = request.values
