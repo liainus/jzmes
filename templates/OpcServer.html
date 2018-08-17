@@ -28,7 +28,7 @@
             <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove'" onclick="OpcServerToolbar.delete();">删除</a>
             <a href="#" class="easyui-linkbutton" id="reload" data-options="iconCls:'icon-reload'" onclick="OpcServerToolbar.refresh();">刷新</a>
         </div>
-        <table class="easyui-datagrid" id="tabOpc" title="Opc服务配置列表" style="width:100%;" data-options="
+        <table class="easyui-datagrid" id="tabOpc" title="" style="width:100%;" data-options="
             rownumbers:true,
             singleSelect:false,
             autoRowHeight:false,
@@ -78,8 +78,8 @@
                     </tbody>
                 </table>
                 <div id="userClassDialogButtons" >
-                    <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" id="saveAdd" onclick="OpcServerToolbar.saveAdd()" >保存</a>
-                    <a href="#" class="easyui-linkbutton" onclick="$('#userClassDialog').dialog('close')">关闭</a>
+                    <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" id="saveAdd" onclick="OpcServerToolbar.save()" >保存</a>
+                    <a href="#" class="easyui-linkbutton" onclick="$('#OpcClassDialog').dialog('close')">关闭</a>
                 </div>
             </form>
         </div>
@@ -98,7 +98,7 @@
                         return false;
                     }
                     $.ajax({
-                        url: '/OpcServerSearch',
+                        url: '/OpcServer/Search',
                         method: 'POST',
                         traditional: true,
                         data: a,
@@ -162,7 +162,7 @@
                                 // a = JSON.stringify([{"ID":9},{"ID":10}])
                                 a = JSON.stringify(jsonarray);
                                 $.ajax({
-                                    url: '/OpcServerDelete',
+                                    url: '/OpcServer/Delete',
                                     method: 'POST',
                                     traditional: true,
                                     // data: JSON.stringify(ids),
@@ -195,7 +195,7 @@
                     }
                 },
                 save:function(){
-                    var strID = $('input[name="iID"]').val();
+                    var strID = $('#ID').val();
                     var urlAddr = ""
                     var stmp = $('#ServerName').val();
                     if(Bee.StringUtils.isEmpty(stmp)) {
@@ -208,11 +208,11 @@
                        return false;
                     }
                     if (strID.length >= 1){
-                        urlAddr = '/OpcServer' + 'Update'
+                        urlAddr = '/OpcServer/' + 'Update'
                         hintinfo = "更新数据"
                     }
                     else {
-                        urlAddr = '/OpcServer' + 'Create'
+                        urlAddr = '/OpcServer/' + 'Create'
                         hintinfo = "新增数据"
                     }
                     var entity = {
@@ -229,7 +229,6 @@
                         dataType: 'json',
                         cache: false,
                         error: function(data){
-                           console.log(data.responseText)
                            alert(hintinfo+ "异常，请刷新后重试...");
                         },
                         success: function (data,response,status) {
