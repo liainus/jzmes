@@ -2847,6 +2847,24 @@ def saveEQPCode():
             insertSyslog("error", "任务确认保存设备code报错Error：" + str(e), "AAAAAAadmin")
             return "NO"
 
+#任务确认查询设备下任务
+@app.route('/processMonitorLine/searchTasksByEquipmentID', methods=['POST', 'GET'])
+def searchTasksByEquipmentID():
+    if request.method == 'GET':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                EquipmentID = data['EquipmentID']
+                taskIDs = db_session.query(ZYTask.TaskID).filter(ZYTask.EquipmentID == EquipmentID).all()
+                jsontaskIDs = json.dumps(taskIDs, cls=AlchemyEncoder, ensure_ascii=False)
+                return jsontaskIDs
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "任务确认查询设备下任务报错Error：" + str(e), "AAAAAAadmin")
+
+
 if __name__ == '__main__':
     app.run(debug=True)
 
