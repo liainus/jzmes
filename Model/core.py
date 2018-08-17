@@ -874,25 +874,25 @@ class ProcessUnit(Base):
 	Desc = Column(Unicode(50), primary_key = False, autoincrement = False, nullable = True)
 	
 	#工艺段额定生产能力:
-	PURateCapacity = Column(Integer, primary_key = False, autoincrement = False, nullable = True)
+	PURateCapacity = Column(Unicode(30), primary_key = False, autoincrement = False, nullable = True)
 	
 	#工艺段计划生产能力:
-	PUPLanCapacity = Column(Integer, primary_key = False, autoincrement = False, nullable = True)
+	PUPLanCapacity = Column(Unicode(30), primary_key = False, autoincrement = False, nullable = True)
 	
 	#工艺段顺序号:
-	Seq = Column(Integer, primary_key = False, autoincrement = False, nullable = True)
+	Seq = Column(Unicode(30), primary_key = False, autoincrement = False, nullable = True)
 	
 	#能力单位:
 	CapacityUnit = Column(Unicode(32), primary_key = False, autoincrement = False, nullable = True)
 	
 	#静置时间:
-	PlaceTime = Column(Integer, primary_key = False, autoincrement = False, nullable = True)
+	PlaceTime = Column(Unicode(30), primary_key = False, autoincrement = False, nullable = True)
 	
 	#时间单位:
 	TimeUnit = Column(Unicode(32), primary_key = False, autoincrement = False, nullable = True)
 	
 	#批次运行时间:
-	BatchRunTime = Column(Integer, primary_key = False, autoincrement = False, nullable = True)
+	BatchRunTime = Column(Unicode(30), primary_key = False, autoincrement = False, nullable = True)
 
 class ProcessUnitWebIFS(object):
 	def __init__(self, name):
@@ -906,7 +906,7 @@ class ProcessUnitWebIFS(object):
 					Model.core.ProcessUnit(
 						PUCode=odata['PUCode'],
 						PUName=odata['PUName'],
-						PLineID=odata['PLineID'],
+						PLineID=int(odata['PLineID']),
 						Desc=odata['Desc'],
 						PURateCapacity=odata['PURateCapacity'],
 						PUPLanCapacity=odata['PUPLanCapacity'],
