@@ -550,6 +550,11 @@
                                     <a href="#" onclick="addTab('OPC服务配置','/OpcServer')">OPC服务配置</a>
                                 </li>
                             {% endif %}
+                            {% if '80' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onclick="addTab('加载OPC-Tag','/OpcTag/load')">加载OPC-Tag</a>
+                                </li>
+                            {% endif %}
                         </ul>
                     </li>
                 {% endif %}
