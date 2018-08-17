@@ -2866,7 +2866,7 @@ def searchTasksByEquipmentID():
             insertSyslog("error", "任务确认查询设备下任务报错Error：" + str(e), "AAAAAAadmin")
 
 # Opc服务配置
-@app.route('/OpcServer', methods=['POST', 'GET'])
+@app.route('/OpcServer')
 def opcServer():
     return render_template('OpcServer.html')
 
@@ -2988,6 +2988,42 @@ def OpcServerSearch():
             print(e)
             logger.error(e)
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+# 加载OPC-Tag
+@app.route('/OpcTag/load')
+def opcTagLoad():
+    try:
+        serverNames = db_session.query(OpcServer.ServerName).all()
+        server_names = []
+        for tu in serverNames:
+            li = list(tu)
+            name = li[0]
+            ser_info = {'servername': name}
+            server_names.append(ser_info)
+        return render_template('OpcTagLoad.html', server_names=server_names)
+    except Exception as e:
+        print(e)
+        logger.error(e)
+        insertSyslog("error", "加载OPC-Tag错误Error：" + str(e), "AAAAAAadmin")
+
+@app.route('/OpcServer/Tag', methods=['POST', 'GET'])
+def opcServerTag():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            ServerName = data['ServerName']
+            URI = db_session.query(OpcServer).filter_by(ServerName=ServerName).first()
+            URI = json.dumps(URI, cls=AlchemyEncoder, ensure_ascii=False)
+            return URI
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "获取OpcServer下的URI报错Error：" + str(e), "AAAAAAadmin")
+            return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
