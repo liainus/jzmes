@@ -2777,7 +2777,15 @@ def taskConfirmSearch():
                     ZYTasks = db_session.query(ZYTask).filter(ZYTask.BatchID == BatchID,
                                                               ZYTask.TaskStatus.in_((20, 40, 50)),
                                                               ZYTask.PUID == APUID).all()[inipage:endpage]
-                elif (APUID != "" and TaskStatus != ""):
+                elif (APUID == "" and TaskStatus != ""):
+                    total = db_session.query(ZYTask).filter(ZYTask.TaskStatus == TaskStatus).count()
+                    ZYTasks = db_session.query(ZYTask).filter(ZYTask.TaskStatus == TaskStatus).all()[inipage:endpage]
+                elif (APUID != "" and TaskStatus != "" and BatchID == ""):
+                    total = db_session.query(ZYTask).filter(ZYTask.TaskStatus == TaskStatus,
+                                                            ZYTask.PUID == APUID).count()
+                    ZYTasks = db_session.query(ZYTask).filter(ZYTask.TaskStatus == TaskStatus,
+                                                              ZYTask.PUID == APUID).all()[inipage:endpage]
+                elif (APUID != "" and TaskStatus != "" and BatchID != ""):
                     total = db_session.query(ZYTask).filter(ZYTask.BatchID == BatchID,
                                                             ZYTask.TaskStatus == TaskStatus,
                                                             ZYTask.PUID == APUID).count()
