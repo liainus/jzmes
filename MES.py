@@ -2867,7 +2867,7 @@ def searchTasksByEquipmentID():
 # Opc服务配置
 @app.route('/OpcServerConfig', methods=['POST', 'GET'])
 def OpcServerConfig():
-    return render_template('OpcServerConfig.html')
+    return render_template('OpcServer.html')
 
 @app.route('/OpcServerConfigFind')
 def OpcServerConfigFind():
