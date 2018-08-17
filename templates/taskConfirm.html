@@ -280,7 +280,8 @@
                 });
                 $('#tabTask').datagrid('load',{
                     PUID: APUID,
-                    BatchID:ABatchID
+                    BatchID:ABatchID,
+                    TaskStatus:""
                 });
             }
         })
@@ -290,7 +291,8 @@
                 ABatchID = rowData.BatchID
                 $('#tabTask').datagrid('load',{
                     PUID: APUID,
-                    BatchID:ABatchID
+                    BatchID:ABatchID,
+                    TaskStatus:""
                 });
             }
         });
