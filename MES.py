@@ -2863,12 +2863,40 @@ def searchTasksByEquipmentID():
             print(e)
             logger.error(e)
             insertSyslog("error", "任务确认查询设备下任务报错Error：" + str(e), "AAAAAAadmin")
-			
 
-# @app.route('/OpcServerConfig', methods=['POST', 'GET'])
-# def OpcServerConfig():
-#     return render_template('OpcServerConfig.html')
+# Opc服务配置
+@app.route('/OpcServerConfig', methods=['POST', 'GET'])
+def OpcServerConfig():
+    return render_template('OpcServerConfig.html')
 
+@app.route('/OpcServerConfigFind')
+def OpcServerConfigFind():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            print(json_str)
+            if len(json_str) > 10:
+                pages = int(data['page'])
+                rowsnumber = int(data['rows'])
+                inipage = (pages - 1) * rowsnumber + 0
+                endpage = (pages - 1) * rowsnumber + rowsnumber
+                total = db_session.query(func.count(Model.core.OpcServer.ID)).scalar()
+                if total > 0:
+                    qDatas = db_session.query(Model.core.OpcServer).all()[inipage:endpage]
+                    # ORM模型转换json格式
+                    jsonopcserver = json.dumps(qDatas, cls=Model.BSFramwork.AlchemyEncoder,
+                                                  ensure_ascii=False)
+                    jsonopcserver = '{"total"' + ":" + str(
+                        total) + ',"rows"' + ":\n" + jsonopcserver + "}"
+                    return jsonopcserver
+                else:
+                    return ""
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
+                              ensure_ascii=False)
 if __name__ == '__main__':
     app.run(debug=True)
 
