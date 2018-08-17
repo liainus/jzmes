@@ -16,7 +16,8 @@ from sqlalchemy.orm import Session, relationship, sessionmaker
 import Model.Global
 from Model.BSFramwork import AlchemyEncoder
 from Model.core import Enterprise, Area, Factory, ProductLine, ProcessUnit, Equipment, Material, MaterialType, \
-    ProductUnit, ProductRule, ZYTask, ZYPlanMaterial, ZYPlan, Unit, PlanManager, SchedulePlan, ProductControlTask
+    ProductUnit, ProductRule, ZYTask, ZYPlanMaterial, ZYPlan, Unit, PlanManager, SchedulePlan, ProductControlTask, \
+    OpcServer
 from Model.system import Role, Organization, User, Menu, Role_Menu
 from tools.MESLogger import MESLogger
 from Model.core import SysLog
@@ -2864,6 +2865,129 @@ def searchTasksByEquipmentID():
             logger.error(e)
             insertSyslog("error", "任务确认查询设备下任务报错Error：" + str(e), "AAAAAAadmin")
 
+# Opc服务配置
+@app.route('/OpcServer', methods=['POST', 'GET'])
+def opcServer():
+    return render_template('OpcServer.html')
+
+# 返回Opc服务列表
+@app.route('/OpcServer/Find')
+def OpcServerFind():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            print(json_str)
+            if len(json_str) > 10:
+                pages = int(data['page'])
+                rowsnumber = int(data['rows'])
+                inipage = (pages - 1) * rowsnumber + 0
+                endpage = (pages - 1) * rowsnumber + rowsnumber
+                total = db_session.query(OpcServer.ID).count()
+                if total > 0:
+                    qDatas = db_session.query(OpcServer).all()[inipage:endpage]
+                    # ORM模型转换json格式
+                    jsonopcserver = json.dumps(qDatas, cls=Model.BSFramwork.AlchemyEncoder,
+                                                  ensure_ascii=False)
+                    jsonopcserver = '{"total"' + ":" + str(
+                        total) + ',"rows"' + ":\n" + jsonopcserver + "}"
+                    return jsonopcserver
+                else:
+                    return ""
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
+                              ensure_ascii=False)
+# 添加Opc服务配置
+app.route('/OpcServer/Create', methods=['POST', 'GET'])
+def OpcServerCreate():
+    if request.method == 'POST':
+        try:
+            data = request.values
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                db_session.add(
+                    OpcServer(
+                        ServerName=data['ServerName'],
+                        URI=data['URI'],
+                        Desc=data['Desc']))
+                db_session.commit()
+                return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
+                                  ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+# 删除Opc服务配置
+app.route('/OpcServer/Delete', methods=['POST', 'GET'])
+def OpcServerDelete():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
+                for key in jsonnumber:
+                    OpcServerID = int(key)
+                    try:
+                        oclass = db_session.query(OpcServer).filter_by(ID=OpcServerID).first()
+                        db_session.delete(oclass)
+                        db_session.commit()
+                    except Exception as ee:
+                        print(ee)
+                        logger.error(ee)
+                        return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
+                                          ensure_ascii=False)
+                return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
+                                  ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+# 修改Opc服务
+app.route('/OpcServer/Update', methods=['POST', 'GET'])
+def OpcServerUpdate():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                OpcServerID = int(data['ID'])
+                oclass = db_session.query(OpcServer).filter_by(ID=OpcServerID).first()
+                oclass.ServerName = data['ServerName']
+                oclass.URI = data['URI']
+                oclass.Desc = data['Desc']
+                db_session.add(oclass)
+                db_session.commit()
+                return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
+                                  ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+# 查询Opc服务
+app.route('/OpcServer/Search', methods=['POST', 'GET'])
+def OpcServerSearch():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 2:
+                ServerName = "%" + data['ServerName'] + "%"
+                OpcServerscount = db_session.query(OpcServer).filter(
+                    OpcServer.ServerName.like(ServerName)).all()
+                total = Counter(OpcServerscount)
+                jsonOpcServers = json.dumps(OpcServerscount, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+                jsonOpcServers = '{"total"' + ":" + str(total.__len__()) + ',"rows"' + ":\n" + jsonOpcServers + "}"
+                return jsonOpcServers
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 if __name__ == '__main__':
     app.run(debug=True)

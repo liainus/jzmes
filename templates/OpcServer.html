@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>OPC服务配置</title>
+    <link href="../static/css/base.css" rel="stylesheet">
+	<link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
+	<link href="../static/css/basic_info.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
+	<link href="../static/js/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
+    <link href="../static/css/datagridpanel_customer.css" rel="stylesheet">
+    <link href="../static/css/dialogpanel.css" type="text/css" rel="stylesheet">
+    <link href="../static/css/datagrid_customer.css" type="text/css" rel="stylesheet">
+    <script type="text/javascript" src="../static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
+</head>
+<body>
+    <div class="content">
+        <div id="OpcServerToolbar" style="padding:0 10px;">
+            服务名称:
+            <input type="text" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
+                placeholder="">
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="OpcServerToolbar.search();">查询</a>
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add'" onclick="OpcServerToolbar.create();">添加</a>
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit'" onclick="OpcServerToolbar.update();">修改</a>
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove'" onclick="OpcServerToolbar.delete();">删除</a>
+            <a href="#" class="easyui-linkbutton" id="reload" data-options="iconCls:'icon-reload'" onclick="OpcServerToolbar.refresh();">刷新</a>
+        </div>
+        <table class="easyui-datagrid" id="tabOpc" title="" style="width:100%;" data-options="
+            rownumbers:true,
+            singleSelect:false,
+            autoRowHeight:false,
+            pagination:true,
+            pageSize:10,
+            toolbar:'#OpcServerToolbar',
+            url:'/OpcServerFind',
+            method:'get'">
+            <thead>
+                <tr>
+                    <th field="ck" checkbox="true"></th>
+                    <th data-options="field:'ServerName',width:200,align:'center'">服务名称</th>
+                    <th data-options="field:'URI',width:200,align:'center'">资源地址</th>
+                    <th data-options="field:'Desc',width:300,align:'center'">描述</th>
+                </tr>
+            </thead>
+        </table>
+        <div id="OpcClassDialog" class="easyui-dialog" style="width:400px;height:400px;padding:10px;"
+             data-options="closed:'true',buttons:'#userClassDialogButtons',modal:true">
+            <form id="OpcClassForm" method="post" class="dialog-form">
+                <table class="kv-table">
+                    <tbody>
+                        <tr>
+                            <td class="kv-label">id</td>
+                            <td class="kv-content">
+                                <input id="ID" name="ID" type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="" disabled="disabled">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">服务名称</td>
+                            <td class="kv-content">
+                                <input id="ServerName" name="ServerName" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">资源地址</td>
+                            <td class="kv-content">
+                                <input id="URI" name="URI" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">描述</td>
+                            <td class="kv-content">
+                                <input id="Desc" name="Desc" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div id="userClassDialogButtons" >
+                    <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" id="saveAdd" onclick="OpcServerToolbar.save()" >保存</a>
+                    <a href="#" class="easyui-linkbutton" onclick="$('#OpcClassDialog').dialog('close')">关闭</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script>
+        $(function(){
+            function createKeyIDObj(keyID){
+                return {
+                    ID:keyID
+                }
+            }
+            OpcServerToolbar = {
+                search:function(){
+                    a = $.trim($('input[name="search"]').val());
+                    if  (Bee.StringUtils.isEmpty(a)){
+                        return false;
+                    }
+                    $.ajax({
+                        url: '/OpcServer/Search',
+                        method: 'POST',
+                        traditional: true,
+                        data: a,
+                        dataType: 'json',
+                        success: function (data) {
+                            $.messager.progress('close');
+
+                            if (data) {
+                                // $(tableId).datagrid('loaded');
+                                // $(tableId).datagrid('load');
+                                // $(tableId).datagrid('unselectAll');
+                                $("#tabOpc").datagrid('loadData', data);
+                                $.messager.show({
+                                    title: '提示',
+                                    timeout: 1000,
+                                    msg: '查询成功',
+                                    style: {
+                                        right: '',
+                                        top: document.body.scrollTop + document.documentElement.scrollTop,
+                                        bottom: ''
+                                    }
+                                });
+                            }
+                        }
+                    })
+                },
+                create:function(){
+                    $("#OpcClassDialog").dialog('open').dialog('setTitle', '新增Opc服务');
+                    $('input[name="ID"]').attr("disabled", "disabled");
+                    $('input[name="ServerName"]').val("");
+                    $('input[name="URI"]').val("");
+                    $('input[name="Desc"]').val("");
+                },
+                update:function(){
+                    var rows = $("#tabOpc").datagrid('getSelections');
+                    if (rows.length > 1) {
+                        $.messager.alert('警告操作！', '编辑记录只能选定一条数据！', 'warning');
+                    } else if (rows.length == 1) {
+                        var row = $("#tabOpc").datagrid('getSelected');
+                        if(row){
+                            $("#OpcClassDialog").dialog('open').dialog('setTitle', '修改Opc服务');
+                            $('input[name="ID"]').val(row.ID);
+                            $('input[name="ServerName"]').val(row.ServerName);
+                            $('input[name="URI"]').val(row.URI);
+                            $('input[name="Desc"]').val(row.Desc);
+                        }
+                    }
+                },
+                delete:function(){
+                    var rows = $("#tabOpc").datagrid('getSelections');
+                    if (rows.length > 0) {
+                        var jsonarray=[];
+                        $.messager.confirm('确定操作', '您正在删除所选的记录吗？', function (flag) {
+                            if (flag) {
+                                var a = "";
+                                for (var i = 0; i < rows.length; i++) {
+                                    // ids.push(parseInt((rows[i].id)));
+                                    var obj=createKeyIDObj(parseInt(rows[i].ID));
+                                    jsonarray.push(obj);
+                                }
+                                // a = JSON.stringify([{"ID":9},{"ID":10}])
+                                a = JSON.stringify(jsonarray);
+                                $.ajax({
+                                    url: '/OpcServer/Delete',
+                                    method: 'POST',
+                                    traditional: true,
+                                    // data: JSON.stringify(ids),
+                                    data: a,
+                                    dataType: 'json',
+                                    success: function (data) {
+                                        $.messager.progress('close');
+
+                                        if (data) {
+                                            $("#tabOpc").datagrid('loaded');
+                                            $("#tabOpc").datagrid('load');
+                                            $("#tabOpc").datagrid('unselectAll');
+                                            $.messager.show({
+                                                title: '提示',
+                                                timeout:1000,
+                                                msg: '删除成功',
+                                                style: {
+                                                    right: '',
+                                                    top: document.body.scrollTop + document.documentElement.scrollTop,
+                                                    bottom: ''
+                                                }
+                                            });
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                    } else {
+                        $.messager.alert('提示', '请选择要删除的记录！', 'info');
+                    }
+                },
+                save:function(){
+                    var strID = $('#ID').val();
+                    var urlAddr = ""
+                    var stmp = $('#ServerName').val();
+                    if(Bee.StringUtils.isEmpty(stmp)) {
+                       alert('Warning：服务名称不能为空！');
+                       return false;
+                    }
+                    stmp = $('#URI').val();
+                    if(Bee.StringUtils.isEmpty(stmp)) {
+                       alert('Warning：资源地址不能为空！');
+                       return false;
+                    }
+                    if (strID.length >= 1){
+                        urlAddr = '/OpcServer/' + 'Update'
+                        hintinfo = "更新数据"
+                    }
+                    else {
+                        urlAddr = '/OpcServer/' + 'Create'
+                        hintinfo = "新增数据"
+                    }
+                    var entity = {
+                        ID:$('#ID').val(),
+                        ServerName:$('#ServerName').val(),
+                        URI:$('#URI').val(),
+                        Desc:$('#Desc').val()
+                    };
+                    $.ajax({
+                        url: urlAddr,
+                        method: 'POST',
+                        traditional: true,
+                        data: entity,
+                        dataType: 'json',
+                        cache: false,
+                        error: function(data){
+                           alert(hintinfo+ "异常，请刷新后重试...");
+                        },
+                        success: function (data,response,status) {
+                            $.messager.progress('close');
+                            var obj1 = eval(data);
+                            if(obj1[0].status == "OK"){
+                                $.messager.show({
+                                    title: '提示',
+                                    msg: hintinfo + '成功',
+                                    timeout:1000,
+                                    style: {
+                                        right: '',
+                                        top: document.body.scrollTop + document.documentElement.scrollTop,
+                                        bottom: ''
+                                    }
+                                });
+
+                                $("#OpcClassForm").form('reset');
+                                $("#tabOpc").dialog('close');
+                                $("#tabOpc").datagrid('reload',{ url: "/allZYTasks/Find?_t=" + new Date().getTime() });
+                            } else {
+                                $.messager.alert(obj1[0].status + '失败！', '未知错误导致失败，请重试！', 'warning');
+                            }
+                        }
+                    });
+                },
+                refresh:function(){
+                    $("#tabOpc").datagrid('load')
+                }
+            }
+        })
+    </script>
+</body>
+</html>

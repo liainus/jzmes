@@ -149,6 +149,19 @@ $(function () {
                         return "中止"
                     }
                 }
+            },
+            {
+                field: 'LockStatus',
+                title: '锁定状态',
+                align: 'center',
+                width: 100,
+                formatter: function(value,row,index){
+                    if (value == 0){
+                        return "解锁"
+                    }else if(value == 10){
+                        return "锁定"
+                    }
+                }
             }
         ]]
     });
@@ -281,6 +294,7 @@ $(function () {
         },
         delete: function () {
             var rows = $(tableId).datagrid('getSelections');
+            console.log(rows.BatchID)
             if (rows.length > 0) {
                 var jsonarray=[];
                 $.messager.confirm('确定操作', '您正在删除所选的记录吗？', function (flag) {
@@ -668,6 +682,19 @@ $(function () {
                         return "故障"
                     }else if(value == 90){
                         return "中止"
+                    }
+                }
+            },
+            {
+                field: 'LockStatus',
+                title: '锁定状态',
+                align: 'center',
+                width: 100,
+                formatter: function(value,row,index){
+                    if (value == 0){
+                        return "解锁"
+                    }else if(value == 10){
+                        return "锁定"
                     }
                 }
             }
