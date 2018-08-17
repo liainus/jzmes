@@ -57,11 +57,11 @@
                             <th data-options="field:'PlanQuantity',width:100,align:'center'">计划重量</th>
                             <th data-options="field:'ActQuantity',width:100,align:'center'">实际重量</th>
                             <th data-options="field:'Unit',width:100,align:'center'">单位</th>
-                            <th data-options="field:'EnterTime',width:100,align:'center'">录入时间</th>
-                            <th data-options="field:'PlanBeginTime',width:100,align:'center'">计划开始时间</th>
-                            <th data-options="field:'PlanEndTime',width:100,align:'center'">计划结束时间</th>
-                            <th data-options="field:'ActBeginTime',width:100,align:'center'">实际开始时间</th>
-                            <th data-options="field:'ActEndTime',width:100,align:'center'">实际完成时间</th>
+                            <th data-options="field:'EnterTime',width:150,align:'center'">录入时间</th>
+                            <th data-options="field:'PlanBeginTime',width:150,align:'center'">计划开始时间</th>
+                            <th data-options="field:'PlanEndTime',width:150,align:'center'">计划结束时间</th>
+                            <th data-options="field:'ActBeginTime',width:150,align:'center'">实际开始时间</th>
+                            <th data-options="field:'ActEndTime',width:150,align:'center'">实际完成时间</th>
                             <th data-options="field:'PlanSeq',width:150,align:'center'">顺序号</th>
                             <th data-options="field:'PUID',width:120,align:'center'">工艺段</th>
                             <th data-options="field:'LockStatus',width:100,align:'center'"formatter="formatterLockStatus">计划锁定状态</th>
@@ -104,9 +104,9 @@
                             <th data-options="field:'PlanQuantity',width:100,align:'center'">计划重量</th>
                             <th data-options="field:'ActQuantity',width:100,align:'center'">实际重量</th>
                             <th data-options="field:'Unit',width:100,align:'center'">单位</th>
-                            <th data-options="field:'EnterTime',width:100,align:'center'">录入时间</th>
-                            <th data-options="field:'ActBeginTime',width:100,align:'center'">实际开始时间</th>
-                            <th data-options="field:'ActEndTime',width:100,align:'center'">实际完成时间</th>
+                            <th data-options="field:'EnterTime',width:150,align:'center'">录入时间</th>
+                            <th data-options="field:'ActBeginTime',width:150,align:'center'">实际开始时间</th>
+                            <th data-options="field:'ActEndTime',width:150,align:'center'">实际完成时间</th>
                             <th data-options="field:'PlanSeq',width:150,align:'center'">顺序号</th>
                             <th data-options="field:'PUID',width:120,align:'center'">工艺段</th>
                             <th data-options="field:'SetRepeatCount',width:100,align:'center'">设定重复次数</th>
@@ -266,6 +266,7 @@
     {#    树形菜单点击事件#}
          var APUID = "" //工艺默认参数
          var ABatchID = "" //计划查询批次号参数
+         var task = "" //状态按钮参数
         $("#tree").tree({
             url:'/processMonitorLine/taskConfirmPuid',
             method: 'get',
@@ -281,7 +282,7 @@
                 $('#tabTask').datagrid('load',{
                     PUID: APUID,
                     BatchID:ABatchID,
-                    TaskStatus:""
+                    TaskStatus:task
                 });
             }
         })
@@ -292,7 +293,7 @@
                 $('#tabTask').datagrid('load',{
                     PUID: APUID,
                     BatchID:ABatchID,
-                    TaskStatus:""
+                    TaskStatus:task
                 });
             }
         });
@@ -333,7 +334,7 @@
             }
         });
         $("#opt-buttons a").on('click',function(){
-            var task = $(this).attr("status")
+            task = $(this).attr("status")
             $('#tabTask').datagrid('load',{
                 PUID: APUID,
                 BatchID:ABatchID,
