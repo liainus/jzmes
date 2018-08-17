@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>OPC服务配置</title>
+    <link href="../static/css/base.css" rel="stylesheet">
+	<link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
+	<link href="../static/css/basic_info.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
+	<link href="../static/js/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
+    <link href="../static/css/datagridpanel_customer.css" rel="stylesheet">
+    <link href="../static/css/dialogpanel.css" type="text/css" rel="stylesheet">
+    <link href="../static/css/datagrid_customer.css" type="text/css" rel="stylesheet">
+    <script type="text/javascript" src="../static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
+</head>
+<body>
+    <div class="content">
+        <div id="OpcServerToolbar" style="padding:0 10px;">
+            服务名称:
+            <input type="text" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
+                placeholder="">
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="EquipmentClassToolbar.search();">查询</a>
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add'" onclick="EquipmentClassToolbar.create();">添加</a>
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit'" onclick="EquipmentClassToolbar.update();">修改</a>
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove'" onclick="EquipmentClassToolbar.delete();">删除</a>
+            <a href="#" class="easyui-linkbutton" id="reload" data-options="iconCls:'icon-reload'" onclick="EquipmentClassToolbar.refresh();">刷新</a>
+        </div>
+        <table class="easyui-datagrid" id="tabPlan" title="计划查询列表" style="width:100%;" data-options="
+            rownumbers:true,
+            singleSelect:false,
+            autoRowHeight:false,
+            pagination:true,
+            pageSize:10,
+            toolbar:'#OpcServerToolbar',
+            url:'/OpcServerFind',
+            method:'get'">
+            <thead>
+                <tr>
+                    <th field="ck" checkbox="true"></th>
+                    <th data-options="field:'ServerName',width:200,align:'center'">服务名称</th>
+                    <th data-options="field:'URI',width:200,align:'center'">资源地址</th>
+                    <th data-options="field:'Desc',width:300,align:'center'">描述</th>
+                </tr>
+            </thead>
+        </table>
+        <div id="userClassDialog" class="easyui-dialog" style="width:400px;height:400px;padding:10px;"
+             data-options="closed:'true',buttons:'#userClassDialogButtons',modal:true">
+            <form id="userClassForm" method="post" class="dialog-form">
+                <table class="kv-table">
+                    <tbody>
+                        <tr>
+                            <td class="kv-label">id</td>
+                            <td class="kv-content">
+                                <input name="id" type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="" disabled="disabled">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">用户名</td>
+                            <td class="kv-content">
+                                <input name="Name" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">密码</td>
+                            <td class="kv-content">
+                                <input name="Password" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">工号</td>
+                            <td class="kv-content">
+                                <input name="LoginName" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">创建用户</td>
+                            <td class="kv-content">
+                                <input name="Creater" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder="" disabled="disabled"  >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">所属部门</td>
+                            <td class="kv-content">
+                                <select name="OrganizationName" id="OrganizationName" type="text" style="width:157px;" autocomplete="off" placeholder="">
+                                    <option value="">请选择</option>
+                                    {% for department in departments %}
+                                        <option value="{{ department['OrganizationID'] }}">{{ department['OrganizationName'] }}</option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">所属角色</td>
+                            <td class="kv-content">
+                                <select name="RoleName" id="RoleName" type="text" style="width:157px;" autocomplete="off" placeholder="">
+                                    <option value="">请选择</option>
+                                    {% for roleName in roleNames %}
+                                        <option value="{{ roleName['RoleID'] }}">{{ roleName['RoleName'] }}</option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div id="userClassDialogButtons" >
+                    <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" id="saveAdd" onclick="UserClassToolbar.saveAdd()" >保存</a>
+                    <a href="#" class="easyui-linkbutton" onclick="$('#userClassDialog').dialog('close')">关闭</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
