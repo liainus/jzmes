@@ -124,6 +124,7 @@
                 create:function(){
                     $("#OpcClassDialog").dialog('open').dialog('setTitle', '新增Opc服务');
                     $('input[name="ID"]').attr("disabled", "disabled");
+                    $('input[name="ID"]').val("");
                     $('input[name="ServerName"]').val("");
                     $('input[name="URI"]').val("");
                     $('input[name="Desc"]').val("");
@@ -141,6 +142,8 @@
                             $('input[name="URI"]').val(row.URI);
                             $('input[name="Desc"]').val(row.Desc);
                         }
+                    }else if(rows.length == 0){
+                        $.messager.alert('警告操作！', '请选定一条数据！', 'warning');
                     }
                 },
                 delete:function(){

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>加载OPC-Tag</title>
+    <link href="../static/css/base.css" rel="stylesheet">
+	<link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
+	<link href="../static/css/basic_info.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
+	<link href="../static/js/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
+    <link href="../static/css/datagridpanel_customer.css" rel="stylesheet">
+    <link href="../static/css/dialogpanel.css" type="text/css" rel="stylesheet">
+    <link href="../static/css/datagrid_customer.css" type="text/css" rel="stylesheet">
+    <script type="text/javascript" src="../static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
+</head>
+<body>
+    <div class="content">
+        <div style="width:300px;height: 500px;border: 1px solid #f1f1f1;">
+            <table class="kv-table">
+                <tbody>
+                    <tr>
+                        <td class="kv-content">
+                           <select name="servername" id="servername" type="text" style="width:157px;" autocomplete="off" placeholder="">
+                                <option value="">请选择</option>
+                                {% for ser_info in server_names %}
+                                    <option value="{{ ser_info['servername'] }}">{{ ser_info['servername'] }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td class="kv-label" style="white-space:nowrap;">
+                            <a href="#" class="easyui-linkbutton">确定</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="kv-content" colspan="2">
+                            <input id="InpURI" type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="left-tree">
+                <ul id="tt" class="easyui-tree">
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
