@@ -46,7 +46,7 @@
                 </tr>
             </thead>
         </table>
-        <div id="OpcClassDialog" class="easyui-dialog" style="width:400px;height:400px;padding:10px;"
+        <div id="OpcClassDialog" class="easyui-dialog" style="width:400px;height:280px;padding:10px;"
              data-options="closed:'true',buttons:'#userClassDialogButtons',modal:true">
             <form id="OpcClassForm" method="post" class="dialog-form">
                 <table class="kv-table">
@@ -93,15 +93,11 @@
             }
             OpcServerToolbar = {
                 search:function(){
-                    a = $.trim($('input[name="search"]').val());
-                    if  (Bee.StringUtils.isEmpty(a)){
-                        return false;
-                    }
                     $.ajax({
                         url: '/OpcServer/Search',
                         method: 'POST',
                         traditional: true,
-                        data: a,
+                        data: {ServerName:$('input[name="search"]').val()},
                         dataType: 'json',
                         success: function (data) {
                             $.messager.progress('close');
@@ -215,17 +211,16 @@
                         urlAddr = '/OpcServer/' + 'Create'
                         hintinfo = "新增数据"
                     }
-                    var entity = {
-                        ID:$('#ID').val(),
-                        ServerName:$('#ServerName').val(),
-                        URI:$('#URI').val(),
-                        Desc:$('#Desc').val()
-                    };
                     $.ajax({
                         url: urlAddr,
                         method: 'POST',
                         traditional: true,
-                        data: entity,
+                        data: {
+                            ID:$('#ID').val(),
+                            ServerName:$('#ServerName').val(),
+                            URI:$('#URI').val(),
+                            Desc:$('#Desc').val()
+                        },
                         dataType: 'json',
                         cache: false,
                         error: function(data){
@@ -247,8 +242,8 @@
                                 });
 
                                 $("#OpcClassForm").form('reset');
-                                $("#tabOpc").dialog('close');
-                                $("#tabOpc").datagrid('reload',{ url: "/allZYTasks/Find?_t=" + new Date().getTime() });
+                                $("#OpcClassDialog").dialog('close');
+                                $("#tabOpc").datagrid('load');
                             } else {
                                 $.messager.alert(obj1[0].status + '失败！', '未知错误导致失败，请重试！', 'warning');
                             }
