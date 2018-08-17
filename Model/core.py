@@ -3360,23 +3360,114 @@ class SysLog(Base):
 
 
 # 服务配置
-class ServiceConfig(Base):
-    __tablename__ = 'ServiceConfig'
+class ServerConfig(Base):
+    __tablename__ = 'ServerConfig'
 
     # ID
     ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
 
     # 服务配置名称
-    ServiceConfigName = Column(Unicode(100), nullable=True)
+    ServerConfigName = Column(Unicode(30), nullable=True)
 
     # IP地址
-    IP = Column(Unicode(200), nullable=True)
+    IP = Column(Unicode(30), nullable=True)
 
     # 端口
-    Port = Column(Unicode(100), nullable=True)
+    Port = Column(Unicode(20), nullable=True)
 
     # auth_key
     AuthKey = Column(Unicode(100), nullable=True)
-	
+
+# Opc服务
+class OpcServer(Base):
+	__tablename__ = 'OpcServer'
+
+	# ID
+	ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+	# 服务名称
+	ServerName = Column(Unicode(30), nullable=True)
+
+	# 资源地址
+	URI = Column(Unicode(30), nullable=True)
+
+	# 描述
+	Desc = Column(Unicode(100), nullable=True)
+
+
+# OpcTag配置表
+class OpcTag(Base):
+	__tablename__ = 'OpcTag'
+
+	# ID
+	ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+	# OpcServerID
+	OpcServerID = Column(Integer, nullable=True)
+
+	# NodeID
+	NodeID = Column(Integer, nullable=True)
+
+	# 名称
+	DisplayName = Column(Unicode(30), nullable=True)
+
+	# 注释
+	Note = Column(Unicode(50), nullable=True)
+
+	# 父节点
+	ParentID = Column(Integer, nullable=True)
+
+	# 备注
+	Desc = Column(Unicode(100), nullable=True)
+
+
+class CollectParamsTemplate(Base):
+	__tablename__ = 'CollectParamsTemplate'
+
+	# ID
+	ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+	#模板名称
+	TemplateName = Column(Unicode(32), nullable=True)
+
+	# OPCTagID
+	OpcTagID = Column(Integer, nullable=True)
+
+	# 描述信息
+	Desc = Column(Unicode(100), nullable=True)
+
+
+class Collectionstrategy(Base):
+	__tablename__ = 'Collectionstrategy'
+
+	# ID
+	ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+	# TableName
+	TableName = Column(Unicode(32),nullable=True)
+
+	# 间隔时间
+	Interval = Column(Integer, nullable=True)
+
+	# OPcTagID
+	FlagOpcTagID = Column(Integer, nullable=True)
+
+	# 描述
+	Desc = Column(Unicode(100), nullable=True)
+
+class CollectTask(Base):
+	__tablename__ = 'CollectTask'
+
+	#ID
+	ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+	# 采集参数模板ID
+	CollectParamsTemplateID = Column(Integer, nullable=True)
+
+	# 采集策略ID
+	CollectionStrategyID = Column(Integer, nullable=True)
+
+	# 描述
+	Desc = Column(Unicode(100), nullable=True)
 # 生成表单的执行语句
 Base.metadata.create_all(engine)

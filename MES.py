@@ -2826,6 +2826,10 @@ def saveEQPCode():
             insertSyslog("error", "任务确认保存设备code报错Error：" + str(e), "AAAAAAadmin")
             return "NO"
 
+# @app.route('/OpcServerConfig', methods=['POST', 'GET'])
+# def OpcServerConfig():
+#     return render_template('OpcServerConfig.html')
+
 if __name__ == '__main__':
     app.run(debug=True)
 
