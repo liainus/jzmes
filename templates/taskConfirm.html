@@ -298,6 +298,11 @@
             }
         });
         $('#tabTask').datagrid({
+            queryParams: {
+                PUID: APUID,
+                BatchID:ABatchID,
+                TaskStatus:task
+            },
             onClickRow:function(rowIndex,rowData){
                 $('#updataPlanDialog').dialog("open").dialog('setTitle', '修改设备编码');
                 $('#ID').val(rowData.ID);
