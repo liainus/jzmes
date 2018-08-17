@@ -2900,7 +2900,7 @@ def OpcServerFind():
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
                               ensure_ascii=False)
 # 添加Opc服务配置
-app.route('/OpcServer/Create', methods=['POST', 'GET'])
+@app.route('/OpcServer/Create', methods=['POST', 'GET'])
 def OpcServerCreate():
     if request.method == 'POST':
         try:
@@ -2921,7 +2921,7 @@ def OpcServerCreate():
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 # 删除Opc服务配置
-app.route('/OpcServer/Delete', methods=['POST', 'GET'])
+@app.route('/OpcServer/Delete', methods=['POST', 'GET'])
 def OpcServerDelete():
     if request.method == 'POST':
         data = request.values
@@ -2948,7 +2948,7 @@ def OpcServerDelete():
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 # 修改Opc服务
-app.route('/OpcServer/Update', methods=['POST', 'GET'])
+@app.route('/OpcServer/Update', methods=['POST', 'GET'])
 def OpcServerUpdate():
     if request.method == 'POST':
         data = request.values
@@ -2970,7 +2970,7 @@ def OpcServerUpdate():
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 # 查询Opc服务
-app.route('/OpcServer/Search', methods=['POST', 'GET'])
+@app.route('/OpcServer/Search', methods=['POST', 'GET'])
 def OpcServerSearch():
     if request.method == 'POST':
         data = request.values
