@@ -14,9 +14,10 @@ $(function () {
     var titleText = "任务信息";
 
     function createKeyIDObj(keyID){
-    return {
-        ID:keyID
-    }}
+        return {
+            ID:keyID
+        }
+    }
     
 
      $('input[name="iZYTaskName"]').change(function () {
@@ -183,13 +184,43 @@ $(function () {
                 field: 'TaskStatus',
                 title: '任务状态',
                 align: 'center',
-                width: 100
+                width: 100,
+                formatter: function(value,row,index){
+                    if (value == 10){
+                        return "编制"
+                    }else if(value == 20){
+                        return "下达"
+                    }else if(value == 30){
+                        return "新增"
+                    }else if(value == 40){
+                        return "确认"
+                    }else if(value == 50){
+                        return "执行"
+                    }else if(value == 60){
+                        return "完成"
+                    }else if(value == 70){
+                        return "取消"
+                    }else if(value == 80){
+                        return "暂停"
+                    }else if(value == 85){
+                        return "故障"
+                    }else if(value == 90){
+                        return "中止"
+                    }
+                }
             },
             {
                 field: 'LockStatus',
                 title: '锁定状态',
                 align: 'center',
-                width: 100
+                width: 100,
+                formatter: function(value,row,index){
+                    if (value == 0){
+                        return "解锁"
+                    }else if(value == 10){
+                        return "锁定"
+                    }
+                }
             }
         ]]
     });
@@ -243,24 +274,24 @@ $(function () {
             $(formTitleId).text(titleText);
             $('input[name="Name"]').focus();
             $('input[name="iID"]').attr("disabled", "disabled");
-            $('input[name="iID"]').val();
+            $('input[name="iID"]').val("");
             $('#iPlanDate').datetimebox({value: ""});;
-            $('input[name="iTaskID"]').val();
+            $('input[name="iTaskID"]').val("");
             $('#iBatchID option:contains("请选择")').prop("selected", 'selected');
-            $('input[name="iPlanSeq"]').val();
+            $('input[name="iPlanSeq"]').val("");
             $('#iPUID option:contains("请选择")').prop("selected", 'selected');
-            $('input[name="iPlanType"]').val();
+            $('input[name="iPlanType"]').val("");
             $('#iBrandName option:contains("请选择")').prop("selected", 'selected');
-            $('input[name="iPlanQuantity"]').val();
-            $('input[name="iActQuantity"]').val();
+            $('input[name="iPlanQuantity"]').val("");
+            $('input[name="iActQuantity"]').val("");
             $('#iUnit option:contains("请选择")').prop("selected", 'selected');
             $('#iActBeginTime').datetimebox({value: ""});
             $('#iActEndTime').datetimebox({value: ""});
-            $('input[name="iSetRepeatCount"]').val();
-            $('input[name="iCurretnRepeatCount"]').val();
-            $('input[name="iActTank"]').val();
-            $('input[name="iTaskStatus"]').val();
-            $('input[name="iLockStatus"]').val();
+            $('input[name="iSetRepeatCount"]').val("");
+            $('input[name="iCurretnRepeatCount"]').val("");
+            $('input[name="iActTank"]').val("");
+            $('input[name="iTaskStatus"]').val("");
+            $('input[name="iLockStatus"]').val("");
             // $('input[name="iZYTaskSeq"]').onChange()
             // $(formId).form('clear');
             message = '新增' + titleText;
@@ -297,14 +328,7 @@ $(function () {
                     $('input[name="iActTank"]').val(row.ActTank);
                     $('input[name="iTaskStatus"]').val(row.TaskStatus);
                     $('input[name="iLockStatus"]').val(row.LockStatus);
-                    //var thisSwitchbuttonObj = $(".switchstatus").find("[switchbuttonName='IsEnable']");//获取switchbutton对象  
-                    if (row.IsEnable == '禁用') {
-
-                        $("[switchbuttonName='IsEnable']").switchbutton("uncheck");
-                    }else {
-                        $("[switchbuttonName='IsEnable']").switchbutton("check");
-                    }
-                    $('input[name="iZYTaskName"]').focus();
+                    //var thisSwitchbuttonObj = $(".switchstatus").find("[switchbuttonName='IsEnable']");//获取switchbutton对象
                     // $('#ZYTaskClassCombobox').combobox('setValue',row['ZYTaskClass'].id);
                     message = '编辑' + titleText;
 
@@ -335,11 +359,6 @@ $(function () {
                             // data: JSON.stringify(ids),
                             data: a,
                             dataType: 'json',
-                            beforeSend: function () {
-                                $.messager.progress({
-                                    text: '正在删除中...'
-                                });
-                            },
                             success: function (data) {
                                 $.messager.progress('close');
 
@@ -512,13 +531,6 @@ $(function () {
                     data: entity,
                     dataType: 'json',
                     cache: false,
-
-                    // beforeSend: function () {
-                    //
-                    //     $.messager.progress({
-                    //         text: '正在' + message + '中...'
-                    //     });
-                    // },
                     error: function(data){
                            console.log(data.responseText)
                            alert(hintinfo+ "异常，请刷新后重试...");
@@ -603,7 +615,7 @@ $(function () {
                 width: 100
             },
             {
-                field: 'PUCode',
+                field: 'PUID',
                 title: '工艺段编号',
                 align: 'center',
                 width: 100
@@ -684,13 +696,43 @@ $(function () {
                 field: 'TaskStatus',
                 title: '任务状态',
                 align: 'center',
-                width: 100
+                width: 100,
+                formatter: function(value,row,index){
+                    if (value == 10){
+                        return "编制"
+                    }else if(value == 20){
+                        return "下达"
+                    }else if(value == 30){
+                        return "新增"
+                    }else if(value == 40){
+                        return "确认"
+                    }else if(value == 50){
+                        return "执行"
+                    }else if(value == 60){
+                        return "完成"
+                    }else if(value == 70){
+                        return "取消"
+                    }else if(value == 80){
+                        return "暂停"
+                    }else if(value == 85){
+                        return "故障"
+                    }else if(value == 90){
+                        return "中止"
+                    }
+                }
             },
             {
                 field: 'LockStatus',
                 title: '锁定状态',
                 align: 'center',
-                width: 100
+                width: 100,
+                formatter: function(value,row,index){
+                    if (value == 0){
+                        return "解锁"
+                    }else if(value == 10){
+                        return "锁定"
+                    }
+                }
             }
 
         ]]
