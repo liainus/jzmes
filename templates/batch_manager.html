@@ -35,19 +35,27 @@
                     <tr>
                         <td class="kv-label" style="white-space:nowrap;">当前工作日</td>
                         <td class="kv-content">
-                            <input type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="">
+                            <input id="currentWorkdate" type="text" class="easyui-datebox" style="height: 28px;width: 150px;" data-options="required:true,showSeconds:false,editable:false" autocomplete="off" placeholder="">
                         </td>
                         <td class="kv-label" style="white-space:nowrap;">工艺段名称</td>
                         <td class="kv-content">
-                            <input type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="">
+                            <select name="PUID" id="PUID" type="text" style="height: 28px;width: 150px;" autocomplete="off" placeholder="">
+                                <option value="">请选择</option>
+                                {% for id in Product_unit_ID %}
+                                    <option value="{{ id['ID'] }}">{{ id['text'] }}</option>
+                                {% endfor %}
+                            </select>
                         </td>
-                        <td class="kv-label" style="white-space:nowrap;">调度模式</td>
-                        <td class="kv-content">
-                            <input type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="">
-                        </td>
-                        <td class="kv-label" style="white-space:nowrap;">控制模式</td>
-                        <td class="kv-content">
-                            <input type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="">
+{#                        <td class="kv-label" style="white-space:nowrap;">调度模式</td>#}
+{#                        <td class="kv-content">#}
+{#                            <input type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="">#}
+{#                        </td>#}
+{#                        <td class="kv-label" style="white-space:nowrap;">控制模式</td>#}
+{#                        <td class="kv-content">#}
+{#                            <input type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="">#}
+{#                        </td>#}
+                        <td class="kv-label">
+                            <a href="#" class="easyui-linkbutton" id="btnSearch">搜索</a>
                         </td>
                     </tr>
                 </tbody>
@@ -56,7 +64,7 @@
                 <tbody>
                     <tr>
                         <td class="kv-label">计划状态色卡</td>
-                        <td class="kv-content" style="width:80%">
+                        <td class="kv-content" style="width:90%">
                             <div class="colorBox pp1" style="background-color:#007bff;">任务编制</div>
                             <div class="colorBox pp2" style="background-color:#17a2b8;">任务下达</div>
                             <div class="colorBox pp3" style="background-color:#009688">任务新建</div>
@@ -178,12 +186,38 @@
         </div>
     </div>
     <script type="text/javascript">
+        //当前日期
+        function getCurentDateStr() {
+            var now = new Date();
+            var year = now.getFullYear();       //年
+            var month = now.getMonth() + 1;     //月
+            var day = now.getDate();            //日
+            var clock = year + "-";
+            if (month < 10) clock += "0";
+            clock += month + "-";
+            if (day < 10) clock += "0";
+            clock += day;
+            return clock;
+        }
         $(function(){
+            //设置默认当前日期
+            $('#currentWorkdate').datebox('setValue', getCurentDateStr());
+            $('#currentWorkdate').datebox('calendar').calendar({
+                validator: function (date) {
+                    var now = new Date();
+                    var d1 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                    return date <= d1;
+                }
+            })
             //每10秒自执行
             setInterval(function () {
                 $('#tt').datagrid('load').datagrid('loaded')
             }, 10000)
             $('#tt').datagrid({
+                queryParams: {
+                    currentWorkdate: $("#currentWorkdate").datebox('getValue'),
+                    PUID: ''
+                },
                 rowStyler:function(index,row){
                     if (row.TaskStatus=='任务编制'){
                         return 'background-color:#007bff; color:white;font-weight:bold;';
@@ -334,6 +368,13 @@
                     }
                 }
             });
+            //点击搜索 筛选表格数据
+            $("#btnSearch").on('click',function(){
+                $('#tt').datagrid('load',{
+                    currentWorkdate: $("#currentWorkdate").datebox('getValue'),
+                    PUID: $("#PUID").find("option:selected").val()
+                })
+            })
         })
     </script>
 </body>

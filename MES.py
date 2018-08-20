@@ -489,7 +489,45 @@ def menuToUser():
 # 左右滑动添加
 @app.route('/batchmanager')  # 批次管理
 def batchmanager():
-    return render_template('batch_manager.html')
+    productUnit_ID = db_session.query(ProcessUnit.ID, ProcessUnit.PUName).all()
+    print(productUnit_ID)
+    data = []
+    for tu in productUnit_ID:
+        li = list(tu)
+        id = li[0]
+        name = li[1]
+        pro_unit_id = {'ID': id, 'text': name}
+        data.append(pro_unit_id)
+    return render_template('batch_manager.html',Product_unit_ID=data)
+
+#批次管理查询
+@app.route('/batchManager/SearchBatchManager')
+def SearchBatchManager():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                pages = int(data['page'])  # 页数
+                rowsnumber = int(data['rows'])  # 行数
+                inipage = (pages - 1) * rowsnumber + 0  # 起始页
+                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+                currentWorkdate = data["currentWorkdate"]
+                PUID = data["PUID"]
+                if(PUID == ""):
+                    total = db_session.query(ZYPlan).count()
+                    zYPlans = db_session.query(ZYPlan).order_by("PlanDate desc").all()[inipage:endpage]
+                else:
+                    total = db_session.query(ZYPlan).filter(ZYPlan.PlanDate == currentWorkdate, ZYPlan.PUID == PUID).count()
+                    zYPlans = db_session.query(ZYPlan).filter(ZYPlan.PlanDate == currentWorkdate, ZYPlan.PUID == PUID).order_by("PlanDate desc").all()[inipage:endpage]
+                jsonzyplans = json.dumps(zYPlans, cls=AlchemyEncoder, ensure_ascii=False)
+                jsonzyplans = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonzyplans + "}"
+                return jsonzyplans
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "批次管理查询报错Error：" + str(e), "AAAAAAadmin")
+            return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
 # 加载工作台
@@ -1194,35 +1232,6 @@ def ZYPlansFind():
         ZYPlanIFS = Model.core.ZYPlanWebIFS("ZYPlanFind")
         re = ZYPlanIFS.ZYPlansFind(data)
         return re
-
-#批次管理查询
-@app.route('/batchManager/SearchBatchManager')
-def SearchBatchManager():
-    if request.method == 'GET':
-        data = request.values
-        try:
-            json_str = json.dumps(data.to_dict())
-            if len(json_str) > 10:
-                pages = int(data['page'])  # 页数
-                rowsnumber = int(data['rows'])  # 行数
-                inipage = (pages - 1) * rowsnumber + 0  # 起始页
-                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
-                currentWorkdate = data["currentWorkdate"]
-                PUID = data["PUID"]
-                if(currentWorkdate == "" and PUID == ""):
-                    total = db_session.query(ZYPlan).count()
-                    zYPlans = db_session.query(ZYPlan).order_by("EnterTime desc").all()[inipage:endpage]
-                else:
-                    total = db_session.query(ZYPlan).filer(ZYPlan.PlanBeginTime == currentWorkdate, ZYPlan.PUID == PUID).count()
-                    zYPlans = db_session.query(ZYPlan).filer(ZYPlan.PlanBeginTime == currentWorkdate, ZYPlan.PUID).order_by("PlanBeginTime desc").all()[inipage:endpage]
-                jsonzyplans = json.dumps(zYPlans, cls=AlchemyEncoder, ensure_ascii=False)
-                jsonzyplans = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonzyplans + "}"
-                return jsonzyplans
-        except Exception as e:
-            print(e)
-            logger.error(e)
-            insertSyslog("error", "批次管理查询报错Error：" + str(e), "AAAAAAadmin")
-            return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 # role更新数据，通过传入的json数据，解析之后进行相应更新
 @app.route('/allZYPlans/Update', methods=['POST', 'GET'])
