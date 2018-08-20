@@ -3021,7 +3021,18 @@ def opcServerTag():
             insertSyslog("error", "获取OpcServer下的URI报错Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
-
+# 连接opcua-client
+@app.route('/opcuaClient/link', methods=['POST', 'GET'])
+def opcuaClientLink():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            pass
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "获取OpcServer下的URI报错Error：" + str(e), "AAAAAAadmin")
+            return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 
 
