@@ -45,7 +45,7 @@
                 <ul id="tt" class="easyui-tree"></ul>
             </div>
         </div>
-        <div style="width:300px;height: 500px;float: left;">
+        <div style="width:300px;height: 500px;float: left;margin-left: 10px;">
             <div style="margin-top: 20px;margin-bottom: 10px;border-bottom: 1px solid #ccc;padding-bottom: 10px;">
                 <span style="color:#1da02b;">所选节点</span>
             </div>
@@ -106,7 +106,7 @@
                         console.log("OK")
                         $("#tt").tree({
                             url:'/opcuaClient/link',
-                            method: 'get',
+                            method: 'post',
                             animate:true,
                             loadFilter:function(data){
                                 return data
