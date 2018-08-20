@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>加载OPC-Tag</title>
+    <link href="../static/css/base.css" rel="stylesheet">
+	<link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
+	<link href="../static/css/basic_info.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
+	<link href="../static/js/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
+    <link href="../static/css/datagridpanel_customer.css" rel="stylesheet">
+    <link href="../static/css/dialogpanel.css" type="text/css" rel="stylesheet">
+    <link href="../static/css/datagrid_customer.css" type="text/css" rel="stylesheet">
+    <script type="text/javascript" src="../static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
+</head>
+<body>
+    <div class="" style="padding: 10px;">
+        <div style="width:300px;height: 500px;border: 1px solid #f1f1f1;float: left;">
+            <table class="kv-table">
+                <tbody>
+                    <tr>
+                        <td class="kv-content">
+                           <select name="servername" id="servername" type="text" style="width:157px;" autocomplete="off" placeholder="">
+                                <option value="">请选择</option>
+                                {% for ser_info in server_names %}
+                                    <option value="{{ ser_info['servername'] }}">{{ ser_info['servername'] }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td class="kv-label" style="white-space:nowrap;">
+                            <a href="#" class="easyui-linkbutton" id="btnConfirm">连接</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="kv-content" colspan="2">
+                            您选择的资源地址：<p id="InpURI"></p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="left-tree">
+                <ul id="tt" class="easyui-tree"></ul>
+            </div>
+        </div>
+        <div style="width:300px;height: 500px;float: left;">
+            <div style="margin-top: 20px;margin-bottom: 10px;border-bottom: 1px solid #ccc;padding-bottom: 10px;">
+                <span style="color:#1da02b;">所选节点</span>
+            </div>
+            <table class="kv-table">
+                <tbody>
+                    <tr>
+                        <td class="kv-label" style="white-space:nowrap;">
+
+                        </td>
+                        <td class="kv-content">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="kv-label" style="white-space:nowrap;">
+
+                        </td>
+                        <td class="kv-content">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="kv-content" colspan="2">
+                            <a href="#" class="easyui-linkbutton" id="btnConfirm">加载到</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+<script>
+    $(function(){
+        $("#servername").bind('change',function(){
+            $("#InpURI").html("")
+            $.ajax({
+                url:'/OpcServer/Tag',
+                type:'get',
+                data:{
+                    ServerName:$(this).val()
+                },
+                success:function(data){
+                    if(data){
+                        $("#InpURI").html(data)
+                    }
+                }
+            })
+
+        })
+        $("#btnConfirm").on('click',function(){
+            $.ajax({
+                url:'/opcuaClient/link',
+                type:'get',
+                data:{
+                    URI:$("#InpURI").html()
+                },
+                success:function(data){
+                    if(data){
+                        console.log("OK")
+                        $("#tt").tree({
+
+                        })
+                    }else{
+                        console.log("NO")
+                    }
+                }
+            })
+        })
+    })
+</script>
+</body>
+</html>
