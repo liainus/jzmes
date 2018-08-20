@@ -1075,15 +1075,18 @@ class Equipment(Base):
 	Manufacture_Date = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
 
 
-# Equipment:
-class PEquipment(Base):
-	__tablename__ = "PEquipment"
+# 设备建模表
+class Pequipment(Base):
+	__tablename__ = "Pequipment"
 
 	# ID:
 	ID = Column(Integer, primary_key=True, autoincrement=True, nullable=True)
 
 	# 设备编码:
 	EQPCode = Column(Unicode(30), primary_key=False, autoincrement=False, nullable=True)
+
+	# 设备名称:
+	EQPName = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
 
 	# 工艺段ID:
 	PUID = Column(Integer, nullable=False, primary_key=False)
