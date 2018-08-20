@@ -97,16 +97,15 @@
         $("#btnConfirm").on('click',function(){
             $.ajax({
                 url:'/opcuaClient/link',
-                type:'get',
+                type:'post',
                 data:{
                     URI:$("#InpURI").html()
                 },
                 success:function(data){
                     if(data){
-                        console.log("OK")
+                        console.log(data)
                         $("#tt").tree({
-                            url:'/opcuaClient/link',
-                            method: 'post',
+                            data:data,
                             animate:true,
                             loadFilter:function(data){
                                 return data
