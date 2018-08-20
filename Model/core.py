@@ -1074,6 +1074,23 @@ class Equipment(Base):
 	# 生产日期:
 	Manufacture_Date = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
 
+
+# Equipment:
+class PEquipment(Base):
+	__tablename__ = "PEquipment"
+
+	# ID:
+	ID = Column(Integer, primary_key=True, autoincrement=True, nullable=True)
+
+	# 设备编码:
+	EQPCode = Column(Unicode(30), primary_key=False, autoincrement=False, nullable=True)
+
+	# 工艺段ID:
+	PUID = Column(Integer, nullable=False, primary_key=False)
+
+	#描述:
+	Desc = Column(Unicode(50), primary_key = False, autoincrement = False, nullable = True)
+
 class EquipmentWebIFS(object):
 	def __init__(self, name):
 		self.name = name
