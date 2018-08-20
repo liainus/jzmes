@@ -3038,17 +3038,13 @@ def opcServerTag():
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 def printSelect(node):
-    index = 0
     result = []
-    if index < 3:
-        for cNode in node.get_children():#[Node(TwoByteNodeId(i=86)), Node(TwoByteNodeId(i=85)), Node(TwoByteNodeId(i=87))]
-            if len(cNode.get_children()) > 0:
-                result.append({"nodeID": cNode.nodeid.to_string(),
-                               "displayName": cNode.get_display_name().Text,
-                               "BrowseName": cNode.get_browse_name().to_string()})
-            printSelect(cNode)
-        index += 1
-    return result
+    for cNode in node.get_children():#[Node(TwoByteNodeId(i=86)), Node(TwoByteNodeId(i=85)), Node(TwoByteNodeId(i=87))]
+        if len(cNode.get_children()) > 0:
+            result.append({"nodeID": cNode.nodeid.to_string(),
+                           "displayName": cNode.get_display_name().Text,
+                           "BrowseName": cNode.get_browse_name().to_string()})
+        return result
 # nodeid displayname browsename
 # 连接opcua-client
 @app.route('/opcuaClient/link', methods=['POST', 'GET'])
