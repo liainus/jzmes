@@ -17,63 +17,70 @@
     <script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
 </head>
 <body>
-    <div class="" style="padding: 10px;">
-        <div style="width:300px;height: 500px;border: 1px solid #f1f1f1;float: left;">
-            <table class="kv-table">
+    <div class="" style="padding: 1%;">
+        <div class="easyui-layout" style="width:100%;height:350px;">
+            <div data-options="region:'west',split:true" title="连接服务地址" style="width:20%;">
+                <table class="kv-table">
+                    <tbody>
+                        <tr>
+                            <td class="kv-content">
+                               <select name="servername" id="servername" type="text" style="width:150px;" autocomplete="off" placeholder="">
+                                    <option value="">请选择</option>
+                                    {% for ser_info in server_names %}
+                                        <option value="{{ ser_info['servername'] }}">{{ ser_info['servername'] }}</option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                            <td class="kv-label" style="white-space:nowrap;">
+                                <a href="#" class="easyui-linkbutton" id="btnConfirm">连接</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-content" colspan="2">
+                                您选择的资源地址：<p id="InpURI"></p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div data-options="region:'center',title:'节点网格列表'">
+                <table id="treegrid" class="easyui-treegrid">
+                    <thead>
+                        <tr>
+                            <th data-options="field:'displayName',width:300">DisplayName</th>
+                            <th data-options="field:'nodeID',width:200">NodeId</th>
+                            <th data-options="field:'BrowseName',width:200">BrowseName</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div data-options="region:'east',split:true" title="所选节点" style="width:20%;">
+                <table class="kv-table">
                 <tbody>
                     <tr>
-                        <td class="kv-content">
-                           <select name="servername" id="servername" type="text" style="width:157px;" autocomplete="off" placeholder="">
-                                <option value="">请选择</option>
-                                {% for ser_info in server_names %}
-                                    <option value="{{ ser_info['servername'] }}">{{ ser_info['servername'] }}</option>
-                                {% endfor %}
-                            </select>
-                        </td>
                         <td class="kv-label" style="white-space:nowrap;">
-                            <a href="#" class="easyui-linkbutton" id="btnConfirm">连接</a>
+                            displayName
+                        </td>
+                        <td class="kv-content">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="kv-label" style="white-space:nowrap;">
+                            nodeID
+                        </td>
+                        <td class="kv-content">
+
                         </td>
                     </tr>
                     <tr>
                         <td class="kv-content" colspan="2">
-                            您选择的资源地址：<p id="InpURI"></p>
+                            <a href="#" class="easyui-linkbutton" id="btnConfirm">加载到数据库</a>
                         </td>
                     </tr>
                 </tbody>
             </table>
-            <div class="left-tree">
-                <ul id="tt" class="easyui-tree"></ul>
             </div>
-        </div>
-        <div style="width:300px;height: 500px;float: left;margin-left: 10px;">
-            <div style="margin-top: 20px;margin-bottom: 10px;border-bottom: 1px solid #ccc;padding-bottom: 10px;">
-                <span style="color:#1da02b;">所选节点</span>
-            </div>
-            <table class="kv-table">
-                <tbody>
-                    <tr>
-                        <td class="kv-label" style="white-space:nowrap;">
-
-                        </td>
-                        <td class="kv-content">
-
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="kv-label" style="white-space:nowrap;">
-
-                        </td>
-                        <td class="kv-content">
-
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="kv-content" colspan="2">
-                            <a href="#" class="easyui-linkbutton" id="btnConfirm">加载到</a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
         </div>
     </div>
 <script>
@@ -95,30 +102,36 @@
 
         })
         $("#btnConfirm").on('click',function(){
-            $.ajax({
-                url:'/opcuaClient/link',
-                type:'post',
-                data:{
-                    URI:$("#InpURI").html()
-                },
-                success:function(data){
-                    if(data){
-                        console.log(data)
-                        $("#tt").tree({
-                            data:data,
-                            animate:true,
-                            loadFilter:function(data){
-                                return data
-                            },
-                            onClick :function(node){
-
-                            }
-                        })
-                    }else{
-                        console.log("NO")
+            if($("#servername").val() == ""){
+                alert("请选择服务名称!")
+            }else{
+                $.ajax({
+                    url:'/opcuaClient/link',
+                    type:'post',
+                    data:{
+                        URI:$("#InpURI").html()
+                    },
+                    success:function(data){
+                        if(data){
+                            console.log(data)
+                            $("#treegrid").treegrid({
+                                idField:'nodeID',
+                                treeField:'displayName',
+                                data:data,
+                                animate:true,
+                                loadFilter:function(data){
+                                    return data
+                                },
+                                onClick :function(node){
+                                    
+                                }
+                            })
+                        }else{
+                            console.log("NO")
+                        }
                     }
-                }
-            })
+                })
+            }
         })
     })
 </script>

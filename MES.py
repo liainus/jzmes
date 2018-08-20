@@ -3152,12 +3152,16 @@ def opcServerTag():
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 def printSelect(node):
+    index = 0
     result = []
-    for cNode in node.get_children(): #[Node(TwoByteNodeId(i=86)), Node(TwoByteNodeId(i=85)), Node(TwoByteNodeId(i=87))]
-        # if len(cNode.get_children()) > 0:
-        result.append({"id": cNode.nodeid.to_string(),
-                       "text": cNode.get_display_name().Text,
-                       "BrowseName": cNode.get_browse_name().to_string()})
+    if index < 3:
+        for cNode in node.get_children():#[Node(TwoByteNodeId(i=86)), Node(TwoByteNodeId(i=85)), Node(TwoByteNodeId(i=87))]
+            if len(cNode.get_children()) > 0:
+                result.append({"nodeID": cNode.nodeid.to_string(),
+                               "displayName": cNode.get_display_name().Text,
+                               "BrowseName": cNode.get_browse_name().to_string()})
+            printSelect(cNode)
+        index += 1
     return result
 # nodeid displayname browsename
 # 连接opcua-client
@@ -3181,10 +3185,25 @@ def opcuaClientLink():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "获取OpcServer下的URI报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "opcuaClient连接失败Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
-# @app.route('')
+@app.route('/opcuaClient/NodeLoad', methods=['POST', 'GET'])
+def nodeLoad():
+    if request.method == "POST":
+        data = request.values
+        try:
+            Node = data['node']
+            if Node is None:
+                return
+            tree_data = printSelect(Node)
+            tree_data = json.dumps(tree_data, cls=AlchemyEncoder, ensure_ascii=False)
+            return tree_data
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "加载opcuaClient节点失败报错Error：" + str(e), "AAAAAAadmin")
+            return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 if __name__ == '__main__':
     app.run(debug=True)
