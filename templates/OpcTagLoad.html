@@ -17,8 +17,8 @@
     <script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
 </head>
 <body>
-    <div class="content">
-        <div style="width:300px;height: 500px;border: 1px solid #f1f1f1;">
+    <div class="" style="padding: 10px;">
+        <div style="width:300px;height: 500px;border: 1px solid #f1f1f1;float: left;">
             <table class="kv-table">
                 <tbody>
                     <tr>
@@ -45,10 +45,41 @@
                 <ul id="tt" class="easyui-tree"></ul>
             </div>
         </div>
+        <div style="width:300px;height: 500px;float: left;">
+            <div style="margin-top: 20px;margin-bottom: 10px;border-bottom: 1px solid #ccc;padding-bottom: 10px;">
+                <span style="color:#1da02b;">所选节点</span>
+            </div>
+            <table class="kv-table">
+                <tbody>
+                    <tr>
+                        <td class="kv-label" style="white-space:nowrap;">
+
+                        </td>
+                        <td class="kv-content">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="kv-label" style="white-space:nowrap;">
+
+                        </td>
+                        <td class="kv-content">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="kv-content" colspan="2">
+                            <a href="#" class="easyui-linkbutton" id="btnConfirm">加载到</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 <script>
     $(function(){
         $("#servername").bind('change',function(){
+            $("#InpURI").html("")
             $.ajax({
                 url:'/OpcServer/Tag',
                 type:'get',
@@ -73,6 +104,9 @@
                 success:function(data){
                     if(data){
                         console.log("OK")
+                        $("#tt").tree({
+
+                        })
                     }else{
                         console.log("NO")
                     }
