@@ -263,7 +263,7 @@
          $('#ActTank').attr("disabled", true);
          $('#TaskStatus').attr("disabled", true);
          $('#LockStatus').attr("disabled", true);
-    {#    树形菜单点击事件#}
+
          var APUID = "" //工艺默认参数
          var ABatchID = "" //计划查询批次号参数
          var task = "" //状态按钮参数
@@ -287,6 +287,17 @@
             }
         })
         $('#tabPlan').datagrid({
+            onLoadSuccess:function(){
+                $(this).datagrid('selectRow', 0)
+                var planFirstRow = $(this).datagrid('getSelected') //获取默认被选中的第一行数据
+                var iPUID = planFirstRow.PUID
+                var iBatchID = planFirstRow.BatchID
+                $('#tabTask').datagrid('load',{
+                    PUID: iPUID,
+                    BatchID:iBatchID,
+                    TaskStatus:task
+                });
+            },
             onClickRow:function(rowIndex,rowData){
                 APUID = rowData.PUID
                 ABatchID = rowData.BatchID

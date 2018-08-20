@@ -218,6 +218,17 @@
                     currentWorkdate: $("#currentWorkdate").datebox('getValue'),
                     PUID: ''
                 },
+                onLoadSuccess:function(){
+                    $(this).datagrid('selectRow', 0)
+                    var planFirstRow = $(this).datagrid('getSelected') //获取默认被选中的第一行数据
+                    var iBatchID = planFirstRow.BatchID
+                    $('#ttTasks').datagrid('load',{
+                        ABatchID: iBatchID
+                    });
+                    $("#ttMaterials").datagrid('load',{
+                        ABatchID:iBatchID
+                    })
+                },
                 rowStyler:function(index,row){
                     if (row.TaskStatus=='任务编制'){
                         return 'background-color:#007bff; color:white;font-weight:bold;';
