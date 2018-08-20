@@ -2712,17 +2712,21 @@ def taskConfirmPuidDate():
     if request.method == 'GET':
         data = request.values  # 返回请求中的参数和form
         try:
-            puids = db_session.query(ZYPlan.PUID).filter().all()           
-            puidnews = []
-            for id in puids:
-                if id not in puidnews:
-                    puidnews.append(id)
+            # puids = db_session.query(ZYPlan.PUID).filter().all()
+            # puidnews = []
+            # for id in puids:
+            #     if id not in puidnews:
+            #         puidnews.append(id)
+            # sz = []
+            # for puid in puidnews:
+            #     APUID = puid  # 工艺段编码
+            #     PDCtrlTaskName = db_session.query(ProductControlTask.PDCtrlTaskName).filter_by(PUID=APUID).first()
+            #     PUID = str(APUID)
+            #     sz.append({"id": PUID[1:-2], "text": PDCtrlTaskName})
             sz = []
-            for puid in puidnews:
-                APUID = puid  # 工艺段编码
-                PDCtrlTaskName = db_session.query(ProductControlTask.PDCtrlTaskName).filter_by(PUID=APUID).first()
-                PUID = str(APUID)
-                sz.append({"id": PUID[1:-2], "text": PDCtrlTaskName})
+            ProcessUnits = db_session.query(ProcessUnit.ID, ProcessUnit.PUName).all()
+            for procc in ProcessUnits:
+                sz.append({"id": procc.ID, "text": procc.PUName})
             jsonsz = json.dumps(sz, cls=AlchemyEncoder, ensure_ascii=False)
             return jsonsz
         except Exception as e:
