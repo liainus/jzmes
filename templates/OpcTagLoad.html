@@ -31,21 +31,55 @@
                             </select>
                         </td>
                         <td class="kv-label" style="white-space:nowrap;">
-                            <a href="#" class="easyui-linkbutton">确定</a>
+                            <a href="#" class="easyui-linkbutton" id="btnConfirm">连接</a>
                         </td>
                     </tr>
                     <tr>
                         <td class="kv-content" colspan="2">
-                            <input id="InpURI" type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="">
+                            您选择的资源地址：<p id="InpURI"></p>
                         </td>
                     </tr>
                 </tbody>
             </table>
             <div class="left-tree">
-                <ul id="tt" class="easyui-tree">
-                </ul>
+                <ul id="tt" class="easyui-tree"></ul>
             </div>
         </div>
     </div>
+<script>
+    $(function(){
+        $("#servername").bind('change',function(){
+            $.ajax({
+                url:'/OpcServer/Tag',
+                type:'get',
+                data:{
+                    ServerName:$(this).val()
+                },
+                success:function(data){
+                    if(data){
+                        $("#InpURI").html(data)
+                    }
+                }
+            })
+
+        })
+        $("#btnConfirm").on('click',function(){
+            $.ajax({
+                url:'/opcuaClient/link',
+                type:'get',
+                data:{
+                    URI:$("#InpURI").html()
+                },
+                success:function(data){
+                    if(data){
+                        console.log("OK")
+                    }else{
+                        console.log("NO")
+                    }
+                }
+            })
+        })
+    })
+</script>
 </body>
 </html>
