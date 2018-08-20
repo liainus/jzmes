@@ -17,7 +17,7 @@ import Model.Global
 from Model.BSFramwork import AlchemyEncoder
 from Model.core import Enterprise, Area, Factory, ProductLine, ProcessUnit, Equipment, Material, MaterialType, \
     ProductUnit, ProductRule, ZYTask, ZYPlanMaterial, ZYPlan, Unit, PlanManager, SchedulePlan, ProductControlTask, \
-    OpcServer
+    OpcServer, Pequipment
 from Model.system import Role, Organization, User, Menu, Role_Menu
 from tools.MESLogger import MESLogger
 from Model.core import SysLog
@@ -1075,7 +1075,121 @@ def allProcessUnitsSearch():
         return re
 
 # 设备建模
-# 加载工作台
+@app.route('/Pequipment')
+def pequipment():
+    ID = db_session.query(ProcessUnit.ID, ProcessUnit.PUName).all()
+    print(ID)
+    data = []
+    for tu in ID:
+        li = list(tu)
+        id = li[0]
+        name = li[1]
+        processUnit_id = {'ID': id, 'text': name}
+        data.append(processUnit_id)
+    return render_template('equipmentModel.html', ProcessUnit_id=data)
+
+# 设备建模查询
+@app.route('/equipmentModel/pequipmentSearch', methods=['POST', 'GET'])
+def pequipmentSearch():
+    if request.method == 'GET':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                pages = int(data['page'])  # 页数
+                rowsnumber = int(data['rows'])  # 行数
+                inipage = (pages - 1) * rowsnumber + 0  # 起始页
+                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+                EQPName = data['EQPName']  # 设备名称
+                if(EQPName == "" or EQPName == None):
+                    total = db_session.query(Pequipment).count()
+                    pequipments = db_session.query(Pequipment).all()[inipage:endpage]
+                else:
+                    total = db_session.query(Pequipment).filter(Pequipment.EQPName.like("%" + EQPName + "%")).count()
+                    pequipments = db_session.query(Pequipment).filter(Pequipment.EQPName.like("%" + EQPName + "%")).all()[inipage:endpage]
+                jsonpequipments = json.dumps(pequipments, cls=AlchemyEncoder, ensure_ascii=False)
+                jsonpequipments = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonpequipments + "}"
+                return jsonpequipments
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "设备建模查询报错Error：" + str(e), "AAAAAAadmin")
+
+# 设备建模增加
+@app.route('/equipmentModel/pequipmentCreate', methods=['POST', 'GET'])
+def pequipmentCreate():
+    if request.method == 'POST':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                db_session.add(
+                    Model.core.Equipment(
+                        EQPCode=data['EQPCode'],
+                        EQPName=data['EQPName'],
+                        PUID=data['PUID'],
+                        Desc=data['Desc']))
+                session.commit()
+                return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
+                              ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+            insertSyslog("error", "设备建模增加报错Error：" + str(e), "AAAAAAadmin")
+
+# 设备建模修改
+@app.route('/equipmentModel/pequipmentUpdate', methods=['POST', 'GET'])
+def pequipmentUpdate():
+    if request.method == 'POST':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                id = int(data['ID'])
+                oclass = session.query(Pequipment).filter_by(ID=id).first()
+                oclass.EQPCode=data['EQPCode']
+                oclass.EQPName=data['EQPName']
+                oclass.PUID=data['PUID']
+                oclass.Desc=data['Desc']
+                session.commit()
+                return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
+                                  ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
+                              ensure_ascii=False)
+            insertSyslog("error", "设备建模修改报错Error：" + str(e), "AAAAAAadmin")
+
+# 设备建模删除
+@app.route('/equipmentModel/pequipmentDelete', methods=['POST', 'GET'])
+def pequipmentDelete():
+    if request.method == 'GET':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
+                for key in jsonnumber:
+                    # for subkey in list(key):
+                    id = int(key)
+                    try:
+                        oclass = session.query(Pequipment).filter_by(ID=id).first()
+                        session.delete(oclass)
+                        session.commit()
+                    except Exception as ee:
+                        print(ee)
+                        logger.error(ee)
+                        return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
+                                          ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+            insertSyslog("error", "设备建模删除报错Error：" + str(e), "AAAAAAadmin")
+
+# 设备详细信息
 @app.route('/Equipment')
 def equipment():
     ID = db_session.query(ProcessUnit.ID, ProcessUnit.PUName).all()
@@ -2826,7 +2940,7 @@ def searchAllEquipments():
             if len(jsonstr) > 10:
                 APUID = data['PUID']  # 工艺段编码
                 dataequipmentNames = []
-                equipmentNames = db_session.query(Equipment.EQPCode,Equipment.EQPName).filter(Equipment.PUID == 1)
+                equipmentNames = db_session.query(Pequipment.EQPCode,Pequipment.EQPName).filter(Pequipment.PUID == 1)
                 for equip in equipmentNames:
                     li = list(equip)
                     id = li[0]
@@ -3039,12 +3153,12 @@ def opcServerTag():
 
 def printSelect(node):
     result = []
-    for cNode in node.get_children(): #[Node(TwoByteNodeId(i=86)), Node(TwoByteNodeId(i=85)), Node(TwoByteNodeId(i=87))]
-        # if len(cNode.get_children()) > 0:
-        result.append({"id": cNode.nodeid.to_string(),
-                       "text": cNode.get_display_name().Text,
-                       "BrowseName": cNode.get_browse_name().to_string()})
-    return result
+    for cNode in node.get_children():#[Node(TwoByteNodeId(i=86)), Node(TwoByteNodeId(i=85)), Node(TwoByteNodeId(i=87))]
+        if len(cNode.get_children()) > 0:
+            result.append({"nodeID": cNode.nodeid.to_string(),
+                           "displayName": cNode.get_display_name().Text,
+                           "BrowseName": cNode.get_browse_name().to_string()})
+        return result
 # nodeid displayname browsename
 # 连接opcua-client
 @app.route('/opcuaClient/link', methods=['POST', 'GET'])
@@ -3067,10 +3181,25 @@ def opcuaClientLink():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "获取OpcServer下的URI报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "opcuaClient连接失败Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
-# @app.route('')
+@app.route('/opcuaClient/NodeLoad', methods=['POST', 'GET'])
+def nodeLoad():
+    if request.method == "POST":
+        data = request.values
+        try:
+            Node = data['node']
+            if Node is None:
+                return
+            tree_data = printSelect(Node)
+            tree_data = json.dumps(tree_data, cls=AlchemyEncoder, ensure_ascii=False)
+            return tree_data
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "加载opcuaClient节点失败报错Error：" + str(e), "AAAAAAadmin")
+            return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 if __name__ == '__main__':
     app.run(debug=True)
