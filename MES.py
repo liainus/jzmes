@@ -3036,12 +3036,12 @@ def opcServerTag():
 def printSelect(node):
     result = []
     for cNode in node.get_children(): #[Node(TwoByteNodeId(i=86)), Node(TwoByteNodeId(i=85)), Node(TwoByteNodeId(i=87))]
-        # print("****|" * depth + " " + s + str(i) + ":" + nc.get_display_name().Text)
-        result.append({"id": cNode.nodeid, "text": cNode.get_display_name(), "children": printSelect(cNode)})
-        if len(cNode.get_children()) <= 0:
-            return
-        return result
-
+        # if len(cNode.get_children()) > 0:
+        result.append({"id": cNode.nodeid.to_string(),
+                       "text": cNode.get_display_name().Text,
+                       "BrowseName": cNode.get_browse_name().to_string()})
+    return result
+# nodeid displayname browsename
 # 连接opcua-client
 @app.route('/opcuaClient/link', methods=['POST', 'GET'])
 def opcuaClientLink():
@@ -3054,25 +3054,19 @@ def opcuaClientLink():
                 return
             client = Client("%s"%URI)
             client.connect()
-            winccnode = client.get_node('ns=1;s=f|@LOCALMACHINE::所有变量的列表')
             # 获取根节点
             rootNode = client.get_root_node()
-            print(rootNode.get_children())
             tree_data = printSelect(rootNode)
             print(tree_data)
-            tree_data = json.dumps(tree_data, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+            tree_data = json.dumps(tree_data, cls=AlchemyEncoder, ensure_ascii=False)
             return tree_data
-            # print(winccnode.get_browse_name())
-            # print(winccnode.get_display_name())
-            # print(winccnode.nodeid)
-            # print(winccnode.server)
         except Exception as e:
             print(e)
             logger.error(e)
             insertSyslog("error", "获取OpcServer下的URI报错Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
-
+# @app.route('')
 
 if __name__ == '__main__':
     app.run(debug=True)
