@@ -3037,10 +3037,10 @@ def printSelect(node):
     result = []
     for cNode in node.get_children(): #[Node(TwoByteNodeId(i=86)), Node(TwoByteNodeId(i=85)), Node(TwoByteNodeId(i=87))]
         # print("****|" * depth + " " + s + str(i) + ":" + nc.get_display_name().Text)
-        result.append({"id": cNode.nodeid, "text": cNode.get_display_name()})
+        result.append({"id": cNode.nodeid, "text": cNode.get_display_name(), "children": printSelect(cNode)})
         if len(cNode.get_children()) <= 0:
             return
-        printSelect(cNode)
+        return result
 
 # 连接opcua-client
 @app.route('/opcuaClient/link', methods=['POST', 'GET'])
