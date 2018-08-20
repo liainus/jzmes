@@ -105,7 +105,15 @@
                     if(data){
                         console.log("OK")
                         $("#tt").tree({
+                            url:'/opcuaClient/link',
+                            method: 'get',
+                            animate:true,
+                            loadFilter:function(data){
+                                return data
+                            },
+                            onClick :function(node){
 
+                            }
                         })
                     }else{
                         console.log("NO")
