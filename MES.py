@@ -31,6 +31,7 @@ from Model.control import ctrlPlan
 from flask_login import LoginManager, current_user
 from flask.ext.login import login_required, logout_user, login_user
 import socket
+from opcua import Client
 
 #flask_login的初始化
 login_manager = LoginManager()
@@ -809,6 +810,7 @@ def parentNode():
             logger.error(e)
             insertSyslog("error", "加父级载菜单列表报错Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
 def getEnterprizeList(id=0):
     sz = []
     try:
@@ -3017,26 +3019,53 @@ def opcTagLoad():
 
 @app.route('/OpcServer/Tag', methods=['POST', 'GET'])
 def opcServerTag():
-    if request.method == 'POST':
+    if request.method == 'GET':
         data = request.values
         try:
             ServerName = data['ServerName']
-            URI = db_session.query(OpcServer).filter_by(ServerName=ServerName).first()
-            URI = json.dumps(URI, cls=AlchemyEncoder, ensure_ascii=False)
-            return URI
+            if ServerName is None:
+                return
+            URI = db_session.query(OpcServer.URI).filter_by(ServerName=ServerName).first()
+            return URI[0]
         except Exception as e:
             print(e)
             logger.error(e)
             insertSyslog("error", "获取OpcServer下的URI报错Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
+def printSelect(node):
+    result = []
+    for cNode in node.get_children(): #[Node(TwoByteNodeId(i=86)), Node(TwoByteNodeId(i=85)), Node(TwoByteNodeId(i=87))]
+        # print("****|" * depth + " " + s + str(i) + ":" + nc.get_display_name().Text)
+        result.append({"id": cNode.nodeid, "text": cNode.get_display_name()})
+        if len(cNode.get_children()) <= 0:
+            return
+        printSelect(cNode)
+
 # 连接opcua-client
 @app.route('/opcuaClient/link', methods=['POST', 'GET'])
 def opcuaClientLink():
-    if request.method == 'GET':
+    if request.method == 'POST':
         data = request.values
         try:
-            pass
+            # 连接opc服务
+            URI = data["URI"]
+            if URI is None or URI == '':
+                return
+            client = Client("%s"%URI)
+            client.connect()
+            winccnode = client.get_node('ns=1;s=f|@LOCALMACHINE::所有变量的列表')
+            # 获取根节点
+            rootNode = client.get_root_node()
+            print(rootNode.get_children())
+            tree_data = printSelect(rootNode)
+            print(tree_data)
+            tree_data = json.dumps(tree_data, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+            return tree_data
+            # print(winccnode.get_browse_name())
+            # print(winccnode.get_display_name())
+            # print(winccnode.nodeid)
+            # print(winccnode.server)
         except Exception as e:
             print(e)
             logger.error(e)
