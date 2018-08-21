@@ -112,8 +112,8 @@
                     <th data-options="field: 'PlanEndTime',align: 'center' ">计划结束时间</th>
                     <th data-options="field: 'ActBeginTime',align: 'center' ">实际开始时间</th>
                     <th data-options="field: 'ActEndTime',align: 'center' ">实际完成时间</th>
-                    <th data-options="field: 'TaskStatus',align: 'center' ">任务状态</th>
-                    <th data-options="field: 'LockStatus',align: 'center' ">任务锁定状态</th>
+                    <th data-options="field: 'TaskStatus',align: 'center' " formatter="formatterStatus">任务状态</th>
+                    <th data-options="field: 'LockStatus',align: 'center' " formatter="formatterLockStatus">任务锁定状态</th>
                     <th data-options="field: 'INFStatus',align: 'center' ">接口处理状态</th>
                     <th data-options="field: 'WMSStatus',align: 'center' ">仓储送料状态</th>
                 </tr>
@@ -147,8 +147,8 @@
                         <th data-options="field: 'SetRepeatCount',align: 'center' ">设定重复次数</th>
                         <th data-options="field: 'CurretnRepeatCount',align: 'center' ">当前重复次数</th>
                         <th data-options="field: 'ActTank',align: 'center' ">实际罐号</th>
-                        <th data-options="field: 'TaskStatus',align: 'center' ">任务状态</th>
-                        <th data-options="field: 'LockStatus',align: 'center' ">任务锁定状态</th>
+                        <th data-options="field: 'TaskStatus',align: 'center' " formatter="formatterStatus">任务状态</th>
+                        <th data-options="field: 'LockStatus',align: 'center' " formatter="formatterLockStatus">任务锁定状态</th>
                     </tr>
                 </thead>
             </table>
@@ -177,8 +177,8 @@
                         <th data-options="field: 'SetRepeatCount',align: 'center' ">设定重复次数</th>
                         <th data-options="field: 'CurretnRepeatCount',align: 'center' ">当前重复次数</th>
                         <th data-options="field: 'ActTank',align: 'center' ">实际罐号</th>
-                        <th data-options="field: 'TaskStatus',align: 'center' ">任务状态</th>
-                        <th data-options="field: 'LockStatus',align: 'center' ">任务锁定状态</th>
+                        <th data-options="field: 'TaskStatus',align: 'center' " formatter="formatterStatus">任务状态</th>
+                        <th data-options="field: 'LockStatus',align: 'center' " formatter="formatterLockStatus">任务锁定状态</th>
                     </tr>
                 </thead>
             </table>
@@ -387,6 +387,36 @@
                 })
             })
         })
+        function formatterStatus(value, row, index){
+            if (value == 10){
+                return '编制'
+            }else if(value == 20){
+                return '下达'
+            }else if(value == 30){
+                return '新增'
+            }else if(value == 40){
+                return '确认'
+            }else if(value == 50){
+                return '执行'
+            }else if(value == 60){
+                return '完成'
+            }else if(value == 70){
+                return '取消'
+            }else if(value == 80){
+                return '暂停'
+            }else if(value == 85){
+                return '故障'
+            }else if(value == 90){
+                return '中止'
+            }
+        }
+        function formatterLockStatus(value, row, index){
+            if (value == 10){
+                return '锁定'
+            }else if(value == 0){
+                return '解锁'
+            }
+        }
     </script>
 </body>
 </html>
