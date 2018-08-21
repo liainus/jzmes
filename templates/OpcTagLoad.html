@@ -48,7 +48,7 @@
                     <thead>
                         <tr>
                             <th data-options="field:'displayName',width:300">DisplayName</th>
-                            <th data-options="field:'nodeID',width:200">NodeId</th>
+                            <th data-options="field:'nodeId',width:200">NodeId</th>
                             <th data-options="field:'BrowseName',width:200">BrowseName</th>
                         </tr>
                     </thead>
@@ -114,10 +114,11 @@
                     success:function(data){
                         if(data){
                             console.log(data)
+                            data = JSON.parse(data)
                             $("#treegrid").treegrid({
-                                idField:'nodeID',
-                                treeField:'displayName',
                                 data:data,
+                                idField:'id',
+                                treeField:'displayName',
                                 animate:true,
                                 loadFilter:function(data){
                                     return data
