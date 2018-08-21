@@ -51,7 +51,7 @@
                 </h2>
 
                 <ul class="sider-nav">
-                {% if isIn(['02', '03', '04', '05', '07', '83'], session.get('menus')) %}
+                {% if isIn(['02', '03', '04', '05', '07'], session.get('menus')) %}
                     <li>
                         <a href="javascript:;">
                             <span class="iconfont sider-nav-icon">&#xe611;</span>
@@ -77,11 +77,6 @@
                             {% if '05' in session.get('menus') %}
                                 <li>
                                     <a href="#" onclick="addTab('草珊瑚含片生产线','/processMonitorLine')">草珊瑚含片生产线</a>
-                                </li>
-                            {% endif %}
-                            {% if '83' in session.get('menus') %}
-                                <li>
-                                    <a href="#" onclick="addTab('任务确认','/taskConfirm ')">任务确认</a>
                                 </li>
                             {% endif %}
                         </ul>
@@ -189,7 +184,7 @@
                         </ul>
                     </li>
                 {% endif %}
-                {% if isIn(['25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37'], session.get('menus')) %}
+                {% if isIn(['25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37','83'], session.get('menus')) %}
                     <li>
                         <a href="javascript:;">
                             <span class="iconfont sider-nav-icon">&#xe6c3;</span>
@@ -210,6 +205,11 @@
                             {% if '27' in session.get('menus') %}
                                 <li>
                                     <a href="#" onclick="addTab('制药任务','ZYTask')">制药任务</a>
+                                </li>
+                            {% endif %}
+                            {% if '83' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onclick="addTab('任务确认','/taskConfirm ')">任务确认</a>
                                 </li>
                             {% endif %}
                             {% if '28' in session.get('menus') %}
