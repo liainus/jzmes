@@ -1089,6 +1089,28 @@ def pequipment():
     return render_template('equipmentModel.html', ProcessUnit_id=data)
 
 # 设备建模查询
+@app.route('/equipmentModel/pequipmentFind', methods=['POST', 'GET'])
+def pequipmentFind():
+    if request.method == 'GET':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                pages = int(data['page'])  # 页数
+                rowsnumber = int(data['rows'])  # 行数
+                inipage = (pages - 1) * rowsnumber + 0  # 起始页
+                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+                total = db_session.query(Pequipment).count()
+                pequipments = db_session.query(Pequipment).all()[inipage:endpage]
+                jsonpequipments = json.dumps(pequipments, cls=AlchemyEncoder, ensure_ascii=False)
+                jsonpequipments = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonpequipments + "}"
+                return jsonpequipments
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "设备建模查询报错Error：" + str(e), "AAAAAAadmin")
+
+# 设备建模查询
 @app.route('/equipmentModel/pequipmentSearch', methods=['POST', 'GET'])
 def pequipmentSearch():
     if request.method == 'GET':
