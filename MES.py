@@ -3170,7 +3170,8 @@ def printSelect(node, id, depth):
                 result.append({"id": id,
                                "nodeId": cNode.nodeid.to_string(),
                                "displayName": cNode.get_display_name().Text,
-                               "BrowseName": cNode.get_browse_name().to_string(), "children": printSelect(cNode, id, depth+1)})
+                               "BrowseName": cNode.get_browse_name().to_string(),
+                               "children": printSelect(cNode, id, depth+1)})
     return result
 # nodeid displayname browsename
 # 连接opcua-client
