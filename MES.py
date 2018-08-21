@@ -3161,7 +3161,7 @@ def opcServerTag():
 #
 #         return sz
 
-def printSelect(node, id):
+def printSelect(node, id, depth):
     result = []
     if depth <= 3:
         for cNode in node.get_children():#[Node(TwoByteNodeId(i=86)), Node(TwoByteNodeId(i=85)), Node(TwoByteNodeId(i=87))]
