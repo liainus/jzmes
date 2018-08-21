@@ -114,6 +114,7 @@
                     success:function(data){
                         if(data){
                             console.log(data)
+                            data = JSON.parse(data)
                             $("#treegrid").treegrid({
                                 data:data,
                                 idField:'id',
