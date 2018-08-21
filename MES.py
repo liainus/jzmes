@@ -3151,14 +3151,27 @@ def opcServerTag():
             insertSyslog("error", "获取OpcServer下的URI报错Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
-def printSelect(node):
+# organizations = db_session.query(Organization).filter().all()
+#         for obj in organizations:
+#             if obj.ParentNode == id:
+#                 sz.append({"id": obj.ID, "text": obj.OrganizationName, "children": getOrganizationList(obj.ID)})
+#         srep = ',' + 'items' + ':' + '[]'
+#         # data = string(sz)
+#         # data.replace(srep, '')
+#
+#         return sz
+
+def printSelect(node, id, depth):
     result = []
-    for cNode in node.get_children():#[Node(TwoByteNodeId(i=86)), Node(TwoByteNodeId(i=85)), Node(TwoByteNodeId(i=87))]
-        if len(cNode.get_children()) > 0:
-            result.append({"id": cNode.nodeid.to_string(),
-                           "name": cNode.get_display_name().Text,
-                           "BrowseName": cNode.get_browse_name().to_string()})
-        return result
+    if depth <= 3:
+        for cNode in node.get_children():#[Node(TwoByteNodeId(i=86)), Node(TwoByteNodeId(i=85)), Node(TwoByteNodeId(i=87))]
+            if len(cNode.get_children()) > 0:
+                id += 1
+                result.append({"id": id,
+                               "nodeId": cNode.nodeid.to_string(),
+                               "displayName": cNode.get_display_name().Text,
+                               "BrowseName": cNode.get_browse_name().to_string(), "children": printSelect(cNode, id, depth+1)})
+    return result
 # nodeid displayname browsename
 # 连接opcua-client
 @app.route('/opcuaClient/link', methods=['POST', 'GET'])
@@ -3174,7 +3187,8 @@ def opcuaClientLink():
             client.connect()
             # 获取根节点
             rootNode = client.get_root_node()
-            tree_data = printSelect(rootNode)
+            id = -1
+            tree_data = printSelect(rootNode, id, 1)
             print(tree_data)
             tree_data = json.dumps(tree_data, cls=AlchemyEncoder, ensure_ascii=False)
             return tree_data
@@ -3190,6 +3204,7 @@ def nodeLoad():
         data = request.values
         try:
             Node = data['node']
+            id = data['id']
             if Node is None:
                 return
             tree_data = printSelect(Node)
