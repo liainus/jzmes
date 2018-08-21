@@ -15,7 +15,7 @@ $(function () {
         ID:keyID
     }}
     $(tableId).datagrid({
-        url: urlPrefix + 'pequipmentSearch', // urlPrefix + 'findAll',
+        url: urlPrefix + 'pequipmentFind', // urlPrefix + 'findAll',
         queryParams: {
             EQPName: ''
         },
@@ -252,7 +252,7 @@ $(function () {
         },
         refresh: function () {
             $(tableId).datagrid({
-        url: urlPrefix + 'pequipmentSearch', // urlPrefix + 'findAll',
+        url: urlPrefix + 'pequipmentFind', // urlPrefix + 'findAll',
         method: 'get',
         rownumbers: true,
         singleSelect: false,
