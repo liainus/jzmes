@@ -3155,8 +3155,8 @@ def printSelect(node):
     result = []
     for cNode in node.get_children():#[Node(TwoByteNodeId(i=86)), Node(TwoByteNodeId(i=85)), Node(TwoByteNodeId(i=87))]
         if len(cNode.get_children()) > 0:
-            result.append({"nodeID": cNode.nodeid.to_string(),
-                           "displayName": cNode.get_display_name().Text,
+            result.append({"id": cNode.nodeid.to_string(),
+                           "name": cNode.get_display_name().Text,
                            "BrowseName": cNode.get_browse_name().to_string()})
         return result
 # nodeid displayname browsename
