@@ -2,7 +2,7 @@
  * Created by zcx on 2018/8/21.
  */
 $(function () {
-    var urlPrefix = '/allEquipments/';
+    var urlPrefix = '/equipmentModel/';
     var idPrefix = 'EquipmentClass';
     var tableId = "#" + idPrefix + "Table";
     var toolbarId = "#" + idPrefix + "Toolbar";
@@ -15,7 +15,10 @@ $(function () {
         ID:keyID
     }}
     $(tableId).datagrid({
-        url: urlPrefix + 'Find', // urlPrefix + 'findAll',
+        url: urlPrefix + 'pequipmentSearch', // urlPrefix + 'findAll',
+        queryParams: {
+            EQPName: ''
+        },
         method: 'get',
         rownumbers: true,
         singleSelect: false,
@@ -72,11 +75,11 @@ $(function () {
                 return false;
             }
             var entity = {
-                    condition:a
+                    EQPName:a
                 };
             $.ajax({
-                url: '/allEquipments/Search',
-                method: 'POST',
+                url: '/equipmentModel/pequipmentSearch',
+                method: 'get',
                 traditional: true,
                 data: entity,
                 dataType: 'json',
@@ -144,8 +147,8 @@ $(function () {
                         }
                         a = JSON.stringify(jsonarray);
                         $.ajax({
-                            url: '/allEquipments/Delete',
-                            method: 'POST',
+                            url: '/equipmentModel/pequipmentDelete',
+                            method: 'get',
                             traditional: true,
                             data: a,
                             dataType: 'json',
@@ -189,13 +192,17 @@ $(function () {
                alert('Warning：设备名称不能为空！');
                return false;
             }
-
+            stmp = $('#PUID').find("option:selected").val();
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：工艺段名称不能为空！');
+               return false;
+            }
             if (strID.length >= 1){
-                urlAddr = urlPrefix + 'Update'
+                urlAddr = urlPrefix + 'pequipmentUpdate'
                 hintinfo = "更新数据"
             }
             else {
-                urlAddr = urlPrefix + 'Create'
+                urlAddr = urlPrefix + 'pequipmentCreate'
                 hintinfo = "新增数据"
             }
                 var entity = {
@@ -245,7 +252,7 @@ $(function () {
         },
         refresh: function () {
             $(tableId).datagrid({
-        url: urlPrefix + 'Find', // urlPrefix + 'findAll',
+        url: urlPrefix + 'pequipmentSearch', // urlPrefix + 'findAll',
         method: 'get',
         rownumbers: true,
         singleSelect: false,
