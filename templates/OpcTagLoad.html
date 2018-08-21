@@ -47,8 +47,8 @@
                 <table id="treegrid" class="easyui-treegrid">
                     <thead>
                         <tr>
-                            <th data-options="field:'displayName',width:300">DisplayName</th>
-                            <th data-options="field:'nodeID',width:200">NodeId</th>
+                            <th data-options="field:'name',width:300">DisplayName</th>
+                            <th data-options="field:'id',width:200">NodeId</th>
                             <th data-options="field:'BrowseName',width:200">BrowseName</th>
                         </tr>
                     </thead>
@@ -115,8 +115,8 @@
                         if(data){
                             console.log(data)
                             $("#treegrid").treegrid({
-                                idField:'nodeID',
-                                treeField:'displayName',
+                                idField:'id',
+                                treeField:'name',
                                 data:data,
                                 animate:true,
                                 loadFilter:function(data){
