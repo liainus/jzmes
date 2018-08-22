@@ -85,6 +85,7 @@
     </div>
 <script>
     $(function(){
+        var URIstr = ""
         $("#servername").bind('change',function(){
             $("#InpURI").html("")
             $.ajax({
@@ -95,6 +96,7 @@
                 },
                 success:function(data){
                     if(data){
+                        URIstr = data
                         $("#InpURI").html(data)
                     }
                 }
@@ -128,7 +130,7 @@
                                     $("#nodeID_text").html(node.nodeId)
                                 },
                                 onBeforeExpand:function(row){
-                                    var url = '/opcuaClient/NodeLoadMore?id=' + row.id + '&nodeId=' + row.nodeId
+                                    var url = '/opcuaClient/NodeLoadMore?id=' + row.id + '&nodeId=' + row.nodeId + '&URI=' + URIstr
                                     $("#treegrid").treegrid("options").url = url;
                                     return true;
                                 }
