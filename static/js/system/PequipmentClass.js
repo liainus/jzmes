@@ -74,31 +74,8 @@ $(function () {
             if  (Bee.StringUtils.isEmpty(a)){
                 return false;
             }
-            var entity = {
-                    EQPName:a
-                };
-            $.ajax({
-                url: '/equipmentModel/pequipmentSearch',
-                method: 'get',
-                traditional: true,
-                data: entity,
-                dataType: 'json',
-                success: function (data) {
-                    $.messager.progress('close');
-                    if (data) {
-                        $(tableId).datagrid('loadData', data);
-                        $.messager.show({
-                            title: '提示',
-                            timeout: 1000,
-                            msg: '查询' + titleText + '成功',
-                            style: {
-                                right: '',
-                                top: document.body.scrollTop + document.documentElement.scrollTop,
-                                bottom: ''
-                            }
-                        });
-                    }
-                }
+            $(tableId).datagrid('load',{
+                EQPName:a
             })
         },
         create: function () {

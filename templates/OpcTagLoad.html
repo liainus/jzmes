@@ -59,17 +59,17 @@
                 <tbody>
                     <tr>
                         <td class="kv-label" style="white-space:nowrap;">
-                            displayName
+                            nodeID
                         </td>
-                        <td class="kv-content" id="displayName_text">
+                        <td class="kv-content" id="nodeID_text">
 
                         </td>
                     </tr>
                     <tr>
                         <td class="kv-label" style="white-space:nowrap;">
-                            nodeID
+                            displayName
                         </td>
-                        <td class="kv-content" id="nodeID_text">
+                        <td class="kv-content" id="displayName_text">
 
                         </td>
                     </tr>
@@ -126,6 +126,11 @@
                                 onClickRow :function(node){
                                     $("#displayName_text").html(node.displayName)
                                     $("#nodeID_text").html(node.nodeId)
+                                },
+                                onBeforeExpand:function(row){
+                                    var url = '/opcuaClient/NodeLoadMore?id=' + row.id + '&nodeId=' + row.nodeId
+                                    $("#treegrid").treegrid("options").url = url;
+                                    return true;
                                 }
                             })
                         }else{

@@ -3151,28 +3151,34 @@ def opcServerTag():
             insertSyslog("error", "获取OpcServer下的URI报错Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
-# organizations = db_session.query(Organization).filter().all()
-#         for obj in organizations:
-#             if obj.ParentNode == id:
-#                 sz.append({"id": obj.ID, "text": obj.OrganizationName, "children": getOrganizationList(obj.ID)})
-#         srep = ',' + 'items' + ':' + '[]'
-#         # data = string(sz)
-#         # data.replace(srep, '')
-#
-#         return sz
+def unique_num():
+    import datetime
+    import random
+    nowTime = datetime.datetime.now().strftime("%Y%m%d%H%M%S")  # 生成当前时间
+    randomNum = random.randint(0, 100)  # 生成的随机整数n，其中0<=n<=100
+    if randomNum <= 10:
+        randomNum = str(0) + str(randomNum)
+    uniqueNum = str(nowTime) + str(randomNum)
+    return uniqueNum
 
-def printSelect(node, id, depth):
+# global id
+# id = 0
+def printSelect(node, depth): # id:0, depth:1
     result = []
-    if depth <= 3:
+    # global id
+    # id += 1 # 控制下一层
+    if depth <= 2:
         for cNode in node.get_children():#[Node(TwoByteNodeId(i=86)), Node(TwoByteNodeId(i=85)), Node(TwoByteNodeId(i=87))]
             if len(cNode.get_children()) > 0:
-                id += 1
-                result.append({"id": id,
+                result.append({"id": unique_num(),
                                "nodeId": cNode.nodeid.to_string(),
                                "displayName": cNode.get_display_name().Text,
                                "BrowseName": cNode.get_browse_name().to_string(),
-                               "children": printSelect(cNode, id, depth+1)})
+                               "state": 'closed',
+                               "children": printSelect(cNode, depth+1)
+                               })
     return result
+
 # nodeid displayname browsename
 # 连接opcua-client
 @app.route('/opcuaClient/link', methods=['POST', 'GET'])
@@ -3188,9 +3194,7 @@ def opcuaClientLink():
             client.connect()
             # 获取根节点
             rootNode = client.get_root_node()
-            id = -1
-            tree_data = printSelect(rootNode, id, 1)
-            print(tree_data)
+            tree_data = printSelect(rootNode, 1)
             tree_data = json.dumps(tree_data, cls=AlchemyEncoder, ensure_ascii=False)
             return tree_data
         except Exception as e:
@@ -3199,18 +3203,33 @@ def opcuaClientLink():
             insertSyslog("error", "opcuaClient连接失败Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
-@app.route('/opcuaClient/NodeLoad', methods=['POST', 'GET'])
+@app.route('/opcuaClient/NodeLoadMore', methods=['POST', 'GET'])
 def nodeLoad():
     if request.method == "POST":
         data = request.values
         try:
-            Node = data['node']
+            rootNode = data['nodeId']
             id = data['id']
-            if Node is None:
+            if rootNode is None or id is None:
                 return
-            tree_data = printSelect(Node)
+            tree_data = printSelect(rootNode, 1)
             tree_data = json.dumps(tree_data, cls=AlchemyEncoder, ensure_ascii=False)
             return tree_data
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "加载opcuaClient节点失败报错Error：" + str(e), "AAAAAAadmin")
+            return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+# 将所选OPC-Tag加载到数据库
+app.route("/opcuaClient/storeOpcTag", methods=['POST', 'GET'])
+def storeOpcTag():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            nodeId = data['nodeId']
+            displayName = data['displayName']
+
         except Exception as e:
             print(e)
             logger.error(e)
