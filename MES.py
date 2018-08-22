@@ -3155,9 +3155,9 @@ def unique_num():
     import datetime
     import random
     nowTime = datetime.datetime.now().strftime("%Y%m%d%H%M%S")  # 生成当前时间
-    # randomNum = random.randint(0, 100)  # 生成的随机整数n，其中0<=n<=100
-    # if randomNum <= 10:
-    #     randomNum = str(0) + str(randomNum)
+    randomNum = random.randint(0, 100)  # 生成的随机整数n，其中0<=n<=100
+    if randomNum <= 10:
+        randomNum = str(0) + str(randomNum)
     uniqueNum = str(nowTime)
     return uniqueNum
 
@@ -3210,8 +3210,12 @@ def nodeLoad():
         try:
             rootNode = data['nodeId']
             id = data['id']
-            if rootNode is None or id is None:
+            URI = data["URI"]
+            if rootNode is None or id is None or URI is None:
                 return
+            client = Client("%s" % URI)
+            client.connect()
+            rootNode = client.get_node(rootNode)
             tree_data = printSelect(rootNode, 1)
             tree_data = json.dumps(tree_data, cls=AlchemyEncoder, ensure_ascii=False)
             return tree_data
