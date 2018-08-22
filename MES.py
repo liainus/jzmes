@@ -3161,20 +3161,25 @@ def unique_num():
     uniqueNum = str(nowTime)
     return uniqueNum
 
-# global id
-# id = 0
+def state(node):
+    for cNode in node.get_children():
+        if len(cNode.get_children()) > 0:
+            return 'closed'
+        return 'open'
+global id
+id = 0
 def printSelect(node, depth): # id:0, depth:1
     result = []
-    # global id
-    # id += 1 # 控制下一层
+    global id
+    id += 1 # 控制下一层
     if depth <= 2:
         for cNode in node.get_children():#[Node(TwoByteNodeId(i=86)), Node(TwoByteNodeId(i=85)), Node(TwoByteNodeId(i=87))]
             if len(cNode.get_children()) > 0:
-                result.append({"id": unique_num(),
+                result.append({"id": id+1,
                                "nodeId": cNode.nodeid.to_string(),
                                "displayName": cNode.get_display_name().Text,
                                "BrowseName": cNode.get_browse_name().to_string(),
-                               "state": 'closed',
+                               "state": state(cNode),
                                "children": printSelect(cNode, depth+1)
                                })
     return result
@@ -3190,7 +3195,7 @@ def opcuaClientLink():
             URI = data["URI"]
             if URI is None or URI == '':
                 return
-            client = Client("%s"%URI)
+            client = Client("%s"% URI)
             client.connect()
             # 获取根节点
             rootNode = client.get_root_node()
