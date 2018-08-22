@@ -3426,7 +3426,7 @@ class OpcTag(Base):
 	OpcServerID = Column(Integer, nullable=True)
 
 	# NodeID
-	NodeID = Column(Integer, nullable=True)
+	NodeID = Column(Unicode(30), nullable=True)
 
 	# 名称
 	DisplayName = Column(Unicode(30), nullable=True)
@@ -3435,7 +3435,7 @@ class OpcTag(Base):
 	Note = Column(Unicode(50), nullable=True)
 
 	# 父节点
-	ParentID = Column(Integer, nullable=True)
+	ParentID = Column(Unicode(30), nullable=True)
 
 	# 备注
 	Desc = Column(Unicode(100), nullable=True)

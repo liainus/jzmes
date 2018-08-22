@@ -17,7 +17,7 @@ import Model.Global
 from Model.BSFramwork import AlchemyEncoder
 from Model.core import Enterprise, Area, Factory, ProductLine, ProcessUnit, Equipment, Material, MaterialType, \
     ProductUnit, ProductRule, ZYTask, ZYPlanMaterial, ZYPlan, Unit, PlanManager, SchedulePlan, ProductControlTask, \
-    OpcServer, Pequipment
+    OpcServer, Pequipment, OpcTag
 from Model.system import Role, Organization, User, Menu, Role_Menu
 from tools.MESLogger import MESLogger
 from Model.core import SysLog
@@ -3151,21 +3151,7 @@ def opcServerTag():
             insertSyslog("error", "获取OpcServer下的URI报错Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
-def unique_num():
-    import datetime
-    import random
-    nowTime = datetime.datetime.now().strftime("%Y%m%d%H%M%S")  # 生成当前时间
-    randomNum = random.randint(0, 100)  # 生成的随机整数n，其中0<=n<=100
-    if randomNum <= 10:
-        randomNum = str(0) + str(randomNum)
-    uniqueNum = str(nowTime)
-    return uniqueNum
 
-def state(node):
-    for cNode in node.get_children():
-        if len(cNode.get_children()) > 0:
-            return 'closed'
-        return 'open'
 global id
 id = 0
 def printSelect(node, depth): # id:0, depth:1
@@ -3174,15 +3160,24 @@ def printSelect(node, depth): # id:0, depth:1
     id += 1 # 控制下一层
     if depth <= 2:
         for cNode in node.get_children():#[Node(TwoByteNodeId(i=86)), Node(TwoByteNodeId(i=85)), Node(TwoByteNodeId(i=87))]
-            if len(cNode.get_children()) > 0:
-                result.append({"id": id+1,
-                               "nodeId": cNode.nodeid.to_string(),
-                               "displayName": cNode.get_display_name().Text,
-                               "BrowseName": cNode.get_browse_name().to_string(),
-                               "state": state(cNode),
-                               "children": printSelect(cNode, depth+1)
-                               })
-    return result
+            if len(cNode.get_children()) >= 0:
+                if len(cNode.get_children()) > 0:
+                    result.append({"id": id+1,
+                                   "nodeId": cNode.nodeid.to_string(),
+                                   "displayName": cNode.get_display_name().Text,
+                                   "BrowseName": cNode.get_browse_name().to_string(),
+                                   "state": 'closed',
+                                   "children": printSelect(cNode, depth+1)
+                                   })
+                if len(cNode.get_children()) == 0:
+                    result.append({"id": id + 1,
+                                   "nodeId": cNode.nodeid.to_string(),
+                                   "displayName": cNode.get_display_name().Text,
+                                   "BrowseName": cNode.get_browse_name().to_string(),
+                                   "state": 'open',
+                                   "children": printSelect(cNode, depth + 1)
+                                   })
+        return result
 
 # nodeid displayname browsename
 # 连接opcua-client
@@ -3230,19 +3225,49 @@ def nodeLoad():
             insertSyslog("error", "加载opcuaClient节点失败报错Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
+
+def store_child(node, OpcServerID):
+    for cNode in node.get_children():
+        nodeId = cNode.nodeid.to_string()
+        displayName = cNode.get_display_name().Text
+        opcTag_c = OpcTag()
+        opcTag_c.OpcServerID = OpcServerID
+        opcTag_c.NodeID = nodeId
+        opcTag_c.DisplayName = displayName
+        opcTag_c.ParentID = node.nodeid.to_string()
+        db_session.add(opcTag_c)
+        db_session.commit()
+        if len(cNode.get_children()) > 0:
+            store_child(cNode, OpcServerID)
+
 # 将所选OPC-Tag加载到数据库
-app.route("/opcuaClient/storeOpcTag", methods=['POST', 'GET'])
+@app.route("/opcuaClient/storeOpcTag", methods=['POST', 'GET'])
 def storeOpcTag():
     if request.method == 'POST':
         data = request.values
         try:
             nodeId = data['nodeId']
             displayName = data['displayName']
-
+            URI = data['URI']
+            if nodeId is None or displayName is None or URI is None:
+                return
+            client = Client("%s" % URI)
+            client.connect()
+            OpcServerID = db_session.query(OpcServer).filter_by(URI=URI).first().ID
+            # 存储当前节点
+            opcTag_r = OpcTag()
+            opcTag_r.OpcServerID = OpcServerID
+            opcTag_r.NodeID = nodeId
+            opcTag_r.DisplayName = displayName
+            db_session.add(opcTag_r)
+            db_session.commit()
+            # 存储子节点
+            node = client.get_node(nodeId)
+            store_child(node, OpcServerID)
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "加载opcuaClient节点失败报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "OpcTag存储失败报错Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 if __name__ == '__main__':
