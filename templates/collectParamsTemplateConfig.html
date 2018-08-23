@@ -159,7 +159,7 @@
                                         $.messager.progress('close');
 
                                         if (data) {
-                                            $("#tab").datagrid('load');
+                                            $("#tab").datagrid('loadData', data);
                                             $.messager.show({
                                                 title: '提示',
                                                 timeout:1000,
