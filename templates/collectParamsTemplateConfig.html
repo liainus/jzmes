@@ -159,9 +159,7 @@
                                         $.messager.progress('close');
 
                                         if (data) {
-                                            $("#tab").datagrid('loaded');
                                             $("#tab").datagrid('load');
-                                            $("#tab").datagrid('unselectAll');
                                             $.messager.show({
                                                 title: '提示',
                                                 timeout:1000,
