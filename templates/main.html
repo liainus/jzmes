@@ -560,6 +560,16 @@
                                     <a href="#" onclick="addTab('加载OPC-Tag','/OpcTag/load')">加载OPC-Tag</a>
                                 </li>
                             {% endif %}
+                            {% if '88' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onclick="addTab('配置采集策略模板','/CollectParamsTemplate/config')">配置采集策略模板</a>
+                                </li>
+                            {% endif %}
+                            {% if '88' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onclick="addTab('配置采集策略','/OpcTag/load')">配置采集策略</a>
+                                </li>
+                            {% endif %}
                         </ul>
                     </li>
                 {% endif %}
