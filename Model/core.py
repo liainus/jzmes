@@ -3450,10 +3450,23 @@ class CollectParamsTemplate(Base):
 	#模板名称
 	TemplateName = Column(Unicode(32), nullable=True)
 
-	# OPCTagID
+	# 描述信息
+	Desc = Column(Unicode(100), nullable=True)
+
+
+class CollectParams(Base):
+	__tablename__ = 'CollectParams'
+
+	#ID
+	ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+	# CollectParamsTemplateID
+	CollectParamsTemplateID = Column(Integer, nullable=True)
+
+	# OpcTagID
 	OpcTagID = Column(Integer, nullable=True)
 
-	# 描述信息
+	# 描述
 	Desc = Column(Unicode(100), nullable=True)
 
 
@@ -3463,14 +3476,14 @@ class Collectionstrategy(Base):
 	# ID
 	ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
 
-	# TableName
-	TableName = Column(Unicode(32),nullable=True)
-
 	# 间隔时间
 	Interval = Column(Integer, nullable=True)
 
 	# OPcTagID
 	FlagOpcTagID = Column(Integer, nullable=True)
+
+	# 策略名称
+	StrategyName = Column(Unicode(30), nullable=True)
 
 	# 描述
 	Desc = Column(Unicode(100), nullable=True)
@@ -3487,7 +3500,11 @@ class CollectTask(Base):
 	# 采集策略ID
 	CollectionStrategyID = Column(Integer, nullable=True)
 
+	# TableName
+	TableName = Column(Unicode(32), nullable=True)
+
 	# 描述
 	Desc = Column(Unicode(100), nullable=True)
+
 # 生成表单的执行语句
 Base.metadata.create_all(engine)
