@@ -3270,6 +3270,14 @@ def storeOpcTag():
             insertSyslog("error", "OpcTag存储失败报错Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
+# 配置采集策略模板
+@app.route('/CollectParamsTemplate/config', methods=['POST', 'GET'])
+def collectParamsTemplateConfig():
+    return render_template('collectParamsTemplateConfig.html')
+
+
+
+
 if __name__ == '__main__':
     app.run(debug=True)
 
