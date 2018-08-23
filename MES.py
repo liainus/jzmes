@@ -3384,7 +3384,7 @@ def templateSearch():
             if len(json_str) > 2:
                 TemplateName = "%" + data['TemplateName'] + "%"
                 Templatescount = db_session.query(CollectParamsTemplate).filter(
-                    OpcServer.ServerName.like(TemplateName)).all()
+                    CollectParamsTemplate.TemplateName.like(TemplateName)).all()
                 total = Counter(Templatescount)
                 jsonTemplates = json.dumps(Templatescount, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
                 jsonTemplates = '{"total"' + ":" + str(total.__len__()) + ',"rows"' + ":\n" + jsonTemplates + "}"
@@ -3394,8 +3394,6 @@ def templateSearch():
             logger.error(e)
             insertSyslog("error", "CollectParamsTemplate数据查询失败报错Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
-
-
 
 
 
