@@ -3450,6 +3450,9 @@ class CollectParamsTemplate(Base):
 	#模板名称
 	TemplateName = Column(Unicode(32), nullable=True)
 
+	# TableName
+	TableName = Column(Unicode(32), nullable=True)
+
 	# 描述信息
 	Desc = Column(Unicode(100), nullable=True)
 
@@ -3499,9 +3502,6 @@ class CollectTask(Base):
 
 	# 采集策略ID
 	CollectionStrategyID = Column(Integer, nullable=True)
-
-	# TableName
-	TableName = Column(Unicode(32), nullable=True)
 
 	# 描述
 	Desc = Column(Unicode(100), nullable=True)
