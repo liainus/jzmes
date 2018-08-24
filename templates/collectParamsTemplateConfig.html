@@ -160,6 +160,7 @@
 
                                         if (data) {
                                             $("#tab").datagrid('loadData', data);
+                                            $("#tab").datagrid('load');
                                             $.messager.show({
                                                 title: '提示',
                                                 timeout:1000,
@@ -182,6 +183,7 @@
                 save:function(){
                     var strID = $('#ID').val();
                     var urlAddr = ""
+                    var hintinfo = ""
                     var stmp = $('#TemplateName').val();
                     if(Bee.StringUtils.isEmpty(stmp)) {
                        alert('Warning：模板名称不能为空！');
@@ -205,7 +207,6 @@
                             Desc:$('#Desc').val()
                         },
                         dataType: 'json',
-                        cache: false,
                         error: function(data){
                            alert(hintinfo+ "异常，请刷新后重试...");
                         },

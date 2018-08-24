@@ -103,10 +103,8 @@
                             $.messager.progress('close');
 
                             if (data) {
-                                // $(tableId).datagrid('loaded');
-                                // $(tableId).datagrid('load');
-                                // $(tableId).datagrid('unselectAll');
                                 $("#tabOpc").datagrid('loadData', data);
+                                $("#tabOpc").datagrid('load');
                                 $.messager.show({
                                     title: '提示',
                                     timeout: 1000,
