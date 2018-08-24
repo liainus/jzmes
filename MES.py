@@ -17,7 +17,7 @@ import Model.Global
 from Model.BSFramwork import AlchemyEncoder
 from Model.core import Enterprise, Area, Factory, ProductLine, ProcessUnit, Equipment, Material, MaterialType, \
     ProductUnit, ProductRule, ZYTask, ZYPlanMaterial, ZYPlan, Unit, PlanManager, SchedulePlan, ProductControlTask, \
-    OpcServer, Pequipment, OpcTag, CollectParamsTemplate
+    OpcServer, Pequipment, OpcTag, CollectParamsTemplate, CollectParams
 from Model.system import Role, Organization, User, Menu, Role_Menu
 from tools.MESLogger import MESLogger
 from Model.core import SysLog
@@ -3314,6 +3314,7 @@ def templateCreate():
                 db_session.add(
                     CollectParamsTemplate(
                         TemplateName=data['TemplateName'],
+                        TableName =data['TableName'],
                         Desc=data['Desc']))
                 db_session.commit()
                 return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
@@ -3361,6 +3362,7 @@ def templateUpdate():
                 TemplateID = int(data['ID'])
                 oclass = db_session.query(CollectParamsTemplate).filter_by(ID=TemplateID).first()
                 oclass.TemplateName = data['TemplateName']
+                oclass.TableName = data['TableName'],
                 oclass.Desc = data['Desc']
                 db_session.add(oclass)
                 db_session.commit()
@@ -3395,8 +3397,130 @@ def templateSearch():
             insertSyslog("error", "CollectParamsTemplate数据查询失败报错Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
+# 采集策略配置
+@app.route('/CollectParams/config')
+def collectParamsConfig():
+    return render_template('collectParamsConfig.html')
 
+@app.route('/CollectParams/config/find', methods=['POST', 'GET'])
+def collectParamsFind():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            print(json_str)
+            if len(json_str) > 10:
+                pages = int(data['page'])
+                rowsnumber = int(data['rows'])
+                inipage = (pages - 1) * rowsnumber + 0
+                endpage = (pages - 1) * rowsnumber + rowsnumber
+                total = db_session.query(CollectParams.ID).count()
+                if total > 0:
+                    qDatas = db_session.query(CollectParams).all()[inipage:endpage]
+                    # ORM模型转换json格式
+                    jsonCollectParams = json.dumps(qDatas, cls=Model.BSFramwork.AlchemyEncoder,
+                                                  ensure_ascii=False)
+                    jsonCollectParams = '{"total"' + ":" + str(
+                        total) + ',"rows"' + ":\n" + jsonCollectParams + "}"
+                    return jsonCollectParams
+                else:
+                    return ""
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "CollectParams数据加载失败报错Error：" + str(e), "AAAAAAadmin")
+            return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,ensure_ascii=False)
 
+# @app.route('/CollectParams/config/create', methods=['POST', 'GET'])
+# def collectParamsCreate():
+#     if request.method == 'POST':
+#         try:
+#             data = request.values
+#             json_str = json.dumps(data.to_dict())
+#             if len(json_str) > 10:
+#                 db_session.add(
+#                     CollectParams(
+#                         TemplateName=data['TemplateName'],
+#                         Desc=data['Desc']))
+#                 db_session.commit()
+#                 return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
+#                                   ensure_ascii=False)
+#         except Exception as e:
+#             print(e)
+#             logger.error(e)
+#             insertSyslog("error", "CollectParamsTemplate数据创建失败报错Error：" + str(e), "AAAAAAadmin")
+#             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+#
+# @app.route('/CollectParamsTemplate/config/delete', methods=['POST', 'GET'])
+# def templateDelete():
+#     if request.method == 'POST':
+#         data = request.values
+#         try:
+#             jsonstr = json.dumps(data.to_dict())
+#             if len(jsonstr) > 10:
+#                 jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
+#                 for key in jsonnumber:
+#                     TemplateID = int(key)
+#                     try:
+#                         oclass = db_session.query(CollectParamsTemplate).filter_by(ID=TemplateID).first()
+#                         db_session.delete(oclass)
+#                         db_session.commit()
+#                     except Exception as ee:
+#                         print(ee)
+#                         logger.error(ee)
+#                         return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
+#                                           ensure_ascii=False)
+#                 return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
+#                                   ensure_ascii=False)
+#         except Exception as e:
+#             print(e)
+#             logger.error(e)
+#             insertSyslog("error", "CollectParamsTemplate数据删除失败报错Error：" + str(e), "AAAAAAadmin")
+#             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+#
+# @app.route('/CollectParamsTemplate/config/update', methods=['POST', 'GET'])
+# def templateUpdate():
+#     if request.method == 'POST':
+#         data = request.values
+#         try:
+#             json_str = json.dumps(data.to_dict())
+#             if len(json_str) > 10:
+#                 TemplateID = int(data['ID'])
+#                 oclass = db_session.query(CollectParamsTemplate).filter_by(ID=TemplateID).first()
+#                 oclass.TemplateName = data['TemplateName']
+#                 oclass.Desc = data['Desc']
+#                 db_session.add(oclass)
+#                 db_session.commit()
+#                 return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
+#                                   ensure_ascii=False)
+#         except Exception as e:
+#             print(e)
+#             logger.error(e)
+#             insertSyslog("error", "CollectParamsTemplate数据更新失败报错Error：" + str(e), "AAAAAAadmin")
+#             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+#
+#             # 查询Opc服务
+#
+#
+# @app.route('/CollectParamsTemplate/config/search', methods=['POST', 'GET'])
+# def templateSearch():
+#     if request.method == 'POST':
+#         data = request.values
+#         try:
+#             json_str = json.dumps(data.to_dict())
+#             if len(json_str) > 2:
+#                 TemplateName = "%" + data['TemplateName'] + "%"
+#                 Templatescount = db_session.query(CollectParamsTemplate).filter(
+#                     CollectParamsTemplate.TemplateName.like(TemplateName)).all()
+#                 total = Counter(Templatescount)
+#                 jsonTemplates = json.dumps(Templatescount, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+#                 jsonTemplates = '{"total"' + ":" + str(total.__len__()) + ',"rows"' + ":\n" + jsonTemplates + "}"
+#                 return jsonTemplates
+#         except Exception as e:
+#             print(e)
+#             logger.error(e)
+#             insertSyslog("error", "CollectParamsTemplate数据查询失败报错Error：" + str(e), "AAAAAAadmin")
+#             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 if __name__ == '__main__':
     app.run(debug=True)
