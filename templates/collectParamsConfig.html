@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>配置采集策略</title>
+    <link href="../static/css/base.css" rel="stylesheet">
+	<link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
+	<link href="../static/css/basic_info.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
+	<link href="../static/js/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
+    <link href="../static/css/datagridpanel_customer.css" rel="stylesheet">
+    <link href="../static/css/dialogpanel.css" type="text/css" rel="stylesheet">
+    <link href="../static/css/datagrid_customer.css" type="text/css" rel="stylesheet">
+    <script type="text/javascript" src="../static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
+</head>
+<body>
+    <div class="" style="padding: 1%;">
+        <div class="easyui-layout" style="width:100%;height:500px;">
+            <div data-options="region:'west',split:true" title="OpcTag变量网格列表" style="width:45%;">
+                <table id="treegrid" class="easyui-treegrid">
+                    <thead>
+                        <tr>
+                            <th data-options="field:'NodeId',width:300">NodeId</th>
+                            <th data-options="field:'Desc',width:200">Desc</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div data-options="region:'center',title:'策略模板列表'" style="width:45%;">
+                <table class="easyui-datagrid" id="tab" title="" style="width:100%;" data-options="
+                    rownumbers:true,
+                    singleSelect:true,
+                    autoRowHeight:false,
+                    pagination:true,
+                    pageSize:10,
+                    url:'/CollectParamsTemplate/config/find',
+                    method:'get'">
+                    <thead>
+                        <tr>
+                            <th field="ck" checkbox="true"></th>
+                            <th data-options="field:'TemplateName',width:200,align:'center'">模板名称</th>
+                            <th data-options="field:'Desc',width:200,align:'center'">描述信息</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div data-options="region:'east',split:true" title="确认框" style="width:10%;">
+                <a href="#" class="easyui-linkbutton" id="btnConfirm">确定</a>
+            </div>
+        </div>
+    </div>
+    <script>
+        $("#treegrid").treegrid({
+            url:'/CollectParams/OpcTagLoad',
+            idField:'id',
+            treeField:'NodeId',
+            singleSelect:false,
+            rownumbers: true,
+            checkbox: true,
+            animate:true,
+            loadFilter:function(data){
+                return data
+            }
+        })
+    </script>
+</body>
+</html>
