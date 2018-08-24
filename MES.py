@@ -3314,7 +3314,6 @@ def templateCreate():
                 db_session.add(
                     CollectParamsTemplate(
                         TemplateName=data['TemplateName'],
-                        TableName =data['TableName'],
                         Desc=data['Desc']))
                 db_session.commit()
                 return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
@@ -3416,11 +3415,11 @@ def getOpcTagList(id, ParentID=None):
     except Exception as e:
         print(e)
         logger.error(e)
-        insertSyslog("error", "加父级载菜单列表报错Error：" + str(e), "AAAAAAadmin")
+        insertSyslog("error", "加载父级菜单列表报错Error：" + str(e), "AAAAAAadmin")
         return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
-@app.route('/CollectParams/OpcTagLoad')
-def opcTagLoad():
+@app.route('/CollectParams/OpcTagLoad', methods=['POST', 'GET'])
+def OpcTagLoad():
     if request.method == 'GET':
         try:
             data = getOpcTagList(id=0)
@@ -3432,6 +3431,32 @@ def opcTagLoad():
             logger.error(e)
             insertSyslog("error", "路由/CollectParams/OpcTagLoad生成OpcTag树形图报错Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
+@app.route('/CollectParams/store', methods=['POST', 'GET'])
+def collectParams():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            CollectParamsTemplateID = data['CollectParamsTemplateID']
+            if CollectParamsTemplateID is None or data['OpcTags'] is None:
+                return
+            if len(json_str) > 10:
+                for opctag in data['OpcTags']:
+                    db_session.add(
+                        CollectParams(
+                            CollectParamsTemplateID=CollectParamsTemplateID,
+                            OpcTagID=opctag,
+                            Desc=data['Desc']))
+                    db_session.commit()
+                return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
+                                  ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "CollectParams数据创建失败报错Error：" + str(e), "AAAAAAadmin")
+            return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
 
 
 if __name__ == '__main__':
