@@ -41,7 +41,6 @@
                 <tr>
                     <th field="ck" checkbox="true"></th>
                     <th data-options="field:'TemplateName',width:200,align:'center'">模板名称</th>
-                    <th data-options="field:'TableName',width:200,align:'center'">表名称</th>
                     <th data-options="field:'Desc',width:200,align:'center'">描述信息</th>
                 </tr>
             </thead>
@@ -61,12 +60,6 @@
                             <td class="kv-label">模板名称</td>
                             <td class="kv-content">
                                 <input id="TemplateName" name="TemplateName" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
-                            </td>
-                        </tr>
-                         <tr>
-                            <td class="kv-label">表名称</td>
-                            <td class="kv-content">
-                                <input id="TableName" name="TableName" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
                             </td>
                         </tr>
                         <tr>
@@ -123,7 +116,6 @@
                     $('input[name="ID"]').attr("disabled", "disabled");
                     $('input[name="ID"]').val("");
                     $('input[name="TemplateName"]').val("");
-                    $('input[name="TableName"]').val("");
                     $('input[name="Desc"]').val("");
                 },
                 update:function(){
@@ -136,7 +128,6 @@
                             $("#TemplateClassDialog").dialog('open').dialog('setTitle', '修改采集策略');
                             $('input[name="ID"]').val(row.ID);
                             $('input[name="TemplateName"]').val(row.TemplateName);
-                            $('input[name="TableName"]').val(row.TableName);
                             $('input[name="Desc"]').val(row.Desc);
                         }
                     }else if(rows.length == 0){
@@ -192,15 +183,9 @@
                 save:function(){
                     var strID = $('#ID').val();
                     var urlAddr = ""
-                    var hintinfo = ""
                     var stmp = $('#TemplateName').val();
                     if(Bee.StringUtils.isEmpty(stmp)) {
                        alert('Warning：模板名称不能为空！');
-                       return false;
-                    }
-                    stmp = $('#TableName').val();
-                    if(Bee.StringUtils.isEmpty(stmp)) {
-                       alert('Warning：表名称不能为空！');
                        return false;
                     }
                     if (strID.length >= 1){
@@ -218,10 +203,10 @@
                         data: {
                             ID:$('#ID').val(),
                             TemplateName:$('#TemplateName').val(),
-                            TableName:$('#TableName').val(),
                             Desc:$('#Desc').val()
                         },
                         dataType: 'json',
+                        cache: false,
                         error: function(data){
                            alert(hintinfo+ "异常，请刷新后重试...");
                         },
