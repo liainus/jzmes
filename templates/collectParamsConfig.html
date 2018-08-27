@@ -18,8 +18,8 @@
 </head>
 <body>
     <div class="" style="padding: 1%;">
-        <div class="easyui-layout" style="width:100%;height:500px;">
-            <div data-options="region:'west',split:true" title="OpcTag变量网格列表" style="width:45%;">
+        <div class="easyui-layout" style="width:100%;height:300px;">
+            <div data-options="region:'west',split:true" title="OpcTag变量网格列表(多选)" style="width:45%;">
                 <table id="treegrid" class="easyui-treegrid">
                     <thead>
                         <tr>
@@ -29,7 +29,7 @@
                     </thead>
                 </table>
             </div>
-            <div data-options="region:'center',title:'策略模板列表'" style="width:45%;">
+            <div data-options="region:'center',title:'策略模板列表(单选)'" style="width:45%;">
                 <table class="easyui-datagrid" id="templateTab" title="" style="width:100%;" data-options="
                     rownumbers:true,
                     singleSelect:true,
@@ -76,13 +76,13 @@
             }
         }
         $(function(){
+            var isCheckFlag = true;
             $("#treegrid").treegrid({
                 url:'/CollectParams/OpcTagLoad',
                 idField:'id',
                 treeField:'NodeId',
                 singleSelect:false,
                 rownumbers: true,
-                checkbox: true,
                 animate:true,
                 loadFilter:function(data){
                     return data
@@ -95,11 +95,10 @@
                 var jsonarray = []
                 var OpcTags = ""
                 for (var i = 0; i < treegridSelections.length; i++) {
-                    var obj=createKeyIDObj(parseInt(treegridSelections[i].NodeID));
+                    var obj=createKeyIDObj(treegridSelections[i].NodeId);
                         jsonarray.push(obj);
                 }
                 OpcTags = JSON.stringify(jsonarray);
-                console.log(OpcTags)
                 $.ajax({
                     url:'/CollectParams/store',
                     type:'get',
