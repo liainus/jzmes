@@ -98,7 +98,12 @@
                         <tr>
                             <td class="kv-label">NodeId</td>
                             <td class="kv-content">
-                                <input id="NodeID" name="NodeID" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                                <select name="NodeID" id="NodeID" type="text" style="width:157px;" autocomplete="off" placeholder="">
+                                    <option value="">请选择</option>
+                                    {% for nodeId in NodeID %}
+                                        <option value="{{ nodeId['nodeID'] }}">{{ nodeId['nodeID'] }}</option>
+                                    {% endfor %}
+                                </select>
                             </td>
                         </tr>
                         <tr>
@@ -208,7 +213,7 @@
                     strID = 0
                     $("#TemplateClassDialog").dialog('open').dialog('setTitle', '新增采集策略');
                     $('#TemplateName option[value=""]').prop("selected", 'selected');//默认空
-                    $('input[name="NodeID"]').val("");
+                    $('#NodeID option[value=""]').prop("selected", 'selected');//默认空
                     $('input[name="Desc"]').val("");
                 },
                 update:function(){
@@ -221,7 +226,7 @@
                         if(row){
                             $("#TemplateClassDialog").dialog('open').dialog('setTitle', '修改采集策略');
                             $('#TemplateName option:contains('+row.TemplateName+')').prop("selected", 'selected');//赋值
-                            $('input[name="NodeID"]').val(row.NodeID);
+                            $('#NodeID option:contains('+row.NodeID+')').prop("selected", 'selected');//赋值
                             $('input[name="Desc"]').val(row.Desc);
                         }
                     }else if(rows.length == 0){
@@ -281,7 +286,7 @@
                        alert('Warning：模板名称不能为空！');
                        return false;
                     }
-                    stmp = $('#NodeID').val();
+                    stmp = $('#NodeID').find("option:selected").val();
                     if(Bee.StringUtils.isEmpty(stmp)) {
                        alert('Warning：NodeId不能为空！');
                        return false;
@@ -299,7 +304,7 @@
                         traditional: true,
                         data: {
                             TemplateName:$('#TemplateName').find("option:selected").val(),
-                            NodeID:$('#NodeID').val(),
+                            NodeID:$('#NodeID').find("option:selected").val(),
                             Desc:$('#Desc').val()
                         },
                         dataType: 'json',
