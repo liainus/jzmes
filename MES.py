@@ -3446,8 +3446,7 @@ def collectParams():
                 for nodeId in nodeIds:
                     OpcTagID = db_session.query(OpcTag.ID).filter_by(NodeID=nodeId).first()[0]
                     # 判断当前模板是否存在
-                    object = db_session.query(OpcTag).filter_by(NodeID=nodeId,
-                                                                CollectParamsTemplateID=CollectParamsTemplateID).first()
+                    object = db_session.query(CollectParams).filter(CollectParams.OpcTagID==OpcTagID and CollectParams.CollectParamsTemplateID==CollectParamsTemplateID).first()
                     if object is not None:
                         return
                     db_session.add(
