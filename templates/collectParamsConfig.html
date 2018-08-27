@@ -89,9 +89,15 @@
                 }
             })
 
+            var datagridCheckedID = ""
+            $("#templateTab").datagrid({
+                onSelect:function(rowIndex, rowData){
+                    datagridCheckedID = rowData.ID
+                }
+            })
+
             $("#btnConfirm").on('click',function(){
                 var treegridSelections =  $('#treegrid').treegrid('getSelections')//网格选中数据
-                var datagridChecked = $('#templateTab').datagrid('getChecked')
                 var jsonarray = []
                 var OpcTags = ""
                 for (var i = 0; i < treegridSelections.length; i++) {
@@ -104,7 +110,7 @@
                     type:'get',
                     data:{
                         OpcTags:OpcTags,
-                        CollectParamsTemplateID:datagridChecked.ID
+                        CollectParamsTemplateID:datagridCheckedID
                     },
                     success:function(data){
                         if(data){
