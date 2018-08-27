@@ -87,7 +87,12 @@
                         <tr>
                             <td class="kv-label">模板名称</td>
                             <td class="kv-content">
-                                <input id="TemplateName" name="TemplateName" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                                <select name="TemplateName" id="TemplateName" type="text" style="width:157px;" autocomplete="off" placeholder="">
+                                    <option value="">请选择</option>
+                                    {% for TemplateName in TemplateNames %}
+                                        <option value="{{ TemplateName['tempName'] }}">{{ TemplateName['tempName'] }}</option>
+                                    {% endfor %}
+                                </select>
                             </td>
                         </tr>
                         <tr>
@@ -202,7 +207,7 @@
                 create:function(){
                     strID = 0
                     $("#TemplateClassDialog").dialog('open').dialog('setTitle', '新增采集策略');
-                    $('input[name="TemplateName"]').val("");
+                    $('#TemplateName option[value=""]').prop("selected", 'selected');//默认空
                     $('input[name="NodeID"]').val("");
                     $('input[name="Desc"]').val("");
                 },
@@ -215,7 +220,7 @@
                         var row = $("#storeTab").datagrid('getSelected');
                         if(row){
                             $("#TemplateClassDialog").dialog('open').dialog('setTitle', '修改采集策略');
-                            $('input[name="TemplateName"]').val(row.TemplateName);
+                            $('#TemplateName option:contains('+row.TemplateName+')').prop("selected", 'selected');//赋值
                             $('input[name="NodeID"]').val(row.NodeID);
                             $('input[name="Desc"]').val(row.Desc);
                         }
@@ -271,7 +276,7 @@
                 },
                 save:function(){
                     var urlAddr = ""
-                    var stmp = $('#TemplateName').val();
+                    var stmp = $('#TemplateName').find("option:selected").val();
                     if(Bee.StringUtils.isEmpty(stmp)) {
                        alert('Warning：模板名称不能为空！');
                        return false;
@@ -293,7 +298,7 @@
                         method: 'POST',
                         traditional: true,
                         data: {
-                            TemplateName:$('#TemplateName').val(),
+                            TemplateName:$('#TemplateName').find("option:selected").val(),
                             NodeID:$('#NodeID').val(),
                             Desc:$('#Desc').val()
                         },
