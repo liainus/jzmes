@@ -3462,6 +3462,19 @@ def collectParams():
             insertSyslog("error", "CollectParams数据创建失败报错Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
+def transform(OpcTagIDs):
+    Datas = []
+    for OpcTagID in OpcTagIDs:
+        # 查询NodeID
+        NodeID = db_session.query(OpcTag.NodeID).filter_by(ID=OpcTagID).first()[0]
+        # 通过OpcTagID查询CollectParamsTemplateID
+        tempID = db_session.query(CollectParams.CollectParamsTemplateID).filter_by(OpcTagID=OpcTagID).first()
+        # 通过CollectParamsTemplateID查询TemplateName
+        tempName = db_session.query(CollectParamsTemplate.TemplateName).filter_by(ID=tempID).first()[0]
+        Desc = db_session.query(CollectParams.Desc).filter_by(OpcTagID=OpcTagID).first()[0]
+        Datas.append({"TemplateName": tempName, "NodeID": NodeID, "Desc": Desc})
+    return Datas
+
 @app.route('/CollectParams/find', methods=['POST', 'GET'])
 def collectParamsFind():
     if request.method == 'GET':
@@ -3476,18 +3489,9 @@ def collectParamsFind():
                 endpage = (pages - 1) * rowsnumber + rowsnumber
                 total = db_session.query(CollectParams.ID).count()
                 if total > 0:
-                    Datas = []
                     # 查询模板ID
                     OpcTagIDs = db_session.query(CollectParams.OpcTagID).all()[inipage:endpage]
-                    for OpcTagID in OpcTagIDs:
-                        # 查询NodeID
-                        NodeID = db_session.query(OpcTag.NodeID).filter_by(ID=OpcTagID).first()[0]
-                        # 通过OpcTagID查询CollectParamsTemplateID
-                        tempID = db_session.query(CollectParams.CollectParamsTemplateID).filter_by(OpcTagID=OpcTagID).first()
-                        # 通过CollectParamsTemplateID查询TemplateName
-                        tempName = db_session.query(CollectParamsTemplate.TemplateName).filter_by(ID=tempID).first()[0]
-                        Desc = db_session.query(CollectParams.Desc).filter_by(OpcTagID=OpcTagID).first()[0]
-                        Datas.append({"TemplateName": tempName, "NodeID": NodeID, "Desc": Desc})
+                    Datas = transform(OpcTagIDs)
                     # ORM模型转换json格式
                     jsonCollectParams= json.dumps(Datas)
                     jsonCollectParams = '{"total"' + ":" + str(
@@ -3502,6 +3506,8 @@ def collectParamsFind():
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
                               ensure_ascii=False)
 
+
+
 @app.route('/CollectParams/create', methods=['POST', 'GET'])
 def collectParamsCreate():
     if request.method == 'POST':
@@ -3509,10 +3515,18 @@ def collectParamsCreate():
             data = request.values
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 10:
+                tempName = data['TemplateName']
+                NodeId = data['NodeID']
+                Desc = data['Desc']
+                if tempName is None or NodeId is None:
+                    return
+                CollectParamsTemplateID = db_session.query(CollectParamsTemplate.ID).filter_by(TemplateName=tempName).first()[0]
+                OpcTagID = db_session.query(OpcTag.ID).filter_by(NodeId=NodeId).first()[0]
                 db_session.add(
                     CollectParams(
-                        TemplateName=data['TemplateName'],
-                        Desc=data['Desc']))
+                        CollectParamsTemplateID= CollectParamsTemplateID,
+                        OpcTagID= OpcTagID,
+                        Desc=Desc))
                 db_session.commit()
                 return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
                                   ensure_ascii=False)
@@ -3530,19 +3544,20 @@ def collectParamsDelete():
         try:
             jsonstr = json.dumps(data.to_dict())
             if len(jsonstr) > 10:
-                jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
-                for key in jsonnumber:
-                    TemplateID = int(key)
-                    try:
-                        oclass = db_session.query(CollectParamsTemplate).filter_by(ID=TemplateID).first()
-                        db_session.delete(oclass)
-                        db_session.commit()
-                    except Exception as ee:
-                        print(ee)
-                        logger.error(ee)
-                        return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
-                                          ensure_ascii=False)
-                return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
+                NodeID = data['NodeID']
+                if NodeID is None:
+                    return
+                OpcTagID = db_session.query(OpcTag.ID).filter_by(NodeID=NodeID).first()[0]
+                try:
+                    oclass = db_session.query(CollectParams).filter_by(OpcTagID=OpcTagID).first()
+                    db_session.delete(oclass)
+                    db_session.commit()
+                except Exception as ee:
+                    print(ee)
+                    logger.error(ee)
+                    return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
+                                      ensure_ascii=False)
+            return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
                                   ensure_ascii=False)
         except Exception as e:
             print(e)
@@ -3583,12 +3598,13 @@ def collectParamsSearch():
         try:
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 2:
-                TemplateName = "%" + data['TemplateName'] + "%"
-                Templatescount = db_session.query(CollectParamsTemplate).filter(
-                    CollectParamsTemplate.TemplateName.like(TemplateName)).all()
-                total = Counter(Templatescount)
-                jsonTemplates = json.dumps(Templatescount, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
-                jsonTemplates = '{"total"' + ":" + str(total.__len__()) + ',"rows"' + ":\n" + jsonTemplates + "}"
+                TemplateName = data['TemplateName']
+                tempId = db_session.query(CollectParamsTemplate.ID).filter_by(TemplateName=TemplateName).first()
+                OpcTagIDs = db_session.query(CollectParams.OpcTagID).filter_by(CollectParamsTemplateID=tempId).all()
+                total = db_session.query(CollectParams.ID).filter_by(CollectParamsTemplateID=tempId).count()
+                Datas = transform(OpcTagIDs)
+                jsonTemplates = json.dumps(Datas)
+                jsonTemplates = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonTemplates + "}"
                 return jsonTemplates
         except Exception as e:
             print(e)
