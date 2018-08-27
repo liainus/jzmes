@@ -30,7 +30,7 @@
                 </table>
             </div>
             <div data-options="region:'center',title:'策略模板列表'" style="width:45%;">
-                <table class="easyui-datagrid" id="tab" title="" style="width:100%;" data-options="
+                <table class="easyui-datagrid" id="templateTab" title="" style="width:100%;" data-options="
                     rownumbers:true,
                     singleSelect:true,
                     autoRowHeight:false,
@@ -47,23 +47,74 @@
                     </thead>
                 </table>
             </div>
-            <div data-options="region:'east',split:true" title="确认框" style="width:10%;">
+            <div data-options="region:'east',split:true,collapsible:false" title="确认框" style="width:10%;">
                 <a href="#" class="easyui-linkbutton" id="btnConfirm">确定</a>
             </div>
         </div>
+        <table class="easyui-datagrid" id="storeTab" title="采集策略列表" style="width:100%;" data-options="
+            rownumbers:true,
+            singleSelect:true,
+            autoRowHeight:false,
+            pagination:true,
+            pageSize:10,
+            url:'/CollectParams/find',
+            method:'get'">
+            <thead>
+                <tr>
+                    <th field="ck" checkbox="true"></th>
+                    <th data-options="field:'CollectParamsTemplateID',width:200,align:'center'">模板名称</th>
+                    <th data-options="field:'OpcTagID',width:200,align:'center'">NodeId</th>
+                    <th data-options="field:'Desc',width:200,align:'center'">描述信息</th>
+                </tr>
+            </thead>
+        </table>
     </div>
     <script>
-        $("#treegrid").treegrid({
-            url:'/CollectParams/OpcTagLoad',
-            idField:'id',
-            treeField:'NodeId',
-            singleSelect:false,
-            rownumbers: true,
-            checkbox: true,
-            animate:true,
-            loadFilter:function(data){
-                return data
+        function createKeyIDObj(keyID){
+            return {
+                CollectParamsTemplateID:keyID
             }
+        }
+        $(function(){
+            $("#treegrid").treegrid({
+                url:'/CollectParams/OpcTagLoad',
+                idField:'id',
+                treeField:'NodeId',
+                singleSelect:false,
+                rownumbers: true,
+                checkbox: true,
+                animate:true,
+                loadFilter:function(data){
+                    return data
+                }
+            })
+
+            $("#btnConfirm").on('click',function(){
+                var treegridSelections =  $('#treegrid').treegrid('getSelections')//网格选中数据
+                var datagridChecked = $('#templateTab').datagrid('getChecked')
+                console.log(treegridSelections)
+                console.log(datagridChecked)
+                var jsonarray = []
+                var CollectParamsTemplateID = ""
+                for (var i = 0; i < treegridSelections.length; i++) {
+                    var obj=createKeyIDObj(parseInt(treegridSelections[i].id));
+                        jsonarray.push(obj);
+                }
+                CollectParamsTemplateID = JSON.stringify(jsonarray);
+                $.ajax({
+                    url:'/CollectParams/store',
+                    type:'get',
+                    data:{
+                        CollectParamsTemplateID:CollectParamsTemplateID,
+                        OpcTagID:datagridChecked.ID
+                    },
+                    success:function(data){
+                        if(data){
+                            $("#storeTab").datagrid("load")
+                        }
+                    }
+                })
+            })
         })
     </script>
 </body>
