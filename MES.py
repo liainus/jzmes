@@ -3433,19 +3433,22 @@ def OpcTagLoad():
 
 @app.route('/CollectParams/store', methods=['POST', 'GET'])
 def collectParams():
-    if request.method == 'POST':
+    if request.method == 'GET':
         data = request.values
         try:
             json_str = json.dumps(data.to_dict())
             CollectParamsTemplateID = data['CollectParamsTemplateID']
-            if CollectParamsTemplateID is None or data['OpcTags'] is None:
+            nodeIds = data['OpcTags'] # [{"nodeId":"i=2259"},{"nodeId":"i=2258"}]
+            nodeIds = re.findall(r"i=\d+", nodeIds)
+            if CollectParamsTemplateID is None or nodeIds is None:
                 return
             if len(json_str) > 10:
-                for opctag in data['OpcTags']:
+                for nodeId in nodeIds:
+                    OpcTagID = db_session.query(OpcTag.ID).filter_by(NodeID=nodeId).first()[0]
                     db_session.add(
                         CollectParams(
                             CollectParamsTemplateID=CollectParamsTemplateID,
-                            OpcTagID=opctag))
+                            OpcTagID=OpcTagID))
                     db_session.commit()
                 return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
                                   ensure_ascii=False)
@@ -3499,7 +3502,6 @@ def collectParamsCreate():
             data = request.values
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 10:
-
                 db_session.add(
                     CollectParams(
                         TemplateName=data['TemplateName'],
