@@ -157,6 +157,16 @@
                     success:function(data){
                         if(data){
                             $("#storeTab").datagrid("load")
+                            $.messager.show({
+                                title: '提示',
+                                timeout:1000,
+                                msg: '保存成功',
+                                style: {
+                                    right: '',
+                                    top: document.body.scrollTop + document.documentElement.scrollTop,
+                                    bottom: ''
+                                }
+                            });
                         }
                     }
                 })
