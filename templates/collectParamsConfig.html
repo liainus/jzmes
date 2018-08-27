@@ -72,7 +72,7 @@
     <script>
         function createKeyIDObj(keyID){
             return {
-                CollectParamsTemplateID:keyID
+                nodeId:keyID
             }
         }
         $(function(){
@@ -92,21 +92,20 @@
             $("#btnConfirm").on('click',function(){
                 var treegridSelections =  $('#treegrid').treegrid('getSelections')//网格选中数据
                 var datagridChecked = $('#templateTab').datagrid('getChecked')
-                console.log(treegridSelections)
-                console.log(datagridChecked)
                 var jsonarray = []
-                var CollectParamsTemplateID = ""
+                var OpcTags = ""
                 for (var i = 0; i < treegridSelections.length; i++) {
-                    var obj=createKeyIDObj(parseInt(treegridSelections[i].id));
+                    var obj=createKeyIDObj(parseInt(treegridSelections[i].NodeID));
                         jsonarray.push(obj);
                 }
-                CollectParamsTemplateID = JSON.stringify(jsonarray);
+                OpcTags = JSON.stringify(jsonarray);
+                console.log(OpcTags)
                 $.ajax({
                     url:'/CollectParams/store',
                     type:'get',
                     data:{
-                        CollectParamsTemplateID:CollectParamsTemplateID,
-                        OpcTagID:datagridChecked.ID
+                        OpcTags:OpcTags,
+                        CollectParamsTemplateID:datagridChecked.ID
                     },
                     success:function(data){
                         if(data){
