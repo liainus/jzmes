@@ -3445,6 +3445,11 @@ def collectParams():
             if len(json_str) > 10:
                 for nodeId in nodeIds:
                     OpcTagID = db_session.query(OpcTag.ID).filter_by(NodeID=nodeId).first()[0]
+                    # 判断当前模板是否存在
+                    object = db_session.query(OpcTag).filter_by(NodeID=nodeId,
+                                                                CollectParamsTemplateID=CollectParamsTemplateID).first()
+                    if object is not None:
+                        return
                     db_session.add(
                         CollectParams(
                             CollectParamsTemplateID=CollectParamsTemplateID,
@@ -3472,17 +3477,20 @@ def collectParamsFind():
                 endpage = (pages - 1) * rowsnumber + rowsnumber
                 total = db_session.query(CollectParams.ID).count()
                 if total > 0:
+                    Datas = []
                     # 查询模板ID
-                    tempIds = db_session.query(CollectParams.CollectParamsTemplateID).all()
-                    for tempId in tempIds:
-                        pass
-                    # 通过ID查询模板名称
-                    tempName = db_session.query(CollectParamsTemplate.TemplateName).filter_by(ID=tempId).first()
-                    # 查询nodeId
-                    OpcTagID = db_session.query(CollectParams.OpcTagID).all()
+                    OpcTagIDs = db_session.query(CollectParams.OpcTagID).all()[inipage:endpage]
+                    for OpcTagID in OpcTagIDs:
+                        # 查询NodeID
+                        NodeID = db_session.query(OpcTag.NodeID).filter_by(ID=OpcTagID).first()[0]
+                        # 通过OpcTagID查询CollectParamsTemplateID
+                        tempID = db_session.query(CollectParams.CollectParamsTemplateID).filter_by(OpcTagID=OpcTagID).first()
+                        # 通过CollectParamsTemplateID查询TemplateName
+                        tempName = db_session.query(CollectParamsTemplate.TemplateName).filter_by(ID=tempID).first()[0]
+                        Desc = db_session.query(CollectParams.Desc).filter_by(OpcTagID=OpcTagID).first()[0]
+                        Datas.append({"TemplateName": tempName, "NodeID": NodeID, "Desc": Desc})
                     # ORM模型转换json格式
-                    jsonCollectParams= json.dumps(qDatas, cls=Model.BSFramwork.AlchemyEncoder,
-                                                    ensure_ascii=False)
+                    jsonCollectParams= json.dumps(Datas)
                     jsonCollectParams = '{"total"' + ":" + str(
                         total) + ',"rows"' + ":\n" + jsonCollectParams + "}"
                     return jsonCollectParams
