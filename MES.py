@@ -3399,7 +3399,21 @@ def templateSearch():
 # 采集策略配置
 @app.route('/CollectParams/config')
 def collectParamsConfig():
-    return render_template('collectParamsConfig.html')
+    TemplateNames = []
+    TempNames = db_session.query(CollectParamsTemplate.TemplateName).all()
+    for name in TempNames:
+        li = list(name)
+        name = li[0]
+        temp_name = {'tempName': name}
+        TemplateNames.append(temp_name)
+    NodeID = []
+    NodeIDs = db_session.query(OpcTag.NodeID).all()
+    for nodeID in NodeIDs:
+        li = list(nodeID)
+        name = li[0]
+        node_id = {'nodeId': nodeID}
+        NodeID.append(node_id)
+    return render_template('collectParamsConfig.html', TemplateNames=TemplateNames, NodeID=NodeID)
 
 def getOpcTagList(id, ParentID=None):
     sz = []
@@ -3505,7 +3519,6 @@ def collectParamsFind():
             insertSyslog("error", "CollectParams数据加载失败报错Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
                               ensure_ascii=False)
-
 
 
 @app.route('/CollectParams/create', methods=['POST', 'GET'])
