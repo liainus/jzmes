@@ -3479,7 +3479,6 @@ def collectParams():
 def transform(OpcTagIDs):
     Datas = []
     for OpcTagID in OpcTagIDs:
-        ID = db_session.query(CollectParams.ID).filter_by(OpcTagID=OpcTagID).first()[0]
         # 查询NodeID
         NodeID = db_session.query(OpcTag.NodeID).filter_by(ID=OpcTagID).first()[0]
         # 通过OpcTagID查询CollectParamsTemplateID
@@ -3487,7 +3486,7 @@ def transform(OpcTagIDs):
         # 通过CollectParamsTemplateID查询TemplateName
         tempName = db_session.query(CollectParamsTemplate.TemplateName).filter_by(ID=tempID).first()[0]
         Desc = db_session.query(CollectParams.Desc).filter_by(OpcTagID=OpcTagID).first()[0]
-        Datas.append({"ID":ID, "TemplateName": tempName, "NodeID": NodeID, "Desc": Desc})
+        Datas.append({"TemplateName": tempName, "NodeID": NodeID, "Desc": Desc})
     return Datas
 
 @app.route('/CollectParams/find', methods=['POST', 'GET'])
@@ -3596,32 +3595,32 @@ def collectParamsUpdate():
                 TempName = data['TemplateName']
                 nodeID = data['NodeID']
                 TempID = db_session.query(CollectParamsTemplate.ID).filter_by(TemplateName=TempName).first()[0]
-                OpcTagID = db_session.query(OpcTag.ID).filter(NodeID=nodeID).first()[0]
-                ID_byTempID = db_session.query(CollectParams.ID).filter_by(CollectParamsTemplateID=TempID).first()
-                if ID_byTempID is None:
-                    ID_byOpcTagID = db_session.query(CollectParams.ID).filter_by(OpcTagID=OpcTagID)
-                    if ID_byOpcTagID is None: # 两者为空则相当于添加一个新的策略
+                OpcTagID = db_session.query(OpcTag.ID).filter_by(NodeID=nodeID).first()[0]
+                ID_byOpcTagID = db_session.query(CollectParams.ID).filter_by(OpcTagID=OpcTagID).first()
+                if ID_byOpcTagID is None:
+                    ID_byTempID = db_session.query(CollectParams.ID).filter_by(CollectParamsTemplateID=TempID).first()
+                    if ID_byTempID is None: # 两者为空则相当于添加一个新的策略
                         oclass = CollectParams()
                         oclass.CollectParamsTemplateID = TempID
-                        oclass.OpcTagID = OpcTagID,
+                        oclass.OpcTagID = OpcTagID
                         oclass.Desc = data['Desc']
                         db_session.add(oclass)
                         db_session.commit()
                         return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
                                       ensure_ascii=False)
-                    # 改变模板的情况
-                    oclass = db_session.query(CollectParams).filter_by(ID=ID_byOpcTagID).first()
+                    # 改变NodeID的情况
+                    oclass = db_session.query(CollectParams).filter_by(ID=ID_byTempID).first()
                     oclass.CollectParamsTemplateID = TempID
-                    oclass.OpcTagID = OpcTagID,
+                    oclass.OpcTagID = OpcTagID
                     oclass.Desc = data['Desc']
                     db_session.add(oclass)
                     db_session.commit()
                     return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
                                   ensure_ascii=False)
-                # 改变NodeID的情况
-                oclass = db_session.query(CollectParams).filter_by(ID=ID_byTempID).first()
+                # 改变模板的情况
+                oclass = db_session.query(CollectParams).filter_by(ID=ID_byOpcTagID).first()
+                oclass.OpcTagID = OpcTagID
                 oclass.CollectParamsTemplateID = TempID
-                oclass.OpcTagID = OpcTagID,
                 oclass.Desc = data['Desc']
                 db_session.add(oclass)
                 db_session.commit()
