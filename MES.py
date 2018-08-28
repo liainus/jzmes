@@ -3593,12 +3593,33 @@ def collectParamsUpdate():
         try:
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 10:
-                ID = int(data['ID'])
                 TempName = data['TemplateName']
                 nodeID = data['NodeID']
                 TempID = db_session.query(CollectParamsTemplate.ID).filter_by(TemplateName=TempName).first()[0]
                 OpcTagID = db_session.query(OpcTag.ID).filter(NodeID=nodeID).first()[0]
-                oclass = db_session.query(CollectParams).filter_by(ID=ID).first()
+                ID_byTempID = db_session.query(CollectParams.ID).filter_by(CollectParamsTemplateID=TempID).first()
+                if ID_byTempID is None:
+                    ID_byOpcTagID = db_session.query(CollectParams.ID).filter_by(OpcTagID=OpcTagID)
+                    if ID_byOpcTagID is None: # 两者为空则相当于添加一个新的策略
+                        oclass = CollectParams()
+                        oclass.CollectParamsTemplateID = TempID
+                        oclass.OpcTagID = OpcTagID,
+                        oclass.Desc = data['Desc']
+                        db_session.add(oclass)
+                        db_session.commit()
+                        return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
+                                      ensure_ascii=False)
+                    # 改变模板的情况
+                    oclass = db_session.query(CollectParams).filter_by(ID=ID_byOpcTagID).first()
+                    oclass.CollectParamsTemplateID = TempID
+                    oclass.OpcTagID = OpcTagID,
+                    oclass.Desc = data['Desc']
+                    db_session.add(oclass)
+                    db_session.commit()
+                    return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
+                                  ensure_ascii=False)
+                # 改变NodeID的情况
+                oclass = db_session.query(CollectParams).filter_by(ID=ID_byTempID).first()
                 oclass.CollectParamsTemplateID = TempID
                 oclass.OpcTagID = OpcTagID,
                 oclass.Desc = data['Desc']
