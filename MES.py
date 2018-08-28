@@ -3593,10 +3593,14 @@ def collectParamsUpdate():
         try:
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 10:
-                TemplateID = int(data['ID'])
-                oclass = db_session.query(CollectParamsTemplate).filter_by(ID=TemplateID).first()
-                oclass.TemplateName = data['TemplateName']
-                oclass.TableName = data['TableName'],
+                ID = int(data['ID'])
+                TempName = data['TemplateName']
+                nodeID = data['NodeID']
+                TempID = db_session.query(CollectParamsTemplate.ID).filter_by(TemplateName=TempName).first()[0]
+                OpcTagID = db_session.query(OpcTag.ID).filter(NodeID=nodeID).first()[0]
+                oclass = db_session.query(CollectParams).filter_by(ID=ID).first()
+                oclass.CollectParamsTemplateID = TempID
+                oclass.OpcTagID = OpcTagID,
                 oclass.Desc = data['Desc']
                 db_session.add(oclass)
                 db_session.commit()
