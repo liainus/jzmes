@@ -3410,8 +3410,8 @@ def collectParamsConfig():
     NodeIDs = db_session.query(OpcTag.NodeID).all()
     for nodeID in NodeIDs:
         li = list(nodeID)
-        name = li[0]
-        node_id = {'nodeId': nodeID}
+        ID = li[0]
+        node_id = {'nodeID': ID}
         NodeID.append(node_id)
     return render_template('collectParamsConfig.html', TemplateNames=TemplateNames, NodeID=NodeID)
 
@@ -3479,6 +3479,7 @@ def collectParams():
 def transform(OpcTagIDs):
     Datas = []
     for OpcTagID in OpcTagIDs:
+        ID = db_session.query(CollectParams.ID).filter_by(OpcTagID=OpcTagID).first()[0]
         # 查询NodeID
         NodeID = db_session.query(OpcTag.NodeID).filter_by(ID=OpcTagID).first()[0]
         # 通过OpcTagID查询CollectParamsTemplateID
@@ -3486,7 +3487,7 @@ def transform(OpcTagIDs):
         # 通过CollectParamsTemplateID查询TemplateName
         tempName = db_session.query(CollectParamsTemplate.TemplateName).filter_by(ID=tempID).first()[0]
         Desc = db_session.query(CollectParams.Desc).filter_by(OpcTagID=OpcTagID).first()[0]
-        Datas.append({"TemplateName": tempName, "NodeID": NodeID, "Desc": Desc})
+        Datas.append({"ID":ID, "TemplateName": tempName, "NodeID": NodeID, "Desc": Desc})
     return Datas
 
 @app.route('/CollectParams/find', methods=['POST', 'GET'])
@@ -3534,7 +3535,11 @@ def collectParamsCreate():
                 if tempName is None or NodeId is None:
                     return
                 CollectParamsTemplateID = db_session.query(CollectParamsTemplate.ID).filter_by(TemplateName=tempName).first()[0]
-                OpcTagID = db_session.query(OpcTag.ID).filter_by(NodeId=NodeId).first()[0]
+                OpcTagID = db_session.query(OpcTag.ID).filter_by(NodeID=NodeId).first()[0]
+                object = db_session.query(CollectParams).filter(
+                    CollectParams.OpcTagID == OpcTagID and CollectParams.CollectParamsTemplateID == CollectParamsTemplateID).first()
+                if object is not None:
+                    return
                 db_session.add(
                     CollectParams(
                         CollectParamsTemplateID= CollectParamsTemplateID,
@@ -3558,18 +3563,20 @@ def collectParamsDelete():
             jsonstr = json.dumps(data.to_dict())
             if len(jsonstr) > 10:
                 NodeID = data['NodeID']
-                if NodeID is None:
+                nodeIds = re.findall(r"i=\d+", NodeID)
+                if nodeIds is None:
                     return
-                OpcTagID = db_session.query(OpcTag.ID).filter_by(NodeID=NodeID).first()[0]
-                try:
-                    oclass = db_session.query(CollectParams).filter_by(OpcTagID=OpcTagID).first()
-                    db_session.delete(oclass)
-                    db_session.commit()
-                except Exception as ee:
-                    print(ee)
-                    logger.error(ee)
-                    return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
-                                      ensure_ascii=False)
+                for nodeId in nodeIds:
+                    OpcTagID = db_session.query(OpcTag.ID).filter_by(NodeID=nodeId).first()[0]
+                    try:
+                        oclass = db_session.query(CollectParams).filter_by(OpcTagID=OpcTagID).first()
+                        db_session.delete(oclass)
+                        db_session.commit()
+                    except Exception as ee:
+                        print(ee)
+                        logger.error(ee)
+                        return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
+                                          ensure_ascii=False)
             return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
                                   ensure_ascii=False)
         except Exception as e:
