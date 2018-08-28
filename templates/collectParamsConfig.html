@@ -89,8 +89,8 @@
                             <td class="kv-content">
                                 <select name="TemplateName" id="TemplateName" type="text" style="width:157px;" autocomplete="off" placeholder="">
                                     <option value="">请选择</option>
-                                    {% for TemplateName in TemplateNames %}
-                                        <option value="{{ TemplateName['tempName'] }}">{{ TemplateName['tempName'] }}</option>
+                                    {% for TempName in TempNames %}
+                                        <option value="{{ TempName['tempName'] }}">{{ TempName['tempName'] }}</option>
                                     {% endfor %}
                                 </select>
                             </td>
