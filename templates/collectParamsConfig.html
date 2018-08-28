@@ -79,17 +79,11 @@
                 </tr>
             </thead>
         </table>
-        <div id="TemplateClassDialog" class="easyui-dialog" style="width:400px;height:280px;padding:10px;"
+        <div id="TemplateClassDialog" class="easyui-dialog" style="width:400px;height:240px;padding:10px;"
              data-options="closed:'true',buttons:'#userClassDialogButtons',modal:true">
             <form id="TemplateClassForm" method="post" class="dialog-form">
                 <table class="kv-table">
                     <tbody>
-                        <tr>
-                            <td class="kv-label">ID</td>
-                            <td class="kv-content">
-                                <input id="ID" name="ID" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder="" disabled="disabled">
-                            </td>
-                        </tr>
                         <tr>
                             <td class="kv-label">模板名称</td>
                             <td class="kv-content">
@@ -216,13 +210,14 @@
                     })
                 },
                 create:function(){
+                    strID = 0
                     $("#TemplateClassDialog").dialog('open').dialog('setTitle', '新增采集策略');
-                    $('input[name="ID"]').val("")
                     $('#TemplateName option[value=""]').prop("selected", 'selected');//默认空
                     $('#NodeID option[value=""]').prop("selected", 'selected');//默认空
                     $('input[name="Desc"]').val("");
                 },
                 update:function(){
+                    strID = 1
                     var rows = $("#storeTab").datagrid('getSelections');
                     if (rows.length > 1) {
                         $.messager.alert('警告操作！', '编辑记录只能选定一条数据！', 'warning');
@@ -230,7 +225,6 @@
                         var row = $("#storeTab").datagrid('getSelected');
                         if(row){
                             $("#TemplateClassDialog").dialog('open').dialog('setTitle', '修改采集策略');
-                            $('input[name="ID"]').val(row.ID)
                             $('#TemplateName option:contains('+row.TemplateName+')').prop("selected", 'selected');//赋值
                             $('#NodeID option:contains('+row.NodeID+')').prop("selected", 'selected');//赋值
                             $('input[name="Desc"]').val(row.Desc);
@@ -258,9 +252,8 @@
                                     method: 'POST',
                                     traditional: true,
                                     // data: JSON.stringify(ids),
-                                    data: {
-                                        NodeID:a
-                                    },
+                                    data: a,
+                                    dataType: 'json',
                                     success: function (data) {
                                         $.messager.progress('close');
 
@@ -287,7 +280,6 @@
                     }
                 },
                 save:function(){
-                    var strID = $('input[name="ID"]').val()
                     var urlAddr = ""
                     var stmp = $('#TemplateName').find("option:selected").val();
                     if(Bee.StringUtils.isEmpty(stmp)) {
@@ -299,10 +291,10 @@
                        alert('Warning：NodeId不能为空！');
                        return false;
                     }
-                    if (strID >= 1){
+                    if (strID == 1){
                         urlAddr = '/CollectParams/' + 'update'
                         hintinfo = "更新数据"
-                    }else {
+                    }else if(strID == 0) {
                         urlAddr = '/CollectParams/' + 'create'
                         hintinfo = "新增数据"
                     }
@@ -311,7 +303,6 @@
                         method: 'POST',
                         traditional: true,
                         data: {
-                            ID:$('input[name="ID"]').val(),
                             TemplateName:$('#TemplateName').find("option:selected").val(),
                             NodeID:$('#NodeID').find("option:selected").val(),
                             Desc:$('#Desc').val()
