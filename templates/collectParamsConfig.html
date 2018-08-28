@@ -252,8 +252,9 @@
                                     method: 'POST',
                                     traditional: true,
                                     // data: JSON.stringify(ids),
-                                    data: a,
-                                    dataType: 'json',
+                                    data: {
+                                        NodeID:a
+                                    },
                                     success: function (data) {
                                         $.messager.progress('close');
 
