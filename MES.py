@@ -3336,7 +3336,10 @@ def templateDelete():
                     TemplateID = int(key)
                     try:
                         oclass = db_session.query(CollectParamsTemplate).filter_by(ID=TemplateID).first()
+                        oclass_params = db_session.query(CollectParams).filter_by(CollectParamsTemplateID=TemplateID).first()
                         db_session.delete(oclass)
+                        if oclass_params is not None:
+                            db_session.delete(oclass_params)
                         db_session.commit()
                     except Exception as ee:
                         print(ee)
@@ -3413,7 +3416,7 @@ def collectParamsConfig():
         ID = li[0]
         node_id = {'nodeID': ID}
         NodeID.append(node_id)
-    return render_template('collectParamsConfig.html', TemplateNames=TemplateNames, NodeID=NodeID)
+    return render_template('collectParamsConfig.html', TempNames=TemplateNames, NodeID=NodeID)
 
 def getOpcTagList(id, ParentID=None):
     sz = []
@@ -3460,14 +3463,19 @@ def collectParams():
                 for nodeId in nodeIds:
                     OpcTagID = db_session.query(OpcTag.ID).filter_by(NodeID=nodeId).first()[0]
                     # 判断当前模板是否存在
-                    object = db_session.query(CollectParams).filter(CollectParams.OpcTagID==OpcTagID and CollectParams.CollectParamsTemplateID==CollectParamsTemplateID).first()
+                    object = db_session.query(CollectParams).filter(and_(CollectParams.OpcTagID==OpcTagID,CollectParams.CollectParamsTemplateID==CollectParamsTemplateID)).first()
                     if object is not None:
-                        return
-                    db_session.add(
-                        CollectParams(
-                            CollectParamsTemplateID=CollectParamsTemplateID,
-                            OpcTagID=OpcTagID))
-                    db_session.commit()
+                        db_session.delete(object)
+                        db_session.commit()
+                        db_session.add(
+                            CollectParams(
+                                CollectParamsTemplateID=CollectParamsTemplateID,
+                                OpcTagID=OpcTagID))
+                        db_session.commit()
+                    else:
+                        db_session.add(CollectParams(CollectParamsTemplateID=CollectParamsTemplateID,
+                                                     OpcTagID=OpcTagID))
+                        db_session.commit()
                 return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
                                   ensure_ascii=False)
         except Exception as e:
