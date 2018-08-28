@@ -3479,8 +3479,8 @@ class Collectionstrategy(Base):
 	# 间隔时间
 	Interval = Column(Integer, nullable=True)
 
-	# OPcTagID
-	FlagOpcTagID = Column(Integer, nullable=True)
+	# NodeID
+	NodeID = Column(Unicode(30), nullable=True)
 
 	# 策略名称
 	StrategyName = Column(Unicode(30), nullable=True)

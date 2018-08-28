@@ -562,7 +562,12 @@
                             {% endif %}
                             {% if '88' in session.get('menus') %}
                                 <li>
-                                    <a href="#" onclick="addTab('配置采集策略模板','/CollectParamsTemplate/config')">配置采集策略模板</a>
+                                    <a href="#" onclick="addTab('管理采集模板','/CollectParamsTemplate/config')">管理采集模板</a>
+                                </li>
+                            {% endif %}
+                            {% if '88' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onclick="addTab('配置采集模板','/CollectParams/config')">配置采集模板</a>
                                 </li>
                             {% endif %}
                             {% if '88' in session.get('menus') %}
