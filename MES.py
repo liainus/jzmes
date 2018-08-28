@@ -17,7 +17,7 @@ import Model.Global
 from Model.BSFramwork import AlchemyEncoder
 from Model.core import Enterprise, Area, Factory, ProductLine, ProcessUnit, Equipment, Material, MaterialType, \
     ProductUnit, ProductRule, ZYTask, ZYPlanMaterial, ZYPlan, Unit, PlanManager, SchedulePlan, ProductControlTask, \
-    OpcServer, Pequipment, OpcTag, CollectParamsTemplate, CollectParams
+    OpcServer, Pequipment, OpcTag, CollectParamsTemplate, CollectParams, Collectionstrategy
 from Model.system import Role, Organization, User, Menu, Role_Menu
 from tools.MESLogger import MESLogger
 from Model.core import SysLog
@@ -3396,7 +3396,7 @@ def templateSearch():
             insertSyslog("error", "CollectParamsTemplate数据查询失败报错Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
-# 采集策略配置
+# 采集模板配置
 @app.route('/CollectParams/config')
 def collectParamsConfig():
     TemplateNames = []
@@ -3655,6 +3655,137 @@ def collectParamsSearch():
             logger.error(e)
             insertSyslog("error", "CollectParamsTemplate数据查询失败报错Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+# 配置采集策略
+@app.route('/Collectionstrategy/config')
+def collectionstrategyConfig():
+    return render_template('CollectionstrategyConfig.html')
+
+@app.route('/Collectionstrategy/config/find', methods=['POST', 'GET'])
+def strategyFind():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            print(json_str)
+            if len(json_str) > 10:
+                pages = int(data['page'])
+                rowsnumber = int(data['rows'])
+                inipage = (pages - 1) * rowsnumber + 0
+                endpage = (pages - 1) * rowsnumber + rowsnumber
+                total = db_session.query(Collectionstrategy.ID).count()
+                if total > 0:
+                    qDatas = db_session.query(Collectionstrategy).all()[inipage:endpage]
+                    # ORM模型转换json格式
+                    jsonStrategyconfig = json.dumps(qDatas, cls=Model.BSFramwork.AlchemyEncoder,
+                                                  ensure_ascii=False)
+                    jsonStrategyconfig = '{"total"' + ":" + str(
+                        total) + ',"rows"' + ":\n" + jsonStrategyconfig + "}"
+                    return jsonStrategyconfig
+                else:
+                    return ""
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "Collectionstrategy数据加载失败报错Error：" + str(e), "AAAAAAadmin")
+            return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,ensure_ascii=False)
+
+@app.route('/Collectionstrategy/config/create', methods=['POST', 'GET'])
+def strategyCreate():
+    if request.method == 'POST':
+        try:
+            data = request.values
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                db_session.add(
+                    Collectionstrategy(
+                        Interval=data['Interval'],
+                        NodeID=data['NodeID'],
+                        StrategyName=data['StrategyName'],
+                        Desc=data['Desc']
+                    ))
+                db_session.commit()
+                return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
+                                  ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "Collectionstrategy数据创建失败报错Error：" + str(e), "AAAAAAadmin")
+            return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+@app.route('/Collectionstrategy/config/delete', methods=['POST', 'GET'])
+def strategyDelete():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
+                for key in jsonnumber:
+                    StrategyID = int(key)
+                    try:
+                        oclass = db_session.query(Collectionstrategy).filter_by(ID=StrategyID).first()
+                        db_session.delete(oclass)
+                        db_session.commit()
+                    except Exception as ee:
+                        print(ee)
+                        logger.error(ee)
+                        return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
+                                          ensure_ascii=False)
+                return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
+                                  ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "Collectionstrategy数据删除失败报错Error：" + str(e), "AAAAAAadmin")
+            return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+@app.route('/Collectionstrategy/config/update', methods=['POST', 'GET'])
+def strategyUpdate():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                StrategyID = int(data['ID'])
+                oclass = db_session.query(Collectionstrategy).filter_by(ID=StrategyID).first()
+                oclass.Interval = data['Interval']
+                oclass.NodeID = data['NodeID']
+                oclass.StrategyName = data['StrategyName']
+                oclass.Desc = data['Desc']
+                db_session.add(oclass)
+                db_session.commit()
+                return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
+                                  ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "Collectionstrategy数据更新失败报错Error：" + str(e), "AAAAAAadmin")
+            return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+            # 查询Opc服务
+
+
+@app.route('/Collectionstrategy/config/search', methods=['POST', 'GET'])
+def strategySearch():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 2:
+                StrategyName = "%" + data['StrategyName'] + "%"
+                Strategyscount = db_session.query(Collectionstrategy).filter(
+                    CollectParamsTemplate.TemplateName.like(StrategyName)).all()
+                total = Counter(Strategyscount)
+                jsonStrategys = json.dumps(Strategyscount, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+                jsonStrategys = '{"total"' + ":" + str(total.__len__()) + ',"rows"' + ":\n" + jsonStrategys + "}"
+                return jsonStrategys
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "Collectionstrategy数据查询失败报错Error：" + str(e), "AAAAAAadmin")
+            return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
