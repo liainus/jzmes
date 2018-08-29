@@ -575,6 +575,11 @@
                                     <a href="#" onclick="addTab('配置采集策略','/Collectionstrategy/config')">配置采集策略</a>
                                 </li>
                             {% endif %}
+                            {% if '88' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onclick="addTab('配置采集任务','/CollectTask/config')">配置采集任务</a>
+                                </li>
+                            {% endif %}
                         </ul>
                     </li>
                 {% endif %}
