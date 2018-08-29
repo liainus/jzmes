@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>配置采集任务</title>
+    <link href="../static/css/base.css" rel="stylesheet">
+	<link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
+	<link href="../static/css/basic_info.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
+	<link href="../static/js/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
+    <link href="../static/css/datagridpanel_customer.css" rel="stylesheet">
+    <link href="../static/css/dialogpanel.css" type="text/css" rel="stylesheet">
+    <link href="../static/css/datagrid_customer.css" type="text/css" rel="stylesheet">
+    <script type="text/javascript" src="../static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
+</head>
+<body>
+    <div class="content">
+        <div id="Toolbar" style="padding:0 10px;">
+            采集任务名称:
+            <input type="text" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
+                placeholder="">
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="CollectToolbar.search();">查询</a>
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add'" onclick="CollectToolbar.create();">添加</a>
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit'" onclick="CollectToolbar.update();">修改</a>
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove'" onclick="CollectToolbar.delete();">删除</a>
+            <a href="#" class="easyui-linkbutton" id="reload" data-options="iconCls:'icon-reload'" onclick="CollectToolbar.refresh();">刷新</a>
+        </div>
+        <table class="easyui-datagrid" id="tab" title="" style="width:100%;" data-options="
+            rownumbers:true,
+            singleSelect:false,
+            autoRowHeight:false,
+            pagination:true,
+            pageSize:10,
+            toolbar:'#Toolbar',
+            url:'/CollectTask/config/find',
+            method:'get'">
+            <thead>
+                <tr>
+                    <th field="ck" checkbox="true"></th>
+                    <th data-options="field:'CollectTaskName',width:200,align:'center'">采集任务名称</th>
+                    <th data-options="field:'TableName',width:200,align:'center'">TableName</th>
+                    <th data-options="field:'Desc',width:200,align:'center'">描述</th>
+                </tr>
+            </thead>
+        </table>
+        <div id="TemplateClassDialog" class="easyui-dialog" style="width:400px;height:240px;padding:10px;"
+             data-options="closed:'true',buttons:'#userClassDialogButtons',modal:true">
+            <form id="TemplateClassForm" method="post" class="dialog-form">
+                <table class="kv-table">
+                    <tbody>
+                        <tr>
+                            <td class="kv-label">id</td>
+                            <td class="kv-content">
+                                <input id="ID" name="ID" type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="" disabled="disabled">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">采集任务名称</td>
+                            <td class="kv-content">
+                                <input id="CollectTaskName" name="CollectTaskName" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">TableName</td>
+                            <td class="kv-content">
+                                <input id="TableName" name="TableName" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">描述</td>
+                            <td class="kv-content">
+                                <input id="Desc" name="Desc" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div id="userClassDialogButtons" >
+                    <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" onclick="CollectToolbar.save()" >保存</a>
+                    <a href="#" class="easyui-linkbutton" onclick="$('#TemplateClassDialog').dialog('close')">关闭</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script>
+        $(function(){
+            function createKeyIDObj(keyID){
+                return {
+                    ID:keyID
+                }
+            }
+            CollectToolbar = {
+                search:function(){
+                    $.ajax({
+                        url: '/CollectTask/config/search',
+                        method: 'POST',
+                        traditional: true,
+                        data: {StrategyName:$('input[name="search"]').val()},
+                        dataType: 'json',
+                        success: function (data) {
+                            $.messager.progress('close');
+                            if (data) {
+                                $("#tab").datagrid('loadData', data);
+                                $.messager.show({
+                                    title: '提示',
+                                    timeout: 1000,
+                                    msg: '查询成功',
+                                    style: {
+                                        right: '',
+                                        top: document.body.scrollTop + document.documentElement.scrollTop,
+                                        bottom: ''
+                                    }
+                                });
+                            }
+                        }
+                    })
+                },
+                create:function(){
+                    $("#TemplateClassDialog").dialog('open').dialog('setTitle', '新增采集策略');
+                    $('input[name="ID"]').attr("disabled", "disabled");
+                    $('input[name="ID"]').val("");
+                    $('input[name="CollectTaskName"]').val("");
+                    $('input[name="TableName"]').val("");
+                    $('input[name="Desc"]').val("");
+                },
+                update:function(){
+                    var rows = $("#tab").datagrid('getSelections');
+                    if (rows.length > 1) {
+                        $.messager.alert('警告操作！', '编辑记录只能选定一条数据！', 'warning');
+                    } else if (rows.length == 1) {
+                        var row = $("#tab").datagrid('getSelected');
+                        if(row){
+                            $("#TemplateClassDialog").dialog('open').dialog('setTitle', '修改采集策略');
+                            $('input[name="ID"]').val(row.ID);
+                            $('input[name="CollectTaskName"]').val(row.CollectTaskName);
+                            $('input[name="TableName"]').val(row.TableName);
+                            $('input[name="Desc"]').val(row.Desc);
+                        }
+                    }else if(rows.length == 0){
+                        $.messager.alert('警告操作！', '请选定一条数据！', 'warning');
+                    }
+                },
+                delete:function(){
+                    var rows = $("#tab").datagrid('getSelections');
+                    if (rows.length > 0) {
+                        var jsonarray=[];
+                        $.messager.confirm('确定操作', '您正在删除所选的记录吗？', function (flag) {
+                            if (flag) {
+                                var a = "";
+                                for (var i = 0; i < rows.length; i++) {
+                                    // ids.push(parseInt((rows[i].id)));
+                                    var obj=createKeyIDObj(parseInt(rows[i].ID));
+                                    jsonarray.push(obj);
+                                }
+                                // a = JSON.stringify([{"ID":9},{"ID":10}])
+                                a = JSON.stringify(jsonarray);
+                                $.ajax({
+                                    url: '/CollectTask/config/delete',
+                                    method: 'POST',
+                                    traditional: true,
+                                    // data: JSON.stringify(ids),
+                                    data: {
+                                        ID:a
+                                    },
+                                    dataType: 'json',
+                                    success: function (data) {
+                                        $.messager.progress('close');
+
+                                        if (data) {
+                                            $("#tab").datagrid('loadData', data);
+                                            $("#tab").datagrid('load');
+                                            $.messager.show({
+                                                title: '提示',
+                                                timeout:1000,
+                                                msg: '删除成功',
+                                                style: {
+                                                    right: '',
+                                                    top: document.body.scrollTop + document.documentElement.scrollTop,
+                                                    bottom: ''
+                                                }
+                                            });
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                    } else {
+                        $.messager.alert('提示', '请选择要删除的记录！', 'info');
+                    }
+                },
+                save:function(){
+                    var strID = $('#ID').val();
+                    var urlAddr = ""
+                    var stmp = $('#CollectTaskName').val();
+                    if(Bee.StringUtils.isEmpty(stmp)) {
+                       alert('Warning：采集任务名称不能为空！');
+                       return false;
+                    }
+                    stmp = $('#TableName').val();
+                    if(Bee.StringUtils.isEmpty(stmp)) {
+                       alert('Warning：TableName不能为空！');
+                       return false;
+                    }
+                    if (strID.length >= 1){
+                        urlAddr = '/CollectTask/config/' + 'update'
+                        hintinfo = "更新数据"
+                    }
+                    else {
+                        urlAddr = '/CollectTask/config/' + 'create'
+                        hintinfo = "新增数据"
+                    }
+                    $.ajax({
+                        url: urlAddr,
+                        method: 'POST',
+                        traditional: true,
+                        data: {
+                            ID:$('#ID').val(),
+                            CollectTaskName:$('#CollectTaskName').val(),
+                            TableName:$('#TableName').val(),
+                            Desc:$('#Desc').val()
+                        },
+                        dataType: 'json',
+                        cache: false,
+                        error: function(data){
+                           alert(hintinfo+ "异常，请刷新后重试...");
+                        },
+                        success: function (data,response,status) {
+                            $.messager.progress('close');
+                            var obj1 = eval(data);
+                            if(obj1[0].status == "OK"){
+                                $.messager.show({
+                                    title: '提示',
+                                    msg: hintinfo + '成功',
+                                    timeout:1000,
+                                    style: {
+                                        right: '',
+                                        top: document.body.scrollTop + document.documentElement.scrollTop,
+                                        bottom: ''
+                                    }
+                                });
+
+                                $("#TemplateClassForm").form('reset');
+                                $("#TemplateClassDialog").dialog('close');
+                                $("#tab").datagrid('load');
+                            } else {
+                                $.messager.alert(obj1[0].status + '失败！', '未知错误导致失败，请重试！', 'warning');
+                            }
+                        }
+                    });
+                },
+                refresh:function(){
+                    $("#tab").datagrid('load')
+                }
+            }
+        })
+    </script>
+</body>
+</html>
