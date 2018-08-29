@@ -86,7 +86,7 @@
 
         <div id="configToolbar" style="padding:0 10px;">
             采集任务名称:
-            <input type="text" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
+            <input type="text" class="textbox-text validatebox-text textbox-prompt" name="Asearch" style="height:28px;" autocomplete="off"
                 placeholder="">
             <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="CollectConfigToolbar.search();">查询</a>
             <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add'" onclick="CollectConfigToolbar.create();">添加</a>
@@ -353,7 +353,7 @@
                         url: '/CollectTaskConfig/search',
                         method: 'POST',
                         traditional: true,
-                        data: {CollectTaskName:$('input[name="search"]').val()},
+                        data: {CollectTaskName:$('input[name="Asearch"]').val()},
                         dataType: 'json',
                         success: function (data) {
                             $.messager.progress('close');
