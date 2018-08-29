@@ -3797,9 +3797,34 @@ def strategySearch():
             insertSyslog("error", "Collectionstrategy数据查询失败报错Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
+# 采集任务
 @app.route('/CollectTask/config')
 def CollectTaskConfig():
-    return render_template('CollectTaskConfig.html')
+    TemplateNames = []
+    TempNames = db_session.query(CollectParamsTemplate.TemplateName).all()
+    for name in TempNames:
+        li = list(name)
+        name = li[0]
+        temp_name = {'tempName': name}
+        TemplateNames.append(temp_name)
+    StrategyNames = []
+    straNames = db_session.query(Collectionstrategy.StrategyName).all()
+    for name in straNames:
+        li = list(name)
+        name = li[0]
+        stra_name = {'straName': name}
+        StrategyNames.append(stra_name)
+    CollectTaskNames = []
+    TaskNames = db_session.query(CollectTask.CollectTaskName).all()
+    for name in TaskNames:
+        li = list(name)
+        name = li[0]
+        task_name = {'taskName': name}
+        CollectTaskNames.append(task_name)
+    return render_template('CollectTaskConfig.html',
+                           TempNames=TemplateNames,
+                           StrategyNames=StrategyNames,
+                           CollectTaskNames=CollectTaskNames)
 
 @app.route('/CollectTask/config/find', methods=['POST', 'GET'])
 def CollectTaskFind():
@@ -3939,7 +3964,7 @@ def collectTaskCollection():
                 rowsnumber = int(data['rows'])
                 inipage = (pages - 1) * rowsnumber + 0
                 endpage = (pages - 1) * rowsnumber + rowsnumber
-                total = db_session.query(CollectTaskCollection).filter_by(CollectTaskName=TaskName).all().count()
+                total = db_session.query(CollectTaskCollection).filter_by(CollectTaskName=TaskName).count()
                 if total > 0:
                     qDatas = db_session.query(CollectTaskCollection).filter_by(CollectTaskName=TaskName).all()[inipage:endpage]
                     # ORM模型转换json格式
