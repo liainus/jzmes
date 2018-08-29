@@ -19,7 +19,7 @@
 <body>
     <div class="content">
         <div id="Toolbar" style="padding:0 10px;">
-            模板名称:
+            策略名称:
             <input type="text" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
                 placeholder="">
             <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="CollectToolbar.search();">查询</a>
@@ -104,13 +104,14 @@
                         url: '/Collectionstrategy/config/search',
                         method: 'POST',
                         traditional: true,
-                        data: {TemplateName:$('input[name="search"]').val()},
+                        data: {StrategyName:$('input[name="search"]').val()},
                         dataType: 'json',
                         success: function (data) {
                             $.messager.progress('close');
 
                             if (data) {
                                 $("#tab").datagrid('loadData', data);
+                                $("#tab").datagrid('load');
                                 $.messager.show({
                                     title: '提示',
                                     timeout: 1000,
