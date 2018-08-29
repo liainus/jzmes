@@ -3484,16 +3484,18 @@ def collectParams():
             insertSyslog("error", "CollectParams数据创建失败报错Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
-def transform(OpcTagIDs):
+def transform(IDs):
     Datas = []
-    for OpcTagID in OpcTagIDs:
-        # 查询NodeID
+    for ID in IDs:
+        # 查询OpcTagID
+        OpcTagID = db_session.query(CollectParams.OpcTagID).filter_by(ID=ID).first()[0]
+        # 通过OpcTagID查询NodeID
         NodeID = db_session.query(OpcTag.NodeID).filter_by(ID=OpcTagID).first()[0]
-        # 通过OpcTagID查询CollectParamsTemplateID
-        tempID = db_session.query(CollectParams.CollectParamsTemplateID).filter_by(OpcTagID=OpcTagID).first()
+        # 查询CollectParamsTemplateID
+        tempID = db_session.query(CollectParams.CollectParamsTemplateID).filter_by(ID=ID).first()
         # 通过CollectParamsTemplateID查询TemplateName
-        tempName = db_session.query(CollectParamsTemplate.TemplateName).filter_by(ID=tempID).first()[0]
-        Desc = db_session.query(CollectParams.Desc).filter_by(OpcTagID=OpcTagID).first()[0]
+        tempName = db_session.query(CollectParamsTemplate.TemplateName).filter_by(ID=tempID).first()
+        Desc = db_session.query(CollectParams.Desc).filter_by(ID=ID).first()[0]
         Datas.append({"TemplateName": tempName, "NodeID": NodeID, "Desc": Desc})
     return Datas
 
@@ -3512,8 +3514,8 @@ def collectParamsFind():
                 total = db_session.query(CollectParams.ID).count()
                 if total > 0:
                     # 查询模板ID
-                    OpcTagIDs = db_session.query(CollectParams.OpcTagID).all()[inipage:endpage]
-                    Datas = transform(OpcTagIDs)
+                    IDs = db_session.query(CollectParams.ID).all()[inipage:endpage]
+                    Datas = transform(IDs)
                     # ORM模型转换json格式
                     jsonCollectParams= json.dumps(Datas)
                     jsonCollectParams = '{"total"' + ":" + str(
@@ -3652,9 +3654,9 @@ def collectParamsSearch():
             if len(json_str) > 2:
                 TemplateName = data['TemplateName']
                 tempId = db_session.query(CollectParamsTemplate.ID).filter_by(TemplateName=TemplateName).first()
-                OpcTagIDs = db_session.query(CollectParams.OpcTagID).filter_by(CollectParamsTemplateID=tempId).all()
+                IDs = db_session.query(CollectParams.ID).filter_by(CollectParamsTemplateID=tempId).all()
                 total = db_session.query(CollectParams.ID).filter_by(CollectParamsTemplateID=tempId).count()
-                Datas = transform(OpcTagIDs)
+                Datas = transform(IDs)
                 jsonTemplates = json.dumps(Datas)
                 jsonTemplates = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonTemplates + "}"
                 return jsonTemplates
