@@ -3957,13 +3957,21 @@ def collectTaskCollection():
         try:
             json_str = json.dumps(data.to_dict())
             TaskName = data['CollectTaskName']
+            pages = int(data['page'])
+            rowsnumber = int(data['rows'])
+            inipage = (pages - 1) * rowsnumber + 0
+            endpage = (pages - 1) * rowsnumber + rowsnumber
             if TaskName is None or TaskName == '':
-                return
+                total = db_session.query(CollectTaskCollection).count()
+                if total > 0:
+                    qDatas = db_session.query(CollectTaskCollection).all()[inipage:endpage]
+                    # ORM模型转换json格式
+                    jsonCollectTask = json.dumps(qDatas, cls=Model.BSFramwork.AlchemyEncoder,
+                                                 ensure_ascii=False)
+                    jsonCollectTask = '{"total"' + ":" + str(
+                        total) + ',"rows"' + ":\n" + jsonCollectTask + "}"
+                    return jsonCollectTask
             if len(json_str) > 10:
-                pages = int(data['page'])
-                rowsnumber = int(data['rows'])
-                inipage = (pages - 1) * rowsnumber + 0
-                endpage = (pages - 1) * rowsnumber + rowsnumber
                 total = db_session.query(CollectTaskCollection).filter_by(CollectTaskName=TaskName).count()
                 if total > 0:
                     qDatas = db_session.query(CollectTaskCollection).filter_by(CollectTaskName=TaskName).all()[inipage:endpage]
@@ -3974,7 +3982,7 @@ def collectTaskCollection():
                         total) + ',"rows"' + ":\n" + jsonCollectTask + "}"
                     return jsonCollectTask
                 else:
-                    return ""
+                    return
         except Exception as e:
             print(e)
             logger.error(e)
