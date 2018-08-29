@@ -130,19 +130,34 @@
                         <tr>
                             <td class="kv-label">采集参数模板名称</td>
                             <td class="kv-content">
-                                <input id="TemplateName" name="TemplateName" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                                <select name="TemplateName" id="TemplateName" type="text" autocomplete="off" placeholder="" style="height:29px;width:162px;">
+                                    <option value="">请选择</option>
+                                    {% for temp in TempNames %}
+                                        <option value="{{ temp['tempName'] }}">{{ temp['tempName'] }}</option>
+                                    {% endfor %}
+                                </select>
                             </td>
                         </tr>
                         <tr>
                             <td class="kv-label">策略名称</td>
                             <td class="kv-content">
-                                <input id="StrategyName" name="StrategyName" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                                <select name="StrategyName" id="StrategyName" type="text" autocomplete="off" placeholder="" style="height:29px;width:162px;">
+                                    <option value="">请选择</option>
+                                    {% for strategy in StrategyNames %}
+                                        <option value="{{ strategy['straName'] }}">{{ strategy['straName'] }}</option>
+                                    {% endfor %}
+                                </select>
                             </td>
                         </tr>
                         <tr>
                             <td class="kv-label">采集任务名称</td>
                             <td class="kv-content">
-                                <input id="CollectTaskName" name="CollectTaskName" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                                <select name="CollectTaskName" id="CollectTaskName" type="text" autocomplete="off" placeholder="" style="height:29px;width:162px;">
+                                    <option value="">请选择</option>
+                                    {% for Task in CollectTaskNames %}
+                                        <option value="{{ Task['taskName'] }}">{{ Task['taskName'] }}</option>
+                                    {% endfor %}
+                                </select>
                             </td>
                         </tr>
                         <tr>
@@ -362,9 +377,9 @@
                     $("#configClassDialog").dialog('open').dialog('setTitle', '新增采集任务');
                     $('input[name="ID"]').attr("disabled", "disabled");
                     $('input[name="ID"]').val("");
-                    $('input[name="TemplateName"]').val("");
-                    $('input[name="StrategyName"]').val("");
-                    $('input[name="CollectTaskName"]').val("");
+                    $('#TemplateName option[value=""]').prop("selected", 'selected');
+                    $('#StrategyName option[value=""]').prop("selected", 'selected');
+                    $('#CollectTaskName option[value=""]').prop("selected", 'selected');
                     $('input[name="Desc"]').val("");
                 },
                 update:function(){
@@ -376,9 +391,9 @@
                         if(row){
                             $("#configClassDialog").dialog('open').dialog('setTitle', '修改采集任务');
                             $('input[name="ID"]').val(row.ID);
-                            $('input[name="TemplateName"]').val(row.TemplateName);
-                            $('input[name="StrategyName"]').val(row.StrategyName);
-                            $('input[name="CollectTaskName"]').val(row.CollectTaskName);
+                            $('#TemplateName option:contains('+row.TemplateName+')').prop("selected", 'selected');
+                            $('#StrategyName option:contains('+row.StrategyName+')').prop("selected", 'selected');
+                            $('#CollectTaskName option:contains('+row.CollectTaskName+')').prop("selected", 'selected');
                             $('input[name="Desc"]').val(row.Desc);
                         }
                     }else if(rows.length == 0){
@@ -436,17 +451,17 @@
                 save:function(){
                     var strID = $('#ID').val();
                     var urlAddr = ""
-                    var stmp = $('#TemplateName').val();
+                    var stmp = $('#TemplateName').find("option:selected").val();
                     if(Bee.StringUtils.isEmpty(stmp)) {
                        alert('Warning：采集参数模板名称不能为空！');
                        return false;
                     }
-                    stmp = $('#StrategyName').val();
+                    stmp = $('#StrategyName').find("option:selected").val();
                     if(Bee.StringUtils.isEmpty(stmp)) {
                        alert('Warning：策略名称不能为空！');
                        return false;
                     }
-                    stmp = $('#CollectTaskName').val();
+                    stmp = $('#CollectTaskName').find("option:selected").val();
                     if(Bee.StringUtils.isEmpty(stmp)) {
                        alert('Warning：采集任务名称不能为空！');
                        return false;
@@ -465,9 +480,9 @@
                         traditional: true,
                         data: {
                             ID:$('#ID').val(),
-                            TemplateName:$('#TemplateName').val(),
-                            StrategyName:$('#StrategyName').val(),
-                            CollectTaskName:$('#CollectTaskName').val(),
+                            TemplateName:$('#TemplateName').find("option:selected").val(),
+                            StrategyName:$('#StrategyName').find("option:selected").val(),
+                            CollectTaskName:$('#CollectTaskName').find("option:selected").val(),
                             Desc:$('#Desc').val()
                         },
                         dataType: 'json',
