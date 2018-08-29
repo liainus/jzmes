@@ -3798,7 +3798,7 @@ def strategySearch():
 
 @app.route('/CollectTask/config')
 def CollectTaskConfig():
-    render_template('CollectTaskConfig.html')
+    return render_template('CollectTaskConfig.html')
 
 @app.route('/CollectTask/config/find', methods=['POST', 'GET'])
 def CollectTaskFind():
