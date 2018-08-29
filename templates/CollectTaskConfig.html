@@ -124,13 +124,13 @@
                         <tr>
                             <td class="kv-label">id</td>
                             <td class="kv-content">
-                                <input id="AID" name="ID" type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="" disabled="disabled">
+                                <input id="AID" name="AID" type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="" disabled="disabled">
                             </td>
                         </tr>
                         <tr>
                             <td class="kv-label">采集参数模板名称</td>
                             <td class="kv-content">
-                                <select name="ATemplateName" id="TemplateName" type="text" autocomplete="off" placeholder="" style="height:29px;width:162px;">
+                                <select name="ATemplateName" id="ATemplateName" type="text" autocomplete="off" placeholder="" style="height:29px;width:162px;">
                                     <option value="">请选择</option>
                                     {% for temp in TempNames %}
                                         <option value="{{ temp['tempName'] }}">{{ temp['tempName'] }}</option>
@@ -141,7 +141,7 @@
                         <tr>
                             <td class="kv-label">策略名称</td>
                             <td class="kv-content">
-                                <select name="AStrategyName" id="StrategyName" type="text" autocomplete="off" placeholder="" style="height:29px;width:162px;">
+                                <select name="AStrategyName" id="AStrategyName" type="text" autocomplete="off" placeholder="" style="height:29px;width:162px;">
                                     <option value="">请选择</option>
                                     {% for strategy in StrategyNames %}
                                         <option value="{{ strategy['straName'] }}">{{ strategy['straName'] }}</option>
@@ -152,7 +152,7 @@
                         <tr>
                             <td class="kv-label">采集任务名称</td>
                             <td class="kv-content">
-                                <select name="ACollectTaskName" id="CollectTaskName" type="text" autocomplete="off" placeholder="" style="height:29px;width:162px;">
+                                <select name="ACollectTaskName" id="ACollectTaskName" type="text" autocomplete="off" placeholder="" style="height:29px;width:162px;">
                                     <option value="">请选择</option>
                                     {% for Task in CollectTaskNames %}
                                         <option value="{{ Task['taskName'] }}">{{ Task['taskName'] }}</option>
@@ -163,7 +163,7 @@
                         <tr>
                             <td class="kv-label">描述</td>
                             <td class="kv-content">
-                                <input id="ADesc" name="Desc" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                                <input id="ADesc" name="ADesc" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
                             </td>
                         </tr>
                     </tbody>
