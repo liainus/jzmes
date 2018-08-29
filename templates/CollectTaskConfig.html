@@ -507,9 +507,7 @@
             $("#tab").datagrid({
                 onSelect:function(rowIndex, rowData){
                     $("#configTab").datagrid('load',{
-                        queryParams: {
-                            CollectTaskName: rowData.CollectTaskName
-                        }
+                        CollectTaskName: rowData.CollectTaskName
                     })
                 }
             })
