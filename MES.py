@@ -3931,11 +3931,10 @@ def collectTaskCollection():
         data = request.values
         try:
             json_str = json.dumps(data.to_dict())
-            print(json_str)
+            TaskName = data['CollectTaskName']
+            if TaskName is None or TaskName == '':
+                return
             if len(json_str) > 10:
-                TaskName = data['CollectTaskName']
-                if TaskName is None:
-                    return
                 pages = int(data['page'])
                 rowsnumber = int(data['rows'])
                 inipage = (pages - 1) * rowsnumber + 0
