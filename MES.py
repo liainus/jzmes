@@ -3784,8 +3784,8 @@ def strategySearch():
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 2:
                 StrategyName = "%" + data['StrategyName'] + "%"
-                Strategyscount = db_session.query(Collectionstrategy).filter(
-                    CollectParamsTemplate.TemplateName.like(StrategyName)).all()
+                Strategyscount = db_session.query(Collectionstrategy).filter(Collectionstrategy.StrategyName.like(StrategyName)).all()
+                print(Strategyscount)
                 total = Counter(Strategyscount)
                 jsonStrategys = json.dumps(Strategyscount, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
                 jsonStrategys = '{"total"' + ":" + str(total.__len__()) + ',"rows"' + ":\n" + jsonStrategys + "}"
