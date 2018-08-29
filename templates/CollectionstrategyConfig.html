@@ -108,10 +108,8 @@
                         dataType: 'json',
                         success: function (data) {
                             $.messager.progress('close');
-
                             if (data) {
                                 $("#tab").datagrid('loadData', data);
-                                $("#tab").datagrid('load');
                                 $.messager.show({
                                     title: '提示',
                                     timeout: 1000,
