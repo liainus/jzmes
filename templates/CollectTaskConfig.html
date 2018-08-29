@@ -46,7 +46,7 @@
                 </tr>
             </thead>
         </table>
-        <div id="TemplateClassDialog" class="easyui-dialog" style="width:400px;height:240px;padding:10px;"
+        <div id="TemplateClassDialog" class="easyui-dialog" style="width:400px;height:280px;padding:10px;"
              data-options="closed:'true',buttons:'#userClassDialogButtons',modal:true">
             <form id="TemplateClassForm" method="post" class="dialog-form">
                 <table class="kv-table">
@@ -116,7 +116,7 @@
                 </tr>
             </thead>
         </table>
-        <div id="configClassDialog" class="easyui-dialog" style="width:400px;height:240px;padding:10px;"
+        <div id="configClassDialog" class="easyui-dialog" style="width:400px;height:280px;padding:10px;"
              data-options="closed:'true',buttons:'#configClassDialogButtons',modal:true">
             <form id="TemplateConfigClassForm" method="post" class="dialog-form">
                 <table class="kv-table">
@@ -124,13 +124,13 @@
                         <tr>
                             <td class="kv-label">id</td>
                             <td class="kv-content">
-                                <input id="ID" name="ID" type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="" disabled="disabled">
+                                <input id="AID" name="ID" type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="" disabled="disabled">
                             </td>
                         </tr>
                         <tr>
                             <td class="kv-label">采集参数模板名称</td>
                             <td class="kv-content">
-                                <select name="TemplateName" id="TemplateName" type="text" autocomplete="off" placeholder="" style="height:29px;width:162px;">
+                                <select name="ATemplateName" id="TemplateName" type="text" autocomplete="off" placeholder="" style="height:29px;width:162px;">
                                     <option value="">请选择</option>
                                     {% for temp in TempNames %}
                                         <option value="{{ temp['tempName'] }}">{{ temp['tempName'] }}</option>
@@ -141,7 +141,7 @@
                         <tr>
                             <td class="kv-label">策略名称</td>
                             <td class="kv-content">
-                                <select name="StrategyName" id="StrategyName" type="text" autocomplete="off" placeholder="" style="height:29px;width:162px;">
+                                <select name="AStrategyName" id="StrategyName" type="text" autocomplete="off" placeholder="" style="height:29px;width:162px;">
                                     <option value="">请选择</option>
                                     {% for strategy in StrategyNames %}
                                         <option value="{{ strategy['straName'] }}">{{ strategy['straName'] }}</option>
@@ -152,7 +152,7 @@
                         <tr>
                             <td class="kv-label">采集任务名称</td>
                             <td class="kv-content">
-                                <select name="CollectTaskName" id="CollectTaskName" type="text" autocomplete="off" placeholder="" style="height:29px;width:162px;">
+                                <select name="ACollectTaskName" id="CollectTaskName" type="text" autocomplete="off" placeholder="" style="height:29px;width:162px;">
                                     <option value="">请选择</option>
                                     {% for Task in CollectTaskNames %}
                                         <option value="{{ Task['taskName'] }}">{{ Task['taskName'] }}</option>
@@ -163,7 +163,7 @@
                         <tr>
                             <td class="kv-label">描述</td>
                             <td class="kv-content">
-                                <input id="Desc" name="Desc" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                                <input id="ADesc" name="Desc" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
                             </td>
                         </tr>
                     </tbody>
@@ -375,12 +375,12 @@
                 },
                 create:function(){
                     $("#configClassDialog").dialog('open').dialog('setTitle', '新增采集任务');
-                    $('input[name="ID"]').attr("disabled", "disabled");
-                    $('input[name="ID"]').val("");
-                    $('#TemplateName option[value=""]').prop("selected", 'selected');
-                    $('#StrategyName option[value=""]').prop("selected", 'selected');
-                    $('#CollectTaskName option[value=""]').prop("selected", 'selected');
-                    $('input[name="Desc"]').val("");
+                    $('input[name="AID"]').attr("disabled", "disabled");
+                    $('input[name="AID"]').val("");
+                    $('#ATemplateName option[value=""]').prop("selected", 'selected');
+                    $('#AStrategyName option[value=""]').prop("selected", 'selected');
+                    $('#ACollectTaskName option[value=""]').prop("selected", 'selected');
+                    $('input[name="ADesc"]').val("");
                 },
                 update:function(){
                     var rows = $("#configTab").datagrid('getSelections');
@@ -390,11 +390,11 @@
                         var row = $("#configTab").datagrid('getSelected');
                         if(row){
                             $("#configClassDialog").dialog('open').dialog('setTitle', '修改采集任务');
-                            $('input[name="ID"]').val(row.ID);
-                            $('#TemplateName option:contains('+row.TemplateName+')').prop("selected", 'selected');
-                            $('#StrategyName option:contains('+row.StrategyName+')').prop("selected", 'selected');
-                            $('#CollectTaskName option:contains('+row.CollectTaskName+')').prop("selected", 'selected');
-                            $('input[name="Desc"]').val(row.Desc);
+                            $('input[name="AID"]').val(row.ID);
+                            $('#ATemplateName option:contains('+row.TemplateName+')').prop("selected", 'selected');
+                            $('#AStrategyName option:contains('+row.StrategyName+')').prop("selected", 'selected');
+                            $('#ACollectTaskName option:contains('+row.CollectTaskName+')').prop("selected", 'selected');
+                            $('input[name="ADesc"]').val(row.Desc);
                         }
                     }else if(rows.length == 0){
                         $.messager.alert('警告操作！', '请选定一条数据！', 'warning');
@@ -449,19 +449,19 @@
                     }
                 },
                 save:function(){
-                    var strID = $('#ID').val();
+                    var strID = $('#AID').val();
                     var urlAddr = ""
-                    var stmp = $('#TemplateName').find("option:selected").val();
+                    var stmp = $('#ATemplateName').find("option:selected").val();
                     if(Bee.StringUtils.isEmpty(stmp)) {
                        alert('Warning：采集参数模板名称不能为空！');
                        return false;
                     }
-                    stmp = $('#StrategyName').find("option:selected").val();
+                    stmp = $('#AStrategyName').find("option:selected").val();
                     if(Bee.StringUtils.isEmpty(stmp)) {
                        alert('Warning：策略名称不能为空！');
                        return false;
                     }
-                    stmp = $('#CollectTaskName').find("option:selected").val();
+                    stmp = $('#ACollectTaskName').find("option:selected").val();
                     if(Bee.StringUtils.isEmpty(stmp)) {
                        alert('Warning：采集任务名称不能为空！');
                        return false;
@@ -479,11 +479,11 @@
                         method: 'POST',
                         traditional: true,
                         data: {
-                            ID:$('#ID').val(),
-                            TemplateName:$('#TemplateName').find("option:selected").val(),
-                            StrategyName:$('#StrategyName').find("option:selected").val(),
-                            CollectTaskName:$('#CollectTaskName').find("option:selected").val(),
-                            Desc:$('#Desc').val()
+                            ID:$('#AID').val(),
+                            TemplateName:$('#ATemplateName').find("option:selected").val(),
+                            StrategyName:$('#AStrategyName').find("option:selected").val(),
+                            CollectTaskName:$('#ACollectTaskName').find("option:selected").val(),
+                            Desc:$('#ADesc').val()
                         },
                         dataType: 'json',
                         cache: false,
