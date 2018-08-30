@@ -4119,7 +4119,7 @@ def Taskload():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "CTask数据加载失败报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "Task数据加载失败报错Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 if __name__ == '__main__':
     app.run(debug=True)
