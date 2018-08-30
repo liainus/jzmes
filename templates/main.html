@@ -76,7 +76,7 @@
                             {% endif %}
                             {% if '05' in session.get('menus') %}
                                 <li>
-                                    <a href="#" onclick="addTab('草珊瑚含片生产线','/processMonitorLine')">草珊瑚含片生产线</a>
+                                    <a href="#" onclick="addTab('产品生产线监控','/processMonitorLine')">产品生产线监控</a>
                                 </li>
                             {% endif %}
                         </ul>
@@ -199,7 +199,17 @@
                             {% endif %}
                             {% if '26' in session.get('menus') %}
                                 <li>
-                                    <a href="#" onclick="addTab('制药计划','ZYPlan')">制药计划</a>
+                                    <a href="#" onclick="addTab('制药计划','/ZYPlanGuid/planmanager')">制药计划</a>
+                                </li>
+                            {% endif %}
+                            {% if '25' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onclick="addTab('计划审核','/ZYPlanGuid/checkplanmanager')">计划审核</a>
+                                </li>
+                            {% endif %}
+                            {% if '25' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onclick="addTab('计划明细','/ZYPlan')">计划明细</a>
                                 </li>
                             {% endif %}
                             {% if '27' in session.get('menus') %}
@@ -558,6 +568,26 @@
                             {% if '88' in session.get('menus') %}
                                 <li>
                                     <a href="#" onclick="addTab('加载OPC-Tag','/OpcTag/load')">加载OPC-Tag</a>
+                                </li>
+                            {% endif %}
+                            {% if '88' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onclick="addTab('管理采集模板','/CollectParamsTemplate/config')">管理采集模板</a>
+                                </li>
+                            {% endif %}
+                            {% if '88' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onclick="addTab('配置采集模板','/CollectParams/config')">配置采集模板</a>
+                                </li>
+                            {% endif %}
+                            {% if '88' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onclick="addTab('配置采集策略','/Collectionstrategy/config')">配置采集策略</a>
+                                </li>
+                            {% endif %}
+                            {% if '88' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onclick="addTab('配置采集任务','/CollectTask/config')">配置采集任务</a>
                                 </li>
                             {% endif %}
                         </ul>

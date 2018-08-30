@@ -3432,7 +3432,7 @@ class OpcTag(Base):
 	OpcServerID = Column(Integer, nullable=True)
 
 	# NodeID
-	NodeID = Column(Integer, nullable=True)
+	NodeID = Column(Unicode(30), nullable=True)
 
 	# 名称
 	DisplayName = Column(Unicode(30), nullable=True)
@@ -3441,7 +3441,7 @@ class OpcTag(Base):
 	Note = Column(Unicode(50), nullable=True)
 
 	# 父节点
-	ParentID = Column(Integer, nullable=True)
+	ParentID = Column(Unicode(30), nullable=True)
 
 	# 备注
 	Desc = Column(Unicode(100), nullable=True)
@@ -3456,10 +3456,23 @@ class CollectParamsTemplate(Base):
 	#模板名称
 	TemplateName = Column(Unicode(32), nullable=True)
 
-	# OPCTagID
+	# 描述信息
+	Desc = Column(Unicode(100), nullable=True)
+
+
+class CollectParams(Base):
+	__tablename__ = 'CollectParams'
+
+	#ID
+	ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+	# CollectParamsTemplateID
+	CollectParamsTemplateID = Column(Integer, nullable=True)
+
+	# OpcTagID
 	OpcTagID = Column(Integer, nullable=True)
 
-	# 描述信息
+	# 描述
 	Desc = Column(Unicode(100), nullable=True)
 
 
@@ -3469,14 +3482,14 @@ class Collectionstrategy(Base):
 	# ID
 	ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
 
-	# TableName
-	TableName = Column(Unicode(32),nullable=True)
-
 	# 间隔时间
 	Interval = Column(Integer, nullable=True)
 
-	# OPcTagID
-	FlagOpcTagID = Column(Integer, nullable=True)
+	# NodeID
+	NodeID = Column(Unicode(30), nullable=True)
+
+	# 策略名称
+	StrategyName = Column(Unicode(30), nullable=True)
 
 	# 描述
 	Desc = Column(Unicode(100), nullable=True)
@@ -3487,11 +3500,39 @@ class CollectTask(Base):
 	#ID
 	ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
 
+	# 采集任务名称
+	CollectTaskName = Column(Unicode(32), nullable=True)
+
+	# TableName
+	TableName = Column(Unicode(32), nullable=True)
+
+	# 描述
+	Desc = Column(Unicode(100), nullable=True)
+
+
+class CollectTaskCollection(Base):
+	__tablename__ = 'CollectTaskCollection'
+
+	#ID
+	ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
 	# 采集参数模板ID
 	CollectParamsTemplateID = Column(Integer, nullable=True)
 
+	# 采集参数模板名称
+	TemplateName = Column(Unicode(32), nullable=True)
+
 	# 采集策略ID
 	CollectionStrategyID = Column(Integer, nullable=True)
+
+	# 策略名称
+	StrategyName = Column(Unicode(30), nullable=True)
+
+	#采集任务ID
+	CollectTaskID = Column(Integer, nullable=True)
+
+	# 采集任务名称
+	CollectTaskName = Column(Unicode(32), nullable=True)
 
 	# 描述
 	Desc = Column(Unicode(100), nullable=True)

@@ -18,6 +18,8 @@ from Model.BSFramwork import AlchemyEncoder
 from Model.core import Enterprise, Area, Factory, ProductLine, ProcessUnit, Equipment, Material, MaterialType, \
     ProductUnit, ProductRule, ZYTask, ZYPlanMaterial, ZYPlan, Unit, PlanManager, SchedulePlan, ProductControlTask, \
     OpcServer, Pequipment, WorkFlowStatus, WorkFlowEvent
+    OpcTag, CollectParamsTemplate, CollectParams, Collectionstrategy, CollectTask, \
+    CollectTaskCollection
 from Model.system import Role, Organization, User, Menu, Role_Menu
 from tools.MESLogger import MESLogger
 from Model.core import SysLog
@@ -32,7 +34,7 @@ from flask_login import LoginManager, current_user
 from flask.ext.login import login_required, logout_user, login_user
 import socket
 from opcua import Client
-
+from Model.dynamic_model import make_dynamic_classes
 #flask_login的初始化
 login_manager = LoginManager()
 login_manager.db_session_protection = 'strong'
@@ -44,12 +46,10 @@ app.config['SECRET_KEY'] = 'qeqhqiqd131'
 login_manager.init_app(app)
 
 
-
 engine = create_engine(Model.Global.GLOBAL_DATABASE_CONNECT_STRING, deprecate_large_types=True)
 Session = sessionmaker(bind=engine)
 db_session = Session()
 logger = MESLogger('../logs', 'log')
-
 
 # 存储
 def store(data):
@@ -3275,33 +3275,34 @@ def opcServerTag():
             insertSyslog("error", "获取OpcServer下的URI报错Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
-def unique_num():
-    import datetime
-    import random
-    nowTime = datetime.datetime.now().strftime("%Y%m%d%H%M%S")  # 生成当前时间
-    randomNum = random.randint(0, 100)  # 生成的随机整数n，其中0<=n<=100
-    if randomNum <= 10:
-        randomNum = str(0) + str(randomNum)
-    uniqueNum = str(nowTime) + str(randomNum)
-    return uniqueNum
 
-# global id
-# id = 0
+
+global id
+id = 0
 def printSelect(node, depth): # id:0, depth:1
     result = []
-    # global id
-    # id += 1 # 控制下一层
+    global id
+    id += 1 # 控制下一层
     if depth <= 2:
         for cNode in node.get_children():#[Node(TwoByteNodeId(i=86)), Node(TwoByteNodeId(i=85)), Node(TwoByteNodeId(i=87))]
-            if len(cNode.get_children()) > 0:
-                result.append({"id": unique_num(),
-                               "nodeId": cNode.nodeid.to_string(),
-                               "displayName": cNode.get_display_name().Text,
-                               "BrowseName": cNode.get_browse_name().to_string(),
-                               "state": 'closed',
-                               "children": printSelect(cNode, depth+1)
-                               })
-    return result
+            if len(cNode.get_children()) >= 0:
+                if len(cNode.get_children()) > 0:
+                    result.append({"id": id+1,
+                                   "nodeId": cNode.nodeid.to_string(),
+                                   "displayName": cNode.get_display_name().Text,
+                                   "BrowseName": cNode.get_browse_name().to_string(),
+                                   "state": 'closed',
+                                   "children": printSelect(cNode, depth+1)
+                                   })
+                if len(cNode.get_children()) == 0:
+                    result.append({"id": id + 1,
+                                   "nodeId": cNode.nodeid.to_string(),
+                                   "displayName": cNode.get_display_name().Text,
+                                   "BrowseName": cNode.get_browse_name().to_string(),
+                                   "state": 'open',
+                                   "children": printSelect(cNode, depth + 1)
+                                   })
+        return result
 
 # nodeid displayname browsename
 # 连接opcua-client
@@ -3314,7 +3315,7 @@ def opcuaClientLink():
             URI = data["URI"]
             if URI is None or URI == '':
                 return
-            client = Client("%s"%URI)
+            client = Client("%s"% URI)
             client.connect()
             # 获取根节点
             rootNode = client.get_root_node()
@@ -3334,8 +3335,12 @@ def nodeLoad():
         try:
             rootNode = data['nodeId']
             id = data['id']
-            if rootNode is None or id is None:
+            URI = data["URI"]
+            if rootNode is None or id is None or URI is None:
                 return
+            client = Client("%s" % URI)
+            client.connect()
+            rootNode = client.get_node(rootNode)
             tree_data = printSelect(rootNode, 1)
             tree_data = json.dumps(tree_data, cls=AlchemyEncoder, ensure_ascii=False)
             return tree_data
@@ -3345,21 +3350,181 @@ def nodeLoad():
             insertSyslog("error", "加载opcuaClient节点失败报错Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
+
+def store_child(node, OpcServerID):
+    for cNode in node.get_children():
+        nodeId = cNode.nodeid.to_string()
+        displayName = cNode.get_display_name().Text
+        opcTag_c = OpcTag()
+        opcTag_c.OpcServerID = OpcServerID
+        opcTag_c.NodeID = nodeId
+        opcTag_c.DisplayName = displayName
+        opcTag_c.ParentID = node.nodeid.to_string()
+        db_session.add(opcTag_c)
+        db_session.commit()
+        if len(cNode.get_children()) > 0:
+            store_child(cNode, OpcServerID)
+
 # 将所选OPC-Tag加载到数据库
-app.route("/opcuaClient/storeOpcTag", methods=['POST', 'GET'])
+@app.route("/opcuaClient/storeOpcTag", methods=['POST', 'GET'])
 def storeOpcTag():
     if request.method == 'POST':
         data = request.values
         try:
             nodeId = data['nodeId']
             displayName = data['displayName']
-
+            URI = data['URI']
+            if nodeId is None or displayName is None or URI is None:
+                return
+            client = Client("%s" % URI)
+            client.connect()
+            OpcServerID = db_session.query(OpcServer).filter_by(URI=URI).first().ID
+            # 存储当前节点
+            opcTag_r = OpcTag()
+            opcTag_r.OpcServerID = OpcServerID
+            opcTag_r.NodeID = nodeId
+            opcTag_r.DisplayName = displayName
+            db_session.add(opcTag_r)
+            db_session.commit()
+            # 存储子节点
+            node = client.get_node(nodeId)
+            store_child(node, OpcServerID)
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "加载opcuaClient节点失败报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "OpcTag存储失败报错Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
+# 配置采集策略模板
+@app.route('/CollectParamsTemplate/config')
+def collectParamsTemplateConfig():
+    return render_template('collectParamsTemplateConfig.html')
+
+@app.route('/CollectParamsTemplate/config/find', methods=['POST', 'GET'])
+def templateFind():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            print(json_str)
+            if len(json_str) > 10:
+                pages = int(data['page'])
+                rowsnumber = int(data['rows'])
+                inipage = (pages - 1) * rowsnumber + 0
+                endpage = (pages - 1) * rowsnumber + rowsnumber
+                total = db_session.query(CollectParamsTemplate.ID).count()
+                if total > 0:
+                    qDatas = db_session.query(CollectParamsTemplate).all()[inipage:endpage]
+                    # ORM模型转换json格式
+                    jsonTemplateconfig = json.dumps(qDatas, cls=Model.BSFramwork.AlchemyEncoder,
+                                                  ensure_ascii=False)
+                    jsonTemplateconfig = '{"total"' + ":" + str(
+                        total) + ',"rows"' + ":\n" + jsonTemplateconfig + "}"
+                    return jsonTemplateconfig
+                else:
+                    return ""
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "CollectParamsTemplate数据加载失败报错Error：" + str(e), "AAAAAAadmin")
+            return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,ensure_ascii=False)
+
+@app.route('/CollectParamsTemplate/config/create', methods=['POST', 'GET'])
+def templateCreate():
+    if request.method == 'POST':
+        try:
+            data = request.values
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                db_session.add(
+                    CollectParamsTemplate(
+                        TemplateName=data['TemplateName'],
+                        Desc=data['Desc']))
+                db_session.commit()
+                return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
+                                  ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "CollectParamsTemplate数据创建失败报错Error：" + str(e), "AAAAAAadmin")
+            return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+@app.route('/CollectParamsTemplate/config/delete', methods=['POST', 'GET'])
+def templateDelete():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
+                for key in jsonnumber:
+                    TemplateID = int(key)
+                    try:
+                        oclass = db_session.query(CollectParamsTemplate).filter_by(ID=TemplateID).first()
+                        oclass_params = db_session.query(CollectParams).filter_by(CollectParamsTemplateID=TemplateID).first()
+                        db_session.delete(oclass)
+                        if oclass_params is not None:
+                            db_session.delete(oclass_params)
+                        db_session.commit()
+                    except Exception as ee:
+                        print(ee)
+                        logger.error(ee)
+                        return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
+                                          ensure_ascii=False)
+                return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
+                                  ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "CollectParamsTemplate数据删除失败报错Error：" + str(e), "AAAAAAadmin")
+            return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+@app.route('/CollectParamsTemplate/config/update', methods=['POST', 'GET'])
+def templateUpdate():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                TemplateID = int(data['ID'])
+                oclass = db_session.query(CollectParamsTemplate).filter_by(ID=TemplateID).first()
+                oclass.TemplateName = data['TemplateName']
+                oclass.TableName = data['TableName'],
+                oclass.Desc = data['Desc']
+                db_session.add(oclass)
+                db_session.commit()
+                return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
+                                  ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "CollectParamsTemplate数据更新失败报错Error：" + str(e), "AAAAAAadmin")
+            return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+            # 查询Opc服务
+
+
+@app.route('/CollectParamsTemplate/config/search', methods=['POST', 'GET'])
+def templateSearch():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 2:
+                TemplateName = "%" + data['TemplateName'] + "%"
+                Templatescount = db_session.query(CollectParamsTemplate).filter(
+                    CollectParamsTemplate.TemplateName.like(TemplateName)).all()
+                total = Counter(Templatescount)
+                jsonTemplates = json.dumps(Templatescount, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+                jsonTemplates = '{"total"' + ":" + str(total.__len__()) + ',"rows"' + ":\n" + jsonTemplates + "}"
+                return jsonTemplates
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "CollectParamsTemplate数据查询失败报错Error：" + str(e), "AAAAAAadmin")
+            return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+<<<<<<< HEAD
 
 # 制药计划向导生成planmanager修改
 @app.route('/ZYPlanGuid/updatePlanmanager', methods=['POST', 'GET'])
@@ -3449,6 +3614,108 @@ def createPlanmanager():
 #
 @app.route('/ZYPlanGuid/findPlanmanager')
 def findPlanmanager():
+# 采集模板配置
+@app.route('/CollectParams/config')
+def collectParamsConfig():
+    TemplateNames = []
+    TempNames = db_session.query(CollectParamsTemplate.TemplateName).all()
+    for name in TempNames:
+        li = list(name)
+        name = li[0]
+        temp_name = {'tempName': name}
+        TemplateNames.append(temp_name)
+    NodeID = []
+    NodeIDs = db_session.query(OpcTag.NodeID).all()
+    for nodeID in NodeIDs:
+        li = list(nodeID)
+        ID = li[0]
+        node_id = {'nodeID': ID}
+        NodeID.append(node_id)
+    return render_template('collectParamsConfig.html', TempNames=TemplateNames, NodeID=NodeID)
+
+def getOpcTagList(id, ParentID=None):
+    sz = []
+    try:
+        opcTags = db_session.query(OpcTag).all()
+        for obj in opcTags:
+            if obj.ParentID == ParentID:
+                sz.append({"id": obj.ID,
+                           "NodeId": obj.NodeID,
+                           "Desc": obj.Desc,
+                           "children": getOpcTagList(obj.ID, obj.NodeID)})
+        return sz
+    except Exception as e:
+        print(e)
+        logger.error(e)
+        insertSyslog("error", "加载父级菜单列表报错Error：" + str(e), "AAAAAAadmin")
+        return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
+@app.route('/CollectParams/OpcTagLoad', methods=['POST', 'GET'])
+def OpcTagLoad():
+    if request.method == 'POST':
+        try:
+            data = getOpcTagList(id=0)
+            jsondata = json.dumps(data, cls=AlchemyEncoder, ensure_ascii=False)
+            return jsondata.encode("utf8")
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "路由/CollectParams/OpcTagLoad生成OpcTag树形图报错Error：" + str(e), "AAAAAAadmin")
+            return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
+@app.route('/CollectParams/store', methods=['POST', 'GET'])
+def collectParams():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            CollectParamsTemplateID = data['CollectParamsTemplateID']
+            nodeIds = data['OpcTags'] # [{"nodeId":"i=2259"},{"nodeId":"i=2258"}]
+            nodeIds = re.findall(r"i=\d+", nodeIds)
+            if CollectParamsTemplateID is None or nodeIds is None:
+                return
+            if len(json_str) > 10:
+                for nodeId in nodeIds:
+                    OpcTagID = db_session.query(OpcTag.ID).filter_by(NodeID=nodeId).first()[0]
+                    # 判断当前模板是否存在
+                    object = db_session.query(CollectParams).filter(and_(CollectParams.OpcTagID==OpcTagID,CollectParams.CollectParamsTemplateID==CollectParamsTemplateID)).first()
+                    if object is not None:
+                        db_session.delete(object)
+                        db_session.commit()
+                        db_session.add(
+                            CollectParams(
+                                CollectParamsTemplateID=CollectParamsTemplateID,
+                                OpcTagID=OpcTagID))
+                        db_session.commit()
+                    else:
+                        db_session.add(CollectParams(CollectParamsTemplateID=CollectParamsTemplateID,
+                                                     OpcTagID=OpcTagID))
+                        db_session.commit()
+                return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
+                                  ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "CollectParams数据创建失败报错Error：" + str(e), "AAAAAAadmin")
+            return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+def transform(IDs):
+    Datas = []
+    for ID in IDs:
+        # 查询OpcTagID
+        OpcTagID = db_session.query(CollectParams.OpcTagID).filter_by(ID=ID).first()[0]
+        # 通过OpcTagID查询NodeID
+        NodeID = db_session.query(OpcTag.NodeID).filter_by(ID=OpcTagID).first()[0]
+        # 查询CollectParamsTemplateID
+        tempID = db_session.query(CollectParams.CollectParamsTemplateID).filter_by(ID=ID).first()
+        # 通过CollectParamsTemplateID查询TemplateName
+        tempName = db_session.query(CollectParamsTemplate.TemplateName).filter_by(ID=tempID).first()
+        Desc = db_session.query(CollectParams.Desc).filter_by(ID=ID).first()[0]
+        Datas.append({"TemplateName": tempName, "NodeID": NodeID, "Desc": Desc})
+    return Datas
+
+@app.route('/CollectParams/find', methods=['POST', 'GET'])
+def collectParamsFind():
     if request.method == 'GET':
         data = request.values
         try:
@@ -3459,6 +3726,180 @@ def findPlanmanager():
                 rowsnumber = int(data['rows'])
                 inipage = (pages - 1) * rowsnumber + 0
                 endpage = (pages - 1) * rowsnumber + rowsnumber
+                total = db_session.query(CollectParams.ID).count()
+                if total > 0:
+                    # 查询模板ID
+                    IDs = db_session.query(CollectParams.ID).all()[inipage:endpage]
+                    Datas = transform(IDs)
+                    # ORM模型转换json格式
+                    jsonCollectParams= json.dumps(Datas)
+                    jsonCollectParams = '{"total"' + ":" + str(
+                        total) + ',"rows"' + ":\n" + jsonCollectParams + "}"
+                    return jsonCollectParams
+                else:
+                    return ""
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "CollectParams数据加载失败报错Error：" + str(e), "AAAAAAadmin")
+            return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
+                              ensure_ascii=False)
+
+
+@app.route('/CollectParams/create', methods=['POST', 'GET'])
+def collectParamsCreate():
+    if request.method == 'POST':
+        try:
+            data = request.values
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                tempName = data['TemplateName']
+                NodeId = data['NodeID']
+                Desc = data['Desc']
+                if tempName is None or NodeId is None:
+                    return
+                CollectParamsTemplateID = db_session.query(CollectParamsTemplate.ID).filter_by(TemplateName=tempName).first()[0]
+                OpcTagID = db_session.query(OpcTag.ID).filter_by(NodeID=NodeId).first()[0]
+                object = db_session.query(CollectParams).filter(
+                    CollectParams.OpcTagID == OpcTagID and CollectParams.CollectParamsTemplateID == CollectParamsTemplateID).first()
+                if object is not None:
+                    return
+                db_session.add(
+                    CollectParams(
+                        CollectParamsTemplateID= CollectParamsTemplateID,
+                        OpcTagID= OpcTagID,
+                        Desc=Desc))
+                db_session.commit()
+                return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
+                                  ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "CollectParamsTemplate数据创建失败报错Error：" + str(e), "AAAAAAadmin")
+            return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+
+@app.route('/CollectParams/delete', methods=['POST', 'GET'])
+def collectParamsDelete():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                NodeID = data['NodeID']
+                nodeIds = re.findall(r"i=\d+", NodeID)
+                if nodeIds is None:
+                    return
+                for nodeId in nodeIds:
+                    OpcTagID = db_session.query(OpcTag.ID).filter_by(NodeID=nodeId).first()[0]
+                    try:
+                        oclass = db_session.query(CollectParams).filter_by(OpcTagID=OpcTagID).first()
+                        db_session.delete(oclass)
+                        db_session.commit()
+                    except Exception as ee:
+                        print(ee)
+                        logger.error(ee)
+                        return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
+                                          ensure_ascii=False)
+            return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
+                                  ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "CollectParamsTemplate数据删除失败报错Error：" + str(e), "AAAAAAadmin")
+            return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+
+@app.route('/CollectParams/update', methods=['POST', 'GET'])
+def collectParamsUpdate():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                TempName = data['TemplateName']
+                nodeID = data['NodeID']
+                TempID = db_session.query(CollectParamsTemplate.ID).filter_by(TemplateName=TempName).first()[0]
+                OpcTagID = db_session.query(OpcTag.ID).filter_by(NodeID=nodeID).first()[0]
+                ID_byOpcTagID = db_session.query(CollectParams.ID).filter_by(OpcTagID=OpcTagID).first()
+                if ID_byOpcTagID is None:
+                    ID_byTempID = db_session.query(CollectParams.ID).filter_by(CollectParamsTemplateID=TempID).first()
+                    if ID_byTempID is None: # 两者为空则相当于添加一个新的策略
+                        oclass = CollectParams()
+                        oclass.CollectParamsTemplateID = TempID
+                        oclass.OpcTagID = OpcTagID
+                        oclass.Desc = data['Desc']
+                        db_session.add(oclass)
+                        db_session.commit()
+                        return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
+                                      ensure_ascii=False)
+                    # 改变NodeID的情况
+                    oclass = db_session.query(CollectParams).filter_by(ID=ID_byTempID).first()
+                    oclass.CollectParamsTemplateID = TempID
+                    oclass.OpcTagID = OpcTagID
+                    oclass.Desc = data['Desc']
+                    db_session.add(oclass)
+                    db_session.commit()
+                    return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
+                                  ensure_ascii=False)
+                # 改变模板的情况
+                oclass = db_session.query(CollectParams).filter_by(ID=ID_byOpcTagID).first()
+                oclass.OpcTagID = OpcTagID
+                oclass.CollectParamsTemplateID = TempID
+                oclass.Desc = data['Desc']
+                db_session.add(oclass)
+                db_session.commit()
+                return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
+                                  ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "CollectParamsTemplate数据更新失败报错Error：" + str(e), "AAAAAAadmin")
+            return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+            # 查询Opc服务
+
+
+@app.route('/CollectParams/search', methods=['POST', 'GET'])
+def collectParamsSearch():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 2:
+                TemplateName = data['TemplateName']
+                tempId = db_session.query(CollectParamsTemplate.ID).filter_by(TemplateName=TemplateName).first()
+                IDs = db_session.query(CollectParams.ID).filter_by(CollectParamsTemplateID=tempId).all()
+                total = db_session.query(CollectParams.ID).filter_by(CollectParamsTemplateID=tempId).count()
+                Datas = transform(IDs)
+                jsonTemplates = json.dumps(Datas)
+                jsonTemplates = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonTemplates + "}"
+                return jsonTemplates
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "CollectParamsTemplate数据查询失败报错Error：" + str(e), "AAAAAAadmin")
+            return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+# 配置采集策略
+@app.route('/Collectionstrategy/config')
+def collectionstrategyConfig():
+    return render_template('CollectionstrategyConfig.html')
+
+@app.route('/Collectionstrategy/config/find', methods=['POST', 'GET'])
+def strategyFind():
+>>>>>>> 9e1a8c8bba0e201ebfd8b3b2f593bccfd9713785
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            print(json_str)
+            if len(json_str) > 10:
+                pages = int(data['page'])
+                rowsnumber = int(data['rows'])
+                inipage = (pages - 1) * rowsnumber + 0
+                endpage = (pages - 1) * rowsnumber + rowsnumber
+<<<<<<< HEAD
                 total = db_session.query(func.count(Role.ID)).scalar()
                 roles = db_session.query(Role).all()[inipage:endpage]
                 # ORM模型转换json格式
@@ -3476,6 +3917,152 @@ def findPlanmanager():
 def searchPlanmanager():
     if request.method == 'GET':
         data = request.values  # 返回请求中的参数和form
+                total = db_session.query(Collectionstrategy.ID).count()
+                if total > 0:
+                    qDatas = db_session.query(Collectionstrategy).all()[inipage:endpage]
+                    # ORM模型转换json格式
+                    jsonStrategyconfig = json.dumps(qDatas, cls=Model.BSFramwork.AlchemyEncoder,
+                                                  ensure_ascii=False)
+                    jsonStrategyconfig = '{"total"' + ":" + str(
+                        total) + ',"rows"' + ":\n" + jsonStrategyconfig + "}"
+                    return jsonStrategyconfig
+                else:
+                    return ""
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "Collectionstrategy数据加载失败报错Error：" + str(e), "AAAAAAadmin")
+            return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,ensure_ascii=False)
+
+@app.route('/Collectionstrategy/config/create', methods=['POST', 'GET'])
+def strategyCreate():
+    if request.method == 'POST':
+        try:
+            data = request.values
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                db_session.add(
+                    Collectionstrategy(
+                        Interval=data['Interval'],
+                        NodeID=data['NodeID'],
+                        StrategyName=data['StrategyName'],
+                        Desc=data['Desc']
+                    ))
+                db_session.commit()
+                return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
+                                  ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "Collectionstrategy数据创建失败报错Error：" + str(e), "AAAAAAadmin")
+            return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+@app.route('/Collectionstrategy/config/delete', methods=['POST', 'GET'])
+def strategyDelete():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
+                for key in jsonnumber:
+                    StrategyID = int(key)
+                    try:
+                        oclass = db_session.query(Collectionstrategy).filter_by(ID=StrategyID).first()
+                        db_session.delete(oclass)
+                        db_session.commit()
+                    except Exception as ee:
+                        print(ee)
+                        logger.error(ee)
+                        return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
+                                          ensure_ascii=False)
+                return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
+                                  ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "Collectionstrategy数据删除失败报错Error：" + str(e), "AAAAAAadmin")
+            return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+@app.route('/Collectionstrategy/config/update', methods=['POST', 'GET'])
+def strategyUpdate():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                StrategyID = int(data['ID'])
+                oclass = db_session.query(Collectionstrategy).filter_by(ID=StrategyID).first()
+                oclass.Interval = data['Interval']
+                oclass.NodeID = data['NodeID']
+                oclass.StrategyName = data['StrategyName']
+                oclass.Desc = data['Desc']
+                db_session.add(oclass)
+                db_session.commit()
+                return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
+                                  ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "Collectionstrategy数据更新失败报错Error：" + str(e), "AAAAAAadmin")
+            return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+            # 查询Opc服务
+
+
+@app.route('/Collectionstrategy/config/search', methods=['POST', 'GET'])
+def strategySearch():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 2:
+                StrategyName = "%" + data['StrategyName'] + "%"
+                Strategyscount = db_session.query(Collectionstrategy).filter(
+                    Collectionstrategy.StrategyName.like(StrategyName)).all()
+                total = Counter(Strategyscount)
+                jsonStrategys = json.dumps(Strategyscount, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+                jsonStrategys = '{"total"' + ":" + str(total.__len__()) + ',"rows"' + ":\n" + jsonStrategys + "}"
+                return jsonStrategys
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "Collectionstrategy数据查询失败报错Error：" + str(e), "AAAAAAadmin")
+            return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+# 采集任务
+@app.route('/CollectTask/config')
+def CollectTaskConfig():
+    TemplateNames = []
+    TempNames = db_session.query(CollectParamsTemplate.TemplateName).all()
+    for name in TempNames:
+        li = list(name)
+        name = li[0]
+        temp_name = {'tempName': name}
+        TemplateNames.append(temp_name)
+    StrategyNames = []
+    straNames = db_session.query(Collectionstrategy.StrategyName).all()
+    for name in straNames:
+        li = list(name)
+        name = li[0]
+        stra_name = {'straName': name}
+        StrategyNames.append(stra_name)
+    CollectTaskNames = []
+    TaskNames = db_session.query(CollectTask.CollectTaskName).all()
+    for name in TaskNames:
+        li = list(name)
+        name = li[0]
+        task_name = {'taskName': name}
+        CollectTaskNames.append(task_name)
+    return render_template('CollectTaskConfig.html',
+                           TempNames=TemplateNames,
+                           StrategyNames=StrategyNames,
+                           CollectTaskNames=CollectTaskNames)
+
+@app.route('/CollectTask/config/find', methods=['POST', 'GET'])
+def CollectTaskFind():
+    if request.method == 'GET':
+        data = request.values
         try:
             json_str = json.dumps(data.to_dict())
             print(json_str)
@@ -3494,8 +4081,296 @@ def searchPlanmanager():
             print(e)
             logger.error(e)
             insertSyslog("error", "计划向导生成的计划查询报错Error：" + str(e), "AAAAAAadmin")
+                pages = int(data['page'])
+                rowsnumber = int(data['rows'])
+                inipage = (pages - 1) * rowsnumber + 0
+                endpage = (pages - 1) * rowsnumber + rowsnumber
+                total = db_session.query(CollectTask.ID).count()
+                if total > 0:
+                    qDatas = db_session.query(CollectTask).all()[inipage:endpage]
+                    # ORM模型转换json格式
+                    jsonCollectTask = json.dumps(qDatas, cls=Model.BSFramwork.AlchemyEncoder,
+                                                  ensure_ascii=False)
+                    jsonCollectTask = '{"total"' + ":" + str(
+                        total) + ',"rows"' + ":\n" + jsonCollectTask + "}"
+                    return jsonCollectTask
+                else:
+                    return ""
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "jsonCollectTask数据加载失败报错Error：" + str(e), "AAAAAAadmin")
+            return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,ensure_ascii=False)
+
+@app.route('/CollectTask/config/create', methods=['POST', 'GET'])
+def CollectTaskCreate():
+    if request.method == 'POST':
+        try:
+            data = request.values
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                db_session.add(
+                    CollectTask(
+                        CollectTaskName=data['CollectTaskName'],
+                        TableName=data['TableName'],
+                        Desc=data['Desc']
+                    ))
+                db_session.commit()
+                return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
+                                  ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "CollectTask数据创建失败报错Error：" + str(e), "AAAAAAadmin")
+            return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+@app.route('/CollectTask/config/delete', methods=['POST', 'GET'])
+def CollectTaskDelete():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
+                for key in jsonnumber:
+                    CollectTaskID = int(key)
+                    try:
+                        oclass = db_session.query(CollectTask).filter_by(ID=CollectTaskID).first()
+                        db_session.delete(oclass)
+                        db_session.commit()
+                    except Exception as ee:
+                        print(ee)
+                        logger.error(ee)
+                        return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
+                                          ensure_ascii=False)
+                return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
+                                  ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "CollectTask数据删除失败报错Error：" + str(e), "AAAAAAadmin")
+            return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+@app.route('/CollectTask/config/update', methods=['POST', 'GET'])
+def CollectTaskUpdate():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                CollectTaskID = int(data['ID'])
+                oclass = db_session.query(CollectTask).filter_by(ID=CollectTaskID).first()
+                oclass.CollectTaskName = data['CollectTaskName']
+                oclass.TableName = data['TableName']
+                oclass.Desc = data['Desc']
+                db_session.add(oclass)
+                db_session.commit()
+                return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
+                                  ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "CollectTask数据更新失败报错Error：" + str(e), "AAAAAAadmin")
+            return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+            # 查询Opc服务
 
 
+@app.route('/CollectTask/config/search', methods=['POST', 'GET'])
+def CollectTaskSearch():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 2:
+                CollectTaskName = "%" + data['CollectTaskName'] + "%"
+                Taskscount = db_session.query(CollectTask).filter(
+                    CollectTask.CollectTaskName.like(CollectTaskName)).all()
+                total = Counter(Taskscount)
+                jsonTasks = json.dumps(Taskscount, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+                jsonTasks = '{"total"' + ":" + str(total.__len__()) + ',"rows"' + ":\n" + jsonTasks + "}"
+                return jsonTasks
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "CollectTask数据查询失败报错Error：" + str(e), "AAAAAAadmin")
+            return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+# 采集任务配置
+@app.route('/CollectTaskConfig/find', methods=['POST', 'GET'])
+def collectTaskCollection():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            TaskName = data['CollectTaskName']
+            pages = int(data['page'])
+            rowsnumber = int(data['rows'])
+            inipage = (pages - 1) * rowsnumber + 0
+            endpage = (pages - 1) * rowsnumber + rowsnumber
+            if TaskName is None or TaskName == '':
+                total = db_session.query(CollectTaskCollection).count()
+                if total > 0:
+                    qDatas = db_session.query(CollectTaskCollection).all()[inipage:endpage]
+                    # ORM模型转换json格式
+                    jsonCollectTask = json.dumps(qDatas, cls=Model.BSFramwork.AlchemyEncoder,
+                                                 ensure_ascii=False)
+                    jsonCollectTask = '{"total"' + ":" + str(
+                        total) + ',"rows"' + ":\n" + jsonCollectTask + "}"
+                    return jsonCollectTask
+            if len(json_str) > 10:
+                total = db_session.query(CollectTaskCollection).filter_by(CollectTaskName=TaskName).count()
+                if total > 0:
+                    qDatas = db_session.query(CollectTaskCollection).filter_by(CollectTaskName=TaskName).all()[inipage:endpage]
+                    # ORM模型转换json格式
+                    jsonCollectTask = json.dumps(qDatas, cls=Model.BSFramwork.AlchemyEncoder,
+                                                  ensure_ascii=False)
+                    jsonCollectTask = '{"total"' + ":" + str(
+                        total) + ',"rows"' + ":\n" + jsonCollectTask + "}"
+                    return jsonCollectTask
+                else:
+                    return
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "jsonCollectTask数据加载失败报错Error：" + str(e), "AAAAAAadmin")
+            return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,ensure_ascii=False)
+
+
+@app.route('/CollectTaskConfig/create', methods=['POST', 'GET'])
+def TaskCollectionCreate():
+    if request.method == 'POST':
+        try:
+            data = request.values
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                TemplateName = data['TemplateName']
+                CollectParamsTemplateID = db_session.query(CollectParamsTemplate.ID).filter_by(
+                    TemplateName=TemplateName).first()[0]
+                StrategyName = data['StrategyName']
+                CollectionStrategyID = db_session.query(Collectionstrategy.ID).filter_by(
+                    StrategyName=StrategyName).first()[0]
+                CollectTaskName = data['CollectTaskName']
+                CollectTaskID = db_session.query(CollectTask.ID).filter_by(
+                    CollectTaskName=CollectTaskName).first()[0]
+                db_session.add(
+                    CollectTaskCollection(
+                        CollectParamsTemplateID=CollectParamsTemplateID,
+                        TemplateName=TemplateName,
+                        CollectionStrategyID=CollectionStrategyID,
+                        StrategyName=StrategyName,
+                        CollectTaskID=CollectTaskID,
+                        CollectTaskName=CollectTaskName,
+                        Desc=data['Desc'],
+                    ))
+                db_session.commit()
+                return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
+                                  ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "CollectTaskCollection数据创建失败报错Error：" + str(e), "AAAAAAadmin")
+            return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+@app.route('/CollectTaskConfig/delete', methods=['POST', 'GET'])
+def TaskCollectionDelete():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
+                for key in jsonnumber:
+                    ID = int(key)
+                    try:
+                        oclass = db_session.query(CollectTaskCollection).filter_by(ID=ID).first()
+                        db_session.delete(oclass)
+                        db_session.commit()
+                    except Exception as ee:
+                        print(ee)
+                        logger.error(ee)
+                        return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
+                                          ensure_ascii=False)
+                return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
+                                  ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "CollectTaskCollection数据删除失败报错Error：" + str(e), "AAAAAAadmin")
+            return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+@app.route('/CollectTaskConfig/update', methods=['POST', 'GET'])
+def TaskCollectionUpdate():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                ID = int(data['ID'])
+                TemplateName = data['TemplateName']
+                CollectParamsTemplateID = db_session.query(CollectParamsTemplate.ID).filter_by(
+                    TemplateName=TemplateName).first()[0]
+                StrategyName = data['StrategyName']
+                CollectionStrategyID = db_session.query(Collectionstrategy.ID).filter_by(
+                    StrategyName=StrategyName).first()[0]
+                CollectTaskName = data['CollectTaskName']
+                CollectTaskID = db_session.query(CollectTask.ID).filter_by(
+                    CollectTaskName=CollectTaskName).first()[0]
+                oclass = db_session.query(CollectTaskCollection).filter_by(ID=ID).first()
+                oclass.TemplateName = TemplateName
+                oclass.CollectParamsTemplateID = CollectParamsTemplateID
+                oclass.StrategyName = StrategyName
+                oclass.CollectionStrategyID = CollectionStrategyID
+                oclass.CollectTaskName = CollectTaskName
+                oclass.CollectTaskID = CollectTaskID
+                oclass.Desc = data['Desc']
+                db_session.add(oclass)
+                db_session.commit()
+                return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
+                                  ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "CollectTaskCollection数据更新失败报错Error：" + str(e), "AAAAAAadmin")
+            return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+            # 查询Opc服务
+
+
+@app.route('/CollectTaskConfig/search', methods=['POST', 'GET'])
+def TaskCollectionSearch():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 2:
+                CollectTaskName = "%" + data['CollectTaskName'] + "%"
+                count = db_session.query(CollectTaskCollection).filter(
+                    CollectTaskCollection.CollectTaskName.like(CollectTaskName)).all()
+                total = Counter(count)
+                jsonTasks = json.dumps(count, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+                jsonTasks = '{"total"' + ":" + str(total.__len__()) + ',"rows"' + ":\n" + jsonTasks + "}"
+                return jsonTasks
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "CollectTaskCollection数据查询失败报错Error：" + str(e), "AAAAAAadmin")
+            return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+@app.route('/CollectTaskConfig/load', methods=['POST', 'GET'])
+def Taskload():
+    if request.method == 'GET':
+        try:
+            task_dict = make_dynamic_classes()
+            print(task_dict)
+            return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
+                              ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "Task数据加载失败报错Error：" + str(e), "AAAAAAadmin")
+            return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+>>>>>>> 9e1a8c8bba0e201ebfd8b3b2f593bccfd9713785
 if __name__ == '__main__':
     app.run(debug=True)
 

@@ -75,7 +75,7 @@
                     </tr>
                     <tr>
                         <td class="kv-content" colspan="2">
-                            <a href="#" class="easyui-linkbutton" id="btnConfirm">加载到数据库</a>
+                            <a href="#" class="easyui-linkbutton" id="btnLoad">加载到数据库</a>
                         </td>
                     </tr>
                 </tbody>
@@ -85,6 +85,10 @@
     </div>
 <script>
     $(function(){
+        var URIstr = "" //URI
+        var NodeId = ""
+        var DisplayName = ""
+        var ParentNode = "" //选择的节点的父节点
         $("#servername").bind('change',function(){
             $("#InpURI").html("")
             $.ajax({
@@ -95,6 +99,7 @@
                 },
                 success:function(data){
                     if(data){
+                        URIstr = data
                         $("#InpURI").html(data)
                     }
                 }
@@ -113,7 +118,6 @@
                     },
                     success:function(data){
                         if(data){
-                            console.log(data)
                             data = JSON.parse(data)
                             $("#treegrid").treegrid({
                                 data:data,
@@ -124,11 +128,14 @@
                                     return data
                                 },
                                 onClickRow :function(node){
-                                    $("#displayName_text").html(node.displayName)
-                                    $("#nodeID_text").html(node.nodeId)
+                                    NodeId = node.nodeId
+                                    DisplayName = node.displayName
+                                    console.log()
+                                    $("#nodeID_text").html(NodeId)
+                                    $("#displayName_text").html(DisplayName)
                                 },
                                 onBeforeExpand:function(row){
-                                    var url = '/opcuaClient/NodeLoadMore?id=' + row.id + '&nodeId=' + row.nodeId
+                                    var url = '/opcuaClient/NodeLoadMore?id=' + row.id + '&nodeId=' + row.nodeId + '&URI=' + URIstr
                                     $("#treegrid").treegrid("options").url = url;
                                     return true;
                                 }
@@ -139,6 +146,31 @@
                     }
                 })
             }
+        })
+        $("#btnLoad").on('click',function(){
+            $.ajax({
+                url:'/opcuaClient/storeOpcTag',
+                type:'post',
+                data:{
+                    nodeId:NodeId,
+                    displayName:DisplayName,
+                    URI:URIstr
+                },
+                success:function(data){
+                    if(data){
+                        $.messager.show({
+                            title: '提示',
+                            timeout: 1000,
+                            msg: '加载成功',
+                            style: {
+                                right: '',
+                                top: document.body.scrollTop + document.documentElement.scrollTop,
+                                bottom: ''
+                            }
+                        });
+                    }
+                }
+            })
         })
     })
 </script>
