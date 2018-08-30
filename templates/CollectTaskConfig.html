@@ -18,6 +18,7 @@
 </head>
 <body>
     <div class="content">
+        <a href="#" id="taskLoadBtn" class="easyui-linkbutton" data-options="iconCls:'icon-redo'">任务加载</a>
         <div id="Toolbar" style="padding:0 10px;">
             采集任务名称:
             <input type="text" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
@@ -525,6 +526,46 @@
                         CollectTaskName: rowData.CollectTaskName
                     })
                 }
+            })
+
+            //任务加载
+            $("#taskLoadBtn").on('click',function(){
+                $.ajax({
+                    url: '/CollectTaskConfig/load',
+                    method: 'GET',
+                    traditional: true,
+                    cache: false,
+                    beforeSend: function () {
+                        $.messager.progress({
+                            title: '提示',
+                            msg: '正在加载中，请稍候……',
+                            text: ''
+                        });
+                    },
+                    complete: function () {
+                        $.messager.progress('close');
+                    },
+                    error: function(data){
+                       alert("异常，请刷新后重试...");
+                    },
+                    success: function (data,response,status) {
+                        var obj1 = eval(data);
+                        if(obj1[0].status == "OK"){
+                            $.messager.show({
+                                title: '提示',
+                                msg: '加载成功',
+                                timeout:1000,
+                                style: {
+                                    right: '',
+                                    top: document.body.scrollTop + document.documentElement.scrollTop,
+                                    bottom: ''
+                                }
+                            });
+                        } else {
+                            $.messager.alert(obj1[0].status + '失败！', '未知错误导致失败，请重试！', 'warning');
+                        }
+                    }
+                });
             })
         })
     </script>
