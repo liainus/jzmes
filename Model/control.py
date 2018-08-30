@@ -157,7 +157,7 @@ class ctrlPlan:
                     # PlanEndTime=APlanEndTime,
                     # ActBeginTime="",
                     # ActEndTime="",
-                    PlanStatus=Model.Global.TASKSTATUS.COMPILE.value,
+                    ZYPlanStatus=Model.Global.TASKSTATUS.COMPILE.value,
                     LockStatus=Model.Global.TASKLOCKSTATUS.UNLOCK.value,
                     INFStatus=Model.Global.TASKSTATUS.COMPILE.value,
                     WMSStatus=Model.Global.TASKSTATUS.COMPILE.value))
@@ -331,7 +331,7 @@ class ctrlPlan:
             logger.error(e)
             return iReturn, iIsExist,str(e)
 
-    def createPlanManager(self, APlanDate, ABatchID,ABrandID,ABrandName,ASeq,AType,APlanQuantity,AUnit,APLineID,APlineName):
+    def createPlanManager(self, APlanDate, ABatchID,ABrandID,ABrandName,ASeq,AType,APlanQuantity,AUnit):
         bReturn = True;
         try:
             session.add(
@@ -345,8 +345,7 @@ class ctrlPlan:
                     Type = AType,
                     PlanQuantity = APlanQuantity,
                     Unit = AUnit,
-                    PLineID = APLineID,
-                    PLineName = APlineName))
+                    PlanStatus = Model.Global.PlanStatus.NEW.value))
             session.commit()
             return bReturn
         except Exception as e:
@@ -395,7 +394,7 @@ class ctrlPlan:
             logger.error(e)
             return  bReturn
 
-    def createLinePUPlan(self, AProductRuleID, APlanWeight,APlanDate,ABatchID,ABrandID,ABrandName,PLineName,AUnit):
+    def createLinePlanManager(self, AProductRuleID, APlanWeight,APlanDate,ABatchID,ABrandID,ABrandName,PLineName,AUnit,userID):
         bReturn = True
         bIsExist = True
         iPlanSeq = 0
@@ -420,22 +419,67 @@ class ctrlPlan:
             bReturn, iPLineID, sPLineName = self.getLineInfo(PLineName)
             if bReturn == False:
                 return False
-            bReturn,oRoutes = self.getProductUnitRoute(AProductRuleID)
+            bReturn, strTaskNo = self.getTaskNo()
+            bReturn = self.createPlanManager(APlanDate, ABatchID, ABrandID, ABrandName, iPlanManageSeq, "", APlanWeight,
+                                             AUnit)
+            if bReturn == False:
+                return False
+
+            PlanManageID = session.query(Model.core.PlanManager.ID).filter_by(BatchID=ABatchID).first()
+            print(PlanManageID)
+            PlanManageID = PlanManageID[0]
+            userID = userID
+            Desc = "计划向导生成计划planmanager"
+            Type = Model.Global.AuditStatus.Unaudited.value
+            EventTime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            bReturn = self.createWorkFlowEvent(PlanManageID,None,None,userID,Desc,Type,EventTime)
+            if bReturn == False:
+                return False
+
+            PlanManageID = PlanManageID
+            AuditStatus = Model.Global.AuditStatus.Unaudited.value
+            DescF = "计划向导生成计划planmanager"
+            bReturn = self.createWorkFlowStatus(PlanManageID, None, None, AuditStatus, DescF)
+            if bReturn == False:
+                return False
+            return True
+        except Exception as e:
+            session.rollback()
+            print(e)
+            logger.error(e)
+            return bReturn
+
+    def createZYPlanZYTask(self, AProductRuleID, APlanWeight, APlanDate, ABatchID, ABrandID, ABrandName, AUnit):
+        bReturn = True
+        bIsExist = True
+        iPlanSeq = 0
+        iTaskCount = 0
+        iTaskSeq = 0
+        iPlanManageSeq = 0
+        iPLineID = 0
+        sPLineName = ""
+        iReturn = 0
+        iIsExist = 0
+        try:
+            strPlanStarTime = str(APlanDate) + " " + Model.Global.GLOBAL_PLANSTARTTIME
+            bReturn, iPLineID, sPLineName = self.getLineInfo()
+            if bReturn == False:
+                return False
+            bReturn, oRoutes = self.getProductUnitRoute(AProductRuleID)
             if bReturn == False:
                 return False
             else:
                 for obj in oRoutes:
                     iPUID = int(obj.PUID)
                     iProductRuleID = int(obj.ProductRuleID)
-                    iPDUnitRouteName = obj.PDUnitRouteName
                     bReturn, strTaskNo = self.getTaskNo()
                     if (bReturn == True):
                         try:
-                            bReturn,iPlanSeq = self.getPlanSeq(iPUID, APlanDate)
+                            bReturn, iPlanSeq = self.getPlanSeq(iPUID, APlanDate)
                             if bReturn == False:
                                 return False
 
-                            bReturn, iSetReatCount = self.getPUPara(iPUID, ABrandID) #, "SetReatCount"#比如六个任务，每个任务罐子里的煎煮次数
+                            bReturn, iSetReatCount = self.getPUPara(iPUID, ABrandID, "SetReatCount")
                             if bReturn == False:
                                 return False
 
@@ -443,42 +487,37 @@ class ctrlPlan:
                             if bReturn == False:
                                 return False
 
-                            bReturn,iPlanManageSeq = self.getPlanManagerSeq(iPLineID,APlanDate)
+                            bReturn, iPlanManageSeq = self.getPlanManagerSeq(iPLineID, APlanDate)
                             if bReturn == False:
                                 return False
-                            iReturn,iIsExist,sErr = self.IsExistBatchID(ABatchID)
-                            print(iIsExist)
+                            iReturn, iIsExist, sErr = self.IsExistBatchID(ABatchID)
                             if iReturn == -1:
                                 return False
-
-
-
                             elif iIsExist == 0:
-                                bReturn = self.createPlanManager(APlanDate,ABatchID,ABrandID,ABrandName,iPlanManageSeq,"",APlanWeight,AUnit,iPLineID,sPLineName)
-                                if bReturn == False:
-                                    print("haha ")
+                                pass
                             else:
                                 pass
 
                             bReturn = self.createPUPlan(iPUID, ABatchID, ABrandID, ABrandName, APlanWeight, strTaskNo,
-                                                        iPlanSeq, APlanDate, AUnit, strPlanStarTime, Model.Global.GLOBAL_PLANENDTIME)
+                                                        iPlanSeq, APlanDate, AUnit, strPlanStarTime,
+                                                        Model.Global.GLOBAL_PLANENDTIME)
                             if bReturn == False:
                                 return False
 
                             if iTaskCount >= 1:
                                 iTaskSeq = 0
-                                for num in range(0,iTaskCount):
+                                for num in range(0, iTaskCount):
                                     iTaskSeq = iTaskSeq + 1
                                     bReturn, strTaskNo = self.getTaskNo()
                                     if bReturn == False:
                                         return False
-                                    bReturn = self.createPUTask(iPUID, iPDUnitRouteName, ABatchID, ABrandID, ABrandName, APlanWeight,
-                                                                strTaskNo, iTaskSeq, APlanDate, AUnit,iSetReatCount)
+                                    bReturn = self.createPUTask(iPUID, ABatchID, ABrandID, ABrandName, APlanWeight,
+                                                                strTaskNo, iTaskSeq, APlanDate, AUnit, iSetReatCount)
                                     if bReturn == False:
                                         return False
                         except Exception as e:
                             session.rollback()
-                            print (e)
+                            print(e)
                             logger.error(e)
                             return False
             return True
@@ -517,6 +556,42 @@ class ctrlPlan:
             print(e)
             logger.error(e)
             return  bReturn,varTaskNo
+
+    def createWorkFlowEvent(self,APlanManageID,AZYPlanID,AZYTaskID,userID,Desc,Type,EventTime):
+        bReturn = True
+        try:
+            session.add(Model.core.WorkFlowEvent(
+                PlanManageID=APlanManageID,
+                ZYPlanID=AZYPlanID,
+                ZYTaskID=AZYTaskID,
+                userID=userID,
+                Desc=Desc,
+                Type=Type,
+                EventTime=EventTime))
+            session.commit()
+            return bReturn
+        except Exception as e:
+            session.rollback()
+            print(e)
+            logger.error(e)
+            return False
+
+    def createWorkFlowStatus(self,APlanManageID, AZYPlanID, AZYTaskID, AuditStatus, Desc):
+        bReturn = True
+        try:
+            session.add(Model.core.WorkFlowStatus(
+                PlanManageID=APlanManageID,
+                ZYPlanID=AZYPlanID,
+                ZYTaskID=AZYTaskID,
+                AuditStatus=AuditStatus,
+                Desc=Desc))
+            session.commit()
+            return bReturn
+        except Exception as e:
+            session.rollback()
+            print(e)
+            logger.error(e)
+            return False
 
 
 # class SystemCtrol:

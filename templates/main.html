@@ -197,19 +197,19 @@
                                     <a href="#" onclick="addTab('制药计划向导','createPlanWizard')">制药计划向导</a>
                                 </li>
                             {% endif %}
-                            {% if '25' in session.get('menus') %}
-                                <li>
-                                    <a href="#" onclick="addTab('计划审核','PlanAuditing')">计划审核</a>
-                                </li>
-                            {% endif %}
-                            {% if '25' in session.get('menus') %}
-                                <li>
-                                    <a href="#" onclick="addTab('计划明细','PlanDetailed')">计划明细</a>
-                                </li>
-                            {% endif %}
                             {% if '26' in session.get('menus') %}
                                 <li>
-                                    <a href="#" onclick="addTab('制药计划','ZYPlan')">制药计划</a>
+                                    <a href="#" onclick="addTab('制药计划','/ZYPlanGuid/planmanager')">制药计划</a>
+                                </li>
+                            {% endif %}
+                            {% if '25' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onclick="addTab('计划审核','/ZYPlanGuid/checkplanmanager')">计划审核</a>
+                                </li>
+                            {% endif %}
+                            {% if '25' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onclick="addTab('计划明细','/ZYPlan')">计划明细</a>
                                 </li>
                             {% endif %}
                             {% if '27' in session.get('menus') %}

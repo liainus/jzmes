@@ -156,7 +156,7 @@ class ZYPlan(Base):
 	ActEndTime = Column(DateTime, primary_key = False, autoincrement = False, nullable = True)
 	
 	#计划状态:
-	PlanStatus = Column(Unicode(32), primary_key = False, autoincrement = False, nullable = True)
+	ZYPlanStatus = Column(Unicode(32), primary_key = False, autoincrement = False, nullable = True)
 	
 	#计划锁定状态:
 	LockStatus = Column(Unicode(32), primary_key = False, autoincrement = False, nullable = True)
@@ -3016,33 +3016,39 @@ class PlanManager(Base):
 	# 调度编号:
 	SchedulePlanCode = Column(Unicode(100), primary_key=False, autoincrement=False, nullable=True)
 
-	# BatchID:
+	# 批次号:
 	BatchID = Column(Unicode(64), primary_key=False, autoincrement=False, nullable=True)
 
 	# PlanQuantity:
 	PlanQuantity = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
 
-	# Unit:
+	# 单位:
 	Unit = Column(Unicode(64), primary_key=False, autoincrement=False, nullable=True)
 
-	# BrandID:
+	# 品名ID:
 	BrandID = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
 
-	# 描述:
+	# 品名:
 	BrandName = Column(Unicode(64), primary_key=False, autoincrement=False, nullable=True)
 
 	# Seq:
 	Seq = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
 
+	# 计划状态:
+	PlanStatus = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
 	# 调度计划开始时间:
 	PlanBeginTime = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+
+	# 计划完成时间:
+	PlanEndTime = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
 
 	# 调度类型:
 	Type = Column(Unicode(64), primary_key=False, autoincrement=False, nullable=True)
 
-	PLineID = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
-
-	PLineName = Column(Unicode(64), primary_key=False, autoincrement=False, nullable=True)
+	# PLineID = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
+    #
+	# PLineName = Column(Unicode(64), primary_key=False, autoincrement=False, nullable=True)
 
 class PlanManagerWebIFS(object):
 	def __init__(self, name):
@@ -3530,6 +3536,58 @@ class CollectTaskCollection(Base):
 
 	# 描述
 	Desc = Column(Unicode(100), nullable=True)
+
+
+# 用于在MES存储调度计划事件信息:
+class WorkFlowEvent(Base):
+	__tablename__ = "WorkFlowEvent"
+
+	# ID:
+	ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+	# PlanManage表ID:
+	PlanManageID = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
+
+	# ZYPlan表ID:
+	ZYPlanID = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
+
+	# ZYTask表ID:
+	ZYTaskID = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
+
+	# 用户ID:
+	userID = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+	# 描述:
+	Desc = Column(Unicode(100), primary_key=False, autoincrement=False, nullable=True)
+
+	# 事件类型:
+	Type = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+	# 事件发生的时间:
+	EventTime = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+
+# 用于在MES流程流转表:
+class WorkFlowStatus(Base):
+	__tablename__ = "WorkFlowStatus"
+
+	# ID:
+	ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+	# PlanManage表ID:
+	PlanManageID = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
+
+	# ZYPlan表ID:
+	ZYPlanID = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
+
+	# ZYTask表ID:
+	ZYTaskID = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
+
+	# 审核状态:
+	AuditStatus = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+	# 描述:
+	Desc = Column(Unicode(100), primary_key=False, autoincrement=False, nullable=True)
+
 
 # 生成表单的执行语句
 Base.metadata.create_all(engine)
