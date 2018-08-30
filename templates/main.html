@@ -197,6 +197,16 @@
                                     <a href="#" onclick="addTab('制药计划向导','createPlanWizard')">制药计划向导</a>
                                 </li>
                             {% endif %}
+                            {% if '25' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onclick="addTab('计划审核','PlanAuditing')">计划审核</a>
+                                </li>
+                            {% endif %}
+                            {% if '25' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onclick="addTab('计划明细','PlanDetailed')">计划明细</a>
+                                </li>
+                            {% endif %}
                             {% if '26' in session.get('menus') %}
                                 <li>
                                     <a href="#" onclick="addTab('制药计划','ZYPlan')">制药计划</a>

@@ -4113,6 +4113,9 @@ def Taskload():
     if request.method == 'GET':
         try:
             task_dict = make_dynamic_classes()
+            print(task_dict)
+            return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
+                              ensure_ascii=False)
         except Exception as e:
             print(e)
             logger.error(e)
