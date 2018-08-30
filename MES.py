@@ -17,7 +17,7 @@ import Model.Global
 from Model.BSFramwork import AlchemyEncoder
 from Model.core import Enterprise, Area, Factory, ProductLine, ProcessUnit, Equipment, Material, MaterialType, \
     ProductUnit, ProductRule, ZYTask, ZYPlanMaterial, ZYPlan, Unit, PlanManager, SchedulePlan, ProductControlTask, \
-    OpcServer, Pequipment
+    OpcServer, Pequipment, WorkFlowStatus, WorkFlowEvent
 from Model.system import Role, Organization, User, Menu, Role_Menu
 from tools.MESLogger import MESLogger
 from Model.core import SysLog
@@ -169,6 +169,7 @@ def insertSyslog(operationType, operationContent, userName):
                        ComputerName=ComputerName, IP=socket.gethostbyname(ComputerName)))
             db_session.commit()
         except Exception as e:
+            db_session.rollback()
             print(e)
             logger.error(e)
 
@@ -260,6 +261,7 @@ def addUser():
                 insertSyslog("添加用户", "添加用户"+data['Name']+"添加成功", "AAAAAAadmin")
                 return json.dumps([{"status": "OK"}], cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
+            db_session.rollback()
             print(e)
             logger.error(e)
             insertSyslog("error", "添加用户报错Error：" + str(e), "AAAAAAadmin")
@@ -289,6 +291,7 @@ def UpdateUser():
                 return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=AlchemyEncoder,
                                   ensure_ascii=False)
         except Exception as e:
+            db_session.rollback()
             print(e)
             logger.error(e)
             insertSyslog("error", "更新用户报错Error：" + str(e), "AAAAAAadmin")
@@ -310,6 +313,7 @@ def deleteUser():
                         db_session.commit()
                         insertSyslog("success", "删除ID是" + string(id) + "的用户删除成功", "AAAAAAadmin")
                     except Exception as ee:
+                        db_session.rollback()
                         print(ee)
                         logger.error(ee)
                         insertSyslog("error", "删除户ID为"+string(id)+"报错Error：" + string(ee), "AAAAAAadmin")
@@ -617,6 +621,7 @@ def allOrganizationsUpdate():
                 return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=AlchemyEncoder,
                                   ensure_ascii=False)
         except Exception as e:
+            db_session.rollback()
             print(e)
             logger.error(e)
             insertSyslog("error", "更新组织报错Error：" + str(e), "AAAAAAadmin")
@@ -643,6 +648,7 @@ def allOrganizationsDelete():
                         db_session.commit()
                         insertSyslog("success", "删除组织ID为" + str(Organizationid) + "的组织删除成功", "AAAAAAadmin")
                     except Exception as ee:
+                        db_session.rollback()
                         print(ee)
                         logger.error(ee)
                         insertSyslog("error", "删除组织报错Error：" + str(ee), "AAAAAAadmin")
@@ -688,6 +694,7 @@ def allOrganizationsCreate():
                 insertSyslog("success", "新增组织" + data['OrganizationName'] + "的组织新增成功", "AAAAAAadmin")
                 return json.dumps([{"status": "OK"}], cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
+            db_session.rollback()
             print(e)
             logger.error(e)
             insertSyslog("error", "新增组织报错Error：" + str(e), "AAAAAAadmin")
@@ -1133,6 +1140,7 @@ def pequipmentCreate():
                 return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
                               ensure_ascii=False)
         except Exception as e:
+            db_session.rollback()
             print(e)
             logger.error(e)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
@@ -1156,6 +1164,7 @@ def pequipmentUpdate():
                 return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
                                   ensure_ascii=False)
         except Exception as e:
+            db_session.rollback()
             print(e)
             logger.error(e)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
@@ -1179,6 +1188,7 @@ def pequipmentDelete():
                         session.delete(oclass)
                         session.commit()
                     except Exception as ee:
+                        db_session.rollback()
                         print(ee)
                         logger.error(ee)
                         return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
@@ -2133,7 +2143,7 @@ def allSchedulePlansSearch():
 
 
 # 加载工作台
-@app.route('/PlanManager')
+@app.route('/planManager')
 def planManager():
     return render_template('sysPlanManager.html')
 
@@ -2337,6 +2347,7 @@ def allrolesUpdate():
                 db_session.commit()
                 return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
+            db_session.rollback()
             print(e)
             logger.error(e)
             insertSyslog("error", "更新角色报错Error：" + str(e), "AAAAAAadmin")
@@ -2362,6 +2373,7 @@ def allrolesDelete():
                         db_session.delete(oclass)
                         db_session.commit()
                     except Exception as ee:
+                        db_session.rollback()
                         print(ee)
                         logger.error(ee)
                         insertSyslog("error", "删除角色报错Error：" + str(ee), "AAAAAAadmin")
@@ -2394,6 +2406,7 @@ def allrolesCreate():
                 db_session.commit()
                 return json.dumps([{"status": "OK"}], cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
+            db_session.rollback()
             print(e)
             logger.error(e)
             insertSyslog("error", "创建角色报错Error：" + str(e), "AAAAAAadmin")
@@ -2637,7 +2650,7 @@ def treeProductRule():
             logger.error(e)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
-# 计划向导生成计划、任务
+# 计划向导生成计划
 @app.route('/ZYPlanGuid/makePlan', methods=['POST', 'GET'])
 def makePlan():
     if request.method == 'POST':
@@ -2654,15 +2667,121 @@ def makePlan():
                 PLineName = data['PLineName']#生产线名字
                 AUnit = data['AUnit']#d单位
                 PlanCreate = ctrlPlan('PlanCreate')
+                userID = ""
                 ABrandID = AProductRuleID
-                re = PlanCreate.createLinePUPlan(AProductRuleID, APlanWeight, APlanDate, ABatchID, ABrandID, ABrandName, PLineName, AUnit)
+                re = PlanCreate.createLinePlanManager(AProductRuleID, APlanWeight, APlanDate, ABatchID, ABrandID, ABrandName, PLineName, AUnit,userID)
                 re = json.dumps(re)
                 return re
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "生成计划、任务报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "计划向导生成计划报错Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
+# 生产管理部复核计划
+@app.route('/ZYPlanGuid/checkPlanManager', methods=['POST', 'GET'])
+def checkPlanManager():
+    if request.method == 'POST':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                PlanManageID = int(data['ID'])
+                oclass = db_session.query(WorkFlowStatus).filter_by(PlanManageID=PlanManageID).first()
+                oclass.AuditStatus = Model.Global.AuditStatus.Checked.value
+                db_session.commit()
+                return "OK"
+        except Exception as e:
+            db_session.rollback()
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "生产管理部复核计划报错Error：" + str(e), "AAAAAAadmin")
+            return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
+# 下发计划生成ZY计划、任务
+@app.route('/ZYPlanGuid/createZYPlanZYtask', methods=['POST', 'GET'])
+def createZYPlanZYtask():
+    if request.method == 'POST':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            json_str = json.dumps(data.to_dict())
+            print(json_str)
+            if len(json_str) > 10:
+                AProductRuleID = int(data['AProductRuleID'])  # 产品定义ID
+                APlanWeight = data['APlanWeight']  # 计划重量
+                APlanDate = data['APlanDate']  # 计划生产日期
+                ABatchID = data['ABatchID']  # 批次号
+                ABrandName = data['ABrandName']  # 产品名称
+                PLineName = data['PLineName']  # 生产线名字
+                AUnit = data['AUnit']  # d单位
+                PlanCreate = ctrlPlan('PlanCreate')
+                ABrandID = AProductRuleID
+                re = PlanCreate.createZYPlanZYTask(AProductRuleID, APlanWeight, APlanDate, ABatchID,
+                                                      ABrandID, ABrandName, PLineName, AUnit)
+                re = json.dumps(re)
+                return re
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "下发计划生成ZY计划、任务报错Error：" + str(e), "AAAAAAadmin")
+            return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
+# 下发后的计划撤回，删除ZYplan，ZYtask
+@app.route('/ZYPlanGuid/RecallPlan', methods=['POST', 'GET'])
+def RecallPlan():
+    if request.method == 'POST':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                ABatchID = data['ABatchID']  # 批次号
+                planids,planLockStatuss = db_session.query(ZYPlan.ID, ZYPlan.LockStatus).filter_by(BatchID=ABatchID).all()
+                for status in planLockStatuss:
+                    if(status == "10"):
+                        return "计划状态已锁定，不允许撤回"
+                    else:
+                        pass
+                taskids, taskLockStatuss = db_session.query(ZYTask.ID, ZYTask.LockStatus).filter_by(
+                    BatchID=ABatchID).all()
+                for st in taskLockStatuss:
+                    if (st == "10"):
+                        return "任务状态已锁定，不允许撤回"
+                    else:
+                        pass
+                for id in planids:
+                    try:
+                        oclass = db_session.query(ZYPlan).filter_by(ID=id).first()
+                        db_session.delete(oclass)
+                        db_session.commit()
+                    except Exception as ee:
+                        db_session.rollback()
+                        print(ee)
+                        logger.error(ee)
+                        insertSyslog("error", "删除批次计划信息报错Error"+ string(ee), "AAAAAAadmin")
+                        return 'NO'
+                for id in taskids:
+                    try:
+                        oclass = db_session.query(ZYTask).filter_by(ID=id).first()
+                        db_session.delete(oclass)
+                        db_session.commit()
+                    except Exception as ee:
+                        db_session.rollback()
+                        print(ee)
+                        logger.error(ee)
+                        insertSyslog("error", "删除批次任务信息报错Error" + string(ee), "AAAAAAadmin")
+                        return 'NO'
+                oclass = db_session.query(PlanManager).filter_by(BatchID=ABatchID).first()
+                oclass.PlanStatus = "30"
+                workFlowStatus = db_session.query(WorkFlowStatus).filter_by(PlanManageID=oclass.ID).first()
+                workFlowStatus.AuditStatus = "10"
+                db_session.commit()
+                return 'OK'
+        except Exception as e:
+            db_session.rollback()
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "撤回批次计划报错Error：" + str(e), "AAAAAAadmin")
+            return 'NO'
 
 # 计划向导获取批次任务明细
 @app.route('/ZYPlanGuid/CriticalTasks', methods=['POST', 'GET'])
@@ -2721,11 +2840,10 @@ def isBatchNumber():
         data = request.values  # 返回请求中的参数和form
         try:
             json_str = json.dumps(data.to_dict())
-            print(json_str)
             if len(json_str) > 10:
                 isExist = ''#前台判断标识：OK为批次号可用，NO为此批次号已存在
                 ABatchID = data['ABatchID']
-                BatchID = db_session.query(ZYPlan.BatchID).filter(ZYPlan.BatchID == ABatchID).first()
+                BatchID = db_session.query(PlanManager.BatchID).filter(PlanManager.BatchID == ABatchID).first()
                 if(BatchID == None):
                     isExist = 'OK'
                 else:
@@ -2736,6 +2854,7 @@ def isBatchNumber():
             print(e)
             logger.error(e)
             insertSyslog("error", "批次号判重报错Error：" + str(e), "AAAAAAadmin")
+            return 'NO'
 
 # 计划向导重量校验
 @app.route('/ZYPlanGuid/weightCheck', methods=['POST', 'GET'])
@@ -2799,6 +2918,7 @@ def zYPlanXF():
                             task.TaskStatus = '20'
                             db_session.commit
                     except Exception as ee:
+                        db_session.rollback()
                         print(ee)
                         logger.error(ee)
                         insertSyslog("error", "获取批次计划信息报错Error"+ string(ee), "AAAAAAadmin")
@@ -2972,6 +3092,7 @@ def saveEQPCode():
                 db_session.commit()
                 return "OK"
         except Exception as e:
+            db_session.rollback()
             print(e)
             logger.error(e)
             insertSyslog("error", "任务确认保存设备code报错Error：" + str(e), "AAAAAAadmin")
@@ -3045,6 +3166,7 @@ def OpcServerCreate():
                 return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
                                   ensure_ascii=False)
         except Exception as e:
+            db_session.rollback()
             print(e)
             logger.error(e)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
@@ -3072,6 +3194,7 @@ def OpcServerDelete():
                 return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
                                   ensure_ascii=False)
         except Exception as e:
+            db_session.rollback()
             print(e)
             logger.error(e)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
@@ -3094,6 +3217,7 @@ def OpcServerUpdate():
                 return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
                                   ensure_ascii=False)
         except Exception as e:
+            db_session.rollback()
             print(e)
             logger.error(e)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
@@ -3235,6 +3359,142 @@ def storeOpcTag():
             logger.error(e)
             insertSyslog("error", "加载opcuaClient节点失败报错Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+
+# 制药计划向导生成planmanager修改
+@app.route('/ZYPlanGuid/updatePlanmanager', methods=['POST', 'GET'])
+def updatePlanmanager():
+    if request.method == 'POST':
+        data = request.values
+        str = request.get_json()
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                Roleid = int(data['ID'])
+                role = db_session.query(Role).filter_by(ID=Roleid).first()
+                role.RoleName = data['RoleName']
+                role.RoleSeq = data['RoleSeq']
+                role.Description = data['Description']
+                role.CreatePerson = data['CreatePerson']
+                role.CreateDate = data['CreateDate']
+                role.ParentNode = data['ParentNode']
+                db_session.commit()
+                return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=AlchemyEncoder, ensure_ascii=False)
+        except Exception as e:
+            db_session.rollback()
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "更新角色报错Error：" + str(e), "AAAAAAadmin")
+            return json.dumps([{"status": "Error" + string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
+
+# 删除制药计划
+@app.route('/ZYPlanGuid/deletePlanmanager', methods=['POST', 'GET'])
+def deletePlanmanager():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            #   jsonDict = data.to_dict(
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
+                for key in jsonnumber:
+                    # for subkey in list(key):
+                    Roleid = int(key)
+                    try:
+                        oclass = db_session.query(Role).filter_by(ID=Roleid).first()
+                        db_session.delete(oclass)
+                        db_session.commit()
+                    except Exception as ee:
+                        db_session.rollback()
+                        print(ee)
+                        logger.error(ee)
+                        insertSyslog("error", "删除角色报错Error：" + str(ee), "AAAAAAadmin")
+                        return json.dumps([{"status": "error:" + string(ee)}], cls=AlchemyEncoder, ensure_ascii=False)
+                return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=AlchemyEncoder, ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "删除角色报错Error：" + str(e), "AAAAAAadmin")
+            # return json.dumps([{"status": "Error"+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+            return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
+
+#创建制药计划
+@app.route('/ZYPlanGuid/createPlanmanager', methods=['POST', 'GET'])
+def createPlanmanager():
+    if request.method == 'POST':
+        data = request.values
+        str = request.get_json()
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                db_session.add(Role(RoleName=data['RoleName'],
+                                 RoleSeq=data['RoleSeq'],
+                                 Description=data['Description'],
+                                 CreatePerson=data['CreatePerson'],
+                                 CreateDate= datetime.datetime.now(),
+                                 ParentNode = data['ParentNode']
+                                 ))
+                db_session.commit()
+                return json.dumps([{"status": "OK"}], cls=AlchemyEncoder, ensure_ascii=False)
+        except Exception as e:
+            db_session.rollback()
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "创建角色报错Error：" + str(e), "AAAAAAadmin")
+            return json.dumps([{"status": "Error:"+ str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
+
+#
+@app.route('/ZYPlanGuid/findPlanmanager')
+def findPlanmanager():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            print(json_str)
+            if len(json_str) > 10:
+                pages = int(data['page'])
+                rowsnumber = int(data['rows'])
+                inipage = (pages - 1) * rowsnumber + 0
+                endpage = (pages - 1) * rowsnumber + rowsnumber
+                total = db_session.query(func.count(Role.ID)).scalar()
+                roles = db_session.query(Role).all()[inipage:endpage]
+                # ORM模型转换json格式
+                jsonroles = json.dumps(roles, cls=AlchemyEncoder, ensure_ascii=False)
+                jsonroles = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonroles + "}"
+                return jsonroles
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "查询角色列表报错Error：" + str(e), "AAAAAAadmin")
+            return json.dumps([{"status": "Error：" + string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
+#计划向导生成的计划查询
+@app.route('/ZYPlanGuid/searchPlanmanager', methods=['POST', 'GET'])
+def searchPlanmanager():
+    if request.method == 'GET':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            json_str = json.dumps(data.to_dict())
+            print(json_str)
+            if len(json_str) > 10:
+                pages = int(data['page'])  # 页数
+                rowsnumber = int(data['rows'])  # 行数
+                inipage = (pages - 1) * rowsnumber + 0  # 起始页
+                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+                ABatchID = data['BatchID']  # 批次号
+                total = db_session.query(PlanManager).filter(PlanManager.BatchID == ABatchID).count()
+                planManagers = db_session.query(PlanManager).filter(PlanManager.BatchID == ABatchID).all()[inipage:endpage]
+                planManagers = json.dumps(planManagers, cls=AlchemyEncoder, ensure_ascii=False)
+                jsonPlanManagers = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + planManagers + "}"
+                return jsonPlanManagers
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "计划向导生成的计划查询报错Error：" + str(e), "AAAAAAadmin")
+
 
 if __name__ == '__main__':
     app.run(debug=True)
