@@ -33,7 +33,7 @@ from flask_login import LoginManager, current_user
 from flask.ext.login import login_required, logout_user, login_user
 import socket
 from opcua import Client
-
+from Model.dynamic_model import make_dynamic_classes
 #flask_login的初始化
 login_manager = LoginManager()
 login_manager.db_session_protection = 'strong'
@@ -45,12 +45,10 @@ app.config['SECRET_KEY'] = 'qeqhqiqd131'
 login_manager.init_app(app)
 
 
-
 engine = create_engine(Model.Global.GLOBAL_DATABASE_CONNECT_STRING, deprecate_large_types=True)
 Session = sessionmaker(bind=engine)
 db_session = Session()
 logger = MESLogger('../logs', 'log')
-
 
 # 存储
 def store(data):
@@ -4099,7 +4097,7 @@ def TaskCollectionSearch():
             if len(json_str) > 2:
                 CollectTaskName = "%" + data['CollectTaskName'] + "%"
                 count = db_session.query(CollectTaskCollection).filter(
-                    CollectTask.CollectTaskName.like(CollectTaskName)).all()
+                    CollectTaskCollection.CollectTaskName.like(CollectTaskName)).all()
                 total = Counter(count)
                 jsonTasks = json.dumps(count, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
                 jsonTasks = '{"total"' + ":" + str(total.__len__()) + ',"rows"' + ":\n" + jsonTasks + "}"
@@ -4110,8 +4108,16 @@ def TaskCollectionSearch():
             insertSyslog("error", "CollectTaskCollection数据查询失败报错Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
-
-
+@app.route('/CollectTaskConfig/load', methods=['POST', 'GET'])
+def Taskload():
+    if request.method == 'GET':
+        try:
+            task_dict = make_dynamic_classes()
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "CTask数据加载失败报错Error：" + str(e), "AAAAAAadmin")
+            return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 if __name__ == '__main__':
     app.run(debug=True)
 
