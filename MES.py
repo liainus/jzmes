@@ -3893,41 +3893,17 @@ def strategyFind():
                 rowsnumber = int(data['rows'])
                 inipage = (pages - 1) * rowsnumber + 0
                 endpage = (pages - 1) * rowsnumber + rowsnumber
-                total = db_session.query(func.count(Role.ID)).scalar()
-                roles = db_session.query(Role).all()[inipage:endpage]
+                total = db_session.query(func.count(Collectionstrategy.ID)).scalar()
+                Collectionstrategys = db_session.query(Collectionstrategy).all()[inipage:endpage]
                 # ORM模型转换json格式
-                jsonroles = json.dumps(roles, cls=AlchemyEncoder, ensure_ascii=False)
-                jsonroles = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonroles + "}"
-                return jsonroles
+                jsonStrategys = json.dumps(Collectionstrategys, cls=AlchemyEncoder, ensure_ascii=False)
+                jsonStrategys = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonStrategys + "}"
+                return jsonStrategys
         except Exception as e:
             print(e)
             logger.error(e)
             insertSyslog("error", "查询角色列表报错Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error：" + string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
-
-#计划向导生成的计划查询
-@app.route('/ZYPlanGuid/searchPlanmanager', methods=['POST', 'GET'])
-def searchPlanmanager():
-    if request.method == 'GET':
-        data = request.values
-        try:
-            json_str = json.dumps(data.to_dict())
-            print(json_str)
-            if len(json_str) > 10:
-                pages = int(data['page'])  # 页数
-                rowsnumber = int(data['rows'])  # 行数
-                inipage = (pages - 1) * rowsnumber + 0  # 起始页
-                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
-                ABatchID = data['BatchID']  # 批次号
-                total = db_session.query(PlanManager).filter(PlanManager.BatchID == ABatchID).count()
-                planManagers = db_session.query(PlanManager).filter(PlanManager.BatchID == ABatchID).all()[inipage:endpage]
-                planManagers = json.dumps(planManagers, cls=AlchemyEncoder, ensure_ascii=False)
-                jsonPlanManagers = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + planManagers + "}"
-                return jsonPlanManagers
-        except Exception as e:
-            print(e)
-            logger.error(e)
-            insertSyslog("error", "计划向导生成的计划查询报错Error：" + str(e), "AAAAAAadmin")
 
 
 @app.route('/Collectionstrategy/config/create', methods=['POST', 'GET'])
@@ -4353,6 +4329,30 @@ def Taskload():
             logger.error(e)
             insertSyslog("error", "Task数据加载失败报错Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+#计划向导生成的计划查询
+@app.route('/ZYPlanGuid/searchPlanmanager', methods=['POST', 'GET'])
+def searchPlanmanager():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            print(json_str)
+            if len(json_str) > 10:
+                pages = int(data['page'])  # 页数
+                rowsnumber = int(data['rows'])  # 行数
+                inipage = (pages - 1) * rowsnumber + 0  # 起始页
+                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+                ABatchID = data['BatchID']  # 批次号
+                total = db_session.query(PlanManager).filter(PlanManager.BatchID == ABatchID).count()
+                planManagers = db_session.query(PlanManager).filter(PlanManager.BatchID == ABatchID).all()[inipage:endpage]
+                planManagers = json.dumps(planManagers, cls=AlchemyEncoder, ensure_ascii=False)
+                jsonPlanManagers = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + planManagers + "}"
+                return jsonPlanManagers
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "计划向导生成的计划查询报错Error：" + str(e), "AAAAAAadmin")
 
 if __name__ == '__main__':
     app.run(debug=True)
