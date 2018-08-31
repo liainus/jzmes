@@ -12,6 +12,7 @@
 import json
 # 引入mssql数据库引擎
 import re
+import datetime
 import sys
 import pymssql
 from collections import Counter
@@ -3063,14 +3064,14 @@ class PlanManagerWebIFS(object):
 					Model.core.PlanManager(
 						SchedulePlanCode=odata['SchedulePlanCode'],
 						BatchID=odata['BatchID'],
-						BrandID=odata['BrandID'],
+						BrandID=int(odata['BrandID']),
 						BrandName=odata['BrandName'],
-						PlanQuantity=odata['PlanQuantity'],
+						PlanQuantity=int(odata['PlanQuantity']),
 						Unit=odata['Unit'],
-						Seq=odata['Seq'],
-						PlanBeginTime=odata['PlanBeginTime'],
-						PlanEndTime = odata['PlanEndTime'],
-						PlanStatus = Model.Global.PlanStatus.NEW,
+						Seq=int(odata['Seq']),
+						PlanBeginTime=odata['PlanBeginTime'],#datetime.datetime.strptime(odata['PlanBeginTime'],'%Y-%m-%d %H:%M'),
+						PlanEndTime = odata['PlanEndTime'],#datetime.datetime.strptime(odata['PlanEndTime'],'%Y-%m-%d %H:%M'),
+						PlanStatus = "10",
 						Type = odata['Type']))
 				session.commit()
 				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK],
