@@ -53,7 +53,7 @@
                 </tr>
             </thead>
         </table>
-        <div id="TemplateClassDialog" class="easyui-dialog" style="width:400px;height:240px;padding:10px;"
+        <div id="TemplateClassDialog" class="easyui-dialog" style="width:400px;height:500px;padding:10px;"
              data-options="closed:'true',buttons:'#userClassDialogButtons',modal:true">
             <form id="TemplateClassForm" method="post" class="dialog-form">
                 <table class="kv-table">
@@ -67,7 +67,7 @@
                         <tr>
                             <td class="kv-label">调度编号</td>
                             <td class="kv-content">
-                                <input id="SchedulePlanCode" name="SchedulePlanCode" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                                <input id="SchedulePlanCode" name="SchedulePlanCode" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
                             </td>
                         </tr>
                         <tr>
@@ -90,7 +90,7 @@
                         <tr>
                             <td class="kv-label">序号</td>
                             <td class="kv-content">
-                                <input id="Seq" name="Seq" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                                <input id="Seq" name="Seq" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
                             </td>
                         </tr>
                         <tr>
@@ -107,19 +107,19 @@
                         <tr>
                             <td class="kv-label">计划开始时间</td>
                             <td class="kv-content">
-                                <input id="PlanBeginTime" name="PlanBeginTime" required="true" type="text" class="easyui-datetimebox" data-options="required:true,showSeconds:false,editable:false" autocomplete="off" placeholder=""  >
+                                <input id="PlanBeginTime" name="PlanBeginTime" required="true" type="text" class="easyui-datetimebox" data-options="showSeconds:false,editable:false" autocomplete="off" placeholder=""  >
                             </td>
                         </tr>
                         <tr>
                             <td class="kv-label">计划完成时间</td>
                             <td class="kv-content">
-                                <input id="PlanEndTime" name="PlanEndTime" required="true" type="text" class="easyui-datetimebox" data-options="required:true,showSeconds:false,editable:false" autocomplete="off" placeholder=""  >
+                                <input id="PlanEndTime" name="PlanEndTime" required="true" type="text" class="easyui-datetimebox" data-options="showSeconds:false,editable:false" autocomplete="off" placeholder=""  >
                             </td>
                         </tr>
                         <tr>
                             <td class="kv-label">调度类型</td>
                             <td class="kv-content">
-                                <input id="Type" name="Type" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                                <input id="Type" name="Type" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
                             </td>
                         </tr>
                     </tbody>
@@ -348,7 +348,8 @@
                             Unit:$('#Unit').find("option:selected").html(),
                             PlanBeginTime:$('#PlanBeginTime').datetimebox('getValue'),
                             PlanEndTime:$('#PlanEndTime').datetimebox('getValue'),
-                            Type:$('#Type').val()
+                            Type:$('#Type').val(),
+                            PlanQuantity:""
                         },
                         dataType: 'json',
                         cache: false,
