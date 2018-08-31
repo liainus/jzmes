@@ -2145,7 +2145,7 @@ def allSchedulePlansSearch():
 # 加载工作台
 @app.route('/ZYPlanGuid/planmanager')
 def planManager():
-    return render_template('sysPlanManager.html')
+    return render_template('planmanager.html')
 
 
 @app.route('/allPlanManagers/Find')
