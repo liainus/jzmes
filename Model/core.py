@@ -194,7 +194,7 @@ class ZYPlanWebIFS(object):
 						PlanEndTime= odata['PlanEndTime'],
 						ActBeginTime= odata['ActBeginTime'],
 						ActEndTime= odata['ActEndTime'],
-						PlanStatus= odata['PlanStatus'],
+						ZYPlanStatus= odata['ZYPlanStatus'],
 						LockStatus= odata['LockStatus'],
 						INFStatus= odata['INFStatus'],
 						WMSStatus= odata['WMSStatus']))
@@ -286,7 +286,7 @@ class ZYPlanWebIFS(object):
 				oclass.PlanEndTime = odata['PlanEndTime']
 				oclass.ActBeginTime = odata['ActBeginTime']
 				oclass.ActEndTime = odata['ActEndTime']
-				oclass.PlanStatus = odata['PlanStatus']
+				oclass.ZYPlanStatus = odata['ZYPlanStatus']
 				oclass.LockStatus = odata['LockStatus']
 				oclass.INFStatus = odata['INFStatus']
 				oclass.WMSStatus = odata['WMSStatus']
@@ -3031,7 +3031,7 @@ class PlanManager(Base):
 	# 品名:
 	BrandName = Column(Unicode(64), primary_key=False, autoincrement=False, nullable=True)
 
-	# Seq:
+	# 序号:
 	Seq = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
 
 	# 计划状态:
@@ -3069,9 +3069,9 @@ class PlanManagerWebIFS(object):
 						Unit=odata['Unit'],
 						Seq=odata['Seq'],
 						PlanBeginTime=odata['PlanBeginTime'],
-						PLineID = odata['PLineID'],
-						PLineName = odata['PLineName'],
-						Type=odata['Type']))
+						PlanEndTime = odata['PlanEndTime'],
+						PlanStatus = odata['PlanStatus'],
+						Type = odata['Type']))
 				session.commit()
 				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK],
 								  cls=Model.BSFramwork.AlchemyEncoder,
@@ -3152,10 +3152,10 @@ class PlanManagerWebIFS(object):
 				oclass.BrandName = odata['BrandName']
 				oclass.PlanQuantity = odata['PlanQuantity']
 				oclass.Unit = odata['Unit']
-				oclass.PLineID = odata['PLineID']
-				oclass.PLineName = odata['PLineName']
 				oclass.Seq = odata['Seq']
+				oclass.PlanStatus = odata['PlanStatus']
 				oclass.PlanBeginTime = odata['PlanBeginTime']
+				oclass.PlanEndTime = odata['PlanEndTime']
 				oclass.Type = odata['Type']
 				session.commit()
 				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK],
