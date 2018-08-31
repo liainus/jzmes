@@ -165,8 +165,8 @@ $(function () {
             $('input[name="iID"]').val("");
             $('input[name="iSchedulePlanCode"]').val("");
             $('input[name="iDesc"]').val("");
-            $('#iPlanBeginTime').datetimebox({value: ""});
-            $('#iPlanEndTime').datetimebox({value: ""});
+            $('#iPlanBeginTime').datetimebox("setValue", "");
+            $('#iPlanEndTime').datetimebox("setValue", "");
             $('input[name="iType"]').val("");// $('input[name="iSchedulePlanSeq"]').onChange()
             // $(formId).form('clear');
             message = '新增' + titleText;

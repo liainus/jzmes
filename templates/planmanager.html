@@ -19,7 +19,7 @@
 <body>
     <div class="content">
         <div id="Toolbar" style="padding:0 10px;">
-            名称:
+            批次号:
             <input type="text" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
                 placeholder="">
             <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="CollectToolbar.search();">查询</a>
@@ -43,12 +43,13 @@
                     <th field="ck" checkbox="true"></th>
                     <th data-options="field:'SchedulePlanCode',width:200,align:'center'">调度编号</th>
                     <th data-options="field:'BatchID',width:200,align:'center'">批次号</th>
-                    <th data-options="field:'Unit',width:200,align:'center'">单位</th>
-                    <th data-options="field:'BrandName',width:200,align:'center'">品名</th>
-                    <th data-options="field:'PlanStatus',width:200,align:'center'">计划状态</th>
-                    <th data-options="field:'PlanBeginTime',width:200,align:'center'">调度计划开始时间</th>
+                    <th data-options="field:'BrandName',width:150,align:'center'">品名</th>
+                    <th data-options="field:'Seq',width:150,align:'center'">序号</th>
+                    <th data-options="field:'Unit',width:100,align:'center'">单位</th>
+                    <th data-options="field:'PlanStatus',width:100,align:'center'">计划状态</th>
+                    <th data-options="field:'PlanBeginTime',width:200,align:'center'">计划开始时间</th>
                     <th data-options="field:'PlanEndTime',width:200,align:'center'">计划完成时间</th>
-                    <th data-options="field:'Type',width:200,align:'center'">调度类型</th>
+                    <th data-options="field:'Type',width:100,align:'center'">调度类型</th>
                 </tr>
             </thead>
         </table>
@@ -64,27 +65,61 @@
                             </td>
                         </tr>
                         <tr>
-                            <td class="kv-label">间隔时间</td>
+                            <td class="kv-label">调度编号</td>
                             <td class="kv-content">
-                                <input id="Interval" name="Interval" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                                <input id="SchedulePlanCode" name="SchedulePlanCode" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
                             </td>
                         </tr>
                         <tr>
-                            <td class="kv-label">NodeID</td>
+                            <td class="kv-label">批次号</td>
                             <td class="kv-content">
-                                <input id="NodeID" name="NodeID" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                                <input id="BatchID" name="BatchID" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
                             </td>
                         </tr>
                         <tr>
-                            <td class="kv-label">策略名称</td>
+                            <td class="kv-label">品名</td>
                             <td class="kv-content">
-                                <input id="StrategyName" name="StrategyName" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                                 <select name="BrandName" id="BrandName" type="text" style="width:157px;" autocomplete="off" placeholder="">
+                                    <option value="">请选择</option>
+                                    {% for id in Product_info %}
+                                        <option value="{{ id['PRCode'] }}">{{ id['text'] }}</option>
+                                    {% endfor %}
+                                </select>
                             </td>
                         </tr>
                         <tr>
-                            <td class="kv-label">描述</td>
+                            <td class="kv-label">序号</td>
                             <td class="kv-content">
-                                <input id="Desc" name="Desc" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                                <input id="Seq" name="Seq" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">单位</td>
+                            <td class="kv-content">
+                                 <select name="Unit" id="Unit" type="text" style="width:157px;" autocomplete="off" placeholder="">
+                                    <option value="">请选择</option>
+                                    {% for id in Unit %}
+                                        <option value="{{ id['UnitCode'] }}">{{ id['text'] }}</option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">计划开始时间</td>
+                            <td class="kv-content">
+                                <input id="PlanBeginTime" name="PlanBeginTime" required="true" type="text" class="easyui-datetimebox" data-options="required:true,showSeconds:false,editable:false" autocomplete="off" placeholder=""  >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">计划完成时间</td>
+                            <td class="kv-content">
+                                <input id="PlanEndTime" name="PlanEndTime" required="true" type="text" class="easyui-datetimebox" data-options="required:true,showSeconds:false,editable:false" autocomplete="off" placeholder=""  >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">调度类型</td>
+                            <td class="kv-content">
+                                <input id="Type" name="Type" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
                             </td>
                         </tr>
                     </tbody>
@@ -117,10 +152,10 @@
             CollectToolbar = {
                 search:function(){
                     $.ajax({
-                        url: '/Collectionstrategy/config/search',
+                        url: '/allPlanManagers/Search',
                         method: 'POST',
                         traditional: true,
-                        data: {StrategyName:$('input[name="search"]').val()},
+                        data: {BatchID:$('input[name="search"]').val()},
                         dataType: 'json',
                         success: function (data) {
                             $.messager.progress('close');
@@ -141,13 +176,17 @@
                     })
                 },
                 create:function(){
-                    $("#TemplateClassDialog").dialog('open').dialog('setTitle', '新增采集策略');
+                    $("#TemplateClassDialog").dialog('open').dialog('setTitle', '新增计划');
                     $('input[name="ID"]').attr("disabled", "disabled");
                     $('input[name="ID"]').val("");
-                    $('input[name="Interval"]').val("");
-                    $('input[name="NodeID"]').val("");
-                    $('input[name="StrategyName"]').val("");
-                    $('input[name="Desc"]').val("");
+                    $("#SchedulePlanCode").val("")
+                    $("#BatchID").val("")
+                    $('#BrandName option[value=""]').prop("selected", 'selected');
+                    $("#Seq").val("")
+                    $('#Unit option[value=""]').prop("selected", 'selected');
+                    $("#PlanBeginTime").datetimebox("setValue", "")
+                    $("#PlanEndTime").datetimebox("setValue", "")
+                    $("#Type").val("")
                 },
                 update:function(){
                     var rows = $("#tab").datagrid('getSelections');
@@ -156,12 +195,16 @@
                     } else if (rows.length == 1) {
                         var row = $("#tab").datagrid('getSelected');
                         if(row){
-                            $("#TemplateClassDialog").dialog('open').dialog('setTitle', '修改采集策略');
+                            $("#TemplateClassDialog").dialog('open').dialog('setTitle', '修改计划');
                             $('input[name="ID"]').val(row.ID);
-                            $('input[name="Interval"]').val(row.Interval);
-                            $('input[name="NodeID"]').val(row.NodeID);
-                            $('input[name="StrategyName"]').val(row.StrategyName);
-                            $('input[name="Desc"]').val(row.Desc);
+                            $("#SchedulePlanCode").val(row.SchedulePlanCode)
+                            $("#BatchID").val(row.BatchID)
+                            $('#BrandName option:contains('+row.BrandName+')').prop("selected", 'selected');
+                            $("#Seq").val(row.Seq)
+                            $('#Unit option:contains('+row.Unit+')').prop("selected", 'selected');
+                            $("#PlanBeginTime").datetimebox("setValue", row.PlanBeginTime )
+                            $("#PlanEndTime").datetimebox("setValue", row.PlanEndTime )
+                            $("#Type").val(row.Type)
                         }
                     }else if(rows.length == 0){
                         $.messager.alert('警告操作！', '请选定一条数据！', 'warning');
@@ -182,7 +225,7 @@
                                 // a = JSON.stringify([{"ID":9},{"ID":10}])
                                 a = JSON.stringify(jsonarray);
                                 $.ajax({
-                                    url: '/Collectionstrategy/config/delete',
+                                    url: '/allPlanManagers/Delete',
                                     method: 'POST',
                                     traditional: true,
                                     // data: JSON.stringify(ids),
@@ -234,7 +277,9 @@
                                     url: '/ZYPlanXF/zYPlanXF',
                                     method: 'GET',
                                     // data: JSON.stringify(ids),
-                                    data: a,
+                                    data: {
+                                        ID:a
+                                    },
                                     success: function (data) {
                                         $.messager.progress('close')
                                         if (data == "OK") {
@@ -266,27 +311,27 @@
                 save:function(){
                     var strID = $('#ID').val();
                     var urlAddr = ""
-                    var stmp = $('#Interval').val();
+                    var stmp = $('#BatchID').val();
                     if(Bee.StringUtils.isEmpty(stmp)) {
-                       alert('Warning：间隔时间不能为空！');
+                       alert('Warning：批次号不能为空！');
                        return false;
                     }
-                    stmp = $('#NodeID').val();
+                    stmp = $('#BrandName').find("option:selected").val();
                     if(Bee.StringUtils.isEmpty(stmp)) {
-                       alert('Warning：NodeID不能为空！');
+                       alert('Warning：品名不能为空！');
                        return false;
                     }
-                    stmp = $('#StrategyName').val();
+                    stmp = $('#Unit').find("option:selected").val();
                     if(Bee.StringUtils.isEmpty(stmp)) {
-                       alert('Warning：策略名称不能为空！');
+                       alert('Warning：单位不能为空！');
                        return false;
                     }
                     if (strID.length >= 1){
-                        urlAddr = '/Collectionstrategy/config/' + 'update'
+                        urlAddr = '/allPlanManagers/' + 'Update'
                         hintinfo = "更新数据"
                     }
                     else {
-                        urlAddr = '/Collectionstrategy/config/' + 'create'
+                        urlAddr = '/allPlanManagers/' + 'Create'
                         hintinfo = "新增数据"
                     }
                     $.ajax({
@@ -295,10 +340,15 @@
                         traditional: true,
                         data: {
                             ID:$('#ID').val(),
-                            Interval:$('#Interval').val(),
-                            NodeID:$('#NodeID').val(),
-                            StrategyName:$('#StrategyName').val(),
-                            Desc:$('#Desc').val()
+                            SchedulePlanCode:$('#SchedulePlanCode').val(),
+                            BatchID:$('#BatchID').val(),
+                            BrandID:$('#BrandName').find("option:selected").val(),
+                            BrandName:$('#BrandName').find("option:selected").html(),
+                            Seq:$('#Seq').val(),
+                            Unit:$('#Unit').find("option:selected").html(),
+                            PlanBeginTime:$('#PlanBeginTime').datetimebox('getValue'),
+                            PlanEndTime:$('#PlanEndTime').datetimebox('getValue'),
+                            Type:$('#Type').val()
                         },
                         dataType: 'json',
                         cache: false,
