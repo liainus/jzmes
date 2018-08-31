@@ -3070,7 +3070,7 @@ class PlanManagerWebIFS(object):
 						Seq=odata['Seq'],
 						PlanBeginTime=odata['PlanBeginTime'],
 						PlanEndTime = odata['PlanEndTime'],
-						PlanStatus = odata['PlanStatus'],
+						PlanStatus = Model.Global.PlanStatus.NEW,
 						Type = odata['Type']))
 				session.commit()
 				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK],
@@ -3153,7 +3153,6 @@ class PlanManagerWebIFS(object):
 				oclass.PlanQuantity = odata['PlanQuantity']
 				oclass.Unit = odata['Unit']
 				oclass.Seq = odata['Seq']
-				oclass.PlanStatus = odata['PlanStatus']
 				oclass.PlanBeginTime = odata['PlanBeginTime']
 				oclass.PlanEndTime = odata['PlanEndTime']
 				oclass.Type = odata['Type']
