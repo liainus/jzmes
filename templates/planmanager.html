@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>计划管理</title>
+    <link href="../static/css/base.css" rel="stylesheet">
+	<link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
+	<link href="../static/css/basic_info.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
+	<link href="../static/js/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
+    <link href="../static/css/datagridpanel_customer.css" rel="stylesheet">
+    <link href="../static/css/dialogpanel.css" type="text/css" rel="stylesheet">
+    <link href="../static/css/datagrid_customer.css" type="text/css" rel="stylesheet">
+    <script type="text/javascript" src="../static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
+</head>
+<body>
+    <div class="content">
+        <div id="Toolbar" style="padding:0 10px;">
+            名称:
+            <input type="text" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
+                placeholder="">
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="CollectToolbar.search();">查询</a>
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add'" onclick="CollectToolbar.create();">添加</a>
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit'" onclick="CollectToolbar.update();">修改</a>
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove'" onclick="CollectToolbar.delete();">删除</a>
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-redo'" onclick="CollectToolbar.send();">下发</a>
+            <a href="#" class="easyui-linkbutton" id="reload" data-options="iconCls:'icon-reload'" onclick="CollectToolbar.refresh();">刷新</a>
+        </div>
+        <table class="easyui-datagrid" id="tab" title="" style="width:100%;" data-options="
+            rownumbers:true,
+            singleSelect:false,
+            autoRowHeight:false,
+            pagination:true,
+            pageSize:10,
+            toolbar:'#Toolbar',
+            url:'/allPlanManagers/Find',
+            method:'get'">
+            <thead>
+                <tr>
+                    <th field="ck" checkbox="true"></th>
+                    <th data-options="field:'SchedulePlanCode',width:200,align:'center'">调度编号</th>
+                    <th data-options="field:'BatchID',width:200,align:'center'">批次号</th>
+                    <th data-options="field:'Unit',width:200,align:'center'">单位</th>
+                    <th data-options="field:'BrandName',width:200,align:'center'">品名</th>
+                    <th data-options="field:'PlanStatus',width:200,align:'center'">计划状态</th>
+                    <th data-options="field:'PlanBeginTime',width:200,align:'center'">调度计划开始时间</th>
+                    <th data-options="field:'PlanEndTime',width:200,align:'center'">计划完成时间</th>
+                    <th data-options="field:'Type',width:200,align:'center'">调度类型</th>
+                </tr>
+            </thead>
+        </table>
+        <div id="TemplateClassDialog" class="easyui-dialog" style="width:400px;height:240px;padding:10px;"
+             data-options="closed:'true',buttons:'#userClassDialogButtons',modal:true">
+            <form id="TemplateClassForm" method="post" class="dialog-form">
+                <table class="kv-table">
+                    <tbody>
+                        <tr>
+                            <td class="kv-label">id</td>
+                            <td class="kv-content">
+                                <input id="ID" name="ID" type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="" disabled="disabled">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">间隔时间</td>
+                            <td class="kv-content">
+                                <input id="Interval" name="Interval" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">NodeID</td>
+                            <td class="kv-content">
+                                <input id="NodeID" name="NodeID" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">策略名称</td>
+                            <td class="kv-content">
+                                <input id="StrategyName" name="StrategyName" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">描述</td>
+                            <td class="kv-content">
+                                <input id="Desc" name="Desc" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div id="userClassDialogButtons" >
+                    <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" onclick="CollectToolbar.save()" >保存</a>
+                    <a href="#" class="easyui-linkbutton" onclick="$('#TemplateClassDialog').dialog('close')">关闭</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- 右键菜单 -->
+    <div id="contextmenu" class="easyui-menu" style="width:120px;">
+        <div data-options="iconCls:'icon-reload'" onclick="CollectToolbar.refresh();">刷新</div>
+        <div data-options="iconCls:'icon-add'" onclick="CollectToolbar.create();">新建</div>
+        <div class="menu-sep"></div>
+
+        <div data-options="iconCls:'icon-edit'" onclick="CollectToolbar.update();">编辑</div>
+        <div data-options="iconCls:'icon-remove'" onclick="CollectToolbar.delete();">删除</div>
+        <div data-options="iconCls:'icon-redo'" onclick="CollectToolbar.send();">下发</div>
+    </div>
+
+    <script>
+        $(function(){
+            function createKeyIDObj(keyID){
+                return {
+                    ID:keyID
+                }
+            }
+            CollectToolbar = {
+                search:function(){
+                    $.ajax({
+                        url: '/Collectionstrategy/config/search',
+                        method: 'POST',
+                        traditional: true,
+                        data: {StrategyName:$('input[name="search"]').val()},
+                        dataType: 'json',
+                        success: function (data) {
+                            $.messager.progress('close');
+                            if (data) {
+                                $("#tab").datagrid('loadData', data);
+                                $.messager.show({
+                                    title: '提示',
+                                    timeout: 1000,
+                                    msg: '查询成功',
+                                    style: {
+                                        right: '',
+                                        top: document.body.scrollTop + document.documentElement.scrollTop,
+                                        bottom: ''
+                                    }
+                                });
+                            }
+                        }
+                    })
+                },
+                create:function(){
+                    $("#TemplateClassDialog").dialog('open').dialog('setTitle', '新增采集策略');
+                    $('input[name="ID"]').attr("disabled", "disabled");
+                    $('input[name="ID"]').val("");
+                    $('input[name="Interval"]').val("");
+                    $('input[name="NodeID"]').val("");
+                    $('input[name="StrategyName"]').val("");
+                    $('input[name="Desc"]').val("");
+                },
+                update:function(){
+                    var rows = $("#tab").datagrid('getSelections');
+                    if (rows.length > 1) {
+                        $.messager.alert('警告操作！', '编辑记录只能选定一条数据！', 'warning');
+                    } else if (rows.length == 1) {
+                        var row = $("#tab").datagrid('getSelected');
+                        if(row){
+                            $("#TemplateClassDialog").dialog('open').dialog('setTitle', '修改采集策略');
+                            $('input[name="ID"]').val(row.ID);
+                            $('input[name="Interval"]').val(row.Interval);
+                            $('input[name="NodeID"]').val(row.NodeID);
+                            $('input[name="StrategyName"]').val(row.StrategyName);
+                            $('input[name="Desc"]').val(row.Desc);
+                        }
+                    }else if(rows.length == 0){
+                        $.messager.alert('警告操作！', '请选定一条数据！', 'warning');
+                    }
+                },
+                delete:function(){
+                    var rows = $("#tab").datagrid('getSelections');
+                    if (rows.length > 0) {
+                        var jsonarray=[];
+                        $.messager.confirm('确定操作', '您正在删除所选的记录吗？', function (flag) {
+                            if (flag) {
+                                var a = "";
+                                for (var i = 0; i < rows.length; i++) {
+                                    // ids.push(parseInt((rows[i].id)));
+                                    var obj=createKeyIDObj(parseInt(rows[i].ID));
+                                    jsonarray.push(obj);
+                                }
+                                // a = JSON.stringify([{"ID":9},{"ID":10}])
+                                a = JSON.stringify(jsonarray);
+                                $.ajax({
+                                    url: '/Collectionstrategy/config/delete',
+                                    method: 'POST',
+                                    traditional: true,
+                                    // data: JSON.stringify(ids),
+                                    data: {
+                                        ID:a
+                                    },
+                                    dataType: 'json',
+                                    success: function (data) {
+                                        $.messager.progress('close');
+
+                                        if (data) {
+                                            $("#tab").datagrid('loadData', data);
+                                            $("#tab").datagrid('load');
+                                            $.messager.show({
+                                                title: '提示',
+                                                timeout:1000,
+                                                msg: '删除成功',
+                                                style: {
+                                                    right: '',
+                                                    top: document.body.scrollTop + document.documentElement.scrollTop,
+                                                    bottom: ''
+                                                }
+                                            });
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                    } else {
+                        $.messager.alert('提示', '请选择要删除的记录！', 'info');
+                    }
+                },
+                send:function(){
+                    var rows = $("#tab").datagrid('getSelections');
+                    if (rows.length > 0) {
+                        var jsonarray=[];
+                        $.messager.confirm('确定操作', '确定要下发所选的记录吗？', function (flag) {
+                            if (flag) {
+                                var PrimaryKey = "ID";
+                                var a = "";
+                                for (var i = 0; i < rows.length; i++) {
+                                    // ids.push(parseInt((rows[i].id)));
+                                    var obj=createKeyIDObj(parseInt(rows[i].ID));
+                                    jsonarray.push(obj);
+                                }
+                                // a = JSON.stringify([{"ID":9},{"ID":10}])
+                                a = JSON.stringify(jsonarray);
+                                $.ajax({
+                                    url: '/ZYPlanXF/zYPlanXF',
+                                    method: 'GET',
+                                    // data: JSON.stringify(ids),
+                                    data: a,
+                                    success: function (data) {
+                                        $.messager.progress('close')
+                                        if (data == "OK") {
+                                            $.messager.show({
+                                                title: '提示',
+                                                timeout:1000,
+                                                msg: '下发' + titleText + '成功',
+                                                style: {
+                                                    right: '',
+                                                    top: document.body.scrollTop + document.documentElement.scrollTop,
+                                                    bottom: ''
+                                                }
+                                            });
+                                            $("#tab").datagrid('loaded');
+                                            $("#tab").datagrid('load');
+                                            $("#tab").datagrid('unselectAll');
+                                        }
+                                    },
+                                    error:function(){
+                                        alert("下发失败，请稍后重试！")
+                                    }
+                                });
+                            }
+                        });
+                    } else {
+                        $.messager.alert('提示', '请选择要下发的记录！', 'info');
+                    }
+                },
+                save:function(){
+                    var strID = $('#ID').val();
+                    var urlAddr = ""
+                    var stmp = $('#Interval').val();
+                    if(Bee.StringUtils.isEmpty(stmp)) {
+                       alert('Warning：间隔时间不能为空！');
+                       return false;
+                    }
+                    stmp = $('#NodeID').val();
+                    if(Bee.StringUtils.isEmpty(stmp)) {
+                       alert('Warning：NodeID不能为空！');
+                       return false;
+                    }
+                    stmp = $('#StrategyName').val();
+                    if(Bee.StringUtils.isEmpty(stmp)) {
+                       alert('Warning：策略名称不能为空！');
+                       return false;
+                    }
+                    if (strID.length >= 1){
+                        urlAddr = '/Collectionstrategy/config/' + 'update'
+                        hintinfo = "更新数据"
+                    }
+                    else {
+                        urlAddr = '/Collectionstrategy/config/' + 'create'
+                        hintinfo = "新增数据"
+                    }
+                    $.ajax({
+                        url: urlAddr,
+                        method: 'POST',
+                        traditional: true,
+                        data: {
+                            ID:$('#ID').val(),
+                            Interval:$('#Interval').val(),
+                            NodeID:$('#NodeID').val(),
+                            StrategyName:$('#StrategyName').val(),
+                            Desc:$('#Desc').val()
+                        },
+                        dataType: 'json',
+                        cache: false,
+                        error: function(data){
+                           alert(hintinfo+ "异常，请刷新后重试...");
+                        },
+                        success: function (data,response,status) {
+                            $.messager.progress('close');
+                            var obj1 = eval(data);
+                            if(obj1[0].status == "OK"){
+                                $.messager.show({
+                                    title: '提示',
+                                    msg: hintinfo + '成功',
+                                    timeout:1000,
+                                    style: {
+                                        right: '',
+                                        top: document.body.scrollTop + document.documentElement.scrollTop,
+                                        bottom: ''
+                                    }
+                                });
+
+                                $("#TemplateClassForm").form('reset');
+                                $("#TemplateClassDialog").dialog('close');
+                                $("#tab").datagrid('load');
+                            } else {
+                                $.messager.alert(obj1[0].status + '失败！', '未知错误导致失败，请重试！', 'warning');
+                            }
+                        }
+                    });
+                },
+                refresh:function(){
+                    $("#tab").datagrid('load')
+                }
+            }
+            //datagrid表格右键操作
+            $("#tab").datagrid({
+                onRowContextMenu: function (e, rowIndex, rowData) { //右键时触发事件
+                    //三个参数：e里面的内容很多，真心不明白，rowIndex就是当前点击时所在行的索引，rowData当前行的数据
+                    e.preventDefault(); //阻止浏览器捕获右键事件
+                    $(this).datagrid("clearSelections"); //取消所有选中项
+                    $(this).datagrid("selectRow", rowIndex); //根据索引选中该行
+                    $('#contextmenu').menu('show', {
+                        //显示右键菜单
+                        left: e.pageX,//在鼠标点击处显示菜单
+                        top: e.pageY
+                    });
+                    e.preventDefault();  //阻止浏览器自带的右键菜单弹出
+                }
+            });
+        })
+    </script>
+</body>
+</html>

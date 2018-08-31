@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>计划审核</title>
+    <link href="../static/css/base.css" rel="stylesheet">
+	<link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
+	<link href="../static/css/basic_info.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
+	<link href="../static/js/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
+    <link href="../static/css/datagridpanel_customer.css" rel="stylesheet">
+    <link href="../static/css/dialogpanel.css" type="text/css" rel="stylesheet">
+    <link href="../static/css/datagrid_customer.css" type="text/css" rel="stylesheet">
+    <script type="text/javascript" src="../static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
+</head>
+<body>
+    <div class="content">
+        <div id="Toolbar" style="padding:0 10px;">
+            批次号名称:
+            <input type="text" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
+                placeholder="">
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="CollectToolbar.search();">查询</a>
+
+        </div>
+        <table class="easyui-datagrid" id="tab" title="" style="width:100%;" data-options="
+            queryParams: {
+                BatchID: ''
+            }
+            rownumbers:true,
+            singleSelect:false,
+            autoRowHeight:false,
+            pagination:true,
+            pageSize:10,
+            toolbar:'#Toolbar',
+            url:'/allPlanManagers/searchcheckplanmanager',
+            method:'get'">
+            <thead>
+                <tr>
+                    <th field="ck" checkbox="true"></th>
+                    <th data-options="field:'SchedulePlanCode',width:200,align:'center'">调度编号</th>
+                    <th data-options="field:'BatchID',width:200,align:'center'">批次号</th>
+                    <th data-options="field:'Unit',width:200,align:'center'">单位</th>
+                    <th data-options="field:'BrandName',width:200,align:'center'">品名</th>
+                    <th data-options="field:'PlanStatus',width:200,align:'center'">计划状态</th>
+                    <th data-options="field:'PlanBeginTime',width:200,align:'center'">调度计划开始时间</th>
+                    <th data-options="field:'PlanEndTime',width:200,align:'center'">计划完成时间</th>
+                    <th data-options="field:'Type',width:200,align:'center'">调度类型</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+    <script>
+        $(function(){
+            CollectToolbar = {
+                search:function(){
+                    $.ajax({
+                        url: '/Collectionstrategy/config/search',
+                        method: 'POST',
+                        traditional: true,
+                        data: {BatchID:$('input[name="search"]').val()},
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data) {
+                                $("#tab").datagrid('loadData', data);
+                                $.messager.show({
+                                    title: '提示',
+                                    timeout: 1000,
+                                    msg: '查询成功',
+                                    style: {
+                                        right: '',
+                                        top: document.body.scrollTop + document.documentElement.scrollTop,
+                                        bottom: ''
+                                    }
+                                });
+                            }
+                        }
+                    })
+                }
+            }
+        })
+    </script>
+</body>
+</html>

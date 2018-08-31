@@ -341,54 +341,6 @@ $(function () {
                 $.messager.alert('提示', '请选择要删除的记录！', 'info');
             }
         },
-        send:function(){
-            var rows = $(tableId).datagrid('getSelections');
-            if (rows.length > 0) {
-                var jsonarray=[];
-                $.messager.confirm('确定操作', '确定要下发所选的记录吗？', function (flag) {
-                    if (flag) {
-                        var PrimaryKey = "ID";
-                        var a = "";
-                        for (var i = 0; i < rows.length; i++) {
-                            // ids.push(parseInt((rows[i].id)));
-                            var obj=createKeyIDObj(parseInt(rows[i].ID));
-                            jsonarray.push(obj);
-                        }
-                        // a = JSON.stringify([{"ID":9},{"ID":10}])
-                        a = JSON.stringify(jsonarray);
-                        $.ajax({
-                            url: '/ZYPlanXF/zYPlanXF',
-                            method: 'GET',
-                            // data: JSON.stringify(ids),
-                            data: a,
-                            success: function (data) {
-                                $.messager.progress('close')
-                                if (data == "OK") {
-                                    $.messager.show({
-                                        title: '提示',
-                                        timeout:1000,
-                                        msg: '下发' + titleText + '成功',
-                                        style: {
-                                            right: '',
-                                            top: document.body.scrollTop + document.documentElement.scrollTop,
-                                            bottom: ''
-                                        }
-                                    });
-                                    $(tableId).datagrid('loaded');
-                                    $(tableId).datagrid('load');
-                                    $(tableId).datagrid('unselectAll');
-                                }
-                            },
-                            error:function(){
-                                alert("下发失败，请稍后重试！")
-                            }
-                        });
-                    }
-                });
-            } else {
-                $.messager.alert('提示', '请选择要下发的记录！', 'info');
-            }
-        },
         save: function () {
             var validate=$(formId).form('validate');
             var strID = $('input[name="iID"]').val();
