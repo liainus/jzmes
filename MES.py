@@ -2145,7 +2145,25 @@ def allSchedulePlansSearch():
 # 加载工作台
 @app.route('/ZYPlanGuid/planmanager')
 def planManager():
-    return render_template('planmanager.html')
+    product_info = db_session.query(ProductRule.PRCode, ProductRule.PRName).all()
+    # print(product_info)
+    data_pro = []
+    for tu in product_info:
+        li = list(tu)
+        prcode = li[0]
+        name = li[1]
+        pro_info = {'PRCode': prcode, 'text': name}
+        data_pro.append(pro_info)
+
+    proUnit_info = db_session.query(Unit.UnitCode, Unit.UnitName).all()
+    data_pucode = []
+    for tu in proUnit_info:
+        li = list(tu)
+        pucode = li[0]
+        name = li[1]
+        pro_info = {'UnitCode': pucode, 'text': name}
+        data_pucode.append(pro_info)
+    return render_template('planmanager.html', Product_info=data_pro, Unit=data_pucode)
 
 
 @app.route('/allPlanManagers/Find')
