@@ -2143,7 +2143,7 @@ def allSchedulePlansSearch():
 
 
 # 加载工作台
-@app.route('/planManager')
+@app.route('/ZYPlanGuid/planmanager')
 def planManager():
     return render_template('sysPlanManager.html')
 
@@ -4343,9 +4343,47 @@ def searchPlanmanager():
                 rowsnumber = int(data['rows'])  # 行数
                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
-                ABatchID = data['BatchID']  # 批次号
+                ABatchID = data['ABatchID']  # 批次号
                 total = db_session.query(PlanManager).filter(PlanManager.BatchID == ABatchID).count()
                 planManagers = db_session.query(PlanManager).filter(PlanManager.BatchID == ABatchID).all()[inipage:endpage]
+                planManagers = json.dumps(planManagers, cls=AlchemyEncoder, ensure_ascii=False)
+                jsonPlanManagers = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + planManagers + "}"
+                return jsonPlanManagers
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "计划向导生成的计划查询报错Error：" + str(e), "AAAAAAadmin")
+
+# 计划管理计划审核页面
+@app.route('/ZYPlanGuid/checkplanmanager')
+def checkplanmanager():
+    return render_template('checkplanmanager.html')
+
+#计划审核查询
+@app.route('/allPlanManagers/searchcheckplanmanager', methods=['POST', 'GET'])
+def searchcheckplanmanager():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            print(json_str)
+            if len(json_str) > 10:
+                pages = int(data['page'])  # 页数
+                rowsnumber = int(data['rows'])  # 行数
+                inipage = (pages - 1) * rowsnumber + 0  # 起始页
+                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+                ABatchID = data['ABatchID']  # 批次号
+                if (ABatchID == None or ABatchID == ""):
+                    total = db_session.query(PlanManager).filter(PlanManager.BatchID == ABatchID,
+                                                                 PlanManager.PlanStatus == Model.Global.PlanStatus.NEW).count()
+                    planManagers = db_session.query(PlanManager).filter(PlanManager.BatchID == ABatchID,
+                                                                 PlanManager.PlanStatus == Model.Global.PlanStatus.NEW).all()[
+                                   inipage:endpage]
+                else:
+                    total = db_session.query(PlanManager.ID).filter(
+                        PlanManager.PlanStatus == Model.Global.PlanStatus.NEW).count()
+                    planManagers = db_session.query(PlanManager).filter(
+                        PlanManager.PlanStatus == Model.Global.PlanStatus.NEW).all()[inipage:endpage]
                 planManagers = json.dumps(planManagers, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonPlanManagers = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + planManagers + "}"
                 return jsonPlanManagers
