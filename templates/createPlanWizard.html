@@ -257,7 +257,7 @@
             $("#wizard").on("showStep", function(e, anchorObject, stepNumber, stepDirection) {
                 if(stepNumber == 1){
                     setTimeout(function() {
-                        $("#MaterialsTab").datagrid('load',{
+                        $("#PlanTab").datagrid('load',{
                             ABatchID :$('#ABatchID').val()
                         })
                         $("#TasksTab").datagrid('load',{
@@ -279,7 +279,7 @@
     <div id="wizard" class="sw-main sw-theme-arrows">
         <ul style="margin:10px;">
             <li><a href="#step-1">Step 1<br /><small>批次号品名录入</small></a></li>
-            <li><a href="#step-2">Step 2<br /><small>物料明细</small></a></li>
+            <li><a href="#step-2">Step 2<br /><small>批次计划</small></a></li>
             <li><a href="#step-3">Step 3<br /><small>计划效验结果</small></a></li>
         </ul>
         <div>
@@ -338,10 +338,10 @@
                 </div>
             </div>
             <div id="step-2">
-                <h3 class="border-bottom border-gray pb-2">物料BOM</h3>
+                <h3 class="border-bottom border-gray pb-2">生成计划信息</h3>
                 <div id="tab" class="easyui-tabs" style="width:100%;height:520px;">
                     <div title="批次计划" data-options="closable:false"  style="padding:0px;">
-                        <table id="MaterialsTab" class="easyui-datagrid" style="width:100%;"  data-options="
+                        <table id="PlanTab" class="easyui-datagrid" style="width:100%;"  data-options="
                              url:'/ZYPlanGuid/searchPlanmanager',
                              method: 'get',
                              rownumbers:true,
