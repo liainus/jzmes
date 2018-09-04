@@ -23,7 +23,7 @@
             <input type="text" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
                 placeholder="">
             <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="CollectToolbar.search();">查询</a>
-
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-ok'" onclick="CollectToolbar.pass();">批量通过审核</a>
         </div>
         <table class="easyui-datagrid" id="tab" title="" style="width:100%;" data-options="
             queryParams: {
@@ -52,6 +52,10 @@
                 </tr>
             </thead>
         </table>
+        <!-- 右键菜单 -->
+        <div id="contextmenu" class="easyui-menu" style="width:120px;">
+            <div data-options="iconCls:'icon-ok'" onclick="CollectToolbar.pass();">通过审核</div>
+        </div>
     </div>
     <script>
         $(function(){
@@ -79,8 +83,71 @@
                             }
                         }
                     })
+                },
+                pass:function(){
+                    var rows = $("#tab").datagrid('getSelections');
+                    if (rows.length > 0) {
+                        var jsonarray=[];
+                        $.messager.confirm('确定操作', '您正在通过审核所选的记录吗？', function (flag) {
+                            if (flag) {
+                                var a = "";
+                                for (var i = 0; i < rows.length; i++) {
+                                    // ids.push(parseInt((rows[i].id)));
+                                    var obj=createKeyIDObj(parseInt(rows[i].ID));
+                                    jsonarray.push(obj);
+                                }
+                                // a = JSON.stringify([{"ID":9},{"ID":10}])
+                                a = JSON.stringify(jsonarray);
+                                $.ajax({
+                                    url: '/ZYPlanGuid/checkPlanManager',
+                                    method: 'POST',
+                                    traditional: true,
+                                    // data: JSON.stringify(ids),
+                                    data: {
+                                        ID:a
+                                    },
+                                    dataType: 'json',
+                                    success: function (data) {
+                                        $.messager.progress('close');
+
+                                        if (data) {
+                                            $("#tab").datagrid('loadData', data);
+                                            $("#tab").datagrid('load');
+                                            $.messager.show({
+                                                title: '提示',
+                                                timeout:1000,
+                                                msg: '审核成功',
+                                                style: {
+                                                    right: '',
+                                                    top: document.body.scrollTop + document.documentElement.scrollTop,
+                                                    bottom: ''
+                                                }
+                                            });
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                    } else {
+                        $.messager.alert('提示', '请选择要通过的记录！', 'info');
+                    }
                 }
             }
+            //datagrid表格右键操作
+            $("#tab").datagrid({
+                onRowContextMenu: function (e, rowIndex, rowData) { //右键时触发事件
+                    //三个参数：e里面的内容很多，真心不明白，rowIndex就是当前点击时所在行的索引，rowData当前行的数据
+                    e.preventDefault(); //阻止浏览器捕获右键事件
+                    $(this).datagrid("clearSelections"); //取消所有选中项
+                    $(this).datagrid("selectRow", rowIndex); //根据索引选中该行
+                    $('#contextmenu').menu('show', {
+                        //显示右键菜单
+                        left: e.pageX,//在鼠标点击处显示菜单
+                        top: e.pageY
+                    });
+                    e.preventDefault();  //阻止浏览器自带的右键菜单弹出
+                }
+            });
         })
     </script>
 </body>
