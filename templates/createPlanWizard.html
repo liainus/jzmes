@@ -273,6 +273,29 @@
             var d = date.getDate();
             return y+'-'+(m<10?('0'+m):m)+'-'+( d<10?('0'+d):d);
         }
+        function formatterStatus(value, row, index){
+            if (value == 10){
+                return '编制'
+            }else if(value == 20){
+                return '下达'
+            }else if(value == 30){
+                return '新增'
+            }else if(value == 40){
+                return '确认'
+            }else if(value == 50){
+                return '执行'
+            }else if(value == 60){
+                return '完成'
+            }else if(value == 70){
+                return '取消'
+            }else if(value == 80){
+                return '暂停'
+            }else if(value == 85){
+                return '故障'
+            }else if(value == 90){
+                return '中止'
+            }
+        }
 	</script>
 </head>
 <body>
@@ -361,7 +384,7 @@
                                     <th data-options="field: 'PlanQuantity',align: 'center',width:100 ">计划重量</th>
                                     <th data-options="field: 'BrandName',align: 'center',width:150 ">品名</th>
                                     <th data-options="field: 'Unit',align: 'center',width:100 ">单位</th>
-                                    <th data-options="field: 'PlanStatus',align: 'center',width:100 ">计划状态</th>
+                                    <th data-options="field: 'PlanStatus',align: 'center',width:100 " formatter="formatterStatus">计划状态</th>
                                     <th data-options="field: 'PlanBeginTime',align: 'center',width:200 ">调度计划开始时间</th>
                                     <th data-options="field: 'PlanEndTime',align: 'center',width:200 ">计划完成时间</th>
                                     <th data-options="field: 'Type',align: 'center',width:100 ">调度类型</th>
