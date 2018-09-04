@@ -3172,7 +3172,7 @@ class PlanManagerWebIFS(object):
 		try:
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 2:
-				strconditon = "%" + odata['condition'] + "%"
+				strconditon = "%" + odata['BatchID'] + "%"
 				PlanManagerscount = session.query(Model.core.PlanManager).filter(
 					PlanManager.BatchID.like(strconditon)).all()
 				total = Counter(PlanManagerscount)
