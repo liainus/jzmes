@@ -8,7 +8,7 @@ from collections import Counter
 from flask import Flask, jsonify, redirect, url_for, flash
 from flask import render_template, request
 from flask import session
-from sqlalchemy import create_engine, Column, ForeignKey, Table, Integer, String, and_, or_
+from sqlalchemy import create_engine, Column, ForeignKey, Table, Integer, String, and_, or_, desc
 from sqlalchemy import func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session, relationship, sessionmaker
@@ -136,15 +136,15 @@ def syslogsFindByDate():
                 endTime = data['endTime']  # 结束时间
                 if startTime == "" and endTime == "":
                     total = db_session.query(SysLog).count()
-                    syslogs = db_session.query(SysLog).order_by("OperationDate desc").all()[inipage:endpage]
+                    syslogs = db_session.query(SysLog).order_by(desc("OperationDate")).all()[inipage:endpage]
                 elif startTime != "" and endTime == "":
                     nowTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                     total = db_session.query(SysLog).filter(SysLog.OperationDate.between(startTime, nowTime)).count()
-                    syslogs = db_session.query(SysLog).filter(SysLog.OperationDate.between(startTime, nowTime)).order_by("OperationDate desc")[
+                    syslogs = db_session.query(SysLog).filter(SysLog.OperationDate.between(startTime, nowTime)).order_by(desc("OperationDate"))[
                               inipage:endpage]
                 else:
                     total = db_session.query(SysLog).filter(SysLog.OperationDate.between(startTime, endTime)).count()
-                    syslogs = db_session.query(SysLog).filter(SysLog.OperationDate.between(startTime, endTime)).order_by("OperationDate desc")[
+                    syslogs = db_session.query(SysLog).filter(SysLog.OperationDate.between(startTime, endTime)).order_by(desc("OperationDate"))[
                               inipage:endpage]
                 jsonsyslogs = json.dumps(syslogs, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonsyslogs = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonsyslogs + "}"
@@ -520,10 +520,10 @@ def SearchBatchManager():
                 PUID = data["PUID"]
                 if(PUID == ""):
                     total = db_session.query(ZYPlan).count()
-                    zYPlans = db_session.query(ZYPlan).order_by("PlanDate desc").all()[inipage:endpage]
+                    zYPlans = db_session.query(ZYPlan).order_by(desc("EnterTime")).all()[inipage:endpage]
                 else:
                     total = db_session.query(ZYPlan).filter(ZYPlan.PlanDate == currentWorkdate, ZYPlan.PUID == PUID).count()
-                    zYPlans = db_session.query(ZYPlan).filter(ZYPlan.PlanDate == currentWorkdate, ZYPlan.PUID == PUID).order_by("PlanDate desc").all()[inipage:endpage]
+                    zYPlans = db_session.query(ZYPlan).filter(ZYPlan.PlanDate == currentWorkdate, ZYPlan.PUID == PUID).order_by(desc("EnterTime")).all()[inipage:endpage]
                 jsonzyplans = json.dumps(zYPlans, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonzyplans = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonzyplans + "}"
                 return jsonzyplans
@@ -2716,6 +2716,34 @@ def checkPlanManager():
             insertSyslog("error", "生产管理部复核计划报错Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
+# 计划下发---更改计划状态，计划下的任务状态
+@app.route('/ZYPlanGuid/createZYPlanZYtask', methods=['POST', 'GET'])
+def createZYPlanZYtask():
+    if request.method == 'GET':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
+                for key in jsonnumber:
+                    id = int(key)
+                    try:
+                        PlanCreate = ctrlPlan('PlanCreate')
+                        returnmsg = PlanCreate.createZYPlanZYTask(id)
+                    except Exception as ee:
+                        db_session.rollback()
+                        print(ee)
+                        logger.error(ee)
+                        insertSyslog("error", "获取批次计划信息报错Error" + string(ee), "AAAAAAadmin")
+                        return 'NO'
+                    return 'OK'
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "获取批次计划信息报错Error：" + str(e), "AAAAAAadmin")
+            return 'NO'
+
+
 # 下发计划生成ZY计划、任务
 @app.route('/ZYPlanGuid/createZYPlanZYtask', methods=['POST', 'GET'])
 def createZYPlanZYtask():
@@ -2725,7 +2753,7 @@ def createZYPlanZYtask():
             json_str = json.dumps(data.to_dict())
             print(json_str)
             if len(json_str) > 10:
-                ABatchID = data['ABatchID']  # 批次号
+                ID = data['ID']  # 批次号
                 PlanCreate = ctrlPlan('PlanCreate')
                 re = PlanCreate.createZYPlanZYTask(ABatchID)
                 re = json.dumps(re)
@@ -2907,38 +2935,6 @@ def searchZYPlan():
             print(e)
             logger.error(e)
             insertSyslog("error", "获取批次计划信息报错Error：" + str(e), "AAAAAAadmin")
-
-# 计划下发---更改计划状态，计划下的任务状态
-@app.route('/ZYPlanXF/zYPlanXF', methods=['POST', 'GET'])
-def zYPlanXF():
-    if request.method == 'GET':
-        data = request.values  # 返回请求中的参数和form
-        try:
-            jsonstr = json.dumps(data.to_dict())
-            if len(jsonstr) > 10:
-                jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
-                for key in jsonnumber:
-                    id = int(key)
-                    try:
-                        oclass = db_session.query(ZYPlan).filter_by(ID=id).first()
-                        oclass.PlanStatus = '20'#20是任务已下发
-                        db_session.commit()
-                        tasks = db_session.query(ZYTask).filter_by(BatchID=oclass.BatchID, PUID=oclass.PUID).all()
-                        for task in tasks:
-                            task.TaskStatus = '20'
-                            db_session.commit
-                    except Exception as ee:
-                        db_session.rollback()
-                        print(ee)
-                        logger.error(ee)
-                        insertSyslog("error", "获取批次计划信息报错Error"+ string(ee), "AAAAAAadmin")
-                        return 'NO'
-                return 'OK'
-        except Exception as e:
-            print(e)
-            logger.error(e)
-            insertSyslog("error", "获取批次计划信息报错Error：" + str(e), "AAAAAAadmin")
-            return 'NO'
 
 #生产线监控
 @app.route('/processMonitorLine')
