@@ -3068,7 +3068,7 @@ class PlanManagerWebIFS(object):
 						BrandName=odata['BrandName'],
 						PlanQuantity=int(odata['PlanQuantity']),
 						Unit=odata['Unit'],
-						Seq=int(odata['Seq']),
+						# Seq=int(odata['Seq']),
 						PlanBeginTime=odata['PlanBeginTime'],#datetime.datetime.strptime(odata['PlanBeginTime'],'%Y-%m-%d %H:%M'),
 						PlanEndTime = odata['PlanEndTime'],#datetime.datetime.strptime(odata['PlanEndTime'],'%Y-%m-%d %H:%M'),
 						PlanStatus = Model.Global.PlanStatus.NEW.value,
@@ -3153,7 +3153,7 @@ class PlanManagerWebIFS(object):
 				oclass.BrandName = odata['BrandName']
 				oclass.PlanQuantity = odata['PlanQuantity']
 				oclass.Unit = odata['Unit']
-				oclass.Seq = odata['Seq']
+				# oclass.Seq = odata['Seq']
 				oclass.PlanBeginTime = odata['PlanBeginTime']
 				oclass.PlanEndTime = odata['PlanEndTime']
 				oclass.Type = odata['Type']

@@ -340,7 +340,7 @@ class ctrlPlan:
                     BatchID = ABatchID,
                     BrandID = ABrandID,
                     BrandName = ABrandName,
-                    Seq = ASeq,
+                    # Seq = ASeq,
                     PlanBeginTime = APlanDate + " " + Model.Global.GLOBAL_PLANSTARTTIME,
                     Type = AType,
                     PlanQuantity = APlanQuantity,
