@@ -2725,17 +2725,9 @@ def createZYPlanZYtask():
             json_str = json.dumps(data.to_dict())
             print(json_str)
             if len(json_str) > 10:
-                AProductRuleID = int(data['AProductRuleID'])  # 产品定义ID
-                APlanWeight = data['APlanWeight']  # 计划重量
-                APlanDate = data['APlanDate']  # 计划生产日期
                 ABatchID = data['ABatchID']  # 批次号
-                ABrandName = data['ABrandName']  # 产品名称
-                PLineName = data['PLineName']  # 生产线名字
-                AUnit = data['AUnit']  # d单位
                 PlanCreate = ctrlPlan('PlanCreate')
-                ABrandID = AProductRuleID
-                re = PlanCreate.createZYPlanZYTask(AProductRuleID, APlanWeight, APlanDate, ABatchID,
-                                                      ABrandID, ABrandName, PLineName, AUnit)
+                re = PlanCreate.createZYPlanZYTask(ABatchID)
                 re = json.dumps(re)
                 return re
         except Exception as e:
@@ -3541,90 +3533,6 @@ def templateSearch():
             logger.error(e)
             insertSyslog("error", "CollectParamsTemplate数据查询失败报错Error：" + str(e), "AAAAAAadmin")
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
-
-# 制药计划向导生成planmanager修改
-@app.route('/ZYPlanGuid/updatePlanmanager', methods=['POST', 'GET'])
-def updatePlanmanager():
-    if request.method == 'POST':
-        data = request.values
-        str = request.get_json()
-        try:
-            json_str = json.dumps(data.to_dict())
-            if len(json_str) > 10:
-                Roleid = int(data['ID'])
-                role = db_session.query(Role).filter_by(ID=Roleid).first()
-                role.RoleName = data['RoleName']
-                role.RoleSeq = data['RoleSeq']
-                role.Description = data['Description']
-                role.CreatePerson = data['CreatePerson']
-                role.CreateDate = data['CreateDate']
-                role.ParentNode = data['ParentNode']
-                db_session.commit()
-                return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=AlchemyEncoder, ensure_ascii=False)
-        except Exception as e:
-            db_session.rollback()
-            print(e)
-            logger.error(e)
-            insertSyslog("error", "更新角色报错Error：" + str(e), "AAAAAAadmin")
-            return json.dumps([{"status": "Error" + string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
-
-
-# 删除制药计划
-@app.route('/ZYPlanGuid/deletePlanmanager', methods=['POST', 'GET'])
-def deletePlanmanager():
-    if request.method == 'POST':
-        data = request.values
-        try:
-            #   jsonDict = data.to_dict(
-            jsonstr = json.dumps(data.to_dict())
-            if len(jsonstr) > 10:
-                jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
-                for key in jsonnumber:
-                    # for subkey in list(key):
-                    Roleid = int(key)
-                    try:
-                        oclass = db_session.query(Role).filter_by(ID=Roleid).first()
-                        db_session.delete(oclass)
-                        db_session.commit()
-                    except Exception as ee:
-                        db_session.rollback()
-                        print(ee)
-                        logger.error(ee)
-                        insertSyslog("error", "删除角色报错Error：" + str(ee), "AAAAAAadmin")
-                        return json.dumps([{"status": "error:" + string(ee)}], cls=AlchemyEncoder, ensure_ascii=False)
-                return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=AlchemyEncoder, ensure_ascii=False)
-        except Exception as e:
-            print(e)
-            logger.error(e)
-            insertSyslog("error", "删除角色报错Error：" + str(e), "AAAAAAadmin")
-            # return json.dumps([{"status": "Error"+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
-            return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
-
-
-#创建制药计划
-@app.route('/ZYPlanGuid/createPlanmanager', methods=['POST', 'GET'])
-def createPlanmanager():
-    if request.method == 'POST':
-        data = request.values
-        str = request.get_json()
-        try:
-            json_str = json.dumps(data.to_dict())
-            if len(json_str) > 10:
-                db_session.add(Role(RoleName=data['RoleName'],
-                                 RoleSeq=data['RoleSeq'],
-                                 Description=data['Description'],
-                                 CreatePerson=data['CreatePerson'],
-                                 CreateDate= datetime.datetime.now(),
-                                 ParentNode = data['ParentNode']
-                                 ))
-                db_session.commit()
-                return json.dumps([{"status": "OK"}], cls=AlchemyEncoder, ensure_ascii=False)
-        except Exception as e:
-            db_session.rollback()
-            print(e)
-            logger.error(e)
-            insertSyslog("error", "创建角色报错Error：" + str(e), "AAAAAAadmin")
-            return json.dumps([{"status": "Error:"+ str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
 # 采集模板配置

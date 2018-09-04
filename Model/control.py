@@ -449,7 +449,7 @@ class ctrlPlan:
             logger.error(e)
             return bReturn
 
-    def createZYPlanZYTask(self, AProductRuleID, APlanWeight, APlanDate, ABatchID, ABrandID, ABrandName, AUnit):
+    def createZYPlanZYTask(self, ABatchID):
         bReturn = True
         bIsExist = True
         iPlanSeq = 0
@@ -461,11 +461,21 @@ class ctrlPlan:
         iReturn = 0
         iIsExist = 0
         try:
+            oclassplan = session.query(Model.core.PlanManager).filter_by(BatchID=ABatchID).first()
+            PlanStatus = oclassplan.PlanStatus
+            if(PlanStatus != "20"):
+                return False
+            ABrandID = oclassplan.BrandID
+            ABrandName = oclassplan.BrandName
+            APlanWeight = oclassplan.PlanQuantity
+            APlanDate = oclassplan.SchedulePlanCode
+            AUnit = oclassplan.Unit
+
             strPlanStarTime = str(APlanDate) + " " + Model.Global.GLOBAL_PLANSTARTTIME
             bReturn, iPLineID, sPLineName = self.getLineInfo()
             if bReturn == False:
                 return False
-            bReturn, oRoutes = self.getProductUnitRoute(AProductRuleID)
+            bReturn, oRoutes = self.getProductUnitRoute(ABrandID)
             if bReturn == False:
                 return False
             else:
