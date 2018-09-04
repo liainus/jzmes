@@ -3071,7 +3071,7 @@ class PlanManagerWebIFS(object):
 						Seq=int(odata['Seq']),
 						PlanBeginTime=odata['PlanBeginTime'],#datetime.datetime.strptime(odata['PlanBeginTime'],'%Y-%m-%d %H:%M'),
 						PlanEndTime = odata['PlanEndTime'],#datetime.datetime.strptime(odata['PlanEndTime'],'%Y-%m-%d %H:%M'),
-						PlanStatus = "10",
+						PlanStatus = Model.Global.PlanStatus.NEW.value,
 						Type = odata['Type']))
 				session.commit()
 				return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK],
