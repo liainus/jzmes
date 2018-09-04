@@ -43,8 +43,8 @@
                     <th field="ck" checkbox="true"></th>
                     <th data-options="field:'SchedulePlanCode',width:200,align:'center'">调度编号</th>
                     <th data-options="field:'BatchID',width:200,align:'center'">批次号</th>
+                    <th data-options="field:'PlanQuantity',width:100,align:'center'">计划重量</th>
                     <th data-options="field:'BrandName',width:150,align:'center'">品名</th>
-                    <th data-options="field:'Seq',width:150,align:'center'">序号</th>
                     <th data-options="field:'Unit',width:100,align:'center'">单位</th>
                     <th data-options="field:'PlanStatus',width:100,align:'center'">计划状态</th>
                     <th data-options="field:'PlanBeginTime',width:200,align:'center'">计划开始时间</th>
@@ -77,6 +77,12 @@
                             </td>
                         </tr>
                         <tr>
+                            <td class="kv-label">计划重量</td>
+                            <td class="kv-content">
+                                <input id="PlanQuantity" name="PlanQuantity" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                            </td>
+                        </tr>
+                        <tr>
                             <td class="kv-label">品名</td>
                             <td class="kv-content">
                                  <select name="BrandName" id="BrandName" type="text" style="width:157px;" autocomplete="off" placeholder="">
@@ -85,12 +91,6 @@
                                         <option value="{{ id['PRCode'] }}">{{ id['text'] }}</option>
                                     {% endfor %}
                                 </select>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="kv-label">序号</td>
-                            <td class="kv-content">
-                                <input id="Seq" name="Seq" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
                             </td>
                         </tr>
                         <tr>
@@ -181,8 +181,8 @@
                     $('input[name="ID"]').val("");
                     $("#SchedulePlanCode").val("")
                     $("#BatchID").val("")
+                    $("#PlanQuantity").val("")
                     $('#BrandName option[value=""]').prop("selected", 'selected');
-                    $("#Seq").val("")
                     $('#Unit option[value=""]').prop("selected", 'selected');
                     $("#PlanBeginTime").datetimebox("setValue", "")
                     $("#PlanEndTime").datetimebox("setValue", "")
@@ -199,8 +199,8 @@
                             $('input[name="ID"]').val(row.ID);
                             $("#SchedulePlanCode").val(row.SchedulePlanCode)
                             $("#BatchID").val(row.BatchID)
+                            $("#PlanQuantity").val(row.PlanQuantity)
                             $('#BrandName option:contains('+row.BrandName+')').prop("selected", 'selected');
-                            $("#Seq").val(row.Seq)
                             $('#Unit option:contains('+row.Unit+')').prop("selected", 'selected');
                             $("#PlanBeginTime").datetimebox("setValue", row.PlanBeginTime )
                             $("#PlanEndTime").datetimebox("setValue", row.PlanEndTime )
@@ -286,7 +286,7 @@
                                             $.messager.show({
                                                 title: '提示',
                                                 timeout:1000,
-                                                msg: '下发' + titleText + '成功',
+                                                msg: '下发成功',
                                                 style: {
                                                     right: '',
                                                     top: document.body.scrollTop + document.documentElement.scrollTop,
@@ -316,6 +316,11 @@
                        alert('Warning：批次号不能为空！');
                        return false;
                     }
+                    stmp = $('#PlanQuantity').val();
+                    if(Bee.StringUtils.isEmpty(stmp)) {
+                       alert('Warning：计划重量不能为空！');
+                       return false;
+                    }
                     stmp = $('#BrandName').find("option:selected").val();
                     if(Bee.StringUtils.isEmpty(stmp)) {
                        alert('Warning：品名不能为空！');
@@ -342,14 +347,13 @@
                             ID:$('#ID').val(),
                             SchedulePlanCode:$('#SchedulePlanCode').val(),
                             BatchID:$('#BatchID').val(),
+                            PlanQuantity:$('#PlanQuantity').val(),
                             BrandID:$('#BrandName').find("option:selected").val(),
                             BrandName:$('#BrandName').find("option:selected").html(),
-                            Seq:$('#Seq').val(),
                             Unit:$('#Unit').find("option:selected").html(),
                             PlanBeginTime:$('#PlanBeginTime').datetimebox('getValue'),
                             PlanEndTime:$('#PlanEndTime').datetimebox('getValue'),
-                            Type:$('#Type').val(),
-                            PlanQuantity:""
+                            Type:$('#Type').val()
                         },
                         dataType: 'json',
                         cache: false,
