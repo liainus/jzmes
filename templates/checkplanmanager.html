@@ -59,6 +59,11 @@
     </div>
     <script>
         $(function(){
+            function createKeyIDObj(keyID){
+                return {
+                    ID:keyID
+                }
+            }
             CollectToolbar = {
                 search:function(){
                     $.ajax({
