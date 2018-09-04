@@ -2204,12 +2204,12 @@ def allPlanManagersCreate():
         PlanManagerIFS = Model.core.PlanManagerWebIFS("PlanManagerCreate")
         re = PlanManagerIFS.allPlanManagersCreate(data)
         BatchID = data['BatchID']
-        PlanManageID = session.query(Model.core.PlanManager.ID).filter_by(BatchID=BatchID).first()
+        PlanManageID = db_session.query(Model.core.PlanManager.ID).filter_by(BatchID=BatchID).first()
         PlanManageID = PlanManageID[0]
         userID = ""
         Desc = "计划向导生成计划planmanager"
         Type = Model.Global.AuditStatus.Unaudited.value
-        EventTime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        EventTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         PlanCreate = ctrlPlan('PlanCreate')
         bReturn = PlanCreate.createWorkFlowEvent(PlanManageID, None, None, userID, Desc, Type, EventTime)
         PlanManageID = PlanManageID
@@ -4299,14 +4299,14 @@ def searchcheckplanmanager():
                 ABatchID = data['BatchID']  # 批次号
                 if (ABatchID == None or ABatchID == ""):
                     total = db_session.query(PlanManager.ID).join(WorkFlowStatus, PlanManager.ID == WorkFlowStatus.PlanManageID).filter(
-                        WorkFlowStatus.AuditStatus == Model.Global.AuditStatus.Unaudited.Unaudited.value).count()
+                        WorkFlowStatus.AuditStatus == Model.Global.AuditStatus.Unaudited.value).count()
                     planManagers = db_session.query(PlanManager).join(WorkFlowStatus, PlanManager.ID == WorkFlowStatus.PlanManageID).filter(
-                        WorkFlowStatus.AuditStatus == Model.Global.AuditStatus.Unaudited.Unaudited.value).all()[inipage:endpage]
+                        WorkFlowStatus.AuditStatus == Model.Global.AuditStatus.Unaudited.value).all()[inipage:endpage]
                 else:
                     total = db_session.query(PlanManager).join(WorkFlowStatus, PlanManager.ID == WorkFlowStatus.PlanManageID).filter(PlanManager.BatchID == ABatchID,
-                        WorkFlowStatus.AuditStatus == Model.Global.AuditStatus.Unaudited.Unaudited.value).count()
+                        WorkFlowStatus.AuditStatus == Model.Global.AuditStatus.Unaudited.value).count()
                     planManagers = db_session.query(PlanManager).join(WorkFlowStatus, PlanManager.ID == WorkFlowStatus.PlanManageID).filter(PlanManager.BatchID == ABatchID,
-                        WorkFlowStatus.AuditStatus == Model.Global.AuditStatus.Unaudited.Unaudited.value).all()[inipage:endpage]
+                        WorkFlowStatus.AuditStatus == Model.Global.AuditStatus.Unaudited.value).all()[inipage:endpage]
                 planManagers = json.dumps(planManagers, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonPlanManagers = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + planManagers + "}"
                 return jsonPlanManagers
