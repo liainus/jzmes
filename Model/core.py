@@ -3020,7 +3020,7 @@ class PlanManager(Base):
 	# 批次号:
 	BatchID = Column(Unicode(64), primary_key=False, autoincrement=False, nullable=True)
 
-	# PlanQuantity:
+	# 计划重量:
 	PlanQuantity = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
 
 	# 单位:
@@ -3032,8 +3032,8 @@ class PlanManager(Base):
 	# 品名:
 	BrandName = Column(Unicode(64), primary_key=False, autoincrement=False, nullable=True)
 
-	# 序号:
-	Seq = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
+	# # 序号:
+	# Seq = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
 
 	# 计划状态:
 	PlanStatus = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
