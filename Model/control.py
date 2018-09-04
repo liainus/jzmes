@@ -426,7 +426,6 @@ class ctrlPlan:
                 return False
 
             PlanManageID = session.query(Model.core.PlanManager.ID).filter_by(BatchID=ABatchID).first()
-            print(PlanManageID)
             PlanManageID = PlanManageID[0]
             userID = userID
             Desc = "计划向导生成计划planmanager"
