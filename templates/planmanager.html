@@ -340,49 +340,64 @@
                         hintinfo = "新增数据"
                     }
                     $.ajax({
-                        url: urlAddr,
-                        method: 'POST',
-                        traditional: true,
-                        data: {
-                            ID:$('#ID').val(),
-                            SchedulePlanCode:$('#SchedulePlanCode').val(),
-                            BatchID:$('#BatchID').val(),
-                            PlanQuantity:$('#PlanQuantity').val(),
-                            BrandID:$('#BrandName').find("option:selected").val(),
-                            BrandName:$('#BrandName').find("option:selected").html(),
-                            Unit:$('#Unit').find("option:selected").html(),
-                            PlanBeginTime:$('#PlanBeginTime').datetimebox('getValue'),
-                            PlanEndTime:$('#PlanEndTime').datetimebox('getValue'),
-                            Type:$('#Type').val()
-                        },
-                        dataType: 'json',
-                        cache: false,
-                        error: function(data){
-                           alert(hintinfo+ "异常，请刷新后重试...");
-                        },
-                        success: function (data,response,status) {
-                            $.messager.progress('close');
-                            var obj1 = eval(data);
-                            if(obj1[0].status == "OK"){
-                                $.messager.show({
-                                    title: '提示',
-                                    msg: hintinfo + '成功',
-                                    timeout:1000,
-                                    style: {
-                                        right: '',
-                                        top: document.body.scrollTop + document.documentElement.scrollTop,
-                                        bottom: ''
+                        url:"/ZYPlanGuid/isBatchNumber",
+                        data:{ABatchID:$("#BatchID").val()},
+                        type:"get",
+                        success:function(res){
+                            if(res == '"NO"'){
+                                alert('Warning：批次号重复！请重新输入');
+                                return false
+                            }else if(res == '"OK"'){
+                                $.ajax({
+                                    url: urlAddr,
+                                    method: 'POST',
+                                    traditional: true,
+                                    data: {
+                                        ID:$('#ID').val(),
+                                        SchedulePlanCode:$('#SchedulePlanCode').val(),
+                                        BatchID:$('#BatchID').val(),
+                                        PlanQuantity:$('#PlanQuantity').val(),
+                                        BrandID:$('#BrandName').find("option:selected").val(),
+                                        BrandName:$('#BrandName').find("option:selected").html(),
+                                        Unit:$('#Unit').find("option:selected").html(),
+                                        PlanBeginTime:$('#PlanBeginTime').datetimebox('getValue'),
+                                        PlanEndTime:$('#PlanEndTime').datetimebox('getValue'),
+                                        Type:$('#Type').val()
+                                    },
+                                    dataType: 'json',
+                                    cache: false,
+                                    error: function(data){
+                                       alert(hintinfo+ "异常，请刷新后重试...");
+                                    },
+                                    success: function (data,response,status) {
+                                        $.messager.progress('close');
+                                        var obj1 = eval(data);
+                                        if(obj1[0].status == "OK"){
+                                            $.messager.show({
+                                                title: '提示',
+                                                msg: hintinfo + '成功',
+                                                timeout:1000,
+                                                style: {
+                                                    right: '',
+                                                    top: document.body.scrollTop + document.documentElement.scrollTop,
+                                                    bottom: ''
+                                                }
+                                            });
+
+                                            $("#TemplateClassForm").form('reset');
+                                            $("#TemplateClassDialog").dialog('close');
+                                            $("#tab").datagrid('load');
+                                        } else {
+                                            $.messager.alert(obj1[0].status + '失败！', '未知错误导致失败，请重试！', 'warning');
+                                        }
                                     }
                                 });
-
-                                $("#TemplateClassForm").form('reset');
-                                $("#TemplateClassDialog").dialog('close');
-                                $("#tab").datagrid('load');
-                            } else {
-                                $.messager.alert(obj1[0].status + '失败！', '未知错误导致失败，请重试！', 'warning');
                             }
+                        },
+                        error:function(){
+                            alert("请求错误，请刷新后重试！")
                         }
-                    });
+                    })
                 },
                 refresh:function(){
                     $("#tab").datagrid('load')
