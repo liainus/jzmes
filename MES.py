@@ -2775,59 +2775,69 @@ def createZYPlanZYtask():
 # 下发后的计划撤回，删除ZYplan，ZYtask
 @app.route('/ZYPlanGuid/RecallPlan', methods=['POST', 'GET'])
 def RecallPlan():
-    if request.method == 'POST':
+    if request.method == 'GET':
         data = request.values  # 返回请求中的参数和form
         try:
             jsonstr = json.dumps(data.to_dict())
             if len(jsonstr) > 10:
-                ABatchID = data['BatchID']  # 批次号
-                planids,planLockStatuss = db_session.query(ZYPlan.ID, ZYPlan.LockStatus).filter_by(BatchID=ABatchID).all()
-                for status in planLockStatuss:
-                    if(status == "10"):
-                        return "计划状态已锁定，不允许撤回"
-                    else:
-                        pass
-                taskids, taskLockStatuss = db_session.query(ZYTask.ID, ZYTask.LockStatus).filter_by(
-                    BatchID=ABatchID).all()
-                for st in taskLockStatuss:
-                    if (st == "10"):
-                        return "任务状态已锁定，不允许撤回"
-                    else:
-                        pass
-                for id in planids:
+                jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
+                for key in jsonnumber:
+                    id = int(key)
                     try:
-                        oclass = db_session.query(ZYPlan).filter_by(ID=id).first()
-                        db_session.delete(oclass)
+                        ABatchID = id  # 批次号
+                        planids, planLockStatuss = db_session.query(ZYPlan.ID, ZYPlan.LockStatus).filter_by(BatchID=ABatchID).all()
+                        for status in planLockStatuss:
+                            if (status == "10"):
+                                return "计划状态已锁定，不允许撤回"
+                            else:
+                                pass
+                        taskids, taskLockStatuss = db_session.query(ZYTask.ID, ZYTask.LockStatus).filter_by(
+                            BatchID=ABatchID).all()
+                        for st in taskLockStatuss:
+                            if (st == "10"):
+                                return "任务状态已锁定，不允许撤回"
+                            else:
+                                pass
+                        for id in planids:
+                            try:
+                                oclass = db_session.query(ZYPlan).filter_by(ID=id).first()
+                                db_session.delete(oclass)
+                                db_session.commit()
+                            except Exception as ee:
+                                db_session.rollback()
+                                print(ee)
+                                logger.error(ee)
+                                insertSyslog("error", "删除批次计划信息报错Error" + string(ee), "AAAAAAadmin")
+                                return json.dumps([{"status": "Error:" + str(ee)}], cls=AlchemyEncoder, ensure_ascii=False)
+                        for id in taskids:
+                            try:
+                                oclass = db_session.query(ZYTask).filter_by(ID=id).first()
+                                db_session.delete(oclass)
+                                db_session.commit()
+                            except Exception as ee:
+                                db_session.rollback()
+                                print(ee)
+                                logger.error(ee)
+                                insertSyslog("error", "删除批次任务信息报错Error" + string(ee), "AAAAAAadmin")
+                                return json.dumps([{"status": "Error:" + str(ee)}], cls=AlchemyEncoder, ensure_ascii=False)
+                        oclass = db_session.query(PlanManager).filter_by(BatchID=ABatchID).first()
+                        oclass.PlanStatus = Model.Global.PlanStatus.NEW.value
+                        workFlowStatus = db_session.query(WorkFlowStatus).filter_by(PlanManageID=oclass.ID).first()
+                        workFlowStatus.AuditStatus = Model.Global.AuditStatus.Unaudited.value
                         db_session.commit()
-                    except Exception as ee:
+                        return 'OK'
+                    except Exception as e:
                         db_session.rollback()
-                        print(ee)
-                        logger.error(ee)
-                        insertSyslog("error", "删除批次计划信息报错Error"+ string(ee), "AAAAAAadmin")
-                        return 'NO'
-                for id in taskids:
-                    try:
-                        oclass = db_session.query(ZYTask).filter_by(ID=id).first()
-                        db_session.delete(oclass)
-                        db_session.commit()
-                    except Exception as ee:
-                        db_session.rollback()
-                        print(ee)
-                        logger.error(ee)
-                        insertSyslog("error", "删除批次任务信息报错Error" + string(ee), "AAAAAAadmin")
-                        return 'NO'
-                oclass = db_session.query(PlanManager).filter_by(BatchID=ABatchID).first()
-                oclass.PlanStatus = Model.Global.PlanStatus.NEW.value
-                workFlowStatus = db_session.query(WorkFlowStatus).filter_by(PlanManageID=oclass.ID).first()
-                workFlowStatus.AuditStatus = Model.Global.AuditStatus.Unaudited.value
-                db_session.commit()
-                return 'OK'
+                        print(e)
+                        logger.error(e)
+                        insertSyslog("error", "撤回批次计划报错Error：" + str(e), "AAAAAAadmin")
+                        return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             db_session.rollback()
             print(e)
             logger.error(e)
             insertSyslog("error", "撤回批次计划报错Error：" + str(e), "AAAAAAadmin")
-            return 'NO'
+            return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 # 计划向导获取批次任务明细
 @app.route('/ZYPlanGuid/CriticalTasks', methods=['POST', 'GET'])
