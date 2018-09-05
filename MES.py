@@ -2764,7 +2764,7 @@ def createZYPlanZYtask():
                         logger.error(ee)
                         insertSyslog("error", "下发计划生成ZY计划、任务报错Error" + string(ee), "AAAAAAadmin")
                         return 'NO'
-                    return 'OK'
+                return 'OK'
         except Exception as e:
             print(e)
             logger.error(e)
@@ -2780,7 +2780,7 @@ def RecallPlan():
         try:
             jsonstr = json.dumps(data.to_dict())
             if len(jsonstr) > 10:
-                ABatchID = data['ABatchID']  # 批次号
+                ABatchID = data['BatchID']  # 批次号
                 planids,planLockStatuss = db_session.query(ZYPlan.ID, ZYPlan.LockStatus).filter_by(BatchID=ABatchID).all()
                 for status in planLockStatuss:
                     if(status == "10"):
