@@ -171,7 +171,7 @@ class ctrlPlan:
             return bReturn
 
 
-    def createPUTask(self,APUID, iPDUnitRouteName, ABatchID, ABrandID, ABrandName, APlanWeight,ATaskNO,ASeq, APlanDate, AUnit,ASetRepeatCount):
+    def createPUTask(self, APUID, ABatchID, ABrandID, ABrandName, APlanWeight,ATaskNO,ASeq, APlanDate, AUnit,ASetRepeatCount):
         bReturn = True;
         try:
             session.add(
@@ -181,7 +181,7 @@ class ctrlPlan:
                     BatchID=ABatchID,
                     PlanSeq=ASeq,
                     PUID=APUID,
-                    PDUnitRouteName=iPDUnitRouteName,
+                    # PDUnitRouteName=iPDUnitRouteName,
                     PlanType=Model.Global.PLANTYPE.SCHEDULE.value,
                     BrandID=ABrandID,
                     BrandName=ABrandName,
@@ -462,19 +462,18 @@ class ctrlPlan:
         try:
             oclassplan = session.query(Model.core.PlanManager).filter_by(ID=ID).first()
             PlanStatus = oclassplan.PlanStatus
-            if(PlanStatus != "20"):
-                return False
             ABrandID = oclassplan.BrandID
             ABrandName = oclassplan.BrandName
             APlanWeight = oclassplan.PlanQuantity
             APlanDate = oclassplan.SchedulePlanCode
             AUnit = oclassplan.Unit
             ABatchID = oclassplan.BatchID
+            oclassw = session.query(Model.core.WorkFlowStatus).filter_by(PlanManageID=ID).first()
+            AuditStatus = oclassw.AuditStatus
+            if (AuditStatus != "20"):
+                return False
 
             strPlanStarTime = str(APlanDate) + " " + Model.Global.GLOBAL_PLANSTARTTIME
-            bReturn, iPLineID, sPLineName = self.getLineInfo()
-            if bReturn == False:
-                return False
             bReturn, oRoutes = self.getProductUnitRoute(ABrandID)
             if bReturn == False:
                 return False
@@ -489,7 +488,7 @@ class ctrlPlan:
                             if bReturn == False:
                                 return False
 
-                            bReturn, iSetReatCount = self.getPUPara(iPUID, ABrandID, "SetReatCount")
+                            bReturn, iSetReatCount = self.getPUPara(iPUID, ABrandID)
                             if bReturn == False:
                                 return False
 
@@ -497,9 +496,9 @@ class ctrlPlan:
                             if bReturn == False:
                                 return False
 
-                            bReturn, iPlanManageSeq = self.getPlanManagerSeq(iPLineID, APlanDate)
-                            if bReturn == False:
-                                return False
+                            # bReturn, iPlanManageSeq = self.getPlanManagerSeq(iPLineID, APlanDate)
+                            # if bReturn == False:
+                            #     return False
                             iReturn, iIsExist, sErr = self.IsExistBatchID(ABatchID)
                             if iReturn == -1:
                                 return False

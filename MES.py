@@ -2723,14 +2723,16 @@ def checkPlanManager():
                     try:
                         oclass = db_session.query(WorkFlowStatus).filter_by(PlanManageID=id).first()
                         oclass.AuditStatus = Model.Global.AuditStatus.Checked.value
+                        oclassplan = db_session.query(PlanManager).filter_by(ID=id).first()
+                        oclassplan.PlanStatus = Model.Global.PlanStatus.Checked.value
                         db_session.commit()
-                        return "OK"
                     except Exception as ee:
                         db_session.rollback()
                         print(ee)
                         logger.error(ee)
                         insertSyslog("error", "生产管理部审核计划报错Error：" + str(ee), "AAAAAAadmin")
                         return json.dumps([{"status": "Error:" + str(ee)}], cls=AlchemyEncoder, ensure_ascii=False)
+                return "OK"
         except Exception as e:
             db_session.rollback()
             print(e)
@@ -2753,7 +2755,11 @@ def createZYPlanZYtask():
                     try:
                         PlanCreate = ctrlPlan('PlanCreate')
                         returnmsg = PlanCreate.createZYPlanZYTask(id)
+                        oclassplan = db_session.query(PlanManager).filter_by(ID=id).first()
+                        oclassplan.PlanStatus = Model.Global.PlanStatus.Realse.value
+                        db_session.commit()
                     except Exception as ee:
+                        db_session.rollback()
                         print(ee)
                         logger.error(ee)
                         insertSyslog("error", "下发计划生成ZY计划、任务报错Error" + string(ee), "AAAAAAadmin")
@@ -2811,9 +2817,9 @@ def RecallPlan():
                         insertSyslog("error", "删除批次任务信息报错Error" + string(ee), "AAAAAAadmin")
                         return 'NO'
                 oclass = db_session.query(PlanManager).filter_by(BatchID=ABatchID).first()
-                oclass.PlanStatus = "30"
+                oclass.PlanStatus = Model.Global.PlanStatus.NEW.value
                 workFlowStatus = db_session.query(WorkFlowStatus).filter_by(PlanManageID=oclass.ID).first()
-                workFlowStatus.AuditStatus = "10"
+                workFlowStatus.AuditStatus = Model.Global.AuditStatus.Unaudited.value
                 db_session.commit()
                 return 'OK'
         except Exception as e:
@@ -4308,6 +4314,7 @@ def searchcheckplanmanager():
                     planManagers = db_session.query(PlanManager).join(WorkFlowStatus, PlanManager.ID == WorkFlowStatus.PlanManageID).filter(PlanManager.BatchID == ABatchID,
                         WorkFlowStatus.AuditStatus == Model.Global.AuditStatus.Unaudited.value).all()[inipage:endpage]
                 planManagers = json.dumps(planManagers, cls=AlchemyEncoder, ensure_ascii=False)
+                print(planManagers)
                 jsonPlanManagers = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + planManagers + "}"
                 return jsonPlanManagers
         except Exception as e:
