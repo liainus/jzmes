@@ -134,49 +134,71 @@
                 send:function(){
                     var rows = $("#tab").datagrid('getSelections');
                     if (rows.length > 0) {
+                        var PrimaryKey = "ID";
                         var jsonarray=[];
-                        $.messager.confirm('确定操作', '确定要下发所选的记录吗？', function (flag) {
-                            if (flag) {
-                                var PrimaryKey = "ID";
-                                var a = "";
-                                for (var i = 0; i < rows.length; i++) {
-                                    // ids.push(parseInt((rows[i].id)));
-                                    var obj=createKeyIDObj(parseInt(rows[i].ID));
-                                    jsonarray.push(obj);
-                                }
-                                // a = JSON.stringify([{"ID":9},{"ID":10}])
-                                a = JSON.stringify(jsonarray);
-                                $.ajax({
-                                    url: '/ZYPlanGuid/createZYPlanZYtask',
-                                    method: 'GET',
-                                    // data: JSON.stringify(ids),
-                                    data: {
-                                        ID:a
-                                    },
-                                    success: function (data) {
-                                        $.messager.progress('close')
-                                        if (data == "OK") {
-                                            $.messager.show({
-                                                title: '提示',
-                                                timeout:1000,
-                                                msg: '下发成功',
-                                                style: {
-                                                    right: '',
-                                                    top: document.body.scrollTop + document.documentElement.scrollTop,
-                                                    bottom: ''
-                                                }
-                                            });
-                                            $("#tab").datagrid('loaded');
-                                            $("#tab").datagrid('load');
-                                            $("#tab").datagrid('unselectAll');
+                        var jsonstr = []
+                        var a = "";
+                        for (var i = 0; i < rows.length; i++) {
+                            var obj=createKeyIDObj(parseInt(rows[i].ID));
+                            jsonarray.push(obj);
+                            var objstr = rows[i].PlanStatus
+                            jsonstr.push(objstr)
+                        }
+                        a = JSON.stringify(jsonarray);
+                        if($.inArray("10",jsonstr) != -1){
+                            $.messager.alert('提示', '不能下发未通过审核的数据，请重新选择！', 'info');
+                        } else if($.inArray("20",jsonstr) != -1){
+                            $.messager.alert('提示', '不能下发未通过审核的数据，请重新选择！', 'info');
+                        } else if($.inArray("30",jsonstr) != -1){
+                            $.messager.alert('提示', '不能下发未通过审核的数据，请重新选择！', 'info');
+                        } else if($.inArray("40",jsonstr) != -1){
+                            $.messager.alert('提示', '不能下发未通过审核的数据，请重新选择！', 'info');
+                        } else if($.inArray("50",jsonstr) != -1){
+                            $.messager.alert('提示', '不能下发未通过审核的数据，请重新选择！', 'info');
+                        } else if($.inArray("60",jsonstr) != -1){
+                            $.messager.alert('提示', '不能下发未通过审核的数据，请重新选择！', 'info');
+                        } else if($.inArray("70",jsonstr) != -1){
+                            $.messager.alert('提示', '不能下发未通过审核的数据，请重新选择！', 'info');
+                        } else if($.inArray("80",jsonstr) != -1){
+                            $.messager.alert('提示', '不能下发未通过审核的数据，请重新选择！', 'info');
+                        } else if($.inArray("85",jsonstr) != -1){
+                            $.messager.alert('提示', '不能下发未通过审核的数据，请重新选择！', 'info');
+                        } else if($.inArray("90",jsonstr) != -1){
+                            $.messager.alert('提示', '不能下发未通过审核的数据，请重新选择！', 'info');
+                        }else{
+                            $.messager.confirm('确定操作', '确定要下发所选的记录吗？', function (flag) {
+                                if (flag) {
+                                    $.ajax({
+                                        url: '/ZYPlanGuid/createZYPlanZYtask',
+                                        method: 'GET',
+                                        data: {
+                                            ID:a
+                                        },
+                                        success: function (data) {
+                                            $.messager.progress('close')
+                                            if (data == "OK") {
+                                                $.messager.show({
+                                                    title: '提示',
+                                                    timeout:1000,
+                                                    msg: '下发成功',
+                                                    style: {
+                                                        right: '',
+                                                        top: document.body.scrollTop + document.documentElement.scrollTop,
+                                                        bottom: ''
+                                                    }
+                                                });
+                                                $("#tab").datagrid('loaded');
+                                                $("#tab").datagrid('load');
+                                                $("#tab").datagrid('unselectAll');
+                                            }
+                                        },
+                                        error:function(){
+                                            alert("下发失败，请稍后重试！")
                                         }
-                                    },
-                                    error:function(){
-                                        alert("下发失败，请稍后重试！")
-                                    }
-                                });
-                            }
-                        });
+                                    });
+                                }
+                            });
+                        }
                     } else {
                         $.messager.alert('提示', '请选择要下发的记录！', 'info');
                     }
@@ -296,6 +318,8 @@
         function formatterStatus(value, row, index){
             if (value == 10){
                 return '编制'
+            }else if(value == 11){
+                return '已审核'
             }else if(value == 20){
                 return '下达'
             }else if(value == 30){

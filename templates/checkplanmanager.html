@@ -72,8 +72,7 @@
                                     dataType: 'json',
                                     success: function (data) {
                                         $.messager.progress('close');
-
-                                        if (data) {
+                                        if (data == "OK") {
                                             $("#tab").datagrid('loadData', data);
                                             $("#tab").datagrid('load');
                                             $.messager.show({
@@ -115,6 +114,8 @@
         function formatterStatus(value, row, index){
             if (value == 10){
                 return '编制'
+            }else if(value == 11){
+                return '已审核'
             }else if(value == 20){
                 return '下达'
             }else if(value == 30){
