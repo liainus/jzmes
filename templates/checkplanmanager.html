@@ -15,48 +15,6 @@
     <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
     <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
     <script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
-</head>
-<body>
-    <div class="content">
-        <div id="Toolbar" style="padding:0 10px;">
-            批次号名称:
-            <input type="text" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
-                placeholder="">
-            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="CollectToolbar.search();">查询</a>
-            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-ok'" onclick="CollectToolbar.pass();">批量通过审核</a>
-        </div>
-        <table class="easyui-datagrid" id="tab" title="" style="width:100%;" data-options="
-            queryParams: {
-                BatchID: ''
-            },
-            rownumbers:true,
-            singleSelect:false,
-            autoRowHeight:false,
-            pagination:true,
-            pageSize:10,
-            toolbar:'#Toolbar',
-            url:'/allPlanManagers/searchcheckplanmanager',
-            method:'get'">
-            <thead>
-                <tr>
-                    <th field="ck" checkbox="true"></th>
-                    <th data-options="field:'SchedulePlanCode',width:200,align:'center'">调度编号</th>
-                    <th data-options="field:'BatchID',width:200,align:'center'">批次号</th>
-                    <th data-options="field:'PlanQuantity',width:100,align:'center'">计划重量</th>
-                    <th data-options="field:'BrandName',width:150,align:'center'">品名</th>
-                    <th data-options="field:'Unit',width:100,align:'center'">单位</th>
-                    <th data-options="field:'PlanStatus',width:100,align:'center'">计划状态</th>
-                    <th data-options="field:'PlanBeginTime',width:200,align:'center'">调度计划开始时间</th>
-                    <th data-options="field:'PlanEndTime',width:200,align:'center'">计划完成时间</th>
-                    <th data-options="field:'Type',width:100,align:'center'">调度类型</th>
-                </tr>
-            </thead>
-        </table>
-        <!-- 右键菜单 -->
-        <div id="contextmenu" class="easyui-menu" style="width:120px;">
-            <div data-options="iconCls:'icon-ok'" onclick="CollectToolbar.pass();">通过审核</div>
-        </div>
-    </div>
     <script>
         $(function(){
             function createKeyIDObj(keyID){
@@ -154,6 +112,71 @@
                 }
             });
         })
+        function formatterStatus(value, row, index){
+            if (value == 10){
+                return '编制'
+            }else if(value == 20){
+                return '下达'
+            }else if(value == 30){
+                return '新增'
+            }else if(value == 40){
+                return '确认'
+            }else if(value == 50){
+                return '执行'
+            }else if(value == 60){
+                return '完成'
+            }else if(value == 70){
+                return '取消'
+            }else if(value == 80){
+                return '暂停'
+            }else if(value == 85){
+                return '故障'
+            }else if(value == 90){
+                return '中止'
+            }
+        }
     </script>
+</head>
+<body>
+    <div class="content">
+        <div id="Toolbar" style="padding:0 10px;">
+            批次号名称:
+            <input type="text" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
+                placeholder="">
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="CollectToolbar.search();">查询</a>
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-ok'" onclick="CollectToolbar.pass();">批量通过审核</a>
+        </div>
+        <table class="easyui-datagrid" id="tab" title="" style="width:100%;" data-options="
+            queryParams: {
+                BatchID: ''
+            },
+            rownumbers:true,
+            singleSelect:false,
+            autoRowHeight:false,
+            pagination:true,
+            pageSize:10,
+            toolbar:'#Toolbar',
+            url:'/allPlanManagers/searchcheckplanmanager',
+            method:'get'">
+            <thead>
+                <tr>
+                    <th field="ck" checkbox="true"></th>
+                    <th data-options="field:'SchedulePlanCode',width:200,align:'center'">调度编号</th>
+                    <th data-options="field:'BatchID',width:200,align:'center'">批次号</th>
+                    <th data-options="field:'PlanQuantity',width:100,align:'center'">计划重量</th>
+                    <th data-options="field:'BrandName',width:150,align:'center'">品名</th>
+                    <th data-options="field:'Unit',width:100,align:'center'">单位</th>
+                    <th data-options="field:'PlanStatus',width:100,align:'center'" formatter="formatterStatus">计划状态</th>
+                    <th data-options="field:'PlanBeginTime',width:200,align:'center'">调度计划开始时间</th>
+                    <th data-options="field:'PlanEndTime',width:200,align:'center'">计划完成时间</th>
+                    <th data-options="field:'Type',width:100,align:'center'">调度类型</th>
+                </tr>
+            </thead>
+        </table>
+        <!-- 右键菜单 -->
+        <div id="contextmenu" class="easyui-menu" style="width:120px;">
+            <div data-options="iconCls:'icon-ok'" onclick="CollectToolbar.pass();">通过审核</div>
+        </div>
+    </div>
 </body>
 </html>
