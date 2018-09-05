@@ -151,6 +151,10 @@
                             $.messager.alert('提示', '不能下发未通过审核的数据，请重新选择！', 'info');
                         } else if($.inArray("30",jsonstr) != -1){
                             $.messager.alert('提示', '不能下发未通过审核的数据，请重新选择！', 'info');
+                        } else if($.inArray("31",jsonstr) != -1){
+                            $.messager.alert('提示', '不能下发未通过审核的数据，请重新选择！', 'info');
+                        } else if($.inArray("32",jsonstr) != -1){
+                            $.messager.alert('提示', '不能下发未通过审核的数据，请重新选择！', 'info');
                         } else if($.inArray("40",jsonstr) != -1){
                             $.messager.alert('提示', '不能下发未通过审核的数据，请重新选择！', 'info');
                         } else if($.inArray("50",jsonstr) != -1){
@@ -159,13 +163,7 @@
                             $.messager.alert('提示', '不能下发未通过审核的数据，请重新选择！', 'info');
                         } else if($.inArray("70",jsonstr) != -1){
                             $.messager.alert('提示', '不能下发未通过审核的数据，请重新选择！', 'info');
-                        } else if($.inArray("80",jsonstr) != -1){
-                            $.messager.alert('提示', '不能下发未通过审核的数据，请重新选择！', 'info');
-                        } else if($.inArray("85",jsonstr) != -1){
-                            $.messager.alert('提示', '不能下发未通过审核的数据，请重新选择！', 'info');
-                        } else if($.inArray("90",jsonstr) != -1){
-                            $.messager.alert('提示', '不能下发未通过审核的数据，请重新选择！', 'info');
-                        }else{
+                        } else{
                             $.messager.confirm('确定操作', '确定要下发所选的记录吗？', function (flag) {
                                 if (flag) {
                                     $.ajax({
@@ -201,6 +199,64 @@
                         }
                     } else {
                         $.messager.alert('提示', '请选择要下发的记录！', 'info');
+                    }
+                },
+                unsend:function(){
+                    var rows = $("#tab").datagrid('getSelections');
+                    if (rows.length > 0) {
+                        var PrimaryKey = "ID";
+                        var jsonarray=[];
+                        var a = "";
+                        for (var i = 0; i < rows.length; i++) {
+                            var obj=createKeyIDObj(parseInt(rows[i].ID));
+                            jsonarray.push(obj);
+                        }
+                        a = JSON.stringify(jsonarray);
+                        $.messager.confirm('确定操作', '确定要下发所选的记录吗？', function (flag) {
+                            if (flag) {
+                                $.ajax({
+                                    url: '/ZYPlanGuid/RecallPlan',
+                                    method: 'GET',
+                                    data: {
+                                        ID:a
+                                    },
+                                    success: function (data) {
+                                        $.messager.progress('close')
+                                        if (data == "OK") {
+                                            $.messager.show({
+                                                title: '提示',
+                                                timeout:1000,
+                                                msg: '撤回成功',
+                                                style: {
+                                                    right: '',
+                                                    top: document.body.scrollTop + document.documentElement.scrollTop,
+                                                    bottom: ''
+                                                }
+                                            });
+                                            $("#tab").datagrid('loaded');
+                                            $("#tab").datagrid('load');
+                                            $("#tab").datagrid('unselectAll');
+                                        }else{
+                                            $.messager.show({
+                                                title: '提示',
+                                                timeout:1000,
+                                                msg: '撤回失败，'+data,
+                                                style: {
+                                                    right: '',
+                                                    top: document.body.scrollTop + document.documentElement.scrollTop,
+                                                    bottom: ''
+                                                }
+                                            });
+                                        }
+                                    },
+                                    error:function(){
+                                        alert("请求失败，请稍后重试！")
+                                    }
+                                });
+                            }
+                        });
+                    } else {
+                        $.messager.alert('提示', '请选择要撤回的记录！', 'info');
                     }
                 },
                 save:function(){
@@ -317,27 +373,25 @@
         })
         function formatterStatus(value, row, index){
             if (value == 10){
-                return '编制'
+                return '新增'
             }else if(value == 11){
                 return '已审核'
             }else if(value == 20){
-                return '下达'
+                return '已下发'
             }else if(value == 30){
-                return '新增'
+                return '中控已确认'
+            }else if(value == 31){
+                return '中控已复核'
+            }else if(value == 32){
+                return 'QA已复核'
             }else if(value == 40){
-                return '确认'
+                return '已确认，准备生产'
             }else if(value == 50){
                 return '执行'
             }else if(value == 60){
-                return '完成'
+                return '已完成'
             }else if(value == 70){
-                return '取消'
-            }else if(value == 80){
-                return '暂停'
-            }else if(value == 85){
-                return '故障'
-            }else if(value == 90){
-                return '中止'
+                return 'QA放行'
             }
         }
     </script>
@@ -352,7 +406,8 @@
             <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add'" onclick="CollectToolbar.create();">添加</a>
             <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit'" onclick="CollectToolbar.update();">修改</a>
             <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove'" onclick="CollectToolbar.delete();">删除</a>
-            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-redo'" onclick="CollectToolbar.send();">下发</a>
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-redo'" onclick="CollectToolbar.send();">计划下发</a>
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-undo'" onclick="CollectToolbar.unsend();">计划撤回</a>
             <a href="#" class="easyui-linkbutton" id="reload" data-options="iconCls:'icon-reload'" onclick="CollectToolbar.refresh();">刷新</a>
         </div>
         <table class="easyui-datagrid" id="tab" title="" style="width:100%;" data-options="
@@ -466,6 +521,7 @@
         <div data-options="iconCls:'icon-edit'" onclick="CollectToolbar.update();">编辑</div>
         <div data-options="iconCls:'icon-remove'" onclick="CollectToolbar.delete();">删除</div>
         <div data-options="iconCls:'icon-redo'" onclick="CollectToolbar.send();">下发</div>
+        <div data-options="iconCls:'icon-undo'" onclick="CollectToolbar.unsend();">下发</div>
     </div>
 </body>
 </html>
