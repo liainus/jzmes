@@ -2732,7 +2732,7 @@ def checkPlanManager():
                         logger.error(ee)
                         insertSyslog("error", "生产管理部审核计划报错Error：" + str(ee), "AAAAAAadmin")
                         return json.dumps([{"status": "Error:" + str(ee)}], cls=AlchemyEncoder, ensure_ascii=False)
-                return "OK"
+                return 'OK'
         except Exception as e:
             db_session.rollback()
             print(e)
