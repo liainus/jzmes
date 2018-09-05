@@ -208,11 +208,11 @@
                         var jsonarray=[];
                         var a = "";
                         for (var i = 0; i < rows.length; i++) {
-                            var obj=createKeyIDObj(parseInt(rows[i].ID));
+                            var obj=createKeyIDObj(rows[i].BatchID);
                             jsonarray.push(obj);
                         }
                         a = JSON.stringify(jsonarray);
-                        $.messager.confirm('确定操作', '确定要下发所选的记录吗？', function (flag) {
+                        $.messager.confirm('确定操作', '确定要撤回所选的记录吗？', function (flag) {
                             if (flag) {
                                 $.ajax({
                                     url: '/ZYPlanGuid/RecallPlan',
