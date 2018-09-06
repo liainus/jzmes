@@ -3032,9 +3032,6 @@ class PlanManager(Base):
 	# 品名:
 	BrandName = Column(Unicode(64), primary_key=False, autoincrement=False, nullable=True)
 
-	# # 序号:
-	# Seq = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
-
 	# 计划状态:
 	PlanStatus = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
@@ -3046,6 +3043,9 @@ class PlanManager(Base):
 
 	# 调度类型:
 	Type = Column(Unicode(64), primary_key=False, autoincrement=False, nullable=True)
+
+	# # 序号:
+	# Seq = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
 
 	# PLineID = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
     #

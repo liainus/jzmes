@@ -4312,29 +4312,83 @@ def searchcheckplanmanager():
     if request.method == 'GET':
         data = request.values
         try:
-            json_str = json.dumps(data.to_dict())
-            print(json_str)
-            if len(json_str) > 10:
-                pages = int(data['page'])  # 页数
-                rowsnumber = int(data['rows'])  # 行数
-                inipage = (pages - 1) * rowsnumber + 0  # 起始页
-                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
-                ABatchID = data['BatchID']  # 批次号
-                if (ABatchID == None or ABatchID == ""):
-                    total = db_session.query(PlanManager.ID).join(WorkFlowStatus, PlanManager.ID == WorkFlowStatus.PlanManageID).filter(
-                        WorkFlowStatus.AuditStatus == Model.Global.AuditStatus.Unaudited.value).count()
-                    planManagers = db_session.query(PlanManager).join(WorkFlowStatus, PlanManager.ID == WorkFlowStatus.PlanManageID).filter(
-                        WorkFlowStatus.AuditStatus == Model.Global.AuditStatus.Unaudited.value).all()[inipage:endpage]
-                else:
-                    total = db_session.query(PlanManager).join(WorkFlowStatus, PlanManager.ID == WorkFlowStatus.PlanManageID).filter(PlanManager.BatchID == ABatchID,
-                        WorkFlowStatus.AuditStatus == Model.Global.AuditStatus.Unaudited.value).count()
-                    planManagers = db_session.query(PlanManager).join(WorkFlowStatus, PlanManager.ID == WorkFlowStatus.PlanManageID).filter(PlanManager.BatchID == ABatchID,
-                        WorkFlowStatus.AuditStatus == Model.Global.AuditStatus.Unaudited.value).all()[inipage:endpage]
-                planManagers = json.dumps(planManagers, cls=AlchemyEncoder, ensure_ascii=False)
-                print(planManagers)
-                jsonPlanManagers = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + planManagers + "}"
-                return jsonPlanManagers
+            AuditStatus = Model.Global.AuditStatus.Unaudited.value
+            re = searchplanmanager(data,AuditStatus)
+            return re
         except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "计划向导生成的计划查询报错Error：" + str(e), "AAAAAAadmin")
+def searchplanmanager(data,AuditStatus):
+    json_str = json.dumps(data.to_dict())
+    if len(json_str) > 10:
+        pages = int(data['page'])  # 页数
+        rowsnumber = int(data['rows'])  # 行数
+        inipage = (pages - 1) * rowsnumber + 0  # 起始页
+        endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+        ABatchID = data['BatchID']  # 批次号
+        if (ABatchID == None or ABatchID == ""):
+            total = db_session.query(PlanManager.ID).join(WorkFlowStatus,
+                                                          PlanManager.ID == WorkFlowStatus.PlanManageID).filter(
+                WorkFlowStatus.AuditStatus == AuditStatus).count()
+            planManagers = db_session.query(PlanManager).join(WorkFlowStatus,
+                                                              PlanManager.ID == WorkFlowStatus.PlanManageID).filter(
+                WorkFlowStatus.AuditStatus == AuditStatus).all()[inipage:endpage]
+        else:
+            total = db_session.query(PlanManager).join(WorkFlowStatus,
+                                                       PlanManager.ID == WorkFlowStatus.PlanManageID).filter(
+                PlanManager.BatchID == ABatchID,
+                WorkFlowStatus.AuditStatus == AuditStatus).count()
+            planManagers = db_session.query(PlanManager).join(WorkFlowStatus,
+                                                              PlanManager.ID == WorkFlowStatus.PlanManageID).filter(
+                PlanManager.BatchID == ABatchID,
+                WorkFlowStatus.AuditStatus == AuditStatus).all()[inipage:endpage]
+        planManagers = json.dumps(planManagers, cls=AlchemyEncoder, ensure_ascii=False)
+        print(planManagers)
+        jsonPlanManagers = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + planManagers + "}"
+        return jsonPlanManagers
+
+# 中控确认查询
+@app.route('/ZYPlanGuid/controlConfirmSearch', methods=['POST', 'GET'])
+def searchcheckplanmanager():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            AuditStatus = Model.Global.AuditStatus.Realse.value
+            re = searchplanmanager(data, AuditStatus)
+            return re
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "计划向导生成的计划查询报错Error：" + str(e), "AAAAAAadmin")
+# 中控确认
+@app.route('/ZYPlanGuid/controlConfirm', methods=['POST', 'GET'])
+def controlConfirm():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            ID = data['ID']
+            planManagerOclass = db_session.query(PlanManager).filter(ID == ID).first()
+            planManagerOclass.PlanStatus = Model.Global.PlanStatus.Control.value
+            wOclass = db_session.query(WorkFlowStatus).filter(WorkFlowStatus.PlanManageID == ID).first()
+            wOclass.AuditStatus = Model.Global.AuditStatus.ClearField.value
+            db_session.commit()
+            userID = ""
+            Desc = "中控确认清场"
+            Type = Model.Global.AuditStatus.ClearField.value
+            EventTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            PlanCreate = ctrlPlan('PlanCreate')
+            wReturn = PlanCreate.createWorkFlowEvent(ID, None, None, userID, Desc, Type, EventTime)
+            if(wReturn == False):
+                return "NO"
+            AuditStatus = Model.Global.AuditStatus.ClearField.value
+            DescF = "中控确认清场"
+            bReturn = PlanCreate.createWorkFlowStatus(ID, None, None, AuditStatus, DescF)
+            if (bReturn == False):
+                return "NO"
+            return "OK"
+        except Exception as e:
+            db_session.rollback()
             print(e)
             logger.error(e)
             insertSyslog("error", "计划向导生成的计划查询报错Error：" + str(e), "AAAAAAadmin")
