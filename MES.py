@@ -2759,6 +2759,8 @@ def createZYPlanZYtask():
                             return 'NO'
                         oclassplan = db_session.query(PlanManager).filter_by(ID=id).first()
                         oclassplan.PlanStatus = Model.Global.PlanStatus.Realse.value
+                        oclassw = db_session.query(WorkFlowStatus).filter_by(PlanManageID=id).first()
+                        oclassw.AuditStatus = Model.Global.AuditStatus.Realse.value
                         db_session.commit()
                     except Exception as ee:
                         db_session.rollback()
@@ -4348,9 +4350,14 @@ def searchplanmanager(data,AuditStatus):
         jsonPlanManagers = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + planManagers + "}"
         return jsonPlanManagers
 
+# 中控确认
+@app.route('/MiddleControl/PlanConfirm')
+def PlanConfirm():
+    return render_template('MiddleControlPlanConfirm.html')
+
 # 中控确认查询
 @app.route('/ZYPlanGuid/controlConfirmSearch', methods=['POST', 'GET'])
-def searchcheckplanmanager():
+def controlConfirmSearch():
     if request.method == 'GET':
         data = request.values
         try:
@@ -4364,7 +4371,7 @@ def searchcheckplanmanager():
 # 中控确认
 @app.route('/ZYPlanGuid/controlConfirm', methods=['POST', 'GET'])
 def controlConfirm():
-    if request.method == 'GET':
+    if request.method == 'POST':
         data = request.values
         try:
             ID = data['ID']
