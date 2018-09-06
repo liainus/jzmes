@@ -2755,6 +2755,8 @@ def createZYPlanZYtask():
                     try:
                         PlanCreate = ctrlPlan('PlanCreate')
                         returnmsg = PlanCreate.createZYPlanZYTask(id)
+                        if(returnmsg == False):
+                            return 'NO'
                         oclassplan = db_session.query(PlanManager).filter_by(ID=id).first()
                         oclassplan.PlanStatus = Model.Global.PlanStatus.Realse.value
                         db_session.commit()
@@ -2785,22 +2787,27 @@ def RecallPlan():
                     id = int(key)
                     try:
                         ABatchID = id  # 批次号
-                        planids, planLockStatuss = db_session.query(ZYPlan.ID, ZYPlan.LockStatus).filter_by(BatchID=ABatchID).all()
-                        for status in planLockStatuss:
-                            if (status == "10"):
-                                return "计划状态已锁定，不允许撤回"
+                        PlanStatus = db_session.query(PlanManager.PlanStatus).filter_by(BatchID=ABatchID).first()
+                        if (PlanStatus[0] != "20"):
+                            return "只能是已下发状态的计划才能撤回！"
+                        else:
+                            pass
+                        zYPlans = db_session.query(ZYPlan.ID, ZYPlan.LockStatus).filter_by(BatchID=ABatchID).all()
+                        for zYPlan in zYPlans:
+                            if (zYPlan.LockStatus == "10"):
+                                return "计划状态已锁定，不允许撤回！"
                             else:
                                 pass
-                        taskids, taskLockStatuss = db_session.query(ZYTask.ID, ZYTask.LockStatus).filter_by(
+                        zYTasks = db_session.query(ZYTask.ID, ZYTask.LockStatus).filter_by(
                             BatchID=ABatchID).all()
-                        for st in taskLockStatuss:
-                            if (st == "10"):
-                                return "任务状态已锁定，不允许撤回"
+                        for zYTask in zYTasks:
+                            if (zYTask.LockStatus == "10"):
+                                return "任务状态已锁定，不允许撤回！"
                             else:
                                 pass
-                        for id in planids:
+                        for zYPlan in zYPlans:
                             try:
-                                oclass = db_session.query(ZYPlan).filter_by(ID=id).first()
+                                oclass = db_session.query(ZYPlan).filter_by(ID=zYPlan.ID).first()
                                 db_session.delete(oclass)
                                 db_session.commit()
                             except Exception as ee:
@@ -2809,9 +2816,9 @@ def RecallPlan():
                                 logger.error(ee)
                                 insertSyslog("error", "删除批次计划信息报错Error" + string(ee), "AAAAAAadmin")
                                 return json.dumps([{"status": "Error:" + str(ee)}], cls=AlchemyEncoder, ensure_ascii=False)
-                        for id in taskids:
+                        for zYTask in zYTasks:
                             try:
-                                oclass = db_session.query(ZYTask).filter_by(ID=id).first()
+                                oclass = db_session.query(ZYTask).filter_by(ID=zYTask.ID).first()
                                 db_session.delete(oclass)
                                 db_session.commit()
                             except Exception as ee:
