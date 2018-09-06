@@ -209,6 +209,11 @@
                             {% endif %}
                             {% if '25' in session.get('menus') %}
                                 <li>
+                                    <a href="#" onclick="addTab('中控计划确认','/MiddleControl/PlanConfirm')">中控计划确认</a>
+                                </li>
+                            {% endif %}
+                            {% if '25' in session.get('menus') %}
+                                <li>
                                     <a href="#" onclick="addTab('计划明细','/ZYPlan')">计划明细</a>
                                 </li>
                             {% endif %}
