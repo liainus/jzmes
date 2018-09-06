@@ -3554,8 +3554,8 @@ class WorkFlowEvent(Base):
 	# ZYTask表ID:
 	ZYTaskID = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
 
-	# 用户ID:
-	userID = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+	# 用户名:
+	userName = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
 	# 描述:
 	Desc = Column(Unicode(100), primary_key=False, autoincrement=False, nullable=True)

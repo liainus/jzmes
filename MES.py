@@ -231,7 +231,7 @@ def MyUserSelect():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "查询用户列表报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "查询用户列表报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
@@ -258,13 +258,13 @@ def addUser():
                 user.RoleName=data['RoleName']
                 db_session.add(user)
                 db_session.commit()
-                insertSyslog("添加用户", "添加用户"+data['Name']+"添加成功", "AAAAAAadmin")
+                insertSyslog("添加用户", "添加用户"+data['Name']+"添加成功", current_user.Name)
                 return json.dumps([{"status": "OK"}], cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             db_session.rollback()
             print(e)
             logger.error(e)
-            insertSyslog("error", "添加用户报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "添加用户报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 @app.route('/user/updateUser', methods=['POST', 'GET'])
@@ -287,14 +287,14 @@ def UpdateUser():
                 # user.IsLock = data['IsLock']
                 user.OrganizationName = data['OrganizationName']
                 db_session.commit()
-                insertSyslog("success", "更新用户" + data['Name'] + "成功", "AAAAAAadmin")
+                insertSyslog("success", "更新用户" + data['Name'] + "成功", current_user.Name)
                 return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=AlchemyEncoder,
                                   ensure_ascii=False)
         except Exception as e:
             db_session.rollback()
             print(e)
             logger.error(e)
-            insertSyslog("error", "更新用户报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "更新用户报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 @app.route('/user/deleteUser', methods=['POST', 'GET'])
@@ -311,12 +311,12 @@ def deleteUser():
                         oclass = db_session.query(User).filter_by(id=id).first()
                         db_session.delete(oclass)
                         db_session.commit()
-                        insertSyslog("success", "删除ID是" + string(id) + "的用户删除成功", "AAAAAAadmin")
+                        insertSyslog("success", "删除ID是" + string(id) + "的用户删除成功", current_user.Name)
                     except Exception as ee:
                         db_session.rollback()
                         print(ee)
                         logger.error(ee)
-                        insertSyslog("error", "删除户ID为"+string(id)+"报错Error：" + string(ee), "AAAAAAadmin")
+                        insertSyslog("error", "删除户ID为"+string(id)+"报错Error：" + string(ee), current_user.Name)
                         return json.dumps([{"status": "error:" + string(ee)}], cls=AlchemyEncoder,
                                           ensure_ascii=False)
                 return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=AlchemyEncoder,
@@ -324,7 +324,7 @@ def deleteUser():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "删除用户报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "删除用户报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 # 权限分配
@@ -345,7 +345,7 @@ def getRoleList(id=0):
         return sz
     except Exception as e:
         print(e)
-        insertSyslog("error", "查询角色报错Error：" + str(e), "AAAAAAadmin")
+        insertSyslog("error", "查询角色报错Error：" + str(e), current_user.Name)
         return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 # 权限分配下的角色列表
@@ -362,7 +362,7 @@ def SelectRoles():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "查询权限分配下的角色列表报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "查询权限分配下的角色列表报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
@@ -393,7 +393,7 @@ def userList():
             except Exception as e:
                 print(e)
                 logger.error(e)
-                insertSyslog("error", "查询权限分配下的用户列表报错Error：" + str(e), "AAAAAAadmin")
+                insertSyslog("error", "查询权限分配下的用户列表报错Error：" + str(e), current_user.Name)
                 return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
         if ID != '':
             data = request.values  # 返回请求中的参数和form
@@ -422,7 +422,7 @@ def userList():
             except Exception as e:
                 print(e)
                 logger.error(e)
-                insertSyslog("error", "通过点击角色查询用户报错Error：" + str(e), "AAAAAAadmin")
+                insertSyslog("error", "通过点击角色查询用户报错Error：" + str(e), current_user.Name)
                 return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
@@ -441,7 +441,7 @@ def getMenuList(id=0):
         return sz
     except Exception as e:
         print(e)
-        insertSyslog("error", "查询权限分配下的功能模块列表Error：" + str(e), "AAAAAAadmin")
+        insertSyslog("error", "查询权限分配下的功能模块列表Error：" + str(e), current_user.Name)
         return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 # 加载菜单列表
 @app.route('/permission/menulist')
@@ -455,7 +455,7 @@ def menulist():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "加载菜单列表Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "加载菜单列表Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 # 权限分配下为角色添加权限
@@ -485,7 +485,7 @@ def menuToUser():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "权限分配下为角色添加权限Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "权限分配下为角色添加权限Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
@@ -530,7 +530,7 @@ def SearchBatchManager():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "批次管理查询报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "批次管理查询报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
@@ -550,7 +550,7 @@ def selectAll():
             return jsondatas
         except Exception as e:
             print(e)
-            insertSyslog("error", "查询组织结构报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "查询组织结构报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 def getMyOrganizationChildrenMap(id):
     sz = []
@@ -592,7 +592,7 @@ def OrganizationsFind():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "查询组织报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "查询组织报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:"+ str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 # role更新数据，通过传入的json数据，解析之后进行相应更新
@@ -617,14 +617,14 @@ def allOrganizationsUpdate():
                 organization.Img = data['Img']
                 organization.Color = data['Color']
                 db_session.commit()
-                insertSyslog("success", "更新组织" + data['OrganizationName'] + "的组织更新成功", "AAAAAAadmin")
+                insertSyslog("success", "更新组织" + data['OrganizationName'] + "的组织更新成功", current_user.Name)
                 return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=AlchemyEncoder,
                                   ensure_ascii=False)
         except Exception as e:
             db_session.rollback()
             print(e)
             logger.error(e)
-            insertSyslog("error", "更新组织报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "更新组织报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
@@ -646,12 +646,12 @@ def allOrganizationsDelete():
                         oclass = db_session.query(Organization).filter_by(ID=Organizationid).first()
                         db_session.delete(oclass)
                         db_session.commit()
-                        insertSyslog("success", "删除组织ID为" + str(Organizationid) + "的组织删除成功", "AAAAAAadmin")
+                        insertSyslog("success", "删除组织ID为" + str(Organizationid) + "的组织删除成功", current_user.Name)
                     except Exception as ee:
                         db_session.rollback()
                         print(ee)
                         logger.error(ee)
-                        insertSyslog("error", "删除组织报错Error：" + str(ee), "AAAAAAadmin")
+                        insertSyslog("error", "删除组织报错Error：" + str(ee), current_user.Name)
                         return json.dumps([{"status": "error:" + string(ee)}], cls=AlchemyEncoder,
                                           ensure_ascii=False)
                 return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=AlchemyEncoder,
@@ -659,7 +659,7 @@ def allOrganizationsDelete():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "删除组织报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "删除组织报错Error：" + str(e), current_user.Name)
             # return json.dumps([{"status": "Error"+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
@@ -691,13 +691,13 @@ def allOrganizationsCreate():
                                  CreatePerson=data['CreatePerson'],
                                  CreateDate=datetime.datetime.now(),Img = DspImg,Color = DspColor))
                 db_session.commit()
-                insertSyslog("success", "新增组织" + data['OrganizationName'] + "的组织新增成功", "AAAAAAadmin")
+                insertSyslog("success", "新增组织" + data['OrganizationName'] + "的组织新增成功", current_user.Name)
                 return json.dumps([{"status": "OK"}], cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             db_session.rollback()
             print(e)
             logger.error(e)
-            insertSyslog("error", "新增组织报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "新增组织报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
@@ -717,7 +717,7 @@ def allOrganizationsSearch():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "查询组织报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "查询组织报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
@@ -801,7 +801,7 @@ def getOrganizationList(id=0):
         return sz
     except Exception as e:
         print(e)
-        insertSyslog("error", "查询组织树形结构报错Error：" + str(e), "AAAAAAadmin")
+        insertSyslog("error", "查询组织树形结构报错Error：" + str(e), current_user.Name)
         return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 # 加载菜单列表
@@ -815,7 +815,7 @@ def parentNode():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "加父级载菜单列表报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "加父级载菜单列表报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 def getEnterprizeList(id=0):
@@ -829,7 +829,7 @@ def getEnterprizeList(id=0):
     except Exception as e:
         print(e)
         logger.error(e)
-        insertSyslog("error", "加父级载菜单列表报错Error：" + str(e), "AAAAAAadmin")
+        insertSyslog("error", "加父级载菜单列表报错Error：" + str(e), current_user.Name)
         return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 @app.route('/allEnterprises/Search', methods=['POST', 'GET'])
@@ -1120,7 +1120,7 @@ def pequipmentFind():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "设备建模查询报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "设备建模查询报错Error：" + str(e), current_user.Name)
 
 # 设备建模增加
 @app.route('/equipmentModel/pequipmentCreate', methods=['POST', 'GET'])
@@ -1144,7 +1144,7 @@ def pequipmentCreate():
             print(e)
             logger.error(e)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
-            insertSyslog("error", "设备建模增加报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "设备建模增加报错Error：" + str(e), current_user.Name)
 
 # 设备建模修改
 @app.route('/equipmentModel/pequipmentUpdate', methods=['POST', 'GET'])
@@ -1169,7 +1169,7 @@ def pequipmentUpdate():
             logger.error(e)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
                               ensure_ascii=False)
-            insertSyslog("error", "设备建模修改报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "设备建模修改报错Error：" + str(e), current_user.Name)
 
 # 设备建模删除
 @app.route('/equipmentModel/pequipmentDelete', methods=['POST', 'GET'])
@@ -1197,7 +1197,7 @@ def pequipmentDelete():
             print(e)
             logger.error(e)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
-            insertSyslog("error", "设备建模删除报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "设备建模删除报错Error：" + str(e), current_user.Name)
 
 # 设备详细信息
 @app.route('/Equipment')
@@ -2206,12 +2206,12 @@ def allPlanManagersCreate():
         BatchID = data['BatchID']
         PlanManageID = db_session.query(Model.core.PlanManager.ID).filter_by(BatchID=BatchID).first()
         PlanManageID = PlanManageID[0]
-        userID = ""
+        userName = current_user.Name
         Desc = "计划向导生成计划planmanager"
         Type = Model.Global.AuditStatus.Unaudited.value
         EventTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         PlanCreate = ctrlPlan('PlanCreate')
-        bReturn = PlanCreate.createWorkFlowEvent(PlanManageID, None, None, userID, Desc, Type, EventTime)
+        bReturn = PlanCreate.createWorkFlowEvent(PlanManageID, None, None, userName, Desc, Type, EventTime)
         PlanManageID = PlanManageID
         AuditStatus = Model.Global.AuditStatus.Unaudited.value
         DescF = "计划向导生成计划planmanager"
@@ -2298,7 +2298,7 @@ def getOrganizationChildren(id=0):
     except Exception as e:
         print(e)
         logger.error(e)
-        insertSyslog("error", "获取树形结构菜单报错Error：" + str(e), "AAAAAAadmin")
+        insertSyslog("error", "获取树形结构菜单报错Error：" + str(e), current_user.Name)
         return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
@@ -2381,7 +2381,7 @@ def allrolesUpdate():
             db_session.rollback()
             print(e)
             logger.error(e)
-            insertSyslog("error", "更新角色报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "更新角色报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error" + string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
@@ -2407,13 +2407,13 @@ def allrolesDelete():
                         db_session.rollback()
                         print(ee)
                         logger.error(ee)
-                        insertSyslog("error", "删除角色报错Error：" + str(ee), "AAAAAAadmin")
+                        insertSyslog("error", "删除角色报错Error：" + str(ee), current_user.Name)
                         return json.dumps([{"status": "error:" + string(ee)}], cls=AlchemyEncoder, ensure_ascii=False)
                 return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "删除角色报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "删除角色报错Error：" + str(e), current_user.Name)
             # return json.dumps([{"status": "Error"+ string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
@@ -2440,7 +2440,7 @@ def allrolesCreate():
             db_session.rollback()
             print(e)
             logger.error(e)
-            insertSyslog("error", "创建角色报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "创建角色报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:"+ str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
@@ -2468,7 +2468,7 @@ def allrolesFind():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "查询角色列表报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "查询角色列表报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
@@ -2488,7 +2488,7 @@ def allrolesSearch():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "擦护心角色列表报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "擦护心角色列表报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
@@ -2526,7 +2526,7 @@ def getMyEnterprise(id=0):
     except Exception as e:
         print(e)
         logger.error(e)
-        insertSyslog("error", "获取树形结构报错Error：" + str(e), "AAAAAAadmin")
+        insertSyslog("error", "获取树形结构报错Error：" + str(e), current_user.Name)
         return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
@@ -2706,7 +2706,7 @@ def makePlan():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "计划向导生成计划报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "计划向导生成计划报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 # 生产管理部审核计划
@@ -2721,23 +2721,34 @@ def checkPlanManager():
                 for key in jsonnumber:
                     id = int(key)
                     try:
-                        oclass = db_session.query(WorkFlowStatus).filter_by(PlanManageID=id).first()
-                        oclass.AuditStatus = Model.Global.AuditStatus.Checked.value
                         oclassplan = db_session.query(PlanManager).filter_by(ID=id).first()
                         oclassplan.PlanStatus = Model.Global.PlanStatus.Checked.value
                         db_session.commit()
+                        userName = current_user.Name
+                        Desc = "生产管理部审核计划"
+                        Type = Model.Global.AuditStatus.Checked.value
+                        EventTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                        PlanCreate = ctrlPlan('PlanCreate')
+                        wReturn = PlanCreate.createWorkFlowEvent(id, None, None, userName, Desc, Type, EventTime)
+                        if (wReturn == False):
+                            return 'NO'
+                        AuditStatus = Model.Global.AuditStatus.Checked.value
+                        DescF = "生产管理部审核计划"
+                        bReturn = PlanCreate.createWorkFlowStatus(id, None, None, AuditStatus, DescF)
+                        if (bReturn == False):
+                            return 'NO'
                     except Exception as ee:
                         db_session.rollback()
                         print(ee)
                         logger.error(ee)
-                        insertSyslog("error", "生产管理部审核计划报错Error：" + str(ee), "AAAAAAadmin")
+                        insertSyslog("error", "生产管理部审核计划报错Error：" + str(ee), current_user.Name)
                         return json.dumps([{"status": "Error:" + str(ee)}], cls=AlchemyEncoder, ensure_ascii=False)
                 return 'OK'
         except Exception as e:
             db_session.rollback()
             print(e)
             logger.error(e)
-            insertSyslog("error", "生产管理部审核计划报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "生产管理部审核计划报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
@@ -2759,20 +2770,31 @@ def createZYPlanZYtask():
                             return 'NO'
                         oclassplan = db_session.query(PlanManager).filter_by(ID=id).first()
                         oclassplan.PlanStatus = Model.Global.PlanStatus.Realse.value
-                        oclassw = db_session.query(WorkFlowStatus).filter_by(PlanManageID=id).first()
-                        oclassw.AuditStatus = Model.Global.AuditStatus.Realse.value
                         db_session.commit()
+                        userName = current_user.Name
+                        Desc = "下发计划生成ZY计划、任务"
+                        Type = Model.Global.AuditStatus.Realse.value
+                        EventTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                        PlanCreate = ctrlPlan('PlanCreate')
+                        wReturn = PlanCreate.createWorkFlowEvent(id, None, None, userName, Desc, Type, EventTime)
+                        if (wReturn == False):
+                            return 'NO'
+                        AuditStatus = Model.Global.AuditStatus.Realse.value
+                        DescF = "下发计划生成ZY计划、任务"
+                        bReturn = PlanCreate.createWorkFlowStatus(id, None, None, AuditStatus, DescF)
+                        if (bReturn == False):
+                            return 'NO'
                     except Exception as ee:
                         db_session.rollback()
                         print(ee)
                         logger.error(ee)
-                        insertSyslog("error", "下发计划生成ZY计划、任务报错Error" + string(ee), "AAAAAAadmin")
+                        insertSyslog("error", "下发计划生成ZY计划、任务报错Error" + string(ee), current_user.Name)
                         return 'NO'
                 return 'OK'
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "下发计划生成ZY计划、任务报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "下发计划生成ZY计划、任务报错Error：" + str(e), current_user.Name)
             return 'NO'
 
 
@@ -2816,7 +2838,7 @@ def RecallPlan():
                                 db_session.rollback()
                                 print(ee)
                                 logger.error(ee)
-                                insertSyslog("error", "删除批次计划信息报错Error" + string(ee), "AAAAAAadmin")
+                                insertSyslog("error", "删除批次计划信息报错Error" + string(ee), current_user.Name)
                                 return json.dumps([{"status": "Error:" + str(ee)}], cls=AlchemyEncoder, ensure_ascii=False)
                         for zYTask in zYTasks:
                             try:
@@ -2827,25 +2849,36 @@ def RecallPlan():
                                 db_session.rollback()
                                 print(ee)
                                 logger.error(ee)
-                                insertSyslog("error", "删除批次任务信息报错Error" + string(ee), "AAAAAAadmin")
+                                insertSyslog("error", "删除批次任务信息报错Error" + string(ee), current_user.Name)
                                 return json.dumps([{"status": "Error:" + str(ee)}], cls=AlchemyEncoder, ensure_ascii=False)
                         oclass = db_session.query(PlanManager).filter_by(BatchID=ABatchID).first()
                         oclass.PlanStatus = Model.Global.PlanStatus.NEW.value
-                        workFlowStatus = db_session.query(WorkFlowStatus).filter_by(PlanManageID=oclass.ID).first()
-                        workFlowStatus.AuditStatus = Model.Global.AuditStatus.Unaudited.value
                         db_session.commit()
+                        userName = current_user.Name
+                        Desc = "计划撤回，删除ZYplan，ZYtask"
+                        Type = Model.Global.AuditStatus.Unaudited.value
+                        EventTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                        PlanCreate = ctrlPlan('PlanCreate')
+                        wReturn = PlanCreate.createWorkFlowEvent(id, None, None, userName, Desc, Type, EventTime)
+                        if (wReturn == False):
+                            return 'NO'
+                        AuditStatus = Model.Global.AuditStatus.Unaudited.value
+                        DescF = "计划撤回，删除ZYplan，ZYtask"
+                        bReturn = PlanCreate.createWorkFlowStatus(id, None, None, AuditStatus, DescF)
+                        if (bReturn == False):
+                            return 'NO'
                         return 'OK'
                     except Exception as e:
                         db_session.rollback()
                         print(e)
                         logger.error(e)
-                        insertSyslog("error", "撤回批次计划报错Error：" + str(e), "AAAAAAadmin")
+                        insertSyslog("error", "撤回批次计划报错Error：" + str(e), current_user.Name)
                         return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             db_session.rollback()
             print(e)
             logger.error(e)
-            insertSyslog("error", "撤回批次计划报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "撤回批次计划报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 # 计划向导获取批次任务明细
@@ -2870,7 +2903,7 @@ def criticalTasks():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "计划向导获取批次任务明细报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "计划向导获取批次任务明细报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 # 计划向导获取批次物料明细
@@ -2895,7 +2928,7 @@ def criticalMaterials():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "计划向导获取批次物料明细报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "计划向导获取批次物料明细报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 # 批次号判重
@@ -2918,7 +2951,7 @@ def isBatchNumber():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "批次号判重报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "批次号判重报错Error：" + str(e), current_user.Name)
             return 'NO'
 
 # 计划向导重量校验
@@ -2935,7 +2968,7 @@ def weightCheck():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "计划向导重量校验报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "计划向导重量校验报错Error：" + str(e), current_user.Name)
 
 # 获取批次计划信息
 @app.route('/ZYPlanGuid/searchZYPlan', methods=['POST', 'GET'])
@@ -2961,7 +2994,7 @@ def searchZYPlan():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "获取批次计划信息报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "获取批次计划信息报错Error：" + str(e), current_user.Name)
 
 #生产线监控
 @app.route('/processMonitorLine')
@@ -2999,7 +3032,7 @@ def taskConfirmPuidDate():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "任务确认获取工艺段报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "任务确认获取工艺段报错Error：" + str(e), current_user.Name)
 
 # 任务确认查询计划
 @app.route('/processMonitorLine/planConfirmSearch', methods=['POST', 'GET'])
@@ -3028,7 +3061,7 @@ def planConfirmSearch():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "任务确认查询计划报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "任务确认查询计划报错Error：" + str(e), current_user.Name)
 
 #任务确认查询任务
 @app.route('/processMonitorLine/taskConfirmSearch', methods=['POST', 'GET'])
@@ -3081,7 +3114,7 @@ def taskConfirmSearch():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "获取任务确认的任务列表报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "获取任务确认的任务列表报错Error：" + str(e), current_user.Name)
 
 #任务确认工艺段下的所有设备
 @app.route('/processMonitorLine/searchAllEquipments', methods=['POST', 'GET'])
@@ -3105,7 +3138,7 @@ def searchAllEquipments():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "任务确认工艺段下的所有设备报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "任务确认工艺段下的所有设备报错Error：" + str(e), current_user.Name)
 
 #任务确认保存设备code
 @app.route('/processMonitorLine/saveEQPCode', methods=['POST', 'GET'])
@@ -3128,7 +3161,7 @@ def saveEQPCode():
             db_session.rollback()
             print(e)
             logger.error(e)
-            insertSyslog("error", "任务确认保存设备code报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "任务确认保存设备code报错Error：" + str(e), current_user.Name)
             return "NO"
 
 #任务确认查询设备下任务
@@ -3146,7 +3179,7 @@ def searchTasksByEquipmentID():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "任务确认查询设备下任务报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "任务确认查询设备下任务报错Error：" + str(e), current_user.Name)
 
 # Opc服务配置
 @app.route('/OpcServer')
@@ -3290,7 +3323,7 @@ def opcTagLoad():
     except Exception as e:
         print(e)
         logger.error(e)
-        insertSyslog("error", "加载OPC-Tag错误Error：" + str(e), "AAAAAAadmin")
+        insertSyslog("error", "加载OPC-Tag错误Error：" + str(e), current_user.Name)
 
 @app.route('/OpcServer/Tag', methods=['POST', 'GET'])
 def opcServerTag():
@@ -3305,7 +3338,7 @@ def opcServerTag():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "获取OpcServer下的URI报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "获取OpcServer下的URI报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 
@@ -3358,7 +3391,7 @@ def opcuaClientLink():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "opcuaClient连接失败Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "opcuaClient连接失败Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 @app.route('/opcuaClient/NodeLoadMore', methods=['POST', 'GET'])
@@ -3380,7 +3413,7 @@ def nodeLoad():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "加载opcuaClient节点失败报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "加载opcuaClient节点失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 
@@ -3425,7 +3458,7 @@ def storeOpcTag():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "OpcTag存储失败报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "OpcTag存储失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 # 配置采集策略模板
@@ -3459,7 +3492,7 @@ def templateFind():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "CollectParamsTemplate数据加载失败报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "CollectParamsTemplate数据加载失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,ensure_ascii=False)
 
 @app.route('/CollectParamsTemplate/config/create', methods=['POST', 'GET'])
@@ -3479,7 +3512,7 @@ def templateCreate():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "CollectParamsTemplate数据创建失败报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "CollectParamsTemplate数据创建失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 @app.route('/CollectParamsTemplate/config/delete', methods=['POST', 'GET'])
@@ -3509,7 +3542,7 @@ def templateDelete():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "CollectParamsTemplate数据删除失败报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "CollectParamsTemplate数据删除失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 @app.route('/CollectParamsTemplate/config/update', methods=['POST', 'GET'])
@@ -3531,7 +3564,7 @@ def templateUpdate():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "CollectParamsTemplate数据更新失败报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "CollectParamsTemplate数据更新失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
             # 查询Opc服务
@@ -3554,7 +3587,7 @@ def templateSearch():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "CollectParamsTemplate数据查询失败报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "CollectParamsTemplate数据查询失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 
@@ -3591,7 +3624,7 @@ def getOpcTagList(id, ParentID=None):
     except Exception as e:
         print(e)
         logger.error(e)
-        insertSyslog("error", "加载父级菜单列表报错Error：" + str(e), "AAAAAAadmin")
+        insertSyslog("error", "加载父级菜单列表报错Error：" + str(e), current_user.Name)
         return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 @app.route('/CollectParams/OpcTagLoad', methods=['POST', 'GET'])
@@ -3604,7 +3637,7 @@ def OpcTagLoad():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "路由/CollectParams/OpcTagLoad生成OpcTag树形图报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "路由/CollectParams/OpcTagLoad生成OpcTag树形图报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 @app.route('/CollectParams/store', methods=['POST', 'GET'])
@@ -3640,7 +3673,7 @@ def collectParams():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "CollectParams数据创建失败报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "CollectParams数据创建失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 def transform(IDs):
@@ -3685,7 +3718,7 @@ def collectParamsFind():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "CollectParams数据加载失败报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "CollectParams数据加载失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
                               ensure_ascii=False)
 
@@ -3719,7 +3752,7 @@ def collectParamsCreate():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "CollectParamsTemplate数据创建失败报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "CollectParamsTemplate数据创建失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 
@@ -3750,7 +3783,7 @@ def collectParamsDelete():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "CollectParamsTemplate数据删除失败报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "CollectParamsTemplate数据删除失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 
@@ -3798,7 +3831,7 @@ def collectParamsUpdate():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "CollectParamsTemplate数据更新失败报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "CollectParamsTemplate数据更新失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
             # 查询Opc服务
@@ -3822,7 +3855,7 @@ def collectParamsSearch():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "CollectParamsTemplate数据查询失败报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "CollectParamsTemplate数据查询失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 # 配置采集策略
@@ -3851,7 +3884,7 @@ def strategyFind():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "查询角色列表报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "查询角色列表报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
@@ -3875,7 +3908,7 @@ def strategyCreate():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "Collectionstrategy数据创建失败报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "Collectionstrategy数据创建失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 @app.route('/Collectionstrategy/config/delete', methods=['POST', 'GET'])
@@ -3902,7 +3935,7 @@ def strategyDelete():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "Collectionstrategy数据删除失败报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "Collectionstrategy数据删除失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 @app.route('/Collectionstrategy/config/update', methods=['POST', 'GET'])
@@ -3925,7 +3958,7 @@ def strategyUpdate():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "Collectionstrategy数据更新失败报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "Collectionstrategy数据更新失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
             # 查询Opc服务
@@ -3948,7 +3981,7 @@ def strategySearch():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "Collectionstrategy数据查询失败报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "Collectionstrategy数据查询失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 # 采集任务
@@ -4006,7 +4039,7 @@ def CollectTaskFind():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "jsonCollectTask数据加载失败报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "jsonCollectTask数据加载失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,ensure_ascii=False)
 
 
@@ -4029,7 +4062,7 @@ def CollectTaskCreate():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "CollectTask数据创建失败报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "CollectTask数据创建失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 @app.route('/CollectTask/config/delete', methods=['POST', 'GET'])
@@ -4056,7 +4089,7 @@ def CollectTaskDelete():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "CollectTask数据删除失败报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "CollectTask数据删除失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 @app.route('/CollectTask/config/update', methods=['POST', 'GET'])
@@ -4078,7 +4111,7 @@ def CollectTaskUpdate():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "CollectTask数据更新失败报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "CollectTask数据更新失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
             # 查询Opc服务
@@ -4101,7 +4134,7 @@ def CollectTaskSearch():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "CollectTask数据查询失败报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "CollectTask数据查询失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 # 采集任务配置
@@ -4141,7 +4174,7 @@ def collectTaskCollection():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "jsonCollectTask数据加载失败报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "jsonCollectTask数据加载失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,ensure_ascii=False)
 
 
@@ -4177,7 +4210,7 @@ def TaskCollectionCreate():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "CollectTaskCollection数据创建失败报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "CollectTaskCollection数据创建失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 @app.route('/CollectTaskConfig/delete', methods=['POST', 'GET'])
@@ -4204,7 +4237,7 @@ def TaskCollectionDelete():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "CollectTaskCollection数据删除失败报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "CollectTaskCollection数据删除失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 @app.route('/CollectTaskConfig/update', methods=['POST', 'GET'])
@@ -4239,7 +4272,7 @@ def TaskCollectionUpdate():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "CollectTaskCollection数据更新失败报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "CollectTaskCollection数据更新失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
             # 查询Opc服务
@@ -4262,7 +4295,7 @@ def TaskCollectionSearch():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "CollectTaskCollection数据查询失败报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "CollectTaskCollection数据查询失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 @app.route('/CollectTaskConfig/load', methods=['POST', 'GET'])
@@ -4276,7 +4309,7 @@ def Taskload():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "Task数据加载失败报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "Task数据加载失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 #计划向导生成的计划查询
@@ -4301,9 +4334,9 @@ def searchPlanmanager():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "计划向导生成的计划查询报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "计划向导生成的计划查询报错Error：" + str(e), current_user.Name)
 
-# 计划管理计划审核页面
+# 计划审核页面
 @app.route('/ZYPlanGuid/checkplanmanager')
 def checkplanmanager():
     return render_template('checkplanmanager.html')
@@ -4320,7 +4353,7 @@ def searchcheckplanmanager():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "计划向导生成的计划查询报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "计划向导生成的计划查询报错Error：" + str(e), current_user.Name)
 def searchplanmanager(data,AuditStatus):
     json_str = json.dumps(data.to_dict())
     if len(json_str) > 10:
@@ -4367,38 +4400,38 @@ def controlConfirmSearch():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "计划向导生成的计划查询报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "计划向导生成的计划查询报错Error：" + str(e), current_user.Name)
 # 中控确认
 @app.route('/ZYPlanGuid/controlConfirm', methods=['POST', 'GET'])
 def controlConfirm():
     if request.method == 'POST':
         data = request.values
         try:
-            ID = data['ID']
+            jsonstr = json.dumps(data.to_dict())
+            jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
+            ID = int(jsonnumber[0])
             planManagerOclass = db_session.query(PlanManager).filter(ID == ID).first()
             planManagerOclass.PlanStatus = Model.Global.PlanStatus.Control.value
-            wOclass = db_session.query(WorkFlowStatus).filter(WorkFlowStatus.PlanManageID == ID).first()
-            wOclass.AuditStatus = Model.Global.AuditStatus.ClearField.value
             db_session.commit()
-            userID = ""
+            userName = current_user.Name
             Desc = "中控确认清场"
             Type = Model.Global.AuditStatus.ClearField.value
             EventTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             PlanCreate = ctrlPlan('PlanCreate')
-            wReturn = PlanCreate.createWorkFlowEvent(ID, None, None, userID, Desc, Type, EventTime)
+            wReturn = PlanCreate.createWorkFlowEvent(ID, None, None, userName, Desc, Type, EventTime)
             if(wReturn == False):
-                return "NO"
+                return 'NO'
             AuditStatus = Model.Global.AuditStatus.ClearField.value
             DescF = "中控确认清场"
             bReturn = PlanCreate.createWorkFlowStatus(ID, None, None, AuditStatus, DescF)
             if (bReturn == False):
-                return "NO"
-            return "OK"
+                return 'NO'
+            return 'OK'
         except Exception as e:
             db_session.rollback()
             print(e)
             logger.error(e)
-            insertSyslog("error", "计划向导生成的计划查询报错Error：" + str(e), "AAAAAAadmin")
+            insertSyslog("error", "计划向导生成的计划查询报错Error：" + str(e), current_user.Name)
 
 if __name__ == '__main__':
     app.run(debug=True)
