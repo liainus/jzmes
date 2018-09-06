@@ -34,57 +34,56 @@
                 adopt:function(){
                     var rows = $("#tab").datagrid('getSelections');
                     if (rows.length > 0) {
-                        var PrimaryKey = "ID";
-                        var jsonarray=[];
-                        var jsonstr = []
-                        var a = "";
-                        for (var i = 0; i < rows.length; i++) {
-                            var obj=createKeyIDObj(parseInt(rows[i].ID));
-                            jsonarray.push(obj);
-                            var objstr = rows[i].PlanStatus
-                            jsonstr.push(objstr)
-                        }
-                        a = JSON.stringify(jsonarray);
                         $("#TemplateClassDialog").dialog('open').dialog('setTitle', '确认生产前的准备工作');
-                        var deadWork = $("#dg").datagrid('getSelections');
-                        if (deadWork.length == 6){
-                            $.messager.confirm('确定操作', '确定要确认所选的计划吗？', function (flag) {
-                                if (flag) {
-                                    $.ajax({
-                                        url: '/ZYPlanGuid/controlConfirm',
-                                        method: 'GET',
-                                        data: {
-                                            ID:a
-                                        },
-                                        success: function (data) {
-                                            $.messager.progress('close')
-                                            if (data == "OK") {
-                                                $.messager.show({
-                                                    title: '提示',
-                                                    timeout:1000,
-                                                    msg: '已计划确认成功',
-                                                    style: {
-                                                        right: '',
-                                                        top: document.body.scrollTop + document.documentElement.scrollTop,
-                                                        bottom: ''
-                                                    }
-                                                });
-                                                $("#tab").datagrid('loaded');
-                                                $("#tab").datagrid('load');
-                                                $("#tab").datagrid('unselectAll');
-                                            }
-                                        },
-                                        error:function(){
-                                            alert("请求失败，请稍后重试！")
-                                        }
-                                    });
-                                }
-                            });
-                        }else{
-                            $.messager.alert('提示', '请确认完成了所有准备工作！', 'info');
-                        }
                     } else {
                         $.messager.alert('提示', '请选择要确认的计划！', 'info');
+                    }
+                },
+                save:function(){
+                    var rows = $("#tab").datagrid('getSelections');
+                    var jsonarray=[];
+                    var a = "";
+                    for (var i = 0; i < rows.length; i++) {
+                        var obj=createKeyIDObj(parseInt(rows[i].ID));
+                        jsonarray.push(obj);
+                    }
+                    a = JSON.stringify(jsonarray);
+                    var deadWork = $("#dg").datagrid('getSelections');
+                    if (deadWork.length == 6){
+                        $.messager.confirm('确定操作', '确定要确认所选的计划吗？', function (flag) {
+                            if (flag) {
+                                $.ajax({
+                                    url: '/ZYPlanGuid/controlConfirm',
+                                    method: 'POST',
+                                    data: {
+                                        ID:a
+                                    },
+                                    success: function (data) {
+                                        $.messager.progress('close')
+                                        if (data == "OK") {
+                                            $.messager.show({
+                                                title: '提示',
+                                                timeout:1000,
+                                                msg: '已计划确认成功',
+                                                style: {
+                                                    right: '',
+                                                    top: document.body.scrollTop + document.documentElement.scrollTop,
+                                                    bottom: ''
+                                                }
+                                            });
+                                            $("#tab").datagrid('loaded');
+                                            $("#tab").datagrid('load');
+                                            $("#tab").datagrid('unselectAll');
+                                        }
+                                    },
+                                    error:function(){
+                                        alert("请求失败，请稍后重试！")
+                                    }
+                                });
+                            }
+                        });
+                    }else{
+                        $.messager.alert('提示', '请确认完成了所有准备工作！', 'info');
                     }
                 },
                 refresh:function(){
@@ -181,7 +180,7 @@
                 </tr>
             </thead>
         </table>
-        <div id="TemplateClassDialog" class="easyui-dialog" style="width:350px;height:300px;padding:10px;"
+        <div id="TemplateClassDialog" class="easyui-dialog" style="width:400px;height:360px;padding:10px;"
              data-options="closed:'true',buttons:'#userClassDialogButtons',modal:true">
             <form id="TemplateClassForm" method="post" class="dialog-form">
                 <table class="easyui-datagrid" id="dg" title="" style="width:100%;" data-options="
