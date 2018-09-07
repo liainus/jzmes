@@ -199,17 +199,22 @@
                             {% endif %}
                             {% if '26' in session.get('menus') %}
                                 <li>
-                                    <a href="#" onclick="addTab('计划管理','/ZYPlanGuid/planmanager')">计划管理</a>
+                                    <a href="#" onclick="addTab('生产计划管理','/ZYPlanGuid/planmanager')">生产计划管理</a>
                                 </li>
                             {% endif %}
                             {% if '25' in session.get('menus') %}
                                 <li>
-                                    <a href="#" onclick="addTab('计划审核','/ZYPlanGuid/checkplanmanager')">计划审核</a>
+                                    <a href="#" onclick="addTab('生产计划审核','/ZYPlanGuid/checkplanmanager')">生产计划审核</a>
                                 </li>
                             {% endif %}
                             {% if '25' in session.get('menus') %}
                                 <li>
                                     <a href="#" onclick="addTab('中控计划确认','/MiddleControl/PlanConfirm')">中控计划确认</a>
+                                </li>
+                            {% endif %}
+                            {% if '25' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onclick="addTab('QA计划确认','QAPlanConfirm')">QA计划确认</a>
                                 </li>
                             {% endif %}
                             {% if '25' in session.get('menus') %}
