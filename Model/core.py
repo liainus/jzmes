@@ -19,6 +19,8 @@ from collections import Counter
 # -coding:utf-8--
 # 引入必要的类库
 from imp import reload
+
+from flask_login import current_user
 from sqlalchemy import Column, DateTime, Float, Integer, String, Unicode, BigInteger
 from sqlalchemy import create_engine, Column, ForeignKey, Table, DateTime, Integer, String
 from sqlalchemy import func
@@ -3094,9 +3096,21 @@ class PlanManagerWebIFS(object):
 					PlanManagerid = int(key)
 					try:
 						oclass = session.query(Model.core.PlanManager).filter_by(ID=PlanManagerid).first()
+						oclassW = session.query(WorkFlowStatus).filter_by(PlanManageID=PlanManagerid).first()
+						session.delete(oclassW)
 						session.delete(oclass)
+						oclassFs = session.query(WorkFlowEvent).filter_by(PlanManageID=PlanManagerid).all()
+						for oclassF in oclassFs:
+							session.delete(oclassF)
+						zYPlans = session.query(ZYPlan).filter_by(BatchID=oclass.BatchID).all()
+						zYTasks = session.query(ZYTask).filter_by(BatchID=oclass.BatchID).all()
+						for zYPlan in zYPlans:
+							session.delete(zYPlan)
+						for zYTask in zYTasks:
+							session.delete(oclass)
 						session.commit()
 					except Exception as ee:
+						session.rollback()
 						print(ee)
 						logger.error(ee)
 						return json.dumps([{"status": "error:" + str(ee)}],
@@ -3587,6 +3601,36 @@ class WorkFlowStatus(Base):
 
 	# 描述:
 	Desc = Column(Unicode(100), primary_key=False, autoincrement=False, nullable=True)
+
+# 进行生产前的准备工作表:
+class ReadyWork(Base):
+	__tablename__ = "ReadyWork"
+
+	# ID:
+	ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+	# ZYPlan表ID:
+	ZYPlanID = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
+
+	#检查工作区域是否有《清场合格证》
+	ClearFieldCard = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+	#是否清除工作区域、设备上的上一批次的物料或产品
+	ClearLastMateriel = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+	#检查是否已经清除上一批次物料的状态标志
+	ClearLastMaterielStatus = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+	#检查生产设备、生产现场是否完好清洁
+	ClaernEquipLocal = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+	#是否清除生产现场与本批产品无关的文件
+	ClarnFile = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+	#检查设备、电器件、介质是否正常处于安全状态
+	SafetyStatus = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+
 
 
 # 生成表单的执行语句

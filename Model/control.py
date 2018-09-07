@@ -157,7 +157,7 @@ class ctrlPlan:
                     # PlanEndTime=APlanEndTime,
                     # ActBeginTime="",
                     # ActEndTime="",
-                    ZYPlanStatus=Model.Global.TASKSTATUS.COMPILE.value,
+                    ZYPlanStatus=Model.Global.ZYPlanStatus.NEW.value,
                     LockStatus=Model.Global.TASKLOCKSTATUS.UNLOCK.value,
                     INFStatus=Model.Global.TASKSTATUS.COMPILE.value,
                     WMSStatus=Model.Global.TASKSTATUS.COMPILE.value))
