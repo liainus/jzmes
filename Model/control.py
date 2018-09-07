@@ -566,14 +566,14 @@ class ctrlPlan:
             logger.error(e)
             return  bReturn,varTaskNo
 
-    def createWorkFlowEvent(self,APlanManageID,AZYPlanID,AZYTaskID,userID,Desc,Type,EventTime):
+    def createWorkFlowEvent(self,APlanManageID,AZYPlanID,AZYTaskID,userName,Desc,Type,EventTime):
         bReturn = True
         try:
             session.add(Model.core.WorkFlowEvent(
                 PlanManageID=APlanManageID,
                 ZYPlanID=AZYPlanID,
                 ZYTaskID=AZYTaskID,
-                userID=userID,
+                userName=userName,
                 Desc=Desc,
                 Type=Type,
                 EventTime=EventTime))
