@@ -50,7 +50,7 @@
                     a = JSON.stringify(jsonarray);
                     var deadWork = $("#dg").datagrid('getSelections');
                     if (deadWork.length == 6){
-                        $.messager.confirm('确定操作', '确定要确认所选的计划吗？', function (flag) {
+                        $.messager.confirm('确定操作', '确定要通过所选的计划吗？', function (flag) {
                             if (flag) {
                                 $.ajax({
                                     url: '/ZYPlanGuid/controlConfirm',
