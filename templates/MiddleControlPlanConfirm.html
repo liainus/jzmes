@@ -31,40 +31,33 @@
                         }
                     })
                 },
-                adopt:function(){
-                    var rows = $("#tab").datagrid('getSelections');
-                    if (rows.length > 0) {
-                        $("#TemplateClassDialog").dialog('open').dialog('setTitle', '确认生产前的准备工作');
-                    } else {
-                        $.messager.alert('提示', '请选择要确认的计划！', 'info');
-                    }
+                dead:function(){
+                    $("#TemplateClassDialog").dialog('open').dialog('setTitle', '确认生产前的准备工作');
                 },
                 save:function(){
-                    var rows = $("#tab").datagrid('getSelections');
-                    var jsonarray=[];
-                    var a = "";
-                    for (var i = 0; i < rows.length; i++) {
-                        var obj=createKeyIDObj(parseInt(rows[i].ID));
-                        jsonarray.push(obj);
-                    }
-                    a = JSON.stringify(jsonarray);
-                    var deadWork = $("#dg").datagrid('getSelections');
-                    if (deadWork.length == 6){
-                        $.messager.confirm('确定操作', '确定要通过所选的计划吗？', function (flag) {
+                    var deadRows = $("#dg").datagrid('getSelections');
+                    var array = [];
+                        var b = "";
+                        for (var i = 0; i < deadRows.length; i++) {
+                            var object = createKeyIDObj(parseInt(deadRows[i].c));
+                            array.push(object);
+                        }
+                        b = JSON.stringify(array);
+                        $.messager.confirm('确定操作', '确定要保存所选的准备工作吗？', function (flag) {
                             if (flag) {
                                 $.ajax({
-                                    url: '/ZYPlanGuid/controlConfirm',
+                                    url: '/ZYPlanGuid/controlConfirmSaveInfo',
                                     method: 'POST',
                                     data: {
-                                        ID:a
+                                        ID: b
                                     },
                                     success: function (data) {
                                         $.messager.progress('close')
                                         if (data == "OK") {
                                             $.messager.show({
                                                 title: '提示',
-                                                timeout:1000,
-                                                msg: '已计划确认成功',
+                                                timeout: 1000,
+                                                msg: '保存成功',
                                                 style: {
                                                     right: '',
                                                     top: document.body.scrollTop + document.documentElement.scrollTop,
@@ -77,14 +70,57 @@
                                             $("#TemplateClassDialog").dialog('close');
                                         }
                                     },
-                                    error:function(){
+                                    error: function () {
                                         alert("请求失败，请稍后重试！")
                                     }
                                 });
                             }
                         });
-                    }else{
-                        $.messager.alert('提示', '请确认完成了所有准备工作！', 'info');
+                },
+                adopt:function(){
+                    var rows = $("#tab").datagrid('getSelections');
+                    if (rows.length > 0) {
+                        var jsonarray = [];
+                        var a = "";
+                        for (var i = 0; i < rows.length; i++) {
+                            var obj = createKeyIDObj(parseInt(rows[i].ID));
+                            jsonarray.push(obj);
+                        }
+                        a = JSON.stringify(jsonarray);
+                        $.messager.confirm('确定操作', '确定要通过所选的计划吗？', function (flag) {
+                            if (flag) {
+                                $.ajax({
+                                    url: '/ZYPlanGuid/controlConfirm',
+                                    method: 'POST',
+                                    data: {
+                                        ID: a
+                                    },
+                                    success: function (data) {
+                                        $.messager.progress('close')
+                                        if (data == "OK") {
+                                            $.messager.show({
+                                                title: '提示',
+                                                timeout: 1000,
+                                                msg: '已计划确认成功',
+                                                style: {
+                                                    right: '',
+                                                    top: document.body.scrollTop + document.documentElement.scrollTop,
+                                                    bottom: ''
+                                                }
+                                            });
+                                            $("#tab").datagrid('loaded');
+                                            $("#tab").datagrid('load');
+                                            $("#tab").datagrid('unselectAll');
+                                        }
+                                    },
+                                    error: function () {
+                                        alert("请求失败，请稍后重试！")
+                                    }
+                                });
+                            }
+                        });
+                    } else {
+                        $.messager.alert('提示', '请选择要确认的计划！', 'info');
                     }
                 },
                 refresh:function(){
@@ -94,13 +130,18 @@
 
             $('#dg').datagrid({
                 data: [
-                    {f:'检查工作区域是否有《清场合格证》'},
-                    {f:'是否清除工作区域、设备上的上一批次的物料或产品'},
-                    {f:'检查是否已经清除上一批次物料的状态标志'},
-                    {f:'检查生产设备、生产现场是否完好清洁'},
-                    {f:'是否清除生产现场与本批产品无关的文件'},
-                    {f:'检查设备、电器件、介质是否正常处于安全状态'}
-                ]
+                    {f:'检查工作区域是否有《清场合格证》',c:'ClearFieldCard'},
+                    {f:'是否清除工作区域、设备上的上一批次的物料或产品',c:'ClearLastMateriel'},
+                    {f:'检查是否已经清除上一批次物料的状态标志',c:'ClearLastMaterielStatus'},
+                    {f:'检查生产设备、生产现场是否完好清洁',c:'ClaernEquipLocal'},
+                    {f:'是否清除生产现场与本批产品无关的文件',c:'ClarnFile'},
+                    {f:'检查设备、电器件、介质是否正常处于安全状态',c:'SafetyStatus'}
+                ],
+                onLoadSuccess:function(){
+                    $(this).datagrid('checkRow', 0)
+                    $(this).datagrid('checkRow', 1)
+                    $(this).datagrid('checkRow', 2)
+                }
             });
 
              $("#tab").datagrid({
@@ -151,6 +192,7 @@
             <input type="text" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
                 placeholder="">
             <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="CollectToolbar.search();">查询</a>
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit'" onclick="CollectToolbar.dead();">准备工作确认</a>
             <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-redo'" onclick="CollectToolbar.adopt();">计划确认</a>
             <a href="#" class="easyui-linkbutton" id="reload" data-options="iconCls:'icon-reload'" onclick="CollectToolbar.refresh();">刷新</a>
         </div>
