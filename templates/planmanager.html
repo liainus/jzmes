@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>计划管理</title>
+    <title>生产计划管理</title>
     <link href="../static/css/base.css" rel="stylesheet">
 	<link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
 	<link href="../static/css/basic_info.css" rel="stylesheet">
@@ -237,16 +237,7 @@
                                             $("#tab").datagrid('load');
                                             $("#tab").datagrid('unselectAll');
                                         }else{
-                                            $.messager.show({
-                                                title: '提示',
-                                                timeout:1000,
-                                                msg: '撤回失败，'+data,
-                                                style: {
-                                                    right: '',
-                                                    top: document.body.scrollTop + document.documentElement.scrollTop,
-                                                    bottom: ''
-                                                }
-                                            });
+                                            $.messager.alert('提示', data, 'info');
                                         }
                                     },
                                     error:function(){
