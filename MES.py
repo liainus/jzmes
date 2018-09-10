@@ -4455,6 +4455,7 @@ def controlConfirmSaveInfo():
                     if (js == "SafetyStatus"):
                         SafetyStatus = "1"
                 db_session.add(ReadyWork(
+                    ZYPlanID = data['ZYPlanID'],
                     ClearFieldCard = data['ClearFieldCard'],
                     ClearLastMateriel = data['ClearLastMateriel'],
                     ClearLastMaterielStatus = data['ClearLastMaterielStatus'],
