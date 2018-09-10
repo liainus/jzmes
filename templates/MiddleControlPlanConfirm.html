@@ -22,6 +22,7 @@
                     ID:keyID
                 }
             }
+            var ZYPlanID = ""
             CollectToolbar = {
                 search:function(){
                     var searchBatchID = $('input[name="search"]').val()
@@ -35,17 +36,18 @@
                     var rows = $("#tab").datagrid('getSelections');
                     if (rows.length > 0) {
                         $("#TemplateClassDialog").dialog('open').dialog('setTitle', '确认生产前的准备工作');
+                        ZYPlanID = rows[0].ID
                         $('#dg').datagrid({
                             url:'/ZYPlanGuid/ConfirmSearchInfo',
                             method:'get',
                             queryParams: {
-                                ZYPlanID: rows[0].ID
+                                ZYPlanID: ZYPlanID
                             },
                             onLoadSuccess:function(data){
-                                console.log(data.rows)
                                 $.each(data.rows,function(index,value){
+                                    console.log(value)
                                     if(data.rows[index].IsCheck == 1){
-                                        console.log($(this).datagrid('checkRow',index))
+                                        $(this).datagrid('checkRow',index)
                                     }
                                 })
                             }
@@ -70,7 +72,8 @@
                                     url: '/ZYPlanGuid/controlConfirmSaveInfo',
                                     method: 'POST',
                                     data: {
-                                        ID: b
+                                        ID: b,
+                                        ZYPlanID:ZYPlanID
                                     },
                                     success: function (data) {
                                         $.messager.progress('close')
