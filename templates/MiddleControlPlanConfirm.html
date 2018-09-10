@@ -43,11 +43,11 @@
                             },
                             onLoadSuccess:function(data){
                                 console.log(data.rows)
-                                for (var i = 0; i < data.rows.length; i++) {
-                                    if(data.rows[i].IsCheck){
-                                        console.log(i)
+                                $.each(data.rows,function(index,value){
+                                    if(data.rows[index].IsCheck == 1){
+                                        console.log($(this).datagrid('checkRow',index))
                                     }
-                                }
+                                })
                             }
                         });
                     } else {
