@@ -4413,7 +4413,7 @@ def controlConfirmSearch():
 # 中控确认保存信息查询
 @app.route('/ZYPlanGuid/ConfirmSearchInfo', methods=['POST', 'GET'])
 def ConfirmSearchInfo():
-    if request.method == 'POST':
+    if request.method == 'GET':
         data = request.values
         try:
             json_str = json.dumps(data.to_dict())
@@ -4441,6 +4441,7 @@ def controlConfirmSaveInfo():
                 ClaernEquipLocal = "0"
                 ClarnFile = "0"
                 SafetyStatus = "0"
+                ZYPlanID = data['ZYPlanID']
                 for js in json_str:
                     if(js=="ClearFieldCard"):
                         ClearFieldCard = "1"
@@ -4454,15 +4455,23 @@ def controlConfirmSaveInfo():
                         ClarnFile = "1"
                     if (js == "SafetyStatus"):
                         SafetyStatus = "1"
-                db_session.add(ReadyWork(
-                    ZYPlanID = data['ZYPlanID'],
-                    ClearFieldCard = data['ClearFieldCard'],
-                    ClearLastMateriel = data['ClearLastMateriel'],
-                    ClearLastMaterielStatus = data['ClearLastMaterielStatus'],
-                    ClaernEquipLocal = data['ClaernEquipLocal'],
-                    ClarnFile = data['ClarnFile'],
-                    SafetyStatus = data['SafetyStatus']
-                ))
+                oclass = db_session.query(ReadyWork).filter(ZYPlanID==ZYPlanID).first()
+                if(oclass==None):
+                    db_session.add(ReadyWork(
+                        ZYPlanID = ZYPlanID,
+                        ClearFieldCard = ClearFieldCard,
+                        ClearLastMateriel = ClearLastMateriel,
+                        ClearLastMaterielStatus = ClearLastMaterielStatus,
+                        ClaernEquipLocal = ClaernEquipLocal,
+                        ClarnFile = ClarnFile,
+                        SafetyStatus = SafetyStatus))
+                else:
+                    oclass.ClearFieldCard = ClearFieldCard
+                    oclass.ClearLastMateriel = ClearLastMateriel
+                    oclass.ClearLastMaterielStatus = ClearLastMaterielStatus
+                    oclass.ClaernEquipLocal = ClaernEquipLocal
+                    oclass.ClarnFile = ClarnFile
+                    oclass.SafetyStatus = SafetyStatus
                 db_session.commit()
                 return 'OK'
         except Exception as e:
