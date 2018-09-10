@@ -36,8 +36,18 @@
                     if (rows.length > 0) {
                         $("#TemplateClassDialog").dialog('open').dialog('setTitle', '确认生产前的准备工作');
                         $('#dg').datagrid({
+                            url:'/ZYPlanGuid/ConfirmSearchInfo',
+                            method:'get',
+                            queryParams: {
+                                ZYPlanID: rows[0].ID
+                            },
                             onLoadSuccess:function(data){
-                                console.log(data)
+                                console.log(data.rows)
+                                for (var i = 0; i < data.rows.length; i++) {
+                                    if(data.rows[i].IsCheck){
+                                        console.log(i)
+                                    }
+                                }
                             }
                         });
                     } else {
@@ -222,8 +232,6 @@
              data-options="closed:'true',buttons:'#userClassDialogButtons',modal:true">
             <form id="TemplateClassForm" method="post" class="dialog-form">
                 <table class="easyui-datagrid" id="dg" title="" style="width:100%;" data-options="
-                    url:'/ZYPlanGuid/ConfirmSearchInfo',
-                    method:'get',
                     rownumbers:true,
                     singleSelect:false,
                     autoRowHeight:false">
