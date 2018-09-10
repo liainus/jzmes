@@ -4410,6 +4410,23 @@ def controlConfirmSearch():
             logger.error(e)
             insertSyslog("error", "计划向导生成的计划查询报错Error：" + str(e), current_user.Name)
 
+# 中控确认保存信息查询
+@app.route('/ZYPlanGuid/ConfirmSearchInfo', methods=['POST', 'GET'])
+def ConfirmSearchInfo():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                ZYPlanID = int(data["ZYPlanID"])
+                oclass = db_session.query(ReadyWork).filter(ZYPlanID == ZYPlanID).first()
+                return json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
+        except Exception as e:
+            db_session.commit()
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "中控确认保存信息报错Error：" + str(e), current_user.Name)
+
 # 中控确认保存信息
 @app.route('/ZYPlanGuid/controlConfirmSaveInfo', methods=['POST', 'GET'])
 def controlConfirmSaveInfo():
@@ -4417,24 +4434,43 @@ def controlConfirmSaveInfo():
         data = request.values
         try:
             json_str = json.dumps(data.to_dict())
-            print(json_str)
             if len(json_str) > 10:
-                ZYPlanID = data['ZYPlanID']
-                oclass = db_session.query(ReadyWork).filter(ReadyWork.ZYPlanID == ZYPlanID).first()
-                oclass.ClearFieldCard = data['ClearFieldCard']
-                oclass.ClearLastMateriel = data['ClearLastMateriel']
-                oclass.ClearLastMaterielStatus = data['ClearLastMaterielStatus']
-                oclass.ClaernEquipLocal = data['ClaernEquipLocal']
-                oclass.ClarnFile = data['ClarnFile']
-                oclass.SafetyStatus = data['SafetyStatus']
+                ClearFieldCard = "0"
+                ClearLastMateriel = "0"
+                ClearLastMaterielStatus = "0"
+                ClaernEquipLocal = "0"
+                ClarnFile = "0"
+                SafetyStatus = "0"
+                for js in json_str:
+                    if(js=="ClearFieldCard"):
+                        ClearFieldCard = "1"
+                    if (js == "ClearLastMateriel"):
+                        ClearLastMateriel = "1"
+                    if (js == "ClearLastMaterielStatus"):
+                        ClearLastMaterielStatus = "1"
+                    if (js == "ClaernEquipLocal"):
+                        ClaernEquipLocal = "1"
+                    if (js == "ClarnFile"):
+                        ClarnFile = "1"
+                    if (js == "SafetyStatus"):
+                        SafetyStatus = "1"
+                db_session.add(ReadyWork(
+                    ClearFieldCard = data['ClearFieldCard'],
+                    ClearLastMateriel = data['ClearLastMateriel'],
+                    ClearLastMaterielStatus = data['ClearLastMaterielStatus'],
+                    ClaernEquipLocal = data['ClaernEquipLocal'],
+                    ClarnFile = data['ClarnFile'],
+                    SafetyStatus = data['SafetyStatus']
+                ))
                 db_session.commit()
                 return 'OK'
         except Exception as e:
+            db_session.commit()
             print(e)
             logger.error(e)
-            insertSyslog("error", "计划向导生成的计划查询报错Error：" + str(e), current_user.Name)
+            insertSyslog("error", "中控确认保存信息报错Error：" + str(e), current_user.Name)
 
-# 中控确认
+# 中控确认清场
 @app.route('/ZYPlanGuid/controlConfirm', methods=['POST', 'GET'])
 def controlConfirm():
     if request.method == 'POST':
@@ -4464,6 +4500,11 @@ def controlConfirm():
             print(e)
             logger.error(e)
             insertSyslog("error", "计划向导生成的计划查询报错Error：" + str(e), current_user.Name)
+
+# QA复核
+@app.route('/QAPlanConfirm')
+def QAPlanConfirm():
+    return render_template('QAPlanConfirm.html')
 
 # QA复核查询
 @app.route('/ZYPlanGuid/QAConfirmSearch', methods=['POST', 'GET'])
@@ -4523,10 +4564,10 @@ def QAConfirm():
                         oclassW.DescF =  "QA复核"
                         oclassZYPlans = db_session.query(ZYPlan).filter(ZYPlan.BatchID == oclass.BatchID).all()
                         for ZYPlan in oclassZYPlans:
-                            ZYPlan.ZYPlanStatus = Model.Global.ZYPlanStatus.COMFIRM.value
+                            ZYPlan.ZYPlanStatus = Model.Global.ZYPlanStatus.RUN.value
                         oclassZYTasks = db_session.query(ZYTask).filter(ZYTask.BatchID == oclass.BatchID).all()
                         for ZYTask in oclassZYTasks:
-                            ZYTask.TaskStatus = Model.Global.TASKSTATUS.COMFIRM.value
+                            ZYTask.TaskStatus = Model.Global.TASKSTATUS.RUN.value
                         db_session.commit()
                         userName = current_user.Name
                         Desc = "QA复核"
@@ -4546,6 +4587,50 @@ def QAConfirm():
             print(e)
             logger.error(e)
             insertSyslog("error", "QA复核报错Error：" + str(e), current_user.Name)
+
+# QA放行
+@app.route('/ZYPlanGuid/QAPass', methods=['POST', 'GET'])
+def QAPass():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
+                for key in jsonnumber:
+                    id = int(key)
+                    try:
+                        oclass = db_session.query(PlanManager).filter(PlanManager.ID == id).first()
+                        oclass.PlanStatus = Model.Global.PlanStatus.QAChecked.value
+                        oclassW = db_session.query(WorkFlowStatus).filter(WorkFlowStatus.PlanManageID == id).first()
+                        oclassW.AuditStatus = Model.Global.AuditStatus.ReviewPass.value
+                        oclassW.DescF =  "QA放行"
+                        oclassZYPlans = db_session.query(ZYPlan).filter(ZYPlan.BatchID == oclass.BatchID).all()
+                        for ZYPlan in oclassZYPlans:
+                            ZYPlan.ZYPlanStatus = Model.Global.ZYPlanStatus.FINISH.value
+                        oclassZYTasks = db_session.query(ZYTask).filter(ZYTask.BatchID == oclass.BatchID).all()
+                        for ZYTask in oclassZYTasks:
+                            ZYTask.TaskStatus = Model.Global.TASKSTATUS.FINISH.value
+                        db_session.commit()
+                        userName = current_user.Name
+                        Desc = "QA放行"
+                        Type = Model.Global.AuditStatus.BatchEndPass.value
+                        EventTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                        PlanCreate = ctrlPlan('PlanCreate')
+                        wReturn = PlanCreate.createWorkFlowEvent(id, None, None, userName, Desc, Type, EventTime)
+                        if(wReturn == False):
+                            return 'NO'
+                        return 'OK'
+                    except Exception as e:
+                        db_session.rollback()
+                        print(e)
+                        logger.error(e)
+                        insertSyslog("error", "QA复核报错Error：" + str(e), current_user.Name)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "QA复核报错Error：" + str(e), current_user.Name)
+
 if __name__ == '__main__':
     app.run(debug=True)
 
