@@ -32,7 +32,42 @@
                     })
                 },
                 dead:function(){
-                    $("#TemplateClassDialog").dialog('open').dialog('setTitle', '确认生产前的准备工作');
+                    var rows = $("#tab").datagrid('getSelections');
+                    if (rows.length > 0) {
+                        $("#TemplateClassDialog").dialog('open').dialog('setTitle', '确认生产前的准备工作');
+                        console.log(rows[0].ID)
+                        $.ajax({
+                            url: '/ZYPlanGuid/ConfirmSearchInfo',
+                            method: 'GET',
+                            data: {
+                                ZYPlanID: rows[0].ID
+                            },
+                            success: function (data) {
+                                console.log(data)
+                                $('#dg').datagrid({
+                                    data: [
+                                        {f:'检查工作区域是否有《清场合格证》',c:'ClearFieldCard'},
+                                        {f:'是否清除工作区域、设备上的上一批次的物料或产品',c:'ClearLastMateriel'},
+                                        {f:'检查是否已经清除上一批次物料的状态标志',c:'ClearLastMaterielStatus'},
+                                        {f:'检查生产设备、生产现场是否完好清洁',c:'ClaernEquipLocal'},
+                                        {f:'是否清除生产现场与本批产品无关的文件',c:'ClarnFile'},
+                                        {f:'检查设备、电器件、介质是否正常处于安全状态',c:'SafetyStatus'}
+                                    ],
+                                    onLoadSuccess:function(){
+
+                                        $(this).datagrid('checkRow', 0)
+                                        $(this).datagrid('checkRow', 1)
+                                        $(this).datagrid('checkRow', 2)
+                                    }
+                                });
+                            },
+                            error: function () {
+                                alert("请求失败，请稍后重试！")
+                            }
+                        });
+                    } else {
+                        $.messager.alert('提示', '请选择计划！', 'info');
+                    }
                 },
                 save:function(){
                     var deadRows = $("#dg").datagrid('getSelections');
@@ -127,22 +162,6 @@
                     $("#tab").datagrid('load')
                 }
             }
-
-            $('#dg').datagrid({
-                data: [
-                    {f:'检查工作区域是否有《清场合格证》',c:'ClearFieldCard'},
-                    {f:'是否清除工作区域、设备上的上一批次的物料或产品',c:'ClearLastMateriel'},
-                    {f:'检查是否已经清除上一批次物料的状态标志',c:'ClearLastMaterielStatus'},
-                    {f:'检查生产设备、生产现场是否完好清洁',c:'ClaernEquipLocal'},
-                    {f:'是否清除生产现场与本批产品无关的文件',c:'ClarnFile'},
-                    {f:'检查设备、电器件、介质是否正常处于安全状态',c:'SafetyStatus'}
-                ],
-                onLoadSuccess:function(){
-                    $(this).datagrid('checkRow', 0)
-                    $(this).datagrid('checkRow', 1)
-                    $(this).datagrid('checkRow', 2)
-                }
-            });
 
              $("#tab").datagrid({
                 //datagrid表格右键操作
