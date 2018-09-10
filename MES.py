@@ -4420,9 +4420,6 @@ def ConfirmSearchInfo():
             if len(json_str) > 10:
                 ZYPlanID = int(data["ZYPlanID"])
                 oclass = db_session.query(ReadyWork).filter(ReadyWork.ZYPlanID == ZYPlanID).all()
-                for oc in oclass:
-                    oc.IsCheck = "0"
-                db_session.commit()
                 return json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             db_session.rollback()
@@ -4439,6 +4436,10 @@ def controlConfirmSaveInfo():
             jsonstr = json.dumps(data.to_dict())
             if len(jsonstr) > 10:
                 jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
+                ZYPlanID = int(data["ZYPlanID"])
+                oclass = db_session.query(ReadyWork).filter(ReadyWork.ZYPlanID == ZYPlanID).all()
+                for oc in oclass:
+                    oc.IsCheck = "0"
                 for key in jsonnumber:
                     ID = int(key)
                     oclass = db_session.query(ReadyWork).filter(ReadyWork.ID == ID).first()
