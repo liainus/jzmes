@@ -4419,10 +4419,10 @@ def ConfirmSearchInfo():
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 10:
                 ZYPlanID = int(data["ZYPlanID"])
-                oclass = db_session.query(ReadyWork).filter(ZYPlanID == ZYPlanID).first()
+                oclass = db_session.query(ReadyWork).filter(ReadyWork.ZYPlanID == ZYPlanID).all()
                 return json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
-            db_session.commit()
+            db_session.rollback()
             print(e)
             logger.error(e)
             insertSyslog("error", "中控确认保存信息报错Error：" + str(e), current_user.Name)
@@ -4433,49 +4433,21 @@ def controlConfirmSaveInfo():
     if request.method == 'POST':
         data = request.values
         try:
-            json_str = json.dumps(data.to_dict())
-            if len(json_str) > 10:
-                ClearFieldCard = "0"
-                ClearLastMateriel = "0"
-                ClearLastMaterielStatus = "0"
-                ClaernEquipLocal = "0"
-                ClarnFile = "0"
-                SafetyStatus = "0"
-                ZYPlanID = data['ZYPlanID']
-                for js in json_str:
-                    if(js=="ClearFieldCard"):
-                        ClearFieldCard = "1"
-                    if (js == "ClearLastMateriel"):
-                        ClearLastMateriel = "1"
-                    if (js == "ClearLastMaterielStatus"):
-                        ClearLastMaterielStatus = "1"
-                    if (js == "ClaernEquipLocal"):
-                        ClaernEquipLocal = "1"
-                    if (js == "ClarnFile"):
-                        ClarnFile = "1"
-                    if (js == "SafetyStatus"):
-                        SafetyStatus = "1"
-                oclass = db_session.query(ReadyWork).filter(ZYPlanID==ZYPlanID).first()
-                if(oclass==None):
-                    db_session.add(ReadyWork(
-                        ZYPlanID = ZYPlanID,
-                        ClearFieldCard = ClearFieldCard,
-                        ClearLastMateriel = ClearLastMateriel,
-                        ClearLastMaterielStatus = ClearLastMaterielStatus,
-                        ClaernEquipLocal = ClaernEquipLocal,
-                        ClarnFile = ClarnFile,
-                        SafetyStatus = SafetyStatus))
-                else:
-                    oclass.ClearFieldCard = ClearFieldCard
-                    oclass.ClearLastMateriel = ClearLastMateriel
-                    oclass.ClearLastMaterielStatus = ClearLastMaterielStatus
-                    oclass.ClaernEquipLocal = ClaernEquipLocal
-                    oclass.ClarnFile = ClarnFile
-                    oclass.SafetyStatus = SafetyStatus
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
+                ZYPlanID = int(data["ZYPlanID"])
+                oclass = db_session.query(ReadyWork).filter(ReadyWork.ZYPlanID == ZYPlanID).all()
+                for oc in oclass:
+                    oc.IsCheck = "0"
+                for key in jsonnumber:
+                    ID = int(key)
+                    oclass = db_session.query(ReadyWork).filter(ReadyWork.ID == ID).first()
+                    oclass.IsCheck = "1"
                 db_session.commit()
                 return 'OK'
         except Exception as e:
-            db_session.commit()
+            db_session.rollback()
             print(e)
             logger.error(e)
             insertSyslog("error", "中控确认保存信息报错Error：" + str(e), current_user.Name)

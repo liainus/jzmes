@@ -3612,23 +3612,32 @@ class ReadyWork(Base):
 	# ZYPlan表ID:
 	ZYPlanID = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
 
-	#检查工作区域是否有《清场合格证》
-	ClearFieldCard = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+	# 准备项名称
+	ReadyName = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
-	#是否清除工作区域、设备上的上一批次的物料或产品
-	ClearLastMateriel = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+	# 是否检查合格
+	IsCheck = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
-	#检查是否已经清除上一批次物料的状态标志
-	ClearLastMaterielStatus = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+	#描述
+	Describe = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
-	#检查生产设备、生产现场是否完好清洁
-	ClaernEquipLocal = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
-
-	#是否清除生产现场与本批产品无关的文件
-	ClarnFile = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
-
-	#检查设备、电器件、介质是否正常处于安全状态
-	SafetyStatus = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+	# #检查工作区域是否有《清场合格证》
+	# ClearFieldCard = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    #
+	# #是否清除工作区域、设备上的上一批次的物料或产品
+	# ClearLastMateriel = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    #
+	# #检查是否已经清除上一批次物料的状态标志
+	# ClearLastMaterielStatus = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    #
+	# #检查生产设备、生产现场是否完好清洁
+	# ClaernEquipLocal = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    #
+	# #是否清除生产现场与本批产品无关的文件
+	# ClarnFile = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    #
+	# #检查设备、电器件、介质是否正常处于安全状态
+	# SafetyStatus = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
 
 
