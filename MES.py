@@ -5,7 +5,7 @@ import re
 import string
 import time
 from collections import Counter
-from flask import Flask, jsonify, redirect, url_for, flash
+from flask import Flask, jsonify, redirect, url_for
 from flask import render_template, request
 from flask import session
 from sqlalchemy import create_engine, Column, ForeignKey, Table, Integer, String, and_, or_, desc
@@ -4612,6 +4612,13 @@ def QAPass():
             print(e)
             logger.error(e)
             insertSyslog("error", "QA复核报错Error：" + str(e), current_user.Name)
+
+# NodeID注释配置
+@app.route('/NodeIdNote/config', methods=['POST', 'GET'])
+def nodeIdNote():
+    return render_template('nodeIDNote.html')
+
+# Excel
 
 if __name__ == '__main__':
     app.run(debug=True)
