@@ -3639,7 +3639,18 @@ class ReadyWork(Base):
 	# #检查设备、电器件、介质是否正常处于安全状态
 	# SafetyStatus = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
+# nodeId_note
+class NodeIdNote(Base):
+	__tablename__ = 'NodeIdNote'
 
+	#ID
+	ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+	# NodeID
+	NodeID = Column(Unicode(32), nullable=True)
+
+	# Note
+	Note = Column(Unicode(32), nullable=True)
 
 
 # 生成表单的执行语句

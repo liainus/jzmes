@@ -1,10 +1,12 @@
 import datetime
 import decimal
 import json
+import os
 import re
 import string
 import time
 from collections import Counter
+import xlrd
 from flask import Flask, jsonify, redirect, url_for
 from flask import render_template, request
 from flask import session
@@ -19,7 +21,7 @@ from Model.core import Enterprise, Area, Factory, ProductLine, ProcessUnit, Equi
     ProductUnit, ProductRule, ZYTask, ZYPlanMaterial, ZYPlan, Unit, PlanManager, SchedulePlan, ProductControlTask, \
     OpcServer, Pequipment, WorkFlowStatus, WorkFlowEvent, \
     OpcTag, CollectParamsTemplate, CollectParams, Collectionstrategy, CollectTask, \
-    CollectTaskCollection, ReadyWork
+    CollectTaskCollection, ReadyWork, NodeIdNote
 from Model.system import Role, Organization, User, Menu, Role_Menu
 from tools.MESLogger import MESLogger
 from Model.core import SysLog
@@ -4618,7 +4620,154 @@ def QAPass():
 def nodeIdNote():
     return render_template('nodeIDNote.html')
 
-# Excel
+def get_data(filename, method='r'):
+    '''
+    改变数据结构 -- 方便前端显示
+    :param filename:  文件名
+    :param method:  按照 列或者 行 返回数据
+    '''
+    data = xlrd.open_workbook(filename)
+    table= data.sheets()[0]
+    nrows = table.nrows  # 行数
+    ncols = table.ncols  # 列数
+    if method == 'r':
+        row_list = [table.row_values(i) for i in range(0,nrows)]   # 所有行的数据
+        return row_list
+    elif method == 'c':
+        col_list = [table.col_values(i) for i in range(0,ncols)]    # 所有列的数据
+        return col_list
+
+# Excel_show:
+@app.route('/NodeIdNote/store', methods=['GET','POST'])
+def show():
+    if request.method == 'POST':
+        file = request.files.get('note')
+        if file is None or file == '':
+            return
+        filename = file.filename
+        data = get_data(filename)
+
+
+@app.route('/NodeIdNote/Find')
+def NodeIdNoteFind():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            print(json_str)
+            if len(json_str) > 10:
+                pages = int(data['page'])
+                rowsnumber = int(data['rows'])
+                inipage = (pages - 1) * rowsnumber + 0
+                endpage = (pages - 1) * rowsnumber + rowsnumber
+                total = db_session.query(NodeIdNote.ID).count()
+                if total > 0:
+                    qDatas = db_session.query(NodeIdNote).all()[inipage:endpage]
+                    # ORM模型转换json格式
+                    jsonNodeIdNote = json.dumps(qDatas, cls=Model.BSFramwork.AlchemyEncoder,
+                                                 ensure_ascii=False)
+                    jsonNodeIdNote = '{"total"' + ":" + str(
+                        total) + ',"rows"' + ":\n" + jsonNodeIdNote + "}"
+                    return jsonNodeIdNote
+                else:
+                    return ""
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "NodeIdNote数据加载失败报错Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+
+@app.route('/NodeIdNote/Create', methods=['POST', 'GET'])
+def NodeIdNoteCreate():
+    if request.method == 'POST':
+        try:
+            data = request.values
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                db_session.add(
+                    NodeIdNote(
+                        NodeID=data['NodeID'],
+                        Note=data['Note']
+                    ))
+                db_session.commit()
+                return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
+                                  ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "NodeIdNote数据创建失败报错Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+
+@app.route('/NodeIdNote/Delete', methods=['POST', 'GET'])
+def NodeIdNoteDelete():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
+                for key in jsonnumber:
+                    NodeIdNoteID = int(key)
+                    try:
+                        oclass = db_session.query(NodeIdNote).filter_by(ID=NodeIdNoteID).first()
+                        db_session.delete(oclass)
+                        db_session.commit()
+                    except Exception as ee:
+                        print(ee)
+                        logger.error(ee)
+                        return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
+                                          ensure_ascii=False)
+                return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
+                                  ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "NodeIdNote数据删除失败报错Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+
+@app.route('/NodeIdNote/Update', methods=['POST', 'GET'])
+def NodeIdNoteUpdate():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                NodeIdNoteID = int(data['ID'])
+                oclass = db_session.query(NodeIdNote).filter_by(ID=NodeIdNoteID).first()
+                oclass.NodeID = data['NodeID']
+                oclass.Note = data['Note']
+                db_session.add(oclass)
+                db_session.commit()
+                return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
+                                  ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "NodeIdNote数据更新失败报错Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+@app.route('/NodeIdNote/Search', methods=['POST', 'GET'])
+def NodeIdNoteSearch():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 2:
+                NodeID = "%" + data['NodeID'] + "%"
+                count = db_session.query(NodeIdNote).filter(
+                    NodeIdNote.NodeID.like(NodeID)).all()
+                total = Counter(count)
+                jsonNotes = json.dumps(count, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+                jsonNotes = '{"total"' + ":" + str(total.__len__()) + ',"rows"' + ":\n" + jsonNotes + "}"
+                return jsonNotes
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "NodeIdNote数据查询失败报错Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 if __name__ == '__main__':
     app.run(debug=True)
