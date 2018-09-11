@@ -2772,11 +2772,11 @@ def createZYPlanZYtask():
                         oclassW.AuditStatus = Model.Global.AuditStatus.Realse.value
                         oclassW.DescF = "下发计划生成ZY计划、任务"
                         oclassZYPlans = db_session.query(ZYPlan).filter(ZYPlan.BatchID == oclassplan.BatchID).all()
-                        for ZYPlan in oclassZYPlans:
-                            ZYPlan.ZYPlanStatus = Model.Global.ZYPlanStatus.Realse.value
+                        for zyp in oclassZYPlans:
+                            zyp.ZYPlanStatus = Model.Global.ZYPlanStatus.Realse.value
                         oclassZYTasks = db_session.query(ZYTask).filter(ZYTask.BatchID == oclassplan.BatchID).all()
-                        for ZYTask in oclassZYTasks:
-                            ZYTask.TaskStatus = Model.Global.TASKSTATUS.REDAY.value
+                        for task in oclassZYTasks:
+                            task.TaskStatus = Model.Global.TASKSTATUS.REDAY.value
                         db_session.commit()
                         userName = current_user.Name
                         Desc = "下发计划生成ZY计划、任务"
@@ -4393,14 +4393,14 @@ def controlConfirmSearch():
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
                 ABatchID = data['BatchID']  # 批次号
                 if (ABatchID == None or ABatchID == ""):
-                    total = db_session.query(ZYPlan.ID).filter(ZYPlan.ZYPlanStatus == Model.Global.ZYPlanStatus.NEW.value).count()
-                    ZYPlans = db_session.query(ZYPlan).filter(ZYPlan.ZYPlanStatus == Model.Global.ZYPlanStatus.NEW.value).all()[
+                    total = db_session.query(ZYPlan.ID).filter(ZYPlan.ZYPlanStatus == Model.Global.ZYPlanStatus.Realse.value).count()
+                    ZYPlans = db_session.query(ZYPlan).filter(ZYPlan.ZYPlanStatus == Model.Global.ZYPlanStatus.Realse.value).all()[
                                    inipage:endpage]
                 else:
                     total = db_session.query(ZYPlan).filter(ZYPlan.BatchID == ABatchID,
-                                                            ZYPlan.ZYPlanStatus == Model.Global.ZYPlanStatus.NEW.value).count()
+                                                            ZYPlan.ZYPlanStatus == Model.Global.ZYPlanStatus.Realse.value).count()
                     ZYPlans = db_session.query(ZYPlan).filter(ZYPlan.BatchID == ABatchID,
-                                                                   ZYPlan.ZYPlanStatus == Model.Global.ZYPlanStatus.NEW.value).all()[
+                                                                   ZYPlan.ZYPlanStatus == Model.Global.ZYPlanStatus.Realse.value).all()[
                                    inipage:endpage]
                 ZYPlans = json.dumps(ZYPlans, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonZYPlans = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + ZYPlans + "}"
