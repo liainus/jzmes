@@ -40,16 +40,19 @@
                         $('#dg').datagrid({
                             url:'/ZYPlanGuid/ConfirmSearchInfo',
                             method:'get',
+                            idField:'ID',
                             queryParams: {
                                 ZYPlanID: ZYPlanID
                             },
-                            onLoadSuccess:function(data){
-                                $.each(data.rows,function(index,value){
-                                    console.log(value)
-                                    if(data.rows[index].IsCheck == 1){
-                                        $(this).datagrid('checkRow',index)
+                            onLoadSuccess:function(data) {
+                                console.log(data)
+                                for (var i = 0; i < data.rows.length; i++) {
+                                    if (data.rows[i].IsCheck == 1) {
+                                        console.log(i)
+                                        var index = $("#dataTable1").datagrid("getRowIndex",data.rows[i].ID)
+                                        $("#dg").datagrid('checkRow', i)
                                     }
-                                })
+                                }
                             }
                         });
                     } else {
