@@ -4464,6 +4464,12 @@ def controlConfirm():
             jsonstr = json.dumps(data.to_dict())
             jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
             ID = int(jsonnumber[0])
+            roclass = db_session.query(ReadyWork).filter(ReadyWork.ZYPlanID == ID).all()
+            for ro in roclass:
+                if(ro.IsCheck=="0"):
+                    return "还有准备工作未确认，请确认再提交！"
+                else:
+                    pass
             oclass = db_session.query(PlanManager).filter(ID == ID).first()
             oclass.PlanStatus = Model.Global.PlanStatus.Control.value
             oclassW = db_session.query(WorkFlowStatus).filter(WorkFlowStatus.PlanManageID == ID).first()
@@ -4478,7 +4484,7 @@ def controlConfirm():
             PlanCreate = ctrlPlan('PlanCreate')
             wReturn = PlanCreate.createWorkFlowEvent(ID, None, None, userName, Desc, Type, EventTime)
             if(wReturn == False):
-                return 'NO'
+                return '添加工作流表报错'
             return 'OK'
         except Exception as e:
             db_session.rollback()
