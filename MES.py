@@ -4645,7 +4645,7 @@ def get_data(filename, method='r'):
         return col_list
 
 # Excel_show:
-@app.route('/NodeIdNote/store', methods=['GET','POST'])
+@app.route('/NodeIdNote/store', methods=['GET', 'POST'])
 def show():
     if request.method == 'POST':
         file = request.form.get('note')
