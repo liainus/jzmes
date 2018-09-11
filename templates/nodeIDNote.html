@@ -46,7 +46,7 @@
                 </tr>
             </thead>
         </table>
-        <div id="TemplateClassDialog" class="easyui-dialog" style="width:400px;height:240px;padding:10px;"
+        <div id="TemplateClassDialog" class="easyui-dialog" style="width:400px;height:260px;padding:10px;"
              data-options="closed:'true',buttons:'#userClassDialogButtons',modal:true">
             <form id="TemplateClassForm" method="post" class="dialog-form">
                 <table class="kv-table">
@@ -76,6 +76,23 @@
                     <a href="#" class="easyui-linkbutton" onclick="$('#TemplateClassDialog').dialog('close')">关闭</a>
                 </div>
             </form>
+        </div>
+        <div id="leadClassDialog" class="easyui-dialog" style="width:400px;height:200px;padding:10px;"
+             data-options="closed:'true',buttons:'#loeadClassDialogButtons',modal:true">
+            <table class="kv-table">
+                <tbody>
+                    <tr>
+                        <td class="kv-label">Note</td>
+                        <td class="kv-content">
+                            <input class="easyui-filebox" id="file" name="file" data-options="prompt:'请选择文件',buttonText:'&nbsp;选&nbsp;择&nbsp;'" style="width:100%">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div id="loeadClassDialogButtons" >
+                <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" onclick="CollectToolbar.leading()">确认</a>
+                <a href="#" class="easyui-linkbutton" onclick="$('#leadClassDialog').dialog('close')">关闭</a>
+            </div>
         </div>
     </div>
     <script>
@@ -242,38 +259,40 @@
                     });
                 },
                 leadIn:function(){
-                    $.messager.confirm('确定操作', '您确认要导入注释吗？', function (flag) {
-                        if (flag) {
-                            $.ajax({
-                                url: '/NodeIdNote/store',
-                                method: 'POST',
-                                traditional: true,
-                                cache: false,
-                                error: function(data){
-                                   alert("异常，请刷新后重试...");
-                                },
-                                success: function (data,response,status) {
-                                    $.messager.progress('close');
-                                    var obj1 = eval(data);
-                                    if(obj1[0].status == "OK"){
-                                        $.messager.show({
-                                            title: '提示',
-                                            msg: '导入成功',
-                                            timeout:1000,
-                                            style: {
-                                                right: '',
-                                                top: document.body.scrollTop + document.documentElement.scrollTop,
-                                                bottom: ''
-                                            }
-                                        });
-                                        $("#tab").datagrid('load');
-                                    } else {
-                                        $.messager.alert(obj1[0].status + '失败！', '未知错误导致失败，请重试！', 'warning');
+                    $("#leadClassDialog").dialog('open').dialog('setTitle', '导入注释');
+                },
+                leading:function(){
+                    $.ajax({
+                        url: '/NodeIdNote/store',
+                        method: 'POST',
+                        data:{
+                            note:$("#file").filebox('getValue')
+                        },
+                        traditional: true,
+                        cache: false,
+                        error: function(data){
+                           alert("异常，请刷新后重试...");
+                        },
+                        success: function (data,response,status) {
+                            $.messager.progress('close');
+                            var obj1 = eval(data);
+                            if(obj1[0].status == "OK"){
+                                $.messager.show({
+                                    title: '提示',
+                                    msg: '导入成功',
+                                    timeout:1000,
+                                    style: {
+                                        right: '',
+                                        top: document.body.scrollTop + document.documentElement.scrollTop,
+                                        bottom: ''
                                     }
-                                }
-                            });
+                                });
+                                $("#tab").datagrid('load');
+                            } else {
+                                $.messager.alert(obj1[0].status + '失败！', '未知错误导致失败，请重试！', 'warning');
+                            }
                         }
-                    })
+                    });
                 },
                 refresh:function(){
                     $("#tab").datagrid('load')
