@@ -4642,7 +4642,7 @@ def get_data(filename, method='r'):
 @app.route('/NodeIdNote/store', methods=['GET','POST'])
 def show():
     if request.method == 'POST':
-        file = request.files.get('note')
+        file = request.form.get('note')
         if file is None or file == '':
             return
         filename = file.filename
