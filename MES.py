@@ -5,7 +5,7 @@ import re
 import string
 import time
 from collections import Counter
-from flask import Flask, jsonify, redirect, url_for
+from flask import Flask, jsonify, redirect, url_for, flash
 from flask import render_template, request
 from flask import session
 from sqlalchemy import create_engine, Column, ForeignKey, Table, Integer, String, and_, or_, desc
@@ -4437,11 +4437,11 @@ def controlConfirmSaveInfo():
             if len(jsonstr) > 10:
                 jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
                 ZYPlanID = int(data["ZYPlanID"])
-                oclass = db_session.query(ReadyWork).filter(ReadyWork.ZYPlanID == ZYPlanID).all()
-                for oc in oclass:
+                oclassR = db_session.query(ReadyWork).filter(ReadyWork.ZYPlanID == ZYPlanID).all()
+                for oc in oclassR:
                     oc.IsCheck = "0"
-                for key in jsonnumber:
-                    ID = int(key)
+                for i in range(len(jsonnumber)-1):
+                    ID = int(jsonnumber[i])
                     oclass = db_session.query(ReadyWork).filter(ReadyWork.ID == ID).first()
                     oclass.IsCheck = "1"
                 db_session.commit()
