@@ -176,7 +176,7 @@ $(function () {
             $('input[name="iPRName"]').val("");
             $('input[name="iVersion"]').val("");
             $('input[name="iDesc"]').val("");
-            $('input[name="iIsUsed"]').val("");
+            $('#iIsUsed option[value="0"]').prop("selected", 'selected');
 
             $("#iPublish_date").datebox("setValue", myformatter(new Date()));
             $("#iAppy_date").datebox("setValue", myformatter(new Date()));
@@ -224,7 +224,7 @@ $(function () {
                     $('input[name="iDesc"]').val(row.Desc);
                     $('input[name="iPublish_date"]').datebox('setValue', row.Publish_date);
                     $('input[name="iAppy_date"]').datebox('setValue', row.Appy_date);
-                    $('input[name="iIsUsed"]').val(row.IsUsed);
+                    $('#iIsUsed option:contains('+row.IsUsed+')').prop("selected", 'selected');
 
                     //var thisSwitchbuttonObj = $(".switchstatus").find("[switchbuttonName='IsEnable']");//获取switchbutton对象  
                     if (row.IsEnable == '禁用') {
