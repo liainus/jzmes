@@ -234,13 +234,19 @@
                         $.messager.alert('警告操作！', '编辑记录只能选定一条数据！', 'warning');
                     } else if (rows.length == 1) {
                         var row = $("#tab").datagrid('getSelected');
+                        var Enableds = "否"
+                        if(row.Enabled == true){
+                            Enableds = "是"
+                        }else if(row.Enabled == false){
+                            Enableds = "否"
+                        }
                         if(row){
                             $("#TemplateClassDialog").dialog('open').dialog('setTitle', '修改采集策略');
                             $('input[name="ID"]').val(row.ID);
                             $('input[name="CollectTaskName"]').val(row.CollectTaskName);
                             $('input[name="TableName"]').val(row.TableName);
                             $('input[name="Desc"]').val(row.Desc);
-                            $('#Enabled option:contains('+row.Enabled+')').prop("selected", 'selected');
+                            $('#Enabled option:contains('+Enableds+')').prop("selected", 'selected');
                         }
                     }else if(rows.length == 0){
                         $.messager.alert('警告操作！', '请选定一条数据！', 'warning');
@@ -582,9 +588,9 @@
             })
         })
         function formatterIsUsed(value, row, index){
-            if (value == 'false'){
+            if (value == false){
                 return '否'
-            }else if(value == 'true'){
+            }else if(value == true){
                 return '是'
             }
         }
