@@ -44,10 +44,11 @@
                     <th data-options="field:'CollectTaskName',width:200,align:'center'">采集任务名称</th>
                     <th data-options="field:'TableName',width:200,align:'center'">TableName</th>
                     <th data-options="field:'Desc',width:200,align:'center'">描述</th>
+                    <th data-options="field:'Enabled',width:100,align:'center'" formatter="formatterIsUsed">是否启用</th>
                 </tr>
             </thead>
         </table>
-        <div id="TemplateClassDialog" class="easyui-dialog" style="width:400px;height:280px;padding:10px;"
+        <div id="TemplateClassDialog" class="easyui-dialog" style="width:400px;height:320px;padding:10px;"
              data-options="closed:'true',buttons:'#userClassDialogButtons',modal:true">
             <form id="TemplateClassForm" method="post" class="dialog-form">
                 <table class="kv-table">
@@ -76,6 +77,15 @@
                                 <input id="Desc" name="Desc" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
                             </td>
                         </tr>
+                        <tr>
+                            <td class="kv-label">是否启用</td>
+                            <td class="kv-content">
+                                <select name="Enabled" id="Enabled" type="text" style="width:157px;" autocomplete="off">
+                                    <option value="0" checked>否</option>
+                                    <option value="1">是</option>
+                                </select>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
                 <div id="userClassDialogButtons" >
@@ -84,7 +94,7 @@
                 </div>
             </form>
         </div>
-
+        <!-------表格分界线------->
         <div id="configToolbar" style="padding:0 10px;">
             采集任务名称:
             <input type="text" class="textbox-text validatebox-text textbox-prompt" name="Asearch" style="height:28px;" autocomplete="off"
@@ -216,6 +226,7 @@
                     $('input[name="CollectTaskName"]').val("");
                     $('input[name="TableName"]').val("");
                     $('input[name="Desc"]').val("");
+                    $('#Enabled option[value="0"]').prop("selected", 'selected');
                 },
                 update:function(){
                     var rows = $("#tab").datagrid('getSelections');
@@ -229,6 +240,7 @@
                             $('input[name="CollectTaskName"]').val(row.CollectTaskName);
                             $('input[name="TableName"]').val(row.TableName);
                             $('input[name="Desc"]').val(row.Desc);
+                            $('#Enabled option:contains('+row.Enabled+')').prop("selected", 'selected');
                         }
                     }else if(rows.length == 0){
                         $.messager.alert('警告操作！', '请选定一条数据！', 'warning');
@@ -311,7 +323,8 @@
                             ID:$('#ID').val(),
                             CollectTaskName:$('#CollectTaskName').val(),
                             TableName:$('#TableName').val(),
-                            Desc:$('#Desc').val()
+                            Desc:$('#Desc').val(),
+                            Enabled:$("#iIsUsed").find("option:selected").val()
                         },
                         dataType: 'json',
                         cache: false,
@@ -568,6 +581,13 @@
                 });
             })
         })
+        function formatterIsUsed(value, row, index){
+            if (value == 'False'){
+                return '否'
+            }else if(value == 'True'){
+                return '是'
+            }
+        }
     </script>
 </body>
 </html>
