@@ -4622,13 +4622,13 @@ def QAPass():
             logger.error(e)
             insertSyslog("error", "QA复核报错Error：" + str(e), current_user.Name)
 
-def get_data(file, method='r'):
+def getExcel(file, method='r'):
     '''
     改变数据结构 -- 方便前端显示
     :param filename:  文件名
     :param method:  按照 列或者 行 返回数据
     '''
-    data = xlrd.open_workbook("file.name")
+    data = xlrd.open_workbook(file)
     table = data.sheets()[0]
     nrows = table.nrows  # 行数
     ncols = table.ncols  # 列数
@@ -4645,26 +4645,30 @@ def nodeIdNote():
     if request.method == 'GET':
         return render_template('nodeIDNote.html')
     if request.method == 'POST':
-        file = request.form.get('note')
-        print(file)
-        if file is None or file == '':
-            return
-        filename = file.filename
-        file_dir = 'E:\develop\develop_test_file'
-        file.save(os.path.join(file_dir, file))
-        data = get_data(file)
-
-
-# Excel_show:
-@app.route('/NodeIdNote/store', methods=['GET', 'POST'])
-def show():
-    if request.method == 'POST':
-        file = request.form.get('note')
-        if file is None or file == '':
-            return
-        filename = file.filename
-        data = get_data(filename)
-
+        try:
+            file = request.files.get('note')
+            if file is None or file == '':
+                return
+            file.save(os.path.join(os.getcwd(), file.filename))
+            new_file = '%s%s%s'%(os.getcwd(), "\\", file.filename)
+            data = getExcel(new_file) # [['i=1100', '温度'], ['i=1112', '气压'], ['i=1123', '湿度']]
+            for index in data:
+                oclass = db_session.query(NodeIdNote).filter_by(NodeID=index[0]).first()
+                if oclass is not None:
+                    db_session.delete(oclass)
+                    db_session.commit()
+                if len(index) == 2:
+                    db_session.add(NodeIdNote(
+                            NodeID=index[0],
+                            Note=index[1]))
+                    db_session.commit()
+            print(url_for('NodeIdNoteFind'))
+            return redirect('/NodeIdNote/config')
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "Excel数据读取失败报错Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 @app.route('/NodeIdNote/Find')
 def NodeIdNoteFind():
