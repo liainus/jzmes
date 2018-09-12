@@ -258,3 +258,17 @@ if __name__ == '__main__':
         print(e)
     print (intTaskNo)
     print (qry)
+
+
+def isEqualObj(objA,objB):
+    if type(objA) == type(objB):
+        for attrA in objA.__dict__:
+            if attrA == "ID":
+                continue
+            try:
+                if getattr(objA,attrA) != getattr(objB,attrA):
+                    return False
+            except Exception as e:
+                return False
+        return True
+    return False

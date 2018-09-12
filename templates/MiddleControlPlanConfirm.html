@@ -45,11 +45,8 @@
                                 ZYPlanID: ZYPlanID
                             },
                             onLoadSuccess:function(data) {
-                                console.log(data)
                                 for (var i = 0; i < data.rows.length; i++) {
                                     if (data.rows[i].IsCheck == 1) {
-                                        console.log(i)
-                                        var index = $("#dataTable1").datagrid("getRowIndex",data.rows[i].ID)
                                         $("#dg").datagrid('checkRow', i)
                                     }
                                 }
@@ -138,6 +135,8 @@
                                             $("#tab").datagrid('loaded');
                                             $("#tab").datagrid('load');
                                             $("#tab").datagrid('unselectAll');
+                                        }else{
+                                            $.messager.alert('提示', data, 'info');
                                         }
                                     },
                                     error: function () {

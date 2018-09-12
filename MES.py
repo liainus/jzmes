@@ -3622,13 +3622,13 @@ def getOpcTagList(id, ParentID=None):
             if obj.ParentID == ParentID:
                 sz.append({"id": obj.ID,
                            "NodeId": obj.NodeID,
-                           "Desc": obj.Desc,
+                           "Desc": obj.Note,
                            "children": getOpcTagList(obj.ID, obj.NodeID)})
         return sz
     except Exception as e:
         print(e)
         logger.error(e)
-        insertSyslog("error", "加载父级菜单列表报错Error：" + str(e), current_user.Name)
+        insertSyslog("error", "getOpcTagList加载父级菜单列表报错Error：" + str(e), current_user.Name)
         return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 @app.route('/CollectParams/OpcTagLoad', methods=['POST', 'GET'])
@@ -4681,38 +4681,58 @@ def QAPass():
             logger.error(e)
             insertSyslog("error", "QA复核报错Error：" + str(e), current_user.Name)
 
-# NodeID注释配置
-@app.route('/NodeIdNote/config', methods=['POST', 'GET'])
-def nodeIdNote():
-    return render_template('nodeIDNote.html')
-
-def get_data(filename, method='r'):
+def getExcel(file, method='r'):
     '''
     改变数据结构 -- 方便前端显示
     :param filename:  文件名
     :param method:  按照 列或者 行 返回数据
     '''
-    data = xlrd.open_workbook(filename)
-    table= data.sheets()[0]
+    data = xlrd.open_workbook(file)
+    table = data.sheets()[0]
     nrows = table.nrows  # 行数
     ncols = table.ncols  # 列数
     if method == 'r':
-        row_list = [table.row_values(i) for i in range(0,nrows)]   # 所有行的数据
+        row_list = [table.row_values(i) for i in range(0, nrows)]  # 所有行的数据
         return row_list
     elif method == 'c':
-        col_list = [table.col_values(i) for i in range(0,ncols)]    # 所有列的数据
+        col_list = [table.col_values(i) for i in range(0, ncols)]  # 所有列的数据
         return col_list
 
-# Excel_show:
-@app.route('/NodeIdNote/store', methods=['GET','POST'])
-def show():
+# NodeID注释配置
+@app.route('/NodeIdNote/config', methods=['POST', 'GET'])
+def nodeIdNote():
+    if request.method == 'GET':
+        return render_template('nodeIDNote.html')
     if request.method == 'POST':
-        file = request.files.get('note')
-        if file is None or file == '':
-            return
-        filename = file.filename
-        data = get_data(filename)
-
+        try:
+            file = request.files.get('note')
+            if file is None or file == '':
+                return
+            file.save(os.path.join(os.getcwd(), file.filename))
+            new_file = '%s%s%s'%(os.getcwd(), "\\", file.filename)
+            data = getExcel(new_file) # [['i=1100', '温度'], ['i=1112', '气压'], ['i=1123', '湿度']]
+            for index in data:
+                oclass = db_session.query(NodeIdNote).filter_by(NodeID=index[0]).first()
+                if oclass is not None:
+                    db_session.delete(oclass)
+                    db_session.commit()
+                if len(index) == 2:
+                    db_session.add(NodeIdNote(
+                            NodeID=index[0],
+                            Note=index[1]))
+                    db_session.commit()
+                opcTag = db_session.query(OpcTag).filter_by(NodeID=index[0]).first()
+                if opcTag is None:
+                    continue
+                opcTag.Note = index[1]
+                db_session.add(opcTag)
+                db_session.commit()
+            return redirect('/NodeIdNote/config')
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "Excel数据读取失败报错Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 @app.route('/NodeIdNote/Find')
 def NodeIdNoteFind():
