@@ -4622,27 +4622,38 @@ def QAPass():
             logger.error(e)
             insertSyslog("error", "QA复核报错Error：" + str(e), current_user.Name)
 
-# NodeID注释配置
-@app.route('/NodeIdNote/config', methods=['POST', 'GET'])
-def nodeIdNote():
-    return render_template('nodeIDNote.html')
-
-def get_data(filename, method='r'):
+def get_data(file, method='r'):
     '''
     改变数据结构 -- 方便前端显示
     :param filename:  文件名
     :param method:  按照 列或者 行 返回数据
     '''
-    data = xlrd.open_workbook(filename)
-    table= data.sheets()[0]
+    data = xlrd.open_workbook("file.name")
+    table = data.sheets()[0]
     nrows = table.nrows  # 行数
     ncols = table.ncols  # 列数
     if method == 'r':
-        row_list = [table.row_values(i) for i in range(0,nrows)]   # 所有行的数据
+        row_list = [table.row_values(i) for i in range(0, nrows)]  # 所有行的数据
         return row_list
     elif method == 'c':
-        col_list = [table.col_values(i) for i in range(0,ncols)]    # 所有列的数据
+        col_list = [table.col_values(i) for i in range(0, ncols)]  # 所有列的数据
         return col_list
+
+# NodeID注释配置
+@app.route('/NodeIdNote/config', methods=['POST', 'GET'])
+def nodeIdNote():
+    if request.method == 'GET':
+        return render_template('nodeIDNote.html')
+    if request.method == 'POST':
+        file = request.form.get('note')
+        print(file)
+        if file is None or file == '':
+            return
+        filename = file.filename
+        file_dir = 'E:\develop\develop_test_file'
+        file.save(os.path.join(file_dir, file))
+        data = get_data(file)
+
 
 # Excel_show:
 @app.route('/NodeIdNote/store', methods=['GET', 'POST'])
