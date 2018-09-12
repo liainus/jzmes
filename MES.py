@@ -3622,13 +3622,13 @@ def getOpcTagList(id, ParentID=None):
             if obj.ParentID == ParentID:
                 sz.append({"id": obj.ID,
                            "NodeId": obj.NodeID,
-                           "Desc": obj.Desc,
+                           "Desc": obj.Note,
                            "children": getOpcTagList(obj.ID, obj.NodeID)})
         return sz
     except Exception as e:
         print(e)
         logger.error(e)
-        insertSyslog("error", "加载父级菜单列表报错Error：" + str(e), current_user.Name)
+        insertSyslog("error", "getOpcTagList加载父级菜单列表报错Error：" + str(e), current_user.Name)
         return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 @app.route('/CollectParams/OpcTagLoad', methods=['POST', 'GET'])
@@ -4662,7 +4662,12 @@ def nodeIdNote():
                             NodeID=index[0],
                             Note=index[1]))
                     db_session.commit()
-            print(url_for('NodeIdNoteFind'))
+                opcTag = db_session.query(OpcTag).filter_by(NodeID=index[0]).first()
+                if opcTag is None:
+                    continue
+                opcTag.Note = index[1]
+                db_session.add(opcTag)
+                db_session.commit()
             return redirect('/NodeIdNote/config')
         except Exception as e:
             print(e)

@@ -3523,6 +3523,9 @@ class CollectTask(Base):
 	# 描述
 	Desc = Column(Unicode(100), nullable=True)
 
+	# golbalstartegy
+	GlobalStrategyID = Column(Integer, nullable=True)
+
 
 class CollectTaskCollection(Base):
 	__tablename__ = 'CollectTaskCollection'
