@@ -4058,7 +4058,8 @@ def CollectTaskCreate():
                     CollectTask(
                         CollectTaskName=data['CollectTaskName'],
                         TableName=data['TableName'],
-                        Desc=data['Desc']
+                        Desc=data['Desc'],
+                        Enabled = data['Enabled']
                     ))
                 db_session.commit()
                 return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
@@ -4107,6 +4108,7 @@ def CollectTaskUpdate():
                 oclass = db_session.query(CollectTask).filter_by(ID=CollectTaskID).first()
                 oclass.CollectTaskName = data['CollectTaskName']
                 oclass.TableName = data['TableName']
+                oclass.Enabled = data['Enabled']
                 oclass.Desc = data['Desc']
                 db_session.add(oclass)
                 db_session.commit()

@@ -21,7 +21,7 @@ from collections import Counter
 from imp import reload
 
 from flask_login import current_user
-from sqlalchemy import Column, DateTime, Float, Integer, String, Unicode, BigInteger
+from sqlalchemy import Column, DateTime, Float, Integer, String, Unicode, BigInteger,Boolean
 from sqlalchemy import create_engine, Column, ForeignKey, Table, DateTime, Integer, String
 from sqlalchemy import func
 from sqlalchemy.dialects.mssql.base import BIT
@@ -3509,22 +3509,24 @@ class Collectionstrategy(Base):
 	Desc = Column(Unicode(100), nullable=True)
 
 class CollectTask(Base):
-	__tablename__ = 'CollectTask'
+    __tablename__ = 'CollecTask'
+    #ID
+    ID = Column(Integer,primary_key=True,autoincrement=True,nullable=False)
 
-	#ID
-	ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+    #采集任务名称
+    CollectTaskName = Column(Unicode(32),nullable=True)
 
-	# 采集任务名称
-	CollectTaskName = Column(Unicode(32), nullable=True)
+    #存放采集数据的表名
+    TableName = Column(Unicode(32),nullable=True)
 
-	# TableName
-	TableName = Column(Unicode(32), nullable=True)
+    #全局策略
+    GlobalStrategyID = Column(Integer,nullable=True)
 
-	# 描述
-	Desc = Column(Unicode(100), nullable=True)
+    #是否启用
+    Enabled = Column(Boolean,default=False,nullable=False)
 
-	# golbalstartegy
-	GlobalStrategyID = Column(Integer, nullable=True)
+    #描述
+    Desc = Column(Unicode(100),nullable=True)
 
 
 class CollectTaskCollection(Base):
