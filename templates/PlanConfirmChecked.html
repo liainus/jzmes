@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>中控计划复核</title>
+    <link href="../static/css/base.css" rel="stylesheet">
+	<link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
+	<link href="../static/css/basic_info.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
+	<link href="../static/js/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
+    <link href="../static/css/datagridpanel_customer.css" rel="stylesheet">
+    <link href="../static/css/dialogpanel.css" type="text/css" rel="stylesheet">
+    <link href="../static/css/datagrid_customer.css" type="text/css" rel="stylesheet">
+    <script type="text/javascript" src="../static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
+    <script>
+        $(function(){
+            function createKeyIDObj(keyID){
+                return {
+                    ID:keyID
+                }
+            }
+            CollectToolbar = {
+                search:function(){
+                    var searchBatchID = $('input[name="search"]').val()
+                    $("#tab").datagrid({
+                        queryParams: {
+                            BatchID: searchBatchID
+                        }
+                    })
+                },
+                adopt:function(){
+                    var rows = $("#tab").datagrid('getSelections');
+                    if (rows.length > 0) {
+                        var jsonarray = [];
+                        var a = "";
+                        for (var i = 0; i < rows.length; i++) {
+                            var obj = createKeyIDObj(parseInt(rows[i].ID));
+                            jsonarray.push(obj);
+                        }
+                        a = JSON.stringify(jsonarray);
+                        $.messager.confirm('确定操作', '确定要通过所选的计划吗？', function (flag) {
+                            if (flag) {
+                                $.ajax({
+                                    url: '/ZYPlanGuid/controlConfirmReCheck',
+                                    method: 'POST',
+                                    data: {
+                                        ID: a
+                                    },
+                                    success: function (data) {
+                                        $.messager.progress('close')
+                                        if (data == "OK") {
+                                            $.messager.show({
+                                                title: '提示',
+                                                timeout: 1000,
+                                                msg: '复核成功',
+                                                style: {
+                                                    right: '',
+                                                    top: document.body.scrollTop + document.documentElement.scrollTop,
+                                                    bottom: ''
+                                                }
+                                            });
+                                            $("#tab").datagrid('loaded');
+                                            $("#tab").datagrid('load');
+                                            $("#tab").datagrid('unselectAll');
+                                        }else{
+                                            $.messager.alert('提示', data, 'info');
+                                        }
+                                    },
+                                    error: function () {
+                                        alert("请求失败，请稍后重试！")
+                                    }
+                                });
+                            }
+                        });
+                    } else {
+                        $.messager.alert('提示', '请选择要确认的计划！', 'info');
+                    }
+                },
+                refresh:function(){
+                    $("#tab").datagrid('load')
+                }
+            }
+
+             $("#tab").datagrid({
+                //datagrid表格右键操作
+                onRowContextMenu: function (e, rowIndex, rowData) { //右键时触发事件
+                    //三个参数：e里面的内容很多，真心不明白，rowIndex就是当前点击时所在行的索引，rowData当前行的数据
+                    e.preventDefault(); //阻止浏览器捕获右键事件
+                    $(this).datagrid("clearSelections"); //取消所有选中项
+                    $(this).datagrid("selectRow", rowIndex); //根据索引选中该行
+                    $('#contextmenu').menu('show', {
+                        //显示右键菜单
+                        left: e.pageX,//在鼠标点击处显示菜单
+                        top: e.pageY
+                    });
+                    e.preventDefault();  //阻止浏览器自带的右键菜单弹出
+                }
+            });
+        })
+        function formatterStatus(value, row, index){
+            if (value == 10){
+                return '新增'
+            }else if(value == 11){
+                return '已审核'
+            }else if(value == 20){
+                return '已下发'
+            }else if(value == 30){
+                return '中控已确认'
+            }else if(value == 31){
+                return '中控已复核'
+            }else if(value == 32){
+                return 'QA已复核'
+            }else if(value == 40){
+                return '已确认，准备生产'
+            }else if(value == 50){
+                return '执行'
+            }else if(value == 60){
+                return '已完成'
+            }else if(value == 70){
+                return 'QA放行'
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="content">
+        <div id="Toolbar" style="padding:0 10px;">
+            批次号:
+            <input type="text" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
+                placeholder="">
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="CollectToolbar.search();">查询</a>
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-redo'" onclick="CollectToolbar.adopt();">复核通过</a>
+            <a href="#" class="easyui-linkbutton" id="reload" data-options="iconCls:'icon-reload'" onclick="CollectToolbar.refresh();">刷新</a>
+        </div>
+        <table class="easyui-datagrid" id="tab" title="" style="width:100%;" data-options="
+            queryParams: {
+                BatchID: '',
+            },
+            rownumbers:true,
+            singleSelect:false,
+            autoRowHeight:false,
+            pagination:true,
+            pageSize:10,
+            toolbar:'#Toolbar',
+            url:'/ZYPlanGuid/controlConfirmReCheckSearch',
+            method:'get'">
+            <thead>
+                <tr>
+                    <th field="ck" checkbox="true"></th>
+                    <th data-options="field:'SchedulePlanCode',width:200,align:'center'">调度编号</th>
+                    <th data-options="field:'BatchID',width:200,align:'center'">批次号</th>
+                    <th data-options="field:'PlanQuantity',width:100,align:'center'">计划重量</th>
+                    <th data-options="field:'BrandName',width:150,align:'center'">品名</th>
+                    <th data-options="field:'Unit',width:100,align:'center'">单位</th>
+                    <th data-options="field:'PlanStatus',width:100,align:'center'" formatter="formatterStatus">计划状态</th>
+                    <th data-options="field:'PlanBeginTime',width:200,align:'center'">计划开始时间</th>
+                    <th data-options="field:'PlanEndTime',width:200,align:'center'">计划完成时间</th>
+                    <th data-options="field:'Type',width:100,align:'center'">调度类型</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+    <!-- 右键菜单 -->
+    <div id="contextmenu" class="easyui-menu" style="width:120px;">
+        <div data-options="iconCls:'icon-redo'" onclick="CollectToolbar.adopt();">复核通过</div>
+    </div>
+</body>
+</html>
