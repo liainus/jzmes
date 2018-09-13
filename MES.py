@@ -4084,6 +4084,9 @@ def CollectTaskDelete():
                         oclass = db_session.query(CollectTask).filter_by(ID=CollectTaskID).first()
                         db_session.delete(oclass)
                         db_session.commit()
+                        oclass = db_session.query(CollectTaskCollection).filter_by(CollectTaskID=CollectTaskID).first()
+                        db_session.delete(oclass)
+                        db_session.commit()
                     except Exception as ee:
                         print(ee)
                         logger.error(ee)
@@ -4108,7 +4111,7 @@ def CollectTaskUpdate():
                 oclass = db_session.query(CollectTask).filter_by(ID=CollectTaskID).first()
                 oclass.CollectTaskName = data['CollectTaskName']
                 oclass.TableName = data['TableName']
-                oclass.Enabled = data['Enabled']
+                oclass.Enabled = int(data['Enabled'])
                 oclass.Desc = data['Desc']
                 db_session.add(oclass)
                 db_session.commit()
