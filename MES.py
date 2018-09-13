@@ -4389,31 +4389,34 @@ def PlanConfirm():
 def controlConfirmSearch():
     if request.method == 'GET':
         data = request.values
-        try:
-            json_str = json.dumps(data.to_dict())
-            if len(json_str) > 10:
-                pages = int(data['page'])  # 页数
-                rowsnumber = int(data['rows'])  # 行数
-                inipage = (pages - 1) * rowsnumber + 0  # 起始页
-                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
-                ABatchID = data['BatchID']  # 批次号
-                if (ABatchID == None or ABatchID == ""):
-                    total = db_session.query(ZYPlan.ID).filter(ZYPlan.ZYPlanStatus == Model.Global.ZYPlanStatus.Realse.value).count()
-                    ZYPlans = db_session.query(ZYPlan).filter(ZYPlan.ZYPlanStatus == Model.Global.ZYPlanStatus.Realse.value).all()[
-                                   inipage:endpage]
-                else:
-                    total = db_session.query(ZYPlan).filter(ZYPlan.BatchID == ABatchID,
-                                                            ZYPlan.ZYPlanStatus == Model.Global.ZYPlanStatus.Realse.value).count()
-                    ZYPlans = db_session.query(ZYPlan).filter(ZYPlan.BatchID == ABatchID,
-                                                                   ZYPlan.ZYPlanStatus == Model.Global.ZYPlanStatus.Realse.value).all()[
-                                   inipage:endpage]
-                ZYPlans = json.dumps(ZYPlans, cls=AlchemyEncoder, ensure_ascii=False)
-                jsonZYPlans = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + ZYPlans + "}"
-                return jsonZYPlans
-        except Exception as e:
-            print(e)
-            logger.error(e)
-            insertSyslog("error", "计划向导生成的计划查询报错Error：" + str(e), current_user.Name)
+        ZYPlanStatus = Model.Global.ZYPlanStatus.Realse.value
+        confirmSearch(data, ZYPlanStatus)
+def confirmSearch(data,ZYPlanStatus):
+    try:
+        json_str = json.dumps(data.to_dict())
+        if len(json_str) > 10:
+            pages = int(data['page'])  # 页数
+            rowsnumber = int(data['rows'])  # 行数
+            inipage = (pages - 1) * rowsnumber + 0  # 起始页
+            endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+            ABatchID = data['BatchID']  # 批次号
+            if (ABatchID == None or ABatchID == ""):
+                total = db_session.query(ZYPlan.ID).filter(ZYPlan.ZYPlanStatus == ZYPlanStatus).count()
+                ZYPlans = db_session.query(ZYPlan).filter(ZYPlan.ZYPlanStatus == ZYPlanStatus).all()[
+                          inipage:endpage]
+            else:
+                total = db_session.query(ZYPlan).filter(ZYPlan.BatchID == ABatchID,
+                                                        ZYPlan.ZYPlanStatus == ZYPlanStatus).count()
+                ZYPlans = db_session.query(ZYPlan).filter(ZYPlan.BatchID == ABatchID,
+                                                          ZYPlan.ZYPlanStatus == ZYPlanStatus).all()[
+                          inipage:endpage]
+            ZYPlans = json.dumps(ZYPlans, cls=AlchemyEncoder, ensure_ascii=False)
+            jsonZYPlans = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + ZYPlans + "}"
+            return jsonZYPlans
+    except Exception as e:
+        print(e)
+        logger.error(e)
+        insertSyslog("error", "计划向导生成的计划查询报错Error：" + str(e), current_user.Name)
 
 # 中控确认保存信息查询
 @app.route('/ZYPlanGuid/ConfirmSearchInfo', methods=['POST', 'GET'])
@@ -4503,6 +4506,19 @@ def controlConfirm():
             print(e)
             logger.error(e)
             insertSyslog("error", "中控确认清场报错Error：" + str(e), current_user.Name)
+
+# 中控计划复核
+@app.route('/MiddleControl/PlanConfirmChecked')
+def PlanConfirmChecked():
+    return render_template('MiddleControlPlanConfirm.html')
+
+# 中控计划复核查询
+@app.route('/ZYPlanGuid/controlConfirmReCheckSearch', methods=['POST', 'GET'])
+def controlConfirmReCheckSearch():
+    if request.method == 'GET':
+        data = request.values
+        ZYPlanStatus = Model.Global.ZYPlanStatus.Control.value
+        confirmSearch(data, ZYPlanStatus)
 
 # 中控清场复核
 @app.route('/ZYPlanGuid/controlConfirmReCheck', methods=['POST', 'GET'])
