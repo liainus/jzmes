@@ -4513,7 +4513,7 @@ def controlConfirm():
 # 中控计划复核
 @app.route('/MiddleControl/PlanConfirmChecked')
 def PlanConfirmChecked():
-    return render_template('MiddleControlPlanConfirm.html')
+    return render_template('PlanConfirmChecked.html')
 
 # 中控计划复核查询
 @app.route('/ZYPlanGuid/controlConfirmReCheckSearch', methods=['POST', 'GET'])
