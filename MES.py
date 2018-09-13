@@ -3052,12 +3052,12 @@ def planConfirmSearch():
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
                 APUID = data['PUID']  # 工艺段编码
                 if(APUID == "" or APUID == None):
-                    total = db_session.query(ZYPlan).filter(ZYPlan.PlanStatus.in_((31, 40, 50))).count()
-                    ZYPlans = db_session.query(ZYPlan).filter(ZYPlan.PlanStatus.in_((31, 40, 50))).all()[inipage:endpage]
+                    total = db_session.query(ZYPlan).filter(ZYPlan.ZYPlanStatus.in_((31, 40, 50))).count()
+                    ZYPlans = db_session.query(ZYPlan).filter(ZYPlan.ZYPlanStatus.in_((31, 40, 50))).all()[inipage:endpage]
                 else:
-                    total = db_session.query(ZYPlan).filter(ZYPlan.PlanStatus.in_((31, 40, 50)),
+                    total = db_session.query(ZYPlan).filter(ZYPlan.ZYPlanStatus.in_((31, 40, 50)),
                                                             ZYPlan.PUID == APUID).count()
-                    ZYPlans = db_session.query(ZYPlan).filter(ZYPlan.PlanStatus.in_((31, 40, 50)),
+                    ZYPlans = db_session.query(ZYPlan).filter(ZYPlan.ZYPlanStatus.in_((31, 40, 50)),
                                                               ZYPlan.PUID == APUID).all()[inipage:endpage]
                 jsonZYPlans = json.dumps(ZYPlans, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonZYPlans = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonZYPlans + "}"
@@ -4472,15 +4472,22 @@ def controlConfirm():
                     return "还有准备工作未确认，请确认再提交！"
                 else:
                     pass
-            zyp = db_session.query(ZYPlan).filter(ID == ID)
+            zyp = db_session.query(ZYPlan).filter(ZYPlan.ID == ID).first()
             zyp.ZYPlanStatus = Model.Global.ZYPlanStatus.COMFIRM.value
-            oclass = db_session.query(PlanManager).filter(PlanManager.BatchID == zyp.BatchID).first()
-            oclass.PlanStatus = Model.Global.PlanStatus.Control.value
-            PlanManageID = db_session.query(PlanManager.ID).filter(PlanManager.BatchID == zyp.BatchID)
-            oclassW = db_session.query(WorkFlowStatus).filter(WorkFlowStatus.PlanManageID == PlanManageID).first()
-            oclassW.AuditStatus = Model.Global.AuditStatus.ClearField.value
-            oclassW.DescF =  "中控确认清场"
+            flag = "TRUE"
+            zyplans = db_session.query(ZYPlan).filter(ZYPlan.BatchID == zyp.BatchID).all()
             db_session.commit()
+            for z in zyplans:
+                if(z.ZYPlanStatus != Model.Global.ZYPlanStatus.COMFIRM.value):
+                    flag = "FALSE"
+            if(flag == "TRUE"):
+                oclass = db_session.query(PlanManager).filter(PlanManager.BatchID == zyp.BatchID).first()
+                oclass.PlanStatus = Model.Global.PlanStatus.Control.value
+                PlanManageID = db_session.query(PlanManager.ID).filter(PlanManager.BatchID == zyp.BatchID)
+                oclassW = db_session.query(WorkFlowStatus).filter(WorkFlowStatus.PlanManageID == PlanManageID).first()
+                oclassW.AuditStatus = Model.Global.AuditStatus.ClearField.value
+                oclassW.DescF =  "中控确认清场"
+                db_session.commit()
 
             userName = current_user.Name
             Desc = "中控确认清场"
