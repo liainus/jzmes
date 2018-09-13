@@ -33,45 +33,95 @@
                 },
                 adopt:function(){
                     var rows = $("#tab").datagrid('getSelections');
-                    var jsonarray=[];
-                    var a = "";
-                    for (var i = 0; i < rows.length; i++) {
-                        var obj=createKeyIDObj(parseInt(rows[i].ID));
-                        jsonarray.push(obj);
-                    }
-                    a = JSON.stringify(jsonarray);
-                    $.messager.confirm('确定操作', '确定要通过所选的计划吗？', function (flag) {
-                        if (flag) {
-                            $.ajax({
-                                url: '/ZYPlanGuid/QAConfirm',
-                                method: 'POST',
-                                data: {
-                                    ID:a
-                                },
-                                success: function (data) {
-                                    $.messager.progress('close')
-                                    if (data == "OK") {
-                                        $.messager.show({
-                                            title: '提示',
-                                            timeout:1000,
-                                            msg: '已计划确认成功',
-                                            style: {
-                                                right: '',
-                                                top: document.body.scrollTop + document.documentElement.scrollTop,
-                                                bottom: ''
-                                            }
-                                        });
-                                        $("#tab").datagrid('loaded');
-                                        $("#tab").datagrid('load');
-                                        $("#tab").datagrid('unselectAll');
-                                    }
-                                },
-                                error:function(){
-                                    alert("请求失败，请稍后重试！")
-                                }
-                            });
+                    if(rows.length > 0){
+                        var jsonarray=[];
+                        var a = "";
+                        for (var i = 0; i < rows.length; i++) {
+                            var obj=createKeyIDObj(parseInt(rows[i].ID));
+                            jsonarray.push(obj);
                         }
-                    });
+                        a = JSON.stringify(jsonarray);
+                        $.messager.confirm('确定操作', '确定要确认所选的计划吗？', function (flag) {
+                            if (flag) {
+                                $.ajax({
+                                    url: '/ZYPlanGuid/QAConfirm',
+                                    method: 'POST',
+                                    data: {
+                                        ID:a
+                                    },
+                                    success: function (data) {
+                                        $.messager.progress('close')
+                                        if (data == "OK") {
+                                            $.messager.show({
+                                                title: '提示',
+                                                timeout:1000,
+                                                msg: 'QA确认成功',
+                                                style: {
+                                                    right: '',
+                                                    top: document.body.scrollTop + document.documentElement.scrollTop,
+                                                    bottom: ''
+                                                }
+                                            });
+                                            $("#tab").datagrid('loaded');
+                                            $("#tab").datagrid('load');
+                                            $("#tab").datagrid('unselectAll');
+                                        }
+                                    },
+                                    error:function(){
+                                        alert("请求失败，请稍后重试！")
+                                    }
+                                });
+                            }
+                        });
+                    } else {
+                        $.messager.alert('提示', '请选择要确认的记录！', 'info');
+                    }
+                },
+                pass:function(){
+                    var rows = $("#tab").datagrid('getSelections');
+                    if(rows.length > 0) {
+                        var jsonarray = [];
+                        var a = "";
+                        for (var i = 0; i < rows.length; i++) {
+                            var obj = createKeyIDObj(parseInt(rows[i].ID));
+                            jsonarray.push(obj);
+                        }
+                        a = JSON.stringify(jsonarray);
+                        $.messager.confirm('确定操作', '确定要放行所选的计划吗？', function (flag) {
+                            if (flag) {
+                                $.ajax({
+                                    url: '/ZYPlanGuid/QAPass',
+                                    method: 'POST',
+                                    data: {
+                                        ID: a
+                                    },
+                                    success: function (data) {
+                                        $.messager.progress('close')
+                                        if (data == "OK") {
+                                            $.messager.show({
+                                                title: '提示',
+                                                timeout: 1000,
+                                                msg: 'QA放行成功',
+                                                style: {
+                                                    right: '',
+                                                    top: document.body.scrollTop + document.documentElement.scrollTop,
+                                                    bottom: ''
+                                                }
+                                            });
+                                            $("#tab").datagrid('loaded');
+                                            $("#tab").datagrid('load');
+                                            $("#tab").datagrid('unselectAll');
+                                        }
+                                    },
+                                    error: function () {
+                                        alert("请求失败，请稍后重试！")
+                                    }
+                                });
+                            }
+                        });
+                    } else {
+                        $.messager.alert('提示', '请选择要放行的记录！', 'info');
+                    }
                 },
                 refresh:function(){
                     $("#tab").datagrid('load')
@@ -126,7 +176,8 @@
             <input type="text" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
                 placeholder="">
             <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="CollectToolbar.search();">查询</a>
-            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-redo'" onclick="CollectToolbar.adopt();">计划确认</a>
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-redo'" onclick="CollectToolbar.adopt();">QA确认</a>
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-redo'" onclick="CollectToolbar.pass();">QA放行</a>
             <a href="#" class="easyui-linkbutton" id="reload" data-options="iconCls:'icon-reload'" onclick="CollectToolbar.refresh();">刷新</a>
         </div>
         <table class="easyui-datagrid" id="tab" title="" style="width:100%;" data-options="
@@ -159,7 +210,8 @@
     </div>
     <!-- 右键菜单 -->
     <div id="contextmenu" class="easyui-menu" style="width:120px;">
-        <div data-options="iconCls:'icon-redo'" onclick="CollectToolbar.adopt();">计划确认</div>
+        <div data-options="iconCls:'icon-redo'" onclick="CollectToolbar.adopt();">QA确认</div>
+        <div data-options="iconCls:'icon-redo'" onclick="CollectToolbar.pass();">QA放行</div>
     </div>
 </body>
 </html>
