@@ -164,6 +164,12 @@ class ctrlPlan:
             session.commit()
             ZYPlanID = session.query(Model.core.ZYPlan.ID).filter(Model.core.ZYPlan.BatchID == ABatchID,Model.core.ZYPlan.PUID==APUID).first()
             ZYPlanID = ZYPlanID[0]
+            PlanManageID = session.query(Model.core.PlanManager.ID).filter_by(BatchID=ABatchID).first()
+            PlanManageID = PlanManageID[0]
+            AuditStatus = Model.Global.AuditStatus.Realse.value
+            DescF = "计划向导生成计划zyplan"
+            bReturn = self.createWorkFlowStatus(PlanManageID, ZYPlanID, None, AuditStatus, DescF)
+
             session.add(Model.core.ReadyWork(ZYPlanID=ZYPlanID,IsCheck="0",ReadyName="ClearFieldCard",
                                              Describe="检查工作区域是否有《清场合格证》"))
             session.add(Model.core.ReadyWork(ZYPlanID=ZYPlanID, IsCheck="0", ReadyName="ClearLastMateriel",
