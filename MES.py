@@ -342,7 +342,9 @@ def getRoleList(id=0):
         roles = db_session.query(Role).filter().all()
         for obj in roles:
             if obj.ParentNode == id:
-                sz.append({"id": obj.ID, "text": obj.RoleName, "children": getRoleList(obj.ID)})
+                sz.append({"id": obj.ID,
+                           "text": obj.RoleName,
+                           "children": getRoleList(obj.ID)})
         srep = ',' + 'items' + ':' + '[]'
 
         return sz
@@ -356,7 +358,6 @@ def getRoleList(id=0):
 def SelectRoles():
     if request.method == 'GET':
         try:
-            # data = load()
             data = getRoleList(id=0)
             # organizations = db_session.query(Organization).filter().all()
             jsondata = json.dumps(data, cls=AlchemyEncoder, ensure_ascii=False)
@@ -408,7 +409,6 @@ def userList():
                     # 通过角色ID获取当前角色对应的用户
                     role_id = data['ID']
                     role_name= db_session.query(Role.RoleName).filter_by(ID=role_id).first()
-                    # print(role)
                     if role_name is None:  # 判断当前角色是否存在
                         return
                     total = db_session.query(User).filter_by(RoleName=role_name).count()
@@ -426,22 +426,34 @@ def userList():
 
 
 # 权限分配下的功能模块列表
-def getMenuList(id=0):
+def getMenuList(id=0, role_menus=None):
     sz = []
     try:
         menus = db_session.query(Menu).filter().all()
         for obj in menus:
+            if role_menus in menus:
+                if obj.ParentNode == id:
+                    sz.append({"id": obj.ID,
+                               "text": obj.ModuleName,
+                               "state": 'open',
+                               "children": getMenuList(obj.ID)})
             if obj.ParentNode == id:
-                sz.append({"id": obj.ID, "text": obj.ModuleName, "children": getMenuList(obj.ID)})
-        srep = ',' + 'items' + ':' + '[]'
-        # data = string(sz)
-        # data.replace(srep, '')
-
+                sz.append({"id": obj.ID,
+                           "text": obj.ModuleName,
+                           "state": 'closed',
+                           "children": getMenuList(obj.ID)})
         return sz
     except Exception as e:
         print(e)
         insertSyslog("error", "查询权限分配下的功能模块列表Error：" + str(e), current_user.Name)
         return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
+role_menus = db_session.query(Role.menus).filter_by(ID=1).all()
+print(role_menus)
+menus = db_session.query(Menu).filter().all()
+print(menus)
+
+
 # 加载菜单列表
 @app.route('/permission/menulist')
 def menulist():
@@ -449,7 +461,21 @@ def menulist():
         try:
             data = getMenuList(id=0)
             jsondata = json.dumps(data, cls=AlchemyEncoder, ensure_ascii=False)
-            print(jsondata)
+            return jsondata.encode("utf8")
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "加载菜单列表Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+    if request.method =='POST':
+        data = request.values
+        try:
+            role_id = data['id']
+            role_menus = db_session.query(Role.menus).filter_by(ID=role_id).all()
+            if role_menus is None:
+                return
+            menus_data = getMenuList(id=0, role_menus=role_menus)
+            jsondata = json.dumps(menus_data, cls=AlchemyEncoder, ensure_ascii=False)
             return jsondata.encode("utf8")
         except Exception as e:
             print(e)
@@ -3370,7 +3396,7 @@ def printSelect(node, depth): # id:0, depth:1
     result = []
     global id
     id += 1 # 控制下一层
-    if depth <= 1:
+    if depth <= 2:
         for cNode in node.get_children():#[Node(TwoByteNodeId(i=86)), Node(TwoByteNodeId(i=85)), Node(TwoByteNodeId(i=87))]
             if len(cNode.get_children()) >= 0:
                 if len(cNode.get_children()) > 0:
@@ -3463,6 +3489,9 @@ def storeOpcTag():
             URI = data['URI']
             if nodeId is None or displayName is None or URI is None:
                 return
+            oclass = db_session.query(OpcTag).filter_by(NodeID=nodeId).first()
+            if oclass:
+                return
             client = Client("%s" % URI)
             client.connect()
             OpcServerID = db_session.query(OpcServer).filter_by(URI=URI).first().ID
@@ -3476,6 +3505,7 @@ def storeOpcTag():
             # 存储子节点
             node = client.get_node(nodeId)
             store_child(node, OpcServerID)
+            return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
             logger.error(e)
