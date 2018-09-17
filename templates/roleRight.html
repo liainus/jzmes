@@ -72,7 +72,7 @@
             }
         }
         $(function(){
-            var ttree = $("#tt").tree({
+            $("#tt").tree({
                 url:'/permission/menulist',
                 method: 'get',
                 animate:true,
@@ -99,11 +99,12 @@
                     $('#tab').datagrid('load',{
                         ID: node.id
                     });
-                    var params = {
-                        id: node.id
-                    };
-                    ttree.tree("options").queryParams = params
-                    ttree.tree('reload')
+                    $("#tt").tree({
+                        onBeforeLoad:function(node, param){
+                            param.id = node.id
+                        }
+                    })
+                    $("#tt").tree('reload')
                     treeId = node.id
                 },
                 onSelect:function(node){
@@ -117,11 +118,12 @@
                     $('#tab').datagrid('load',{
                         ID: node.id
                     });
-                    var params = {
-                        id: node.id
-                    };
-                    ttree.tree("options").queryParams = params
-                    ttree.tree('reload')
+                    $("#tt").tree({
+                        onBeforeLoad:function(node, param){
+                            param.id = node.id
+                        }
+                    })
+                    $("#tt").tree('reload')
                     treeId = node.id
                 },
                 onLoadSuccess: function (node, data) {
