@@ -424,56 +424,51 @@ def userList():
                 insertSyslog("error", "通过点击角色查询用户报错Error：" + str(e), current_user.Name)
                 return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
+def trueOrFalse(obj,role_menus):
+    if str(obj.ModuleName) in role_menus:
+        return True
+    return False
 
 # 权限分配下的功能模块列表
-def getMenuList(id=0, role_menus=[]):
+def getMenuList(role_menus, id=0):
     sz = []
     try:
-        menus = db_session.query(Menu).filter().all()
+        menus = db_session.query(Menu).filter_by(ParentNode=id).all()
         for obj in menus:
             if obj.ParentNode == id:
-                if obj in role_menus:
                     sz.append({"id": obj.ID,
                                "text": obj.ModuleName,
-                               "checked": True,
-                               "children": getMenuList(obj.ID)})
-                sz.append({"id": obj.ID,
-                           "text": obj.ModuleName,
-                           "checked": False,
-                           "children": getMenuList(obj.ID)})
+                               "checked": trueOrFalse(obj, role_menus),
+                               "children": getMenuList(role_menus, obj.ID)})
         return sz
     except Exception as e:
         print(e)
         insertSyslog("error", "查询权限分配下的功能模块列表Error：" + str(e), current_user.Name)
         return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
-# role_menus = db_session.query(Role.menus).filter_by(ID=1).all()
-# print(role_menus)
-# menus = db_session.query(Menu).filter().all()
-# print(menus)
-
 
 # 加载菜单列表
 @app.route('/permission/menulist')
 def menulist():
     if request.method == 'GET':
+        role_data = request.values
+        if 'id' not in role_data.keys():
+            try:
+                data = getMenuList(role_menus=[],id=0)
+                jsondata = json.dumps(data, cls=AlchemyEncoder, ensure_ascii=False)
+                return jsondata.encode("utf8")
+            except Exception as e:
+                print(e)
+                logger.error(e)
+                insertSyslog("error", "加载菜单列表Error：" + str(e), current_user.Name)
+                return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+        id = role_data['id']
         try:
-            data = getMenuList(id=0)
-            jsondata = json.dumps(data, cls=AlchemyEncoder, ensure_ascii=False)
-            return jsondata.encode("utf8")
-        except Exception as e:
-            print(e)
-            logger.error(e)
-            insertSyslog("error", "加载菜单列表Error：" + str(e), current_user.Name)
-            return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
-    if request.method =='POST':
-        data = request.values
-        try:
-            role_id = data['id']
-            role_menus = db_session.query(Role.menus).filter_by(ID=role_id).all()
-            if role_menus is None:
-                return
-            menus_data = getMenuList(id=0, role_menus=role_menus)
+            role_menus = db_session.query(Menu.ModuleName).join(Role_Menu, isouter=True).filter_by(Role_ID=id).all()
+            r_menus = []
+            for menu in role_menus:
+                r_menus.append(menu[0])
+            menus_data = getMenuList(r_menus, id=0)
             jsondata = json.dumps(menus_data, cls=AlchemyEncoder, ensure_ascii=False)
             return jsondata.encode("utf8")
         except Exception as e:
@@ -492,11 +487,11 @@ def menuToUser():
             role_id = data['role_id']  # 获取角色ID
             if role_id is None:
                 return
-            menus = db_session.query(Role.menus).fiter_by(ID=role_id).all()
-            db_session.delete(menus)
-            db_session.commit()
-            menu_id = data['menu_id' \
-                           ''] # 获取菜单ID
+            menus = db_session.query(Menu).join(Role_Menu, isouter=True).filter_by(Role_ID=id).all()
+            if menus:
+                db_session.delete(menus)
+                db_session.commit()
+            menu_id = data['menu_id'] # 获取菜单ID
             if menu_id is None:
                 return
             menu_id = re.findall(r'\d+\.?\d*', menu_id)
