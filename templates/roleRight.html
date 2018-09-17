@@ -80,13 +80,11 @@
                 onlyLeafCheck:true,//去掉父节点复选框
                 loadFilter:function(data){
                     return data;
+                },
+                onBeforeLoad:function(node, param){
+                    param.id = ""
                 }
             })
-            var params = {
-                id: ""
-            }
-            ttree.tree("options").queryParams = params
-            ttree.tree('reload')
             var treeId = ""
             $("#tree").tree({
                 url:'/Permission/SelectRoles',
@@ -101,7 +99,7 @@
                     $('#tab').datagrid('load',{
                         ID: node.id
                     });
-                    params = {
+                    var params = {
                         id: node.id
                     };
                     ttree.tree("options").queryParams = params
@@ -119,7 +117,7 @@
                     $('#tab').datagrid('load',{
                         ID: node.id
                     });
-                    params = {
+                    var params = {
                         id: node.id
                     };
                     ttree.tree("options").queryParams = params
