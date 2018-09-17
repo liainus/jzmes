@@ -197,6 +197,11 @@
                                     <a href="#" onclick="addTab('制药计划向导','createPlanWizard')">制药计划向导</a>
                                 </li>
                             {% endif %}
+                            {% if '25' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onclick="addTab('计划执行进度','/PlanExecutionProgress')">计划执行进度</a>
+                                </li>
+                            {% endif %}
                             {% if '26' in session.get('menus') %}
                                 <li>
                                     <a href="#" onclick="addTab('生产计划管理','/ZYPlanGuid/planmanager')">生产计划管理</a>
