@@ -173,8 +173,6 @@
         function formatterStatus(value, row, index){
             if (value == 10){
                 return '新增'
-            }else if(value == 11){
-                return '已审核'
             }else if(value == 20){
                 return '已下发'
             }else if(value == 30){
@@ -189,8 +187,11 @@
                 return '执行'
             }else if(value == 60){
                 return '已完成'
-            }else if(value == 70){
-                return 'QA放行'
+            }
+        }
+        function styleStatus(value,row,index) {
+            if (value == 20){
+                return 'background-color:#ffc107;'
             }
         }
     </script>
@@ -221,12 +222,12 @@
             <thead>
                 <tr>
                     <th field="ck" checkbox="true"></th>
+                    <th data-options="field:'PlanStatus',width:100,align:'center'" formatter="formatterStatus" styler="styleStatus">计划状态</th>
                     <th data-options="field:'SchedulePlanCode',width:200,align:'center'">调度编号</th>
                     <th data-options="field:'BatchID',width:200,align:'center'">批次号</th>
                     <th data-options="field:'PlanQuantity',width:100,align:'center'">计划重量</th>
                     <th data-options="field:'BrandName',width:150,align:'center'">品名</th>
                     <th data-options="field:'Unit',width:100,align:'center'">单位</th>
-                    <th data-options="field:'PlanStatus',width:100,align:'center'" formatter="formatterStatus">计划状态</th>
                     <th data-options="field:'PlanBeginTime',width:200,align:'center'">计划开始时间</th>
                     <th data-options="field:'PlanEndTime',width:200,align:'center'">计划完成时间</th>
                     <th data-options="field:'Type',width:100,align:'center'">调度类型</th>

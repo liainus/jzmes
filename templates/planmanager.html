@@ -146,23 +146,23 @@
                         }
                         a = JSON.stringify(jsonarray);
                         if($.inArray("10",jsonstr) != -1){
-                            $.messager.alert('提示', '不能下发未通过审核的数据，请重新选择！', 'info');
+                            $.messager.alert('提示', '只能下发已审核的数据，请重新选择！', 'info');
                         } else if($.inArray("20",jsonstr) != -1){
-                            $.messager.alert('提示', '不能下发未通过审核的数据，请重新选择！', 'info');
+                            $.messager.alert('提示', '只能下发已审核的数据，请重新选择！', 'info');
                         } else if($.inArray("30",jsonstr) != -1){
-                            $.messager.alert('提示', '不能下发未通过审核的数据，请重新选择！', 'info');
+                            $.messager.alert('提示', '只能下发已审核的数据，请重新选择！', 'info');
                         } else if($.inArray("31",jsonstr) != -1){
-                            $.messager.alert('提示', '不能下发未通过审核的数据，请重新选择！', 'info');
+                            $.messager.alert('提示', '只能下发已审核的数据，请重新选择！', 'info');
                         } else if($.inArray("32",jsonstr) != -1){
-                            $.messager.alert('提示', '不能下发未通过审核的数据，请重新选择！', 'info');
+                            $.messager.alert('提示', '只能下发已审核的数据，请重新选择！', 'info');
                         } else if($.inArray("40",jsonstr) != -1){
-                            $.messager.alert('提示', '不能下发未通过审核的数据，请重新选择！', 'info');
+                            $.messager.alert('提示', '只能下发已审核的数据，请重新选择！', 'info');
                         } else if($.inArray("50",jsonstr) != -1){
-                            $.messager.alert('提示', '不能下发未通过审核的数据，请重新选择！', 'info');
+                            $.messager.alert('提示', '只能下发已审核的数据，请重新选择！', 'info');
                         } else if($.inArray("60",jsonstr) != -1){
-                            $.messager.alert('提示', '不能下发未通过审核的数据，请重新选择！', 'info');
+                            $.messager.alert('提示', '只能下发已审核的数据，请重新选择！', 'info');
                         } else if($.inArray("70",jsonstr) != -1){
-                            $.messager.alert('提示', '不能下发未通过审核的数据，请重新选择！', 'info');
+                            $.messager.alert('提示', '只能下发已审核的数据，请重新选择！', 'info');
                         } else{
                             $.messager.confirm('确定操作', '确定要下发所选的记录吗？', function (flag) {
                                 if (flag) {
@@ -385,6 +385,13 @@
                 return 'QA放行'
             }
         }
+        function styleStatus(value,row,index) {
+            if (value == 10){
+                return 'background-color:#ffc107;'
+            } else if (value == 20){
+                return 'background-color:#28a745;'
+            }
+        }
     </script>
 </head>
 <body>
@@ -413,12 +420,12 @@
             <thead>
                 <tr>
                     <th field="ck" checkbox="true"></th>
+                    <th data-options="field:'PlanStatus',width:100,align:'center'" formatter="formatterStatus" styler="styleStatus">计划状态</th>
                     <th data-options="field:'SchedulePlanCode',width:200,align:'center'">调度编号</th>
                     <th data-options="field:'BatchID',width:200,align:'center'">批次号</th>
                     <th data-options="field:'PlanQuantity',width:100,align:'center'">计划重量</th>
                     <th data-options="field:'BrandName',width:150,align:'center'">品名</th>
                     <th data-options="field:'Unit',width:100,align:'center'">单位</th>
-                    <th data-options="field:'PlanStatus',width:100,align:'center'" formatter="formatterStatus">计划状态</th>
                     <th data-options="field:'PlanBeginTime',width:200,align:'center'">计划开始时间</th>
                     <th data-options="field:'PlanEndTime',width:200,align:'center'">计划完成时间</th>
                     <th data-options="field:'Type',width:100,align:'center'">调度类型</th>

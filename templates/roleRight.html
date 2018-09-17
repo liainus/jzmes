@@ -72,6 +72,16 @@
             }
         }
         $(function(){
+            var ttree = $("#tt").tree({
+                url:'/permission/menulist',
+                method: 'get',
+                animate:true,
+                checkbox:true,
+                onlyLeafCheck:true,//去掉父节点复选框
+                loadFilter:function(data){
+                    return data;
+                }
+            })
             var treeId = ""
             $("#tree").tree({
                 url:'/Permission/SelectRoles',
@@ -86,6 +96,11 @@
                     $('#tab').datagrid('load',{
                         ID: node.id
                     });
+                    var params = {
+                        id: node.id
+                    };
+                    ttree.tree("options").queryParams = params
+                    ttree.tree('reload')
                     treeId = node.id
                 },
                 onSelect:function(node){
@@ -99,6 +114,11 @@
                     $('#tab').datagrid('load',{
                         ID: node.id
                     });
+                    var params = {
+                        id: node.id
+                    };
+                    ttree.tree("options").queryParams = params
+                    ttree.tree('reload')
                     treeId = node.id
                 },
                 onLoadSuccess: function (node, data) {
@@ -108,16 +128,7 @@
                     });
                 }
             })
-            $("#tt").tree({
-                url:'/permission/menulist',
-                method: 'get',
-                animate:true,
-                checkbox:true,
-                onlyLeafCheck:true,//去掉父节点复选框
-                loadFilter:function(data){
-                    return data;
-                }
-            })
+
             $("#SaveBtn").on("click",function () {
                 var nodes = $("#tt").tree('getChecked')
                 var jsonarray = []

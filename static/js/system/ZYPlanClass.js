@@ -128,25 +128,21 @@ $(function () {
                 width: 100,
                 formatter: function(value,row,index){
                     if (value == 10){
-                        return "编制"
+                        return '新增'
                     }else if(value == 20){
-                        return "下达"
+                        return '已下发'
                     }else if(value == 30){
-                        return "新增"
+                        return '中控已确认'
+                    }else if(value == 31){
+                        return '中控已复核'
+                    }else if(value == 32){
+                        return 'QA已复核'
                     }else if(value == 40){
-                        return "确认"
+                        return '已确认，准备生产'
                     }else if(value == 50){
-                        return "执行"
+                        return '执行'
                     }else if(value == 60){
-                        return "完成"
-                    }else if(value == 70){
-                        return "取消"
-                    }else if(value == 80){
-                        return "暂停"
-                    }else if(value == 85){
-                        return "故障"
-                    }else if(value == 90){
-                        return "中止"
+                        return '已完成'
                     }
                 }
             },

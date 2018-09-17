@@ -4930,6 +4930,11 @@ def NodeIdNoteSearch():
             insertSyslog("error", "NodeIdNote数据查询失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
+# 计划执行进度
+@app.route('/PlanExecutionProgress')
+def PlanExecutionProgress():
+    return render_template('PlanExecutionProgress.html')
+
 if __name__ == '__main__':
     app.run(debug=True)
 
