@@ -100,11 +100,18 @@
                         ID: node.id
                     });
                     $("#tt").tree({
+                        url:'/permission/menulist',
+                        method: 'get',
+                        animate:true,
+                        checkbox:true,
+                        onlyLeafCheck:true,//去掉父节点复选框
+                        loadFilter:function(data){
+                            return data;
+                        },
                         onBeforeLoad:function(node, param){
                             param.id = node.id
                         }
                     })
-                    $("#tt").tree('reload')
                     treeId = node.id
                 },
                 onSelect:function(node){
@@ -119,11 +126,18 @@
                         ID: node.id
                     });
                     $("#tt").tree({
+                        url:'/permission/menulist',
+                        method: 'get',
+                        animate:true,
+                        checkbox:true,
+                        onlyLeafCheck:true,//去掉父节点复选框
+                        loadFilter:function(data){
+                            return data;
+                        },
                         onBeforeLoad:function(node, param){
                             param.id = node.id
                         }
                     })
-                    $("#tt").tree('reload')
                     treeId = node.id
                 },
                 onLoadSuccess: function (node, data) {
