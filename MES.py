@@ -380,7 +380,6 @@ def userList():
         if ID == '':
             try:
                 json_str = json.dumps(data.to_dict())
-                print(json_str)
                 if len(json_str) > 10:
                     pages = int(data['page'])  # 页数
                     rowsnumber = int(data['rows'])  # 行数
@@ -391,7 +390,6 @@ def userList():
                     # ORM模型转换json格式
                     jsonusers = json.dumps(users_data, cls=AlchemyEncoder, ensure_ascii=False)
                     jsonusers = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonusers + "}"
-
                     return jsonusers.encode("utf8")
             except Exception as e:
                 print(e)
@@ -402,7 +400,6 @@ def userList():
             data = request.values  # 返回请求中的参数和form
             try:
                 json_str = json.dumps(data.to_dict())
-                print(json_str)
                 if len(json_str) > 10:
                     pages = int(data['page'])  # 页数
                     rowsnumber = int(data['rows'])  # 行数
@@ -417,7 +414,6 @@ def userList():
                     total = db_session.query(User).filter_by(RoleName=role_name).count()
                     users_data = db_session.query(User).filter_by(RoleName=role_name).all()[
                                  inipage:endpage]
-                    print(users_data)
                     # ORM模型转换json格式
                     jsonusers = json.dumps(users_data, cls=AlchemyEncoder, ensure_ascii=False)
                     jsonusers = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonusers + "}"
@@ -3374,7 +3370,7 @@ def printSelect(node, depth): # id:0, depth:1
     result = []
     global id
     id += 1 # 控制下一层
-    if depth <= 2:
+    if depth <= 1:
         for cNode in node.get_children():#[Node(TwoByteNodeId(i=86)), Node(TwoByteNodeId(i=85)), Node(TwoByteNodeId(i=87))]
             if len(cNode.get_children()) >= 0:
                 if len(cNode.get_children()) > 0:
