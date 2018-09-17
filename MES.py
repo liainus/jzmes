@@ -3159,10 +3159,27 @@ def saveEQPCode():
                 EQPCode = data['EQPCode']
                 ID = data['ID']
                 oclass = db_session.query(ZYTask).filter(ZYTask.ID == ID).first()
-                oclassplan = db_session.query(ZYPlan).filter(ZYPlan.PUID == oclass.PUID, ZYPlan.BatchID == oclass.BatchID).first()
                 oclass.EquipmentID = EQPCode
-                oclass.TaskStatus = '40'
-                oclassplan.PlanStatus = '40'
+                oclass.TaskStatus = Model.Global.TASKSTATUS.COMFIRM.value
+                db_session.commit()
+                oclassplan = db_session.query(ZYPlan).filter(ZYPlan.PUID == oclass.PUID, ZYPlan.BatchID == oclass.BatchID).first()
+                oclasstasks = db_session.query(ZYTask).filter(ZYTask.PUID == oclass.PUID,
+                                                             ZYTask.BatchID == oclass.BatchID).all()
+                flag = "TRUE"
+                for task in oclasstasks:
+                    if(task.TaskStatus != Model.Global.TASKSTATUS.COMFIRM.value):
+                        flag = "FALSE"
+                if(flag == "TRUE"):
+                    oclassplan.ZYPlanStatus = Model.Global.ZYPlanStatus.COMFIRM.value
+                db_session.commit()
+                oclassplans = db_session.query(ZYPlan).filter(ZYPlan.BatchID == oclass.BatchID).all()
+                planmana = db_session.query(PlanManager).filter(PlanManager.BatchID == oclass.BatchID).first()
+                flagP = "TRUE"
+                for plan in oclassplans:
+                    if(plan.ZYPlanStatus != Model.Global.ZYPlanStatus.COMFIRM.value):
+                        flagP = "FALSE"
+                if(flagP == "TRUE"):
+                    planmana.PlanStatus = Model.Global.PlanStatus.COMFIRM.value
                 db_session.commit()
                 return "OK"
         except Exception as e:
@@ -4682,16 +4699,17 @@ def QAPass():
                     id = int(key)
                     try:
                         oclass = db_session.query(PlanManager).filter(PlanManager.ID == id).first()
-                        oclass.PlanStatus = Model.Global.PlanStatus.QAChecked.value
-                        oclassW = db_session.query(WorkFlowStatus).filter(WorkFlowStatus.PlanManageID == id).first()
-                        oclassW.AuditStatus = Model.Global.AuditStatus.ReviewPass.value
-                        oclassW.DescF =  "QA放行"
                         oclassZYPlans = db_session.query(ZYPlan).filter(ZYPlan.BatchID == oclass.BatchID).all()
-                        for ZYPlan in oclassZYPlans:
-                            ZYPlan.ZYPlanStatus = Model.Global.ZYPlanStatus.FINISH.value
-                        oclassZYTasks = db_session.query(ZYTask).filter(ZYTask.BatchID == oclass.BatchID).all()
-                        for ZYTask in oclassZYTasks:
-                            ZYTask.TaskStatus = Model.Global.TASKSTATUS.FINISH.value
+                        for plan in oclassZYPlans:
+                            if(plan.ZYPlanStatus != Model.Global.ZYPlanStatus.FINISH.value):
+                                return "请先确认此批次下的计划是否完成，都完成后再进行放行！"
+                            else:
+                                pass
+                        oclass.PlanStatus = Model.Global.PlanStatus.QApass.value
+                        oclassW = db_session.query(WorkFlowStatus).filter(WorkFlowStatus.PlanManageID == id).all()
+                        for oc in oclassW:
+                            oc.AuditStatus = Model.Global.AuditStatus.BatchEndPass.value
+                            oc.DescF = "QA放行"
                         db_session.commit()
                         userName = current_user.Name
                         Desc = "QA放行"
