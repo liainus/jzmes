@@ -426,21 +426,20 @@ def userList():
 
 
 # 权限分配下的功能模块列表
-def getMenuList(id=0, role_menus=None):
+def getMenuList(id=0, role_menus=[]):
     sz = []
     try:
         menus = db_session.query(Menu).filter().all()
         for obj in menus:
-            if role_menus in menus:
-                if obj.ParentNode == id:
+            if obj.ParentNode == id:
+                if obj in role_menus:
                     sz.append({"id": obj.ID,
                                "text": obj.ModuleName,
-                               "state": 'open',
+                               "checked": True,
                                "children": getMenuList(obj.ID)})
-            if obj.ParentNode == id:
                 sz.append({"id": obj.ID,
                            "text": obj.ModuleName,
-                           "state": 'closed',
+                           "checked": False,
                            "children": getMenuList(obj.ID)})
         return sz
     except Exception as e:
@@ -448,10 +447,10 @@ def getMenuList(id=0, role_menus=None):
         insertSyslog("error", "查询权限分配下的功能模块列表Error：" + str(e), current_user.Name)
         return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
-role_menus = db_session.query(Role.menus).filter_by(ID=1).all()
-print(role_menus)
-menus = db_session.query(Menu).filter().all()
-print(menus)
+# role_menus = db_session.query(Role.menus).filter_by(ID=1).all()
+# print(role_menus)
+# menus = db_session.query(Menu).filter().all()
+# print(menus)
 
 
 # 加载菜单列表
@@ -493,11 +492,14 @@ def menuToUser():
             role_id = data['role_id']  # 获取角色ID
             if role_id is None:
                 return
-            menu_id = data['menu_id'] # 获取菜单ID
-            if menu_id:
-                menu_id = re.findall(r'\d+\.?\d*', menu_id)
+            menus = db_session.query(Role.menus).fiter_by(ID=role_id).all()
+            db_session.delete(menus)
+            db_session.commit()
+            menu_id = data['menu_id' \
+                           ''] # 获取菜单ID
             if menu_id is None:
                 return
+            menu_id = re.findall(r'\d+\.?\d*', menu_id)
             for r in menu_id:
                 role = db_session.query(Role).filter_by(ID=role_id).first()
                 menu = db_session.query(Menu).filter_by(ID=r).first()
