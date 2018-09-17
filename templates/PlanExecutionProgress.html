@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>计划执行进度</title>
+    <link href="../static/css/base.css" rel="stylesheet">
+	<link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
+	<link href="../static/css/basic_info.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
+	<link href="../static/js/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
+    <link href="../static/css/datagridpanel_customer.css" rel="stylesheet">
+    <link href="../static/css/dialogpanel.css" type="text/css" rel="stylesheet">
+    <link href="../static/css/datagrid_customer.css" type="text/css" rel="stylesheet">
+    <script type="text/javascript" src="../static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
+    <script>
+        $(function(){
+            function createKeyIDObj(keyID){
+                return {
+                    ID:keyID
+                }
+            }
+            CollectToolbar = {
+                search:function(){
+                    var searchBatchID = $('input[name="search"]').val()
+                    $("#tab").datagrid({
+                        queryParams: {
+                            BatchID: searchBatchID
+                        }
+                    })
+                },
+                progress:function(){
+                    var rows = $("#tab").datagrid('getSelections');
+                    if (rows.length > 0) {
+                        var jsonarray=[];
+                        var a = "";
+                        for (var i = 0; i < rows.length; i++) {
+                            var obj=createKeyIDObj(parseInt(rows[i].ID));
+                            jsonarray.push(obj);
+                        }
+                        a = JSON.stringify(jsonarray);
+                        $("#TemplateClassDialog").dialog('open').dialog('setTitle', '查看'+ rows[0].ID +'的计划进度');
+
+                    } else {
+                        $.messager.alert('提示', '请选择要查看的计划！', 'info');
+                    }
+                },
+                refresh:function(){
+                    $("#tab").datagrid('load')
+                }
+            }
+        })
+        function formatterStatus(value, row, index){
+            if (value == 10){
+                return '新增'
+            }else if(value == 11){
+                return '已审核'
+            }else if(value == 20){
+                return '已下发'
+            }else if(value == 30){
+                return '中控已确认'
+            }else if(value == 31){
+                return '中控已复核'
+            }else if(value == 32){
+                return 'QA已复核'
+            }else if(value == 40){
+                return '已确认，准备生产'
+            }else if(value == 50){
+                return '执行'
+            }else if(value == 60){
+                return '已完成'
+            }else if(value == 70){
+                return 'QA放行'
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="content">
+        <div id="Toolbar" style="padding:0 10px;">
+            批次号:
+            <input type="text" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
+                placeholder="">
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="CollectToolbar.search();">查询</a>
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-redo'" onclick="CollectToolbar.progress();">计划进度</a>
+            <a href="#" class="easyui-linkbutton" id="reload" data-options="iconCls:'icon-reload'" onclick="CollectToolbar.refresh();">刷新</a>
+        </div>
+        <table class="easyui-datagrid" id="tab" title="" style="width:100%;" data-options="
+            queryParams: {
+                BatchID: '',
+            },
+            rownumbers:true,
+            singleSelect:true,
+            autoRowHeight:false,
+            pagination:true,
+            pageSize:10,
+            toolbar:'#Toolbar',
+            url:'/allPlanManagers/Search',
+            method:'get'">
+            <thead>
+                <tr>
+                    <th field="ck" checkbox="true"></th>
+                    <th data-options="field:'PlanStatus',width:100,align:'center'" formatter="formatterStatus">计划状态</th>
+                    <th data-options="field:'SchedulePlanCode',width:200,align:'center'">调度编号</th>
+                    <th data-options="field:'BatchID',width:200,align:'center'">批次号</th>
+                    <th data-options="field:'PlanQuantity',width:100,align:'center'">计划重量</th>
+                    <th data-options="field:'BrandName',width:150,align:'center'">品名</th>
+                    <th data-options="field:'Unit',width:100,align:'center'">单位</th>
+                    <th data-options="field:'PlanBeginTime',width:200,align:'center'">计划开始时间</th>
+                    <th data-options="field:'PlanEndTime',width:200,align:'center'">计划完成时间</th>
+                    <th data-options="field:'Type',width:100,align:'center'">调度类型</th>
+                </tr>
+            </thead>
+        </table>
+        <div id="TemplateClassDialog" class="easyui-dialog" style="width:400px;height:500px;padding:10px;"
+             data-options="closed:'true',modal:true">
+
+        </div>
+</body>
+</html>
