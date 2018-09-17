@@ -82,6 +82,10 @@
                     return data;
                 }
             })
+            var params = {
+                id: ""
+            }
+            ttree.tree("options").queryParams = params
             var treeId = ""
             $("#tree").tree({
                 url:'/Permission/SelectRoles',
@@ -96,7 +100,7 @@
                     $('#tab').datagrid('load',{
                         ID: node.id
                     });
-                    var params = {
+                    params = {
                         id: node.id
                     };
                     ttree.tree("options").queryParams = params
@@ -114,7 +118,7 @@
                     $('#tab').datagrid('load',{
                         ID: node.id
                     });
-                    var params = {
+                    params = {
                         id: node.id
                     };
                     ttree.tree("options").queryParams = params
