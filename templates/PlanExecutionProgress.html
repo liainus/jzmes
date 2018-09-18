@@ -41,7 +41,7 @@
                             jsonarray.push(obj);
                         }
                         a = JSON.stringify(jsonarray);
-                        $("#TemplateClassDialog").dialog('open').dialog('setTitle', '查看'+ rows[0].ID +'的计划进度');
+                        $("#TemplateClassDialog").dialog('open').dialog('setTitle', '查看'+ rows[0].BatchID +'的计划进度');
 
                     } else {
                         $.messager.alert('提示', '请选择要查看的计划！', 'info');
@@ -51,6 +51,14 @@
                     $("#tab").datagrid('load')
                 }
             }
+            $("#tab").datagrid({
+                onClickRow:function(rowIndex, rowData){
+                    $("#smtab").datagrid('load',{
+                        ID: rowData.ID,
+                        BatchID: BatchID.ID
+                    })
+                }
+            })
         })
         function formatterStatus(value, row, index){
             if (value == 10){
@@ -98,7 +106,7 @@
             pageSize:10,
             toolbar:'#Toolbar',
             url:'/allPlanManagers/Search',
-            method:'get'">
+            method:'post'">
             <thead>
                 <tr>
                     <th field="ck" checkbox="true"></th>
@@ -118,5 +126,32 @@
              data-options="closed:'true',modal:true">
 
         </div>
+        <table class="easyui-datagrid" id="smtab" title="" style="width:100%;" data-options="
+            queryParams: {
+                BatchID: '',
+            },
+            rownumbers:true,
+            singleSelect:true,
+            autoRowHeight:false,
+            pagination:true,
+            pageSize:10,
+            toolbar:'#Toolbar',
+            url:'/PlanExecutionProgress/zyPlanProgressSearch',
+            method:'GET'">
+            <thead>
+                <tr>
+                    <th field="ck" checkbox="true"></th>
+                    <th data-options="field:'PlanStatus',width:100,align:'center'" formatter="formatterStatus">计划状态</th>
+                    <th data-options="field:'SchedulePlanCode',width:200,align:'center'">调度编号</th>
+                    <th data-options="field:'BatchID',width:200,align:'center'">批次号</th>
+                    <th data-options="field:'PlanQuantity',width:100,align:'center'">计划重量</th>
+                    <th data-options="field:'BrandName',width:150,align:'center'">品名</th>
+                    <th data-options="field:'Unit',width:100,align:'center'">单位</th>
+                    <th data-options="field:'PlanBeginTime',width:200,align:'center'">计划开始时间</th>
+                    <th data-options="field:'PlanEndTime',width:200,align:'center'">计划完成时间</th>
+                    <th data-options="field:'Type',width:100,align:'center'">调度类型</th>
+                </tr>
+            </thead>
+        </table>
 </body>
 </html>
