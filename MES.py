@@ -3658,16 +3658,16 @@ def collectParamsConfig():
         NodeID.append(node_id)
     return render_template('collectParamsConfig.html', TempNames=TemplateNames, NodeID=NodeID)
 
-def getOpcTagList(id, ParentID=None):
+def getOpcTagList(ParentID=None):
     sz = []
     try:
-        opcTags = db_session.query(OpcTag).all()
+        opcTags = db_session.query(OpcTag).filter_by(ParentID=ParentID).all()
         for obj in opcTags:
             if obj.ParentID == ParentID:
                 sz.append({"id": obj.ID,
                            "NodeId": obj.NodeID,
                            "Desc": obj.Note,
-                           "children": getOpcTagList(obj.ID, obj.NodeID)})
+                           "children": getOpcTagList(obj.NodeID)})
         return sz
     except Exception as e:
         print(e)
@@ -3679,9 +3679,9 @@ def getOpcTagList(id, ParentID=None):
 def OpcTagLoad():
     if request.method == 'POST':
         try:
-            data = getOpcTagList(id=0)
+            data = getOpcTagList(None)
             jsondata = json.dumps(data, cls=AlchemyEncoder, ensure_ascii=False)
-            return jsondata.encode("utf8")
+            return jsondata
         except Exception as e:
             print(e)
             logger.error(e)
@@ -4784,22 +4784,33 @@ def nodeIdNote():
             new_file = '%s%s%s'%(os.getcwd(), "\\", file.filename)
             data = getExcel(new_file) # [['i=1100', '温度'], ['i=1112', '气压'], ['i=1123', '湿度']]
             for index in data:
-                oclass = db_session.query(NodeIdNote).filter_by(NodeID=index[0]).first()
-                if oclass is not None:
-                    db_session.delete(oclass)
-                    db_session.commit()
-                if len(index) == 2:
-                    db_session.add(NodeIdNote(
-                            NodeID=index[0],
-                            Note=index[1]))
-                    db_session.commit()
-                opcTag = db_session.query(OpcTag).filter_by(NodeID=index[0]).first()
-                if opcTag is None:
+                if index[1].lower() == 'note': #去表头
                     continue
-                opcTag.Note = index[1]
-                db_session.add(opcTag)
-                db_session.commit()
-            return redirect('/NodeIdNote/config')
+                elements = ('ns=1;s=t|', 'ns=1;s=h|')
+                for element in elements:  #将注释Note插入OpcTag中
+                    nodeId = element + index[0]
+                    opcTag = db_session.query(OpcTag.NodeID).filter_by(NodeID=nodeId).first()
+                    if opcTag == 'ns=1;s=h|提取罐R1101_8\PV_R110':
+                        print(opcTag)
+                    if opcTag is None:
+                        continue
+                    opcTag.Note = index[1]
+                    db_session.add(opcTag)
+                    db_session.commit()
+                    # 读取excel数据录入NodeIdNote数据表
+                    oclass = db_session.query(NodeIdNote).filter_by(NodeID=nodeId).first()
+                    if oclass is not None:
+                        db_session.delete(oclass)
+                        db_session.commit()
+                    if len(index) == 2:
+                        db_session.add(NodeIdNote(
+                                NodeID=nodeId,
+                                Note=index[1]))
+                        try:
+                            db_session.commit()
+                        except:
+                            db_session.rollback()
+            return redirect(url_for('nodeIdNote'))
         except Exception as e:
             print(e)
             logger.error(e)

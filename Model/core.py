@@ -3446,16 +3446,16 @@ class OpcTag(Base):
 	OpcServerID = Column(Integer, nullable=True)
 
 	# NodeID
-	NodeID = Column(Unicode(30), nullable=True)
+	NodeID = Column(Unicode(200), nullable=True)
 
 	# 名称
-	DisplayName = Column(Unicode(30), nullable=True)
+	DisplayName = Column(Unicode(200), nullable=True)
 
 	# 注释
-	Note = Column(Unicode(50), nullable=True)
+	Note = Column(Unicode(100), nullable=True)
 
 	# 父节点
-	ParentID = Column(Unicode(30), nullable=True)
+	ParentID = Column(Unicode(200), nullable=True)
 
 	# 备注
 	Desc = Column(Unicode(100), nullable=True)
