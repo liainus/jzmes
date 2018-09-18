@@ -171,17 +171,17 @@ class ctrlPlan:
             bReturn = self.createWorkFlowStatus(PlanManageID, ZYPlanID, None, AuditStatus, DescF)
 
             session.add(Model.core.ReadyWork(ZYPlanID=ZYPlanID,IsCheck="0",ReadyName="ClearFieldCard",
-                                             Describe="检查工作区域是否有《清场合格证》"))
+                                             Describe="检查工作区域是否有《清场合格证》", ProductionFlag="0"))
             session.add(Model.core.ReadyWork(ZYPlanID=ZYPlanID, IsCheck="0", ReadyName="ClearLastMateriel",
-                                             Describe="是否清除工作区域、设备上的上一批次的物料或产品"))
+                                             Describe="是否清除工作区域、设备上的上一批次的物料或产品", ProductionFlag="0"))
             session.add(Model.core.ReadyWork(ZYPlanID=ZYPlanID, IsCheck="0", ReadyName="ClearLastMaterielStatus",
-                                             Describe="检查是否已经清除上一批次物料的状态标志"))
+                                             Describe="检查是否已经清除上一批次物料的状态标志", ProductionFlag="0"))
             session.add(Model.core.ReadyWork(ZYPlanID=ZYPlanID, IsCheck="0", ReadyName="ClaernEquipLocal",
-                                             Describe="检查生产设备、生产现场是否完好清洁"))
+                                             Describe="检查生产设备、生产现场是否完好清洁", ProductionFlag="0"))
             session.add(Model.core.ReadyWork(ZYPlanID=ZYPlanID, IsCheck="0", ReadyName="ClarnFile",
-                                             Describe="是否清除生产现场与本批产品无关的文件"))
+                                             Describe="是否清除生产现场与本批产品无关的文件", ProductionFlag="0"))
             session.add(Model.core.ReadyWork(ZYPlanID=ZYPlanID, IsCheck="0", ReadyName="SafetyStatus",
-                                             Describe="检查设备、电器件、介质是否正常处于安全状态"))
+                                             Describe="检查设备、电器件、介质是否正常处于安全状态", ProductionFlag="0"))
             session.commit()
             return bReturn
         except Exception as e:
