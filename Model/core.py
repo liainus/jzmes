@@ -3556,10 +3556,9 @@ class CollectTaskCollection(Base):
 	# 描述
 	Desc = Column(Unicode(100), nullable=True)
 
-
 # 用于在MES存储调度计划事件信息:
-class WorkFlowEvent(Base):
-	__tablename__ = "WorkFlowEvent"
+class WorkFlowEventPlan(Base):
+	__tablename__ = "WorkFlowEventPlan"
 
 	# ID:
 	ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
@@ -3567,11 +3566,27 @@ class WorkFlowEvent(Base):
 	# PlanManage表ID:
 	PlanManageID = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
 
+	# 用户名:
+	userName = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+	# 描述:
+	Desc = Column(Unicode(100), primary_key=False, autoincrement=False, nullable=True)
+
+	# 事件类型:
+	Type = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+	# 事件发生的时间:
+	EventTime = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+
+# 用于在MES存储调度计划事件信息:
+class WorkFlowEventZYPlan(Base):
+	__tablename__ = "WorkFlowEventZYPlan"
+
+	# ID:
+	ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
 	# ZYPlan表ID:
 	ZYPlanID = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
-
-	# ZYTask表ID:
-	ZYTaskID = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
 
 	# 用户名:
 	userName = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)

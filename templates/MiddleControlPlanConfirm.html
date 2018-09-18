@@ -32,7 +32,7 @@
                         }
                     })
                 },
-                dead:function(){
+                ready:function(){
                     var rows = $("#tab").datagrid('getSelections');
                     if (rows.length > 0) {
                         $("#TemplateClassDialog").dialog('open').dialog('setTitle', '确认生产前的准备工作');
@@ -101,7 +101,7 @@
                             }
                         });
                 },
-                adopt:function(){
+                readyConfirm:function(){
                     var rows = $("#tab").datagrid('getSelections');
                     if (rows.length > 0) {
                         var jsonarray = [];
@@ -111,7 +111,7 @@
                             jsonarray.push(obj);
                         }
                         a = JSON.stringify(jsonarray);
-                        $.messager.confirm('确定操作', '确定要通过所选的计划吗？', function (flag) {
+                        $.messager.confirm('确定操作', '确定要通过生产前的准备吗？', function (flag) {
                             if (flag) {
                                 $.ajax({
                                     url: '/ZYPlanGuid/controlConfirm',
@@ -125,7 +125,124 @@
                                             $.messager.show({
                                                 title: '提示',
                                                 timeout: 1000,
-                                                msg: '已计划确认成功',
+                                                msg: '准备确认成功',
+                                                style: {
+                                                    right: '',
+                                                    top: document.body.scrollTop + document.documentElement.scrollTop,
+                                                    bottom: ''
+                                                }
+                                            });
+                                            $("#tab").datagrid('loaded');
+                                            $("#tab").datagrid('load');
+                                            $("#tab").datagrid('unselectAll');
+                                        }else{
+                                            $.messager.alert('提示', data, 'info');
+                                        }
+                                    },
+                                    error: function () {
+                                        alert("请求失败，请稍后重试！")
+                                    }
+                                });
+                            }
+                        });
+                    } else {
+                        $.messager.alert('提示', '请选择要确认的计划！', 'info');
+                    }
+                },
+                clear:function(){
+                    var rows = $("#tab").datagrid('getSelections');
+                    if (rows.length > 0) {
+                        $("#clearTemplateClassDialog").dialog('open').dialog('setTitle', '确认生产前的准备工作');
+                        ZYPlanID = rows[0].ID
+                        $('#clearTab').datagrid({
+                            url:'/ZYPlanGuid/ConfirmSearchInfoAgain',
+                            method:'get',
+                            idField:'ID',
+                            queryParams: {
+                                ZYPlanID: ZYPlanID
+                            },
+                            onLoadSuccess:function(data) {
+                                for (var i = 0; i < data.rows.length; i++) {
+                                    if (data.rows[i].IsCheck == 1) {
+                                        $("#clearTab").datagrid('checkRow', i)
+                                    }
+                                }
+                            }
+                        });
+                    } else {
+                        $.messager.alert('提示', '请选择计划！', 'info');
+                    }
+                },
+                saveclear:function(){
+                    var deadRows = $("#clearTab").datagrid('getSelections');
+                    var array = [];
+                        var b = "";
+                        for (var i = 0; i < deadRows.length; i++) {
+                            var object = createKeyIDObj(parseInt(deadRows[i].ID));
+                            array.push(object);
+                        }
+                        b = JSON.stringify(array);
+
+                        $.messager.confirm('确定操作', '确定要保存所选的清场工作吗？', function (flag) {
+                            if (flag) {
+                                $.ajax({
+                                    url: '/ZYPlanGuid/controlConfirmSaveInfoAgain',
+                                    method: 'POST',
+                                    data: {
+                                        ID: b,
+                                        ZYPlanID:ZYPlanID
+                                    },
+                                    success: function (data) {
+                                        $.messager.progress('close')
+                                        if (data == "OK") {
+                                            $.messager.show({
+                                                title: '提示',
+                                                timeout: 1000,
+                                                msg: '保存成功',
+                                                style: {
+                                                    right: '',
+                                                    top: document.body.scrollTop + document.documentElement.scrollTop,
+                                                    bottom: ''
+                                                }
+                                            });
+                                            $("#tab").datagrid('loaded');
+                                            $("#tab").datagrid('load');
+                                            $("#tab").datagrid('unselectAll');
+                                            $("#clearTemplateClassDialog").dialog('close');
+                                        }
+                                    },
+                                    error: function () {
+                                        alert("请求失败，请稍后重试！")
+                                    }
+                                });
+                            }
+                        });
+                },
+                clearConfirm:function(){
+                    var rows = $("#tab").datagrid('getSelections');
+                    if (rows.length > 0) {
+                        var jsonarray = [];
+                        var a = "";
+                        for (var i = 0; i < rows.length; i++) {
+                            var obj = createKeyIDObj(parseInt(rows[i].ID));
+                            jsonarray.push(obj);
+                        }
+                        a = JSON.stringify(jsonarray);
+                        $.messager.confirm('确定操作', '确定要通过清场工作吗？', function (flag) {
+                            if (flag) {
+                                $.ajax({
+                                    url: '/ZYPlanGuid/controlConfirm',
+                                    method: 'POST',
+                                    data: {
+                                        ID: a
+                                    },
+                                    success: function (data) {
+                                        $.messager.progress('close')
+                                        if (data == "OK") {
+                                            $.messager.show({
+                                                title: '提示',
+                                                timeout: 1000,
+                                                msg: '清场确认成功！',
                                                 style: {
                                                     right: '',
                                                     top: document.body.scrollTop + document.documentElement.scrollTop,
@@ -203,8 +320,10 @@
             <input type="text" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
                 placeholder="">
             <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="CollectToolbar.search();">查询</a>
-            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit'" onclick="CollectToolbar.dead();">准备工作确认</a>
-            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-redo'" onclick="CollectToolbar.adopt();">计划确认</a>
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit'" onclick="CollectToolbar.ready();">生产前的准备</a>
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-redo'" onclick="CollectToolbar.readyConfirm();">准备确认</a>
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit'" onclick="CollectToolbar.clear();">生产结束清场</a>
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-redo'" onclick="CollectToolbar.clearConfirm();">清场确认</a>
             <a href="#" class="easyui-linkbutton" id="reload" data-options="iconCls:'icon-reload'" onclick="CollectToolbar.refresh();">刷新</a>
         </div>
         <table class="easyui-datagrid" id="tab" title="" style="width:100%;" data-options="
@@ -254,10 +373,31 @@
                 </div>
             </form>
         </div>
+        <div id="clearTemplateClassDialog" class="easyui-dialog" style="width:400px;height:360px;padding:10px;"
+             data-options="closed:'true',buttons:'#clearClassDialogButtons',modal:true">
+            <form id="clearTemplateClassForm" method="post" class="dialog-form">
+                <table class="easyui-datagrid" id="clearTab" title="" style="width:100%;" data-options="
+                    rownumbers:true,
+                    singleSelect:false,
+                    autoRowHeight:false">
+                    <thead>
+                        <tr>
+                            <th field="ck" checkbox="true"></th>
+                            <th data-options="field:'Describe',width:300,align:'center'">清场工作描述</th>
+                        </tr>
+                    </thead>
+                </table>
+                <div id="clearClassDialogButtons" >
+                    <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" onclick="CollectToolbar.saveclear()" >确认</a>
+                    <a href="#" class="easyui-linkbutton" onclick="$('#clearTemplateClassDialog').dialog('close')">关闭</a>
+                </div>
+            </form>
+        </div>
     </div>
     <!-- 右键菜单 -->
     <div id="contextmenu" class="easyui-menu" style="width:120px;">
-        <div data-options="iconCls:'icon-redo'" onclick="CollectToolbar.adopt();">计划确认</div>
+        <div data-options="iconCls:'icon-redo'" onclick="CollectToolbar.readyConfirm();">准备确认</div>
+        <div data-options="iconCls:'icon-redo'" onclick="CollectToolbar.clearConfirm();">清场确认</div>
     </div>
 </body>
 </html>

@@ -452,7 +452,7 @@ class ctrlPlan:
             Desc = "计划向导生成计划planmanager"
             Type = Model.Global.AuditStatus.Unaudited.value
             EventTime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            bReturn = self.createWorkFlowEvent(PlanManageID,None,None,userID,Desc,Type,EventTime)
+            bReturn = self.createWorkFlowEventPlan(PlanManageID,userID,Desc,Type,EventTime)
             if bReturn == False:
                 return False
 
@@ -588,17 +588,32 @@ class ctrlPlan:
             logger.error(e)
             return  bReturn,varTaskNo
 
-    def createWorkFlowEvent(self,APlanManageID,AZYPlanID,AZYTaskID,userName,Desc,Type,EventTime):
+    def createWorkFlowEventPlan(self,APlanManageID,userName,Desc,Type):
         bReturn = True
         try:
-            session.add(Model.core.WorkFlowEvent(
+            session.add(Model.core.WorkFlowEventPlan(
                 PlanManageID=APlanManageID,
-                ZYPlanID=AZYPlanID,
-                ZYTaskID=AZYTaskID,
                 userName=userName,
                 Desc=Desc,
                 Type=Type,
-                EventTime=EventTime))
+                EventTime=datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+            session.commit()
+            return bReturn
+        except Exception as e:
+            session.rollback()
+            print(e)
+            logger.error(e)
+            return False
+
+    def createWorkFlowEventZYPlan(self,AZYPlanID,userName,Desc,Type):
+        bReturn = True
+        try:
+            session.add(Model.core.WorkFlowEventZYPlan(
+                ZYPlanID=AZYPlanID,
+                userName=userName,
+                Desc=Desc,
+                Type=Type,
+                EventTime=datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
             session.commit()
             return bReturn
         except Exception as e:
@@ -623,6 +638,9 @@ class ctrlPlan:
             print(e)
             logger.error(e)
             return False
+
+    def createWorkFlowEven(self, PlanManageID, ID, param, userName, Desc, Type, EventTime):
+        pass
 
 
 # class SystemCtrol:
