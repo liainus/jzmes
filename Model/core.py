@@ -3099,7 +3099,7 @@ class PlanManagerWebIFS(object):
 						oclassW = session.query(WorkFlowStatus).filter_by(PlanManageID=PlanManagerid).first()
 						session.delete(oclassW)
 						session.delete(oclass)
-						oclassFs = session.query(WorkFlowEvent).filter_by(PlanManageID=PlanManagerid).all()
+						oclassFs = session.query(WorkFlowEventPlan).filter_by(PlanManageID=PlanManagerid).all()
 						for oclassF in oclassFs:
 							session.delete(oclassF)
 						zYPlans = session.query(ZYPlan).filter_by(BatchID=oclass.BatchID).all()

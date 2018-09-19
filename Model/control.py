@@ -159,8 +159,8 @@ class ctrlPlan:
                     # ActEndTime="",
                     ZYPlanStatus=Model.Global.ZYPlanStatus.NEW.value,
                     LockStatus=Model.Global.TASKLOCKSTATUS.UNLOCK.value,
-                    INFStatus=Model.Global.TASKSTATUS.COMPILE.value,
-                    WMSStatus=Model.Global.TASKSTATUS.COMPILE.value))
+                    INFStatus=Model.Global.TASKSTATUS.NEW.value,
+                    WMSStatus=Model.Global.TASKSTATUS.NEW.value))
             session.commit()
             ZYPlanID = session.query(Model.core.ZYPlan.ID).filter(Model.core.ZYPlan.BatchID == ABatchID,Model.core.ZYPlan.PUID==APUID).first()
             ZYPlanID = ZYPlanID[0]
@@ -215,7 +215,7 @@ class ctrlPlan:
                     SetRepeatCount=ASetRepeatCount,
                     # CurretnRepeatCount=odata['CurretnRepeatCount'],
                     # ActTank=odata['ActTank'],
-                    TaskStatus=Model.Global.TASKSTATUS.COMPILE.value,
+                    TaskStatus=Model.Global.TASKSTATUS.NEW.value,
                     LockStatus=Model.Global.TASKLOCKSTATUS.UNLOCK.value))
             session.commit()
             return bReturn

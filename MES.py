@@ -4363,8 +4363,7 @@ def saveEQPCode():
                         flag = "FALSE"
                 if(flag == "TRUE"):
                     oclassplan.ZYPlanStatus = Model.Global.ZYPlanStatus.COMFIRM.value
-                db_session.commit()
-                oclassplans = db_session.query(ZYPlan).filter(ZYPlan.BatchID == oclass.BatchID).all()
+                    db_session.commit()
                 return "OK"
         except Exception as e:
             db_session.rollback()
@@ -4410,14 +4409,14 @@ def searchcheckplanmanager():
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
                 ABatchID = data['BatchID']  # 批次号
                 if (ABatchID == None or ABatchID == ""):
-                    total = db_session.query(PlanManager.ID).filter(PlanManager.PlanStatus.in_((20, 60))).count()
-                    planManagers = db_session.query(PlanManager).filter(PlanManager.PlanStatus.in_((20, 60))).all()[
+                    total = db_session.query(PlanManager.ID).filter(PlanManager.PlanStatus.in_((10, 40))).count()
+                    planManagers = db_session.query(PlanManager).filter(PlanManager.PlanStatus.in_((10, 40))).all()[
                                    inipage:endpage]
                 else:
                     total = db_session.query(PlanManager).filter(PlanManager.BatchID == ABatchID,
-                                                                 PlanManager.PlanStatus.in_((20, 60))).count()
+                                                                 PlanManager.PlanStatus.in_((10, 40))).count()
                     planManagers = db_session.query(PlanManager).filter(PlanManager.BatchID == ABatchID,
-                                                                        PlanManager.PlanStatus.in_((20, 60))).all()[
+                                                                        PlanManager.PlanStatus.in_((10, 40))).all()[
                                    inipage:endpage]
                 planManagers = json.dumps(planManagers, cls=AlchemyEncoder, ensure_ascii=False)
                 print(planManagers)
@@ -4533,18 +4532,11 @@ def controlConfirm():
             userName = current_user.Name
             if(flag == "TRUE"):
                 oclass = db_session.query(PlanManager).filter(PlanManager.BatchID == zyp.BatchID).first()
-                oclass.PlanStatus = Model.Global.PlanStatus.Control.value
                 oclassW = db_session.query(WorkFlowStatus).filter(WorkFlowStatus.PlanManageID==oclass.ID).all()
                 for oc in oclassW:
                     oc.AuditStatus = Model.Global.AuditStatus.ClearField.value
                     oc.DescF = "中控确认清场"
                 db_session.commit()
-                Desc = "中控确认清场"
-                Type = Model.Global.Type.Control.value
-                PlanCreate = ctrlPlan('PlanCreate')
-                wReturn = PlanCreate.createWorkFlowEventPlan(oclass.ID, userName, Desc, Type)
-                if (wReturn == False):
-                    return '添加工作流表报错'
             Desc = "中控确认清场"
             Type = Model.Global.TypeZY.Control.value
             PlanCreate = ctrlPlan('PlanCreate')
@@ -4606,8 +4598,8 @@ def controlConfirmReCheck():
                 try:
                     ID = int(key)
                     userN = db_session.query(WorkFlowEventZYPlan.userName).filter(WorkFlowEventZYPlan.ZYPlanID == ID).first()
-                    if(userN[0] == current_user.Name):
-                        return "中控确认清场与中控清场复核不能是同一人操作！"
+                    # if(userN[0] == current_user.Name):
+                    #     return "中控确认清场与中控清场复核不能是同一人操作！"
                     roclass = db_session.query(ReadyWork).filter(ReadyWork.ZYPlanID == ID).all()
                     for ro in roclass:
                         if (ro.IsCheck == "0"):
@@ -4625,18 +4617,11 @@ def controlConfirmReCheck():
                     oclass = db_session.query(PlanManager).filter(PlanManager.BatchID == zypla.BatchID).first()
                     userName = current_user.Name
                     if(flag == "TRUE"):
-                        oclass.PlanStatus = Model.Global.PlanStatus.ControlChecked.value
                         oclassW = db_session.query(WorkFlowStatus).filter_by(PlanManageID=oclass.ID).all()
                         for oc in oclassW:
-                            oclassW.AuditStatus = Model.Global.AuditStatus.Recheck.value
-                            oclassW.DescF = "中控清场复核"
+                            oc.AuditStatus = Model.Global.AuditStatus.Recheck.value
+                            oc.DescF = "中控清场复核"
                         db_session.commit()
-                        Desc = "中控清场复核"
-                        Type = Model.Global.Type.ControlChecked.value
-                        PlanCreate = ctrlPlan('PlanCreate')
-                        wReturn = PlanCreate.createWorkFlowEventPlan(oclass.ID, userName, Desc, Type)
-                        if (wReturn == False):
-                            return '添加工作流表报错'
                     Desc = "中控清场复核"
                     Type = Model.Global.TypeZY.ControlChecked.value
                     PlanCreate = ctrlPlan('PlanCreate')
@@ -4672,7 +4657,7 @@ def QAConfirmSearch():
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
                 ABatchID = data['BatchID']  # 批次号
                 if (ABatchID == None or ABatchID == ""):
-                    total = db_session.query(ZYPlan.ID).filter(ZYPlan.ZYPlanStatu.in_((40, 60))).count()
+                    total = db_session.query(ZYPlan.ID).filter(ZYPlan.ZYPlanStatus.in_((40, 60))).count()
                     ZYPlans = db_session.query(ZYPlan).filter(ZYPlan.ZYPlanStatus.in_((40, 60))).all()[inipage:endpage]
                 else:
                     total = db_session.query(ZYPlan.ID).filter(ZYPlan.BatchID == ABatchID,ZYPlan.ZYPlanStatus.in_((40, 60))).count()
@@ -4707,20 +4692,6 @@ def QAConfirm():
                         for oc in oclassW:
                             oc.AuditStatus = Model.Global.AuditStatus.ReviewPass.value
                             oc.DescF = "QA复核"
-                        oclassZYPlans = db_session.query(ZYPlan).filter(ZYPlan.BatchID == oclass.BatchID).all()
-                        flag = "TRUE"
-                        for zy in oclassZYPlans:
-                            if (zy.ZYPlanStatus != Model.Global.ZYPlanStatus.QAChecked.value):
-                                flag = "FALSE"
-                        if(flag == "TRUE"):
-                            oclassPlanManager = db_session.query(PlanManager).filter(PlanManager.BatchID == oclass.BatchID).first()
-                            oclassPlanManager.PlanStatus = Model.Global.PlanStatus.QAChecked.value
-                            Desc = "QA复核"
-                            Type = Model.Global.Type.QAChecked.value
-                            PlanCreate = ctrlPlan('PlanCreate')
-                            wReturn = PlanCreate.createWorkFlowEventPlan(oclassPlanManager.ID, userName, Desc, Type)
-                            if (wReturn == False):
-                                return '添加工作流表报错'
                         db_session.add(Model.core.ReadyWork(ZYPlanID=id, IsCheck="0", ReadyName="ClearFieldCard",
                                                  Describe="设备、衡器是否按照清洁SOP要求完成", ProductionFlag="1"))
                         db_session.add(Model.core.ReadyWork(ZYPlanID=id, IsCheck="0", ReadyName="ClearLastMateriel",
@@ -4820,19 +4791,11 @@ def controlConfirmAgain():
             userName = current_user.Name
             if (flag == "TRUE"):
                 oclass = db_session.query(PlanManager).filter(PlanManager.BatchID == zyp.BatchID).first()
-                oclass.PlanStatus = Model.Global.PlanStatus.Control.value
                 oclassW = db_session.query(WorkFlowStatus).filter(
                     WorkFlowStatus.PlanManageID == oclass.ID).all()
                 for oc in oclassW:
                     oc.AuditStatus = Model.Global.AuditStatus.ClearField.value
                     oc.DescF = "中控确认清场"
-                db_session.commit()
-                Desc = "中控确认清场"
-                Type = Model.Global.Type.Control.value
-                PlanCreate = ctrlPlan('PlanCreate')
-                wReturn = PlanCreate.createWorkFlowEventPlan(oclass.ID, userName, Desc, Type)
-                if (wReturn == False):
-                    return '添加工作流表报错'
             Desc = "中控确认清场"
             Type = Model.Global.TypeZY.Control.value
             PlanCreate = ctrlPlan('PlanCreate')
@@ -4878,18 +4841,10 @@ def controlConfirmReCheckAgain():
                     oclass = db_session.query(PlanManager).filter(PlanManager.BatchID == zypla.BatchID).first()
                     userName = current_user.Name
                     if (flag == "TRUE"):
-                        oclass.PlanStatus = Model.Global.PlanStatus.ControlChecked.value
                         oclassW = db_session.query(WorkFlowStatus).filter_by(PlanManageID=oclass.ID).all()
                         for oc in oclassW:
                             oclassW.AuditStatus = Model.Global.AuditStatus.Recheck.value
                             oclassW.DescF = "中控清场复核"
-                        db_session.commit()
-                        Desc = "中控清场复核"
-                        Type = Model.Global.Type.ControlChecked.value
-                        PlanCreate = ctrlPlan('PlanCreate')
-                        wReturn = PlanCreate.createWorkFlowEventPlan(oclass.ID, userName, Desc, Type)
-                        if (wReturn == False):
-                            return '添加工作流表报错'
                     Desc = "中控清场复核"
                     Type = Model.Global.TypeZY.ControlChecked.value
                     PlanCreate = ctrlPlan('PlanCreate')
@@ -4924,22 +4879,6 @@ def QAConfirmAgain():
                         for oc in oclassW:
                             oc.AuditStatus = Model.Global.AuditStatus.ReviewPass.value
                             oc.DescF = "QA复核"
-                        oclassZYPlans = db_session.query(ZYPlan).filter(ZYPlan.BatchID == oclass.BatchID).all()
-                        flag = "TRUE"
-                        for zy in oclassZYPlans:
-                            if (zy.ZYPlanStatus != Model.Global.ZYPlanStatus.QAChecked.value):
-                                flag = "FALSE"
-                        if (flag == "TRUE"):
-                            oclassPlanManager = db_session.query(PlanManager).filter(
-                                PlanManager.BatchID == oclass.BatchID).first()
-                            oclassPlanManager.PlanStatus = Model.Global.PlanStatus.QAChecked.value
-                            Desc = "QA复核"
-                            Type = Model.Global.Type.QAChecked.value
-                            PlanCreate = ctrlPlan('PlanCreate')
-                            wReturn = PlanCreate.createWorkFlowEventPlan(oclassPlanManager.ID, userName, Desc,
-                                                                         Type)
-                            if (wReturn == False):
-                                return '添加工作流表报错'
                         db_session.commit()
                         userName = current_user.Name
                         Desc = "QA复核"
@@ -5001,6 +4940,67 @@ def QAPass():
             print(e)
             logger.error(e)
             insertSyslog("error", "QA复核报错Error：" + str(e), current_user.Name)
+
+# 计划执行进度
+@app.route('/PlanExecutionProgress')
+def PlanExecutionProgress():
+    return render_template('PlanExecutionProgress.html')
+
+# 计划执行进度查询计划明细
+@app.route('/PlanExecutionProgress/zyPlanProgressSearch', methods=['POST', 'GET'])
+def zyPlanProgressSearch():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 2:
+                pages = int(data['page'])  # 页数
+                rowsnumber = int(data['rows'])  # 行数
+                inipage = (pages - 1) * rowsnumber + 0  # 起始页
+                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+                BatchID = data['BatchID']  # 批次号
+                BrandID = data['BrandID']  # 品名ID
+                total = db_session.query(ZYPlan.ID).filter(ZYPlan.BatchID == BatchID, ZYPlan.BrandID == BrandID).count()
+                zyplans = db_session.query(ZYPlan.ID).filter(ZYPlan.BatchID == BatchID, ZYPlan.BrandID == BrandID).all()[inipage:endpage]
+                jsonzyplans = json.dumps(zyplans, cls=AlchemyEncoder, ensure_ascii=False)
+                jsonzyplans = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonzyplans + "}"
+                return jsonzyplans
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "计划执行进度查询计划明细Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+# 计划执行进度查询流程图
+@app.route('/PlanExecutionProgress/planmanagerProgressTuSearch', methods=['POST', 'GET'])
+def planmanagerProgressTuSearch():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 2:
+                jsonstr = json.dumps(data.to_dict())
+                jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
+                ID = int(jsonnumber[0])
+                plan = db_session.query(PlanManager).filter(PlanManager.ID == ID).first()
+                zyplans = db_session.query(ZYPlan).filter(ZYPlan.BatchID == plan.BatchID).all()
+                for zy in zyplans:
+                    zy.ZYPlanStatus = ""
+                jsonzyplans = json.dumps(zyplans, cls=AlchemyEncoder, ensure_ascii=False)
+                jsonzyplans = '{"total"' + ":" + str() + ',"rows"' + ":\n" + jsonzyplans + "}"
+                return jsonzyplans
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "计划执行进度查询计划明细Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+# 计划管理
+@app.route('/ZYPlanManage')
+def zYPlanManage():
+    return render_template('ZYPlanManage.html')
+
+
 
 def getExcel(file, method='r'):
     '''
@@ -5185,61 +5185,6 @@ def NodeIdNoteSearch():
             print(e)
             logger.error(e)
             insertSyslog("error", "NodeIdNote数据查询失败报错Error：" + str(e), current_user.Name)
-            return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
-
-# 计划执行进度
-@app.route('/PlanExecutionProgress')
-def PlanExecutionProgress():
-    return render_template('PlanExecutionProgress.html')
-
-# 计划执行进度查询计划明细
-@app.route('/PlanExecutionProgress/zyPlanProgressSearch', methods=['POST', 'GET'])
-def zyPlanProgressSearch():
-    if request.method == 'GET':
-        data = request.values
-        try:
-            json_str = json.dumps(data.to_dict())
-            if len(json_str) > 2:
-                pages = int(data['page'])  # 页数
-                rowsnumber = int(data['rows'])  # 行数
-                inipage = (pages - 1) * rowsnumber + 0  # 起始页
-                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
-                BatchID = data['BatchID']  # 批次号
-                BrandID = data['BrandID']  # 品名ID
-                total = db_session.query(ZYPlan.ID).filter(ZYPlan.BatchID == BatchID, ZYPlan.BrandID == BrandID).count()
-                zyplans = db_session.query(ZYPlan.ID).filter(ZYPlan.BatchID == BatchID, ZYPlan.BrandID == BrandID).all()[inipage:endpage]
-                jsonzyplans = json.dumps(zyplans, cls=AlchemyEncoder, ensure_ascii=False)
-                jsonzyplans = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonzyplans + "}"
-                return jsonzyplans
-        except Exception as e:
-            print(e)
-            logger.error(e)
-            insertSyslog("error", "计划执行进度查询计划明细Error：" + str(e), current_user.Name)
-            return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
-
-# 计划执行进度查询流程图
-@app.route('/PlanExecutionProgress/planmanagerProgressTuSearch', methods=['POST', 'GET'])
-def planmanagerProgressTuSearch():
-    if request.method == 'GET':
-        data = request.values
-        try:
-            json_str = json.dumps(data.to_dict())
-            if len(json_str) > 2:
-                pages = int(data['page'])  # 页数
-                rowsnumber = int(data['rows'])  # 行数
-                inipage = (pages - 1) * rowsnumber + 0  # 起始页
-                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
-                BatchID = data['BatchID']  # 批次号
-                BrandID = data['BrandID']  # 品名ID
-                total = db_session.query(ZYPlan.ID).filter(ZYPlan.BatchID == BatchID, ZYPlan.BrandID == BrandID).count()
-                zyplans = db_session.query(ZYPlan.ID).filter(ZYPlan.BatchID == BatchID, ZYPlan.BrandID == BrandID).all()[inipage:endpage]
-                jsonzyplans = json.dumps(zyplans, cls=AlchemyEncoder, ensure_ascii=False)
-                jsonzyplans = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonzyplans + "}"
-                return jsonzyplans
-        except Exception as e:
-            print(e)
-            logger.error(e)
-            insertSyslog("error", "计划执行进度查询计划明细Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 if __name__ == '__main__':
