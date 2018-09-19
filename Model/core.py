@@ -22,7 +22,7 @@ from imp import reload
 
 from flask_login import current_user
 from sqlalchemy import Column, DateTime, Float, Integer, String, Unicode, BigInteger,Boolean
-from sqlalchemy import create_engine, Column, ForeignKey, Table, DateTime, Integer, String
+from sqlalchemy import create_engine, Column, ForeignKey, Table, DateTime, Integer, String, desc
 from sqlalchemy import func
 from sqlalchemy.dialects.mssql.base import BIT
 from sqlalchemy.ext.declarative import declarative_base
@@ -3137,9 +3137,9 @@ class PlanManagerWebIFS(object):
 				inipage = (pages - 1) * rowsnumber + 0
 				endpage = (pages - 1) * rowsnumber + rowsnumber
 				total = session.query(func.count(Model.core.PlanManager.ID)).scalar()
-				qDatas = session.query(Model.core.PlanManager).all()[inipage:endpage]
+				qDatas = session.query(Model.core.PlanManager).order_by(desc("ID")).all()[inipage:endpage]
 				if total > 0:
-					qDatas = session.query(Model.core.PlanManager).all()[inipage:endpage]
+					qDatas = session.query(Model.core.PlanManager).order_by(desc("ID")).all()[inipage:endpage]
 					# ORM模型转换json格式
 					jsonorganzitions = json.dumps(qDatas, cls=Model.BSFramwork.AlchemyEncoder,
 												  ensure_ascii=False)

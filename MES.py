@@ -552,6 +552,31 @@ def SearchBatchManager():
             insertSyslog("error", "批次管理查询报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
+# 计划向导获取批次任务明细
+@app.route('/ZYPlanGuid/CriticalTasks', methods=['POST', 'GET'])
+def criticalTasks():
+    if request.method == 'GET':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            json_str = json.dumps(data.to_dict())
+            print(json_str)
+            if len(json_str) > 10:
+                pages = int(data['page'])  # 页数
+                rowsnumber = int(data['rows'])  # 行数
+                inipage = (pages - 1) * rowsnumber + 0  # 起始页
+                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+                ABatchID = data['ABatchID']
+                total = db_session.query(ZYTask).filter(ZYTask.BatchID == ABatchID).count()
+                zyTasks = db_session.query(ZYTask).filter(ZYTask.BatchID == ABatchID).all()[inipage:endpage]
+                jsonzyTasks = json.dumps(zyTasks, cls=AlchemyEncoder, ensure_ascii=False)
+                jsonzyTasks = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonzyTasks + "}"
+                return jsonzyTasks
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "计划向导获取批次任务明细报错Error：" + str(e), "AAAAAAadmin")
+            return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
 
 # 加载工作台
 @app.route('/organizationMap')
@@ -4042,29 +4067,6 @@ def RecallPlan():
             insertSyslog("error", "撤回批次计划报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
-# 计划向导获取批次任务明细
-@app.route('/ZYPlanGuid/CriticalTasks', methods=['POST', 'GET'])
-def criticalTasks():
-    if request.method == 'GET':
-        data = request.values  # 返回请求中的参数和form
-        try:
-            json_str = json.dumps(data.to_dict())
-            if len(json_str) > 10:
-                pages = int(data['page'])  # 页数
-                rowsnumber = int(data['rows'])  # 行数
-                inipage = (pages - 1) * rowsnumber + 0  # 起始页
-                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
-                ABatchID = data['ABatchID']
-                total = db_session.query(ZYTask).filter(ZYTask.BatchID == ABatchID).count()
-                zyTasks = db_session.query(ZYTask).filter(ZYTask.BatchID == ABatchID).all()[inipage:endpage]
-                jsonzyTasks = json.dumps(zyTasks, cls=AlchemyEncoder, ensure_ascii=False)
-                jsonzyTasks = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonzyTasks + "}"
-                return jsonzyTasks
-        except Exception as e:
-            print(e)
-            logger.error(e)
-            insertSyslog("error", "计划向导获取批次任务明细报错Error：" + str(e), current_user.Name)
-            return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 # 计划向导获取批次物料明细
 @app.route('/ZYPlanGuid/CriticalMaterials', methods=['POST', 'GET'])
@@ -4144,7 +4146,7 @@ def searchZYPlan():
                 ABatchID = data['ABatchID']#批次号
                 APlanDate = data['APlanDate']#计划日期
                 total = db_session.query(ZYPlan).filter(ZYPlan.BatchID == ABatchID, ZYPlan.PlanDate == APlanDate).count()
-                zYPlans = db_session.query(ZYPlan).filter(ZYPlan.BatchID == ABatchID, ZYPlan.PlanDate == APlanDate).all()[
+                zYPlans = db_session.query(ZYPlan).filter(ZYPlan.BatchID == ABatchID, ZYPlan.PlanDate == APlanDate).order_by(desc("EnterTime")).all()[
                               inipage:endpage]
                 jsonzYPlans = json.dumps(zYPlans, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonzYPlans = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonzYPlans + "}"
@@ -4207,12 +4209,12 @@ def planConfirmSearch():
                 APUID = data['PUID']  # 工艺段编码
                 if(APUID == "" or APUID == None):
                     total = db_session.query(ZYPlan).filter(ZYPlan.ZYPlanStatus.in_((31, 40, 50))).count()
-                    ZYPlans = db_session.query(ZYPlan).filter(ZYPlan.ZYPlanStatus.in_((31, 40, 50))).all()[inipage:endpage]
+                    ZYPlans = db_session.query(ZYPlan).filter(ZYPlan.ZYPlanStatus.in_((31, 40, 50))).order_by(desc("EnterTime")).all()[inipage:endpage]
                 else:
                     total = db_session.query(ZYPlan).filter(ZYPlan.ZYPlanStatus.in_((31, 40, 50)),
                                                             ZYPlan.PUID == APUID).count()
                     ZYPlans = db_session.query(ZYPlan).filter(ZYPlan.ZYPlanStatus.in_((31, 40, 50)),
-                                                              ZYPlan.PUID == APUID).all()[inipage:endpage]
+                                                              ZYPlan.PUID == APUID).order_by(desc("EnterTime")).all()[inipage:endpage]
                 jsonZYPlans = json.dumps(ZYPlans, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonZYPlans = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonZYPlans + "}"
                 return jsonZYPlans
@@ -4238,34 +4240,34 @@ def taskConfirmSearch():
                 BatchID = data['BatchID']#批次号
                 if(APUID == "" and TaskStatus == ""):
                     total = db_session.query(ZYTask).filter(ZYTask.TaskStatus.in_((32,40,50))).count()
-                    ZYTasks = db_session.query(ZYTask).filter(ZYTask.TaskStatus.in_((32,40,50))).all()[inipage:endpage]
+                    ZYTasks = db_session.query(ZYTask).filter(ZYTask.TaskStatus.in_((32,40,50))).order_by(desc("EnterTime")).all()[inipage:endpage]
                 elif(APUID != "" and TaskStatus == "" and BatchID == ""):
                     total = db_session.query(ZYTask).filter(ZYTask.TaskStatus.in_((32, 40, 50)),
                                                             ZYTask.PUID == APUID).count()
                     ZYTasks = db_session.query(ZYTask).filter(ZYTask.TaskStatus.in_((32, 40, 50)),
-                                                              ZYTask.PUID == APUID).all()[inipage:endpage]
+                                                              ZYTask.PUID == APUID).order_by(desc("EnterTime")).all()[inipage:endpage]
                 elif(APUID != "" and TaskStatus == "" and BatchID != ""):
                     total = db_session.query(ZYTask).filter(ZYTask.BatchID == BatchID,
                                                             ZYTask.TaskStatus.in_((32, 40, 50)),
                                                             ZYTask.PUID == APUID).count()
                     ZYTasks = db_session.query(ZYTask).filter(ZYTask.BatchID == BatchID,
                                                               ZYTask.TaskStatus.in_((32, 40, 50)),
-                                                              ZYTask.PUID == APUID).all()[inipage:endpage]
+                                                              ZYTask.PUID == APUID).order_by(desc("EnterTime")).all()[inipage:endpage]
                 elif (APUID == "" and TaskStatus != ""):
                     total = db_session.query(ZYTask).filter(ZYTask.TaskStatus == TaskStatus).count()
-                    ZYTasks = db_session.query(ZYTask).filter(ZYTask.TaskStatus == TaskStatus).all()[inipage:endpage]
+                    ZYTasks = db_session.query(ZYTask).filter(ZYTask.TaskStatus == TaskStatus).order_by(desc("EnterTime")).all()[inipage:endpage]
                 elif (APUID != "" and TaskStatus != "" and BatchID == ""):
                     total = db_session.query(ZYTask).filter(ZYTask.TaskStatus == TaskStatus,
                                                             ZYTask.PUID == APUID).count()
                     ZYTasks = db_session.query(ZYTask).filter(ZYTask.TaskStatus == TaskStatus,
-                                                              ZYTask.PUID == APUID).all()[inipage:endpage]
+                                                              ZYTask.PUID == APUID).order_by(desc("EnterTime")).all()[inipage:endpage]
                 elif (APUID != "" and TaskStatus != "" and BatchID != ""):
                     total = db_session.query(ZYTask).filter(ZYTask.BatchID == BatchID,
                                                             ZYTask.TaskStatus == TaskStatus,
                                                             ZYTask.PUID == APUID).count()
                     ZYTasks = db_session.query(ZYTask).filter(ZYTask.BatchID == BatchID,
                                                               ZYTask.TaskStatus == TaskStatus,
-                                                              ZYTask.PUID == APUID).all()[inipage:endpage]
+                                                              ZYTask.PUID == APUID).order_by(desc("EnterTime")).all()[inipage:endpage]
                 jsonZYTasks = json.dumps(ZYTasks, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonZYTasks = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonZYTasks + "}"
                 return jsonZYTasks
@@ -4368,13 +4370,13 @@ def searchcheckplanmanager():
                 ABatchID = data['BatchID']  # 批次号
                 if (ABatchID == None or ABatchID == ""):
                     total = db_session.query(PlanManager.ID).filter(PlanManager.PlanStatus.in_((10, 40))).count()
-                    planManagers = db_session.query(PlanManager).filter(PlanManager.PlanStatus.in_((10, 40))).all()[
+                    planManagers = db_session.query(PlanManager).filter(PlanManager.PlanStatus.in_((10, 40))).order_by(desc("ID")).all()[
                                    inipage:endpage]
                 else:
                     total = db_session.query(PlanManager).filter(PlanManager.BatchID == ABatchID,
                                                                  PlanManager.PlanStatus.in_((10, 40))).count()
                     planManagers = db_session.query(PlanManager).filter(PlanManager.BatchID == ABatchID,
-                                                                        PlanManager.PlanStatus.in_((10, 40))).all()[
+                                                                        PlanManager.PlanStatus.in_((10, 40))).order_by(desc("ID")).all()[
                                    inipage:endpage]
                 planManagers = json.dumps(planManagers, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonPlanManagers = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + planManagers + "}"
@@ -4405,13 +4407,13 @@ def controlConfirmSearch():
                 ABatchID = data['BatchID']  # 批次号
                 if (ABatchID == None or ABatchID == ""):
                     total = db_session.query(ZYPlan.ID).filter(ZYPlan.ZYPlanStatus.in_((20, 60))).count()
-                    ZYPlans = db_session.query(ZYPlan).filter(ZYPlan.ZYPlanStatus.in_((20, 60))).all()[
+                    ZYPlans = db_session.query(ZYPlan).filter(ZYPlan.ZYPlanStatus.in_((20, 60))).order_by(desc("EnterTime")).all()[
                               inipage:endpage]
                 else:
                     total = db_session.query(ZYPlan).filter(ZYPlan.BatchID == ABatchID,
                                                             ZYPlan.ZYPlanStatus.in_((20, 60))).count()
                     ZYPlans = db_session.query(ZYPlan).filter(ZYPlan.BatchID == ABatchID,
-                                                              ZYPlan.ZYPlanStatus.in_((20, 60))).all()[
+                                                              ZYPlan.ZYPlanStatus.in_((20, 60))).order_by(desc("EnterTime")).all()[
                               inipage:endpage]
                 ZYPlans = json.dumps(ZYPlans, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonZYPlans = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + ZYPlans + "}"
@@ -4527,13 +4529,13 @@ def controlConfirmReCheckSearch():
                 ABatchID = data['BatchID']  # 批次号
                 if (ABatchID == None or ABatchID == ""):
                     total = db_session.query(ZYPlan.ID).filter(ZYPlan.ZYPlanStatus.in_((30, 61))).count()
-                    ZYPlans = db_session.query(ZYPlan).filter(ZYPlan.ZYPlanStatus.in_((30, 61))).all()[
+                    ZYPlans = db_session.query(ZYPlan).filter(ZYPlan.ZYPlanStatus.in_((30, 61))).order_by(desc("EnterTime")).all()[
                               inipage:endpage]
                 else:
                     total = db_session.query(ZYPlan).filter(ZYPlan.BatchID == ABatchID,
                                                             ZYPlan.ZYPlanStatus.in_((30, 61))).count()
                     ZYPlans = db_session.query(ZYPlan).filter(ZYPlan.BatchID == ABatchID,
-                                                              ZYPlan.ZYPlanStatus.in_((30, 61))).all()[
+                                                              ZYPlan.ZYPlanStatus.in_((30, 61))).order_by(desc("EnterTime")).all()[
                               inipage:endpage]
                 ZYPlans = json.dumps(ZYPlans, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonZYPlans = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + ZYPlans + "}"
@@ -4615,10 +4617,10 @@ def QAConfirmSearch():
                 ABatchID = data['BatchID']  # 批次号
                 if (ABatchID == None or ABatchID == ""):
                     total = db_session.query(ZYPlan.ID).filter(ZYPlan.ZYPlanStatus.in_((40, 60))).count()
-                    ZYPlans = db_session.query(ZYPlan).filter(ZYPlan.ZYPlanStatus.in_((40, 60))).all()[inipage:endpage]
+                    ZYPlans = db_session.query(ZYPlan).filter(ZYPlan.ZYPlanStatus.in_((40, 60))).order_by(desc("EnterTime")).all()[inipage:endpage]
                 else:
                     total = db_session.query(ZYPlan.ID).filter(ZYPlan.BatchID == ABatchID,ZYPlan.ZYPlanStatus.in_((40, 60))).count()
-                    ZYPlans = db_session.query(ZYPlan).filter(ZYPlan.BatchID == ABatchID,ZYPlan.ZYPlanStatus.in_((40, 60))).all()[inipage:endpage]
+                    ZYPlans = db_session.query(ZYPlan).filter(ZYPlan.BatchID == ABatchID,ZYPlan.ZYPlanStatus.in_((40, 60))).order_by(desc("EnterTime")).all()[inipage:endpage]
                 ZYPlans = json.dumps(ZYPlans, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonZYPlans = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + ZYPlans + "}"
                 return jsonZYPlans
@@ -4642,10 +4644,11 @@ def QAConfirm():
                         oclass = db_session.query(ZYPlan).filter(ZYPlan.ID == id).first()
                         oclassZYTasks = db_session.query(ZYTask).filter(ZYTask.BatchID == oclass.BatchID).all()
                         for Task in oclassZYTasks:
-                            if(ZYTask.TaskStatus != Model.Global.TASKSTATUS.COMFIRM.value):
+                            if(Task.TaskStatus != Model.Global.TASKSTATUS.COMFIRM.value):
                                 return "请先进行任务确认，选择设备！"
                         oclass.ZYPlanStatus = Model.Global.ZYPlanStatus.QAChecked.value
-                        oclassW = db_session.query(WorkFlowStatus).filter_by(PlanManageID=id).all()
+                        planmID = db_session.query(PlanManager.ID).filter(PlanManager.BatchID == oclass.BatchID).first()
+                        oclassW = db_session.query(WorkFlowStatus).filter_by(PlanManageID=planmID[0]).all()
                         for oc in oclassW:
                             oc.AuditStatus = Model.Global.AuditStatus.ReviewPass.value
                             oc.DescF = "QA复核"
@@ -4918,7 +4921,7 @@ def zyPlanProgressSearch():
                 BatchID = data['BatchID']  # 批次号
                 BrandID = data['BrandID']  # 品名ID
                 total = db_session.query(ZYPlan.ID).filter(ZYPlan.BatchID == BatchID, ZYPlan.BrandID == BrandID).count()
-                zyplans = db_session.query(ZYPlan.ID).filter(ZYPlan.BatchID == BatchID, ZYPlan.BrandID == BrandID).all()[inipage:endpage]
+                zyplans = db_session.query(ZYPlan.ID).filter(ZYPlan.BatchID == BatchID, ZYPlan.BrandID == BrandID).order_by(desc("EnterTime")).all()[inipage:endpage]
                 jsonzyplans = json.dumps(zyplans, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonzyplans = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonzyplans + "}"
                 return jsonzyplans
