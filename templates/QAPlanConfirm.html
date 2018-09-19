@@ -201,15 +201,22 @@
             <thead>
                 <tr>
                     <th field="ck" checkbox="true"></th>
-                    <th data-options="field:'SchedulePlanCode',width:200,align:'center'">调度编号</th>
-                    <th data-options="field:'BatchID',width:200,align:'center'">批次号</th>
-                    <th data-options="field:'PlanQuantity',width:100,align:'center'">计划重量</th>
+                    <th data-options="field:'PlanStatus',width:150,align:'center'" formatter="formatterStatus" styler="styleStatus">计划状态</th>
+                    <th data-options="field:'PlanDate',width:200,align:'center'">计划日期</th>
+                    <th data-options="field:'PlanNo',width:150,align:'center'">制药计划单号</th>
+                    <th data-options="field:'BatchID',width:150,align:'center'">批次号</th>
+                    <th data-options="field:'PlanType',width:100,align:'center'">计划类型</th>
                     <th data-options="field:'BrandName',width:150,align:'center'">品名</th>
+                    <th data-options="field:'ERPOrderNo',width:150,align:'center'">ERP订单号</th>
+                    <th data-options="field:'PlanQuantity',width:100,align:'center'">计划重量</th>
+                    <th data-options="field:'ActQuantity',width:100,align:'center'">实际重量</th>
                     <th data-options="field:'Unit',width:100,align:'center'">单位</th>
-                    <th data-options="field:'PlanStatus',width:100,align:'center'" formatter="formatterStatus">计划状态</th>
+                    <th data-options="field:'EnterTime',width:200,align:'center'">录入时间</th>
                     <th data-options="field:'PlanBeginTime',width:200,align:'center'">计划开始时间</th>
                     <th data-options="field:'PlanEndTime',width:200,align:'center'">计划完成时间</th>
-                    <th data-options="field:'Type',width:100,align:'center'">调度类型</th>
+                    <th data-options="field:'ActBeginTime',width:200,align:'center'">实际开始时间</th>
+                    <th data-options="field:'ActEndTime',width:200,align:'center'">实际完成时间</th>
+                    <th data-options="field:'LockStatus',width:100,align:'center'">计划锁定状态</th>
                 </tr>
             </thead>
         </table>
