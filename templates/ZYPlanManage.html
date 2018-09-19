@@ -14,7 +14,7 @@
             margin:3px;
         }
         .sw-theme-arrows > .sw-container {
-            height: 400px;
+            height: 600px;
         }
         .sw-theme-arrows .step-content {
             padding: 0 10px;
@@ -102,10 +102,10 @@
         }
         .sw-theme-arrows > ul.step-anchor > li > a small {
         }
-        .sw-theme-arrows > ul.step-anchor > li.clickable > a:hover {
-            color: #4285F4 !important;
-            background: #46b8da !important;
-        }
+{#        .sw-theme-arrows > ul.step-anchor > li.clickable > a:hover {#}
+{#            color: #4285F4 !important;#}
+{#            background: #46b8da !important;#}
+{#        }#}
         .sw-theme-arrows > ul.step-anchor > li.active > a {
             border-color: #5cb85c !important;
             color: #fff !important;
@@ -133,7 +133,7 @@
             border-left: 30px solid #d9534f !important;
         }
         .sw-theme-arrows > ul.step-anchor > li.disabled > a, .sw-theme-arrows > ul.step-anchor > li.disabled > a:hover {
-            color: #eee !important;
+            color: #999 !important;
         }
         /* Responsive CSS */
         @media screen and (max-width: 768px) {
@@ -164,55 +164,61 @@
 	<script type="text/javascript" src="../static/js/jquery.smartWizard.min.js"></script>
     <script>
         $(function(){
+            var right = $("#right").val()
+            console.log(right)
             $('#wizard').smartWizard({
                 selected: 0,
                 theme: 'arrows',
                 transitionEffect:'fade',
                 transitionSpeed:400,
-                //enableAllAnchors:true,
+                disabledSteps:right,
+                enableAllAnchors:true, //加载所有锚点
+                cycleSteps:true, //循环步骤
                 toolbarSettings: {
-                    //toolbarButtonPosition: 'end',
-                    showPreviousButton:false
+                    showPreviousButton:false, //不显示上一步按钮
+                    showNextButton:false //不显示下一步按钮
                 },
                 anchorSettings:{
-                    anchorClickable:false
+                    anchorClickable:true, //可点击导航
+                    enableAllAnchors:true//激活所有可点击的锚点
                 }
             });
         })
     </script>
 </head>
 <body>
+    <input type="hidden" name="right" id="right" value="{{ right }}">
     <div id="wizard" class="sw-main sw-theme-arrows">
         <ul style="margin:10px;">
-            <li><a href="#step-1">Step 1<br /><small>制药计划向导</small></a></li>
-            <li><a href="#step-2">Step 2<br /><small>生产计划审核</small></a></li>
-            <li><a href="#step-3">Step 3<br /><small>生产计划下发</small></a></li>
-            <li><a href="#step-4">Step 3<br /><small>中控计划确认</small></a></li>
-            <li><a href="#step-5">Step 3<br /><small>中控计划复核</small></a></li>
-            <li><a href="#step-6">Step 3<br /><small>任务确认</small></a></li>
-            <li><a href="#step-7">Step 3<br /><small>QA计划确认</small></a></li>
+            <li class="done"><a href="#step-1"><small>制药计划向导</small></a></li>
+            <li class="done"><a href="#step-2"><small>生产计划审核</small></a></li>
+            <li class="done"><a href="#step-3"><small>生产计划下发</small></a></li>
+            <li class="done"><a href="#step-4"><small>中控计划确认</small></a></li>
+            <li class="done"><a href="#step-5"><small>中控计划复核</small></a></li>
+            <li class="done"><a href="#step-6"><small>任务确认</small></a></li>
+            <li class="done"><a href="#step-7"><small>QA计划确认</small></a></li>
         </ul>
         <div>
-            <div id="step-1">
-                <h3 class="border-bottom border-gray pb-2">计划实际信息111</h3>
+            <div id="step-1" style="height: 100%;">
+                <iframe src="/createPlanWizard" frameborder="0" border="no" height="100%" width="100%"></iframe>
             </div>
-            <div id="step-2">
-                <h3 class="border-bottom border-gray pb-2">生成计划信息222</h3>
+            <div id="step-2" style="height: 100%;">
+                <iframe src="/ZYPlanGuid/checkplanmanager" frameborder="0" border="no" height="100%" width="100%"></iframe>
             </div>
-            <div id="step-3">
-                <h3 class="border-bottom border-gray pb-2">生成计划信息333</h3>
+            <div id="step-3" style="height: 100%;">
+                <iframe src="/ZYPlanGuid/planmanager" frameborder="0" border="no" height="100%" width="100%"></iframe>
             </div>
-            <div id="step-4">
-                <h3 class="border-bottom border-gray pb-2">计划实际信息444</h3>
+            <div id="step-4" style="height: 100%;">
+                <iframe src="/MiddleControl/PlanConfirm" frameborder="0" border="no" height="100%" width="100%"></iframe>
             </div>
-            <div id="step-5">
-                <h3 class="border-bottom border-gray pb-2">生成计划信息555</h3>
+            <div id="step-5" style="height: 100%;">
+                <iframe src="/MiddleControl/PlanConfirmChecked" frameborder="0" border="no" height="100%" width="100%"></iframe>
             </div>
-            <div id="step-6">
-                <h3 class="border-bottom border-gray pb-2">生成计划信息666</h3>
+            <div id="step-6" style="height: 100%;">
+                <iframe src="/taskConfirm" frameborder="0" border="no" height="100%" width="100%"></iframe>
             </div>
-            <div id="step-7">
-                <h3 class="border-bottom border-gray pb-2">生成计划信息777</h3>
+            <div id="step-7" style="height: 100%;">
+                <iframe src="QAPlanConfirm" frameborder="0" border="no" height="100%" width="100%"></iframe>
             </div>
         </div>
     </div>

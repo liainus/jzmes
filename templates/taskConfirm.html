@@ -130,7 +130,7 @@
                                     <td class="kv-label">选择设备</td>
                                     <td class="kv-content">
                                         <input id="EquipmentID" name="EquipmentID" class="easyui-combobox"
-                                            data-options="editable:false">
+                                            data-options="editable:false" style="width:157px;">
                                     </td>
                                 </tr>
                                 <tr>
@@ -232,7 +232,7 @@
                             </tbody>
                         </table>
                         <div id="updataClassDialogButtons" >
-                            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'"  onclick="EquipmentIDSave()" value="submit" >保存</a>
+                            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" onclick="EquipmentIDSave()" value="submit" >保存</a>
                             <a href="#" class="easyui-linkbutton" onclick="$('#updataPlanDialog').dialog('close')">关闭</a>
                         </div>
                     </form>
@@ -316,6 +316,7 @@
             },
             onClickRow:function(rowIndex,rowData){
                 $('#updataPlanDialog').dialog("open").dialog('setTitle', '修改设备编码');
+                $('#updataPlanDialog').window('center');
                 $('#ID').val(rowData.ID);
                  $('#EquipmentID').val(rowData.EquipmentID);
                  $('#PlanDate').val(rowData.PlanDate);
@@ -392,25 +393,31 @@
         }
         function formatterStatus(value, row, index){
             if (value == 10){
-                return '编制'
+                return '新增计划'
+            }else if(value == 11){
+                return '审核计划'
             }else if(value == 20){
-                return '下达'
+                return '下发计划'
             }else if(value == 30){
-                return '新增'
+                return '中控确认生产前的准备'
+            }else if(value == 31){
+                return '中控复核生产前的准备'
             }else if(value == 40){
-                return '确认'
+                return '任务确认'
+            }else if(value == 32){
+                return 'QA复核生产前的准备'
             }else if(value == 50){
-                return '执行'
+                return '执行生产'
             }else if(value == 60){
-                return '完成'
+                return '生产完成'
+            }else if(value == 61){
+                return '中控确认生产结束清场'
+            }else if(value == 62){
+                return '中控复核生产结束清场'
+            }else if(value == 63){
+                return 'QA复核清场'
             }else if(value == 70){
-                return '取消'
-            }else if(value == 80){
-                return '暂停'
-            }else if(value == 85){
-                return '故障'
-            }else if(value == 90){
-                return '中止'
+                return 'QA放行'
             }
         }
         function formatterLockStatus(value, row, index){
