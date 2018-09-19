@@ -552,6 +552,31 @@ def SearchBatchManager():
             insertSyslog("error", "批次管理查询报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
+# 计划向导获取批次任务明细
+@app.route('/ZYPlanGuid/CriticalTasks', methods=['POST', 'GET'])
+def criticalTasks():
+    if request.method == 'GET':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            json_str = json.dumps(data.to_dict())
+            print(json_str)
+            if len(json_str) > 10:
+                pages = int(data['page'])  # 页数
+                rowsnumber = int(data['rows'])  # 行数
+                inipage = (pages - 1) * rowsnumber + 0  # 起始页
+                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+                ABatchID = data['ABatchID']
+                total = db_session.query(ZYTask).filter(ZYTask.BatchID == ABatchID).count()
+                zyTasks = db_session.query(ZYTask).filter(ZYTask.BatchID == ABatchID).all()[inipage:endpage]
+                jsonzyTasks = json.dumps(zyTasks, cls=AlchemyEncoder, ensure_ascii=False)
+                jsonzyTasks = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonzyTasks + "}"
+                return jsonzyTasks
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "计划向导获取批次任务明细报错Error：" + str(e), "AAAAAAadmin")
+            return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
 
 # 加载工作台
 @app.route('/organizationMap')
