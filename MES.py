@@ -4051,7 +4051,7 @@ def RecallPlan():
                                 logger.error(ee)
                                 insertSyslog("error", "删除批次任务信息报错Error" + string(ee), current_user.Name)
                                 return json.dumps([{"status": "Error:" + str(ee)}], cls=AlchemyEncoder, ensure_ascii=False)
-                        planM.PlanStatus = Model.Global.PlanStatus.NEW.value
+                        planM.PlanStatus = Model.Global.PlanStatus.Recall.value
                         oclassW = db_session.query(WorkFlowStatus).filter_by(PlanManageID=id).all()
                         for oc in oclassW:
                             if(oc.ZYPlanID != None):
@@ -4365,14 +4365,6 @@ def saveEQPCode():
                     oclassplan.ZYPlanStatus = Model.Global.ZYPlanStatus.COMFIRM.value
                 db_session.commit()
                 oclassplans = db_session.query(ZYPlan).filter(ZYPlan.BatchID == oclass.BatchID).all()
-                planmana = db_session.query(PlanManager).filter(PlanManager.BatchID == oclass.BatchID).first()
-                flagP = "TRUE"
-                for plan in oclassplans:
-                    if(plan.ZYPlanStatus != Model.Global.ZYPlanStatus.COMFIRM.value):
-                        flagP = "FALSE"
-                if(flagP == "TRUE"):
-                    planmana.PlanStatus = Model.Global.PlanStatus.COMFIRM.value
-                db_session.commit()
                 return "OK"
         except Exception as e:
             db_session.rollback()
@@ -4410,31 +4402,32 @@ def searchcheckplanmanager():
     if request.method == 'GET':
         data = request.values
         try:
-            PlanStatus = Model.Global.PlanStatus.NEW.value
-            re = searchplanmanager(data,PlanStatus)
-            return re
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                pages = int(data['page'])  # 页数
+                rowsnumber = int(data['rows'])  # 行数
+                inipage = (pages - 1) * rowsnumber + 0  # 起始页
+                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+                ABatchID = data['BatchID']  # 批次号
+                if (ABatchID == None or ABatchID == ""):
+                    total = db_session.query(PlanManager.ID).filter(PlanManager.PlanStatus.in_((20, 60))).count()
+                    planManagers = db_session.query(PlanManager).filter(PlanManager.PlanStatus.in_((20, 60))).all()[
+                                   inipage:endpage]
+                else:
+                    total = db_session.query(PlanManager).filter(PlanManager.BatchID == ABatchID,
+                                                                 PlanManager.PlanStatus.in_((20, 60))).count()
+                    planManagers = db_session.query(PlanManager).filter(PlanManager.BatchID == ABatchID,
+                                                                        PlanManager.PlanStatus.in_((20, 60))).all()[
+                                   inipage:endpage]
+                planManagers = json.dumps(planManagers, cls=AlchemyEncoder, ensure_ascii=False)
+                print(planManagers)
+                jsonPlanManagers = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + planManagers + "}"
+                return jsonPlanManagers
         except Exception as e:
             print(e)
             logger.error(e)
             insertSyslog("error", "计划向导生成的计划查询报错Error：" + str(e), current_user.Name)
-def searchplanmanager(data,PlanStatus):
-    json_str = json.dumps(data.to_dict())
-    if len(json_str) > 10:
-        pages = int(data['page'])  # 页数
-        rowsnumber = int(data['rows'])  # 行数
-        inipage = (pages - 1) * rowsnumber + 0  # 起始页
-        endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
-        ABatchID = data['BatchID']  # 批次号
-        if (ABatchID == None or ABatchID == ""):
-            total = db_session.query(PlanManager.ID).filter(PlanManager.PlanStatus == PlanStatus).count()
-            planManagers = db_session.query(PlanManager).filter(PlanManager.PlanStatus == PlanStatus).all()[inipage:endpage]
-        else:
-            total = db_session.query(PlanManager).filter(PlanManager.BatchID == ABatchID, PlanManager.PlanStatus == PlanStatus).count()
-            planManagers = db_session.query(PlanManager).filter(PlanManager.BatchID == ABatchID, PlanManager.PlanStatus == PlanStatus).all()[inipage:endpage]
-        planManagers = json.dumps(planManagers, cls=AlchemyEncoder, ensure_ascii=False)
-        print(planManagers)
-        jsonPlanManagers = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + planManagers + "}"
-        return jsonPlanManagers
+
 
 # 中控确认
 @app.route('/MiddleControl/PlanConfirm')
@@ -4761,7 +4754,7 @@ def QAConfirm():
 
 # 中控再次确认保存信息查询
 @app.route('/ZYPlanGuid/ConfirmSearchInfoAgain', methods=['POST', 'GET'])
-def ConfirmSearchInfo():
+def ConfirmSearchInfoAgain():
     if request.method == 'GET':
         data = request.values
         try:
@@ -4778,7 +4771,7 @@ def ConfirmSearchInfo():
 
 # 中控确认保存信息
 @app.route('/ZYPlanGuid/controlConfirmSaveInfoAgain', methods=['POST', 'GET'])
-def controlConfirmSaveInfo():
+def controlConfirmSaveInfoAgain():
     if request.method == 'POST':
         data = request.values
         try:
@@ -4914,8 +4907,8 @@ def controlConfirmReCheckAgain():
             insertSyslog("error", "中控清场复核报错Error：" + str(e), current_user.Name)
 
 # QA再次复核
-@app.route('/ZYPlanGuid/QAConfirm', methods=['POST', 'GET'])
-def QAConfirm():
+@app.route('/ZYPlanGuid/QAConfirmAgain', methods=['POST', 'GET'])
+def QAConfirmAgain():
     if request.method == 'POST':
         data = request.values
         try:

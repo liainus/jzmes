@@ -451,8 +451,7 @@ class ctrlPlan:
             userID = userID
             Desc = "计划向导生成计划planmanager"
             Type = Model.Global.AuditStatus.Unaudited.value
-            EventTime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            bReturn = self.createWorkFlowEventPlan(PlanManageID,userID,Desc,Type,EventTime)
+            bReturn = self.createWorkFlowEventPlan(PlanManageID,userID,Desc,Type)
             if bReturn == False:
                 return False
 
