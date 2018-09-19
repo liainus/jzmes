@@ -164,12 +164,14 @@
 	<script type="text/javascript" src="../static/js/jquery.smartWizard.min.js"></script>
     <script>
         $(function(){
+            var right = $("#right").val()
+            console.log(right)
             $('#wizard').smartWizard({
                 selected: 0,
                 theme: 'arrows',
                 transitionEffect:'fade',
                 transitionSpeed:400,
-                disabledSteps:[],
+                disabledSteps:right,
                 enableAllAnchors:true, //加载所有锚点
                 cycleSteps:true, //循环步骤
                 toolbarSettings: {
@@ -185,7 +187,7 @@
     </script>
 </head>
 <body>
-<input type="hidden" value="{{ [2,3] }}">
+    <input type="hidden" name="right" id="right" value="{{ right }}">
     <div id="wizard" class="sw-main sw-theme-arrows">
         <ul style="margin:10px;">
             <li class="done"><a href="#step-1"><small>制药计划向导</small></a></li>

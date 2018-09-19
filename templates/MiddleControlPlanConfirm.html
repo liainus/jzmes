@@ -316,11 +316,6 @@
                 return 'QA放行'
             }
         }
-        function styleStatus(value,row,index) {
-            if (value == 20){
-                return 'background-color:#ffc107;'
-            }
-        }
     </script>
 </head>
 <body>
@@ -351,7 +346,7 @@
             <thead>
                 <tr>
                     <th field="ck" checkbox="true"></th>
-                    <th data-options="field:'PlanStatus',width:150,align:'center'" formatter="formatterStatus" styler="styleStatus">计划状态</th>
+                    <th data-options="field:'PlanStatus',width:150,align:'center'" formatter="formatterStatus">计划状态</th>
                     <th data-options="field:'PlanDate',width:200,align:'center'">计划日期</th>
                     <th data-options="field:'PlanNo',width:150,align:'center'">制药计划单号</th>
                     <th data-options="field:'BatchID',width:150,align:'center'">批次号</th>
