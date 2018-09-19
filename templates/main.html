@@ -194,7 +194,7 @@
                         <ul class="sider-nav-s">
                             {% if '25' in session.get('menus') %}
                                 <li>
-                                    <a href="#" onclick="addTab('制药计划向导','createPlanWizard')">制药计划向导</a>
+                                    <a href="#" onclick="addTab('制药计划管理','/ZYPlanManage')">制药计划管理</a>
                                 </li>
                             {% endif %}
                             {% if '25' in session.get('menus') %}
@@ -202,31 +202,31 @@
                                     <a href="#" onclick="addTab('计划执行进度','/PlanExecutionProgress')">计划执行进度</a>
                                 </li>
                             {% endif %}
-                            {% if '26' in session.get('menus') %}
-                                <li>
-                                    <a href="#" onclick="addTab('生产计划管理','/ZYPlanGuid/planmanager')">生产计划管理</a>
-                                </li>
-                            {% endif %}
-                            {% if '25' in session.get('menus') %}
-                                <li>
-                                    <a href="#" onclick="addTab('生产计划审核','/ZYPlanGuid/checkplanmanager')">生产计划审核</a>
-                                </li>
-                            {% endif %}
-                            {% if '25' in session.get('menus') %}
-                                <li>
-                                    <a href="#" onclick="addTab('中控计划确认','/MiddleControl/PlanConfirm')">中控计划确认</a>
-                                </li>
-                            {% endif %}
-                            {% if '25' in session.get('menus') %}
-                                <li>
-                                    <a href="#" onclick="addTab('中控计划复核','/MiddleControl/PlanConfirmChecked')">中控计划复核</a>
-                                </li>
-                            {% endif %}
-                            {% if '25' in session.get('menus') %}
-                                <li>
-                                    <a href="#" onclick="addTab('QA计划确认','QAPlanConfirm')">QA计划确认</a>
-                                </li>
-                            {% endif %}
+{#                            {% if '26' in session.get('menus') %}#}
+{#                                <li>#}
+{#                                    <a href="#" onclick="addTab('生产计划管理','/ZYPlanGuid/planmanager')">生产计划管理</a>#}
+{#                                </li>#}
+{#                            {% endif %}#}
+{#                            {% if '25' in session.get('menus') %}#}
+{#                                <li>#}
+{#                                    <a href="#" onclick="addTab('生产计划审核','/ZYPlanGuid/checkplanmanager')">生产计划审核</a>#}
+{#                                </li>#}
+{#                            {% endif %}#}
+{#                            {% if '25' in session.get('menus') %}#}
+{#                                <li>#}
+{#                                    <a href="#" onclick="addTab('中控计划确认','/MiddleControl/PlanConfirm')">中控计划确认</a>#}
+{#                                </li>#}
+{#                            {% endif %}#}
+{#                            {% if '25' in session.get('menus') %}#}
+{#                                <li>#}
+{#                                    <a href="#" onclick="addTab('中控计划复核','/MiddleControl/PlanConfirmChecked')">中控计划复核</a>#}
+{#                                </li>#}
+{#                            {% endif %}#}
+{#                            {% if '25' in session.get('menus') %}#}
+{#                                <li>#}
+{#                                    <a href="#" onclick="addTab('QA计划确认','QAPlanConfirm')">QA计划确认</a>#}
+{#                                </li>#}
+{#                            {% endif %}#}
                             {% if '25' in session.get('menus') %}
                                 <li>
                                     <a href="#" onclick="addTab('计划明细','/ZYPlan')">计划明细</a>
@@ -237,11 +237,11 @@
                                     <a href="#" onclick="addTab('制药任务','ZYTask')">制药任务</a>
                                 </li>
                             {% endif %}
-                            {% if '83' in session.get('menus') %}
-                                <li>
-                                    <a href="#" onclick="addTab('任务确认','/taskConfirm ')">任务确认</a>
-                                </li>
-                            {% endif %}
+{#                            {% if '83' in session.get('menus') %}#}
+{#                                <li>#}
+{#                                    <a href="#" onclick="addTab('任务确认','/taskConfirm ')">任务确认</a>#}
+{#                                </li>#}
+{#                            {% endif %}#}
                             {% if '28' in session.get('menus') %}
                                 <li>
                                     <a href="#" onclick="addTab('调度日计划','SchedulePlan')">调度日计划</a>

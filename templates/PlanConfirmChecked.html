@@ -102,21 +102,31 @@
         })
         function formatterStatus(value, row, index){
             if (value == 10){
-                return '新增'
+                return '新增计划'
+            }else if(value == 11){
+                return '审核计划'
             }else if(value == 20){
-                return '已下发'
+                return '下发计划'
             }else if(value == 30){
-                return '中控已确认'
+                return '中控确认生产前的准备'
             }else if(value == 31){
-                return '中控已复核'
-            }else if(value == 32){
-                return 'QA已复核'
+                return '中控复核生产前的准备'
             }else if(value == 40){
-                return '已确认，准备生产'
+                return '任务确认'
+            }else if(value == 32){
+                return 'QA复核生产前的准备'
             }else if(value == 50){
-                return '执行'
+                return '执行生产'
             }else if(value == 60){
-                return '已完成'
+                return '生产完成'
+            }else if(value == 61){
+                return '中控确认生产结束清场'
+            }else if(value == 62){
+                return '中控复核生产结束清场'
+            }else if(value == 63){
+                return 'QA复核清场'
+            }else if(value == 70){
+                return 'QA放行'
             }
         }
     </script>

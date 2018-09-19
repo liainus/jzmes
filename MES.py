@@ -129,7 +129,6 @@ def syslogsFindByDate():
         data = request.values  # 返回请求中的参数和form
         try:
             json_str = json.dumps(data.to_dict())
-            print(json_str)
             if len(json_str) > 10:
                 pages = int(data['page'])  # 页数
                 rowsnumber = int(data['rows'])  # 行数
@@ -361,7 +360,6 @@ def SelectRoles():
             data = getRoleList(id=0)
             # organizations = db_session.query(Organization).filter().all()
             jsondata = json.dumps(data, cls=AlchemyEncoder, ensure_ascii=False)
-            print(jsondata)
             return jsondata.encode("utf8")
         except Exception as e:
             print(e)
@@ -516,7 +514,6 @@ def menuToUser():
 @app.route('/batchmanager')  # 批次管理
 def batchmanager():
     productUnit_ID = db_session.query(ProcessUnit.ID, ProcessUnit.PUName).all()
-    print(productUnit_ID)
     data = []
     for tu in productUnit_ID:
         li = list(tu)
@@ -568,7 +565,6 @@ def selectAll():
             data = getMyOrganizationChildrenMap(id=0)
             jsondata = [{"name":"江中集团","value":"0","children":data}]
             jsondatas = json.dumps(jsondata, cls=AlchemyEncoder, ensure_ascii=False)
-            print(jsondatas)
             return jsondatas
         except Exception as e:
             print(e)
@@ -599,7 +595,6 @@ def OrganizationsFind():
         data = request.values # 返回请求中的参数和form
         try:
             json_str = json.dumps(data.to_dict())
-            print(json_str)
             if len(json_str) > 10:
                 pages = int(data['page']) # 页数
                 rowsnumber = int(data['rows'])  # 行数
@@ -931,7 +926,6 @@ def AreasFind():
         data = request.values
         AreaIFS = Model.core.AreaWebIFS("AreaFind")
         re = AreaIFS.AreasFind(data)
-        print(re)
         logger.info(re)
         return re
 
@@ -980,7 +974,6 @@ def allAreasSearch():
 @app.route('/ProductLine')
 def productLine():
     ID = db_session.query(Area.ID, Area.AreaName).all()
-    print(ID)
     data = []
     for tu in ID:
         li = list(tu)
@@ -1044,7 +1037,6 @@ def allProductLinesSearch():
 @app.route('/ProcessUnit')
 def processUnit():
     ID = db_session.query(ProductLine.ID, ProductLine.PLineName).all()
-    print(ID)
     data = []
     for tu in ID:
         li = list(tu)
@@ -1107,7 +1099,6 @@ def allProcessUnitsSearch():
 @app.route('/Pequipment')
 def pequipment():
     ID = db_session.query(ProcessUnit.ID, ProcessUnit.PUName).all()
-    print(ID)
     data = []
     for tu in ID:
         li = list(tu)
@@ -1225,7 +1216,6 @@ def pequipmentDelete():
 @app.route('/Equipment')
 def equipment():
     ID = db_session.query(ProcessUnit.ID, ProcessUnit.PUName).all()
-    print(ID)
     data = []
     for tu in ID:
         li = list(tu)
@@ -1512,7 +1502,6 @@ def allZYTasksSearch():
 def productControlTask():
     try:
         product_def_ID = db_session.query(ProductRule.ID,ProductRule.PRName).all()
-        print(product_def_ID)
         data1 = []
         for tu in product_def_ID:
             li = list(tu)
@@ -1522,7 +1511,6 @@ def productControlTask():
             data1.append(pro_def_id)
 
         productUnit_ID = db_session.query(ProcessUnit.ID, ProcessUnit.PUName).all()
-        print(productUnit_ID)
         data = []
         for tu in productUnit_ID:
             li = list(tu)
@@ -1591,7 +1579,6 @@ def allProductControlTasksSearch():
 def productParameter():
     try:
         product_def_ID = db_session.query(ProductRule.ID, ProductRule.PRName).all()
-        print(product_def_ID)
         data1 = []
         for tu in product_def_ID:
             li = list(tu)
@@ -1601,7 +1588,6 @@ def productParameter():
             data1.append(pro_def_id)
 
         productUnit_ID = db_session.query(ProcessUnit.ID, ProcessUnit.PUName).all()
-        print(productUnit_ID)
         data = []
         for tu in productUnit_ID:
             li = list(tu)
@@ -1724,7 +1710,6 @@ def allMaterialTypesSearch():
 @app.route('/Material')
 def material():
     ID = db_session.query(MaterialType.ID, Material.MATName).all()
-    print(ID)
     data = []
     for tu in ID:
         li = list(tu)
@@ -1781,7 +1766,6 @@ def allMaterialPlanBOMS():
         data = request.values
         MaterialBOMIFS = Model.core.MaterialBOMWebIFS("MaterialCreate")
         re = MaterialBOMIFS.MaterialBOMsFind(data)
-        print(re)
         return re
 
 
@@ -1799,7 +1783,6 @@ def allMaterialsSearch():
 def materialBOM():
     try:
         material_ID = db_session.query(Material.ID,Material.MATName).all()
-        print(material_ID)
         data_material = []
         for tu in material_ID:
             li = list(tu)
@@ -1809,7 +1792,6 @@ def materialBOM():
             data_material.append(material_id)
 
         product_def_ID = db_session.query(ProductRule.ID, ProductRule.PRName).all()
-        print(product_def_ID)
         data1 = []
         for tu in product_def_ID:
             li = list(tu)
@@ -1819,7 +1801,6 @@ def materialBOM():
             data1.append(pro_def_id)
 
         productUnit_ID = db_session.query(ProcessUnit.ID, ProcessUnit.PUName).all()
-        print(productUnit_ID)
         data = []
         for tu in productUnit_ID:
             li = list(tu)
@@ -1829,7 +1810,6 @@ def materialBOM():
             data.append(pro_unit_id)
 
         material_Type_ID = db_session.query(MaterialType.ID, MaterialType.MATTypeName).all()
-        print(material_Type_ID)
         data_material_typeID = []
         for tu in material_Type_ID:
             li = list(tu)
@@ -1955,7 +1935,6 @@ def allZYPlanMaterialsSearch():
 def productUnit():
     try:
         product_def_ID = db_session.query(ProductRule.ID, ProductRule.PRName).all()
-        print(product_def_ID)
         data1 = []
         for tu in product_def_ID:
             li = list(tu)
@@ -1965,7 +1944,6 @@ def productUnit():
             data1.append(pro_def_id)
 
         productUnit_ID = db_session.query(ProcessUnit.ID, ProcessUnit.PUName).all()
-        print(productUnit_ID)
         data = []
         for tu in productUnit_ID:
             li = list(tu)
@@ -2034,7 +2012,6 @@ def allProductUnitsSearch():
 def productUnitRoute():
     try:
         product_def_ID = db_session.query(ProductRule.ID, ProductRule.PRName).all()
-        print(product_def_ID)
         data1 = []
         for tu in product_def_ID:
             li = list(tu)
@@ -2044,7 +2021,6 @@ def productUnitRoute():
             data1.append(pro_def_id)
 
         productUnit_ID = db_session.query(ProcessUnit.ID, ProcessUnit.PUName).all()
-        print(productUnit_ID)
         data = []
         for tu in productUnit_ID:
             li = list(tu)
@@ -2335,7 +2311,6 @@ def OrganizationFind():
             data = getOrganizationChildren(id=0)
             # organizations = db_session.query(Organization).filter().all()
             jsondata = json.dumps(data, cls=AlchemyEncoder, ensure_ascii=False)
-            print(jsondata)
             return jsondata
         except Exception as e:
             print(e)
@@ -2478,7 +2453,6 @@ def allrolesFind():
         data = request.values
         try:
             json_str = json.dumps(data.to_dict())
-            print(json_str)
             if len(json_str) > 10:
                 pages = int(data['page'])
                 rowsnumber = int(data['rows'])
@@ -2563,7 +2537,6 @@ def MyOpFind():
             data = getMyOrganizationChildren(id=0)
             # organizations = db_session.query(Organization).filter().all()
             jsondata = json.dumps(data, cls=AlchemyEncoder, ensure_ascii=False)
-            print(jsondata)
             return jsondata
         except Exception as e:
             print(e)
@@ -2579,7 +2552,6 @@ def myenterprise():
             data = getMyEnterprise(id=0)
             # organizations = db_session.query(Organization).filter().all()
             jsondata = json.dumps(data, cls=AlchemyEncoder, ensure_ascii=False)
-            print(jsondata)
             return jsondata
         except Exception as e:
             print(e)
@@ -2597,7 +2569,6 @@ def MyenterpriseSelect():
                 objid = int(odata['ID'])
                 oclass = db_session.query(Model.system.Organization).filter_by(ID=objid).first()
                 jsondata = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
-            print(jsondata)
             return jsondata
         except Exception as e:
             print(e)
@@ -2610,7 +2581,6 @@ def MyenterpriseSelect():
 def createPlanWizard():
     try:
         product_info = db_session.query(ProductRule.ID, ProductRule.PRName).all()
-        print(product_info)
         data = []
         for tu in product_info:
             li = list(tu)
@@ -2699,7 +2669,6 @@ def treeProductRule():
             data = getProductRule()
             # organizations = db_session.query(Organization).filter().all()
             jsondata = json.dumps(data, cls=AlchemyEncoder, ensure_ascii=False)
-            print(jsondata)
             return jsondata
         except Exception as e:
             print(e)
@@ -2719,7 +2688,6 @@ def OpcServerFind():
         data = request.values
         try:
             json_str = json.dumps(data.to_dict())
-            print(json_str)
             if len(json_str) > 10:
                 pages = int(data['page'])
                 rowsnumber = int(data['rows'])
@@ -3002,7 +2970,6 @@ def templateFind():
         data = request.values
         try:
             json_str = json.dumps(data.to_dict())
-            print(json_str)
             if len(json_str) > 10:
                 pages = int(data['page'])
                 rowsnumber = int(data['rows'])
@@ -3227,7 +3194,6 @@ def collectParamsFind():
         data = request.values
         try:
             json_str = json.dumps(data.to_dict())
-            print(json_str)
             if len(json_str) > 10:
                 pages = int(data['page'])
                 rowsnumber = int(data['rows'])
@@ -3399,7 +3365,6 @@ def strategyFind():
         data = request.values
         try:
             json_str = json.dumps(data.to_dict())
-            print(json_str)
             if len(json_str) > 10:
                 pages = int(data['page'])
                 rowsnumber = int(data['rows'])
@@ -3549,7 +3514,6 @@ def CollectTaskFind():
         data = request.values
         try:
             json_str = json.dumps(data.to_dict())
-            print(json_str)
             if len(json_str) > 10:
                 pages = int(data['page'])
                 rowsnumber = int(data['rows'])
@@ -3838,7 +3802,6 @@ def Taskload():
     if request.method == 'GET':
         try:
             task_dict = make_dynamic_classes()
-            print(task_dict)
             return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
                               ensure_ascii=False)
         except Exception as e:
@@ -3854,7 +3817,6 @@ def searchPlanmanager():
         data = request.values
         try:
             json_str = json.dumps(data.to_dict())
-            print(json_str)
             if len(json_str) > 10:
                 pages = int(data['page'])  # 页数
                 rowsnumber = int(data['rows'])  # 行数
@@ -3880,7 +3842,6 @@ def makePlan():
         data = request.values  # 返回请求中的参数和form
         try:
             json_str = json.dumps(data.to_dict())
-            print(json_str)
             if len(json_str) > 10:
                 AProductRuleID = int(data['AProductRuleID'])# 产品定义ID
                 APlanWeight = data['APlanWeight']# 计划重量
@@ -4088,7 +4049,6 @@ def criticalTasks():
         data = request.values  # 返回请求中的参数和form
         try:
             json_str = json.dumps(data.to_dict())
-            print(json_str)
             if len(json_str) > 10:
                 pages = int(data['page'])  # 页数
                 rowsnumber = int(data['rows'])  # 行数
@@ -4113,7 +4073,6 @@ def criticalMaterials():
         data = request.values  # 返回请求中的参数和form
         try:
             json_str = json.dumps(data.to_dict())
-            print(json_str)
             if len(json_str) > 10:
                 pages = int(data['page'])  # 页数
                 rowsnumber = int(data['rows'])  # 行数
@@ -4177,7 +4136,6 @@ def searchZYPlan():
         data = request.values  # 返回请求中的参数和form
         try:
             json_str = json.dumps(data.to_dict())
-            print(json_str)
             if len(json_str) > 10:
                 pages = int(data['page'])  # 页数
                 rowsnumber = int(data['rows'])  # 行数
@@ -4419,7 +4377,6 @@ def searchcheckplanmanager():
                                                                         PlanManager.PlanStatus.in_((10, 40))).all()[
                                    inipage:endpage]
                 planManagers = json.dumps(planManagers, cls=AlchemyEncoder, ensure_ascii=False)
-                print(planManagers)
                 jsonPlanManagers = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + planManagers + "}"
                 return jsonPlanManagers
         except Exception as e:
@@ -5039,8 +4996,6 @@ def nodeIdNote():
                 for element in elements:  #将注释Note插入OpcTag中
                     nodeId = element + index[0]
                     opcTag = db_session.query(OpcTag.NodeID).filter_by(NodeID=nodeId).first()
-                    if opcTag == 'ns=1;s=h|提取罐R1101_8\PV_R110':
-                        print(opcTag)
                     if opcTag is None:
                         continue
                     opcTag.Note = index[1]
@@ -5072,7 +5027,6 @@ def NodeIdNoteFind():
         data = request.values
         try:
             json_str = json.dumps(data.to_dict())
-            print(json_str)
             if len(json_str) > 10:
                 pages = int(data['page'])
                 rowsnumber = int(data['rows'])
@@ -5189,7 +5143,3 @@ def NodeIdNoteSearch():
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-
-
-

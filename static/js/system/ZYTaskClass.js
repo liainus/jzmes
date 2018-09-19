@@ -189,15 +189,9 @@ $(function () {
                     if (value == 10){
                         return '新增'
                     }else if(value == 20){
-                        return '已下发'
-                    }else if(value == 31){
-                        return '中控已确认'
-                    }else if(value == 32){
-                        return '中控已复核'
-                    }else if(value == 33){
-                        return 'QA已复核'
+                        return '下发'
                     }else if(value == 40){
-                        return '已确认，准备生产'
+                        return '确认'
                     }else if(value == 50){
                         return '执行'
                     }else if(value == 60){
