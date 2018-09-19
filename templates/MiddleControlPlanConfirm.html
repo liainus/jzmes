@@ -36,6 +36,7 @@
                     var rows = $("#tab").datagrid('getSelections');
                     if (rows.length > 0) {
                         $("#TemplateClassDialog").dialog('open').dialog('setTitle', '确认生产前的准备工作');
+                        $('#TemplateClassDialog').window('center');
                         ZYPlanID = rows[0].ID
                         $('#dg').datagrid({
                             url:'/ZYPlanGuid/ConfirmSearchInfo',
@@ -153,6 +154,7 @@
                     var rows = $("#tab").datagrid('getSelections');
                     if (rows.length > 0) {
                         $("#clearTemplateClassDialog").dialog('open').dialog('setTitle', '确认生产前的准备工作');
+                        $('#clearTemplateClassDialog').window('center');
                         ZYPlanID = rows[0].ID
                         $('#clearTab').datagrid({
                             url:'/ZYPlanGuid/ConfirmSearchInfoAgain',
@@ -346,7 +348,7 @@
             <thead>
                 <tr>
                     <th field="ck" checkbox="true"></th>
-                    <th data-options="field:'PlanStatus',width:150,align:'center'" formatter="formatterStatus">计划状态</th>
+                    <th data-options="field:'ZYPlanStatus',width:150,align:'center'" formatter="formatterStatus">计划状态</th>
                     <th data-options="field:'PlanDate',width:200,align:'center'">计划日期</th>
                     <th data-options="field:'PlanNo',width:150,align:'center'">制药计划单号</th>
                     <th data-options="field:'BatchID',width:150,align:'center'">批次号</th>
