@@ -3622,7 +3622,7 @@ class WorkFlowStatus(Base):
 	# 描述:
 	Desc = Column(Unicode(100), primary_key=False, autoincrement=False, nullable=True)
 
-# 进行生产前的准备工作表:
+# 准备工作表:
 class ReadyWork(Base):
 	__tablename__ = "ReadyWork"
 
@@ -3640,6 +3640,9 @@ class ReadyWork(Base):
 
 	#描述
 	Describe = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+	#生产前生产后的标识0代表生产前，1代表生产后
+	ProductionFlag = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
 	# #检查工作区域是否有《清场合格证》
 	# ClearFieldCard = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)

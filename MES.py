@@ -2706,530 +2706,6 @@ def treeProductRule():
             logger.error(e)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
-# 计划向导生成计划
-@app.route('/ZYPlanGuid/makePlan', methods=['POST', 'GET'])
-def makePlan():
-    if request.method == 'POST':
-        data = request.values  # 返回请求中的参数和form
-        try:
-            json_str = json.dumps(data.to_dict())
-            print(json_str)
-            if len(json_str) > 10:
-                AProductRuleID = int(data['AProductRuleID'])# 产品定义ID
-                APlanWeight = data['APlanWeight']# 计划重量
-                APlanDate = data['APlanDate']# 计划生产日期
-                ABatchID = data['ABatchID']# 批次号
-                ABrandName = data['ABrandName'] # 产品名称
-                PLineName = data['PLineName']#生产线名字
-                AUnit = data['AUnit']#d单位
-                PlanCreate = ctrlPlan('PlanCreate')
-                userID = ""
-                ABrandID = AProductRuleID
-                re = PlanCreate.createLinePlanManager(AProductRuleID, APlanWeight, APlanDate, ABatchID, ABrandID, ABrandName, PLineName, AUnit,userID)
-                re = json.dumps(re)
-                return re
-        except Exception as e:
-            print(e)
-            logger.error(e)
-            insertSyslog("error", "计划向导生成计划报错Error：" + str(e), current_user.Name)
-            return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
-
-# 生产管理部审核计划
-@app.route('/ZYPlanGuid/checkPlanManager', methods=['POST', 'GET'])
-def checkPlanManager():
-    if request.method == 'POST':
-        data = request.values  # 返回请求中的参数和form
-        try:
-            jsonstr = json.dumps(data.to_dict())
-            if len(jsonstr) > 10:
-                jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
-                for key in jsonnumber:
-                    id = int(key)
-                    try:
-                        oclassplan = db_session.query(PlanManager).filter_by(ID=id).first()
-                        oclassplan.PlanStatus = Model.Global.PlanStatus.Checked.value
-                        oclassW = db_session.query(WorkFlowStatus).filter_by(PlanManageID=id).first()
-                        oclassW.AuditStatus = Model.Global.AuditStatus.Checked.value
-                        oclassW.DescF = "生产管理部审核计划"
-                        db_session.commit()
-                        userName = current_user.Name
-                        Desc = "生产管理部审核计划"
-                        Type = Model.Global.Type.NEW.value
-                        PlanCreate = ctrlPlan('PlanCreate')
-                        wReturn = PlanCreate.createWorkFlowEventPlan(id, userName, Desc, Type)
-                        if (wReturn == False):
-                            return 'NO'
-                    except Exception as ee:
-                        db_session.rollback()
-                        print(ee)
-                        logger.error(ee)
-                        insertSyslog("error", "生产管理部审核计划报错Error：" + str(ee), current_user.Name)
-                        return json.dumps([{"status": "Error:" + str(ee)}], cls=AlchemyEncoder, ensure_ascii=False)
-                return 'OK'
-        except Exception as e:
-            db_session.rollback()
-            print(e)
-            logger.error(e)
-            insertSyslog("error", "生产管理部审核计划报错Error：" + str(e), current_user.Name)
-            return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
-
-
-# 下发计划生成ZY计划、任务
-@app.route('/ZYPlanGuid/createZYPlanZYtask', methods=['POST', 'GET'])
-def createZYPlanZYtask():
-    if request.method == 'GET':
-        data = request.values  # 返回请求中的参数和form
-        try:
-            jsonstr = json.dumps(data.to_dict())
-            if len(jsonstr) > 10:
-                jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
-                for key in jsonnumber:
-                    id = int(key)
-                    try:
-                        PlanCreate = ctrlPlan('PlanCreate')
-                        returnmsg = PlanCreate.createZYPlanZYTask(id)
-                        if(returnmsg == False):
-                            return 'NO'
-                        oclassplan = db_session.query(PlanManager).filter_by(ID=id).first()
-                        oclassplan.PlanStatus = Model.Global.PlanStatus.Realse.value
-                        oclassW = db_session.query(WorkFlowStatus).filter_by(PlanManageID=id).all()
-                        for oc in oclassW:
-                            oc.AuditStatus = Model.Global.AuditStatus.Realse.value
-                            oc.DescF = "下发计划生成ZY计划、任务"
-                        oclassZYPlans = db_session.query(ZYPlan).filter(ZYPlan.BatchID == oclassplan.BatchID).all()
-                        for zyp in oclassZYPlans:
-                            zyp.ZYPlanStatus = Model.Global.ZYPlanStatus.Realse.value
-                            userName = current_user.Name
-                            Desc = "生成ZY计划"
-                            Type = Model.Global.Type.NEW.value
-                            PlanCreate = ctrlPlan('PlanCreate')
-                            wReturn = PlanCreate.createWorkFlowEventZYPlan(zyp.ID, userName, Desc, Type)
-                            if (wReturn == False):
-                                return 'NO'
-                        oclassZYTasks = db_session.query(ZYTask).filter(ZYTask.BatchID == oclassplan.BatchID).all()
-                        for task in oclassZYTasks:
-                            task.TaskStatus = Model.Global.TASKSTATUS.Realse.value
-                        db_session.commit()
-                        userName = current_user.Name
-                        Desc = "下发计划生成ZY计划、任务"
-                        Type = Model.Global.Type.Realse.value
-                        PlanCreate = ctrlPlan('PlanCreate')
-                        wReturn = PlanCreate.createWorkFlowEventPlan(id, userName, Desc, Type)
-                        if (wReturn == False):
-                            return 'NO'
-                    except Exception as ee:
-                        db_session.rollback()
-                        print(ee)
-                        logger.error(ee)
-                        insertSyslog("error", "下发计划生成ZY计划、任务报错Error" + string(ee), current_user.Name)
-                        return 'NO'
-                return 'OK'
-        except Exception as e:
-            print(e)
-            logger.error(e)
-            insertSyslog("error", "下发计划生成ZY计划、任务报错Error：" + str(e), current_user.Name)
-            return 'NO'
-
-
-# 下发后的计划撤回，删除ZYplan，ZYtask
-@app.route('/ZYPlanGuid/RecallPlan', methods=['POST', 'GET'])
-def RecallPlan():
-    if request.method == 'GET':
-        data = request.values  # 返回请求中的参数和form
-        try:
-            jsonstr = json.dumps(data.to_dict())
-            if len(jsonstr) > 10:
-                jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
-                for key in jsonnumber:
-                    id = int(key)
-                    try:
-                        ABatchID = id  # 批次号
-                        planM = db_session.query(PlanManager).filter_by(BatchID=ABatchID).first()
-                        if (planM.PlanStatus != "20"):
-                            return "只能是已下发状态的计划才能撤回！"
-                        else:
-                            pass
-                        zYPlans = db_session.query(ZYPlan).filter_by(BatchID=ABatchID).all()
-                        for zYPlan in zYPlans:
-                            if (zYPlan.LockStatus == "10"):
-                                return "计划状态已锁定，不允许撤回！"
-                            else:
-                                pass
-                        zYTasks = db_session.query(ZYTask).filter_by(BatchID=ABatchID).all()
-                        for zYTask in zYTasks:
-                            if (zYTask.LockStatus == "10"):
-                                return "任务状态已锁定，不允许撤回！"
-                            else:
-                                pass
-                        for zYPl in zYPlans:
-                            try:
-                                oclass = db_session.query(ZYPlan).filter_by(ID=zYPl.ID).first()
-                                db_session.delete(oclass)
-                                oclassZ = db_session.query(WorkFlowEventZYPlan).filter_by(WorkFlowEventZYPlan.ZYPlanID == zYPl.ID).first()
-                                db_session.delete(oclassZ)
-                                db_session.commit()
-                            except Exception as ee:
-                                db_session.rollback()
-                                logger.error(ee)
-                                insertSyslog("error", "删除批次计划信息报错Error" + string(ee), current_user.Name)
-                                return json.dumps([{"status": "Error:" + str(ee)}], cls=AlchemyEncoder, ensure_ascii=False)
-                        for zYTask in zYTasks:
-                            try:
-                                oclass = db_session.query(ZYTask).filter_by(ID=zYTask.ID).first()
-                                db_session.delete(oclass)
-                                db_session.commit()
-                            except Exception as ee:
-                                db_session.rollback()
-                                print(ee)
-                                logger.error(ee)
-                                insertSyslog("error", "删除批次任务信息报错Error" + string(ee), current_user.Name)
-                                return json.dumps([{"status": "Error:" + str(ee)}], cls=AlchemyEncoder, ensure_ascii=False)
-                        planM.PlanStatus = Model.Global.PlanStatus.NEW.value
-                        oclassW = db_session.query(WorkFlowStatus).filter_by(PlanManageID=id).all()
-                        for oc in oclassW:
-                            if(oc.ZYPlanID != None):
-                                db_session.delete(oc)
-                            else:
-                                oc.AuditStatus = Model.Global.AuditStatus.Unaudited.value
-                                oc.DescF = "计划撤回，删除ZYplan，ZYtask"
-                        db_session.commit()
-                        userName = current_user.Name
-                        Desc = "计划撤回，删除ZYplan，ZYtask"
-                        Type = Model.Global.Type.Recall.value
-                        PlanCreate = ctrlPlan('PlanCreate')
-                        wReturn = PlanCreate.createWorkFlowEventPlan(planM.ID, userName, Desc, Type)
-                        if (wReturn == False):
-                            return 'NO'
-                        return 'OK'
-                    except Exception as e:
-                        db_session.rollback()
-                        print(e)
-                        logger.error(e)
-                        insertSyslog("error", "撤回批次计划报错Error：" + str(e), current_user.Name)
-                        return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
-        except Exception as e:
-            db_session.rollback()
-            print(e)
-            logger.error(e)
-            insertSyslog("error", "撤回批次计划报错Error：" + str(e), current_user.Name)
-            return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
-
-# 计划向导获取批次任务明细
-@app.route('/ZYPlanGuid/CriticalTasks', methods=['POST', 'GET'])
-def criticalTasks():
-    if request.method == 'GET':
-        data = request.values  # 返回请求中的参数和form
-        try:
-            json_str = json.dumps(data.to_dict())
-            print(json_str)
-            if len(json_str) > 10:
-                pages = int(data['page'])  # 页数
-                rowsnumber = int(data['rows'])  # 行数
-                inipage = (pages - 1) * rowsnumber + 0  # 起始页
-                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
-                ABatchID = data['ABatchID']
-                total = db_session.query(ZYTask).filter(ZYTask.BatchID == ABatchID).count()
-                zyTasks = db_session.query(ZYTask).filter(ZYTask.BatchID == ABatchID).all()[inipage:endpage]
-                jsonzyTasks = json.dumps(zyTasks, cls=AlchemyEncoder, ensure_ascii=False)
-                jsonzyTasks = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonzyTasks + "}"
-                return jsonzyTasks
-        except Exception as e:
-            print(e)
-            logger.error(e)
-            insertSyslog("error", "计划向导获取批次任务明细报错Error：" + str(e), current_user.Name)
-            return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
-
-# 计划向导获取批次物料明细
-@app.route('/ZYPlanGuid/CriticalMaterials', methods=['POST', 'GET'])
-def criticalMaterials():
-    if request.method == 'GET':
-        data = request.values  # 返回请求中的参数和form
-        try:
-            json_str = json.dumps(data.to_dict())
-            print(json_str)
-            if len(json_str) > 10:
-                pages = int(data['page'])  # 页数
-                rowsnumber = int(data['rows'])  # 行数
-                inipage = (pages - 1) * rowsnumber + 0  # 起始页
-                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
-                ABatchID = data['ABatchID']
-                total = db_session.query(ZYPlanMaterial).filter(ZYPlanMaterial.BatchID == ABatchID).count()
-                zyMaterials = db_session.query(ZYPlanMaterial).filter(ZYPlanMaterial.BatchID == ABatchID).all()[inipage:endpage]
-                jsonzyMaterials = json.dumps(zyMaterials, cls=AlchemyEncoder, ensure_ascii=False)
-                jsonzyMaterials = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonzyMaterials + "}"
-                return jsonzyMaterials
-        except Exception as e:
-            print(e)
-            logger.error(e)
-            insertSyslog("error", "计划向导获取批次物料明细报错Error：" + str(e), current_user.Name)
-            return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
-
-# 批次号判重
-@app.route('/ZYPlanGuid/isBatchNumber', methods=['POST', 'GET'])
-def isBatchNumber():
-    if request.method == 'GET':
-        data = request.values  # 返回请求中的参数和form
-        try:
-            json_str = json.dumps(data.to_dict())
-            if len(json_str) > 10:
-                isExist = ''#前台判断标识：OK为批次号可用，NO为此批次号已存在
-                ABatchID = data['ABatchID']
-                BatchID = db_session.query(PlanManager.BatchID).filter(PlanManager.BatchID == ABatchID).first()
-                if(BatchID == None):
-                    isExist = 'OK'
-                else:
-                    isExist = 'NO'
-                isExist = json.dumps(isExist)
-                return isExist
-        except Exception as e:
-            print(e)
-            logger.error(e)
-            insertSyslog("error", "批次号判重报错Error：" + str(e), current_user.Name)
-            return 'NO'
-
-# 计划向导重量校验
-@app.route('/ZYPlanGuid/weightCheck', methods=['POST', 'GET'])
-def weightCheck():
-    if request.method == 'GET':
-        data = request.values  # 返回请求中的参数和form
-        try:
-            json_str = json.dumps(data.to_dict())
-            if len(json_str) > 10:
-                PUID = data['PUID']
-                LowLimit,HighLimit = db_session.query(ProductControlTask.LowLimit, ProductControlTask.HighLimit).filter(ProductControlTask.PUID == PUID).first()
-                return LowLimit,HighLimit
-        except Exception as e:
-            print(e)
-            logger.error(e)
-            insertSyslog("error", "计划向导重量校验报错Error：" + str(e), current_user.Name)
-
-# 获取批次计划信息
-@app.route('/ZYPlanGuid/searchZYPlan', methods=['POST', 'GET'])
-def searchZYPlan():
-    if request.method == 'GET':
-        data = request.values  # 返回请求中的参数和form
-        try:
-            json_str = json.dumps(data.to_dict())
-            print(json_str)
-            if len(json_str) > 10:
-                pages = int(data['page'])  # 页数
-                rowsnumber = int(data['rows'])  # 行数
-                inipage = (pages - 1) * rowsnumber + 0  # 起始页
-                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
-                ABatchID = data['ABatchID']#批次号
-                APlanDate = data['APlanDate']#计划日期
-                total = db_session.query(ZYPlan).filter(ZYPlan.BatchID == ABatchID, ZYPlan.PlanDate == APlanDate).count()
-                zYPlans = db_session.query(ZYPlan).filter(ZYPlan.BatchID == ABatchID, ZYPlan.PlanDate == APlanDate).all()[
-                              inipage:endpage]
-                jsonzYPlans = json.dumps(zYPlans, cls=AlchemyEncoder, ensure_ascii=False)
-                jsonzYPlans = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonzYPlans + "}"
-                return jsonzYPlans
-        except Exception as e:
-            print(e)
-            logger.error(e)
-            insertSyslog("error", "获取批次计划信息报错Error：" + str(e), current_user.Name)
-
-#生产线监控
-@app.route('/processMonitorLine')
-def processMonitor():
-    return render_template('processMonitorLine.html')
-
-#任务确认
-@app.route('/taskConfirm')
-def taskConfirm():
-    return render_template('taskConfirm.html')
-
-#任务确认获取工艺段
-@app.route('/processMonitorLine/taskConfirmPuid', methods=['POST', 'GET'])
-def taskConfirmPuidDate():
-    if request.method == 'GET':
-        data = request.values  # 返回请求中的参数和form
-        try:
-            # puids = db_session.query(ZYPlan.PUID).filter().all()
-            # puidnews = []
-            # for id in puids:
-            #     if id not in puidnews:
-            #         puidnews.append(id)
-            # sz = []
-            # for puid in puidnews:
-            #     APUID = puid  # 工艺段编码
-            #     PDCtrlTaskName = db_session.query(ProductControlTask.PDCtrlTaskName).filter_by(PUID=APUID).first()
-            #     PUID = str(APUID)
-            #     sz.append({"id": PUID[1:-2], "text": PDCtrlTaskName})
-            sz = []
-            ProcessUnits = db_session.query(ProcessUnit.ID, ProcessUnit.PUName).all()
-            for procc in ProcessUnits:
-                sz.append({"id": procc.ID, "text": procc.PUName})
-            jsonsz = json.dumps(sz, cls=AlchemyEncoder, ensure_ascii=False)
-            return jsonsz
-        except Exception as e:
-            print(e)
-            logger.error(e)
-            insertSyslog("error", "任务确认获取工艺段报错Error：" + str(e), current_user.Name)
-
-# 任务确认查询计划
-@app.route('/processMonitorLine/planConfirmSearch', methods=['POST', 'GET'])
-def planConfirmSearch():
-    if request.method == 'GET':
-        data = request.values  # 返回请求中的参数和form
-        try:
-            jsonstr = json.dumps(data.to_dict())
-            if len(jsonstr) > 10:
-                pages = int(data['page'])  # 页数
-                rowsnumber = int(data['rows'])  # 行数
-                inipage = (pages - 1) * rowsnumber + 0  # 起始页
-                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
-                APUID = data['PUID']  # 工艺段编码
-                if(APUID == "" or APUID == None):
-                    total = db_session.query(ZYPlan).filter(ZYPlan.ZYPlanStatus.in_((31, 40, 50))).count()
-                    ZYPlans = db_session.query(ZYPlan).filter(ZYPlan.ZYPlanStatus.in_((31, 40, 50))).all()[inipage:endpage]
-                else:
-                    total = db_session.query(ZYPlan).filter(ZYPlan.ZYPlanStatus.in_((31, 40, 50)),
-                                                            ZYPlan.PUID == APUID).count()
-                    ZYPlans = db_session.query(ZYPlan).filter(ZYPlan.ZYPlanStatus.in_((31, 40, 50)),
-                                                              ZYPlan.PUID == APUID).all()[inipage:endpage]
-                jsonZYPlans = json.dumps(ZYPlans, cls=AlchemyEncoder, ensure_ascii=False)
-                jsonZYPlans = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonZYPlans + "}"
-                return jsonZYPlans
-        except Exception as e:
-            print(e)
-            logger.error(e)
-            insertSyslog("error", "任务确认查询计划报错Error：" + str(e), current_user.Name)
-
-#任务确认查询任务
-@app.route('/processMonitorLine/taskConfirmSearch', methods=['POST', 'GET'])
-def taskConfirmSearch():
-    if request.method == 'GET':
-        data = request.values  # 返回请求中的参数和form
-        try:
-            jsonstr = json.dumps(data.to_dict())
-            if len(jsonstr) > 10:
-                pages = int(data['page'])  # 页数
-                rowsnumber = int(data['rows'])  # 行数
-                inipage = (pages - 1) * rowsnumber + 0  # 起始页
-                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
-                APUID = data['PUID']  # 工艺段编码
-                TaskStatus = data['TaskStatus']  # 任务的执行状态
-                BatchID = data['BatchID']#批次号
-                if(APUID == "" and TaskStatus == ""):
-                    total = db_session.query(ZYTask).filter(ZYTask.TaskStatus.in_((32,40,50))).count()
-                    ZYTasks = db_session.query(ZYTask).filter(ZYTask.TaskStatus.in_((32,40,50))).all()[inipage:endpage]
-                elif(APUID != "" and TaskStatus == "" and BatchID == ""):
-                    total = db_session.query(ZYTask).filter(ZYTask.TaskStatus.in_((32, 40, 50)),
-                                                            ZYTask.PUID == APUID).count()
-                    ZYTasks = db_session.query(ZYTask).filter(ZYTask.TaskStatus.in_((32, 40, 50)),
-                                                              ZYTask.PUID == APUID).all()[inipage:endpage]
-                elif(APUID != "" and TaskStatus == "" and BatchID != ""):
-                    total = db_session.query(ZYTask).filter(ZYTask.BatchID == BatchID,
-                                                            ZYTask.TaskStatus.in_((32, 40, 50)),
-                                                            ZYTask.PUID == APUID).count()
-                    ZYTasks = db_session.query(ZYTask).filter(ZYTask.BatchID == BatchID,
-                                                              ZYTask.TaskStatus.in_((32, 40, 50)),
-                                                              ZYTask.PUID == APUID).all()[inipage:endpage]
-                elif (APUID == "" and TaskStatus != ""):
-                    total = db_session.query(ZYTask).filter(ZYTask.TaskStatus == TaskStatus).count()
-                    ZYTasks = db_session.query(ZYTask).filter(ZYTask.TaskStatus == TaskStatus).all()[inipage:endpage]
-                elif (APUID != "" and TaskStatus != "" and BatchID == ""):
-                    total = db_session.query(ZYTask).filter(ZYTask.TaskStatus == TaskStatus,
-                                                            ZYTask.PUID == APUID).count()
-                    ZYTasks = db_session.query(ZYTask).filter(ZYTask.TaskStatus == TaskStatus,
-                                                              ZYTask.PUID == APUID).all()[inipage:endpage]
-                elif (APUID != "" and TaskStatus != "" and BatchID != ""):
-                    total = db_session.query(ZYTask).filter(ZYTask.BatchID == BatchID,
-                                                            ZYTask.TaskStatus == TaskStatus,
-                                                            ZYTask.PUID == APUID).count()
-                    ZYTasks = db_session.query(ZYTask).filter(ZYTask.BatchID == BatchID,
-                                                              ZYTask.TaskStatus == TaskStatus,
-                                                              ZYTask.PUID == APUID).all()[inipage:endpage]
-                jsonZYTasks = json.dumps(ZYTasks, cls=AlchemyEncoder, ensure_ascii=False)
-                jsonZYTasks = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonZYTasks + "}"
-                return jsonZYTasks
-        except Exception as e:
-            print(e)
-            logger.error(e)
-            insertSyslog("error", "获取任务确认的任务列表报错Error：" + str(e), current_user.Name)
-
-#任务确认工艺段下的所有设备
-@app.route('/processMonitorLine/searchAllEquipments', methods=['POST', 'GET'])
-def searchAllEquipments():
-    if request.method == 'GET':
-        data = request.values  # 返回请求中的参数和form
-        try:
-            jsonstr = json.dumps(data.to_dict())
-            if len(jsonstr) > 10:
-                APUID = data['PUID']  # 工艺段编码
-                dataequipmentNames = []
-                equipmentNames = db_session.query(Pequipment.EQPCode,Pequipment.EQPName).filter(Pequipment.PUID == 1)
-                for equip in equipmentNames:
-                    li = list(equip)
-                    id = li[0]
-                    name = li[1]
-                    equipName = {'id': id, 'text': name}
-                    dataequipmentNames.append(equipName)
-                dataequipmentNames = json.dumps(dataequipmentNames, cls=AlchemyEncoder, ensure_ascii=False)
-                return dataequipmentNames
-        except Exception as e:
-            print(e)
-            logger.error(e)
-            insertSyslog("error", "任务确认工艺段下的所有设备报错Error：" + str(e), current_user.Name)
-
-#任务确认保存设备code
-@app.route('/processMonitorLine/saveEQPCode', methods=['POST', 'GET'])
-def saveEQPCode():
-    if request.method == 'GET':
-        data = request.values  # 返回请求中的参数和form
-        try:
-            jsonstr = json.dumps(data.to_dict())
-            if len(jsonstr) > 10:
-                EQPCode = data['EQPCode']
-                ID = data['ID']
-                oclass = db_session.query(ZYTask).filter(ZYTask.ID == ID).first()
-                oclass.EquipmentID = EQPCode
-                oclass.TaskStatus = Model.Global.TASKSTATUS.COMFIRM.value
-                db_session.commit()
-                oclassplan = db_session.query(ZYPlan).filter(ZYPlan.PUID == oclass.PUID, ZYPlan.BatchID == oclass.BatchID).first()
-                oclasstasks = db_session.query(ZYTask).filter(ZYTask.PUID == oclass.PUID,
-                                                             ZYTask.BatchID == oclass.BatchID).all()
-                flag = "TRUE"
-                for task in oclasstasks:
-                    if(task.TaskStatus != Model.Global.TASKSTATUS.COMFIRM.value):
-                        flag = "FALSE"
-                if(flag == "TRUE"):
-                    oclassplan.ZYPlanStatus = Model.Global.ZYPlanStatus.COMFIRM.value
-                db_session.commit()
-                oclassplans = db_session.query(ZYPlan).filter(ZYPlan.BatchID == oclass.BatchID).all()
-                planmana = db_session.query(PlanManager).filter(PlanManager.BatchID == oclass.BatchID).first()
-                flagP = "TRUE"
-                for plan in oclassplans:
-                    if(plan.ZYPlanStatus != Model.Global.ZYPlanStatus.COMFIRM.value):
-                        flagP = "FALSE"
-                if(flagP == "TRUE"):
-                    planmana.PlanStatus = Model.Global.PlanStatus.COMFIRM.value
-                db_session.commit()
-                return "OK"
-        except Exception as e:
-            db_session.rollback()
-            print(e)
-            logger.error(e)
-            insertSyslog("error", "任务确认保存设备code报错Error：" + str(e), current_user.Name)
-            return "NO"
-
-#任务确认查询设备下任务
-@app.route('/processMonitorLine/searchTasksByEquipmentID', methods=['POST', 'GET'])
-def searchTasksByEquipmentID():
-    if request.method == 'GET':
-        data = request.values  # 返回请求中的参数和form
-        try:
-            jsonstr = json.dumps(data.to_dict())
-            if len(jsonstr) > 10:
-                EquipmentID = data['EquipmentID']
-                taskIDs = db_session.query(ZYTask.TaskID).filter(ZYTask.EquipmentID == EquipmentID).all()
-                jsontaskIDs = json.dumps(taskIDs, cls=AlchemyEncoder, ensure_ascii=False)
-                return jsontaskIDs
-        except Exception as e:
-            print(e)
-            logger.error(e)
-            insertSyslog("error", "任务确认查询设备下任务报错Error：" + str(e), current_user.Name)
 
 # Opc服务配置
 @app.route('/OpcServer')
@@ -3664,16 +3140,16 @@ def collectParamsConfig():
         NodeID.append(node_id)
     return render_template('collectParamsConfig.html', TempNames=TemplateNames, NodeID=NodeID)
 
-def getOpcTagList(ParentID=None):
+def getOpcTagList(id, ParentID=None):
     sz = []
     try:
-        opcTags = db_session.query(OpcTag).filter_by(ParentID=ParentID).all()
+        opcTags = db_session.query(OpcTag).all()
         for obj in opcTags:
             if obj.ParentID == ParentID:
                 sz.append({"id": obj.ID,
                            "NodeId": obj.NodeID,
                            "Desc": obj.Note,
-                           "children": getOpcTagList(obj.NodeID)})
+                           "children": getOpcTagList(obj.ID, obj.NodeID)})
         return sz
     except Exception as e:
         print(e)
@@ -3685,9 +3161,9 @@ def getOpcTagList(ParentID=None):
 def OpcTagLoad():
     if request.method == 'POST':
         try:
-            data = getOpcTagList(None)
+            data = getOpcTagList(id=0)
             jsondata = json.dumps(data, cls=AlchemyEncoder, ensure_ascii=False)
-            return jsondata
+            return jsondata.encode("utf8")
         except Exception as e:
             print(e)
             logger.error(e)
@@ -4395,6 +3871,526 @@ def searchPlanmanager():
             logger.error(e)
             insertSyslog("error", "计划向导生成的计划查询报错Error：" + str(e), current_user.Name)
 
+
+
+# 计划向导生成计划
+@app.route('/ZYPlanGuid/makePlan', methods=['POST', 'GET'])
+def makePlan():
+    if request.method == 'POST':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            json_str = json.dumps(data.to_dict())
+            print(json_str)
+            if len(json_str) > 10:
+                AProductRuleID = int(data['AProductRuleID'])# 产品定义ID
+                APlanWeight = data['APlanWeight']# 计划重量
+                APlanDate = data['APlanDate']# 计划生产日期
+                ABatchID = data['ABatchID']# 批次号
+                ABrandName = data['ABrandName'] # 产品名称
+                PLineName = data['PLineName']#生产线名字
+                AUnit = data['AUnit']#d单位
+                PlanCreate = ctrlPlan('PlanCreate')
+                userID = ""
+                ABrandID = AProductRuleID
+                re = PlanCreate.createLinePlanManager(AProductRuleID, APlanWeight, APlanDate, ABatchID, ABrandID, ABrandName, PLineName, AUnit,userID)
+                re = json.dumps(re)
+                return re
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "计划向导生成计划报错Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
+# 生产管理部审核计划
+@app.route('/ZYPlanGuid/checkPlanManager', methods=['POST', 'GET'])
+def checkPlanManager():
+    if request.method == 'POST':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
+                for key in jsonnumber:
+                    id = int(key)
+                    try:
+                        oclassplan = db_session.query(PlanManager).filter_by(ID=id).first()
+                        oclassplan.PlanStatus = Model.Global.PlanStatus.Checked.value
+                        oclassW = db_session.query(WorkFlowStatus).filter_by(PlanManageID=id).first()
+                        oclassW.AuditStatus = Model.Global.AuditStatus.Checked.value
+                        oclassW.DescF = "生产管理部审核计划"
+                        db_session.commit()
+                        userName = current_user.Name
+                        Desc = "生产管理部审核计划"
+                        Type = Model.Global.Type.NEW.value
+                        PlanCreate = ctrlPlan('PlanCreate')
+                        wReturn = PlanCreate.createWorkFlowEventPlan(id, userName, Desc, Type)
+                        if (wReturn == False):
+                            return 'NO'
+                    except Exception as ee:
+                        db_session.rollback()
+                        print(ee)
+                        logger.error(ee)
+                        insertSyslog("error", "生产管理部审核计划报错Error：" + str(ee), current_user.Name)
+                        return json.dumps([{"status": "Error:" + str(ee)}], cls=AlchemyEncoder, ensure_ascii=False)
+                return 'OK'
+        except Exception as e:
+            db_session.rollback()
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "生产管理部审核计划报错Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
+
+# 下发计划生成ZY计划、任务
+@app.route('/ZYPlanGuid/createZYPlanZYtask', methods=['POST', 'GET'])
+def createZYPlanZYtask():
+    if request.method == 'GET':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
+                for key in jsonnumber:
+                    id = int(key)
+                    try:
+                        PlanCreate = ctrlPlan('PlanCreate')
+                        returnmsg = PlanCreate.createZYPlanZYTask(id)
+                        if(returnmsg == False):
+                            return 'NO'
+                        oclassplan = db_session.query(PlanManager).filter_by(ID=id).first()
+                        oclassplan.PlanStatus = Model.Global.PlanStatus.Realse.value
+                        oclassW = db_session.query(WorkFlowStatus).filter_by(PlanManageID=id).all()
+                        for oc in oclassW:
+                            oc.AuditStatus = Model.Global.AuditStatus.Realse.value
+                            oc.DescF = "下发计划生成ZY计划、任务"
+                        oclassZYPlans = db_session.query(ZYPlan).filter(ZYPlan.BatchID == oclassplan.BatchID).all()
+                        for zyp in oclassZYPlans:
+                            zyp.ZYPlanStatus = Model.Global.ZYPlanStatus.Realse.value
+                            userName = current_user.Name
+                            Desc = "生成ZY计划"
+                            Type = Model.Global.Type.NEW.value
+                            PlanCreate = ctrlPlan('PlanCreate')
+                            wReturn = PlanCreate.createWorkFlowEventZYPlan(zyp.ID, userName, Desc, Type)
+                            if (wReturn == False):
+                                return 'NO'
+                        oclassZYTasks = db_session.query(ZYTask).filter(ZYTask.BatchID == oclassplan.BatchID).all()
+                        for task in oclassZYTasks:
+                            task.TaskStatus = Model.Global.TASKSTATUS.Realse.value
+                        db_session.commit()
+                        userName = current_user.Name
+                        Desc = "下发计划生成ZY计划、任务"
+                        Type = Model.Global.Type.Realse.value
+                        PlanCreate = ctrlPlan('PlanCreate')
+                        wReturn = PlanCreate.createWorkFlowEventPlan(id, userName, Desc, Type)
+                        if (wReturn == False):
+                            return 'NO'
+                    except Exception as ee:
+                        db_session.rollback()
+                        print(ee)
+                        logger.error(ee)
+                        insertSyslog("error", "下发计划生成ZY计划、任务报错Error" + string(ee), current_user.Name)
+                        return 'NO'
+                return 'OK'
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "下发计划生成ZY计划、任务报错Error：" + str(e), current_user.Name)
+            return 'NO'
+
+
+# 下发后的计划撤回，删除ZYplan，ZYtask
+@app.route('/ZYPlanGuid/RecallPlan', methods=['POST', 'GET'])
+def RecallPlan():
+    if request.method == 'GET':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
+                for key in jsonnumber:
+                    id = int(key)
+                    try:
+                        ABatchID = id  # 批次号
+                        planM = db_session.query(PlanManager).filter_by(BatchID=ABatchID).first()
+                        if (planM.PlanStatus != "20"):
+                            return "只能是已下发状态的计划才能撤回！"
+                        else:
+                            pass
+                        zYPlans = db_session.query(ZYPlan).filter_by(BatchID=ABatchID).all()
+                        for zYPlan in zYPlans:
+                            if (zYPlan.LockStatus == "10"):
+                                return "计划状态已锁定，不允许撤回！"
+                            else:
+                                pass
+                        zYTasks = db_session.query(ZYTask).filter_by(BatchID=ABatchID).all()
+                        for zYTask in zYTasks:
+                            if (zYTask.LockStatus == "10"):
+                                return "任务状态已锁定，不允许撤回！"
+                            else:
+                                pass
+                        for zYPl in zYPlans:
+                            try:
+                                oclass = db_session.query(ZYPlan).filter_by(ID=zYPl.ID).first()
+                                db_session.delete(oclass)
+                                oclassZ = db_session.query(WorkFlowEventZYPlan).filter_by(WorkFlowEventZYPlan.ZYPlanID == zYPl.ID).first()
+                                db_session.delete(oclassZ)
+                                db_session.commit()
+                            except Exception as ee:
+                                db_session.rollback()
+                                logger.error(ee)
+                                insertSyslog("error", "删除批次计划信息报错Error" + string(ee), current_user.Name)
+                                return json.dumps([{"status": "Error:" + str(ee)}], cls=AlchemyEncoder, ensure_ascii=False)
+                        for zYTask in zYTasks:
+                            try:
+                                oclass = db_session.query(ZYTask).filter_by(ID=zYTask.ID).first()
+                                db_session.delete(oclass)
+                                db_session.commit()
+                            except Exception as ee:
+                                db_session.rollback()
+                                print(ee)
+                                logger.error(ee)
+                                insertSyslog("error", "删除批次任务信息报错Error" + string(ee), current_user.Name)
+                                return json.dumps([{"status": "Error:" + str(ee)}], cls=AlchemyEncoder, ensure_ascii=False)
+                        planM.PlanStatus = Model.Global.PlanStatus.Recall.value
+                        oclassW = db_session.query(WorkFlowStatus).filter_by(PlanManageID=id).all()
+                        for oc in oclassW:
+                            if(oc.ZYPlanID != None):
+                                db_session.delete(oc)
+                            else:
+                                oc.AuditStatus = Model.Global.AuditStatus.Unaudited.value
+                                oc.DescF = "计划撤回，删除ZYplan，ZYtask"
+                        db_session.commit()
+                        userName = current_user.Name
+                        Desc = "计划撤回，删除ZYplan，ZYtask"
+                        Type = Model.Global.Type.Recall.value
+                        PlanCreate = ctrlPlan('PlanCreate')
+                        wReturn = PlanCreate.createWorkFlowEventPlan(planM.ID, userName, Desc, Type)
+                        if (wReturn == False):
+                            return 'NO'
+                        return 'OK'
+                    except Exception as e:
+                        db_session.rollback()
+                        print(e)
+                        logger.error(e)
+                        insertSyslog("error", "撤回批次计划报错Error：" + str(e), current_user.Name)
+                        return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+        except Exception as e:
+            db_session.rollback()
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "撤回批次计划报错Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
+# 计划向导获取批次任务明细
+@app.route('/ZYPlanGuid/CriticalTasks', methods=['POST', 'GET'])
+def criticalTasks():
+    if request.method == 'GET':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            json_str = json.dumps(data.to_dict())
+            print(json_str)
+            if len(json_str) > 10:
+                pages = int(data['page'])  # 页数
+                rowsnumber = int(data['rows'])  # 行数
+                inipage = (pages - 1) * rowsnumber + 0  # 起始页
+                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+                ABatchID = data['ABatchID']
+                total = db_session.query(ZYTask).filter(ZYTask.BatchID == ABatchID).count()
+                zyTasks = db_session.query(ZYTask).filter(ZYTask.BatchID == ABatchID).all()[inipage:endpage]
+                jsonzyTasks = json.dumps(zyTasks, cls=AlchemyEncoder, ensure_ascii=False)
+                jsonzyTasks = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonzyTasks + "}"
+                return jsonzyTasks
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "计划向导获取批次任务明细报错Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
+# 计划向导获取批次物料明细
+@app.route('/ZYPlanGuid/CriticalMaterials', methods=['POST', 'GET'])
+def criticalMaterials():
+    if request.method == 'GET':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            json_str = json.dumps(data.to_dict())
+            print(json_str)
+            if len(json_str) > 10:
+                pages = int(data['page'])  # 页数
+                rowsnumber = int(data['rows'])  # 行数
+                inipage = (pages - 1) * rowsnumber + 0  # 起始页
+                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+                ABatchID = data['ABatchID']
+                total = db_session.query(ZYPlanMaterial).filter(ZYPlanMaterial.BatchID == ABatchID).count()
+                zyMaterials = db_session.query(ZYPlanMaterial).filter(ZYPlanMaterial.BatchID == ABatchID).all()[inipage:endpage]
+                jsonzyMaterials = json.dumps(zyMaterials, cls=AlchemyEncoder, ensure_ascii=False)
+                jsonzyMaterials = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonzyMaterials + "}"
+                return jsonzyMaterials
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "计划向导获取批次物料明细报错Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
+# 批次号判重
+@app.route('/ZYPlanGuid/isBatchNumber', methods=['POST', 'GET'])
+def isBatchNumber():
+    if request.method == 'GET':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                isExist = ''#前台判断标识：OK为批次号可用，NO为此批次号已存在
+                ABatchID = data['ABatchID']
+                BatchID = db_session.query(PlanManager.BatchID).filter(PlanManager.BatchID == ABatchID).first()
+                if(BatchID == None):
+                    isExist = 'OK'
+                else:
+                    isExist = 'NO'
+                isExist = json.dumps(isExist)
+                return isExist
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "批次号判重报错Error：" + str(e), current_user.Name)
+            return 'NO'
+
+# 计划向导重量校验
+@app.route('/ZYPlanGuid/weightCheck', methods=['POST', 'GET'])
+def weightCheck():
+    if request.method == 'GET':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                PUID = data['PUID']
+                LowLimit,HighLimit = db_session.query(ProductControlTask.LowLimit, ProductControlTask.HighLimit).filter(ProductControlTask.PUID == PUID).first()
+                return LowLimit,HighLimit
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "计划向导重量校验报错Error：" + str(e), current_user.Name)
+
+# 获取批次计划信息
+@app.route('/ZYPlanGuid/searchZYPlan', methods=['POST', 'GET'])
+def searchZYPlan():
+    if request.method == 'GET':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            json_str = json.dumps(data.to_dict())
+            print(json_str)
+            if len(json_str) > 10:
+                pages = int(data['page'])  # 页数
+                rowsnumber = int(data['rows'])  # 行数
+                inipage = (pages - 1) * rowsnumber + 0  # 起始页
+                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+                ABatchID = data['ABatchID']#批次号
+                APlanDate = data['APlanDate']#计划日期
+                total = db_session.query(ZYPlan).filter(ZYPlan.BatchID == ABatchID, ZYPlan.PlanDate == APlanDate).count()
+                zYPlans = db_session.query(ZYPlan).filter(ZYPlan.BatchID == ABatchID, ZYPlan.PlanDate == APlanDate).all()[
+                              inipage:endpage]
+                jsonzYPlans = json.dumps(zYPlans, cls=AlchemyEncoder, ensure_ascii=False)
+                jsonzYPlans = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonzYPlans + "}"
+                return jsonzYPlans
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "获取批次计划信息报错Error：" + str(e), current_user.Name)
+
+#生产线监控
+@app.route('/processMonitorLine')
+def processMonitor():
+    return render_template('processMonitorLine.html')
+
+#任务确认
+@app.route('/taskConfirm')
+def taskConfirm():
+    return render_template('taskConfirm.html')
+
+#任务确认获取工艺段
+@app.route('/processMonitorLine/taskConfirmPuid', methods=['POST', 'GET'])
+def taskConfirmPuidDate():
+    if request.method == 'GET':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            # puids = db_session.query(ZYPlan.PUID).filter().all()
+            # puidnews = []
+            # for id in puids:
+            #     if id not in puidnews:
+            #         puidnews.append(id)
+            # sz = []
+            # for puid in puidnews:
+            #     APUID = puid  # 工艺段编码
+            #     PDCtrlTaskName = db_session.query(ProductControlTask.PDCtrlTaskName).filter_by(PUID=APUID).first()
+            #     PUID = str(APUID)
+            #     sz.append({"id": PUID[1:-2], "text": PDCtrlTaskName})
+            sz = []
+            ProcessUnits = db_session.query(ProcessUnit.ID, ProcessUnit.PUName).all()
+            for procc in ProcessUnits:
+                sz.append({"id": procc.ID, "text": procc.PUName})
+            jsonsz = json.dumps(sz, cls=AlchemyEncoder, ensure_ascii=False)
+            return jsonsz
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "任务确认获取工艺段报错Error：" + str(e), current_user.Name)
+
+# 任务确认查询计划
+@app.route('/processMonitorLine/planConfirmSearch', methods=['POST', 'GET'])
+def planConfirmSearch():
+    if request.method == 'GET':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                pages = int(data['page'])  # 页数
+                rowsnumber = int(data['rows'])  # 行数
+                inipage = (pages - 1) * rowsnumber + 0  # 起始页
+                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+                APUID = data['PUID']  # 工艺段编码
+                if(APUID == "" or APUID == None):
+                    total = db_session.query(ZYPlan).filter(ZYPlan.ZYPlanStatus.in_((31, 40, 50))).count()
+                    ZYPlans = db_session.query(ZYPlan).filter(ZYPlan.ZYPlanStatus.in_((31, 40, 50))).all()[inipage:endpage]
+                else:
+                    total = db_session.query(ZYPlan).filter(ZYPlan.ZYPlanStatus.in_((31, 40, 50)),
+                                                            ZYPlan.PUID == APUID).count()
+                    ZYPlans = db_session.query(ZYPlan).filter(ZYPlan.ZYPlanStatus.in_((31, 40, 50)),
+                                                              ZYPlan.PUID == APUID).all()[inipage:endpage]
+                jsonZYPlans = json.dumps(ZYPlans, cls=AlchemyEncoder, ensure_ascii=False)
+                jsonZYPlans = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonZYPlans + "}"
+                return jsonZYPlans
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "任务确认查询计划报错Error：" + str(e), current_user.Name)
+
+#任务确认查询任务
+@app.route('/processMonitorLine/taskConfirmSearch', methods=['POST', 'GET'])
+def taskConfirmSearch():
+    if request.method == 'GET':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                pages = int(data['page'])  # 页数
+                rowsnumber = int(data['rows'])  # 行数
+                inipage = (pages - 1) * rowsnumber + 0  # 起始页
+                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+                APUID = data['PUID']  # 工艺段编码
+                TaskStatus = data['TaskStatus']  # 任务的执行状态
+                BatchID = data['BatchID']#批次号
+                if(APUID == "" and TaskStatus == ""):
+                    total = db_session.query(ZYTask).filter(ZYTask.TaskStatus.in_((32,40,50))).count()
+                    ZYTasks = db_session.query(ZYTask).filter(ZYTask.TaskStatus.in_((32,40,50))).all()[inipage:endpage]
+                elif(APUID != "" and TaskStatus == "" and BatchID == ""):
+                    total = db_session.query(ZYTask).filter(ZYTask.TaskStatus.in_((32, 40, 50)),
+                                                            ZYTask.PUID == APUID).count()
+                    ZYTasks = db_session.query(ZYTask).filter(ZYTask.TaskStatus.in_((32, 40, 50)),
+                                                              ZYTask.PUID == APUID).all()[inipage:endpage]
+                elif(APUID != "" and TaskStatus == "" and BatchID != ""):
+                    total = db_session.query(ZYTask).filter(ZYTask.BatchID == BatchID,
+                                                            ZYTask.TaskStatus.in_((32, 40, 50)),
+                                                            ZYTask.PUID == APUID).count()
+                    ZYTasks = db_session.query(ZYTask).filter(ZYTask.BatchID == BatchID,
+                                                              ZYTask.TaskStatus.in_((32, 40, 50)),
+                                                              ZYTask.PUID == APUID).all()[inipage:endpage]
+                elif (APUID == "" and TaskStatus != ""):
+                    total = db_session.query(ZYTask).filter(ZYTask.TaskStatus == TaskStatus).count()
+                    ZYTasks = db_session.query(ZYTask).filter(ZYTask.TaskStatus == TaskStatus).all()[inipage:endpage]
+                elif (APUID != "" and TaskStatus != "" and BatchID == ""):
+                    total = db_session.query(ZYTask).filter(ZYTask.TaskStatus == TaskStatus,
+                                                            ZYTask.PUID == APUID).count()
+                    ZYTasks = db_session.query(ZYTask).filter(ZYTask.TaskStatus == TaskStatus,
+                                                              ZYTask.PUID == APUID).all()[inipage:endpage]
+                elif (APUID != "" and TaskStatus != "" and BatchID != ""):
+                    total = db_session.query(ZYTask).filter(ZYTask.BatchID == BatchID,
+                                                            ZYTask.TaskStatus == TaskStatus,
+                                                            ZYTask.PUID == APUID).count()
+                    ZYTasks = db_session.query(ZYTask).filter(ZYTask.BatchID == BatchID,
+                                                              ZYTask.TaskStatus == TaskStatus,
+                                                              ZYTask.PUID == APUID).all()[inipage:endpage]
+                jsonZYTasks = json.dumps(ZYTasks, cls=AlchemyEncoder, ensure_ascii=False)
+                jsonZYTasks = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonZYTasks + "}"
+                return jsonZYTasks
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "获取任务确认的任务列表报错Error：" + str(e), current_user.Name)
+
+#任务确认工艺段下的所有设备
+@app.route('/processMonitorLine/searchAllEquipments', methods=['POST', 'GET'])
+def searchAllEquipments():
+    if request.method == 'GET':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                APUID = data['PUID']  # 工艺段编码
+                dataequipmentNames = []
+                equipmentNames = db_session.query(Pequipment.EQPCode,Pequipment.EQPName).filter(Pequipment.PUID == 1)
+                for equip in equipmentNames:
+                    li = list(equip)
+                    id = li[0]
+                    name = li[1]
+                    equipName = {'id': id, 'text': name}
+                    dataequipmentNames.append(equipName)
+                dataequipmentNames = json.dumps(dataequipmentNames, cls=AlchemyEncoder, ensure_ascii=False)
+                return dataequipmentNames
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "任务确认工艺段下的所有设备报错Error：" + str(e), current_user.Name)
+
+#任务确认保存设备code
+@app.route('/processMonitorLine/saveEQPCode', methods=['POST', 'GET'])
+def saveEQPCode():
+    if request.method == 'GET':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                EQPCode = data['EQPCode']
+                ID = data['ID']
+                oclass = db_session.query(ZYTask).filter(ZYTask.ID == ID).first()
+                oclass.EquipmentID = EQPCode
+                oclass.TaskStatus = Model.Global.TASKSTATUS.COMFIRM.value
+                db_session.commit()
+                oclassplan = db_session.query(ZYPlan).filter(ZYPlan.PUID == oclass.PUID, ZYPlan.BatchID == oclass.BatchID).first()
+                oclasstasks = db_session.query(ZYTask).filter(ZYTask.PUID == oclass.PUID,
+                                                             ZYTask.BatchID == oclass.BatchID).all()
+                flag = "TRUE"
+                for task in oclasstasks:
+                    if(task.TaskStatus != Model.Global.TASKSTATUS.COMFIRM.value):
+                        flag = "FALSE"
+                if(flag == "TRUE"):
+                    oclassplan.ZYPlanStatus = Model.Global.ZYPlanStatus.COMFIRM.value
+                db_session.commit()
+                oclassplans = db_session.query(ZYPlan).filter(ZYPlan.BatchID == oclass.BatchID).all()
+                return "OK"
+        except Exception as e:
+            db_session.rollback()
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "任务确认保存设备code报错Error：" + str(e), current_user.Name)
+            return "NO"
+
+#任务确认查询设备下任务
+@app.route('/processMonitorLine/searchTasksByEquipmentID', methods=['POST', 'GET'])
+def searchTasksByEquipmentID():
+    if request.method == 'GET':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                EquipmentID = data['EquipmentID']
+                taskIDs = db_session.query(ZYTask.TaskID).filter(ZYTask.EquipmentID == EquipmentID).all()
+                jsontaskIDs = json.dumps(taskIDs, cls=AlchemyEncoder, ensure_ascii=False)
+                return jsontaskIDs
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "任务确认查询设备下任务报错Error：" + str(e), current_user.Name)
+
+
 # 计划审核页面
 @app.route('/ZYPlanGuid/checkplanmanager')
 def checkplanmanager():
@@ -4406,31 +4402,32 @@ def searchcheckplanmanager():
     if request.method == 'GET':
         data = request.values
         try:
-            PlanStatus = Model.Global.PlanStatus.NEW.value
-            re = searchplanmanager(data,PlanStatus)
-            return re
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                pages = int(data['page'])  # 页数
+                rowsnumber = int(data['rows'])  # 行数
+                inipage = (pages - 1) * rowsnumber + 0  # 起始页
+                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+                ABatchID = data['BatchID']  # 批次号
+                if (ABatchID == None or ABatchID == ""):
+                    total = db_session.query(PlanManager.ID).filter(PlanManager.PlanStatus.in_((20, 60))).count()
+                    planManagers = db_session.query(PlanManager).filter(PlanManager.PlanStatus.in_((20, 60))).all()[
+                                   inipage:endpage]
+                else:
+                    total = db_session.query(PlanManager).filter(PlanManager.BatchID == ABatchID,
+                                                                 PlanManager.PlanStatus.in_((20, 60))).count()
+                    planManagers = db_session.query(PlanManager).filter(PlanManager.BatchID == ABatchID,
+                                                                        PlanManager.PlanStatus.in_((20, 60))).all()[
+                                   inipage:endpage]
+                planManagers = json.dumps(planManagers, cls=AlchemyEncoder, ensure_ascii=False)
+                print(planManagers)
+                jsonPlanManagers = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + planManagers + "}"
+                return jsonPlanManagers
         except Exception as e:
             print(e)
             logger.error(e)
             insertSyslog("error", "计划向导生成的计划查询报错Error：" + str(e), current_user.Name)
-def searchplanmanager(data,PlanStatus):
-    json_str = json.dumps(data.to_dict())
-    if len(json_str) > 10:
-        pages = int(data['page'])  # 页数
-        rowsnumber = int(data['rows'])  # 行数
-        inipage = (pages - 1) * rowsnumber + 0  # 起始页
-        endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
-        ABatchID = data['BatchID']  # 批次号
-        if (ABatchID == None or ABatchID == ""):
-            total = db_session.query(PlanManager.ID).filter(PlanManager.PlanStatus == PlanStatus).count()
-            planManagers = db_session.query(PlanManager).filter(PlanManager.PlanStatus == PlanStatus).all()[inipage:endpage]
-        else:
-            total = db_session.query(PlanManager).filter(PlanManager.BatchID == ABatchID, PlanManager.PlanStatus == PlanStatus).count()
-            planManagers = db_session.query(PlanManager).filter(PlanManager.BatchID == ABatchID, PlanManager.PlanStatus == PlanStatus).all()[inipage:endpage]
-        planManagers = json.dumps(planManagers, cls=AlchemyEncoder, ensure_ascii=False)
-        print(planManagers)
-        jsonPlanManagers = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + planManagers + "}"
-        return jsonPlanManagers
+
 
 # 中控确认
 @app.route('/MiddleControl/PlanConfirm')
@@ -4442,34 +4439,31 @@ def PlanConfirm():
 def controlConfirmSearch():
     if request.method == 'GET':
         data = request.values
-        ZYPlanStatus = Model.Global.ZYPlanStatus.Realse.value
-        return confirmSearch(data, ZYPlanStatus)
-def confirmSearch(data,ZYPlanStatus):
-    try:
-        json_str = json.dumps(data.to_dict())
-        if len(json_str) > 10:
-            pages = int(data['page'])  # 页数
-            rowsnumber = int(data['rows'])  # 行数
-            inipage = (pages - 1) * rowsnumber + 0  # 起始页
-            endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
-            ABatchID = data['BatchID']  # 批次号
-            if (ABatchID == None or ABatchID == ""):
-                total = db_session.query(ZYPlan.ID).filter(ZYPlan.ZYPlanStatus == ZYPlanStatus).count()
-                ZYPlans = db_session.query(ZYPlan).filter(ZYPlan.ZYPlanStatus == ZYPlanStatus).all()[
-                          inipage:endpage]
-            else:
-                total = db_session.query(ZYPlan).filter(ZYPlan.BatchID == ABatchID,
-                                                        ZYPlan.ZYPlanStatus == ZYPlanStatus).count()
-                ZYPlans = db_session.query(ZYPlan).filter(ZYPlan.BatchID == ABatchID,
-                                                          ZYPlan.ZYPlanStatus == ZYPlanStatus).all()[
-                          inipage:endpage]
-            ZYPlans = json.dumps(ZYPlans, cls=AlchemyEncoder, ensure_ascii=False)
-            jsonZYPlans = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + ZYPlans + "}"
-            return jsonZYPlans
-    except Exception as e:
-        print(e)
-        logger.error(e)
-        insertSyslog("error", "计划向导生成的计划查询报错Error：" + str(e), current_user.Name)
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                pages = int(data['page'])  # 页数
+                rowsnumber = int(data['rows'])  # 行数
+                inipage = (pages - 1) * rowsnumber + 0  # 起始页
+                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+                ABatchID = data['BatchID']  # 批次号
+                if (ABatchID == None or ABatchID == ""):
+                    total = db_session.query(ZYPlan.ID).filter(ZYPlan.ZYPlanStatus.in_((20, 60))).count()
+                    ZYPlans = db_session.query(ZYPlan).filter(ZYPlan.ZYPlanStatus.in_((20, 60))).all()[
+                              inipage:endpage]
+                else:
+                    total = db_session.query(ZYPlan).filter(ZYPlan.BatchID == ABatchID,
+                                                            ZYPlan.ZYPlanStatus.in_((20, 60))).count()
+                    ZYPlans = db_session.query(ZYPlan).filter(ZYPlan.BatchID == ABatchID,
+                                                              ZYPlan.ZYPlanStatus.in_((20, 60))).all()[
+                              inipage:endpage]
+                ZYPlans = json.dumps(ZYPlans, cls=AlchemyEncoder, ensure_ascii=False)
+                jsonZYPlans = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + ZYPlans + "}"
+                return jsonZYPlans
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "中控确认查询报错Error：" + str(e), current_user.Name)
 
 # 中控确认保存信息查询
 @app.route('/ZYPlanGuid/ConfirmSearchInfo', methods=['POST', 'GET'])
@@ -4574,8 +4568,31 @@ def PlanConfirmChecked():
 def controlConfirmReCheckSearch():
     if request.method == 'GET':
         data = request.values
-        ZYPlanStatus = Model.Global.ZYPlanStatus.Control.value
-        return confirmSearch(data, ZYPlanStatus)
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                pages = int(data['page'])  # 页数
+                rowsnumber = int(data['rows'])  # 行数
+                inipage = (pages - 1) * rowsnumber + 0  # 起始页
+                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+                ABatchID = data['BatchID']  # 批次号
+                if (ABatchID == None or ABatchID == ""):
+                    total = db_session.query(ZYPlan.ID).filter(ZYPlan.ZYPlanStatus.in_((30, 61))).count()
+                    ZYPlans = db_session.query(ZYPlan).filter(ZYPlan.ZYPlanStatus.in_((30, 61))).all()[
+                              inipage:endpage]
+                else:
+                    total = db_session.query(ZYPlan).filter(ZYPlan.BatchID == ABatchID,
+                                                            ZYPlan.ZYPlanStatus.in_((30, 61))).count()
+                    ZYPlans = db_session.query(ZYPlan).filter(ZYPlan.BatchID == ABatchID,
+                                                              ZYPlan.ZYPlanStatus.in_((30, 61))).all()[
+                              inipage:endpage]
+                ZYPlans = json.dumps(ZYPlans, cls=AlchemyEncoder, ensure_ascii=False)
+                jsonZYPlans = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + ZYPlans + "}"
+                return jsonZYPlans
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "中控计划复核查询报错Error：" + str(e), current_user.Name)
 
 # 中控清场复核
 @app.route('/ZYPlanGuid/controlConfirmReCheck', methods=['POST', 'GET'])
@@ -4608,9 +4625,6 @@ def controlConfirmReCheck():
                     oclass = db_session.query(PlanManager).filter(PlanManager.BatchID == zypla.BatchID).first()
                     userName = current_user.Name
                     if(flag == "TRUE"):
-                        tasks = db_session.query(ZYTask).filter(ZYTask.BatchID == zypla.BatchID).all()
-                        for tk in tasks:
-                            tk.TaskStatus = Model.Global.TASKSTATUS.ControlChecked.value
                         oclass.PlanStatus = Model.Global.PlanStatus.ControlChecked.value
                         oclassW = db_session.query(WorkFlowStatus).filter_by(PlanManageID=oclass.ID).all()
                         for oc in oclassW:
@@ -4688,7 +4702,6 @@ def QAConfirm():
                         for Task in oclassZYTasks:
                             if(ZYTask.TaskStatus != Model.Global.TASKSTATUS.COMFIRM.value):
                                 return "请先进行任务确认，选择设备！"
-                            ZYTask.TaskStatus = Model.Global.TASKSTATUS.QAChecked.value
                         oclass.ZYPlanStatus = Model.Global.ZYPlanStatus.QAChecked.value
                         oclassW = db_session.query(WorkFlowStatus).filter_by(PlanManageID=id).all()
                         for oc in oclassW:
@@ -4706,6 +4719,225 @@ def QAConfirm():
                             Type = Model.Global.Type.QAChecked.value
                             PlanCreate = ctrlPlan('PlanCreate')
                             wReturn = PlanCreate.createWorkFlowEventPlan(oclassPlanManager.ID, userName, Desc, Type)
+                            if (wReturn == False):
+                                return '添加工作流表报错'
+                        db_session.add(Model.core.ReadyWork(ZYPlanID=id, IsCheck="0", ReadyName="ClearFieldCard",
+                                                 Describe="设备、衡器是否按照清洁SOP要求完成", ProductionFlag="1"))
+                        db_session.add(Model.core.ReadyWork(ZYPlanID=id, IsCheck="0", ReadyName="ClearLastMateriel",
+                                                 Describe="是否已经清除生产现场本批次药材及废弃物", ProductionFlag="1"))
+                        db_session.add(Model.core.ReadyWork(ZYPlanID=id, IsCheck="0", ReadyName="ClearLastMaterielStatus",
+                                                 Describe="是否已经清除本批次生产有关的状态标志或文件", ProductionFlag="1"))
+                        db_session.add(Model.core.ReadyWork(ZYPlanID=id, IsCheck="0", ReadyName="ClaernEquipLocal",
+                                                 Describe="工作区域、工器具、洁具是否清洁并按定置摆放", ProductionFlag="1"))
+                        db_session.add(Model.core.ReadyWork(ZYPlanID=id, IsCheck="0", ReadyName="ClarnFile",
+                                                 Describe="是否按《清场管理规程》进行清场", ProductionFlag="1"))
+                        db_session.add(Model.core.ReadyWork(ZYPlanID=id, IsCheck="0", ReadyName="SafetyStatus",
+                                                 Describe="QA对现场清场进行检查，合格后发放《清场合格证》", ProductionFlag="1"))
+                        db_session.commit()
+                        userName = current_user.Name
+                        Desc = "QA复核"
+                        Type = Model.Global.TypeZY.QAChecked.value
+                        PlanCreate = ctrlPlan('PlanCreate')
+                        wReturn = PlanCreate.createWorkFlowEventZYPlan(id, userName, Desc, Type)
+                        if(wReturn == False):
+                            return 'NO'
+                        return 'OK'
+                    except Exception as e:
+                        db_session.rollback()
+                        print(e)
+                        logger.error(e)
+                        insertSyslog("error", "QA复核报错Error：" + str(e), current_user.Name)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "QA复核报错Error：" + str(e), current_user.Name)
+
+# 中控再次确认保存信息查询
+@app.route('/ZYPlanGuid/ConfirmSearchInfoAgain', methods=['POST', 'GET'])
+def ConfirmSearchInfoAgain():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                ZYPlanID = int(data["ZYPlanID"])
+                oclass = db_session.query(ReadyWork).filter(ReadyWork.ZYPlanID == ZYPlanID).all()
+                return json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
+        except Exception as e:
+            db_session.rollback()
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "中控确认保存信息报错Error：" + str(e), current_user.Name)
+
+# 中控确认保存信息
+@app.route('/ZYPlanGuid/controlConfirmSaveInfoAgain', methods=['POST', 'GET'])
+def controlConfirmSaveInfoAgain():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
+                ZYPlanID = int(data["ZYPlanID"])
+                oclassR = db_session.query(ReadyWork).filter(ReadyWork.ZYPlanID == ZYPlanID).all()
+                for oc in oclassR:
+                    oc.IsCheck = "0"
+                for i in range(len(jsonnumber) - 1):
+                    ID = int(jsonnumber[i])
+                    oclass = db_session.query(ReadyWork).filter(ReadyWork.ID == ID).first()
+                    oclass.IsCheck = "1"
+                db_session.commit()
+                return 'OK'
+        except Exception as e:
+            db_session.rollback()
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "中控确认保存信息报错Error：" + str(e), current_user.Name)
+
+# 中控再次确认
+@app.route('/ZYPlanGuid/controlConfirmAgain', methods=['POST', 'GET'])
+def controlConfirmAgain():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
+            ID = int(jsonnumber[0])
+            roclass = db_session.query(ReadyWork).filter(ReadyWork.ZYPlanID == ID).all()
+            for ro in roclass:
+                if (ro.IsCheck == "0"):
+                    return "还有准备工作未确认，请确认再提交！"
+                else:
+                    pass
+            zyp = db_session.query(ZYPlan).filter(ZYPlan.ID == ID).first()
+            zyp.ZYPlanStatus = Model.Global.ZYPlanStatus.Control.value
+            flag = "TRUE"
+            zyplans = db_session.query(ZYPlan).filter(ZYPlan.BatchID == zyp.BatchID).all()
+            db_session.commit()
+            for z in zyplans:
+                if (z.ZYPlanStatus != Model.Global.ZYPlanStatus.Control.value):
+                    flag = "FALSE"
+            userName = current_user.Name
+            if (flag == "TRUE"):
+                oclass = db_session.query(PlanManager).filter(PlanManager.BatchID == zyp.BatchID).first()
+                oclass.PlanStatus = Model.Global.PlanStatus.Control.value
+                oclassW = db_session.query(WorkFlowStatus).filter(
+                    WorkFlowStatus.PlanManageID == oclass.ID).all()
+                for oc in oclassW:
+                    oc.AuditStatus = Model.Global.AuditStatus.ClearField.value
+                    oc.DescF = "中控确认清场"
+                db_session.commit()
+                Desc = "中控确认清场"
+                Type = Model.Global.Type.Control.value
+                PlanCreate = ctrlPlan('PlanCreate')
+                wReturn = PlanCreate.createWorkFlowEventPlan(oclass.ID, userName, Desc, Type)
+                if (wReturn == False):
+                    return '添加工作流表报错'
+            Desc = "中控确认清场"
+            Type = Model.Global.TypeZY.Control.value
+            PlanCreate = ctrlPlan('PlanCreate')
+            wReturn = PlanCreate.createWorkFlowEventZYPlan(ID, userName, Desc, Type)
+            if (wReturn == False):
+                return '添加工作流表报错'
+            return 'OK'
+        except Exception as e:
+            db_session.rollback()
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "中控确认清场报错Error：" + str(e), current_user.Name)
+
+# 中控再次复核
+@app.route('/ZYPlanGuid/controlConfirmReCheckAgain', methods=['POST', 'GET'])
+def controlConfirmReCheckAgain():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
+            for key in jsonnumber:
+                try:
+                    ID = int(key)
+                    userN = db_session.query(WorkFlowEventZYPlan.userName).filter(
+                        WorkFlowEventZYPlan.ZYPlanID == ID).first()
+                    if (userN[0] == current_user.Name):
+                        return "中控确认清场与中控清场复核不能是同一人操作！"
+                    roclass = db_session.query(ReadyWork).filter(ReadyWork.ZYPlanID == ID).all()
+                    for ro in roclass:
+                        if (ro.IsCheck == "0"):
+                            return "还有准备工作未确认，请确认再提交！"
+                        else:
+                            pass
+                    zypla = db_session.query(ZYPlan).filter(ZYPlan.ID == ID).first()
+                    zypla.ZYPlanStatus = Model.Global.ZYPlanStatus.ControlChecked.value
+                    db_session.commit()
+                    zyplans = db_session.query(ZYPlan).filter(ZYPlan.BatchID == zypla.BatchID).all()
+                    flag = "TRUE"
+                    for zy in zyplans:
+                        if (zy.ZYPlanStatus != Model.Global.ZYPlanStatus.ControlChecked.value):
+                            flag = "FALSE"
+                    oclass = db_session.query(PlanManager).filter(PlanManager.BatchID == zypla.BatchID).first()
+                    userName = current_user.Name
+                    if (flag == "TRUE"):
+                        oclass.PlanStatus = Model.Global.PlanStatus.ControlChecked.value
+                        oclassW = db_session.query(WorkFlowStatus).filter_by(PlanManageID=oclass.ID).all()
+                        for oc in oclassW:
+                            oclassW.AuditStatus = Model.Global.AuditStatus.Recheck.value
+                            oclassW.DescF = "中控清场复核"
+                        db_session.commit()
+                        Desc = "中控清场复核"
+                        Type = Model.Global.Type.ControlChecked.value
+                        PlanCreate = ctrlPlan('PlanCreate')
+                        wReturn = PlanCreate.createWorkFlowEventPlan(oclass.ID, userName, Desc, Type)
+                        if (wReturn == False):
+                            return '添加工作流表报错'
+                    Desc = "中控清场复核"
+                    Type = Model.Global.TypeZY.ControlChecked.value
+                    PlanCreate = ctrlPlan('PlanCreate')
+                    wReturn = PlanCreate.createWorkFlowEventZYPlan(ID, userName, Desc, Type)
+                    if (wReturn == False):
+                        return '添加工作流表报错'
+                    return 'OK'
+                except Exception as e:
+                    db_session.rollback()
+                    logger.error(e)
+                    insertSyslog("error", "中控清场复核报错Error：" + str(e), current_user.Name)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "中控清场复核报错Error：" + str(e), current_user.Name)
+
+# QA再次复核
+@app.route('/ZYPlanGuid/QAConfirmAgain', methods=['POST', 'GET'])
+def QAConfirmAgain():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
+                for key in jsonnumber:
+                    id = int(key)
+                    try:
+                        oclass = db_session.query(ZYPlan).filter(ZYPlan.ID == id).first()
+                        oclass.ZYPlanStatus = Model.Global.ZYPlanStatus.QAChecked.value
+                        oclassW = db_session.query(WorkFlowStatus).filter_by(PlanManageID=id).all()
+                        for oc in oclassW:
+                            oc.AuditStatus = Model.Global.AuditStatus.ReviewPass.value
+                            oc.DescF = "QA复核"
+                        oclassZYPlans = db_session.query(ZYPlan).filter(ZYPlan.BatchID == oclass.BatchID).all()
+                        flag = "TRUE"
+                        for zy in oclassZYPlans:
+                            if (zy.ZYPlanStatus != Model.Global.ZYPlanStatus.QAChecked.value):
+                                flag = "FALSE"
+                        if (flag == "TRUE"):
+                            oclassPlanManager = db_session.query(PlanManager).filter(
+                                PlanManager.BatchID == oclass.BatchID).first()
+                            oclassPlanManager.PlanStatus = Model.Global.PlanStatus.QAChecked.value
+                            Desc = "QA复核"
+                            Type = Model.Global.Type.QAChecked.value
+                            PlanCreate = ctrlPlan('PlanCreate')
+                            wReturn = PlanCreate.createWorkFlowEventPlan(oclassPlanManager.ID, userName, Desc,
+                                                                         Type)
                             if (wReturn == False):
                                 return '添加工作流表报错'
                         db_session.commit()
