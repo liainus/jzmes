@@ -51,7 +51,7 @@
                 </h2>
 
                 <ul class="sider-nav">
-                {% if isIn(['02', '03', '04', '05', '07'], session.get('menus')) %}
+                {% if isIn(['2', '3', '4', '5','7'], session.get('menus')) %}
                     <li>
                         <a href="javascript:;">
                             <span class="iconfont sider-nav-icon">&#xe611;</span>
@@ -59,22 +59,22 @@
                             <i class="iconfont">&#xe642;</i>
                         </a>
                         <ul class="sider-nav-s">
-                            {% if '02' in session.get('menus') %}
+                            {% if '2' in session.get('menus') %}
                                 <li>
                                     <a href="#" onclick="addTab('投料段生产监控','runstatus1.html')">投料段生产监控</a>
                                 </li>
                             {% endif %}
-                            {% if '03' in session.get('menus') %}
+                            {% if '3' in session.get('menus') %}
                                 <li>
                                     <a href="#" onclick="addTab('提取段生产监控','processMonitorMap/index.html')">提取段生产监控</a>
                                 </li>
                             {% endif %}
-                            {% if '04' in session.get('menus') %}
+                            {% if '4' in session.get('menus') %}
                                 <li>
                                     <a href="#" onclick="addTab('浓缩段生产监控','remain.html')">浓缩段生产监控</a>
                                 </li>
                             {% endif %}
-                            {% if '05' in session.get('menus') %}
+                            {% if '5' in session.get('menus') %}
                                 <li>
                                     <a href="#" onclick="addTab('产品生产线监控','/processMonitorLine')">产品生产线监控</a>
                                 </li>
@@ -82,7 +82,7 @@
                         </ul>
                     </li>
                 {% endif %}
-                {% if isIn(['07', '08', '09', '10', '11', '12', '13', '14', '15'], session.get('menus')) %}
+                {% if isIn(['7', '8', '9', '10', '11', '12', '13', '14', '15'], session.get('menus')) %}
                     <li>
                         <a href="javascript:;">
                             <span class="iconfont sider-nav-icon">&#xe6ed;</span>
@@ -90,17 +90,17 @@
                             <i class="iconfont">&#xe642;</i>
                         </a>
                         <ul class="sider-nav-s">
-                            {% if '07' in session.get('menus') %}
+                            {% if '7' in session.get('menus') %}
                                 <li>
                                     <a href="#" onclick="addTab('组织结构建模','organization')">组织结构建模</a>
                                 </li>
                             {% endif %}
-                            {% if '08' in session.get('menus') %}
+                            {% if '8' in session.get('menus') %}
                                 <li>
                                     <a href="#" onclick="addTab('组织结构','organizationMap')">组织结构</a>
                                 </li>
                             {% endif %}
-                            {% if '09' in session.get('menus') %}
+                            {% if '9' in session.get('menus') %}
                                 <li>
                                     <a href="#" onclick="addTab('区域建模','Area')">区域建模</a>
                                 </li>
