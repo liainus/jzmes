@@ -5011,8 +5011,8 @@ def zYPlanManage(): # 1           2           3               4            5    
     return render_template('ZYPlanManage.html')
 
 # QA放行
-@app.route('/QAPass')
-def QAPass():
+@app.route('/QAauthPass')
+def QApass():
     return render_template('QAPassAuth.html')
 
 
