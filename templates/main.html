@@ -61,17 +61,17 @@
                         <ul class="sider-nav-s">
                             {% if '2' in session.get('menus') %}
                                 <li>
-                                    <a href="#" onclick="addTab('投料段生产监控','runstatus1.html')">投料段生产监控</a>
+                                    <a href="#" onclick="addTab('前处理段监控','/PreprocessingSectionMonitor')">前处理段监控</a>
                                 </li>
                             {% endif %}
                             {% if '3' in session.get('menus') %}
                                 <li>
-                                    <a href="#" onclick="addTab('提取段生产监控','processMonitorMap/index.html')">提取段生产监控</a>
+                                    <a href="#" onclick="addTab('运输段监控','/TransportMonitor')">运输段监控</a>
                                 </li>
                             {% endif %}
                             {% if '4' in session.get('menus') %}
                                 <li>
-                                    <a href="#" onclick="addTab('浓缩段生产监控','remain.html')">浓缩段生产监控</a>
+                                    <a href="#" onclick="addTab('投料段监控','/FeedingSectionMonitor')">投料段监控</a>
                                 </li>
                             {% endif %}
                             {% if '5' in session.get('menus') %}
