@@ -1,6 +1,6 @@
 #pf-hd{height:42px;position:relative;z-index:2;background-color:#1c87b3/*;background:url('../images/main/xg_left.png?1464005190') left center no-repeat,url('../images/main/xg_right.png?1464005212') right center no-repeat,
 url('../images/main/top_bottombg.png') left bottom repeat-x */;
-border-bottom:1px solid #ccc;}#pf-hd .pf-logo{float:left;padding:0 15px;height:100%;border-right:0px solid #198b25;line-height:42px; background: #1c87b3;}#pf-hd .pf-logo img{vertical-align:middle;margin-left:0px;height:28px;display:none;}#pf-hd .pf-logo .system-name{position:relative;display:inline-block;line-height:42px;font-size:18px;color:#fff;}
+border-bottom:1px solid #ccc;}#pf-hd .pf-logo{float:left;padding:0 15px;height:100%;border-right:0px solid #198b25;line-height:42px; background: #1c87b3;}#pf-hd .pf-logo img{vertical-align:middle;margin-left:0px;height:28px;;}#pf-hd .pf-logo .system-name{position:relative;display:inline-block;line-height:42px;font-size:18px;color:#fff;}
 #pf-hd .pf-logo .split{position:relative;display:inline-block;height:28px;width:1px;top:5px;margin-right:10px;margin-left:10px;background-color:#ccc}
 #pf-hd .pf-nav{float:left}#pf-hd .pf-nav .pf-nav-item{float:left;height:42px;color:#198b25;padding:0 10px;border-right:0px solid #198b25}#pf-hd .pf-nav .pf-nav-item a{display:block;color:#198b25;text-decoration:none}
 #pf-hd .pf-nav .pf-nav-item  .iconfont{float:left;font-size:20px;height:20px;text-align:center;padding-top:10px;padding-right:3px;}
