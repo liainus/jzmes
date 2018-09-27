@@ -4159,7 +4159,7 @@ def searchZYPlan():
 # 前处理段监控
 @app.route('/PreprocessingSectionMonitor')
 def Preprocessing():
-    return render_template('PreprocessingSectionMonitor')
+    return render_template('PreprocessingSectionMonitor.html')
 
 # 运输段监控
 @app.route('/TransportMonitor')
