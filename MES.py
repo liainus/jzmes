@@ -5010,6 +5010,10 @@ def zYPlanManage(): # 1           2           3               4            5    
     #     notVip.append(rights.index(right)+1)
     return render_template('ZYPlanManage.html')
 
+# QA放行
+@app.route('/QAPass')
+def QAPass():
+    return render_template('QAPassAuth.html')
 
 
 def getExcel(file, method='r'):
