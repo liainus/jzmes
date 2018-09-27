@@ -106,7 +106,10 @@
             margin-bottom: 10px;
         }
         .ball-active{
-            background-color: #5cb85c
+            background-color: #5cb85c;
+        }
+        .ball-stay{
+            background-color: #ffac38;
         }
     </style>
     <script>
@@ -127,15 +130,18 @@
                 },
                 refresh:function(){
                     $("#tab").datagrid('load')
+                    $(".host-progress").find(".host-ball").removeClass("ball-active ball-stay").siblings(".host-line").removeClass("ball-active")
                 }
             }
             $("#tab").datagrid({
                 onClickRow:function(rowIndex,rowData){
-                    $(".host-progress").find(".host-ball").removeClass("ball-active").siblings(".host-line").removeClass("ball-active")
+                    $(".host-progress").find(".host-ball").removeClass("ball-active ball-stay").siblings(".host-line").removeClass("ball-active")
                     if(rowData.PlanStatus == "10"){
                         $(".bigPlan1").find(".host-ball").addClass("ball-active").siblings(".host-line").addClass("ball-active")
+                        $(".bigPlan2").find(".host-ball").addClass("ball-stay")
                     }else if(rowData.PlanStatus == "11"){
                         $(".bigPlan1,.bigPlan2").find(".host-ball").addClass("ball-active").siblings(".host-line").addClass("ball-active")
+                        $(".bigPlan3").find(".host-ball").addClass("ball-stay")
                     }else if(rowData.PlanStatus == "20"){
                         $(".bigPlan1,.bigPlan2,.bigPlan3").find(".host-ball").addClass("ball-active").siblings(".host-line").addClass("ball-active")
                     }else if(rowData.PlanStatus == "70"){
