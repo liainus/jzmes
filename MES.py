@@ -4167,7 +4167,7 @@ def Transport():
     return render_template('TransportMonitor.html')
 
 # 投料段监控
-@app.route('FeedingSectionMonitor')
+@app.route('/FeedingSectionMonitor')
 def FeedingSection():
     return render_template('FeedingSectionMonitor.html')
 
