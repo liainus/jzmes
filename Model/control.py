@@ -513,11 +513,6 @@ class ctrlPlan:
             APlanDate = oclassplan.SchedulePlanCode
             AUnit = oclassplan.Unit
             ABatchID = oclassplan.BatchID
-            oclassw = session.query(Model.core.WorkFlowStatus).filter_by(PlanManageID=ID).first()
-            AuditStatus = oclassw.AuditStatus
-            if (AuditStatus != "20"):
-                return False
-
             strPlanStarTime = str(APlanDate) + " " + Model.Global.GLOBAL_PLANSTARTTIME
             bReturn, oRoutes = self.getProductUnitRoute(ABrandID)
             if bReturn == False:
@@ -700,7 +695,7 @@ class ctrlPlan:
         re = self.sessionadd(APlanManageID, I)
         J = Model.node.flowPathNameJWXSP.J.value
         re = self.sessionadd(APlanManageID, J)
-        K = Model.node.flowPathName.K.value
+        K = Model.node.flowPathNameJWXSP.K.value
         re = self.sessionadd(APlanManageID, K)
         L = Model.node.flowPathNameJWXSP.L.value
         re = self.sessionadd(APlanManageID, L)

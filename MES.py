@@ -539,7 +539,7 @@ def SearchBatchManager():
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
                 currentWorkdate = data["currentWorkdate"]
                 PUID = data["PUID"]
-                if(PUID == "" and currentWorkdate == ""):
+                if(PUID == ""):
                     total = db_session.query(PlanManager).count()
                     zYPlans = db_session.query(PlanManager).order_by(desc("PlanBeginTime")).all()[inipage:endpage]
                 else:
@@ -556,7 +556,7 @@ def SearchBatchManager():
 
 # 批次管理查询计划明细
 @app.route('/batchManager/SearchBatchZYPlan')
-def SearchBatchManager():
+def SearchBatchZYPlan():
     if request.method == 'GET':
         data = request.values
         try:
@@ -567,9 +567,9 @@ def SearchBatchManager():
                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
                 ID = data["ID"]
-                planMa = db_session.query(PlanManager).filter(PlanManager.ID == ID)
-                total = db_session.query(ZYPlan.ID).filter(ZYPlan.BatchID == planMa.BatchID, ZYPlan.PUID == planMa.PUID).count()
-                zYPlans = db_session.query(ZYPlan).filter(ZYPlan.BatchID == planMa.BatchID, ZYPlan.PUID == planMa.PUID).order_by(desc("EnterTime")).all()[
+                planMa = db_session.query(PlanManager).filter(PlanManager.ID == ID).first()
+                total = db_session.query(ZYPlan.ID).filter(ZYPlan.BatchID == planMa.BatchID).count()
+                zYPlans = db_session.query(ZYPlan).filter(ZYPlan.BatchID == planMa.BatchID).order_by(desc("EnterTime")).all()[
                           inipage:endpage]
                 jsonzyplans = json.dumps(zYPlans, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonzyplans = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonzyplans + "}"
@@ -582,7 +582,7 @@ def SearchBatchManager():
 
 # 批次管理查询任务明细
 @app.route('/batchManager/SearchBatchZYTask')
-def SearchBatchManager():
+def SearchBatchZYTask():
     if request.method == 'GET':
         data = request.values
         try:
@@ -3959,7 +3959,7 @@ def checkPlanManager():
                         oclassplan = db_session.query(PlanManager).filter_by(ID=id).first()
                         oclassplan.PlanStatus = Model.Global.PlanStatus.Checked.value
                         userName = current_user.Name
-                        oclassNodeColl = db_session.query(Model.node.NodeCollection).filter_by(oddNum=id, name=Model.node.flowPathNameJWXSP.A.value).first()
+                        oclassNodeColl = db_session.query(Model.node.NodeCollection).filter_by(oddNum=id, name="审核计划").first()
                         oclassNodeColl.status = Model.node.NodeStatus.PASSED.value
                         oclassNodeColl.oddUser = userName
                         oclassNodeColl.opertionTime = datetime.datetime.now()
@@ -4013,7 +4013,7 @@ def createZYPlanZYtask():
                             task.TaskStatus = Model.Global.TASKSTATUS.Realse.value
                         userName = current_user.Name
                         oclassNodeColl = db_session.query(Model.node.NodeCollection).filter_by(oddNum=id,
-                                                                                               name=Model.node.flowPathNameJWXSP.B.value).first()
+                                                                                               name="下发计划").first()
                         oclassNodeColl.status = Model.node.NodeStatus.PASSED.value
                         oclassNodeColl.oddUser = userName
                         oclassNodeColl.opertionTime = datetime.datetime.now()
