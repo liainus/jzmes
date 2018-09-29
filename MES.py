@@ -525,7 +525,7 @@ def batchmanager():
         data.append(pro_unit_id)
     return render_template('batch_manager.html',Product_unit_ID=data)
 
-#批次管理查询
+#批次管理查询计划
 @app.route('/batchManager/SearchBatchManager')
 def SearchBatchManager():
     if request.method == 'GET':
@@ -539,19 +539,74 @@ def SearchBatchManager():
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
                 currentWorkdate = data["currentWorkdate"]
                 PUID = data["PUID"]
-                if(PUID == ""):
-                    total = db_session.query(ZYPlan).count()
-                    zYPlans = db_session.query(ZYPlan).order_by(desc("EnterTime")).all()[inipage:endpage]
+                if(PUID == "" and currentWorkdate == ""):
+                    total = db_session.query(PlanManager).count()
+                    zYPlans = db_session.query(PlanManager).order_by(desc("PlanBeginTime")).all()[inipage:endpage]
                 else:
-                    total = db_session.query(ZYPlan).filter(ZYPlan.PlanDate == currentWorkdate, ZYPlan.PUID == PUID).count()
-                    zYPlans = db_session.query(ZYPlan).filter(ZYPlan.PlanDate == currentWorkdate, ZYPlan.PUID == PUID).order_by(desc("EnterTime")).all()[inipage:endpage]
+                    total = db_session.query(PlanManager).filter(PlanManager.PlanBeginTime == currentWorkdate, PlanManager.PUID == PUID).count()
+                    zYPlans = db_session.query(PlanManager).filter(PlanManager.PlanBeginTime == currentWorkdate, PlanManager.PUID == PUID).order_by(desc("PlanBeginTime")).all()[inipage:endpage]
                 jsonzyplans = json.dumps(zYPlans, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonzyplans = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonzyplans + "}"
                 return jsonzyplans
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "批次管理查询报错Error：" + str(e), current_user.Name)
+            insertSyslog("error", "批次管理查询计划报错Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
+# 批次管理查询计划明细
+@app.route('/batchManager/SearchBatchZYPlan')
+def SearchBatchManager():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                pages = int(data['page'])  # 页数
+                rowsnumber = int(data['rows'])  # 行数
+                inipage = (pages - 1) * rowsnumber + 0  # 起始页
+                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+                ID = data["ID"]
+                planMa = db_session.query(PlanManager).filter(PlanManager.ID == ID)
+                total = db_session.query(ZYPlan.ID).filter(ZYPlan.BatchID == planMa.BatchID, ZYPlan.PUID == planMa.PUID).count()
+                zYPlans = db_session.query(ZYPlan).filter(ZYPlan.BatchID == planMa.BatchID, ZYPlan.PUID == planMa.PUID).order_by(desc("EnterTime")).all()[
+                          inipage:endpage]
+                jsonzyplans = json.dumps(zYPlans, cls=AlchemyEncoder, ensure_ascii=False)
+                jsonzyplans = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonzyplans + "}"
+                return jsonzyplans
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "批次管理查询计划明细报错Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
+# 批次管理查询任务明细
+@app.route('/batchManager/SearchBatchZYTask')
+def SearchBatchManager():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                pages = int(data['page'])  # 页数
+                rowsnumber = int(data['rows'])  # 行数
+                inipage = (pages - 1) * rowsnumber + 0  # 起始页
+                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+                ID = data["ID"]
+                plan = db_session.query(ZYPlan).filter(ZYPlan.ID == ID)
+                total = db_session.query(ZYTask.ID).filter(ZYTask.BatchID == plan.BatchID,
+                                                           ZYTask.PUID == plan.PUID).count()
+                zYPlans = db_session.query(ZYTask).filter(ZYTask.BatchID == plan.BatchID,
+                                                          ZYTask.PUID == plan.PUID).order_by(
+                    desc("EnterTime")).all()[
+                          inipage:endpage]
+                jsonzyplans = json.dumps(zYPlans, cls=AlchemyEncoder, ensure_ascii=False)
+                jsonzyplans = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonzyplans + "}"
+                return jsonzyplans
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "批次管理查询任务明细报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 # 计划向导获取批次任务明细
