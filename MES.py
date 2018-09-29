@@ -4149,6 +4149,21 @@ def searchZYPlan():
             logger.error(e)
             insertSyslog("error", "获取批次计划信息报错Error：" + str(e), current_user.Name)
 
+# 前处理段监控
+@app.route('/PreprocessingSectionMonitor')
+def Preprocessing():
+    return render_template('PreprocessingSectionMonitor.html')
+
+# 运输段监控
+@app.route('/TransportMonitor')
+def Transport():
+    return render_template('TransportMonitor.html')
+
+# 投料段监控
+@app.route('/FeedingSectionMonitor')
+def FeedingSection():
+    return render_template('FeedingSectionMonitor.html')
+
 #生产线监控
 @app.route('/processMonitorLine')
 def processMonitor():
@@ -5003,6 +5018,10 @@ def zYPlanManage(): # 1           2           3               4            5    
     #     notVip.append(rights.index(right)+1)
     return render_template('ZYPlanManage.html')
 
+# QA放行
+@app.route('/QAauthPass')
+def QApass():
+    return render_template('QAPassAuth.html')
 
 
 def getExcel(file, method='r'):

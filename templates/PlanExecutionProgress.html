@@ -21,8 +21,8 @@
         /*选项卡*/
         .tab .nav-tabs { position: relative;width:100%; padding:20px; background:#f1f1f1;z-index: 1}
         .tab .nav-tabs li { margin-right: 40px; z-index: 1; }
-        .tab .nav-tabs li a { display: block; padding: 10px 20px; background: #fff; font-size: 14px; font-weight: 600; color: #956cae; text-transform: uppercase; border-radius: 0; margin-right: 0; border: 2px solid #956cae; position: relative; overflow: hidden; z-index: 1; transition: all 0.3s ease 0s; }
-        .tab .nav-tabs li.active a, .tab .nav-tabs li a:hover { color: #fff; border: 2px solid #956cae; }
+        .tab .nav-tabs li a { display: block; padding: 10px 20px; background: #fff; font-size: 14px; font-weight: 600; color: #956cae; text-transform: uppercase; border-radius: 0; margin-right: 0; border: 1px solid #956cae; position: relative; overflow: hidden; z-index: 1; transition: all 0.3s ease 0s; }
+        .tab .nav-tabs li.active a, .tab .nav-tabs li a:hover { color: #fff; border: 1px solid #956cae; }
         .tab .nav-tabs li a:after { content: ""; display: block; width: 100%; height: 0; position: absolute; top: 0; left: 0; z-index: -1; transition: all 0.3s ease 0s; }
         .tab .nav-tabs li.active a:after, .tab .nav-tabs li a:hover:after { height: 100%; background: #956cae; }
         .tab .tab-content { padding: 20px 10px; margin-top: 0; font-size: 14px; color: #999; line-height: 26px;width:auto; height:auto;}
@@ -46,37 +46,33 @@
         .host-progress{
             position: relative;
             float: left;
-            padding-top:20px;
         }
         .host-ball{
             float: left;
-            width: 30px;
+            width: 80px;
             height: 30px;
-            border-radius: 50%;
+            line-height: 30px;
+            border-radius: 3px;
             background-color: #9f9f9f;
             color: #fff;
             text-align: center;
-        }
-        .host-title{
-            position: absolute;
-            top:-10px;
             white-space: nowrap;
+        }
+        .handlePlan{
+            cursor: pointer;
         }
         .host-line{
             float: left;
-            width: 100px;
+            width: 50px;
             height: 2px;
             margin-top: 15px;
             background-color: #9F9F9F;
         }
         .childBox{
-            width:115px;
+            width:130px;
         }
         .childNode{
-            margin-left: -15px;
-        }
-        .childNode .progress-line{
-            height:50px;
+            margin-left: 10px;
         }
 
         /*纵向时间轴*/
@@ -88,15 +84,15 @@
             background-color: #9f9f9f;
         }
         .progress-line{
-            width: 2px;
-            height: 80px;
+            width: 0px;
+            height: 50px;
             margin-left: 30px;
-            background-color: #9F9F9F;
+            border-left: 1px dashed #9f9f9f;
         }
         .detail{
             margin-left: 40px;
             float:left;
-            font-size: 14px;
+            font-size: 12px;
             color: #666;
             line-height:20px;
             position: relative;
@@ -107,11 +103,18 @@
             margin-bottom: 10px;
         }
         .ball-active{
-            background-color: #28a745
+            background-color: #5cb85c;
+        }
+        .ball-stay{
+            background-color: #ffac38;
         }
     </style>
     <script>
         $(function(){
+            //选项卡样式
+            $(".nav-tabs li").on("click",function(){
+                $(this).addClass("active").siblings().removeClass("active")
+            })
             function createKeyIDObj(keyID){
                 return {
                     ID:keyID
@@ -128,15 +131,18 @@
                 },
                 refresh:function(){
                     $("#tab").datagrid('load')
+                    $(".host-progress").find(".host-ball").removeClass("ball-active ball-stay").siblings(".host-line").removeClass("ball-active")
                 }
             }
             $("#tab").datagrid({
                 onClickRow:function(rowIndex,rowData){
-                    $(".host-progress").find(".host-ball").removeClass("ball-active").siblings(".host-line").removeClass("ball-active")
+                    $(".host-progress").find(".host-ball").removeClass("ball-active ball-stay").siblings(".host-line").removeClass("ball-active")
                     if(rowData.PlanStatus == "10"){
                         $(".bigPlan1").find(".host-ball").addClass("ball-active").siblings(".host-line").addClass("ball-active")
+                        $(".bigPlan2").find(".host-ball").addClass("ball-stay")
                     }else if(rowData.PlanStatus == "11"){
                         $(".bigPlan1,.bigPlan2").find(".host-ball").addClass("ball-active").siblings(".host-line").addClass("ball-active")
+                        $(".bigPlan3").find(".host-ball").addClass("ball-stay")
                     }else if(rowData.PlanStatus == "20"){
                         $(".bigPlan1,.bigPlan2,.bigPlan3").find(".host-ball").addClass("ball-active").siblings(".host-line").addClass("ball-active")
                     }else if(rowData.PlanStatus == "70"){
@@ -145,7 +151,27 @@
                     }
                 }
             });
+            //有此权限时增加tabs跳转到操作页面
+            $(".handlePlan").on('click',function(){
+                var text = $(this).html()
+                var src = $(this).attr("skip-src")
+                addTab(text,src)
+            })
         })
+        //按钮点击后添加选项卡
+        function addTab(title, url) {
+            if (parent.$('.easyui-tabs1').tabs('exists', title)) {
+                parent.$('.easyui-tabs1').tabs('select', title);
+            }
+            else {
+                var content = '<iframe class="page-iframe" src="' + url + '" frameborder="no" border="no" height="100%" width="100%" scrolling="auto"></iframe>';
+                parent.$('.easyui-tabs1').tabs('add', {
+                    title: title,
+                    content: content,
+                    closable: true
+                });
+            }
+        }
         function formatterStatus(value, row, index){
             if (value == 10){
                 return '新增计划'
@@ -188,33 +214,19 @@
                 <div role="tabpanel" class="tab-pane fade show active" id="Section1">
                     <div class="progress-head">
                         <div class="host-progress bigPlan1">
-                            <div class="host-ball"></div>
-                            <div class="host-title">
-                                新增计划
-                            </div>
-                            <div class="host-line">
-                            </div>
+                            <div class="host-ball handlePlan" skip-src="/createPlanWizard">新增计划</div>
+                            <div class="host-line"></div>
                         </div>
                         <div class="host-progress bigPlan2">
-                            <div class="host-ball"></div>
-                            <div class="host-title">
-                                审核计划
-                            </div>
+                            <div class="host-ball handlePlan" skip-src="/ZYPlanGuid/checkplanmanager">审核计划</div>
                             <div class="host-line"></div>
                         </div>
                         <div class="host-progress bigPlan3">
-                            <div class="host-ball"></div>
-                            <div class="host-title">
-                                下发计划
-                            </div>
+                            <div class="host-ball handlePlan" skip-src="/ZYPlanGuid/planmanager">下发计划</div>
                             <div class="host-line"></div>
-
                         </div>
                         <div class="host-progress bigPlan4">
-                            <div class="host-ball"></div>
-                            <div class="host-title">
-                                备料
-                            </div>
+                            <div class="host-ball">备料</div>
                             <div class="host-line"></div>
                             <div class="childBox">
                                 <div class="childNode">
@@ -222,7 +234,7 @@
                                     <div class="ball"></div>
                                     <div class="detail">
                                         <div class="flow-detail">
-                                            中控确认生产前的准备
+                                            生产前的准备
                                         </div>
                                     </div>
                                     <div class="progress-line"></div>
@@ -231,7 +243,7 @@
                                     <div class="ball"></div>
                                     <div class="detail">
                                         <div class="flow-detail">
-                                            中控复核生产前的准备
+                                            备料开始
                                         </div>
                                     </div>
                                     <div class="progress-line"></div>
@@ -240,71 +252,14 @@
                                     <div class="ball"></div>
                                     <div class="detail">
                                         <div class="flow-detail">
-                                            任务确认
-                                        </div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">
-                                            QA复核生产前的准备
-                                        </div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">
-                                            执行生产
-                                        </div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">
-                                            生产完成
-                                        </div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">
-                                            中控确认生产结束清场
-                                        </div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">
-                                            中控复核生产结束清场
-                                        </div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">
-                                            QA复核清场
+                                            备料结束清场
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="host-progress bigPlan5">
-                            <div class="host-ball"></div>
-                            <div class="host-title">
-                                煎煮
-                            </div>
+                            <div class="host-ball">煎煮</div>
                             <div class="host-line"></div>
                             <div class="childBox">
                                 <div class="childNode">
@@ -312,7 +267,7 @@
                                     <div class="ball"></div>
                                     <div class="detail">
                                         <div class="flow-detail">
-                                            中控确认生产前的准备
+                                            生产前的准备
                                         </div>
                                     </div>
                                     <div class="progress-line"></div>
@@ -321,7 +276,7 @@
                                     <div class="ball"></div>
                                     <div class="detail">
                                         <div class="flow-detail">
-                                            中控复核生产前的准备
+                                            煎煮开始
                                         </div>
                                     </div>
                                     <div class="progress-line"></div>
@@ -330,7 +285,7 @@
                                     <div class="ball"></div>
                                     <div class="detail">
                                         <div class="flow-detail">
-                                            任务确认
+                                            静置开始
                                         </div>
                                     </div>
                                     <div class="progress-line"></div>
@@ -339,62 +294,14 @@
                                     <div class="ball"></div>
                                     <div class="detail">
                                         <div class="flow-detail">
-                                            QA复核生产前的准备
-                                        </div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">
-                                            执行生产
-                                        </div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">
-                                            生产完成
-                                        </div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">
-                                            中控确认生产结束清场
-                                        </div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">
-                                            中控复核生产结束清场
-                                        </div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">
-                                            QA复核清场
+                                            煎煮结束清场
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="host-progress bigPlan6">
-                            <div class="host-ball"></div>
-                            <div class="host-title">
-                                浓缩
-                            </div>
+                            <div class="host-ball">浓缩</div>
                             <div class="host-line"></div>
                             <div class="childBox">
                                 <div class="childNode">
@@ -402,7 +309,7 @@
                                     <div class="ball"></div>
                                     <div class="detail">
                                         <div class="flow-detail">
-                                            中控确认生产前的准备
+                                            生产前的准备
                                         </div>
                                     </div>
                                     <div class="progress-line"></div>
@@ -411,7 +318,7 @@
                                     <div class="ball"></div>
                                     <div class="detail">
                                         <div class="flow-detail">
-                                            中控复核生产前的准备
+                                            浓缩开始
                                         </div>
                                     </div>
                                     <div class="progress-line"></div>
@@ -420,7 +327,7 @@
                                     <div class="ball"></div>
                                     <div class="detail">
                                         <div class="flow-detail">
-                                            任务确认
+                                            参数控制
                                         </div>
                                     </div>
                                     <div class="progress-line"></div>
@@ -429,7 +336,7 @@
                                     <div class="ball"></div>
                                     <div class="detail">
                                         <div class="flow-detail">
-                                            QA复核生产前的准备
+                                            质量控制
                                         </div>
                                     </div>
                                     <div class="progress-line"></div>
@@ -438,53 +345,14 @@
                                     <div class="ball"></div>
                                     <div class="detail">
                                         <div class="flow-detail">
-                                            执行生产
-                                        </div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">
-                                            生产完成
-                                        </div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">
-                                            中控确认生产结束清场
-                                        </div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">
-                                            中控复核生产结束清场
-                                        </div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">
-                                            QA复核清场
+                                            浓缩结束清场
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="host-progress bigPlan7">
-                            <div class="host-ball"></div>
-                            <div class="host-title">
-                                喷雾干燥
-                            </div>
+                            <div class="host-ball">喷雾干燥</div>
                             <div class="host-line"></div>
                             <div class="childBox">
                                 <div class="childNode">
@@ -492,7 +360,7 @@
                                     <div class="ball"></div>
                                     <div class="detail">
                                         <div class="flow-detail">
-                                            中控确认生产前的准备
+                                            生产前的准备
                                         </div>
                                     </div>
                                     <div class="progress-line"></div>
@@ -501,7 +369,7 @@
                                     <div class="ball"></div>
                                     <div class="detail">
                                         <div class="flow-detail">
-                                            中控复核生产前的准备
+                                            喷雾干燥开始
                                         </div>
                                     </div>
                                     <div class="progress-line"></div>
@@ -510,7 +378,7 @@
                                     <div class="ball"></div>
                                     <div class="detail">
                                         <div class="flow-detail">
-                                            任务确认
+                                            参数控制
                                         </div>
                                     </div>
                                     <div class="progress-line"></div>
@@ -519,62 +387,14 @@
                                     <div class="ball"></div>
                                     <div class="detail">
                                         <div class="flow-detail">
-                                            QA复核生产前的准备
-                                        </div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">
-                                            执行生产
-                                        </div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">
-                                            生产完成
-                                        </div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">
-                                            中控确认生产结束清场
-                                        </div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">
-                                            中控复核生产结束清场
-                                        </div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">
-                                            QA复核清场
+                                            喷雾干燥结束清场
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="host-progress bigPlan8">
-                            <div class="host-ball"></div>
-                            <div class="host-title">
-                                收粉
-                            </div>
+                            <div class="host-ball">收粉</div>
                             <div class="host-line"></div>
                             <div class="childBox">
                                 <div class="childNode">
@@ -582,7 +402,7 @@
                                     <div class="ball"></div>
                                     <div class="detail">
                                         <div class="flow-detail">
-                                            中控确认生产前的准备
+                                            生产前的准备
                                         </div>
                                     </div>
                                     <div class="progress-line"></div>
@@ -591,7 +411,7 @@
                                     <div class="ball"></div>
                                     <div class="detail">
                                         <div class="flow-detail">
-                                            中控复核生产前的准备
+                                            收粉开始
                                         </div>
                                     </div>
                                     <div class="progress-line"></div>
@@ -600,7 +420,7 @@
                                     <div class="ball"></div>
                                     <div class="detail">
                                         <div class="flow-detail">
-                                            任务确认
+                                            质量控制
                                         </div>
                                     </div>
                                     <div class="progress-line"></div>
@@ -609,7 +429,7 @@
                                     <div class="ball"></div>
                                     <div class="detail">
                                         <div class="flow-detail">
-                                            QA复核生产前的准备
+                                            收粉结束统计
                                         </div>
                                     </div>
                                     <div class="progress-line"></div>
@@ -618,53 +438,14 @@
                                     <div class="ball"></div>
                                     <div class="detail">
                                         <div class="flow-detail">
-                                            执行生产
-                                        </div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">
-                                            生产完成
-                                        </div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">
-                                            中控确认生产结束清场
-                                        </div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">
-                                            中控复核生产结束清场
-                                        </div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">
-                                            QA复核清场
+                                            收粉结束清场
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="host-progress bigPlan9">
-                            <div class="host-ball"></div>
-                            <div class="host-title">
-                                QA放行
-                            </div>
+                            <div class="host-ball handlePlan" skip-src="/QAauthPass">QA放行</div>
                         </div>
                     </div>
                     <div id="Toolbar" style="padding:0 10px;">
@@ -704,33 +485,20 @@
                 </div>
                 <div role="tabpanel" class="tab-pane fade" id="Section2">
                     <div class="progress-head">
-                        <div class="host-progress cshBigPlan1">
-                            <div class="host-ball"></div>
-                            <div class="host-title">
-                                新增计划
-                            </div>
-                            <div class="host-line">
-                            </div>
-                        </div>
-                        <div class="host-progress cshBigPlan2">
-                            <div class="host-ball"></div>
-                            <div class="host-title">
-                                审核计划
-                            </div>
+                        <div class="host-progress bigPlan1">
+                            <div class="host-ball handlePlan" skip-src="/createPlanWizard">新增计划</div>
                             <div class="host-line"></div>
                         </div>
-                        <div class="host-progress cshBigPlan3">
-                            <div class="host-ball"></div>
-                            <div class="host-title">
-                                下发计划
-                            </div>
+                        <div class="host-progress bigPlan2">
+                            <div class="host-ball handlePlan" skip-src="/ZYPlanGuid/checkplanmanager">审核计划</div>
                             <div class="host-line"></div>
                         </div>
-                        <div class="host-progress cshBigPlan4">
-                            <div class="host-ball"></div>
-                            <div class="host-title">
-                                备料
-                            </div>
+                        <div class="host-progress bigPlan3">
+                            <div class="host-ball handlePlan" skip-src="/ZYPlanGuid/planmanager">下发计划</div>
+                            <div class="host-line"></div>
+                        </div>
+                        <div class="host-progress bigPlan4">
+                            <div class="host-ball">备料</div>
                             <div class="host-line"></div>
                             <div class="childBox">
                                 <div class="childNode">
@@ -738,7 +506,7 @@
                                     <div class="ball"></div>
                                     <div class="detail">
                                         <div class="flow-detail">
-                                            中控确认生产前的准备
+                                            生产前的准备
                                         </div>
                                     </div>
                                     <div class="progress-line"></div>
@@ -747,7 +515,7 @@
                                     <div class="ball"></div>
                                     <div class="detail">
                                         <div class="flow-detail">
-                                            中控复核生产前的准备
+                                            备料开始
                                         </div>
                                     </div>
                                     <div class="progress-line"></div>
@@ -756,71 +524,14 @@
                                     <div class="ball"></div>
                                     <div class="detail">
                                         <div class="flow-detail">
-                                            任务确认
-                                        </div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">
-                                            QA复核生产前的准备
-                                        </div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">
-                                            执行生产
-                                        </div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">
-                                            生产完成
-                                        </div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">
-                                            中控确认生产结束清场
-                                        </div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">
-                                            中控复核生产结束清场
-                                        </div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">
-                                            QA复核清场
+                                            备料结束清场
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="host-progress cshBigPlan5">
-                            <div class="host-ball"></div>
-                            <div class="host-title">
-                                煎煮
-                            </div>
+                        <div class="host-progress bigPlan5">
+                            <div class="host-ball">煎煮</div>
                             <div class="host-line"></div>
                             <div class="childBox">
                                 <div class="childNode">
@@ -828,7 +539,7 @@
                                     <div class="ball"></div>
                                     <div class="detail">
                                         <div class="flow-detail">
-                                            中控确认生产前的准备
+                                            生产前的准备
                                         </div>
                                     </div>
                                     <div class="progress-line"></div>
@@ -837,7 +548,7 @@
                                     <div class="ball"></div>
                                     <div class="detail">
                                         <div class="flow-detail">
-                                            中控复核生产前的准备
+                                            煎煮开始
                                         </div>
                                     </div>
                                     <div class="progress-line"></div>
@@ -846,7 +557,7 @@
                                     <div class="ball"></div>
                                     <div class="detail">
                                         <div class="flow-detail">
-                                            任务确认
+                                            静置开始
                                         </div>
                                     </div>
                                     <div class="progress-line"></div>
@@ -855,62 +566,14 @@
                                     <div class="ball"></div>
                                     <div class="detail">
                                         <div class="flow-detail">
-                                            QA复核生产前的准备
-                                        </div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">
-                                            执行生产
-                                        </div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">
-                                            生产完成
-                                        </div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">
-                                            中控确认生产结束清场
-                                        </div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">
-                                            中控复核生产结束清场
-                                        </div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">
-                                            QA复核清场
+                                            煎煮结束清场
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="host-progress cshBigPlan6">
-                            <div class="host-ball"></div>
-                            <div class="host-title">
-                                浓缩
-                            </div>
+                        <div class="host-progress bigPlan6">
+                            <div class="host-ball">浓缩</div>
                             <div class="host-line"></div>
                             <div class="childBox">
                                 <div class="childNode">
@@ -918,7 +581,7 @@
                                     <div class="ball"></div>
                                     <div class="detail">
                                         <div class="flow-detail">
-                                            中控确认生产前的准备
+                                            生产前的准备
                                         </div>
                                     </div>
                                     <div class="progress-line"></div>
@@ -927,7 +590,7 @@
                                     <div class="ball"></div>
                                     <div class="detail">
                                         <div class="flow-detail">
-                                            中控复核生产前的准备
+                                            浓缩开始
                                         </div>
                                     </div>
                                     <div class="progress-line"></div>
@@ -936,7 +599,7 @@
                                     <div class="ball"></div>
                                     <div class="detail">
                                         <div class="flow-detail">
-                                            任务确认
+                                            参数控制
                                         </div>
                                     </div>
                                     <div class="progress-line"></div>
@@ -945,7 +608,7 @@
                                     <div class="ball"></div>
                                     <div class="detail">
                                         <div class="flow-detail">
-                                            QA复核生产前的准备
+                                            质量控制
                                         </div>
                                     </div>
                                     <div class="progress-line"></div>
@@ -954,53 +617,14 @@
                                     <div class="ball"></div>
                                     <div class="detail">
                                         <div class="flow-detail">
-                                            执行生产
-                                        </div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">
-                                            生产完成
-                                        </div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">
-                                            中控确认生产结束清场
-                                        </div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">
-                                            中控复核生产结束清场
-                                        </div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">
-                                            QA复核清场
+                                            浓缩结束清场
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="host-progress cshBigPlan7">
-                            <div class="host-ball"></div>
-                            <div class="host-title">
-                                醇沉
-                            </div>
+                        <div class="host-progress bigPlan7">
+                            <div class="host-ball">醇沉</div>
                             <div class="host-line"></div>
                             <div class="childBox">
                                 <div class="childNode">
@@ -1008,7 +632,7 @@
                                     <div class="ball"></div>
                                     <div class="detail">
                                         <div class="flow-detail">
-                                            中控确认生产前的准备
+                                            生产前的准备
                                         </div>
                                     </div>
                                     <div class="progress-line"></div>
@@ -1017,7 +641,7 @@
                                     <div class="ball"></div>
                                     <div class="detail">
                                         <div class="flow-detail">
-                                            中控复核生产前的准备
+                                            领取物料
                                         </div>
                                     </div>
                                     <div class="progress-line"></div>
@@ -1026,7 +650,7 @@
                                     <div class="ball"></div>
                                     <div class="detail">
                                         <div class="flow-detail">
-                                            任务确认
+                                            醇沉开始
                                         </div>
                                     </div>
                                     <div class="progress-line"></div>
@@ -1035,62 +659,14 @@
                                     <div class="ball"></div>
                                     <div class="detail">
                                         <div class="flow-detail">
-                                            QA复核生产前的准备
-                                        </div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">
-                                            执行生产
-                                        </div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">
-                                            生产完成
-                                        </div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">
-                                            中控确认生产结束清场
-                                        </div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">
-                                            中控复核生产结束清场
-                                        </div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">
-                                            QA复核清场
+                                            醇沉结束清场
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="host-progress cshBigPlan8">
-                            <div class="host-ball"></div>
-                            <div class="host-title">
-                                收膏
-                            </div>
+                        <div class="host-progress bigPlan8">
+                            <div class="host-ball">单效浓缩</div>
                             <div class="host-line"></div>
                             <div class="childBox">
                                 <div class="childNode">
@@ -1098,7 +674,7 @@
                                     <div class="ball"></div>
                                     <div class="detail">
                                         <div class="flow-detail">
-                                            中控确认生产前的准备
+                                            生产前的准备
                                         </div>
                                     </div>
                                     <div class="progress-line"></div>
@@ -1107,7 +683,7 @@
                                     <div class="ball"></div>
                                     <div class="detail">
                                         <div class="flow-detail">
-                                            中控复核生产前的准备
+                                            单效浓缩开始
                                         </div>
                                     </div>
                                     <div class="progress-line"></div>
@@ -1116,7 +692,7 @@
                                     <div class="ball"></div>
                                     <div class="detail">
                                         <div class="flow-detail">
-                                            任务确认
+                                            参数控制
                                         </div>
                                     </div>
                                     <div class="progress-line"></div>
@@ -1125,7 +701,7 @@
                                     <div class="ball"></div>
                                     <div class="detail">
                                         <div class="flow-detail">
-                                            QA复核生产前的准备
+                                            质量控制
                                         </div>
                                     </div>
                                     <div class="progress-line"></div>
@@ -1134,53 +710,14 @@
                                     <div class="ball"></div>
                                     <div class="detail">
                                         <div class="flow-detail">
-                                            执行生产
-                                        </div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">
-                                            生产完成
-                                        </div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">
-                                            中控确认生产结束清场
-                                        </div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">
-                                            中控复核生产结束清场
-                                        </div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">
-                                            QA复核清场
+                                            单效浓缩结束清场
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="host-progress cshBigPlan9">
-                            <div class="host-ball"></div>
-                            <div class="host-title">
-                                单效浓缩
-                            </div>
+                        <div class="host-progress bigPlan9">
+                            <div class="host-ball">收膏</div>
                             <div class="host-line"></div>
                             <div class="childBox">
                                 <div class="childNode">
@@ -1188,7 +725,7 @@
                                     <div class="ball"></div>
                                     <div class="detail">
                                         <div class="flow-detail">
-                                            中控确认生产前的准备
+                                            生产前的准备
                                         </div>
                                     </div>
                                     <div class="progress-line"></div>
@@ -1197,7 +734,7 @@
                                     <div class="ball"></div>
                                     <div class="detail">
                                         <div class="flow-detail">
-                                            中控复核生产前的准备
+                                            收膏开始
                                         </div>
                                     </div>
                                     <div class="progress-line"></div>
@@ -1206,7 +743,7 @@
                                     <div class="ball"></div>
                                     <div class="detail">
                                         <div class="flow-detail">
-                                            任务确认
+                                            收膏结束统计
                                         </div>
                                     </div>
                                     <div class="progress-line"></div>
@@ -1215,62 +752,14 @@
                                     <div class="ball"></div>
                                     <div class="detail">
                                         <div class="flow-detail">
-                                            QA复核生产前的准备
-                                        </div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">
-                                            执行生产
-                                        </div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">
-                                            生产完成
-                                        </div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">
-                                            中控确认生产结束清场
-                                        </div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">
-                                            中控复核生产结束清场
-                                        </div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">
-                                            QA复核清场
+                                            收膏结束清场
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="host-progress cshBigPlan10">
-                            <div class="host-ball"></div>
-                            <div class="host-title">
-                                QA放行
-                            </div>
+                        <div class="host-progress bigPlan10">
+                            <div class="host-ball handlePlan" skip-src="/QAauthPass">QA放行</div>
                         </div>
                     </div>
                     <div id="cToolbar" style="padding:0 10px;">
