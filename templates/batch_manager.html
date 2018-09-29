@@ -20,46 +20,6 @@
 <body>
     <div class="container" style="margin:3px;">
         <div style="margin:3px;">
-            <div class="opt-buttons">
-                <a href="#" class="easyui-linkbutton">批次计划申请</a>
-                <a href="#" class="easyui-linkbutton">批生产开始</a>
-                <a href="#" class="easyui-linkbutton">批生产结束</a>
-                <a href="#" class="easyui-linkbutton">批次计划中止</a>
-                <a href="#" class="easyui-linkbutton">切换工艺段</a>
-                <a href="#" class="easyui-linkbutton">刷新</a>
-            </div>
-        </div>
-        <div style="margin:3px;">
-            <table class="kv-table">
-                <tbody>
-                    <tr>
-                        <td class="kv-label" style="white-space:nowrap;">当前工作日</td>
-                        <td class="kv-content">
-                            <input id="currentWorkdate" type="text" class="easyui-datebox" style="height: 28px;width: 150px;" data-options="required:true,showSeconds:false,editable:false" autocomplete="off" placeholder="">
-                        </td>
-                        <td class="kv-label" style="white-space:nowrap;">工艺段名称</td>
-                        <td class="kv-content">
-                            <select name="PUID" id="PUID" type="text" style="height: 28px;width: 150px;" autocomplete="off" placeholder="">
-                                <option value="">请选择</option>
-                                {% for id in Product_unit_ID %}
-                                    <option value="{{ id['ID'] }}">{{ id['text'] }}</option>
-                                {% endfor %}
-                            </select>
-                        </td>
-{#                        <td class="kv-label" style="white-space:nowrap;">调度模式</td>#}
-{#                        <td class="kv-content">#}
-{#                            <input type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="">#}
-{#                        </td>#}
-{#                        <td class="kv-label" style="white-space:nowrap;">控制模式</td>#}
-{#                        <td class="kv-content">#}
-{#                            <input type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="">#}
-{#                        </td>#}
-                        <td class="kv-label">
-                            <a href="#" class="easyui-linkbutton" id="btnSearch">搜索</a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
             <table class="kv-table">
                 <tbody>
                     <tr>
@@ -75,6 +35,25 @@
                             <div class="colorBox pp8" style="background-color:#dc3545;">任务错误</div>
                             <div class="colorBox pp9" style="background-color:#6c757d;">任务中止</div>
 
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <table class="kv-table">
+                <tbody>
+                    <tr>
+                        <td class="kv-label" style="white-space:nowrap;">当前工作日</td>
+                        <td class="kv-content">
+                            <input id="currentWorkdate" type="text" class="easyui-datebox" style="height: 28px;width: 150px;" data-options="required:true,showSeconds:false,editable:false" autocomplete="off" placeholder="">
+                        </td>
+                        <td class="kv-label" style="white-space:nowrap;">工艺段名称</td>
+                        <td class="kv-content">
+                            <select name="PUID" id="PUID" type="text" style="height: 28px;width: 150px;" autocomplete="off" placeholder="">
+                                <option value="">请选择</option>
+                                {% for id in Product_unit_ID %}
+                                    <option value="{{ id['ID'] }}">{{ id['text'] }}</option>
+                                {% endfor %}
+                            </select>
                         </td>
                     </tr>
                 </tbody>
@@ -119,7 +98,14 @@
                 </tr>
             </thead>
         </table>
-
+        <div style="margin:3px;">
+            <div class="opt-buttons">
+                <a href="#" class="easyui-linkbutton">操作人确认</a>
+                <a href="#" class="easyui-linkbutton">复核人确认</a>
+                <a href="#" class="easyui-linkbutton">QA确认</a>
+                <a href="#" class="easyui-linkbutton">刷新</a>
+            </div>
+        </div>
         <div id="tab" class="easyui-tabs" style="width:100%;height:250px;">
             <div title="批次任务明细" data-options="closable:false"  style="padding:0px;display:none;">
                 <table id="ttTasks" class="easyui-datagrid" style="width:100%;"  data-options="url:

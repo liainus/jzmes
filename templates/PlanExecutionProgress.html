@@ -62,11 +62,35 @@
             cursor: pointer;
         }
         .host-line{
+            position: relative;
             float: left;
             width: 50px;
             height: 2px;
             margin-top: 15px;
             background-color: #9F9F9F;
+            z-index: 3;
+        }
+        .host-arrow{
+            position: relative;
+        }
+        .host-arrow:after,.host-arrow:before{
+            width: 0;
+            height: 0;
+            border: 10px solid transparent;
+            border-left-color: #9f9f9f;
+            position: absolute;
+            content: "";
+            top: 6px;
+            left:120px;
+        }
+        .host-arrow:before{
+            top: 6px;
+            left: 117px;
+            border-left-color: white;
+            z-index: 2;
+        }
+        .ball-active.host-arrow:after,.ball-active.host-arrow:before{
+            border-color: #5cb85c;
         }
         .childBox{
             width:130px;
@@ -216,18 +240,22 @@
                         <div class="host-progress bigPlan1">
                             <div class="host-ball handlePlan" skip-src="/createPlanWizard">新增计划</div>
                             <div class="host-line"></div>
+                            <div class="host-arrow"></div>
                         </div>
                         <div class="host-progress bigPlan2">
                             <div class="host-ball handlePlan" skip-src="/ZYPlanGuid/checkplanmanager">审核计划</div>
                             <div class="host-line"></div>
+                            <div class="host-arrow"></div>
                         </div>
                         <div class="host-progress bigPlan3">
                             <div class="host-ball handlePlan" skip-src="/ZYPlanGuid/planmanager">下发计划</div>
                             <div class="host-line"></div>
+                            <div class="host-arrow"></div>
                         </div>
                         <div class="host-progress bigPlan4">
                             <div class="host-ball">备料</div>
                             <div class="host-line"></div>
+                            <div class="host-arrow"></div>
                             <div class="childBox">
                                 <div class="childNode">
                                     <div class="progress-line"></div>
@@ -261,6 +289,7 @@
                         <div class="host-progress bigPlan5">
                             <div class="host-ball">煎煮</div>
                             <div class="host-line"></div>
+                            <div class="host-arrow"></div>
                             <div class="childBox">
                                 <div class="childNode">
                                     <div class="progress-line"></div>
@@ -303,6 +332,7 @@
                         <div class="host-progress bigPlan6">
                             <div class="host-ball">浓缩</div>
                             <div class="host-line"></div>
+                            <div class="host-arrow"></div>
                             <div class="childBox">
                                 <div class="childNode">
                                     <div class="progress-line"></div>
@@ -354,6 +384,7 @@
                         <div class="host-progress bigPlan7">
                             <div class="host-ball">喷雾干燥</div>
                             <div class="host-line"></div>
+                            <div class="host-arrow"></div>
                             <div class="childBox">
                                 <div class="childNode">
                                     <div class="progress-line"></div>
@@ -396,6 +427,7 @@
                         <div class="host-progress bigPlan8">
                             <div class="host-ball">收粉</div>
                             <div class="host-line"></div>
+                            <div class="host-arrow"></div>
                             <div class="childBox">
                                 <div class="childNode">
                                     <div class="progress-line"></div>
