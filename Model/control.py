@@ -17,6 +17,7 @@ from sqlalchemy.orm import sessionmaker, relationship
 from werkzeug.security import generate_password_hash, check_password_hash
 import Model.Global
 import Model.core
+import Model.node
 from tools.MESLogger import MESLogger
 from Model.system import User,Role,Menu
 
@@ -415,7 +416,7 @@ class ctrlPlan:
             logger.error(e)
             return  bReturn
 
-    def createLinePlanManager(self, AProductRuleID, APlanWeight,APlanDate,ABatchID,ABrandID,ABrandName,PLineName,AUnit,userID):
+    def createLinePlanManager(self, AProductRuleID, APlanWeight,APlanDate,ABatchID,ABrandID,ABrandName,PLineName,AUnit,userName):
         bReturn = True
         bIsExist = True
         iPlanSeq = 0
@@ -448,25 +449,49 @@ class ctrlPlan:
 
             PlanManageID = session.query(Model.core.PlanManager.ID).filter_by(BatchID=ABatchID).first()
             PlanManageID = PlanManageID[0]
-            userID = userID
-            Desc = "计划向导生成计划planmanager"
-            Type = Model.Global.AuditStatus.Unaudited.value
-            bReturn = self.createWorkFlowEventPlan(PlanManageID,userID,Desc,Type)
-            if bReturn == False:
-                return False
-
-            PlanManageID = PlanManageID
-            AuditStatus = Model.Global.AuditStatus.Unaudited.value
-            DescF = "计划向导生成计划planmanager"
-            bReturn = self.createWorkFlowStatus(PlanManageID, None, None, AuditStatus, DescF)
-            if bReturn == False:
-                return False
+            if (ABrandName == "健胃消食片浸膏粉"):
+                bReturn = self.createOdd(PlanManageID)
+                if bReturn == False:
+                    return False
+                flowPathNames = session.query(Model.node.Odd.flowPathName).filter(Model.node.Odd.oddNum==PlanManageID).all()
+                for name in flowPathNames:
+                    names = session.query(Model.node.Procedure.nodeName).filter(Model.node.Procedure.flowPathName == name).all()
+                    for na in names:
+                        bReturn = self.createNodeCollection(PlanManageID, na, userName)
+                        if bReturn == False:
+                            return False
+            # Desc = "计划向导生成计划planmanager"
+            # Type = Model.Global.AuditStatus.Unaudited.value
+            # bReturn = self.createWorkFlowEventPlan(PlanManageID,userID,Desc,Type)
+            # if bReturn == False:
+            #     return False
+            #
+            # PlanManageID = PlanManageID
+            # AuditStatus = Model.Global.AuditStatus.Unaudited.value
+            # DescF = "计划向导生成计划planmanager"
+            # bReturn = self.createWorkFlowStatus(PlanManageID, None, None, AuditStatus, DescF)
+            # if bReturn == False:
+            #     return False
             return True
         except Exception as e:
             session.rollback()
             print(e)
             logger.error(e)
             return bReturn
+    def createNodeCollection(self,APlanManageID,name,userName):
+        bReturn = True
+        try:
+            session.add(Model.node.NodeCollection(
+                name=name,
+                oddNum=APlanManageID,
+                oddUser=userName))
+            session.commit()
+            return bReturn
+        except Exception as e:
+            session.rollback()
+            print(e)
+            logger.error(e)
+            return False
 
     def createZYPlanZYTask(self, ID):
         bReturn = True
@@ -640,6 +665,60 @@ class ctrlPlan:
 
     def createWorkFlowEven(self, PlanManageID, ID, param, userName, Desc, Type, EventTime):
         pass
+
+    def sessionadd(self,APlanManageID,flowPathName):
+        bReturn = True
+        try:
+            session.add(Model.node.Odd(
+                oddNum=APlanManageID,
+                flowPathName=flowPathName))
+            session.commit()
+            return bReturn
+        except Exception as e:
+            session.rollback()
+            print(e)
+            logger.error(e)
+            return False
+    def createOdd(self,APlanManageID):
+        A = Model.node.flowPathNameJWXSP.A.value
+        re = self.sessionadd(APlanManageID, A)
+        B = Model.node.flowPathNameJWXSP.B.value
+        re = self.sessionadd(APlanManageID, B)
+        C = Model.node.flowPathNameJWXSP.C.value
+        re = self.sessionadd(APlanManageID, C)
+        D = Model.node.flowPathNameJWXSP.D.value
+        re = self.sessionadd(APlanManageID, D)
+        E = Model.node.flowPathNameJWXSP.E.value
+        re = self.sessionadd(APlanManageID, E)
+        F = Model.node.flowPathNameJWXSP.F.value
+        re = self.sessionadd(APlanManageID, F)
+        G = Model.node.flowPathNameJWXSP.G.value
+        re = self.sessionadd(APlanManageID, G)
+        H = Model.node.flowPathNameJWXSP.H.value
+        re = self.sessionadd(APlanManageID, H)
+        I = Model.node.flowPathNameJWXSP.I.value
+        re = self.sessionadd(APlanManageID, I)
+        J = Model.node.flowPathNameJWXSP.J.value
+        re = self.sessionadd(APlanManageID, J)
+        K = Model.node.flowPathName.K.value
+        re = self.sessionadd(APlanManageID, K)
+        L = Model.node.flowPathNameJWXSP.L.value
+        re = self.sessionadd(APlanManageID, L)
+        M = Model.node.flowPathNameJWXSP.M.value
+        re = self.sessionadd(APlanManageID, M)
+        N = Model.node.flowPathNameJWXSP.N.value
+        re = self.sessionadd(APlanManageID, N)
+        O = Model.node.flowPathNameJWXSP.O.value
+        re = self.sessionadd(APlanManageID, O)
+        P = Model.node.flowPathNameJWXSP.P.value
+        re = self.sessionadd(APlanManageID, P)
+        Q = Model.node.flowPathNameJWXSP.Q.value
+        re = self.sessionadd(APlanManageID, Q)
+        R = Model.node.flowPathNameJWXSP.R.value
+        re = self.sessionadd(APlanManageID, R)
+        S = Model.node.flowPathNameJWXSP.S.value
+        re = self.sessionadd(APlanManageID, S)
+        return re
 
 
 # class SystemCtrol:

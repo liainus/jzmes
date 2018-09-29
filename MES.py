@@ -38,6 +38,8 @@ from flask.ext.login import login_required, logout_user, login_user
 import socket
 from opcua import Client
 from Model.dynamic_model import make_dynamic_classes
+import Model.node
+
 #flask_login的初始化
 login_manager = LoginManager()
 login_manager.db_session_protection = 'strong'
@@ -3876,9 +3878,9 @@ def makePlan():
                 PLineName = data['PLineName']#生产线名字
                 AUnit = data['AUnit']#d单位
                 PlanCreate = ctrlPlan('PlanCreate')
-                userID = ""
+                userName = current_user.Name
                 ABrandID = AProductRuleID
-                re = PlanCreate.createLinePlanManager(AProductRuleID, APlanWeight, APlanDate, ABatchID, ABrandID, ABrandName, PLineName, AUnit,userID)
+                re = PlanCreate.createLinePlanManager(AProductRuleID, APlanWeight, APlanDate, ABatchID, ABrandID, ABrandName, PLineName, AUnit, userName)
                 re = json.dumps(re)
                 return re
         except Exception as e:
@@ -3901,17 +3903,20 @@ def checkPlanManager():
                     try:
                         oclassplan = db_session.query(PlanManager).filter_by(ID=id).first()
                         oclassplan.PlanStatus = Model.Global.PlanStatus.Checked.value
-                        oclassW = db_session.query(WorkFlowStatus).filter_by(PlanManageID=id).first()
-                        oclassW.AuditStatus = Model.Global.AuditStatus.Checked.value
-                        oclassW.DescF = "生产管理部审核计划"
-                        db_session.commit()
                         userName = current_user.Name
-                        Desc = "生产管理部审核计划"
-                        Type = Model.Global.Type.NEW.value
-                        PlanCreate = ctrlPlan('PlanCreate')
-                        wReturn = PlanCreate.createWorkFlowEventPlan(id, userName, Desc, Type)
-                        if (wReturn == False):
-                            return 'NO'
+                        oclassNodeColl = db_session.query(Model.node.NodeCollection).filter_by(oddNum=id, name=Model.node.flowPathNameJWXSP.A.value).first()
+                        oclassNodeColl.status = Model.node.NodeStatus.PASSED.value
+                        oclassNodeColl.oddUser = userName
+                        oclassNodeColl.opertionTime = datetime.datetime.now()
+                        oclassNodeColl.seq = 1
+                        db_session.commit()
+                        # oclassW = db_session.query(WorkFlowStatus).filter_by(PlanManageID=id).first()
+                        # oclassW.AuditStatus = Model.Global.AuditStatus.Checked.value
+                        # oclassW.DescF = "生产管理部审核计划"
+                        # Desc = "生产管理部审核计划"
+                        # Type = Model.Global.Type.NEW.value
+                        # PlanCreate = ctrlPlan('PlanCreate')
+                        # wReturn = PlanCreate.createWorkFlowEventPlan(id, userName, Desc, Type)
                     except Exception as ee:
                         db_session.rollback()
                         print(ee)
@@ -3945,31 +3950,20 @@ def createZYPlanZYtask():
                             return 'NO'
                         oclassplan = db_session.query(PlanManager).filter_by(ID=id).first()
                         oclassplan.PlanStatus = Model.Global.PlanStatus.Realse.value
-                        oclassW = db_session.query(WorkFlowStatus).filter_by(PlanManageID=id).all()
-                        for oc in oclassW:
-                            oc.AuditStatus = Model.Global.AuditStatus.Realse.value
-                            oc.DescF = "下发计划生成ZY计划、任务"
                         oclassZYPlans = db_session.query(ZYPlan).filter(ZYPlan.BatchID == oclassplan.BatchID).all()
                         for zyp in oclassZYPlans:
                             zyp.ZYPlanStatus = Model.Global.ZYPlanStatus.Realse.value
-                            userName = current_user.Name
-                            Desc = "生成ZY计划"
-                            Type = Model.Global.Type.NEW.value
-                            PlanCreate = ctrlPlan('PlanCreate')
-                            wReturn = PlanCreate.createWorkFlowEventZYPlan(zyp.ID, userName, Desc, Type)
-                            if (wReturn == False):
-                                return 'NO'
                         oclassZYTasks = db_session.query(ZYTask).filter(ZYTask.BatchID == oclassplan.BatchID).all()
                         for task in oclassZYTasks:
                             task.TaskStatus = Model.Global.TASKSTATUS.Realse.value
-                        db_session.commit()
                         userName = current_user.Name
-                        Desc = "下发计划生成ZY计划、任务"
-                        Type = Model.Global.Type.Realse.value
-                        PlanCreate = ctrlPlan('PlanCreate')
-                        wReturn = PlanCreate.createWorkFlowEventPlan(id, userName, Desc, Type)
-                        if (wReturn == False):
-                            return 'NO'
+                        oclassNodeColl = db_session.query(Model.node.NodeCollection).filter_by(oddNum=id,
+                                                                                               name=Model.node.flowPathNameJWXSP.B.value).first()
+                        oclassNodeColl.status = Model.node.NodeStatus.PASSED.value
+                        oclassNodeColl.oddUser = userName
+                        oclassNodeColl.opertionTime = datetime.datetime.now()
+                        oclassNodeColl.seq = 2
+                        db_session.commit()
                     except Exception as ee:
                         db_session.rollback()
                         print(ee)
@@ -4038,21 +4032,20 @@ def RecallPlan():
                                 insertSyslog("error", "删除批次任务信息报错Error" + string(ee), current_user.Name)
                                 return json.dumps([{"status": "Error:" + str(ee)}], cls=AlchemyEncoder, ensure_ascii=False)
                         planM.PlanStatus = Model.Global.PlanStatus.Recall.value
-                        oclassW = db_session.query(WorkFlowStatus).filter_by(PlanManageID=id).all()
-                        for oc in oclassW:
-                            if(oc.ZYPlanID != None):
-                                db_session.delete(oc)
-                            else:
-                                oc.AuditStatus = Model.Global.AuditStatus.Unaudited.value
-                                oc.DescF = "计划撤回，删除ZYplan，ZYtask"
-                        db_session.commit()
                         userName = current_user.Name
-                        Desc = "计划撤回，删除ZYplan，ZYtask"
-                        Type = Model.Global.Type.Recall.value
-                        PlanCreate = ctrlPlan('PlanCreate')
-                        wReturn = PlanCreate.createWorkFlowEventPlan(planM.ID, userName, Desc, Type)
-                        if (wReturn == False):
-                            return 'NO'
+                        oclassNodeColl = db_session.query(Model.node.NodeCollection).filter_by(oddNum=id,
+                                                                                               name=Model.node.flowPathNameJWXSP.B.value).first()
+                        oclassNodeColl.status = Model.node.NodeStatus.NOTEXE.value
+                        oclassNodeColl.oddUser = userName
+                        oclassNodeColl.opertionTime = datetime.datetime.now()
+                        oclassNodeColl.seq = 0
+                        oclassNodeCollA = db_session.query(Model.node.NodeCollection).filter_by(oddNum=id,
+                                                                                               name=Model.node.flowPathNameJWXSP.A.value).first()
+                        oclassNodeCollA.status = Model.node.NodeStatus.NOTEXE.value
+                        oclassNodeCollA.oddUser = userName
+                        oclassNodeCollA.opertionTime = datetime.datetime.now()
+                        oclassNodeCollA.seq = 0
+                        db_session.commit()
                         return 'OK'
                     except Exception as e:
                         db_session.rollback()
@@ -5193,6 +5186,7 @@ def NodeIdNoteSearch():
             logger.error(e)
             insertSyslog("error", "NodeIdNote数据查询失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
