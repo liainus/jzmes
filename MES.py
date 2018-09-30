@@ -6,6 +6,8 @@ import re
 import string
 import time
 from collections import Counter
+
+import xlwt
 from flask import Flask, jsonify, redirect, url_for, flash
 import xlrd
 from flask import Flask, jsonify, redirect, url_for
@@ -5055,6 +5057,9 @@ def nodeIdNote():
         return render_template('nodeIDNote.html')
     if request.method == 'POST':
         try:
+            nodes = [] # 收集为匹配的变量
+            x = 0 # Excel横坐标
+            y = 0 # Excel纵坐标
             file = request.files.get('note')
             if file is None or file == '':
                 return
@@ -5064,11 +5069,12 @@ def nodeIdNote():
             for index in data:
                 if index[1].lower() == 'note': #去表头
                     continue
-                elements = ('ns=1;s=t|', 'ns=1;s=h|')
+                elements = ('ns=1;s=t|', 'ns=1;s=f|')
                 for element in elements:  #将注释Note插入OpcTag中
                     nodeId = element + index[0]
                     opcTag = db_session.query(OpcTag.NodeID).filter_by(NodeID=nodeId).first()
                     if opcTag is None:
+                        nodes.append(index)
                         continue
                     opcTag.Note = index[1]
                     db_session.add(opcTag)
@@ -5086,6 +5092,15 @@ def nodeIdNote():
                             db_session.commit()
                         except:
                             db_session.rollback()
+            # 将未匹配注释的变量生成一个新的Excel
+            workbook = xlwt.Workbook(encoding='utf-8', style_compression=0)
+            sheet = workbook.add_sheet('note', cell_overwrite_ok=True)
+            sheet.write(x, y, 'NodeID')
+            for node in nodes:
+                x += 1
+                sheet.write(x, y, node)
+            path = r'C:\Users\maomao\Desktop\test1.xls'
+            workbook.save(path)
             return redirect(url_for('nodeIdNote'))
         except Exception as e:
             print(e)
