@@ -207,7 +207,6 @@
             $('#currentWorkdate').datebox('setValue', getCurentDateStr());
             //选择工作日更新计划
             var today = $('#currentWorkdate').datebox('getValue')
-            console.log(today)
             var selectPUID = ""
             $('#currentWorkdate').datebox('calendar').calendar({
                 validator: function (date) {
