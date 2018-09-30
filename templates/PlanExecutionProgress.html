@@ -62,20 +62,41 @@
             cursor: pointer;
         }
         .host-line{
+            position: relative;
             float: left;
             width: 50px;
             height: 2px;
             margin-top: 15px;
             background-color: #9F9F9F;
+            z-index: 3;
+        }
+        .host-arrow{
+            position: relative;
+        }
+        .host-arrow:after,.host-arrow:before{
+            width: 0;
+            height: 0;
+            border: 10px solid transparent;
+            border-left-color: #9f9f9f;
+            position: absolute;
+            content: "";
+            top: 6px;
+            left:120px;
+        }
+        .host-arrow:before{
+            top: 6px;
+            left: 117px;
+            border-left-color: white;
+            z-index: 2;
+        }
+        .ball-active.host-arrow:after,.ball-active.host-arrow:before{
+            border-color: #5cb85c;
         }
         .childBox{
             width:130px;
         }
         .childNode{
             margin-left: 10px;
-        }
-        .childNode .progress-line{
-            height:50px;
         }
 
         /*纵向时间轴*/
@@ -87,10 +108,10 @@
             background-color: #9f9f9f;
         }
         .progress-line{
-            width: 2px;
-            height: 80px;
+            width: 0px;
+            height: 50px;
             margin-left: 30px;
-            background-color: #9F9F9F;
+            border-left: 1px dashed #9f9f9f;
         }
         .detail{
             margin-left: 40px;
@@ -114,6 +135,10 @@
     </style>
     <script>
         $(function(){
+            //选项卡样式
+            $(".nav-tabs li").on("click",function(){
+                $(this).addClass("active").siblings().removeClass("active")
+            })
             function createKeyIDObj(keyID){
                 return {
                     ID:keyID
@@ -211,6 +236,286 @@
             </ul>
             <div class="tab-content tabs">
                 <div role="tabpanel" class="tab-pane fade show active" id="Section1">
+                    <div class="progress-head">
+                        <div class="host-progress bigPlan1">
+                            <div class="host-ball handlePlan" skip-src="/createPlanWizard">新增计划</div>
+                            <div class="host-line"></div>
+                            <div class="host-arrow"></div>
+                        </div>
+                        <div class="host-progress bigPlan2">
+                            <div class="host-ball handlePlan" skip-src="/ZYPlanGuid/checkplanmanager">审核计划</div>
+                            <div class="host-line"></div>
+                            <div class="host-arrow"></div>
+                        </div>
+                        <div class="host-progress bigPlan3">
+                            <div class="host-ball handlePlan" skip-src="/ZYPlanGuid/planmanager">下发计划</div>
+                            <div class="host-line"></div>
+                            <div class="host-arrow"></div>
+                        </div>
+                        <div class="host-progress bigPlan4">
+                            <div class="host-ball">备料</div>
+                            <div class="host-line"></div>
+                            <div class="host-arrow"></div>
+                            <div class="childBox">
+                                <div class="childNode">
+                                    <div class="progress-line"></div>
+                                    <div class="ball"></div>
+                                    <div class="detail">
+                                        <div class="flow-detail">
+                                            生产前的准备
+                                        </div>
+                                    </div>
+                                    <div class="progress-line"></div>
+                                </div>
+                                <div class="childNode">
+                                    <div class="ball"></div>
+                                    <div class="detail">
+                                        <div class="flow-detail">
+                                            备料开始
+                                        </div>
+                                    </div>
+                                    <div class="progress-line"></div>
+                                </div>
+                                <div class="childNode">
+                                    <div class="ball"></div>
+                                    <div class="detail">
+                                        <div class="flow-detail">
+                                            备料结束清场
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="host-progress bigPlan5">
+                            <div class="host-ball">煎煮</div>
+                            <div class="host-line"></div>
+                            <div class="host-arrow"></div>
+                            <div class="childBox">
+                                <div class="childNode">
+                                    <div class="progress-line"></div>
+                                    <div class="ball"></div>
+                                    <div class="detail">
+                                        <div class="flow-detail">
+                                            生产前的准备
+                                        </div>
+                                    </div>
+                                    <div class="progress-line"></div>
+                                </div>
+                                <div class="childNode">
+                                    <div class="ball"></div>
+                                    <div class="detail">
+                                        <div class="flow-detail">
+                                            煎煮开始
+                                        </div>
+                                    </div>
+                                    <div class="progress-line"></div>
+                                </div>
+                                <div class="childNode">
+                                    <div class="ball"></div>
+                                    <div class="detail">
+                                        <div class="flow-detail">
+                                            静置开始
+                                        </div>
+                                    </div>
+                                    <div class="progress-line"></div>
+                                </div>
+                                <div class="childNode">
+                                    <div class="ball"></div>
+                                    <div class="detail">
+                                        <div class="flow-detail">
+                                            煎煮结束清场
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="host-progress bigPlan6">
+                            <div class="host-ball">浓缩</div>
+                            <div class="host-line"></div>
+                            <div class="host-arrow"></div>
+                            <div class="childBox">
+                                <div class="childNode">
+                                    <div class="progress-line"></div>
+                                    <div class="ball"></div>
+                                    <div class="detail">
+                                        <div class="flow-detail">
+                                            生产前的准备
+                                        </div>
+                                    </div>
+                                    <div class="progress-line"></div>
+                                </div>
+                                <div class="childNode">
+                                    <div class="ball"></div>
+                                    <div class="detail">
+                                        <div class="flow-detail">
+                                            浓缩开始
+                                        </div>
+                                    </div>
+                                    <div class="progress-line"></div>
+                                </div>
+                                <div class="childNode">
+                                    <div class="ball"></div>
+                                    <div class="detail">
+                                        <div class="flow-detail">
+                                            参数控制
+                                        </div>
+                                    </div>
+                                    <div class="progress-line"></div>
+                                </div>
+                                <div class="childNode">
+                                    <div class="ball"></div>
+                                    <div class="detail">
+                                        <div class="flow-detail">
+                                            质量控制
+                                        </div>
+                                    </div>
+                                    <div class="progress-line"></div>
+                                </div>
+                                <div class="childNode">
+                                    <div class="ball"></div>
+                                    <div class="detail">
+                                        <div class="flow-detail">
+                                            浓缩结束清场
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="host-progress bigPlan7">
+                            <div class="host-ball">喷雾干燥</div>
+                            <div class="host-line"></div>
+                            <div class="host-arrow"></div>
+                            <div class="childBox">
+                                <div class="childNode">
+                                    <div class="progress-line"></div>
+                                    <div class="ball"></div>
+                                    <div class="detail">
+                                        <div class="flow-detail">
+                                            生产前的准备
+                                        </div>
+                                    </div>
+                                    <div class="progress-line"></div>
+                                </div>
+                                <div class="childNode">
+                                    <div class="ball"></div>
+                                    <div class="detail">
+                                        <div class="flow-detail">
+                                            喷雾干燥开始
+                                        </div>
+                                    </div>
+                                    <div class="progress-line"></div>
+                                </div>
+                                <div class="childNode">
+                                    <div class="ball"></div>
+                                    <div class="detail">
+                                        <div class="flow-detail">
+                                            参数控制
+                                        </div>
+                                    </div>
+                                    <div class="progress-line"></div>
+                                </div>
+                                <div class="childNode">
+                                    <div class="ball"></div>
+                                    <div class="detail">
+                                        <div class="flow-detail">
+                                            喷雾干燥结束清场
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="host-progress bigPlan8">
+                            <div class="host-ball">收粉</div>
+                            <div class="host-line"></div>
+                            <div class="host-arrow"></div>
+                            <div class="childBox">
+                                <div class="childNode">
+                                    <div class="progress-line"></div>
+                                    <div class="ball"></div>
+                                    <div class="detail">
+                                        <div class="flow-detail">
+                                            生产前的准备
+                                        </div>
+                                    </div>
+                                    <div class="progress-line"></div>
+                                </div>
+                                <div class="childNode">
+                                    <div class="ball"></div>
+                                    <div class="detail">
+                                        <div class="flow-detail">
+                                            收粉开始
+                                        </div>
+                                    </div>
+                                    <div class="progress-line"></div>
+                                </div>
+                                <div class="childNode">
+                                    <div class="ball"></div>
+                                    <div class="detail">
+                                        <div class="flow-detail">
+                                            质量控制
+                                        </div>
+                                    </div>
+                                    <div class="progress-line"></div>
+                                </div>
+                                <div class="childNode">
+                                    <div class="ball"></div>
+                                    <div class="detail">
+                                        <div class="flow-detail">
+                                            收粉结束统计
+                                        </div>
+                                    </div>
+                                    <div class="progress-line"></div>
+                                </div>
+                                <div class="childNode">
+                                    <div class="ball"></div>
+                                    <div class="detail">
+                                        <div class="flow-detail">
+                                            收粉结束清场
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="host-progress bigPlan9">
+                            <div class="host-ball handlePlan" skip-src="/QAauthPass">QA放行</div>
+                        </div>
+                    </div>
+                    <div id="Toolbar" style="padding:0 10px;">
+                        批次号:
+                        <input type="text" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
+                            placeholder="">
+                        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="CollectToolbar.search();">查询</a>
+                        <a href="#" class="easyui-linkbutton" id="reload" data-options="iconCls:'icon-reload'" onclick="CollectToolbar.refresh();">刷新</a>
+                    </div>
+                    <table class="easyui-datagrid" id="tab" title="健胃消食片制药计划列表" style="width:100%;" data-options="
+                        queryParams: {
+                            BatchID: '',
+                        },
+                        rownumbers:true,
+                        singleSelect:true,
+                        autoRowHeight:false,
+                        pagination:true,
+                        pageSize:10,
+                        toolbar:'#Toolbar',
+                        url:'/allPlanManagers/Search',
+                        method:'post'">
+                        <thead>
+                            <tr>
+                                <th field="ck" checkbox="true"></th>
+                                <th data-options="field:'PlanStatus',width:150,align:'center'" formatter="formatterStatus">计划状态</th>
+                                <th data-options="field:'SchedulePlanCode',width:200,align:'center'">调度编号</th>
+                                <th data-options="field:'BatchID',width:200,align:'center'">批次号</th>
+                                <th data-options="field:'PlanQuantity',width:100,align:'center'">计划重量</th>
+                                <th data-options="field:'BrandName',width:150,align:'center'">品名</th>
+                                <th data-options="field:'Unit',width:100,align:'center'">单位</th>
+                                <th data-options="field:'PlanBeginTime',width:200,align:'center'">计划开始时间</th>
+                                <th data-options="field:'PlanEndTime',width:200,align:'center'">计划完成时间</th>
+                                <th data-options="field:'Type',width:100,align:'center'">调度类型</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+                <div role="tabpanel" class="tab-pane fade" id="Section2">
                     <div class="progress-head">
                         <div class="host-progress bigPlan1">
                             <div class="host-ball handlePlan" skip-src="/createPlanWizard">新增计划</div>
@@ -351,7 +656,7 @@
                             </div>
                         </div>
                         <div class="host-progress bigPlan7">
-                            <div class="host-ball">喷雾干燥</div>
+                            <div class="host-ball">醇沉</div>
                             <div class="host-line"></div>
                             <div class="childBox">
                                 <div class="childNode">
@@ -368,7 +673,49 @@
                                     <div class="ball"></div>
                                     <div class="detail">
                                         <div class="flow-detail">
-                                            喷雾干燥开始
+                                            领取物料
+                                        </div>
+                                    </div>
+                                    <div class="progress-line"></div>
+                                </div>
+                                <div class="childNode">
+                                    <div class="ball"></div>
+                                    <div class="detail">
+                                        <div class="flow-detail">
+                                            醇沉开始
+                                        </div>
+                                    </div>
+                                    <div class="progress-line"></div>
+                                </div>
+                                <div class="childNode">
+                                    <div class="ball"></div>
+                                    <div class="detail">
+                                        <div class="flow-detail">
+                                            醇沉结束清场
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="host-progress bigPlan8">
+                            <div class="host-ball">单效浓缩</div>
+                            <div class="host-line"></div>
+                            <div class="childBox">
+                                <div class="childNode">
+                                    <div class="progress-line"></div>
+                                    <div class="ball"></div>
+                                    <div class="detail">
+                                        <div class="flow-detail">
+                                            生产前的准备
+                                        </div>
+                                    </div>
+                                    <div class="progress-line"></div>
+                                </div>
+                                <div class="childNode">
+                                    <div class="ball"></div>
+                                    <div class="detail">
+                                        <div class="flow-detail">
+                                            单效浓缩开始
                                         </div>
                                     </div>
                                     <div class="progress-line"></div>
@@ -386,14 +733,23 @@
                                     <div class="ball"></div>
                                     <div class="detail">
                                         <div class="flow-detail">
-                                            喷雾干燥结束清场
+                                            质量控制
+                                        </div>
+                                    </div>
+                                    <div class="progress-line"></div>
+                                </div>
+                                <div class="childNode">
+                                    <div class="ball"></div>
+                                    <div class="detail">
+                                        <div class="flow-detail">
+                                            单效浓缩结束清场
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="host-progress bigPlan8">
-                            <div class="host-ball">收粉</div>
+                        <div class="host-progress bigPlan9">
+                            <div class="host-ball">收膏</div>
                             <div class="host-line"></div>
                             <div class="childBox">
                                 <div class="childNode">
@@ -410,7 +766,7 @@
                                     <div class="ball"></div>
                                     <div class="detail">
                                         <div class="flow-detail">
-                                            收粉开始
+                                            收膏开始
                                         </div>
                                     </div>
                                     <div class="progress-line"></div>
@@ -419,7 +775,7 @@
                                     <div class="ball"></div>
                                     <div class="detail">
                                         <div class="flow-detail">
-                                            质量控制
+                                            收膏结束统计
                                         </div>
                                     </div>
                                     <div class="progress-line"></div>
@@ -428,62 +784,16 @@
                                     <div class="ball"></div>
                                     <div class="detail">
                                         <div class="flow-detail">
-                                            收粉结束统计
-                                        </div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">
-                                            收粉结束清场
+                                            收膏结束清场
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="host-progress bigPlan9">
+                        <div class="host-progress bigPlan10">
                             <div class="host-ball handlePlan" skip-src="/QAauthPass">QA放行</div>
                         </div>
                     </div>
-                    <div id="Toolbar" style="padding:0 10px;">
-                        批次号:
-                        <input type="text" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
-                            placeholder="">
-                        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="CollectToolbar.search();">查询</a>
-                        <a href="#" class="easyui-linkbutton" id="reload" data-options="iconCls:'icon-reload'" onclick="CollectToolbar.refresh();">刷新</a>
-                    </div>
-                    <table class="easyui-datagrid" id="tab" title="健胃消食片制药计划列表" style="width:100%;" data-options="
-                        queryParams: {
-                            BatchID: '',
-                        },
-                        rownumbers:true,
-                        singleSelect:true,
-                        autoRowHeight:false,
-                        pagination:true,
-                        pageSize:10,
-                        toolbar:'#Toolbar',
-                        url:'/allPlanManagers/Search',
-                        method:'post'">
-                        <thead>
-                            <tr>
-                                <th field="ck" checkbox="true"></th>
-                                <th data-options="field:'PlanStatus',width:150,align:'center'" formatter="formatterStatus">计划状态</th>
-                                <th data-options="field:'SchedulePlanCode',width:200,align:'center'">调度编号</th>
-                                <th data-options="field:'BatchID',width:200,align:'center'">批次号</th>
-                                <th data-options="field:'PlanQuantity',width:100,align:'center'">计划重量</th>
-                                <th data-options="field:'BrandName',width:150,align:'center'">品名</th>
-                                <th data-options="field:'Unit',width:100,align:'center'">单位</th>
-                                <th data-options="field:'PlanBeginTime',width:200,align:'center'">计划开始时间</th>
-                                <th data-options="field:'PlanEndTime',width:200,align:'center'">计划完成时间</th>
-                                <th data-options="field:'Type',width:100,align:'center'">调度类型</th>
-                            </tr>
-                        </thead>
-                    </table>
-                </div>
-                <div role="tabpanel" class="tab-pane fade" id="Section2">
-
                     <div id="cToolbar" style="padding:0 10px;">
                         批次号:
                         <input type="text" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
