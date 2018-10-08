@@ -4939,23 +4939,50 @@ def operateConfirm():
         try:
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 10:
-                pages = int(data['page'])  # 页数
-                rowsnumber = int(data['rows'])  # 行数
-                inipage = (pages - 1) * rowsnumber + 0  # 起始页
-                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
                 ID = data['ID']#计划ID
-                PName = data['PName']
-                PUName = data['PUName']
+                PName = data['PName']#计划名称
+                PUName = data['PUName']#计划明细名称
+                planM = db_session.query(PlanManager).filter(PlanManager.ID == ID).first()
+                BrandName = planM.BrandName
                 if(PName == "备料"):
-                    if(PUName == "生产前准备"):
-                        node = db_session.query(Model.node.NodeCollection).filter(Model.node.NodeCollection.oddNum == ID, Model.node.NodeCollection.name == '（备料段）生产前准备（操作人）')
+                    if (PUName == "生产前的准备"):
+                        node = db_session.query(Model.node.NodeCollection).filter(Model.node.NodeCollection.oddNum == ID, Model.node.NodeCollection.name == '（备料段）生产前准备（操作人）').first()
                         node.status = Model.node.NodeCollection.doPass()
-                        db_session.commit()
+                    if (PUName == "备料开始"):
+                        node = db_session.query(Model.node.NodeCollection).filter(
+                            Model.node.NodeCollection.oddNum == ID, Model.node.NodeCollection.name == '备料操作按SOP执行（操作人）').first()
+                        node.status = Model.node.NodeCollection.doPass()
+                    if (PUName == "备料结束清场"):
+                        node = db_session.query(Model.node.NodeCollection).filter(
+                            Model.node.NodeCollection.oddNum == ID, Model.node.NodeCollection.name == '（备料段）生产结束清场（操作人）').first()
+                        node.status = Model.node.NodeCollection.doPass()
+                if (PName == "煎煮"):
+                    if (PUName == "生产前的准备"):
+                        node = db_session.query(Model.node.NodeCollection).filter(
+                            Model.node.NodeCollection.oddNum == ID,
+                            Model.node.NodeCollection.name == '（煎煮段）生产前准备（操作人）').first()
+                        node.status = Model.node.NodeCollection.doPass()
+                    if (PUName == "煎煮开始"):
+                        node = db_session.query(Model.node.NodeCollection).filter(
+                            Model.node.NodeCollection.oddNum == ID,
+                            Model.node.NodeCollection.name == '煎煮开始，操作按SOP执行（操作人）').first()
+                        node.status = Model.node.NodeCollection.doPass()
+                    if (PUName == "静置开始"):
+                        node = db_session.query(Model.node.NodeCollection).filter(
+                            Model.node.NodeCollection.oddNum == ID,
+                            Model.node.NodeCollection.name == '静置开始，操作按SOP执行（操作人）').first()
+                        node.status = Model.node.NodeCollection.doPass()
+                    if (PUName == "煎煮结束清场"):
+                        node = db_session.query(Model.node.NodeCollection).filter(
+                            Model.node.NodeCollection.oddNum == ID,
+                            Model.node.NodeCollection.name == '（煎煮段）生产结束清场（操作人）').first()
+                        node.status = Model.node.NodeCollection.doPass()
+                db_session.commit()
                 return "操作人确认成功！"
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "QA复核查询报错Error：" + str(e), current_user.Name)
+            insertSyslog("error", "操作人确认报错Error：" + str(e), current_user.Name)
 
 
 
