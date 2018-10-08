@@ -163,6 +163,20 @@
             $("#tab").datagrid({
                 onLoadSuccess:function(data){
                     $(this).datagrid("selectRow", 0);
+                    var rows = $("#tab").datagrid('getSelections');
+                    $(".host-progress").find(".host-ball").removeClass("ball-active ball-stay").siblings(".host-line").removeClass("ball-active")
+                    if(rows[0].PlanStatus == "10"){
+                        $(".bigPlan1").find(".host-ball").addClass("ball-active").siblings(".host-line").addClass("ball-active")
+                        $(".bigPlan2").find(".host-ball").addClass("ball-stay")
+                    }else if(rows[0].PlanStatus == "11"){
+                        $(".bigPlan1,.bigPlan2").find(".host-ball").addClass("ball-active").siblings(".host-line").addClass("ball-active")
+                        $(".bigPlan3").find(".host-ball").addClass("ball-stay")
+                    }else if(rows[0].PlanStatus == "20"){
+                        $(".bigPlan1,.bigPlan2,.bigPlan3").find(".host-ball").addClass("ball-active").siblings(".host-line").addClass("ball-active")
+                    }else if(rows[0].PlanStatus == "70"){
+                        $(".bigPlan1,.bigPlan2,.bigPlan3,.bigPlan4,.bigPlan5,.bigPlan6,.bigPlan7,.bigPlan8,.bigPlan9").find(".host-ball").addClass("ball-active").siblings(".host-line").addClass("ball-active")
+                        $(".bigPlan4,.bigPlan5,.bigPlan6,.bigPlan7,.bigPlan8").find(".ball").addClass("ball-active").siblings(".progress-line").addClass("ball-active")
+                    }
                 },
                 onClickRow:function(rowIndex,rowData){
                     $(".host-progress").find(".host-ball").removeClass("ball-active ball-stay").siblings(".host-line").removeClass("ball-active")
