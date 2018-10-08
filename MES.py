@@ -4931,6 +4931,34 @@ def QAConfirmAgain():
             logger.error(e)
             insertSyslog("error", "QA清场复核报错Error：" + str(e), current_user.Name)
 
+#操作人确认
+@app.route('/ZYPlanGuid/operateConfirm', methods=['POST', 'GET'])
+def operateConfirm():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                pages = int(data['page'])  # 页数
+                rowsnumber = int(data['rows'])  # 行数
+                inipage = (pages - 1) * rowsnumber + 0  # 起始页
+                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+                ID = data['ID']#计划ID
+                PName = data['PName']
+                PUName = data['PUName']
+                if(PName == "备料"):
+                    if(PUName == "生产前准备"):
+                        node = db_session.query(Model.node.NodeCollection).filter(Model.node.NodeCollection.oddNum == ID, Model.node.NodeCollection.name == '（备料段）生产前准备（操作人）')
+                        node.status = Model.node.NodeCollection.doPass()
+                        db_session.commit()
+                return "操作人确认成功！"
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "QA复核查询报错Error：" + str(e), current_user.Name)
+
+
+
 # QA放行查询
 @app.route('/ZYPlanGuid/QAPassSearch', methods=['POST', 'GET'])
 def QAPassSearch():
