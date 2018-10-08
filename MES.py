@@ -5150,7 +5150,7 @@ def nodeIdNote():
                     nodeId = element + index[0]
                     opcTag = db_session.query(OpcTag.NodeID).filter_by(NodeID=nodeId).first()
                     if opcTag is None:
-                        nodes.append(index)
+                        nodes.append(index[0])
                         continue
                     opcTag.Note = index[1]
                     db_session.add(opcTag)
@@ -5172,7 +5172,7 @@ def nodeIdNote():
             workbook = xlwt.Workbook(encoding='utf-8', style_compression=0)
             sheet = workbook.add_sheet('note', cell_overwrite_ok=True)
             sheet.write(x, y, 'NodeID')
-            for node in nodes:
+            for node in set(nodes):
                 x += 1
                 sheet.write(x, y, node)
             path = r'C:\Users\maomao\Desktop\test1.xls'
