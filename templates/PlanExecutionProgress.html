@@ -13,6 +13,7 @@
     <link href="../static/css/datagrid_customer.css" type="text/css" rel="stylesheet">
     <link rel="stylesheet" href="../static/css/bootstrap.min.css" crossorigin="anonymous">
     <script type="text/javascript" src="../static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="../static/js/jquery.contextmenu.r2.js"></script>
     <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
     <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
     <script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
@@ -106,6 +107,7 @@
             border-radius: 10px;
             margin-left: 20px;
             background-color: #9f9f9f;
+            cursor: pointer;
         }
         .progress-line{
             width: 0px;
@@ -181,6 +183,16 @@
                 var src = $(this).attr("skip-src")
                 addTab(text,src)
             })
+            //节点右键操作
+            $(".ball").contextMenu('myMenu',{
+                onContextMenu: function(e) {
+                    return true;
+                },
+                onShowMenu: function(e, menu) {
+                    console.log(menu)
+                    return menu
+                }
+            })
         })
         //按钮点击后添加选项卡
         function addTab(title, url) {
@@ -234,21 +246,29 @@
                 <li role="presentation" class="active"><a href="#Section1" role="tab" data-toggle="tab">健胃消食片</a></li>
                 <li role="presentation"><a href="#Section2" role="tab" data-toggle="tab">草珊瑚含片</a></li>
             </ul>
+            <!-- 右键菜单 -->
+            <div class="contextMenu" id="myMenu">
+                <ul>
+                    <li>操作人确认</li>
+                    <li>复核人确认</li>
+                    <li>QA确认</li>
+                </ul>
+            </div>
             <div class="tab-content tabs">
                 <div role="tabpanel" class="tab-pane fade show active" id="Section1">
                     <div class="progress-head">
                         <div class="host-progress bigPlan1">
-                            <div class="host-ball handlePlan" skip-src="/createPlanWizard">新增计划</div>
+                            <div class="host-ball handlePlan" skip-src="/createPlanWizard" title="点击开始新增计划">新增计划</div>
                             <div class="host-line"></div>
                             <div class="host-arrow"></div>
                         </div>
                         <div class="host-progress bigPlan2">
-                            <div class="host-ball handlePlan" skip-src="/ZYPlanGuid/checkplanmanager">审核计划</div>
+                            <div class="host-ball handlePlan" skip-src="/ZYPlanGuid/checkplanmanager" title="点击进行审核计划">审核计划</div>
                             <div class="host-line"></div>
                             <div class="host-arrow"></div>
                         </div>
                         <div class="host-progress bigPlan3">
-                            <div class="host-ball handlePlan" skip-src="/ZYPlanGuid/planmanager">下发计划</div>
+                            <div class="host-ball handlePlan" skip-src="/ZYPlanGuid/planmanager" title="点击进行下发计划">下发计划</div>
                             <div class="host-line"></div>
                             <div class="host-arrow"></div>
                         </div>
@@ -259,29 +279,23 @@
                             <div class="childBox">
                                 <div class="childNode">
                                     <div class="progress-line"></div>
-                                    <div class="ball"></div>
+                                    <div class="ball" title="右击操作确认"></div>
                                     <div class="detail">
-                                        <div class="flow-detail">
-                                            生产前的准备
-                                        </div>
+                                        <div class="flow-detail">生产前的准备</div>
                                     </div>
                                     <div class="progress-line"></div>
                                 </div>
                                 <div class="childNode">
-                                    <div class="ball"></div>
+                                    <div class="ball" title="右击操作确认"></div>
                                     <div class="detail">
-                                        <div class="flow-detail">
-                                            备料开始
-                                        </div>
+                                        <div class="flow-detail">备料开始</div>
                                     </div>
                                     <div class="progress-line"></div>
                                 </div>
                                 <div class="childNode">
-                                    <div class="ball"></div>
+                                    <div class="ball" title="右击操作确认"></div>
                                     <div class="detail">
-                                        <div class="flow-detail">
-                                            备料结束清场
-                                        </div>
+                                        <div class="flow-detail">备料结束清场</div>
                                     </div>
                                 </div>
                             </div>
@@ -293,38 +307,30 @@
                             <div class="childBox">
                                 <div class="childNode">
                                     <div class="progress-line"></div>
-                                    <div class="ball"></div>
+                                    <div class="ball" title="右击操作确认"></div>
                                     <div class="detail">
-                                        <div class="flow-detail">
-                                            生产前的准备
-                                        </div>
+                                        <div class="flow-detail">生产前的准备</div>
                                     </div>
                                     <div class="progress-line"></div>
                                 </div>
                                 <div class="childNode">
-                                    <div class="ball"></div>
+                                    <div class="ball" title="右击操作确认"></div>
                                     <div class="detail">
-                                        <div class="flow-detail">
-                                            煎煮开始
-                                        </div>
+                                        <div class="flow-detail">煎煮开始</div>
                                     </div>
                                     <div class="progress-line"></div>
                                 </div>
                                 <div class="childNode">
-                                    <div class="ball"></div>
+                                    <div class="ball" title="右击操作确认"></div>
                                     <div class="detail">
-                                        <div class="flow-detail">
-                                            静置开始
-                                        </div>
+                                        <div class="flow-detail">静置开始</div>
                                     </div>
                                     <div class="progress-line"></div>
                                 </div>
                                 <div class="childNode">
-                                    <div class="ball"></div>
+                                    <div class="ball" title="右击操作确认"></div>
                                     <div class="detail">
-                                        <div class="flow-detail">
-                                            煎煮结束清场
-                                        </div>
+                                        <div class="flow-detail">煎煮结束清场</div>
                                     </div>
                                 </div>
                             </div>
@@ -336,47 +342,37 @@
                             <div class="childBox">
                                 <div class="childNode">
                                     <div class="progress-line"></div>
-                                    <div class="ball"></div>
+                                    <div class="ball" title="右击操作确认"></div>
                                     <div class="detail">
-                                        <div class="flow-detail">
-                                            生产前的准备
-                                        </div>
+                                        <div class="flow-detail">生产前的准备</div>
                                     </div>
                                     <div class="progress-line"></div>
                                 </div>
                                 <div class="childNode">
-                                    <div class="ball"></div>
+                                    <div class="ball" title="右击操作确认"></div>
                                     <div class="detail">
-                                        <div class="flow-detail">
-                                            浓缩开始
-                                        </div>
+                                        <div class="flow-detail">浓缩开始</div>
                                     </div>
                                     <div class="progress-line"></div>
                                 </div>
                                 <div class="childNode">
-                                    <div class="ball"></div>
+                                    <div class="ball" title="右击操作确认"></div>
                                     <div class="detail">
-                                        <div class="flow-detail">
-                                            参数控制
-                                        </div>
+                                        <div class="flow-detail">参数控制</div>
                                     </div>
                                     <div class="progress-line"></div>
                                 </div>
                                 <div class="childNode">
-                                    <div class="ball"></div>
+                                    <div class="ball" title="右击操作确认"></div>
                                     <div class="detail">
-                                        <div class="flow-detail">
-                                            质量控制
-                                        </div>
+                                        <div class="flow-detail">质量控制</div>
                                     </div>
                                     <div class="progress-line"></div>
                                 </div>
                                 <div class="childNode">
-                                    <div class="ball"></div>
+                                    <div class="ball" title="右击操作确认"></div>
                                     <div class="detail">
-                                        <div class="flow-detail">
-                                            浓缩结束清场
-                                        </div>
+                                        <div class="flow-detail">浓缩结束清场</div>
                                     </div>
                                 </div>
                             </div>
@@ -388,38 +384,30 @@
                             <div class="childBox">
                                 <div class="childNode">
                                     <div class="progress-line"></div>
-                                    <div class="ball"></div>
+                                    <div class="ball" title="右击操作确认"></div>
                                     <div class="detail">
-                                        <div class="flow-detail">
-                                            生产前的准备
-                                        </div>
+                                        <div class="flow-detail">生产前的准备</div>
                                     </div>
                                     <div class="progress-line"></div>
                                 </div>
                                 <div class="childNode">
-                                    <div class="ball"></div>
+                                    <div class="ball" title="右击操作确认"></div>
                                     <div class="detail">
-                                        <div class="flow-detail">
-                                            喷雾干燥开始
-                                        </div>
+                                        <div class="flow-detail">喷雾干燥开始</div>
                                     </div>
                                     <div class="progress-line"></div>
                                 </div>
                                 <div class="childNode">
-                                    <div class="ball"></div>
+                                    <div class="ball" title="右击操作确认"></div>
                                     <div class="detail">
-                                        <div class="flow-detail">
-                                            参数控制
-                                        </div>
+                                        <div class="flow-detail">参数控制</div>
                                     </div>
                                     <div class="progress-line"></div>
                                 </div>
                                 <div class="childNode">
-                                    <div class="ball"></div>
+                                    <div class="ball" title="右击操作确认"></div>
                                     <div class="detail">
-                                        <div class="flow-detail">
-                                            喷雾干燥结束清场
-                                        </div>
+                                        <div class="flow-detail">喷雾干燥结束清场</div>
                                     </div>
                                 </div>
                             </div>
@@ -431,53 +419,43 @@
                             <div class="childBox">
                                 <div class="childNode">
                                     <div class="progress-line"></div>
-                                    <div class="ball"></div>
+                                    <div class="ball" title="右击操作确认"></div>
                                     <div class="detail">
-                                        <div class="flow-detail">
-                                            生产前的准备
-                                        </div>
+                                        <div class="flow-detail">生产前的准备</div>
                                     </div>
                                     <div class="progress-line"></div>
                                 </div>
                                 <div class="childNode">
-                                    <div class="ball"></div>
+                                    <div class="ball" title="右击操作确认"></div>
                                     <div class="detail">
-                                        <div class="flow-detail">
-                                            收粉开始
-                                        </div>
+                                        <div class="flow-detail">收粉开始</div>
                                     </div>
                                     <div class="progress-line"></div>
                                 </div>
                                 <div class="childNode">
-                                    <div class="ball"></div>
+                                    <div class="ball" title="右击操作确认"></div>
                                     <div class="detail">
-                                        <div class="flow-detail">
-                                            质量控制
-                                        </div>
+                                        <div class="flow-detail">质量控制</div>
                                     </div>
                                     <div class="progress-line"></div>
                                 </div>
                                 <div class="childNode">
-                                    <div class="ball"></div>
+                                    <div class="ball" title="右击操作确认"></div>
                                     <div class="detail">
-                                        <div class="flow-detail">
-                                            收粉结束统计
-                                        </div>
+                                        <div class="flow-detail">收粉结束统计</div>
                                     </div>
                                     <div class="progress-line"></div>
                                 </div>
                                 <div class="childNode">
-                                    <div class="ball"></div>
+                                    <div class="ball" title="右击操作确认"></div>
                                     <div class="detail">
-                                        <div class="flow-detail">
-                                            收粉结束清场
-                                        </div>
+                                        <div class="flow-detail">收粉结束清场</div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="host-progress bigPlan9">
-                            <div class="host-ball handlePlan" skip-src="/QAauthPass">QA放行</div>
+                            <div class="host-ball handlePlan" skip-src="/QAauthPass" title="点击进行QA放行">QA放行</div>
                         </div>
                     </div>
                     <div id="Toolbar" style="padding:0 10px;">
@@ -791,7 +769,7 @@
                             </div>
                         </div>
                         <div class="host-progress bigPlan10">
-                            <div class="host-ball handlePlan" skip-src="/QAauthPass">QA放行</div>
+                            <div class="host-ball handlePlan" skip-src="/QAauthPass" title="点击进行QA放行">QA放行</div>
                         </div>
                     </div>
                     <div id="cToolbar" style="padding:0 10px;">
