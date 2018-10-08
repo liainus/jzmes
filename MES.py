@@ -4013,7 +4013,7 @@ def createZYPlanZYtask():
                             task.TaskStatus = Model.Global.TASKSTATUS.Realse.value
                         userName = current_user.Name
                         oclassNodeColl = db_session.query(Model.node.NodeCollection).filter_by(oddNum=id,
-                                                                                               name="下发计划").first()
+                                                                                               name="计划下发").first()
                         oclassNodeColl.status = Model.node.NodeStatus.PASSED.value
                         oclassNodeColl.oddUser = userName
                         oclassNodeColl.opertionTime = datetime.datetime.now()
