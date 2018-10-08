@@ -32,14 +32,14 @@ var mainPlatform = {
 			event.stopPropagation();
         });
 
-        $(document).on('click', '.pf-logout', function() {
-            layer.confirm('您确定要退出吗？', {
-              icon: 4,
-			  title: '确定退出' //按钮
-			}, function(){
-			  location.href= 'login.html'; 
-			});
-        });
+        // $(document).on('click', '.pf-logout', function() {
+        //     layer.confirm('您确定要退出吗？', {
+        //       icon: 4,
+			//   title: '确定退出' //按钮
+			// }, function(){
+			//   location.href= 'login.html';
+			// });
+        // });
         //左侧菜单收起
         $(document).on('click', '.toggle-icon', function() {
             $(this).closest("#pf-bd").toggleClass("toggle");
