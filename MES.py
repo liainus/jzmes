@@ -4969,23 +4969,162 @@ def operateConfirm():
         try:
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 10:
-                pages = int(data['page'])  # 页数
-                rowsnumber = int(data['rows'])  # 行数
-                inipage = (pages - 1) * rowsnumber + 0  # 起始页
-                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
                 ID = data['ID']#计划ID
-                PName = data['PName']
-                PUName = data['PUName']
+                PName = data['PName']#计划名称
+                PUName = data['PUName']#计划明细名称
+                planM = db_session.query(PlanManager).filter(PlanManager.ID == ID).first()
+                BrandName = planM.BrandName
                 if(PName == "备料"):
-                    if(PUName == "生产前准备"):
-                        node = db_session.query(Model.node.NodeCollection).filter(Model.node.NodeCollection.oddNum == ID, Model.node.NodeCollection.name == '（备料段）生产前准备（操作人）')
-                        node.status = Model.node.NodeCollection.doPass()
-                        db_session.commit()
+                    if(PUName == "生产前的准备"):
+                        node = db_session.query(Model.node.NodeCollection).filter(Model.node.NodeCollection.oddNum == ID, Model.node.NodeCollection.name == '（备料段）生产前准备（操作人）').first()
+                        node.status = Model.node.NodeStatus.PASSED.value
+                    elif(PUName == "备料开始"):
+                        node = db_session.query(Model.node.NodeCollection).filter(
+                            Model.node.NodeCollection.oddNum == ID, Model.node.NodeCollection.name == '备料操作按SOP执行（操作人）').first()
+                        node.status = Model.node.NodeStatus.PASSED.value
+                    elif(PUName == "备料结束清场"):
+                        node = db_session.query(Model.node.NodeCollection).filter(
+                            Model.node.NodeCollection.oddNum == ID, Model.node.NodeCollection.name == '（备料段）生产结束清场（操作人）').first()
+                        node.status = Model.node.NodeStatus.PASSED.value
+                    else:
+                        pass
+                if (PName == "煎煮"):
+                    if(PUName == "生产前的准备"):
+                        node = db_session.query(Model.node.NodeCollection).filter(
+                            Model.node.NodeCollection.oddNum == ID,
+                            Model.node.NodeCollection.name == '（煎煮段）生产前准备（操作人）').first()
+                        node.status = Model.node.NodeStatus.PASSED.value
+                    elif(PUName == "煎煮开始"):
+                        node = db_session.query(Model.node.NodeCollection).filter(
+                            Model.node.NodeCollection.oddNum == ID,
+                            Model.node.NodeCollection.name == '煎煮开始，操作按SOP执行（操作人）').first()
+                        node.status = Model.node.NodeStatus.PASSED.value
+                    elif(PUName == "静置开始"):
+                        node = db_session.query(Model.node.NodeCollection).filter(
+                            Model.node.NodeCollection.oddNum == ID,
+                            Model.node.NodeCollection.name == '静置开始，操作按SOP执行（操作人）').first()
+                        node.status = Model.node.NodeStatus.PASSED.value
+                    elif(PUName == "煎煮结束清场"):
+                        node = db_session.query(Model.node.NodeCollection).filter(
+                            Model.node.NodeCollection.oddNum == ID,
+                            Model.node.NodeCollection.name == '（煎煮段）生产结束清场（操作人）').first()
+                        node.status = Model.node.NodeStatus.PASSED.value
+                    else:
+                        pass
+                if (PName == "浓缩"):
+                    if (PUName == "生产前的准备"):
+                        node = db_session.query(Model.node.NodeCollection).filter(
+                            Model.node.NodeCollection.oddNum == ID,
+                            Model.node.NodeCollection.name == '（浓缩段）生产前准备流程（操作人）').first()
+                        node.status = Model.node.NodeStatus.PASSED.value
+                    elif (PUName == "浓缩开始"):
+                        node = db_session.query(Model.node.NodeCollection).filter(
+                            Model.node.NodeCollection.oddNum == ID,
+                            Model.node.NodeCollection.name == '浓缩开始，操作按SOP执行（操作人）').first()
+                        node.status = Model.node.NodeStatus.PASSED.value
+                    elif (PUName == "浓缩结束清场"):
+                        node = db_session.query(Model.node.NodeCollection).filter(
+                            Model.node.NodeCollection.oddNum == ID,
+                            Model.node.NodeCollection.name == '浓缩结束清场（操作人）').first()
+                        node.status = Model.node.NodeStatus.PASSED.value
+                    else:
+                        pass
+                if (PName == "喷雾干燥"):
+                    if (PUName == "生产前的准备"):
+                        node = db_session.query(Model.node.NodeCollection).filter(
+                            Model.node.NodeCollection.oddNum == ID,
+                            Model.node.NodeCollection.name == '（喷雾干燥段）生产前准备流程（操作人）').first()
+                        node.status = Model.node.NodeStatus.PASSED.value
+                    elif (PUName == "喷雾干燥开始"):
+                        node = db_session.query(Model.node.NodeCollection).filter(
+                            Model.node.NodeCollection.oddNum == ID,
+                            Model.node.NodeCollection.name == '喷雾干燥开始，操作按SOP执行（操作人）').first()
+                        node.status = Model.node.NodeStatus.PASSED.value
+                    elif (PUName == "喷雾干燥结束清场"):
+                        node = db_session.query(Model.node.NodeCollection).filter(
+                            Model.node.NodeCollection.oddNum == ID,
+                            Model.node.NodeCollection.name == '喷雾干燥结束，按SOP清场（操作人）').first()
+                        node.status = Model.node.NodeStatus.PASSED.value
+                    else:
+                        pass
+                if (PName == "收粉"):
+                    if (PUName == "生产前的准备"):
+                        node = db_session.query(Model.node.NodeCollection).filter(
+                            Model.node.NodeCollection.oddNum == ID,
+                            Model.node.NodeCollection.name == '（收粉段）生产前准备流程（操作人）').first()
+                        node.status = Model.node.NodeStatus.PASSED.value
+                    elif (PUName == "收粉开始"):
+                        node = db_session.query(Model.node.NodeCollection).filter(
+                            Model.node.NodeCollection.oddNum == ID,
+                            Model.node.NodeCollection.name == '收粉开始，操作按SOP执行（操作人）').first()
+                        node.status = Model.node.NodeStatus.PASSED.value
+                    elif (PUName == "收粉结束清场"):
+                        node = db_session.query(Model.node.NodeCollection).filter(
+                            Model.node.NodeCollection.oddNum == ID,
+                            Model.node.NodeCollection.name == '收粉结束，按SOP清场（操作人）').first()
+                        node.status = Model.node.NodeStatus.PASSED.value
+                    else:
+                        pass
+                if (PName == "醇沉"):
+                    if (PUName == "生产前的准备"):
+                        node = db_session.query(Model.node.NodeCollection).filter(
+                            Model.node.NodeCollection.oddNum == ID,
+                            Model.node.NodeCollection.name == '（醇沉段）生产前准备（操作人）').first()
+                        node.status = Model.node.NodeStatus.PASSED.value
+                    elif (PUName == "醇沉开始"):
+                        node = db_session.query(Model.node.NodeCollection).filter(
+                            Model.node.NodeCollection.oddNum == ID,
+                            Model.node.NodeCollection.name == '醇沉开始，操作按SOP执行（操作人）').first()
+                        node.status = Model.node.NodeStatus.PASSED.value
+                    elif (PUName == "醇沉结束清场"):
+                        node = db_session.query(Model.node.NodeCollection).filter(
+                            Model.node.NodeCollection.oddNum == ID,
+                            Model.node.NodeCollection.name == '醇沉结束，按SOP清场（操作人）').first()
+                        node.status = Model.node.NodeStatus.PASSED.value
+                    else:
+                        pass
+                if (PName == "单效浓缩段"):
+                    if (PUName == "生产前的准备"):
+                        node = db_session.query(Model.node.NodeCollection).filter(
+                            Model.node.NodeCollection.oddNum == ID,
+                            Model.node.NodeCollection.name == '（单效浓缩段）生产前准备（操作人）').first()
+                        node.status = Model.node.NodeStatus.PASSED.value
+                    elif (PUName == "单效浓缩开始"):
+                        node = db_session.query(Model.node.NodeCollection).filter(
+                            Model.node.NodeCollection.oddNum == ID,
+                            Model.node.NodeCollection.name == '单效浓缩段开始，操作按SOP执行（操作人）').first()
+                        node.status = Model.node.NodeStatus.PASSED.value
+                    elif (PUName == "单效浓缩结束清场"):
+                        node = db_session.query(Model.node.NodeCollection).filter(
+                            Model.node.NodeCollection.oddNum == ID,
+                            Model.node.NodeCollection.name == '单效浓缩段结束，按SOP清场（操作人）').first()
+                        node.status = Model.node.NodeStatus.PASSED.value
+                    else:
+                        pass
+                if (PName == "收膏"):
+                    if (PUName == "生产前的准备"):
+                        node = db_session.query(Model.node.NodeCollection).filter(
+                            Model.node.NodeCollection.oddNum == ID,
+                            Model.node.NodeCollection.name == '（收膏段）生产前准备（操作人）').first()
+                        node.status = Model.node.NodeStatus.PASSED.value
+                    elif (PUName == "收膏开始"):
+                        node = db_session.query(Model.node.NodeCollection).filter(
+                            Model.node.NodeCollection.oddNum == ID,
+                            Model.node.NodeCollection.name == '收膏段开始，操作按SOP执行（操作人）').first()
+                        node.status = Model.node.NodeStatus.PASSED.value
+                    elif (PUName == "收膏结束清场"):
+                        node = db_session.query(Model.node.NodeCollection).filter(
+                            Model.node.NodeCollection.oddNum == ID,
+                            Model.node.NodeCollection.name == '收膏结束，按SOP清场（操作人）').first()
+                        node.status = Model.node.NodeStatus.PASSED.value
+                    else:
+                        pass
+                db_session.commit()
                 return "操作人确认成功！"
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "QA复核查询报错Error：" + str(e), current_user.Name)
+            insertSyslog("error", "操作人确认报错Error：" + str(e), current_user.Name)
 
 
 

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>计划执行进度</title>
+    <title>制药计划管理</title>
     <link href="../static/css/base.css" rel="stylesheet">
 	<link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
 	<link href="../static/css/basic_info.css" rel="stylesheet">
@@ -161,6 +161,23 @@
                 }
             }
             $("#tab").datagrid({
+                onLoadSuccess:function(data){
+                    $(this).datagrid("selectRow", 0);
+                    var rows = $("#tab").datagrid('getSelections');
+                    $(".host-progress").find(".host-ball").removeClass("ball-active ball-stay").siblings(".host-line").removeClass("ball-active")
+                    if(rows[0].PlanStatus == "10"){
+                        $(".bigPlan1").find(".host-ball").addClass("ball-active").siblings(".host-line").addClass("ball-active")
+                        $(".bigPlan2").find(".host-ball").addClass("ball-stay")
+                    }else if(rows[0].PlanStatus == "11"){
+                        $(".bigPlan1,.bigPlan2").find(".host-ball").addClass("ball-active").siblings(".host-line").addClass("ball-active")
+                        $(".bigPlan3").find(".host-ball").addClass("ball-stay")
+                    }else if(rows[0].PlanStatus == "20"){
+                        $(".bigPlan1,.bigPlan2,.bigPlan3").find(".host-ball").addClass("ball-active").siblings(".host-line").addClass("ball-active")
+                    }else if(rows[0].PlanStatus == "70"){
+                        $(".bigPlan1,.bigPlan2,.bigPlan3,.bigPlan4,.bigPlan5,.bigPlan6,.bigPlan7,.bigPlan8,.bigPlan9").find(".host-ball").addClass("ball-active").siblings(".host-line").addClass("ball-active")
+                        $(".bigPlan4,.bigPlan5,.bigPlan6,.bigPlan7,.bigPlan8").find(".ball").addClass("ball-active").siblings(".progress-line").addClass("ball-active")
+                    }
+                },
                 onClickRow:function(rowIndex,rowData){
                     $(".host-progress").find(".host-ball").removeClass("ball-active ball-stay").siblings(".host-line").removeClass("ball-active")
                     if(rowData.PlanStatus == "10"){
@@ -189,9 +206,12 @@
                     return true;
                 },
                 onShowMenu: function(e, menu) {
-                    console.log(menu)
                     return menu
                 }
+            })
+            $("#myMenu ul li").on('click',function () {
+                var rows = $("#tab").datagrid('getSelections');
+                console.log(rows[0].ID)
             })
         })
         //按钮点击后添加选项卡
@@ -248,11 +268,22 @@
             </ul>
             <!-- 右键菜单 -->
             <div class="contextMenu" id="myMenu">
-                <ul>
-                    <li>操作人确认</li>
-                    <li>复核人确认</li>
-                    <li>QA确认</li>
-                </ul>
+                {% if current_user %}
+                    {% if isIn(['89', '90', '91'], session.get('menus')) %}
+                        <ul>
+                            {% if '89' in session.get('menus') %}
+                                <li>操作人确认</li>
+                            {% endif %}
+                            {% if '90' in session.get('menus') %}
+                                <li>复核人确认</li>
+                            {% endif %}
+                            {% if '91' in session.get('menus') %}
+                                <li>QA确认</li>
+                            {% endif %}
+                        </ul>
+                    {% else %}
+                    {% endif %}
+                {% endif %}
             </div>
             <div class="tab-content tabs">
                 <div role="tabpanel" class="tab-pane fade show active" id="Section1">
@@ -358,20 +389,6 @@
                                 <div class="childNode">
                                     <div class="ball" title="右击操作确认"></div>
                                     <div class="detail">
-                                        <div class="flow-detail">参数控制</div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball" title="右击操作确认"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">质量控制</div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball" title="右击操作确认"></div>
-                                    <div class="detail">
                                         <div class="flow-detail">浓缩结束清场</div>
                                     </div>
                                 </div>
@@ -400,13 +417,6 @@
                                 <div class="childNode">
                                     <div class="ball" title="右击操作确认"></div>
                                     <div class="detail">
-                                        <div class="flow-detail">参数控制</div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball" title="右击操作确认"></div>
-                                    <div class="detail">
                                         <div class="flow-detail">喷雾干燥结束清场</div>
                                     </div>
                                 </div>
@@ -429,20 +439,6 @@
                                     <div class="ball" title="右击操作确认"></div>
                                     <div class="detail">
                                         <div class="flow-detail">收粉开始</div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball" title="右击操作确认"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">质量控制</div>
-                                    </div>
-                                    <div class="progress-line"></div>
-                                </div>
-                                <div class="childNode">
-                                    <div class="ball" title="右击操作确认"></div>
-                                    <div class="detail">
-                                        <div class="flow-detail">收粉结束统计</div>
                                     </div>
                                     <div class="progress-line"></div>
                                 </div>
