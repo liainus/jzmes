@@ -4961,7 +4961,7 @@ def QAConfirmAgain():
 #操作人确认
 @app.route('/ZYPlanGuid/operateConfirm', methods=['POST', 'GET'])
 def operateConfirm():
-    if request.method == 'GET':
+    if request.method == 'POST':
         data = request.values
         try:
             json_str = json.dumps(data.to_dict())
@@ -4973,160 +4973,121 @@ def operateConfirm():
                 BrandName = planM.BrandName
                 if(PName == "备料"):
                     if(PUName == "生产前的准备"):
-                        node = db_session.query(Model.node.NodeCollection).filter(Model.node.NodeCollection.oddNum == ID, Model.node.NodeCollection.name == '（备料段）生产前准备（操作人）').first()
-                        node.status = Model.node.NodeStatus.PASSED.value
+                        name = '（备料段）生产前准备（操作人）'
+                        return operateflow(ID, name)
                     elif(PUName == "备料开始"):
-                        node = db_session.query(Model.node.NodeCollection).filter(
-                            Model.node.NodeCollection.oddNum == ID, Model.node.NodeCollection.name == '备料操作按SOP执行（操作人）').first()
-                        node.status = Model.node.NodeStatus.PASSED.value
+                        name = '备料操作按SOP执行（操作人）'
+                        return operateflow(ID, name)
                     elif(PUName == "备料结束清场"):
-                        node = db_session.query(Model.node.NodeCollection).filter(
-                            Model.node.NodeCollection.oddNum == ID, Model.node.NodeCollection.name == '（备料段）生产结束清场（操作人）').first()
-                        node.status = Model.node.NodeStatus.PASSED.value
-                    else:
-                        pass
+                        name = '（备料段）生产结束清场（操作人）'
+                        return operateflow(ID, name)
                 elif(PName == "煎煮"):
                     if(PUName == "生产前的准备"):
-                        node = db_session.query(Model.node.NodeCollection).filter(
-                            Model.node.NodeCollection.oddNum == ID,
-                            Model.node.NodeCollection.name == '（煎煮段）生产前准备（操作人）').first()
-                        node.status = Model.node.NodeStatus.PASSED.value
+                        name = '（煎煮段）生产前准备（操作人）'
+                        return operateflow(ID, name)
                     elif(PUName == "煎煮开始"):
-                        node = db_session.query(Model.node.NodeCollection).filter(
-                            Model.node.NodeCollection.oddNum == ID,
-                            Model.node.NodeCollection.name == '煎煮开始，操作按SOP执行（操作人）').first()
-                        node.status = Model.node.NodeStatus.PASSED.value
+                        name = '煎煮开始，操作按SOP执行（操作人）'
+                        return operateflow(ID, name)
                     elif(PUName == "静置开始"):
-                        node = db_session.query(Model.node.NodeCollection).filter(
-                            Model.node.NodeCollection.oddNum == ID,
-                            Model.node.NodeCollection.name == '静置开始，操作按SOP执行（操作人）').first()
-                        node.status = Model.node.NodeStatus.PASSED.value
+                        name = '静置开始，操作按SOP执行（操作人）'
+                        return operateflow(ID, name)
                     elif(PUName == "煎煮结束清场"):
-                        node = db_session.query(Model.node.NodeCollection).filter(
-                            Model.node.NodeCollection.oddNum == ID,
-                            Model.node.NodeCollection.name == '（煎煮段）生产结束清场（操作人）').first()
-                        node.status = Model.node.NodeStatus.PASSED.value
+                        name = '（煎煮段）生产结束清场（操作人）'
+                        return operateflow(ID, name)
                     else:
                         pass
                 elif(PName == "浓缩"):
                     if (PUName == "生产前的准备"):
-                        node = db_session.query(Model.node.NodeCollection).filter(
-                            Model.node.NodeCollection.oddNum == ID,
-                            Model.node.NodeCollection.name == '（浓缩段）生产前准备流程（操作人）').first()
-                        node.status = Model.node.NodeStatus.PASSED.value
+                        name = '（浓缩段）生产前准备流程（操作人）'
+                        return operateflow(ID, name)
                     elif (PUName == "浓缩开始"):
-                        node = db_session.query(Model.node.NodeCollection).filter(
-                            Model.node.NodeCollection.oddNum == ID,
-                            Model.node.NodeCollection.name == '浓缩开始，操作按SOP执行（操作人）').first()
-                        node.status = Model.node.NodeStatus.PASSED.value
+                        name = '浓缩开始，操作按SOP执行（操作人）'
+                        return operateflow(ID, name)
                     elif (PUName == "浓缩结束清场"):
-                        node = db_session.query(Model.node.NodeCollection).filter(
-                            Model.node.NodeCollection.oddNum == ID,
-                            Model.node.NodeCollection.name == '浓缩结束清场（操作人）').first()
-                        node.status = Model.node.NodeStatus.PASSED.value
+                        name = '浓缩结束清场（操作人）'
+                        return operateflow(ID, name)
                     else:
                         pass
                 elif(PName == "喷雾干燥"):
                     if (PUName == "生产前的准备"):
-                        node = db_session.query(Model.node.NodeCollection).filter(
-                            Model.node.NodeCollection.oddNum == ID,
-                            Model.node.NodeCollection.name == '（喷雾干燥段）生产前准备流程（操作人）').first()
-                        node.status = Model.node.NodeStatus.PASSED.value
+                        name = '（喷雾干燥段）生产前准备流程（操作人）'
+                        return operateflow(ID, name)
                     elif (PUName == "喷雾干燥开始"):
-                        node = db_session.query(Model.node.NodeCollection).filter(
-                            Model.node.NodeCollection.oddNum == ID,
-                            Model.node.NodeCollection.name == '喷雾干燥开始，操作按SOP执行（操作人）').first()
-                        node.status = Model.node.NodeStatus.PASSED.value
+                        name = '喷雾干燥开始，操作按SOP执行（操作人）'
+                        return operateflow(ID, name)
                     elif (PUName == "喷雾干燥结束清场"):
-                        node = db_session.query(Model.node.NodeCollection).filter(
-                            Model.node.NodeCollection.oddNum == ID,
-                            Model.node.NodeCollection.name == '喷雾干燥结束，按SOP清场（操作人）').first()
-                        node.status = Model.node.NodeStatus.PASSED.value
-                    else:
-                        pass
+                        name = '喷雾干燥结束，按SOP清场（操作人）'
+                        return operateflow(ID, name)
                 elif(PName == "收粉"):
                     if (PUName == "生产前的准备"):
-                        node = db_session.query(Model.node.NodeCollection).filter(
-                            Model.node.NodeCollection.oddNum == ID,
-                            Model.node.NodeCollection.name == '（收粉段）生产前准备流程（操作人）').first()
-                        node.status = Model.node.NodeStatus.PASSED.value
+                        name = '（收粉段）生产前准备流程（操作人）'
+                        return operateflow(ID, name)
                     elif (PUName == "收粉开始"):
-                        node = db_session.query(Model.node.NodeCollection).filter(
-                            Model.node.NodeCollection.oddNum == ID,
-                            Model.node.NodeCollection.name == '收粉开始，操作按SOP执行（操作人）').first()
-                        node.status = Model.node.NodeStatus.PASSED.value
+                        name = '收粉开始，操作按SOP执行（操作人）'
+                        return operateflow(ID, name)
                     elif (PUName == "收粉结束清场"):
-                        node = db_session.query(Model.node.NodeCollection).filter(
-                            Model.node.NodeCollection.oddNum == ID,
-                            Model.node.NodeCollection.name == '收粉结束，按SOP清场（操作人）').first()
-                        node.status = Model.node.NodeStatus.PASSED.value
-                    else:
-                        pass
+                        name = '收粉结束，按SOP清场（操作人）'
+                        return operateflow(ID, name)
                 elif(PName == "醇沉"):
                     if (PUName == "生产前的准备"):
-                        node = db_session.query(Model.node.NodeCollection).filter(
-                            Model.node.NodeCollection.oddNum == ID,
-                            Model.node.NodeCollection.name == '（醇沉段）生产前准备（操作人）').first()
-                        node.status = Model.node.NodeStatus.PASSED.value
+                        name = '（醇沉段）生产前准备（操作人）'
+                        return operateflow(ID, name)
                     elif (PUName == "醇沉开始"):
-                        node = db_session.query(Model.node.NodeCollection).filter(
-                            Model.node.NodeCollection.oddNum == ID,
-                            Model.node.NodeCollection.name == '醇沉开始，操作按SOP执行（操作人）').first()
-                        node.status = Model.node.NodeStatus.PASSED.value
+                        name = '醇沉开始，操作按SOP执行（操作人）'
+                        return operateflow(ID, name)
                     elif (PUName == "醇沉结束清场"):
-                        node = db_session.query(Model.node.NodeCollection).filter(
-                            Model.node.NodeCollection.oddNum == ID,
-                            Model.node.NodeCollection.name == '醇沉结束，按SOP清场（操作人）').first()
-                        node.status = Model.node.NodeStatus.PASSED.value
+                        name = '醇沉结束，按SOP清场（操作人）'
+                        return operateflow(ID, name)
                     else:
                         pass
                 elif(PName == "单效浓缩段"):
                     if (PUName == "生产前的准备"):
-                        node = db_session.query(Model.node.NodeCollection).filter(
-                            Model.node.NodeCollection.oddNum == ID,
-                            Model.node.NodeCollection.name == '（单效浓缩段）生产前准备（操作人）').first()
-                        node.status = Model.node.NodeStatus.PASSED.value
+                        name = '（单效浓缩段）生产前准备（操作人）'
+                        return operateflow(ID, name)
                     elif (PUName == "单效浓缩开始"):
-                        node = db_session.query(Model.node.NodeCollection).filter(
-                            Model.node.NodeCollection.oddNum == ID,
-                            Model.node.NodeCollection.name == '单效浓缩段开始，操作按SOP执行（操作人）').first()
-                        node.status = Model.node.NodeStatus.PASSED.value
+                        name = '单效浓缩段开始，操作按SOP执行（操作人）'
+                        return operateflow(ID, name)
                     elif (PUName == "单效浓缩结束清场"):
-                        node = db_session.query(Model.node.NodeCollection).filter(
-                            Model.node.NodeCollection.oddNum == ID,
-                            Model.node.NodeCollection.name == '单效浓缩段结束，按SOP清场（操作人）').first()
-                        node.status = Model.node.NodeStatus.PASSED.value
+                        name = '单效浓缩段结束，按SOP清场（操作人）'
+                        return operateflow(ID, name)
                     else:
                         pass
                 elif(PName == "收膏"):
                     if (PUName == "生产前的准备"):
-                        node = db_session.query(Model.node.NodeCollection).filter(
-                            Model.node.NodeCollection.oddNum == ID,
-                            Model.node.NodeCollection.name == '（收膏段）生产前准备（操作人）').first()
-                        node.status = Model.node.NodeStatus.PASSED.value
+                        name = '（收膏段）生产前准备（操作人）'
+                        return operateflow(ID, name)
                     elif (PUName == "收膏开始"):
-                        node = db_session.query(Model.node.NodeCollection).filter(
-                            Model.node.NodeCollection.oddNum == ID,
-                            Model.node.NodeCollection.name == '收膏段开始，操作按SOP执行（操作人）').first()
-                        node.status = Model.node.NodeStatus.PASSED.value
+                        name = '收膏段开始，操作按SOP执行（操作人）'
+                        return operateflow(ID, name)
                     elif (PUName == "收膏结束清场"):
-                        node = db_session.query(Model.node.NodeCollection).filter(
-                            Model.node.NodeCollection.oddNum == ID,
-                            Model.node.NodeCollection.name == '收膏结束，按SOP清场（操作人）').first()
-                        node.status = Model.node.NodeStatus.PASSED.value
-                    else:
-                        pass
-                db_session.commit()
-                return "操作人确认成功！"
+                        name = '收膏结束，按SOP清场（操作人）'
+                        return operateflow(ID, name)
         except Exception as e:
             print(e)
             logger.error(e)
             insertSyslog("error", "操作人确认报错Error：" + str(e), current_user.Name)
+def operateflow(ID, name):
+    flag = 'OK'
+    try:
+        node = db_session.query(Model.node.NodeCollection).filter(
+            Model.node.NodeCollection.oddNum == ID,
+            Model.node.NodeCollection.name == name).first()
+        node.status = Model.node.NodeStatus.PASSED.value
+        node.opertionTime = datetime.datetime.now()
+        node.oddUser = current_user.Name
+        db_session.commit()
+        return flag
+    except Exception as e:
+        db_session.rollback()
+        print(e)
+        logger.error(e)
+        insertSyslog("error", "复核报错Error：" + str(e), current_user.Name)
+        return "复核报错Error：" + str(e), current_user.Name
 
 # 复核人确认
 @app.route('/ZYPlanGuid/checkedConfirm', methods=['POST', 'GET'])
 def checkedConfirm():
-    if request.method == 'GET':
+    if request.method == 'POST':
         data = request.values
         try:
             json_str = json.dumps(data.to_dict())
@@ -5265,7 +5226,7 @@ def checkedConfirm():
             logger.error(e)
             insertSyslog("error", "复核报错Error：" + str(e), current_user.Name)
 def checkflow(ID,statusName,name):
-    flag = "复核成功！"
+    flag = 'OK'
     try:
         status = db_session.query(Model.node.NodeCollection.status).filter(
             Model.node.NodeCollection.oddNum == ID,
@@ -5276,6 +5237,8 @@ def checkflow(ID,statusName,name):
             Model.node.NodeCollection.oddNum == ID,
             Model.node.NodeCollection.name == name).first()
         node.status = Model.node.NodeStatus.PASSED.value
+        node.opertionTime = datetime.datetime.now()
+        node.oddUser = current_user.Name
         db_session.commit()
         return flag
     except Exception as e:
@@ -5288,7 +5251,7 @@ def checkflow(ID,statusName,name):
 # QA签名
 @app.route('/ZYPlanGuid/QAautograph', methods=['POST', 'GET'])
 def QAautograph():
-    if request.method == 'GET':
+    if request.method == 'POST':
         data = request.values
         try:
             json_str = json.dumps(data.to_dict())
@@ -5428,7 +5391,7 @@ def QAautograph():
             insertSyslog("error", "复核报错Error：" + str(e), current_user.Name)
 
 def QAflow(ID, statusName, name):
-    flag = "QA签名成功！"
+    flag = 'OK'
     try:
         status = db_session.query(Model.node.NodeCollection.status).filter(
             Model.node.NodeCollection.oddNum == ID,
@@ -5439,6 +5402,8 @@ def QAflow(ID, statusName, name):
             Model.node.NodeCollection.oddNum == ID,
             Model.node.NodeCollection.name == name).first()
         node.status = Model.node.NodeStatus.PASSED.value
+        node.opertionTime = datetime.datetime.now()
+        node.oddUser = current_user.Name
         db_session.commit()
         return flag
     except Exception as e:
