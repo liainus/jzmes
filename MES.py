@@ -3226,7 +3226,9 @@ def nodeIdLoadMore():
     if request.method == "POST":
         data = request.values
         try:
-            rootNode = data['nodeId']
+            id = data['id']
+            rootNode = db_session.query(OpcTag.NodeID).filter_by(ID=id).first()[0]
+            # print(rootNode)
             if rootNode is None:
                 return
             tree_data = getOpcTagList(depth=0, ParentID=rootNode)
@@ -3256,28 +3258,26 @@ def collectParams():
     if request.method == 'GET':
         data = request.values
         try:
-            # json_str = json.dumps(data.to_dict())
             CollectParamsTemplateID = data['CollectParamsTemplateID']
-            nodeIds = list(data['OpcTags']) # [{"nodeId":"i=2259"},{"nodeId":"i=2258"}]
-            # nodeIds = re.findall(r"i=\d+", nodeIds)
-            if CollectParamsTemplateID is None or nodeIds is None:
+            Ids = data['OpcTags']
+            Ids = json.loads(Ids)
+            if CollectParamsTemplateID is None or Ids is None:
                 return
-            if len(nodeIds) > 10:
-                for nodeId in nodeIds:
-                    OpcTagID = db_session.query(OpcTag.ID).filter_by(NodeID=nodeId).first()[0]
+            if len(Ids) > 0:
+                for Id in Ids:
                     # 判断当前模板是否存在
-                    object = db_session.query(CollectParams).filter(and_(CollectParams.OpcTagID==OpcTagID,CollectParams.CollectParamsTemplateID==CollectParamsTemplateID)).first()
+                    object = db_session.query(CollectParams).filter(and_(CollectParams.OpcTagID==Id['nodeId'],CollectParams.CollectParamsTemplateID==CollectParamsTemplateID)).first()
                     if object is not None:
                         db_session.delete(object)
                         db_session.commit()
                         db_session.add(
                             CollectParams(
                                 CollectParamsTemplateID=CollectParamsTemplateID,
-                                OpcTagID=OpcTagID))
+                                OpcTagID=Id['nodeId']))
                         db_session.commit()
                     else:
                         db_session.add(CollectParams(CollectParamsTemplateID=CollectParamsTemplateID,
-                                                     OpcTagID=OpcTagID))
+                                                     OpcTagID=Id['nodeId']))
                         db_session.commit()
                 return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
                                   ensure_ascii=False)
@@ -3598,23 +3598,20 @@ def strategySearch():
 def CollectTaskConfig():
     TemplateNames = []
     TempNames = db_session.query(CollectParamsTemplate.TemplateName).all()
-    for name in TempNames:
-        li = list(name)
-        name = li[0]
+    for name in set(TempNames):
+        name = name[0]
         temp_name = {'tempName': name}
         TemplateNames.append(temp_name)
     StrategyNames = []
     straNames = db_session.query(Collectionstrategy.StrategyName).all()
-    for name in straNames:
-        li = list(name)
-        name = li[0]
+    for strname in set(straNames):
+        name = strname[0]
         stra_name = {'straName': name}
         StrategyNames.append(stra_name)
     CollectTaskNames = []
     TaskNames = db_session.query(CollectTask.CollectTaskName).all()
-    for name in TaskNames:
-        li = list(name)
-        name = li[0]
+    for taskName in set(TaskNames):
+        name = taskName[0]
         task_name = {'taskName': name}
         CollectTaskNames.append(task_name)
     return render_template('CollectTaskConfig.html',
