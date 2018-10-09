@@ -4994,8 +4994,6 @@ def operateConfirm():
                     elif(PUName == "煎煮结束清场"):
                         name = '（煎煮段）生产结束清场（操作人）'
                         return operateflow(ID, name)
-                    else:
-                        pass
                 elif(PName == "浓缩"):
                     if (PUName == "生产前的准备"):
                         name = '（浓缩段）生产前准备流程（操作人）'
@@ -5006,8 +5004,6 @@ def operateConfirm():
                     elif (PUName == "浓缩结束清场"):
                         name = '浓缩结束清场（操作人）'
                         return operateflow(ID, name)
-                    else:
-                        pass
                 elif(PName == "喷雾干燥"):
                     if (PUName == "生产前的准备"):
                         name = '（喷雾干燥段）生产前准备流程（操作人）'
@@ -5038,8 +5034,6 @@ def operateConfirm():
                     elif (PUName == "醇沉结束清场"):
                         name = '醇沉结束，按SOP清场（操作人）'
                         return operateflow(ID, name)
-                    else:
-                        pass
                 elif(PName == "单效浓缩段"):
                     if (PUName == "生产前的准备"):
                         name = '（单效浓缩段）生产前准备（操作人）'
@@ -5050,8 +5044,6 @@ def operateConfirm():
                     elif (PUName == "单效浓缩结束清场"):
                         name = '单效浓缩段结束，按SOP清场（操作人）'
                         return operateflow(ID, name)
-                    else:
-                        pass
                 elif(PName == "收膏"):
                     if (PUName == "生产前的准备"):
                         name = '（收膏段）生产前准备（操作人）'
@@ -5110,8 +5102,6 @@ def checkedConfirm():
                         statusName = '（备料段）生产结束清场（操作人）'
                         name = '（备料段）生产结束清场（复核人）'
                         return checkflow(ID, statusName, name)
-                    else:
-                        pass
                 elif (PName == "煎煮"):
                     if (PUName == "生产前的准备"):
                         statusName = '（煎煮段）生产前准备（操作人）'
@@ -5129,8 +5119,6 @@ def checkedConfirm():
                         statusName = '（煎煮段）生产结束清场（操作人）'
                         name = '（煎煮段）生产结束清场（复核人）'
                         return checkflow(ID, statusName, name)
-                    else:
-                        pass
                 elif (PName == "浓缩"):
                     if (PUName == "生产前的准备"):
                         statusName = '（浓缩段）生产前准备流程（操作人）'
@@ -5144,8 +5132,6 @@ def checkedConfirm():
                         statusName = '浓缩结束清场（操作人）'
                         name = '浓缩结束清场（复核人）'
                         return checkflow(ID, statusName, name)
-                    else:
-                        pass
                 elif (PName == "喷雾干燥"):
                     if (PUName == "生产前的准备"):
                         statusName = '（喷雾干燥段）生产前准备流程（操作人）'
@@ -5159,8 +5145,6 @@ def checkedConfirm():
                         statusName = '喷雾干燥结束，按SOP清场（操作人）'
                         name = '喷雾干燥结束，按SOP清场（复核人）'
                         return checkflow(ID, statusName, name)
-                    else:
-                        pass
                 elif (PName == "收粉"):
                     if (PUName == "生产前的准备"):
                         statusName = '（收粉段）生产前准备流程（操作人）'
@@ -5174,8 +5158,6 @@ def checkedConfirm():
                         statusName = '收粉结束，按SOP清场（操作人）'
                         name = '收粉结束，按SOP清场（复核人）'
                         return checkflow(ID, statusName, name)
-                    else:
-                        pass
                 elif (PName == "醇沉"):
                     if (PUName == "生产前的准备"):
                         statusName = '（醇沉段）生产前准备（操作人）'
@@ -5189,8 +5171,6 @@ def checkedConfirm():
                         statusName = '醇沉结束，按SOP清场（操作人）'
                         name = '醇沉结束，按SOP清场（复核人）'
                         return checkflow(ID, statusName, name)
-                    else:
-                        pass
                 elif (PName == "单效浓缩段"):
                     if (PUName == "生产前的准备"):
                         statusName = '（单效浓缩段）生产前准备（操作人）'
@@ -5204,8 +5184,6 @@ def checkedConfirm():
                         statusName = '单效浓缩段结束，按SOP清场（操作人）'
                         name = '单效浓缩段结束，按SOP清场（复核人）'
                         return checkflow(ID, statusName, name)
-                    else:
-                        pass
                 elif (PName == "收膏"):
                     if (PUName == "生产前的准备"):
                         statusName = '（收膏段）生产前准备（操作人）'
@@ -5219,8 +5197,6 @@ def checkedConfirm():
                         statusName = '收膏结束，按SOP清场（操作人）'
                         name = '收膏结束，按SOP清场（复核人）'
                         return checkflow(ID,statusName,name)
-                    else:
-                        pass
         except Exception as e:
             print(e)
             logger.error(e)
@@ -5274,8 +5250,6 @@ def QAautograph():
                         statusName = '（备料段）生产结束清场（复核人）'
                         name = '（备料段）生产结束清场（QA签名）'
                         return QAflow(ID, statusName, name)
-                    else:
-                        pass
                 elif (PName == "煎煮"):
                     if (PUName == "生产前的准备"):
                         statusName = '（煎煮段）生产前准备（复核人）'
@@ -5293,8 +5267,6 @@ def QAautograph():
                         statusName = '（煎煮段）生产结束清场（复核人）'
                         name = '（煎煮段）生产结束清场（QA签名）'
                         return QAflow(ID, statusName, name)
-                    else:
-                        pass
                 elif (PName == "浓缩"):
                     if (PUName == "生产前的准备"):
                         statusName = '（浓缩段）生产前准备流程（复核人）'
@@ -5308,8 +5280,6 @@ def QAautograph():
                         statusName = '浓缩结束清场（复核人）'
                         name = '浓缩结束清场（QA签名）'
                         return QAflow(ID, statusName, name)
-                    else:
-                        pass
                 elif (PName == "喷雾干燥"):
                     if (PUName == "生产前的准备"):
                         statusName = '（喷雾干燥段）生产前准备流程（复核人）'
@@ -5323,8 +5293,6 @@ def QAautograph():
                         statusName = '喷雾干燥结束，按SOP清场（复核人）'
                         name = '喷雾干燥结束，按SOP清场（QA签名）'
                         return QAflow(ID, statusName, name)
-                    else:
-                        pass
                 elif (PName == "收粉"):
                     if (PUName == "生产前的准备"):
                         statusName = '（收粉段）生产前准备流程（复核人）'
@@ -5338,8 +5306,6 @@ def QAautograph():
                         statusName = '收粉结束，按SOP清场（复核人）'
                         name = '收粉结束，按SOP清场（QA签名）'
                         return QAflow(ID, statusName, name)
-                    else:
-                        pass
                 elif (PName == "醇沉"):
                     if (PUName == "生产前的准备"):
                         statusName = '（醇沉段）生产前准备（复核人）'
@@ -5353,8 +5319,6 @@ def QAautograph():
                         statusName = '醇沉结束，按SOP清场（复核人）'
                         name = '醇沉结束，按SOP清场（QA签名）'
                         return QAflow(ID, statusName, name)
-                    else:
-                        pass
                 elif (PName == "单效浓缩段"):
                     if (PUName == "生产前的准备"):
                         statusName = '（单效浓缩段）生产前准备（复核人）'
@@ -5368,8 +5332,6 @@ def QAautograph():
                         statusName = '单效浓缩段结束，按SOP清场（复核人）'
                         name = '单效浓缩段结束，按SOP清场（QA签名）'
                         return QAflow(ID, statusName, name)
-                    else:
-                        pass
                 elif (PName == "收膏"):
                     if (PUName == "生产前的准备"):
                         statusName = '（收膏段）生产前准备（复核人）'
@@ -5383,8 +5345,6 @@ def QAautograph():
                         statusName = '收膏结束，按SOP清场（复核人）'
                         name = '收膏结束，按SOP清场（QA签名）'
                         return QAflow(ID, statusName, name)
-                    else:
-                        pass
         except Exception as e:
             print(e)
             logger.error(e)
@@ -5531,7 +5491,7 @@ def planmanagerProgressTuSearch():
                 plan = db_session.query(PlanManager).filter(PlanManager.ID == ID).first()
                 zyplans = db_session.query(ZYPlan).filter(ZYPlan.BatchID == plan.BatchID).all()
                 for zy in zyplans:
-                    zy.ZYPlanStatus = ""
+                    zy.ZYPlanStatus = ""   
                 jsonzyplans = json.dumps(zyplans, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonzyplans = '{"total"' + ":" + str() + ',"rows"' + ":\n" + jsonzyplans + "}"
                 return jsonzyplans

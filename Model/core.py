@@ -3188,7 +3188,7 @@ class PlanManagerWebIFS(object):
 			if len(json_str) > 2:
 				strconditon = "%" + odata['BatchID'] + "%"
 				PlanManagerscount = session.query(Model.core.PlanManager).filter(
-					PlanManager.BatchID.like(strconditon)).all()
+					PlanManager.BatchID.like(strconditon)).order_by(desc("PlanBeginTime")).all()
 				total = Counter(PlanManagerscount)
 				jsonPlanManagers = json.dumps(PlanManagerscount, cls=Model.BSFramwork.AlchemyEncoder,
 											   ensure_ascii=False)
