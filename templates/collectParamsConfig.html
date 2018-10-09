@@ -158,7 +158,7 @@
                 var jsonarray = []
                 var OpcTags = ""
                 for (var i = 0; i < treegridSelections.length; i++) {
-                    var obj=createKeyIDObj(treegridSelections[i].NodeId);
+                    var obj=createKeyIDObj(treegridSelections[i].ID);
                         jsonarray.push(obj);
                 }
                 OpcTags = JSON.stringify(jsonarray);
