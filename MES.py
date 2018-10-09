@@ -3191,28 +3191,60 @@ def collectParamsConfig():
         NodeID.append(node_id)
     return render_template('collectParamsConfig.html', TempNames=TemplateNames, NodeID=NodeID)
 
-def getOpcTagList(id, ParentID=None):
+def get_childs(ParentID):
+    childs = db_session.query(OpcTag).filter_by(ParentID=ParentID).all()
+    return childs
+
+def getOpcTagList(depth, ParentID=None):
     sz = []
     try:
-        opcTags = db_session.query(OpcTag).all()
-        for obj in opcTags:
-            if obj.ParentID == ParentID:
-                sz.append({"id": obj.ID,
-                           "NodeId": obj.NodeID,
-                           "Desc": obj.Note,
-                           "children": getOpcTagList(obj.ID, obj.NodeID)})
-        return sz
+        opcTags = db_session.query(OpcTag).filter_by(ParentID=ParentID).all()
+        if depth<=1:
+            for obj in opcTags:
+                if obj.ParentID == ParentID:
+                    if len(get_childs(ParentID)) > 0:
+                        sz.append({"id": obj.ID,
+                                   "NodeId": obj.NodeID,
+                                   "Desc": obj.Note,
+                                   "state": 'closed',
+                                   "children": getOpcTagList(depth+1, ParentID=obj.NodeID)})
+                    if len(get_childs(ParentID)) == 0:
+                        sz.append({"id": obj.ID,
+                                   "NodeId": obj.NodeID,
+                                   "Desc": obj.Note,
+                                   "state": 'open',
+                                   "children": getOpcTagList(depth+1, ParentID=obj.NodeID)})
+            return sz
     except Exception as e:
         print(e)
         logger.error(e)
         insertSyslog("error", "getOpcTagList加载父级菜单列表报错Error：" + str(e), current_user.Name)
         return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
+@app.route('/NodeID/LoadMore', methods=['POST', 'GET'])
+def nodeIdLoadMore():
+    if request.method == "POST":
+        data = request.values
+        try:
+            id = data['id']
+            rootNode = db_session.query(OpcTag.NodeID).filter_by(ID=id).first()[0]
+            # print(rootNode)
+            if rootNode is None:
+                return
+            tree_data = getOpcTagList(depth=0, ParentID=rootNode)
+            tree_data = json.dumps(tree_data, cls=AlchemyEncoder, ensure_ascii=False)
+            return tree_data
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "加载NodeID变量节点失败报错Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
 @app.route('/CollectParams/OpcTagLoad', methods=['POST', 'GET'])
 def OpcTagLoad():
     if request.method == 'POST':
         try:
-            data = getOpcTagList(id=0)
+            data = getOpcTagList(depth=0)
             jsondata = json.dumps(data, cls=AlchemyEncoder, ensure_ascii=False)
             return jsondata.encode("utf8")
         except Exception as e:
@@ -3226,28 +3258,26 @@ def collectParams():
     if request.method == 'GET':
         data = request.values
         try:
-            json_str = json.dumps(data.to_dict())
             CollectParamsTemplateID = data['CollectParamsTemplateID']
-            nodeIds = data['OpcTags'] # [{"nodeId":"i=2259"},{"nodeId":"i=2258"}]
-            nodeIds = re.findall(r"i=\d+", nodeIds)
-            if CollectParamsTemplateID is None or nodeIds is None:
+            Ids = data['OpcTags']
+            Ids = json.loads(Ids)
+            if CollectParamsTemplateID is None or Ids is None:
                 return
-            if len(json_str) > 10:
-                for nodeId in nodeIds:
-                    OpcTagID = db_session.query(OpcTag.ID).filter_by(NodeID=nodeId).first()[0]
+            if len(Ids) > 0:
+                for Id in Ids:
                     # 判断当前模板是否存在
-                    object = db_session.query(CollectParams).filter(and_(CollectParams.OpcTagID==OpcTagID,CollectParams.CollectParamsTemplateID==CollectParamsTemplateID)).first()
+                    object = db_session.query(CollectParams).filter(and_(CollectParams.OpcTagID==Id['nodeId'],CollectParams.CollectParamsTemplateID==CollectParamsTemplateID)).first()
                     if object is not None:
                         db_session.delete(object)
                         db_session.commit()
                         db_session.add(
                             CollectParams(
                                 CollectParamsTemplateID=CollectParamsTemplateID,
-                                OpcTagID=OpcTagID))
+                                OpcTagID=Id['nodeId']))
                         db_session.commit()
                     else:
                         db_session.add(CollectParams(CollectParamsTemplateID=CollectParamsTemplateID,
-                                                     OpcTagID=OpcTagID))
+                                                     OpcTagID=Id['nodeId']))
                         db_session.commit()
                 return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
                                   ensure_ascii=False)
@@ -3568,23 +3598,20 @@ def strategySearch():
 def CollectTaskConfig():
     TemplateNames = []
     TempNames = db_session.query(CollectParamsTemplate.TemplateName).all()
-    for name in TempNames:
-        li = list(name)
-        name = li[0]
+    for name in set(TempNames):
+        name = name[0]
         temp_name = {'tempName': name}
         TemplateNames.append(temp_name)
     StrategyNames = []
     straNames = db_session.query(Collectionstrategy.StrategyName).all()
-    for name in straNames:
-        li = list(name)
-        name = li[0]
+    for strname in set(straNames):
+        name = strname[0]
         stra_name = {'straName': name}
         StrategyNames.append(stra_name)
     CollectTaskNames = []
     TaskNames = db_session.query(CollectTask.CollectTaskName).all()
-    for name in TaskNames:
-        li = list(name)
-        name = li[0]
+    for taskName in set(TaskNames):
+        name = taskName[0]
         task_name = {'taskName': name}
         CollectTaskNames.append(task_name)
     return render_template('CollectTaskConfig.html',
@@ -5637,7 +5664,7 @@ def nodeIdNote():
             for node in set(nodes):
                 x += 1
                 sheet.write(x, y, node)
-            path = r'C:\Users\maomao\Desktop\test1.xls'
+            path = r'C:\Users\maomao\Desktop\{}{}{}'.format('nodeId', datetime.datetime.now(), '.xlsx')
             workbook.save(path)
             return redirect(url_for('nodeIdNote'))
         except Exception as e:

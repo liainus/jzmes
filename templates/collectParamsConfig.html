@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>配置采集策略</title>
+    <title>配置采集模板</title>
     <link href="../static/css/base.css" rel="stylesheet">
 	<link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
 	<link href="../static/css/basic_info.css" rel="stylesheet">
@@ -138,6 +138,11 @@
                 animate:true,
                 loadFilter:function(data){
                     return data
+                },
+                onBeforeExpand:function(row){
+                    var url = '/NodeID/LoadMore?id=' + row.id + '&nodeId=' + row.NodeId
+                    $("#treegrid").treegrid("options").url = url;
+                    return true;
                 }
             })
 
@@ -150,10 +155,11 @@
 
             $("#btnConfirm").on('click',function(){
                 var treegridSelections =  $('#treegrid').treegrid('getSelections')//网格选中数据
+                console.log(treegridSelections)
                 var jsonarray = []
                 var OpcTags = ""
                 for (var i = 0; i < treegridSelections.length; i++) {
-                    var obj=createKeyIDObj(treegridSelections[i].NodeId);
+                    var obj=createKeyIDObj(treegridSelections[i].id);
                         jsonarray.push(obj);
                 }
                 OpcTags = JSON.stringify(jsonarray);
