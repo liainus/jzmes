@@ -155,10 +155,11 @@
 
             $("#btnConfirm").on('click',function(){
                 var treegridSelections =  $('#treegrid').treegrid('getSelections')//网格选中数据
+                console.log(treegridSelections)
                 var jsonarray = []
                 var OpcTags = ""
                 for (var i = 0; i < treegridSelections.length; i++) {
-                    var obj=createKeyIDObj(treegridSelections[i].ID);
+                    var obj=createKeyIDObj(treegridSelections[i].id);
                         jsonarray.push(obj);
                 }
                 OpcTags = JSON.stringify(jsonarray);
