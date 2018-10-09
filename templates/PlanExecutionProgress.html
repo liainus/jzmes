@@ -102,6 +102,7 @@
 
         /*纵向时间轴*/
         .ball{
+            display: block;
             width: 20px;
             height: 20px;
             border-radius: 10px;
@@ -207,11 +208,105 @@
                 },
                 onShowMenu: function(e, menu) {
                     return menu
+                },
+                bindings:{
+                    'operConfirm':function(t){
+                        var rows = $("#tab").datagrid('getSelections');
+                        var pID = rows[0].ID
+                        $.ajax({
+                            url: '/ZYPlanGuid/operateConfirm',
+                            method: 'POST',
+                            data: {
+                                ID: pID,
+                                PName:t.name,
+                                PUName:t.rel
+                            },
+                            success: function (data) {
+                                if (data == "OK") {
+                                    $.messager.show({
+                                        title: '提示',
+                                        timeout: 1000,
+                                        msg: '操作成功！',
+                                        style: {
+                                            right: '',
+                                            top: document.body.scrollTop + document.documentElement.scrollTop,
+                                            bottom: ''
+                                        }
+                                    });
+                                }else{
+                                    $.messager.alert('提示', data, 'info');
+                                }
+                            },
+                            error: function () {
+                                alert("请求失败，请稍后重试！")
+                            }
+                        });
+                    },
+                    'reConfirm':function(t){
+                        var rows = $("#tab").datagrid('getSelections');
+                        var pID = rows[0].ID
+                        $.ajax({
+                            url: '/ZYPlanGuid/checkedConfirm',
+                            method: 'POST',
+                            data: {
+                                ID: pID,
+                                PName:t.name,
+                                PUName:t.rel
+                            },
+                            success: function (data) {
+                                if (data == "OK") {
+                                    $.messager.show({
+                                        title: '提示',
+                                        timeout: 1000,
+                                        msg: '操作成功！',
+                                        style: {
+                                            right: '',
+                                            top: document.body.scrollTop + document.documentElement.scrollTop,
+                                            bottom: ''
+                                        }
+                                    });
+                                }else{
+                                    $.messager.alert('提示', data, 'info');
+                                }
+                            },
+                            error: function () {
+                                alert("请求失败，请稍后重试！")
+                            }
+                        });
+                    },
+                    'qaConfirm':function(t){
+                        var rows = $("#tab").datagrid('getSelections');
+                        var pID = rows[0].ID
+                        $.ajax({
+                            url: '/ZYPlanGuid/QAautograph',
+                            method: 'POST',
+                            data: {
+                                ID: pID,
+                                PName:t.name,
+                                PUName:t.rel
+                            },
+                            success: function (data) {
+                                if (data == "OK") {
+                                    $.messager.show({
+                                        title: '提示',
+                                        timeout: 1000,
+                                        msg: '操作成功！',
+                                        style: {
+                                            right: '',
+                                            top: document.body.scrollTop + document.documentElement.scrollTop,
+                                            bottom: ''
+                                        }
+                                    });
+                                }else{
+                                    $.messager.alert('提示', data, 'info');
+                                }
+                            },
+                            error: function () {
+                                alert("请求失败，请稍后重试！")
+                            }
+                        });
+                    }
                 }
-            })
-            $("#myMenu ul li").on('click',function () {
-                var rows = $("#tab").datagrid('getSelections');
-                console.log(rows[0].ID)
             })
         })
         //按钮点击后添加选项卡
@@ -272,13 +367,13 @@
                     {% if isIn(['89', '90', '91'], session.get('menus')) %}
                         <ul>
                             {% if '89' in session.get('menus') %}
-                                <li>操作人确认</li>
+                                <li id="operConfirm">操作人确认</li>
                             {% endif %}
                             {% if '90' in session.get('menus') %}
-                                <li>复核人确认</li>
+                                <li id="reConfirm">复核人确认</li>
                             {% endif %}
                             {% if '91' in session.get('menus') %}
-                                <li>QA确认</li>
+                                <li id="qaConfirm">QA确认</li>
                             {% endif %}
                         </ul>
                     {% else %}
@@ -310,21 +405,21 @@
                             <div class="childBox">
                                 <div class="childNode">
                                     <div class="progress-line"></div>
-                                    <div class="ball" title="右击操作确认"></div>
+                                    <a class="ball" title="右击操作确认" name="备料" rel="生产前的准备"></a>
                                     <div class="detail">
                                         <div class="flow-detail">生产前的准备</div>
                                     </div>
                                     <div class="progress-line"></div>
                                 </div>
                                 <div class="childNode">
-                                    <div class="ball" title="右击操作确认"></div>
+                                    <a class="ball" title="右击操作确认" name="备料" rel="备料开始"></a>
                                     <div class="detail">
                                         <div class="flow-detail">备料开始</div>
                                     </div>
                                     <div class="progress-line"></div>
                                 </div>
                                 <div class="childNode">
-                                    <div class="ball" title="右击操作确认"></div>
+                                    <a class="ball" title="右击操作确认" name="备料" rel="备料结束清场"></a>
                                     <div class="detail">
                                         <div class="flow-detail">备料结束清场</div>
                                     </div>
@@ -338,28 +433,28 @@
                             <div class="childBox">
                                 <div class="childNode">
                                     <div class="progress-line"></div>
-                                    <div class="ball" title="右击操作确认"></div>
+                                    <a class="ball" title="右击操作确认" name="煎煮" rel="生产前的准备"></a>
                                     <div class="detail">
                                         <div class="flow-detail">生产前的准备</div>
                                     </div>
                                     <div class="progress-line"></div>
                                 </div>
                                 <div class="childNode">
-                                    <div class="ball" title="右击操作确认"></div>
+                                    <a class="ball" title="右击操作确认" name="煎煮" rel="煎煮开始"></a>
                                     <div class="detail">
                                         <div class="flow-detail">煎煮开始</div>
                                     </div>
                                     <div class="progress-line"></div>
                                 </div>
                                 <div class="childNode">
-                                    <div class="ball" title="右击操作确认"></div>
+                                    <a class="ball" title="右击操作确认" name="煎煮" rel="静置开始"></a>
                                     <div class="detail">
                                         <div class="flow-detail">静置开始</div>
                                     </div>
                                     <div class="progress-line"></div>
                                 </div>
                                 <div class="childNode">
-                                    <div class="ball" title="右击操作确认"></div>
+                                    <a class="ball" title="右击操作确认" name="煎煮" rel="煎煮结束清场"></a>
                                     <div class="detail">
                                         <div class="flow-detail">煎煮结束清场</div>
                                     </div>
@@ -373,21 +468,21 @@
                             <div class="childBox">
                                 <div class="childNode">
                                     <div class="progress-line"></div>
-                                    <div class="ball" title="右击操作确认"></div>
+                                    <a class="ball" title="右击操作确认" name="浓缩" rel="生产前的准备"></a>
                                     <div class="detail">
                                         <div class="flow-detail">生产前的准备</div>
                                     </div>
                                     <div class="progress-line"></div>
                                 </div>
                                 <div class="childNode">
-                                    <div class="ball" title="右击操作确认"></div>
+                                    <a class="ball" title="右击操作确认" name="浓缩" rel="浓缩开始"></a>
                                     <div class="detail">
                                         <div class="flow-detail">浓缩开始</div>
                                     </div>
                                     <div class="progress-line"></div>
                                 </div>
                                 <div class="childNode">
-                                    <div class="ball" title="右击操作确认"></div>
+                                    <a class="ball" title="右击操作确认" name="浓缩" rel="浓缩结束清场"></a>
                                     <div class="detail">
                                         <div class="flow-detail">浓缩结束清场</div>
                                     </div>
@@ -401,21 +496,21 @@
                             <div class="childBox">
                                 <div class="childNode">
                                     <div class="progress-line"></div>
-                                    <div class="ball" title="右击操作确认"></div>
+                                    <a class="ball" title="右击操作确认" name="喷雾干燥" rel="生产前的准备"></a>
                                     <div class="detail">
                                         <div class="flow-detail">生产前的准备</div>
                                     </div>
                                     <div class="progress-line"></div>
                                 </div>
                                 <div class="childNode">
-                                    <div class="ball" title="右击操作确认"></div>
+                                    <a class="ball" title="右击操作确认" name="喷雾干燥" rel="喷雾干燥开始"></a>
                                     <div class="detail">
                                         <div class="flow-detail">喷雾干燥开始</div>
                                     </div>
                                     <div class="progress-line"></div>
                                 </div>
                                 <div class="childNode">
-                                    <div class="ball" title="右击操作确认"></div>
+                                    <a class="ball" title="右击操作确认" name="喷雾干燥" rel="喷雾干燥结束清场"></a>
                                     <div class="detail">
                                         <div class="flow-detail">喷雾干燥结束清场</div>
                                     </div>
@@ -429,21 +524,21 @@
                             <div class="childBox">
                                 <div class="childNode">
                                     <div class="progress-line"></div>
-                                    <div class="ball" title="右击操作确认"></div>
+                                    <a class="ball" title="右击操作确认" name="收粉" rel="生产前的准备"></a>
                                     <div class="detail">
                                         <div class="flow-detail">生产前的准备</div>
                                     </div>
                                     <div class="progress-line"></div>
                                 </div>
                                 <div class="childNode">
-                                    <div class="ball" title="右击操作确认"></div>
+                                    <a class="ball" title="右击操作确认" name="收粉" rel="收粉开始"></a>
                                     <div class="detail">
                                         <div class="flow-detail">收粉开始</div>
                                     </div>
                                     <div class="progress-line"></div>
                                 </div>
                                 <div class="childNode">
-                                    <div class="ball" title="右击操作确认"></div>
+                                    <a class="ball" title="右击操作确认" name="收粉" rel="收粉结束清场"></a>
                                     <div class="detail">
                                         <div class="flow-detail">收粉结束清场</div>
                                     </div>
