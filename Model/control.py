@@ -460,6 +460,19 @@ class ctrlPlan:
                         bReturn = self.createNodeCollection(PlanManageID, na, userName)
                         if bReturn == False:
                             return False
+            if (ABrandName == "肿节风浸膏"):
+                bReturn = self.createOddC(PlanManageID)
+                if bReturn == False:
+                    return False
+                flowPathNames = session.query(Model.node.Odd.flowPathName).filter(
+                    Model.node.Odd.oddNum == PlanManageID).all()
+                for name in flowPathNames:
+                    names = session.query(Model.node.Procedure.nodeName).filter(
+                        Model.node.Procedure.flowPathName == name).all()
+                    for na in names:
+                        bReturn = self.createNodeCollection(PlanManageID, na, userName)
+                        if bReturn == False:
+                            return False
             # Desc = "计划向导生成计划planmanager"
             # Type = Model.Global.AuditStatus.Unaudited.value
             # bReturn = self.createWorkFlowEventPlan(PlanManageID,userID,Desc,Type)
@@ -713,6 +726,52 @@ class ctrlPlan:
         re = self.sessionadd(APlanManageID, R)
         S = Model.node.flowPathNameJWXSP.S.value
         re = self.sessionadd(APlanManageID, S)
+        return re
+    def createOddC(self,APlanManageID):
+        A = Model.node.flowPathNameCSHHP.A.value
+        re = self.sessionadd(APlanManageID, A)
+        B = Model.node.flowPathNameCSHHP.B.value
+        re = self.sessionadd(APlanManageID, B)
+        C = Model.node.flowPathNameCSHHP.C.value
+        re = self.sessionadd(APlanManageID, C)
+        D = Model.node.flowPathNameCSHHP.D.value
+        re = self.sessionadd(APlanManageID, D)
+        E = Model.node.flowPathNameCSHHP.E.value
+        re = self.sessionadd(APlanManageID, E)
+        F = Model.node.flowPathNameCSHHP.F.value
+        re = self.sessionadd(APlanManageID, F)
+        G = Model.node.flowPathNameCSHHP.G.value
+        re = self.sessionadd(APlanManageID, G)
+        H = Model.node.flowPathNameCSHHP.H.value
+        re = self.sessionadd(APlanManageID, H)
+        I = Model.node.flowPathNameCSHHP.I.value
+        re = self.sessionadd(APlanManageID, I)
+        J = Model.node.flowPathNameCSHHP.J.value
+        re = self.sessionadd(APlanManageID, J)
+        K = Model.node.flowPathNameCSHHP.K.value
+        re = self.sessionadd(APlanManageID, K)
+        L = Model.node.flowPathNameCSHHP.L.value
+        re = self.sessionadd(APlanManageID, L)
+        M = Model.node.flowPathNameCSHHP.M.value
+        re = self.sessionadd(APlanManageID, M)
+        N = Model.node.flowPathNameCSHHP.N.value
+        re = self.sessionadd(APlanManageID, N)
+        O = Model.node.flowPathNameCSHHP.O.value
+        re = self.sessionadd(APlanManageID, O)
+        P = Model.node.flowPathNameCSHHP.P.value
+        re = self.sessionadd(APlanManageID, P)
+        Q = Model.node.flowPathNameCSHHP.Q.value
+        re = self.sessionadd(APlanManageID, Q)
+        R = Model.node.flowPathNameCSHHP.R.value
+        re = self.sessionadd(APlanManageID, R)
+        S = Model.node.flowPathNameCSHHP.S.value
+        re = self.sessionadd(APlanManageID, S)
+        T = Model.node.flowPathNameCSHHP.T.value
+        re = self.sessionadd(APlanManageID, T)
+        U = Model.node.flowPathNameCSHHP.U.value
+        re = self.sessionadd(APlanManageID, U)
+        V = Model.node.flowPathNameCSHHP.V.value
+        re = self.sessionadd(APlanManageID, V)
         return re
 
 
