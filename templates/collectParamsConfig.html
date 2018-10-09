@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>配置采集策略</title>
+    <title>配置采集模板</title>
     <link href="../static/css/base.css" rel="stylesheet">
 	<link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
 	<link href="../static/css/basic_info.css" rel="stylesheet">
@@ -138,6 +138,11 @@
                 animate:true,
                 loadFilter:function(data){
                     return data
+                },
+                onBeforeExpand:function(row){
+                    var url = '/NodeID/LoadMore?id=' + row.id + '&nodeId=' + row.nodeId
+                    $("#treegrid").treegrid("options").url = url;
+                    return true;
                 }
             })
 
