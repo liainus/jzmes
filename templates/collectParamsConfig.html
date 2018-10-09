@@ -140,7 +140,7 @@
                     return data
                 },
                 onBeforeExpand:function(row){
-                    var url = '/NodeID/LoadMore?id=' + row.id + '&nodeId=' + row.nodeId
+                    var url = '/NodeID/LoadMore?id=' + row.id + '&nodeId=' + row.NodeId
                     $("#treegrid").treegrid("options").url = url;
                     return true;
                 }
