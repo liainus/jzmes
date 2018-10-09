@@ -3500,7 +3500,7 @@ class Collectionstrategy(Base):
 	Interval = Column(Integer, nullable=True)
 
 	# NodeID
-	NodeID = Column(Unicode(30), nullable=True)
+	NodeID = Column(Unicode(200), nullable=True)
 
 	# 策略名称
 	StrategyName = Column(Unicode(30), nullable=True)

@@ -3226,7 +3226,9 @@ def nodeIdLoadMore():
     if request.method == "POST":
         data = request.values
         try:
-            rootNode = data['nodeId']
+            id = data['id']
+            rootNode = db_session.query(OpcTag.NodeID).filter_by(ID=id).first()[0]
+            # print(rootNode)
             if rootNode is None:
                 return
             tree_data = getOpcTagList(depth=0, ParentID=rootNode)
@@ -3256,28 +3258,26 @@ def collectParams():
     if request.method == 'GET':
         data = request.values
         try:
-            # json_str = json.dumps(data.to_dict())
             CollectParamsTemplateID = data['CollectParamsTemplateID']
-            nodeIds = list(data['OpcTags']) # [{"nodeId":"i=2259"},{"nodeId":"i=2258"}]
-            # nodeIds = re.findall(r"i=\d+", nodeIds)
-            if CollectParamsTemplateID is None or nodeIds is None:
+            Ids = data['OpcTags']
+            Ids = json.loads(Ids)
+            if CollectParamsTemplateID is None or Ids is None:
                 return
-            if len(nodeIds) > 10:
-                for nodeId in nodeIds:
-                    OpcTagID = db_session.query(OpcTag.ID).filter_by(NodeID=nodeId).first()[0]
+            if len(Ids) > 0:
+                for Id in Ids:
                     # 判断当前模板是否存在
-                    object = db_session.query(CollectParams).filter(and_(CollectParams.OpcTagID==OpcTagID,CollectParams.CollectParamsTemplateID==CollectParamsTemplateID)).first()
+                    object = db_session.query(CollectParams).filter(and_(CollectParams.OpcTagID==Id['nodeId'],CollectParams.CollectParamsTemplateID==CollectParamsTemplateID)).first()
                     if object is not None:
                         db_session.delete(object)
                         db_session.commit()
                         db_session.add(
                             CollectParams(
                                 CollectParamsTemplateID=CollectParamsTemplateID,
-                                OpcTagID=OpcTagID))
+                                OpcTagID=Id['nodeId']))
                         db_session.commit()
                     else:
                         db_session.add(CollectParams(CollectParamsTemplateID=CollectParamsTemplateID,
-                                                     OpcTagID=OpcTagID))
+                                                     OpcTagID=Id['nodeId']))
                         db_session.commit()
                 return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
                                   ensure_ascii=False)
@@ -3598,23 +3598,20 @@ def strategySearch():
 def CollectTaskConfig():
     TemplateNames = []
     TempNames = db_session.query(CollectParamsTemplate.TemplateName).all()
-    for name in TempNames:
-        li = list(name)
-        name = li[0]
+    for name in set(TempNames):
+        name = name[0]
         temp_name = {'tempName': name}
         TemplateNames.append(temp_name)
     StrategyNames = []
     straNames = db_session.query(Collectionstrategy.StrategyName).all()
-    for name in straNames:
-        li = list(name)
-        name = li[0]
+    for strname in set(straNames):
+        name = strname[0]
         stra_name = {'straName': name}
         StrategyNames.append(stra_name)
     CollectTaskNames = []
     TaskNames = db_session.query(CollectTask.CollectTaskName).all()
-    for name in TaskNames:
-        li = list(name)
-        name = li[0]
+    for taskName in set(TaskNames):
+        name = taskName[0]
         task_name = {'taskName': name}
         CollectTaskNames.append(task_name)
     return render_template('CollectTaskConfig.html',
@@ -4964,7 +4961,7 @@ def QAConfirmAgain():
 #操作人确认
 @app.route('/ZYPlanGuid/operateConfirm', methods=['POST', 'GET'])
 def operateConfirm():
-    if request.method == 'GET':
+    if request.method == 'POST':
         data = request.values
         try:
             json_str = json.dumps(data.to_dict())
@@ -4976,157 +4973,445 @@ def operateConfirm():
                 BrandName = planM.BrandName
                 if(PName == "备料"):
                     if(PUName == "生产前的准备"):
-                        node = db_session.query(Model.node.NodeCollection).filter(Model.node.NodeCollection.oddNum == ID, Model.node.NodeCollection.name == '（备料段）生产前准备（操作人）').first()
-                        node.status = Model.node.NodeStatus.PASSED.value
+                        name = '（备料段）生产前准备（操作人）'
+                        return operateflow(ID, name)
                     elif(PUName == "备料开始"):
-                        node = db_session.query(Model.node.NodeCollection).filter(
-                            Model.node.NodeCollection.oddNum == ID, Model.node.NodeCollection.name == '备料操作按SOP执行（操作人）').first()
-                        node.status = Model.node.NodeStatus.PASSED.value
+                        name = '备料操作按SOP执行（操作人）'
+                        return operateflow(ID, name)
                     elif(PUName == "备料结束清场"):
-                        node = db_session.query(Model.node.NodeCollection).filter(
-                            Model.node.NodeCollection.oddNum == ID, Model.node.NodeCollection.name == '（备料段）生产结束清场（操作人）').first()
-                        node.status = Model.node.NodeStatus.PASSED.value
-                    else:
-                        pass
-                if (PName == "煎煮"):
+                        name = '（备料段）生产结束清场（操作人）'
+                        return operateflow(ID, name)
+                elif(PName == "煎煮"):
                     if(PUName == "生产前的准备"):
-                        node = db_session.query(Model.node.NodeCollection).filter(
-                            Model.node.NodeCollection.oddNum == ID,
-                            Model.node.NodeCollection.name == '（煎煮段）生产前准备（操作人）').first()
-                        node.status = Model.node.NodeStatus.PASSED.value
+                        name = '（煎煮段）生产前准备（操作人）'
+                        return operateflow(ID, name)
                     elif(PUName == "煎煮开始"):
-                        node = db_session.query(Model.node.NodeCollection).filter(
-                            Model.node.NodeCollection.oddNum == ID,
-                            Model.node.NodeCollection.name == '煎煮开始，操作按SOP执行（操作人）').first()
-                        node.status = Model.node.NodeStatus.PASSED.value
+                        name = '煎煮开始，操作按SOP执行（操作人）'
+                        return operateflow(ID, name)
                     elif(PUName == "静置开始"):
-                        node = db_session.query(Model.node.NodeCollection).filter(
-                            Model.node.NodeCollection.oddNum == ID,
-                            Model.node.NodeCollection.name == '静置开始，操作按SOP执行（操作人）').first()
-                        node.status = Model.node.NodeStatus.PASSED.value
+                        name = '静置开始，操作按SOP执行（操作人）'
+                        return operateflow(ID, name)
                     elif(PUName == "煎煮结束清场"):
-                        node = db_session.query(Model.node.NodeCollection).filter(
-                            Model.node.NodeCollection.oddNum == ID,
-                            Model.node.NodeCollection.name == '（煎煮段）生产结束清场（操作人）').first()
-                        node.status = Model.node.NodeStatus.PASSED.value
+                        name = '（煎煮段）生产结束清场（操作人）'
+                        return operateflow(ID, name)
                     else:
                         pass
-                if (PName == "浓缩"):
+                elif(PName == "浓缩"):
                     if (PUName == "生产前的准备"):
-                        node = db_session.query(Model.node.NodeCollection).filter(
-                            Model.node.NodeCollection.oddNum == ID,
-                            Model.node.NodeCollection.name == '（浓缩段）生产前准备流程（操作人）').first()
-                        node.status = Model.node.NodeStatus.PASSED.value
+                        name = '（浓缩段）生产前准备流程（操作人）'
+                        return operateflow(ID, name)
                     elif (PUName == "浓缩开始"):
-                        node = db_session.query(Model.node.NodeCollection).filter(
-                            Model.node.NodeCollection.oddNum == ID,
-                            Model.node.NodeCollection.name == '浓缩开始，操作按SOP执行（操作人）').first()
-                        node.status = Model.node.NodeStatus.PASSED.value
+                        name = '浓缩开始，操作按SOP执行（操作人）'
+                        return operateflow(ID, name)
                     elif (PUName == "浓缩结束清场"):
-                        node = db_session.query(Model.node.NodeCollection).filter(
-                            Model.node.NodeCollection.oddNum == ID,
-                            Model.node.NodeCollection.name == '浓缩结束清场（操作人）').first()
-                        node.status = Model.node.NodeStatus.PASSED.value
+                        name = '浓缩结束清场（操作人）'
+                        return operateflow(ID, name)
                     else:
                         pass
-                if (PName == "喷雾干燥"):
+                elif(PName == "喷雾干燥"):
                     if (PUName == "生产前的准备"):
-                        node = db_session.query(Model.node.NodeCollection).filter(
-                            Model.node.NodeCollection.oddNum == ID,
-                            Model.node.NodeCollection.name == '（喷雾干燥段）生产前准备流程（操作人）').first()
-                        node.status = Model.node.NodeStatus.PASSED.value
+                        name = '（喷雾干燥段）生产前准备流程（操作人）'
+                        return operateflow(ID, name)
                     elif (PUName == "喷雾干燥开始"):
-                        node = db_session.query(Model.node.NodeCollection).filter(
-                            Model.node.NodeCollection.oddNum == ID,
-                            Model.node.NodeCollection.name == '喷雾干燥开始，操作按SOP执行（操作人）').first()
-                        node.status = Model.node.NodeStatus.PASSED.value
+                        name = '喷雾干燥开始，操作按SOP执行（操作人）'
+                        return operateflow(ID, name)
                     elif (PUName == "喷雾干燥结束清场"):
-                        node = db_session.query(Model.node.NodeCollection).filter(
-                            Model.node.NodeCollection.oddNum == ID,
-                            Model.node.NodeCollection.name == '喷雾干燥结束，按SOP清场（操作人）').first()
-                        node.status = Model.node.NodeStatus.PASSED.value
-                    else:
-                        pass
-                if (PName == "收粉"):
+                        name = '喷雾干燥结束，按SOP清场（操作人）'
+                        return operateflow(ID, name)
+                elif(PName == "收粉"):
                     if (PUName == "生产前的准备"):
-                        node = db_session.query(Model.node.NodeCollection).filter(
-                            Model.node.NodeCollection.oddNum == ID,
-                            Model.node.NodeCollection.name == '（收粉段）生产前准备流程（操作人）').first()
-                        node.status = Model.node.NodeStatus.PASSED.value
+                        name = '（收粉段）生产前准备流程（操作人）'
+                        return operateflow(ID, name)
                     elif (PUName == "收粉开始"):
-                        node = db_session.query(Model.node.NodeCollection).filter(
-                            Model.node.NodeCollection.oddNum == ID,
-                            Model.node.NodeCollection.name == '收粉开始，操作按SOP执行（操作人）').first()
-                        node.status = Model.node.NodeStatus.PASSED.value
+                        name = '收粉开始，操作按SOP执行（操作人）'
+                        return operateflow(ID, name)
                     elif (PUName == "收粉结束清场"):
-                        node = db_session.query(Model.node.NodeCollection).filter(
-                            Model.node.NodeCollection.oddNum == ID,
-                            Model.node.NodeCollection.name == '收粉结束，按SOP清场（操作人）').first()
-                        node.status = Model.node.NodeStatus.PASSED.value
-                    else:
-                        pass
-                if (PName == "醇沉"):
+                        name = '收粉结束，按SOP清场（操作人）'
+                        return operateflow(ID, name)
+                elif(PName == "醇沉"):
                     if (PUName == "生产前的准备"):
-                        node = db_session.query(Model.node.NodeCollection).filter(
-                            Model.node.NodeCollection.oddNum == ID,
-                            Model.node.NodeCollection.name == '（醇沉段）生产前准备（操作人）').first()
-                        node.status = Model.node.NodeStatus.PASSED.value
+                        name = '（醇沉段）生产前准备（操作人）'
+                        return operateflow(ID, name)
                     elif (PUName == "醇沉开始"):
-                        node = db_session.query(Model.node.NodeCollection).filter(
-                            Model.node.NodeCollection.oddNum == ID,
-                            Model.node.NodeCollection.name == '醇沉开始，操作按SOP执行（操作人）').first()
-                        node.status = Model.node.NodeStatus.PASSED.value
+                        name = '醇沉开始，操作按SOP执行（操作人）'
+                        return operateflow(ID, name)
                     elif (PUName == "醇沉结束清场"):
-                        node = db_session.query(Model.node.NodeCollection).filter(
-                            Model.node.NodeCollection.oddNum == ID,
-                            Model.node.NodeCollection.name == '醇沉结束，按SOP清场（操作人）').first()
-                        node.status = Model.node.NodeStatus.PASSED.value
+                        name = '醇沉结束，按SOP清场（操作人）'
+                        return operateflow(ID, name)
                     else:
                         pass
-                if (PName == "单效浓缩段"):
+                elif(PName == "单效浓缩段"):
                     if (PUName == "生产前的准备"):
-                        node = db_session.query(Model.node.NodeCollection).filter(
-                            Model.node.NodeCollection.oddNum == ID,
-                            Model.node.NodeCollection.name == '（单效浓缩段）生产前准备（操作人）').first()
-                        node.status = Model.node.NodeStatus.PASSED.value
+                        name = '（单效浓缩段）生产前准备（操作人）'
+                        return operateflow(ID, name)
                     elif (PUName == "单效浓缩开始"):
-                        node = db_session.query(Model.node.NodeCollection).filter(
-                            Model.node.NodeCollection.oddNum == ID,
-                            Model.node.NodeCollection.name == '单效浓缩段开始，操作按SOP执行（操作人）').first()
-                        node.status = Model.node.NodeStatus.PASSED.value
+                        name = '单效浓缩段开始，操作按SOP执行（操作人）'
+                        return operateflow(ID, name)
                     elif (PUName == "单效浓缩结束清场"):
-                        node = db_session.query(Model.node.NodeCollection).filter(
-                            Model.node.NodeCollection.oddNum == ID,
-                            Model.node.NodeCollection.name == '单效浓缩段结束，按SOP清场（操作人）').first()
-                        node.status = Model.node.NodeStatus.PASSED.value
+                        name = '单效浓缩段结束，按SOP清场（操作人）'
+                        return operateflow(ID, name)
                     else:
                         pass
-                if (PName == "收膏"):
+                elif(PName == "收膏"):
                     if (PUName == "生产前的准备"):
-                        node = db_session.query(Model.node.NodeCollection).filter(
-                            Model.node.NodeCollection.oddNum == ID,
-                            Model.node.NodeCollection.name == '（收膏段）生产前准备（操作人）').first()
-                        node.status = Model.node.NodeStatus.PASSED.value
+                        name = '（收膏段）生产前准备（操作人）'
+                        return operateflow(ID, name)
                     elif (PUName == "收膏开始"):
-                        node = db_session.query(Model.node.NodeCollection).filter(
-                            Model.node.NodeCollection.oddNum == ID,
-                            Model.node.NodeCollection.name == '收膏段开始，操作按SOP执行（操作人）').first()
-                        node.status = Model.node.NodeStatus.PASSED.value
+                        name = '收膏段开始，操作按SOP执行（操作人）'
+                        return operateflow(ID, name)
                     elif (PUName == "收膏结束清场"):
-                        node = db_session.query(Model.node.NodeCollection).filter(
-                            Model.node.NodeCollection.oddNum == ID,
-                            Model.node.NodeCollection.name == '收膏结束，按SOP清场（操作人）').first()
-                        node.status = Model.node.NodeStatus.PASSED.value
-                    else:
-                        pass
-                db_session.commit()
-                return "操作人确认成功！"
+                        name = '收膏结束，按SOP清场（操作人）'
+                        return operateflow(ID, name)
         except Exception as e:
             print(e)
             logger.error(e)
             insertSyslog("error", "操作人确认报错Error：" + str(e), current_user.Name)
+def operateflow(ID, name):
+    flag = 'OK'
+    try:
+        node = db_session.query(Model.node.NodeCollection).filter(
+            Model.node.NodeCollection.oddNum == ID,
+            Model.node.NodeCollection.name == name).first()
+        node.status = Model.node.NodeStatus.PASSED.value
+        node.opertionTime = datetime.datetime.now()
+        node.oddUser = current_user.Name
+        db_session.commit()
+        return flag
+    except Exception as e:
+        db_session.rollback()
+        print(e)
+        logger.error(e)
+        insertSyslog("error", "复核报错Error：" + str(e), current_user.Name)
+        return "复核报错Error：" + str(e), current_user.Name
 
+# 复核人确认
+@app.route('/ZYPlanGuid/checkedConfirm', methods=['POST', 'GET'])
+def checkedConfirm():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                ID = data['ID']  # 计划ID
+                PName = data['PName']  # 计划名称
+                PUName = data['PUName']  # 计划明细名称
+                planM = db_session.query(PlanManager).filter(PlanManager.ID == ID).first()
+                BrandName = planM.BrandName
+                if (PName == "备料"):
+                    if (PUName == "生产前的准备"):
+                        statusName = '（备料段）生产前准备（操作人）'
+                        name = '（备料段）生产前准备（复核人）'
+                        return checkflow(ID, statusName, name)
+                    elif (PUName == "备料开始"):
+                        statusName = '备料操作按SOP执行（操作人）'
+                        name = '备料操作按SOP执行（复核人）'
+                        return checkflow(ID, statusName, name)
+                    elif (PUName == "备料结束清场"):
+                        statusName = '（备料段）生产结束清场（操作人）'
+                        name = '（备料段）生产结束清场（复核人）'
+                        return checkflow(ID, statusName, name)
+                    else:
+                        pass
+                elif (PName == "煎煮"):
+                    if (PUName == "生产前的准备"):
+                        statusName = '（煎煮段）生产前准备（操作人）'
+                        name = '（煎煮段）生产前准备（复核人）'
+                        return checkflow(ID, statusName, name)
+                    elif (PUName == "煎煮开始"):
+                        statusName = '煎煮开始，操作按SOP执行（操作人）'
+                        name = '煎煮开始，操作按SOP执行（复核人）'
+                        return checkflow(ID, statusName, name)
+                    elif (PUName == "静置开始"):
+                        statusName = '静置开始，操作按SOP执行（操作人）'
+                        name = '静置开始，操作按SOP执行（复核人）'
+                        return checkflow(ID, statusName, name)
+                    elif (PUName == "煎煮结束清场"):
+                        statusName = '（煎煮段）生产结束清场（操作人）'
+                        name = '（煎煮段）生产结束清场（复核人）'
+                        return checkflow(ID, statusName, name)
+                    else:
+                        pass
+                elif (PName == "浓缩"):
+                    if (PUName == "生产前的准备"):
+                        statusName = '（浓缩段）生产前准备流程（操作人）'
+                        name = '（浓缩段）生产前准备流程（复核人）'
+                        return checkflow(ID, statusName, name)
+                    elif (PUName == "浓缩开始"):
+                        statusName = '浓缩开始，操作按SOP执行（操作人）'
+                        name = '浓缩开始，操作按SOP执行（复核人）'
+                        return checkflow(ID, statusName, name)
+                    elif (PUName == "浓缩结束清场"):
+                        statusName = '浓缩结束清场（操作人）'
+                        name = '浓缩结束清场（复核人）'
+                        return checkflow(ID, statusName, name)
+                    else:
+                        pass
+                elif (PName == "喷雾干燥"):
+                    if (PUName == "生产前的准备"):
+                        statusName = '（喷雾干燥段）生产前准备流程（操作人）'
+                        name = '（喷雾干燥段）生产前准备流程（复核人）'
+                        return checkflow(ID, statusName, name)
+                    elif (PUName == "喷雾干燥开始"):
+                        statusName = '喷雾干燥开始，操作按SOP执行（操作人）'
+                        name = '喷雾干燥开始，操作按SOP执行（复核人）'
+                        return checkflow(ID, statusName, name)
+                    elif (PUName == "喷雾干燥结束清场"):
+                        statusName = '喷雾干燥结束，按SOP清场（操作人）'
+                        name = '喷雾干燥结束，按SOP清场（复核人）'
+                        return checkflow(ID, statusName, name)
+                    else:
+                        pass
+                elif (PName == "收粉"):
+                    if (PUName == "生产前的准备"):
+                        statusName = '（收粉段）生产前准备流程（操作人）'
+                        name = '（收粉段）生产前准备流程（复核人）'
+                        return checkflow(ID, statusName, name)
+                    elif (PUName == "收粉开始"):
+                        statusName = '收粉开始，操作按SOP执行（操作人）'
+                        name = '收粉开始，操作按SOP执行（复核人）'
+                        return checkflow(ID, statusName, name)
+                    elif (PUName == "收粉结束清场"):
+                        statusName = '收粉结束，按SOP清场（操作人）'
+                        name = '收粉结束，按SOP清场（复核人）'
+                        return checkflow(ID, statusName, name)
+                    else:
+                        pass
+                elif (PName == "醇沉"):
+                    if (PUName == "生产前的准备"):
+                        statusName = '（醇沉段）生产前准备（操作人）'
+                        name = '（醇沉段）生产前准备（复核人）'
+                        return checkflow(ID, statusName, name)
+                    elif (PUName == "醇沉开始"):
+                        statusName = '醇沉开始，操作按SOP执行（操作人）'
+                        name = '醇沉开始，操作按SOP执行（复核人）'
+                        return checkflow(ID, statusName, name)
+                    elif (PUName == "醇沉结束清场"):
+                        statusName = '醇沉结束，按SOP清场（操作人）'
+                        name = '醇沉结束，按SOP清场（复核人）'
+                        return checkflow(ID, statusName, name)
+                    else:
+                        pass
+                elif (PName == "单效浓缩段"):
+                    if (PUName == "生产前的准备"):
+                        statusName = '（单效浓缩段）生产前准备（操作人）'
+                        name = '（单效浓缩段）生产前准备（复核人）'
+                        return checkflow(ID, statusName, name)
+                    elif (PUName == "单效浓缩开始"):
+                        statusName = '单效浓缩段开始，操作按SOP执行（操作人）'
+                        name = '单效浓缩段开始，操作按SOP执行（复核人）'
+                        return checkflow(ID, statusName, name)
+                    elif (PUName == "单效浓缩结束清场"):
+                        statusName = '单效浓缩段结束，按SOP清场（操作人）'
+                        name = '单效浓缩段结束，按SOP清场（复核人）'
+                        return checkflow(ID, statusName, name)
+                    else:
+                        pass
+                elif (PName == "收膏"):
+                    if (PUName == "生产前的准备"):
+                        statusName = '（收膏段）生产前准备（操作人）'
+                        name = '（收膏段）生产前准备（复核人）'
+                        return checkflow(ID, statusName, name)
+                    elif (PUName == "收膏开始"):
+                        statusName = '收膏段开始，操作按SOP执行（操作人）'
+                        name = '收膏段开始，操作按SOP执行（复核人）'
+                        return checkflow(ID, statusName, name)
+                    elif (PUName == "收膏结束清场"):
+                        statusName = '收膏结束，按SOP清场（操作人）'
+                        name = '收膏结束，按SOP清场（复核人）'
+                        return checkflow(ID,statusName,name)
+                    else:
+                        pass
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "复核报错Error：" + str(e), current_user.Name)
+def checkflow(ID,statusName,name):
+    flag = 'OK'
+    try:
+        status = db_session.query(Model.node.NodeCollection.status).filter(
+            Model.node.NodeCollection.oddNum == ID,
+            Model.node.NodeCollection.name == statusName).first()
+        if (status[0] != 10):
+            return "请先操作人进行确认后再进行复核！"
+        node = db_session.query(Model.node.NodeCollection).filter(
+            Model.node.NodeCollection.oddNum == ID,
+            Model.node.NodeCollection.name == name).first()
+        node.status = Model.node.NodeStatus.PASSED.value
+        node.opertionTime = datetime.datetime.now()
+        node.oddUser = current_user.Name
+        db_session.commit()
+        return flag
+    except Exception as e:
+        db_session.rollback()
+        print(e)
+        logger.error(e)
+        insertSyslog("error", "复核报错Error：" + str(e), current_user.Name)
+        return "复核报错Error：" + str(e), current_user.Name
 
+# QA签名
+@app.route('/ZYPlanGuid/QAautograph', methods=['POST', 'GET'])
+def QAautograph():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                ID = data['ID']  # 计划ID
+                PName = data['PName']  # 计划名称
+                PUName = data['PUName']  # 计划明细名称
+                planM = db_session.query(PlanManager).filter(PlanManager.ID == ID).first()
+                BrandName = planM.BrandName
+                if (PName == "备料"):
+                    if (PUName == "生产前的准备"):
+                        statusName = '（备料段）生产前准备（复核人）'
+                        name = '（备料段）生产前准备（QA签名）'
+                        return QAflow(ID, statusName, name)
+                    elif (PUName == "备料开始"):
+                        statusName = '备料操作按SOP执行（复核人）'
+                        name = '备料操作按SOP执行（QA签名）'
+                        return QAflow(ID, statusName, name)
+                    elif (PUName == "备料结束清场"):
+                        statusName = '（备料段）生产结束清场（复核人）'
+                        name = '（备料段）生产结束清场（QA签名）'
+                        return QAflow(ID, statusName, name)
+                    else:
+                        pass
+                elif (PName == "煎煮"):
+                    if (PUName == "生产前的准备"):
+                        statusName = '（煎煮段）生产前准备（复核人）'
+                        name = '（煎煮段）生产前准备（QA签名）'
+                        return QAflow(ID, statusName, name)
+                    elif (PUName == "煎煮开始"):
+                        statusName = '煎煮开始，操作按SOP执行（复核人）'
+                        name = '煎煮开始，操作按SOP执行（QA签名）'
+                        return QAflow(ID, statusName, name)
+                    elif (PUName == "静置开始"):
+                        statusName = '静置开始，操作按SOP执行（复核人）'
+                        name = '静置开始，操作按SOP执行（QA签名）'
+                        return QAflow(ID, statusName, name)
+                    elif (PUName == "煎煮结束清场"):
+                        statusName = '（煎煮段）生产结束清场（复核人）'
+                        name = '（煎煮段）生产结束清场（QA签名）'
+                        return QAflow(ID, statusName, name)
+                    else:
+                        pass
+                elif (PName == "浓缩"):
+                    if (PUName == "生产前的准备"):
+                        statusName = '（浓缩段）生产前准备流程（复核人）'
+                        name = '（浓缩段）生产前准备流程（QA签名）'
+                        return QAflow(ID, statusName, name)
+                    elif (PUName == "浓缩开始"):
+                        statusName = '浓缩开始，操作按SOP执行（复核人）'
+                        name = '浓缩开始，操作按SOP执行（QA签名）'
+                        return QAflow(ID, statusName, name)
+                    elif (PUName == "浓缩结束清场"):
+                        statusName = '浓缩结束清场（复核人）'
+                        name = '浓缩结束清场（QA签名）'
+                        return QAflow(ID, statusName, name)
+                    else:
+                        pass
+                elif (PName == "喷雾干燥"):
+                    if (PUName == "生产前的准备"):
+                        statusName = '（喷雾干燥段）生产前准备流程（复核人）'
+                        name = '（喷雾干燥段）生产前准备流程（QA签名）'
+                        return QAflow(ID, statusName, name)
+                    elif (PUName == "喷雾干燥开始"):
+                        statusName = '喷雾干燥开始，操作按SOP执行（复核人）'
+                        name = '喷雾干燥开始，操作按SOP执行（QA签名）'
+                        return QAflow(ID, statusName, name)
+                    elif (PUName == "喷雾干燥结束清场"):
+                        statusName = '喷雾干燥结束，按SOP清场（复核人）'
+                        name = '喷雾干燥结束，按SOP清场（QA签名）'
+                        return QAflow(ID, statusName, name)
+                    else:
+                        pass
+                elif (PName == "收粉"):
+                    if (PUName == "生产前的准备"):
+                        statusName = '（收粉段）生产前准备流程（复核人）'
+                        name = '（收粉段）生产前准备流程（QA签名）'
+                        return QAflow(ID, statusName, name)
+                    elif (PUName == "收粉开始"):
+                        statusName = '收粉开始，操作按SOP执行（复核人）'
+                        name = '收粉开始，操作按SOP执行（QA签名）'
+                        return QAflow(ID, statusName, name)
+                    elif (PUName == "收粉结束清场"):
+                        statusName = '收粉结束，按SOP清场（复核人）'
+                        name = '收粉结束，按SOP清场（QA签名）'
+                        return QAflow(ID, statusName, name)
+                    else:
+                        pass
+                elif (PName == "醇沉"):
+                    if (PUName == "生产前的准备"):
+                        statusName = '（醇沉段）生产前准备（复核人）'
+                        name = '（醇沉段）生产前准备（QA签名）'
+                        return QAflow(ID, statusName, name)
+                    elif (PUName == "醇沉开始"):
+                        statusName = '醇沉开始，操作按SOP执行（复核人）'
+                        name = '醇沉开始，操作按SOP执行（QA签名）'
+                        return QAflow(ID, statusName, name)
+                    elif (PUName == "醇沉结束清场"):
+                        statusName = '醇沉结束，按SOP清场（复核人）'
+                        name = '醇沉结束，按SOP清场（QA签名）'
+                        return QAflow(ID, statusName, name)
+                    else:
+                        pass
+                elif (PName == "单效浓缩段"):
+                    if (PUName == "生产前的准备"):
+                        statusName = '（单效浓缩段）生产前准备（复核人）'
+                        name = '（单效浓缩段）生产前准备（QA签名）'
+                        return QAflow(ID, statusName, name)
+                    elif (PUName == "单效浓缩开始"):
+                        statusName = '单效浓缩段开始，操作按SOP执行（复核人）'
+                        name = '单效浓缩段开始，操作按SOP执行（QA签名）'
+                        return QAflow(ID, statusName, name)
+                    elif (PUName == "单效浓缩结束清场"):
+                        statusName = '单效浓缩段结束，按SOP清场（复核人）'
+                        name = '单效浓缩段结束，按SOP清场（QA签名）'
+                        return QAflow(ID, statusName, name)
+                    else:
+                        pass
+                elif (PName == "收膏"):
+                    if (PUName == "生产前的准备"):
+                        statusName = '（收膏段）生产前准备（复核人）'
+                        name = '（收膏段）生产前准备（QA签名）'
+                        return QAflow(ID, statusName, name)
+                    elif (PUName == "收膏开始"):
+                        statusName = '收膏段开始，操作按SOP执行（复核人）'
+                        name = '收膏段开始，操作按SOP执行（QA签名）'
+                        return QAflow(ID, statusName, name)
+                    elif (PUName == "收膏结束清场"):
+                        statusName = '收膏结束，按SOP清场（复核人）'
+                        name = '收膏结束，按SOP清场（QA签名）'
+                        return QAflow(ID, statusName, name)
+                    else:
+                        pass
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "复核报错Error：" + str(e), current_user.Name)
+
+def QAflow(ID, statusName, name):
+    flag = 'OK'
+    try:
+        status = db_session.query(Model.node.NodeCollection.status).filter(
+            Model.node.NodeCollection.oddNum == ID,
+            Model.node.NodeCollection.name == statusName).first()
+        if (status[0] != 10):
+            return "请先复核人进行复核后再进行QA签名！"
+        node = db_session.query(Model.node.NodeCollection).filter(
+            Model.node.NodeCollection.oddNum == ID,
+            Model.node.NodeCollection.name == name).first()
+        node.status = Model.node.NodeStatus.PASSED.value
+        node.opertionTime = datetime.datetime.now()
+        node.oddUser = current_user.Name
+        db_session.commit()
+        return flag
+    except Exception as e:
+        db_session.rollback()
+        print(e)
+        logger.error(e)
+        insertSyslog("error", "QA签名报错Error：" + str(e), current_user.Name)
+        return "QA签名报错Error：" + str(e), current_user.Name
 
 # QA放行查询
 @app.route('/ZYPlanGuid/QAPassSearch', methods=['POST', 'GET'])
