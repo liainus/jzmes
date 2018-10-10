@@ -90,8 +90,11 @@
             border-left-color: white;
             z-index: 2;
         }
-        .ball-active.host-arrow:after,.ball-active.host-arrow:before{
-            border-color: #5cb85c;
+        .host-progress-active .host-arrow:after{
+            border-left-color: #5cb85c;
+        }
+        .host-progress-way-active .host-arrow:after{
+            border-left-color: #ffac38;
         }
         .childBox{
             width:130px;
@@ -165,30 +168,32 @@
                 onLoadSuccess:function(data){
                     $(this).datagrid("selectRow", 0);
                     var rows = $("#tab").datagrid('getSelections');
-                    $(".host-progress").find(".host-ball").removeClass("ball-active ball-stay").siblings(".host-line").removeClass("ball-active")
+                    $(".host-progress").find(".host-ball").removeClass("ball-active ball-stay").siblings(".host-line").removeClass("ball-active ball-stay").parents(".host-progress").removeClass("host-progress-active host-progress-way-active")
                     if(rows[0].PlanStatus == "10"){
-                        $(".bigPlan1").find(".host-ball").addClass("ball-active").siblings(".host-line").addClass("ball-active")
+                        $(".bigPlan1").find(".host-ball").addClass("ball-active").siblings(".host-line").addClass("ball-active").parents(".host-progress").addClass("host-progress-active")
                         $(".bigPlan2").find(".host-ball").addClass("ball-stay")
                     }else if(rows[0].PlanStatus == "11"){
-                        $(".bigPlan1,.bigPlan2").find(".host-ball").addClass("ball-active").siblings(".host-line").addClass("ball-active")
+                        $(".bigPlan1,.bigPlan2").find(".host-ball").addClass("ball-active").siblings(".host-line").addClass("ball-active").parents(".host-progress").addClass("host-progress-active")
                         $(".bigPlan3").find(".host-ball").addClass("ball-stay")
                     }else if(rows[0].PlanStatus == "20"){
-                        $(".bigPlan1,.bigPlan2,.bigPlan3").find(".host-ball").addClass("ball-active").siblings(".host-line").addClass("ball-active")
+                        $(".bigPlan1,.bigPlan2,.bigPlan3").find(".host-ball").addClass("ball-active").siblings(".host-line").addClass("ball-active").parents(".host-progress").addClass("host-progress-active")
+                        $(".bigPlan4,.bigPlan5,.bigPlan6,.bigPlan7,.bigPlan8").find(".host-ball").addClass("ball-stay").siblings(".host-line").addClass("ball-stay").parents(".host-progress").addClass("host-progress-way-active")
                     }else if(rows[0].PlanStatus == "70"){
                         $(".bigPlan1,.bigPlan2,.bigPlan3,.bigPlan4,.bigPlan5,.bigPlan6,.bigPlan7,.bigPlan8,.bigPlan9").find(".host-ball").addClass("ball-active").siblings(".host-line").addClass("ball-active")
                         $(".bigPlan4,.bigPlan5,.bigPlan6,.bigPlan7,.bigPlan8").find(".ball").addClass("ball-active").siblings(".progress-line").addClass("ball-active")
                     }
                 },
                 onClickRow:function(rowIndex,rowData){
-                    $(".host-progress").find(".host-ball").removeClass("ball-active ball-stay").siblings(".host-line").removeClass("ball-active")
+                    $(".host-progress").find(".host-ball").removeClass("ball-active ball-stay").siblings(".host-line").removeClass("ball-active ball-stay").parents(".host-progress").removeClass("host-progress-active host-progress-way-active")
                     if(rowData.PlanStatus == "10"){
-                        $(".bigPlan1").find(".host-ball").addClass("ball-active").siblings(".host-line").addClass("ball-active")
+                        $(".bigPlan1").find(".host-ball").addClass("ball-active").siblings(".host-line").addClass("ball-active").parents(".host-progress").addClass("host-progress-active")
                         $(".bigPlan2").find(".host-ball").addClass("ball-stay")
                     }else if(rowData.PlanStatus == "11"){
-                        $(".bigPlan1,.bigPlan2").find(".host-ball").addClass("ball-active").siblings(".host-line").addClass("ball-active")
+                        $(".bigPlan1,.bigPlan2").find(".host-ball").addClass("ball-active").siblings(".host-line").addClass("ball-active").parents(".host-progress").addClass("host-progress-active")
                         $(".bigPlan3").find(".host-ball").addClass("ball-stay")
                     }else if(rowData.PlanStatus == "20"){
-                        $(".bigPlan1,.bigPlan2,.bigPlan3").find(".host-ball").addClass("ball-active").siblings(".host-line").addClass("ball-active")
+                        $(".bigPlan1,.bigPlan2,.bigPlan3").find(".host-ball").addClass("ball-active").siblings(".host-line").addClass("ball-active").parents(".host-progress").addClass("host-progress-active")
+                        $(".bigPlan4,.bigPlan5,.bigPlan6,.bigPlan7,.bigPlan8").find(".host-ball").addClass("ball-stay").siblings(".host-line").addClass("ball-stay").parents(".host-progress").addClass("host-progress-way-active")
                     }else if(rowData.PlanStatus == "70"){
                         $(".bigPlan1,.bigPlan2,.bigPlan3,.bigPlan4,.bigPlan5,.bigPlan6,.bigPlan7,.bigPlan8,.bigPlan9").find(".host-ball").addClass("ball-active").siblings(".host-line").addClass("ball-active")
                         $(".bigPlan4,.bigPlan5,.bigPlan6,.bigPlan7,.bigPlan8").find(".ball").addClass("ball-active").siblings(".progress-line").addClass("ball-active")
@@ -213,34 +218,73 @@
                     'operConfirm':function(t){
                         var rows = $("#tab").datagrid('getSelections');
                         var pID = rows[0].ID
-                        $.ajax({
-                            url: '/ZYPlanGuid/operateConfirm',
-                            method: 'POST',
-                            data: {
-                                ID: pID,
-                                PName:t.name,
-                                PUName:t.rel
-                            },
-                            success: function (data) {
-                                if (data == "OK") {
-                                    $.messager.show({
-                                        title: '提示',
-                                        timeout: 1000,
-                                        msg: '操作成功！',
-                                        style: {
-                                            right: '',
-                                            top: document.body.scrollTop + document.documentElement.scrollTop,
-                                            bottom: ''
+                        if(t.rel == "生产前的准备"){
+                            $("#readyWorkClassDialog").dialog('open').dialog('setTitle', '确认生产前的准备工作');
+                            $("#readyWorkConfirm").on('click',function(){
+                            var rowInfo = $("#readyWorkTab").datagrid('getSelections');
+                                if(rowInfo.length == 6){
+                                    $.ajax({
+                                        url: '/ZYPlanGuid/operateConfirm',
+                                        method: 'POST',
+                                        data: {
+                                            ID: pID,
+                                            PName:t.name,
+                                            PUName:t.rel
+                                        },
+                                        success: function (data) {
+                                            if (data == "OK") {
+                                                $.messager.show({
+                                                    title: '提示',
+                                                    timeout: 1000,
+                                                    msg: '操作成功！',
+                                                    style: {
+                                                        right: '',
+                                                        top: document.body.scrollTop + document.documentElement.scrollTop,
+                                                        bottom: ''
+                                                    }
+                                                });
+                                            }else{
+                                                $.messager.alert('提示', data, 'info');
+                                            }
+                                        },
+                                        error: function () {
+                                            alert("请求失败，请稍后重试！")
                                         }
                                     });
                                 }else{
-                                    $.messager.alert('提示', data, 'info');
+                                    $.messager.alert('提示', "请完成所有的准备工作", 'info');
                                 }
-                            },
-                            error: function () {
-                                alert("请求失败，请稍后重试！")
-                            }
-                        });
+                            })
+                        }else{
+                            $.ajax({
+                                url: '/ZYPlanGuid/operateConfirm',
+                                method: 'POST',
+                                data: {
+                                    ID: pID,
+                                    PName:t.name,
+                                    PUName:t.rel
+                                },
+                                success: function (data) {
+                                    if (data == "OK") {
+                                        $.messager.show({
+                                            title: '提示',
+                                            timeout: 1000,
+                                            msg: '操作成功！',
+                                            style: {
+                                                right: '',
+                                                top: document.body.scrollTop + document.documentElement.scrollTop,
+                                                bottom: ''
+                                            }
+                                        });
+                                    }else{
+                                        $.messager.alert('提示', data, 'info');
+                                    }
+                                },
+                                error: function () {
+                                    alert("请求失败，请稍后重试！")
+                                }
+                            });
+                        }
                     },
                     'reConfirm':function(t){
                         var rows = $("#tab").datagrid('getSelections');
@@ -379,6 +423,28 @@
                     {% else %}
                     {% endif %}
                 {% endif %}
+            </div>
+            <!-- 准备工作弹框 -->
+            <div id="readyWorkClassDialog" class="easyui-dialog" style="width:400px;height:360px;padding:10px;"
+                 data-options="closed:'true',buttons:'#readyWorkClassDialogButtons',modal:true">
+                <table class="easyui-datagrid" id="readyWorkTab" title="" style="width:100%;" data-options="
+                    url:'/ZYPlanGuid/ConfirmSearchInfo',
+                    method:'get',
+                    idField:'ID',
+                    rownumbers:true,
+                    singleSelect:false,
+                    autoRowHeight:false">
+                    <thead>
+                        <tr>
+                            <th field="ck" checkbox="true"></th>
+                            <th data-options="field:'Describe',width:300,align:'center'">准备工作描述</th>
+                        </tr>
+                    </thead>
+                </table>
+                <div id="readyWorkClassDialogButtons" >
+                    <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" id="readyWorkConfirm" >确认</a>
+                    <a href="#" class="easyui-linkbutton" onclick="$('#readyWorkClassDialog').dialog('close')">关闭</a>
+                </div>
             </div>
             <div class="tab-content tabs">
                 <div role="tabpanel" class="tab-pane fade show active" id="Section1">
