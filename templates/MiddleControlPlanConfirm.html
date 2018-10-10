@@ -153,7 +153,7 @@
                 clear:function(){
                     var rows = $("#tab").datagrid('getSelections');
                     if (rows.length > 0) {
-                        $("#clearTemplateClassDialog").dialog('open').dialog('setTitle', '确认生产前的准备工作');
+                        $("#clearTemplateClassDialog").dialog('open').dialog('setTitle', '确认生产结束清场工作');
                         $('#clearTemplateClassDialog').window('center');
                         ZYPlanID = rows[0].ID
                         $('#clearTab').datagrid({
