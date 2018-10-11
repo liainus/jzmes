@@ -3148,9 +3148,6 @@ def templateUpdate():
             insertSyslog("error", "CollectParamsTemplate数据更新失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
-            # 查询Opc服务
-
-
 @app.route('/CollectParamsTemplate/config/search', methods=['POST', 'GET'])
 def templateSearch():
     if request.method == 'POST':
@@ -3443,9 +3440,6 @@ def collectParamsUpdate():
             insertSyslog("error", "CollectParamsTemplate数据更新失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
-            # 查询Opc服务
-
-
 @app.route('/CollectParams/search', methods=['POST', 'GET'])
 def collectParamsSearch():
     if request.method == 'POST':
@@ -3568,9 +3562,6 @@ def strategyUpdate():
             logger.error(e)
             insertSyslog("error", "Collectionstrategy数据更新失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
-
-            # 查询Opc服务
-
 
 @app.route('/Collectionstrategy/config/search', methods=['POST', 'GET'])
 def strategySearch():
@@ -3722,9 +3713,6 @@ def CollectTaskUpdate():
             logger.error(e)
             insertSyslog("error", "CollectTask数据更新失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
-
-            # 查询Opc服务
-
 
 @app.route('/CollectTask/config/search', methods=['POST', 'GET'])
 def CollectTaskSearch():
@@ -3883,9 +3871,6 @@ def TaskCollectionUpdate():
             logger.error(e)
             insertSyslog("error", "CollectTaskCollection数据更新失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
-
-            # 查询Opc服务
-
 
 @app.route('/CollectTaskConfig/search', methods=['POST', 'GET'])
 def TaskCollectionSearch():
