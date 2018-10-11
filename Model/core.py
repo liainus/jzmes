@@ -3186,14 +3186,19 @@ class PlanManagerWebIFS(object):
 		try:
 			json_str = json.dumps(odata.to_dict())
 			if len(json_str) > 2:
+				pages = int(odata['page'])
+				rowsnumber = int(odata['rows'])
+				inipage = (pages - 1) * rowsnumber + 0
+				endpage = (pages - 1) * rowsnumber + rowsnumber
 				strconditon = "%" + odata['BatchID'] + "%"
-				PlanManagerscount = session.query(Model.core.PlanManager).filter(
-					PlanManager.BatchID.like(strconditon)).order_by(desc("PlanBeginTime")).all()
-				total = Counter(PlanManagerscount)
-				jsonPlanManagers = json.dumps(PlanManagerscount, cls=Model.BSFramwork.AlchemyEncoder,
+				PName = odata['name']
+				total = session.query(Model.core.PlanManager.ID).filter(
+					PlanManager.BatchID.like(strconditon), PlanManager.BrandName.like(PName)).order_by(desc("PlanBeginTime")).count()
+				PlanManagers = session.query(Model.core.PlanManager).filter(
+					PlanManager.BatchID.like(strconditon), PlanManager.BrandName.like(PName)).order_by(desc("PlanBeginTime")).all()[inipage:endpage]
+				jsonPlanManagers = json.dumps(PlanManagers, cls=Model.BSFramwork.AlchemyEncoder,
 											   ensure_ascii=False)
-				jsonPlanManagers = '{"total"' + ":" + str(
-					total.__len__()) + ',"rows"' + ":\n" + jsonPlanManagers + "}"
+				jsonPlanManagers = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonPlanManagers + "}"
 				return jsonPlanManagers
 		except Exception as e:
 			print(e)

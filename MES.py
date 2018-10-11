@@ -4394,7 +4394,6 @@ def taskConfirmSearch():
                 data = request.values
                 ID = data['ID']
                 name = data['name']
-                print(name)
                 BatchID = db_session.query(PlanManager.BatchID).filter(PlanManager.ID == ID).first()
                 PUID = db_session.query(ProductUnitRoute.PUID).filter(ProductUnitRoute.PDUnitRouteName == name).first()
                 total = db_session.query(ZYTask.ID).filter(ZYTask.PUID == PUID[0], ZYTask.BatchID == BatchID[0]).count()
@@ -4555,6 +4554,16 @@ def controlConfirmSaveInfo():
             logger.error(e)
             insertSyslog("error", "中控确认保存信息报错Error：" + str(e), current_user.Name)
 
+#草珊瑚含片
+@app.route('/ZYPlanGuid/cshflowtu')
+def cshflowtu():
+    return render_template('cshflowtu.html')
+
+#健胃消食片
+@app.route('/ZYPlanGuid/jwxspflowtu')
+def jwxspflowtu():
+    return render_template('jwxspflowtu.html')
+
 #操作人确认
 @app.route('/ZYPlanGuid/operateConfirm', methods=['POST', 'GET'])
 def operateConfirm():
@@ -4569,95 +4578,111 @@ def operateConfirm():
                 planM = db_session.query(PlanManager).filter(PlanManager.ID == ID).first()
                 BrandName = planM.BrandName
                 if(PName == "备料"):
+                    PName = '备料段'
                     if(PUName == "生产前的准备"):
                         name = '（备料段）生产前准备（操作人）'
-                        return operateflow(ID, name)
+                        return operateflow(ID, name, PName)
                     elif(PUName == "备料开始"):
                         name = '备料操作按SOP执行（操作人）'
-                        return operateflow(ID, name)
+                        return operateflow(ID, name, PName)
                     elif(PUName == "备料结束清场"):
                         name = '（备料段）生产结束清场（操作人）'
-                        return operateflow(ID, name)
+                        return operateflow(ID, name, PName)
                 elif(PName == "煎煮"):
+                    PName = '煎煮段'
                     if(PUName == "生产前的准备"):
                         name = '（煎煮段）生产前准备（操作人）'
-                        return operateflow(ID, name)
+                        return operateflow(ID, name, PName)
                     elif(PUName == "煎煮开始"):
                         name = '煎煮开始，操作按SOP执行（操作人）'
-                        return operateflow(ID, name)
+                        return operateflow(ID, name, PName)
                     elif(PUName == "静置开始"):
                         name = '静置开始，操作按SOP执行（操作人）'
-                        return operateflow(ID, name)
+                        return operateflow(ID, name, PName)
                     elif(PUName == "煎煮结束清场"):
                         name = '（煎煮段）生产结束清场（操作人）'
-                        return operateflow(ID, name)
+                        return operateflow(ID, name, PName)
                 elif(PName == "浓缩"):
+                    PName = "浓缩段"
                     if (PUName == "生产前的准备"):
                         name = '（浓缩段）生产前准备流程（操作人）'
-                        return operateflow(ID, name)
+                        return operateflow(ID, name, PName)
                     elif (PUName == "浓缩开始"):
                         name = '浓缩开始，操作按SOP执行（操作人）'
-                        return operateflow(ID, name)
+                        return operateflow(ID, name, PName)
                     elif (PUName == "浓缩结束清场"):
                         name = '浓缩结束清场（操作人）'
-                        return operateflow(ID, name)
+                        return operateflow(ID, name, PName)
                 elif(PName == "喷雾干燥"):
+                    PName = "喷雾干燥段"
                     if (PUName == "生产前的准备"):
                         name = '（喷雾干燥段）生产前准备流程（操作人）'
-                        return operateflow(ID, name)
+                        return operateflow(ID, name, PName)
                     elif (PUName == "喷雾干燥开始"):
                         name = '喷雾干燥开始，操作按SOP执行（操作人）'
-                        return operateflow(ID, name)
+                        return operateflow(ID, name, PName)
                     elif (PUName == "喷雾干燥结束清场"):
                         name = '喷雾干燥结束，按SOP清场（操作人）'
-                        return operateflow(ID, name)
+                        return operateflow(ID, name, PName)
                 elif(PName == "收粉"):
+                    PName = '收粉段'
                     if (PUName == "生产前的准备"):
                         name = '（收粉段）生产前准备流程（操作人）'
-                        return operateflow(ID, name)
+                        return operateflow(ID, name, PName)
                     elif (PUName == "收粉开始"):
                         name = '收粉开始，操作按SOP执行（操作人）'
-                        return operateflow(ID, name)
+                        return operateflow(ID, name, PName)
                     elif (PUName == "收粉结束清场"):
                         name = '收粉结束，按SOP清场（操作人）'
-                        return operateflow(ID, name)
+                        return operateflow(ID, name, PName)
                 elif(PName == "醇沉"):
+                    PName = "醇沉段"
                     if (PUName == "生产前的准备"):
                         name = '（醇沉段）生产前准备（操作人）'
-                        return operateflow(ID, name)
+                        return operateflow(ID, name, PName)
                     elif (PUName == "醇沉开始"):
                         name = '醇沉开始，操作按SOP执行（操作人）'
-                        return operateflow(ID, name)
+                        return operateflow(ID, name, PName)
                     elif (PUName == "醇沉结束清场"):
                         name = '醇沉结束，按SOP清场（操作人）'
-                        return operateflow(ID, name)
+                        return operateflow(ID, name, PName)
                 elif(PName == "单效浓缩段"):
+                    PName = "单效浓缩段"
                     if (PUName == "生产前的准备"):
                         name = '（单效浓缩段）生产前准备（操作人）'
-                        return operateflow(ID, name)
+                        return operateflow(ID, name, PName)
                     elif (PUName == "单效浓缩开始"):
                         name = '单效浓缩段开始，操作按SOP执行（操作人）'
-                        return operateflow(ID, name)
+                        return operateflow(ID, name, PName)
                     elif (PUName == "单效浓缩结束清场"):
                         name = '单效浓缩段结束，按SOP清场（操作人）'
-                        return operateflow(ID, name)
+                        return operateflow(ID, name, PName)
                 elif(PName == "收膏"):
+                    PName = "收膏段"
                     if (PUName == "生产前的准备"):
                         name = '（收膏段）生产前准备（操作人）'
-                        return operateflow(ID, name)
+                        return operateflow(ID, name, PName)
                     elif (PUName == "收膏开始"):
                         name = '收膏段开始，操作按SOP执行（操作人）'
-                        return operateflow(ID, name)
+                        return operateflow(ID, name, PName)
                     elif (PUName == "收膏结束清场"):
                         name = '收膏结束，按SOP清场（操作人）'
-                        return operateflow(ID, name)
+                        return operateflow(ID, name, PName)
         except Exception as e:
             print(e)
             logger.error(e)
             insertSyslog("error", "操作人确认报错Error：" + str(e), current_user.Name)
-def operateflow(ID, name):
+def operateflow(ID, name, PName):
     flag = 'OK'
     try:
+        BatchID = db_session.query(PlanManager.BatchID).filter(PlanManager.ID == ID).first()
+        PUID = db_session.query(ProductUnitRoute.PUID).filter(ProductUnitRoute.PDUnitRouteName == PName).first()
+        taskStatuss = db_session.query(ZYTask.TaskStatus).filter(ZYTask.PUID == PUID[0], ZYTask.BatchID == BatchID[0]).all()
+        for status in taskStatuss:
+            if(status[0] != "40"):
+                return "请先进行任务确认，再进行操作！"
+            else:
+                pass
         node = db_session.query(Model.node.NodeCollection).filter(
             Model.node.NodeCollection.oddNum == ID,
             Model.node.NodeCollection.name == name).first()
@@ -4961,7 +4986,8 @@ def QAflow(ID, statusName, name):
         node.status = Model.node.NodeStatus.PASSED.value
         node.opertionTime = datetime.datetime.now()
         node.oddUser = current_user.Name
-        db_session.commit()
+        db_session.commit(Model.node.NodeCollection)
+        status = db_session.query()
         return flag
     except Exception as e:
         db_session.rollback()
