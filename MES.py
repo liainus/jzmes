@@ -3943,8 +3943,29 @@ def searchPlanmanager():
             logger.error(e)
             insertSyslog("error", "计划向导生成的计划查询报错Error：" + str(e), current_user.Name)
 
-
-
+#菜单权限控制
+@app.route('/ZYPlanGuid/menuRedirect', methods=['POST', 'GET'])
+def menuRedirect():
+    if request.method == 'POST':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            menuName = data['menuName']
+            RoleNames = db_session.query(User.RoleName).filter(User.Name == current_user.Name).all()
+            flag = 'OK'
+            for rN in RoleNames:
+                roleID = db_session.query(Role.ID).filter(Role.RoleName == rN[0]).first()
+                menus = db_session.query(Menu.ModuleName).join(Role_Menu, isouter=True).filter_by(Role_ID=roleID).all()
+                for menu in menus:
+                    if(menu[0] == menuName):
+                        flag = 'OK'
+                    else:
+                        flag = '当前用户没有此菜单操作权限！'
+            return flag
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "计划向导生成计划报错Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 # 计划向导生成计划
 @app.route('/ZYPlanGuid/makePlan', methods=['POST', 'GET'])
 def makePlan():
