@@ -4257,18 +4257,18 @@ def processMonitor():
 @app.route('/taskConfirm')
 def taskConfirm():
     if request.method == 'GET':
-        data = request.values
-        ID = data['ID']
-        name = data['NAME']
-        PUID = db_session.query(ProductUnitRoute.PUID).filter(ProductUnitRoute.PDUnitRouteName == name).first()
-        zyp = db_session.query(ZYPlan).filter(ZYPlan.ID == ID, ZYPlan.PUID == PUID).first()
-        zytasks = []
-        tasks = db_session.query(ZYTask).filter(ZYTask.PUID == zyp.PUID, ZYTask.BatchID == zyp.BatchID).all()
-        for task in set(tasks):
-            tas = {'ZYTask': task}
-            zytasks.append(tas)
-        print(zytasks)
-        return render_template('taskConfirm.html',zytasks=zytasks)
+        # data = request.values
+        # ID = data['ID']
+        # name = data['name']
+        # BatchID = db_session.query(PlanManager.BatchID).filter(PlanManager.ID == ID).first()
+        # PUID = db_session.query(ProductUnitRoute.PUID).filter(ProductUnitRoute.PDUnitRouteName == name).first()
+        # zytasks = []
+        # tasks = db_session.query(ZYTask).filter(ZYTask.PUID == PUID[0], ZYTask.BatchID == BatchID[0]).all()
+        # for task in set(tasks):
+        #     tas = {'ZYTask': task}
+        #     zytasks.append(tas)
+        # print(zytasks)
+        return render_template('taskConfirm.html')
 
 #任务确认获取工艺段
 @app.route('/processMonitorLine/taskConfirmPuid', methods=['POST', 'GET'])
@@ -4380,6 +4380,32 @@ def taskConfirmSearch():
             logger.error(e)
             insertSyslog("error", "获取任务确认的任务列表报错Error：" + str(e), current_user.Name)
 
+# 任务确认查询任务
+@app.route('/processMonitorLine/taskConfirmSearch', methods=['POST', 'GET'])
+def taskConfirmSearch():
+    if request.method == 'GET':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                pages = int(data['page'])  # 页数
+                rowsnumber = int(data['rows'])  # 行数
+                inipage = (pages - 1) * rowsnumber + 0  # 起始页
+                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+                data = request.values
+                ID = data['ID']
+                name = data['name']
+                BatchID = db_session.query(PlanManager.BatchID).filter(PlanManager.ID == ID).first()
+                PUID = db_session.query(ProductUnitRoute.PUID).filter(ProductUnitRoute.PDUnitRouteName == name).first()
+                total = db_session.query(ZYTask.ID).filter(ZYTask.PUID == PUID[0], ZYTask.BatchID == BatchID[0]).count()
+                tasks = db_session.query(ZYTask).filter(ZYTask.PUID == PUID[0], ZYTask.BatchID == BatchID[0]).all()[inipage:endpage]
+                jsonZYTasks = json.dumps(tasks, cls=AlchemyEncoder, ensure_ascii=False)
+                jsonZYTasks = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonZYTasks + "}"
+                return jsonZYTasks
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "获取任务确认的任务列表报错Error：" + str(e), current_user.Name)
 #任务确认工艺段下的所有设备
 @app.route('/processMonitorLine/searchAllEquipments', methods=['POST', 'GET'])
 def searchAllEquipments():
