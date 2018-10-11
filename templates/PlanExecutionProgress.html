@@ -6,12 +6,11 @@
     <link href="../static/css/base.css" rel="stylesheet">
     <link rel="stylesheet" href="../static/css/bootstrap.min.css" crossorigin="anonymous">
     <script type="text/javascript" src="../static/js/jquery.min.js"></script>
-    <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
     <script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
     <style>
         /*选项卡*/
-        .tab .nav-tabs { position: relative;width:100%; padding:20px; background:#f1f1f1;z-index: 1}
-        .tab .nav-tabs li { margin-right: 40px; z-index: 1; }
+        .tab .nav-tabs { position: relative;width:100%; padding:20px 0; background:#f1f1f1;z-index: 1}
+        .tab .nav-tabs li { margin-left: 40px; z-index: 1; }
         .tab .nav-tabs li a { display: block; padding: 10px 20px; background: #fff; font-size: 14px; font-weight: 600; color: #956cae; text-transform: uppercase; border-radius: 0; margin-right: 0; border: 1px solid #956cae; position: relative; overflow: hidden; z-index: 1; transition: all 0.3s ease 0s; }
         .tab .nav-tabs li.active a, .tab .nav-tabs li a:hover { color: #fff; border: 1px solid #956cae; }
         .tab .nav-tabs li a:after { content: ""; display: block; width: 100%; height: 0; position: absolute; top: 0; left: 0; z-index: -1; transition: all 0.3s ease 0s; }
@@ -34,20 +33,24 @@
             $(".nav-tabs li").on("click",function(){
                 $(this).addClass("active").siblings().removeClass("active")
             })
+            //tab-pane 自适应页面高度
+            var height = $(window).height();   // 浏览器的高度
+			$(".tab-content").height(height - 130)
+        })
     </script>
 </head>
-<body>
+<body style="overflow-y: hidden">
     <div class="content">
         <div class="tab" role="tabpanel">
-            <ul class="nav nav-tabs" role="tablist">
+            <ul class="nav nav-tabs" role="tablist" id="tabMeun">
                 <li role="presentation" class="active"><a href="#Section1" role="tab" data-toggle="tab">健胃消食片</a></li>
                 <li role="presentation"><a href="#Section2" role="tab" data-toggle="tab">草珊瑚含片</a></li>
             </ul>
             <div class="tab-content tabs">
-                <div role="tabpanel" class="tab-pane fade show active" id="Section1">
+                <div role="tabpanel" class="tab-pane fade show active" id="Section1" style="height: 100%;">
                     <iframe src="/ZYPlanGuid/jwxspflowtu" frameborder="0" border="no" height="100%" width="100%"></iframe>
                 </div>
-                <div role="tabpanel" class="tab-pane fade" id="Section2">
+                <div role="tabpanel" class="tab-pane fade" id="Section2" style="height: 100%;">
                     <iframe src="/ZYPlanGuid/cshflowtu" frameborder="0" border="no" height="100%" width="100%"></iframe>
                 </div>
             </div>

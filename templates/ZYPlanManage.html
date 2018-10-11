@@ -4,221 +4,51 @@
     <meta charset="UTF-8">
     <title>制药计划管理</title>
     <link href="../static/css/base.css" rel="stylesheet">
-	<link href="../static/custom/uimaker/easyui.css" rel="stylesheet">
     <link rel="stylesheet" href="../static/css/bootstrap.min.css" crossorigin="anonymous">
-    <link href="../static/css/smart_wizard.min.css" rel="stylesheet">
+    <script type="text/javascript" src="../static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
     <style>
-        .sw-theme-arrows {
-            border-radius: 5px;
-            border: 1px solid #ddd;
-            margin:3px;
+        /*选项卡*/
+        .tab .nav-tabs { position: relative;width:100%; padding:20px; background:#f1f1f1;z-index: 1}
+        .tab .nav-tabs li { margin-right: 40px; z-index: 1; }
+        .tab .nav-tabs li a { display: block; padding: 10px 20px; background: #fff; font-size: 14px; font-weight: 600; color: #956cae; text-transform: uppercase; border-radius: 0; margin-right: 0; border: 1px solid #956cae; position: relative; overflow: hidden; z-index: 1; transition: all 0.3s ease 0s; }
+        .tab .nav-tabs li.active a, .tab .nav-tabs li a:hover { color: #fff; border: 1px solid #956cae; }
+        .tab .nav-tabs li a:after { content: ""; display: block; width: 100%; height: 0; position: absolute; top: 0; left: 0; z-index: -1; transition: all 0.3s ease 0s; }
+        .tab .nav-tabs li.active a:after, .tab .nav-tabs li a:hover:after { height: 100%; background: #956cae; }
+        .tab .tab-content { padding: 20px 10px; margin-top: 0; font-size: 14px; color: #999; line-height: 26px;width:auto; height:auto;}
+        .tab .tab-content h3 { font-size: 24px; margin-top: 0; }
+
+        @media only screen and (max-width: 767px) {
+        .tab .nav-tabs li { margin: 0 25px 0 0; }
         }
-        .sw-theme-arrows > .sw-container {
-            height: 600px;
-        }
-        .sw-theme-arrows .step-content {
-            padding: 0 10px;
-            border: 0px solid #D4D4D4;
-            background-color: #FFF;
-            text-align: left;
-        }
-        .sw-theme-arrows .sw-toolbar {
-            background:#f9f9f9;
-            padding: 10px;
-            margin-bottom: 0 !important;
-        }
-        .sw-theme-arrows > .sw-toolbar-top {
-        }
-        .sw-theme-arrows > .sw-toolbar-bottom {
-        }
-        .sw-theme-arrows > ul.step-anchor {
-            border: 0;
-            border-bottom: 1px solid #ddd;
-            padding: 0px;
-            background: #f5f5f5;
-            border-radius: 0;
-            border-top-right-radius: 5px;
-            list-style: none;
-            overflow: hidden;
-        }
-        .sw-theme-arrows > ul.step-anchor li+li:before {
-            padding: 0;
-        }
-        .sw-theme-arrows > ul.step-anchor > li {
-        }
-        .sw-theme-arrows > ul.step-anchor > li > a, .sw-theme-arrows > ul.step-anchor > li > a:hover {
-            color: #bbb;
-            text-decoration: none;
-            padding: 10px 0 10px 45px;
-            position: relative;
-            display: block;
-            border: 0 !important;
-            border-radius: 0;
-            outline-style: none;
-            background: #f5f5f5;
-        }
-        .sw-theme-arrows > ul.step-anchor > li > a:after {
-            content: " ";
-            display: block;
-            width: 0;
-            height: 0;
-            border-top: 50px solid transparent;
-            border-bottom: 50px solid transparent;
-            border-left: 30px solid #f5f5f5;
-            position: absolute;
-            top: 50%;
-            margin-top: -50px;
-            left: 100%;
-            z-index: 2;
-        }
-        .sw-theme-arrows > ul.step-anchor > li > a:before {
-            content: " ";
-            display: block;
-            width: 0;
-            height: 0;
-            border-top: 50px solid transparent;
-                   /* Go big on the size, and let overflow hide */
-            border-bottom: 50px solid transparent;
-            border-left: 30px solid #ddd;
-            position: absolute;
-            top: 50%;
-            margin-top: -50px;
-            margin-left: 1px;
-            left: 100%;
-            z-index: 1;
-        }
-        .sw-theme-arrows > ul.step-anchor > li:first-child > a {
-            padding-left: 15px;
-        }
-        .sw-theme-arrows > ul.step-anchor > li > a:hover {
-            color: #bbb;
-            text-decoration: none;
-            outline-style: none;
-            background: #f5f5f5;
-            border-color: #f5f5f5;
-        }
-        .sw-theme-arrows > ul.step-anchor > li > a:hover:after {
-            border-left-color: #f5f5f5;
-        }
-        .sw-theme-arrows > ul.step-anchor > li > a small {
-        }
-{#        .sw-theme-arrows > ul.step-anchor > li.clickable > a:hover {#}
-{#            color: #4285F4 !important;#}
-{#            background: #46b8da !important;#}
-{#        }#}
-        .sw-theme-arrows > ul.step-anchor > li.active > a {
-            border-color: #5cb85c !important;
-            color: #fff !important;
-            background: #5cb85c !important;
-        }
-        .sw-theme-arrows > ul.step-anchor > li.active > a:after {
-            border-left: 30px solid #5cb85c !important;
-        }
-        .sw-theme-arrows > ul.step-anchor > li.done > a {
-            border-color: #b1dfbb !important;
-         /*  #5cb85c */
-            color: #fff !important;
-            background: #b1dfbb !important;
-        }
-        .sw-theme-arrows > ul.step-anchor > li.done > a:after {
-            border-left: 30px solid #b1dfbb;
-         /* c3e6cb */;
-        }
-        .sw-theme-arrows > ul.step-anchor > li.danger > a {
-            border-color: #d9534f !important;
-            color: #fff !important;
-            background: #d9534f !important;
-        }
-        .sw-theme-arrows > ul.step-anchor > li.danger > a:after {
-            border-left: 30px solid #d9534f !important;
-        }
-        .sw-theme-arrows > ul.step-anchor > li.disabled > a, .sw-theme-arrows > ul.step-anchor > li.disabled > a:hover {
-            color: #999 !important;
-        }
-        /* Responsive CSS */
-        @media screen and (max-width: 768px) {
-            .sw-theme-arrows > ul.step-anchor {
-                border: 0;
-                background: #ddd !important;
-            }
-            .sw-theme-arrows > .nav-tabs > li {
-                float: none !important;
-                margin-bottom: 0;
-            }
-            .sw-theme-arrows > ul.step-anchor > li > a, .sw-theme-arrows > ul.step-anchor > li > a:hover {
-                padding-left: 15px;
-                margin-right: 0;
-                margin-bottom: 1px;
-            }
-            .sw-theme-arrows > ul.step-anchor > li > a:after, .sw-theme-arrows > ul.step-anchor > li > a:before {
-                display: none;
-            }
-        }
-        /* Loader Custom Style */
-        .sw-theme-arrows::before {
-            border: 10px solid #f3f3f3;
-            border-top: 10px solid #5cb85c;
+
+        @media only screen and (max-width: 479px) {
+        .tab .nav-tabs li { width: 100%; text-align: center; margin: 0 0 10px 0; }
+        .tab .nav-tabs li:after { width: 0; height: 100%; top: auto; bottom: -60%; right: 50%; }
         }
     </style>
-    <script src="../static/kendo/js/jquery.min.js"></script>
-	<script type="text/javascript" src="../static/js/jquery.smartWizard.min.js"></script>
     <script>
         $(function(){
-{#            var right = $("#right").val()#}
-{#            console.log(right)#}
-            $('#wizard').smartWizard({
-                selected: 0,
-                theme: 'arrows',
-                transitionEffect:'fade',
-                transitionSpeed:400,
-                disabledSteps:[],
-                enableAllAnchors:true, //加载所有锚点
-                cycleSteps:true, //循环步骤
-                toolbarSettings: {
-                    showPreviousButton:false, //不显示上一步按钮
-                    showNextButton:false //不显示下一步按钮
-                },
-                anchorSettings:{
-                    anchorClickable:true, //可点击导航
-                    enableAllAnchors:true//激活所有可点击的锚点
-                }
-            });
-        })
+            //选项卡样式
+            $(".nav-tabs li").on("click",function(){
+                $(this).addClass("active").siblings().removeClass("active")
+            })
     </script>
 </head>
 <body>
-{#    <input type="hidden" name="right" id="right" value="{{ right }}">#}
-    <div id="wizard" class="sw-main sw-theme-arrows">
-        <ul style="margin:10px;">
-            <li class="done"><a href="#step-1"><small>制药计划向导</small></a></li>
-            <li class="done"><a href="#step-2"><small>生产计划审核</small></a></li>
-            <li class="done"><a href="#step-3"><small>生产计划下发</small></a></li>
-            <li class="done"><a href="#step-4"><small>中控计划确认</small></a></li>
-            <li class="done"><a href="#step-5"><small>中控计划复核</small></a></li>
-            <li class="done"><a href="#step-6"><small>任务确认</small></a></li>
-            <li class="done"><a href="#step-7"><small>QA计划确认</small></a></li>
-        </ul>
-        <div>
-            <div id="step-1" style="height: 100%;">
-                <iframe src="/createPlanWizard" frameborder="0" border="no" height="100%" width="100%"></iframe>
-            </div>
-            <div id="step-2" style="height: 100%;">
-                <iframe src="/ZYPlanGuid/checkplanmanager" frameborder="0" border="no" height="100%" width="100%"></iframe>
-            </div>
-            <div id="step-3" style="height: 100%;">
-                <iframe src="/ZYPlanGuid/planmanager" frameborder="0" border="no" height="100%" width="100%"></iframe>
-            </div>
-            <div id="step-4" style="height: 100%;">
-                <iframe src="/MiddleControl/PlanConfirm" frameborder="0" border="no" height="100%" width="100%"></iframe>
-            </div>
-            <div id="step-5" style="height: 100%;">
-                <iframe src="/MiddleControl/PlanConfirmChecked" frameborder="0" border="no" height="100%" width="100%"></iframe>
-            </div>
-            <div id="step-6" style="height: 100%;">
-                <iframe src="/taskConfirm" frameborder="0" border="no" height="100%" width="100%"></iframe>
-            </div>
-            <div id="step-7" style="height: 100%;">
-                <iframe src="QAPlanConfirm" frameborder="0" border="no" height="100%" width="100%"></iframe>
+    <div class="content">
+        <div class="tab" role="tabpanel">
+            <ul class="nav nav-tabs" role="tablist">
+                <li role="presentation" class="active"><a href="#Section1" role="tab" data-toggle="tab">健胃消食片</a></li>
+                <li role="presentation"><a href="#Section2" role="tab" data-toggle="tab">草珊瑚含片</a></li>
+            </ul>
+            <div class="tab-content tabs">
+                <div role="tabpanel" class="tab-pane fade show active" id="Section1">
+                    <iframe src="/ZYPlanGuid/jwxspflowtu" frameborder="0" border="no" height="100%" width="100%"></iframe>
+                </div>
+                <div role="tabpanel" class="tab-pane fade" id="Section2">
+                    <iframe src="/ZYPlanGuid/cshflowtu" frameborder="0" border="no" height="100%" width="100%"></iframe>
+                </div>
             </div>
         </div>
     </div>
