@@ -35,14 +35,15 @@
             })
             //tab-pane 自适应页面高度
             var height = $(window).height();   // 浏览器的高度
-			$(".tab-content").height(height - 130)
+            var menuHeight = $(".nav-tabs").height()
+			$(".tab-content").height(height + menuHeight + 40)
         })
     </script>
 </head>
-<body style="overflow-y: hidden">
+<body>
     <div class="content">
         <div class="tab" role="tabpanel">
-            <ul class="nav nav-tabs" role="tablist" id="tabMeun">
+            <ul class="nav nav-tabs" role="tablist">
                 <li role="presentation" class="active"><a href="#Section1" role="tab" data-toggle="tab">健胃消食片</a></li>
                 <li role="presentation"><a href="#Section2" role="tab" data-toggle="tab">草珊瑚含片</a></li>
             </ul>
