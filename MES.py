@@ -5179,18 +5179,7 @@ def queryFlow(ID, name):
 
 # 计划管理
 @app.route('/ZYPlanManage')
-def zYPlanManage(): # 1           2           3               4            5            6          7
-    # rights = ['制药计划向导','生产计划审核','生产计划下发', '中控计划确认', '中控计划复核', '任务确认', 'QA计划确认']
-    # rolename = db_session.query(User.RoleName).filter_by(Name=current_user.Name).first()
-    # role_id = db_session.query(Role.ID).filter_by(RoleName=rolename).first()
-    # notVip = []
-    # for right in rights:
-    #     menu_id = db_session.query(Menu.ID).filter_by(ModuleName=right).first()[0]
-    #     # db_session.query(Menu).join(Role_Menu, isouter=True).filter_by(Role_ID=id).all()
-    #     menu = db_session.query(Menu).join(Role_Menu, isouter=True).filter(and_(Role_Menu.Role_ID==role_id, Role_Menu.Menu_ID==menu_id)).first()
-    #     if menu:
-    #         continue
-    #     notVip.append(rights.index(right)+1)
+def zYPlanManage():
     return render_template('ZYPlanManage.html')
 
 # QA放行
