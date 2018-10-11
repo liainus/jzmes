@@ -4327,58 +4327,58 @@ def planConfirmSearch():
             logger.error(e)
             insertSyslog("error", "任务确认查询计划报错Error：" + str(e), current_user.Name)
 
-#任务确认查询任务
-@app.route('/processMonitorLine/taskConfirmSearch', methods=['POST', 'GET'])
-def taskConfirmSearch():
-    if request.method == 'GET':
-        data = request.values  # 返回请求中的参数和form
-        try:
-            jsonstr = json.dumps(data.to_dict())
-            if len(jsonstr) > 10:
-                pages = int(data['page'])  # 页数
-                rowsnumber = int(data['rows'])  # 行数
-                inipage = (pages - 1) * rowsnumber + 0  # 起始页
-                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
-                APUID = data['PUID']  # 工艺段编码
-                TaskStatus = data['TaskStatus']  # 任务的执行状态
-                BatchID = data['BatchID']#批次号
-                if(APUID == "" and TaskStatus == ""):
-                    total = db_session.query(ZYTask).filter(ZYTask.TaskStatus.in_((32,40,50))).count()
-                    ZYTasks = db_session.query(ZYTask).filter(ZYTask.TaskStatus.in_((32,40,50))).order_by(desc("EnterTime")).all()[inipage:endpage]
-                elif(APUID != "" and TaskStatus == "" and BatchID == ""):
-                    total = db_session.query(ZYTask).filter(ZYTask.TaskStatus.in_((32, 40, 50)),
-                                                            ZYTask.PUID == APUID).count()
-                    ZYTasks = db_session.query(ZYTask).filter(ZYTask.TaskStatus.in_((32, 40, 50)),
-                                                              ZYTask.PUID == APUID).order_by(desc("EnterTime")).all()[inipage:endpage]
-                elif(APUID != "" and TaskStatus == "" and BatchID != ""):
-                    total = db_session.query(ZYTask).filter(ZYTask.BatchID == BatchID,
-                                                            ZYTask.TaskStatus.in_((32, 40, 50)),
-                                                            ZYTask.PUID == APUID).count()
-                    ZYTasks = db_session.query(ZYTask).filter(ZYTask.BatchID == BatchID,
-                                                              ZYTask.TaskStatus.in_((32, 40, 50)),
-                                                              ZYTask.PUID == APUID).order_by(desc("EnterTime")).all()[inipage:endpage]
-                elif (APUID == "" and TaskStatus != ""):
-                    total = db_session.query(ZYTask).filter(ZYTask.TaskStatus == TaskStatus).count()
-                    ZYTasks = db_session.query(ZYTask).filter(ZYTask.TaskStatus == TaskStatus).order_by(desc("EnterTime")).all()[inipage:endpage]
-                elif (APUID != "" and TaskStatus != "" and BatchID == ""):
-                    total = db_session.query(ZYTask).filter(ZYTask.TaskStatus == TaskStatus,
-                                                            ZYTask.PUID == APUID).count()
-                    ZYTasks = db_session.query(ZYTask).filter(ZYTask.TaskStatus == TaskStatus,
-                                                              ZYTask.PUID == APUID).order_by(desc("EnterTime")).all()[inipage:endpage]
-                elif (APUID != "" and TaskStatus != "" and BatchID != ""):
-                    total = db_session.query(ZYTask).filter(ZYTask.BatchID == BatchID,
-                                                            ZYTask.TaskStatus == TaskStatus,
-                                                            ZYTask.PUID == APUID).count()
-                    ZYTasks = db_session.query(ZYTask).filter(ZYTask.BatchID == BatchID,
-                                                              ZYTask.TaskStatus == TaskStatus,
-                                                              ZYTask.PUID == APUID).order_by(desc("EnterTime")).all()[inipage:endpage]
-                jsonZYTasks = json.dumps(ZYTasks, cls=AlchemyEncoder, ensure_ascii=False)
-                jsonZYTasks = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonZYTasks + "}"
-                return jsonZYTasks
-        except Exception as e:
-            print(e)
-            logger.error(e)
-            insertSyslog("error", "获取任务确认的任务列表报错Error：" + str(e), current_user.Name)
+# #任务确认查询任务
+# @app.route('/processMonitorLine/taskConfirmSearch', methods=['POST', 'GET'])
+# def taskConfirmSearch():
+#     if request.method == 'GET':
+#         data = request.values  # 返回请求中的参数和form
+#         try:
+#             jsonstr = json.dumps(data.to_dict())
+#             if len(jsonstr) > 10:
+#                 pages = int(data['page'])  # 页数
+#                 rowsnumber = int(data['rows'])  # 行数
+#                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
+#                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+#                 APUID = data['PUID']  # 工艺段编码
+#                 TaskStatus = data['TaskStatus']  # 任务的执行状态
+#                 BatchID = data['BatchID']#批次号
+#                 if(APUID == "" and TaskStatus == ""):
+#                     total = db_session.query(ZYTask).filter(ZYTask.TaskStatus.in_((32,40,50))).count()
+#                     ZYTasks = db_session.query(ZYTask).filter(ZYTask.TaskStatus.in_((32,40,50))).order_by(desc("EnterTime")).all()[inipage:endpage]
+#                 elif(APUID != "" and TaskStatus == "" and BatchID == ""):
+#                     total = db_session.query(ZYTask).filter(ZYTask.TaskStatus.in_((32, 40, 50)),
+#                                                             ZYTask.PUID == APUID).count()
+#                     ZYTasks = db_session.query(ZYTask).filter(ZYTask.TaskStatus.in_((32, 40, 50)),
+#                                                               ZYTask.PUID == APUID).order_by(desc("EnterTime")).all()[inipage:endpage]
+#                 elif(APUID != "" and TaskStatus == "" and BatchID != ""):
+#                     total = db_session.query(ZYTask).filter(ZYTask.BatchID == BatchID,
+#                                                             ZYTask.TaskStatus.in_((32, 40, 50)),
+#                                                             ZYTask.PUID == APUID).count()
+#                     ZYTasks = db_session.query(ZYTask).filter(ZYTask.BatchID == BatchID,
+#                                                               ZYTask.TaskStatus.in_((32, 40, 50)),
+#                                                               ZYTask.PUID == APUID).order_by(desc("EnterTime")).all()[inipage:endpage]
+#                 elif (APUID == "" and TaskStatus != ""):
+#                     total = db_session.query(ZYTask).filter(ZYTask.TaskStatus == TaskStatus).count()
+#                     ZYTasks = db_session.query(ZYTask).filter(ZYTask.TaskStatus == TaskStatus).order_by(desc("EnterTime")).all()[inipage:endpage]
+#                 elif (APUID != "" and TaskStatus != "" and BatchID == ""):
+#                     total = db_session.query(ZYTask).filter(ZYTask.TaskStatus == TaskStatus,
+#                                                             ZYTask.PUID == APUID).count()
+#                     ZYTasks = db_session.query(ZYTask).filter(ZYTask.TaskStatus == TaskStatus,
+#                                                               ZYTask.PUID == APUID).order_by(desc("EnterTime")).all()[inipage:endpage]
+#                 elif (APUID != "" and TaskStatus != "" and BatchID != ""):
+#                     total = db_session.query(ZYTask).filter(ZYTask.BatchID == BatchID,
+#                                                             ZYTask.TaskStatus == TaskStatus,
+#                                                             ZYTask.PUID == APUID).count()
+#                     ZYTasks = db_session.query(ZYTask).filter(ZYTask.BatchID == BatchID,
+#                                                               ZYTask.TaskStatus == TaskStatus,
+#                                                               ZYTask.PUID == APUID).order_by(desc("EnterTime")).all()[inipage:endpage]
+#                 jsonZYTasks = json.dumps(ZYTasks, cls=AlchemyEncoder, ensure_ascii=False)
+#                 jsonZYTasks = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonZYTasks + "}"
+#                 return jsonZYTasks
+#         except Exception as e:
+#             print(e)
+#             logger.error(e)
+#             insertSyslog("error", "获取任务确认的任务列表报错Error：" + str(e), current_user.Name)
 
 # 任务确认查询任务
 @app.route('/processMonitorLine/taskConfirmSearch', methods=['POST', 'GET'])
