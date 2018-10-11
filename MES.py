@@ -4554,6 +4554,16 @@ def controlConfirmSaveInfo():
             logger.error(e)
             insertSyslog("error", "中控确认保存信息报错Error：" + str(e), current_user.Name)
 
+#草珊瑚含片
+@app.route('/ZYPlanGuid/cshflowtu')
+def cshflowtu():
+    return render_template('cshflowtu.html')
+
+#健胃消食片
+@app.route('/ZYPlanGuid/jwxspflowtu')
+def jwxspflowtu():
+    return render_template('jwxspflowtu.html')
+
 #操作人确认
 @app.route('/ZYPlanGuid/operateConfirm', methods=['POST', 'GET'])
 def operateConfirm():
@@ -4669,7 +4679,7 @@ def operateflow(ID, name, PName):
         PUID = db_session.query(ProductUnitRoute.PUID).filter(ProductUnitRoute.PDUnitRouteName == PName).first()
         taskStatuss = db_session.query(ZYTask.TaskStatus).filter(ZYTask.PUID == PUID[0], ZYTask.BatchID == BatchID[0]).all()
         for status in taskStatuss:
-            if(status != "40"):
+            if(status[0] != "40"):
                 return "请先进行任务确认，再进行操作！"
             else:
                 pass
@@ -4976,7 +4986,8 @@ def QAflow(ID, statusName, name):
         node.status = Model.node.NodeStatus.PASSED.value
         node.opertionTime = datetime.datetime.now()
         node.oddUser = current_user.Name
-        db_session.commit()
+        db_session.commit(Model.node.NodeCollection)
+        status = db_session.query()
         return flag
     except Exception as e:
         db_session.rollback()
