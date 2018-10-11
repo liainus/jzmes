@@ -3957,7 +3957,7 @@ def menuRedirect():
                 menus = db_session.query(Menu.ModuleName).join(Role_Menu, isouter=True).filter_by(Role_ID=roleID).all()
                 for menu in menus:
                     if(menu[0] == menuName):
-                        flag = 'OK'
+                        return 'OK'
                     else:
                         flag = '当前用户没有此菜单操作权限！'
             return flag
