@@ -24,7 +24,7 @@ from Model.core import Enterprise, Area, Factory, ProductLine, ProcessUnit, Equi
     ProductUnit, ProductRule, ZYTask, ZYPlanMaterial, ZYPlan, Unit, PlanManager, SchedulePlan, ProductControlTask, \
     OpcServer, Pequipment, WorkFlowStatus, WorkFlowEventZYPlan, WorkFlowEventPlan, \
     OpcTag, CollectParamsTemplate, CollectParams, Collectionstrategy, CollectTask, \
-    CollectTaskCollection, ReadyWork, NodeIdNote
+    CollectTaskCollection, ReadyWork, NodeIdNote, ProductUnitRoute
 from Model.system import Role, Organization, User, Menu, Role_Menu
 from tools.MESLogger import MESLogger
 from Model.core import SysLog
@@ -4255,7 +4255,19 @@ def processMonitor():
 #任务确认
 @app.route('/taskConfirm')
 def taskConfirm():
-    return render_template('taskConfirm.html')
+    if request.method == 'GET':
+        # data = request.values
+        # ID = data['ID']
+        # name = data['name']
+        # BatchID = db_session.query(PlanManager.BatchID).filter(PlanManager.ID == ID).first()
+        # PUID = db_session.query(ProductUnitRoute.PUID).filter(ProductUnitRoute.PDUnitRouteName == name).first()
+        # zytasks = []
+        # tasks = db_session.query(ZYTask).filter(ZYTask.PUID == PUID[0], ZYTask.BatchID == BatchID[0]).all()
+        # for task in set(tasks):
+        #     tas = {'ZYTask': task}
+        #     zytasks.append(tas)
+        # print(zytasks)
+        return render_template('taskConfirm.html')
 
 #任务确认获取工艺段
 @app.route('/processMonitorLine/taskConfirmPuid', methods=['POST', 'GET'])
@@ -4314,7 +4326,60 @@ def planConfirmSearch():
             logger.error(e)
             insertSyslog("error", "任务确认查询计划报错Error：" + str(e), current_user.Name)
 
-#任务确认查询任务
+# #任务确认查询任务
+# @app.route('/processMonitorLine/taskConfirmSearch', methods=['POST', 'GET'])
+# def taskConfirmSearch():
+#     if request.method == 'GET':
+#         data = request.values  # 返回请求中的参数和form
+#         try:
+#             jsonstr = json.dumps(data.to_dict())
+#             if len(jsonstr) > 10:
+#                 pages = int(data['page'])  # 页数
+#                 rowsnumber = int(data['rows'])  # 行数
+#                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
+#                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+#                 APUID = data['PUID']  # 工艺段编码
+#                 TaskStatus = data['TaskStatus']  # 任务的执行状态
+#                 BatchID = data['BatchID']#批次号
+#                 if(APUID == "" and TaskStatus == ""):
+#                     total = db_session.query(ZYTask).filter(ZYTask.TaskStatus.in_((32,40,50))).count()
+#                     ZYTasks = db_session.query(ZYTask).filter(ZYTask.TaskStatus.in_((32,40,50))).order_by(desc("EnterTime")).all()[inipage:endpage]
+#                 elif(APUID != "" and TaskStatus == "" and BatchID == ""):
+#                     total = db_session.query(ZYTask).filter(ZYTask.TaskStatus.in_((32, 40, 50)),
+#                                                             ZYTask.PUID == APUID).count()
+#                     ZYTasks = db_session.query(ZYTask).filter(ZYTask.TaskStatus.in_((32, 40, 50)),
+#                                                               ZYTask.PUID == APUID).order_by(desc("EnterTime")).all()[inipage:endpage]
+#                 elif(APUID != "" and TaskStatus == "" and BatchID != ""):
+#                     total = db_session.query(ZYTask).filter(ZYTask.BatchID == BatchID,
+#                                                             ZYTask.TaskStatus.in_((32, 40, 50)),
+#                                                             ZYTask.PUID == APUID).count()
+#                     ZYTasks = db_session.query(ZYTask).filter(ZYTask.BatchID == BatchID,
+#                                                               ZYTask.TaskStatus.in_((32, 40, 50)),
+#                                                               ZYTask.PUID == APUID).order_by(desc("EnterTime")).all()[inipage:endpage]
+#                 elif (APUID == "" and TaskStatus != ""):
+#                     total = db_session.query(ZYTask).filter(ZYTask.TaskStatus == TaskStatus).count()
+#                     ZYTasks = db_session.query(ZYTask).filter(ZYTask.TaskStatus == TaskStatus).order_by(desc("EnterTime")).all()[inipage:endpage]
+#                 elif (APUID != "" and TaskStatus != "" and BatchID == ""):
+#                     total = db_session.query(ZYTask).filter(ZYTask.TaskStatus == TaskStatus,
+#                                                             ZYTask.PUID == APUID).count()
+#                     ZYTasks = db_session.query(ZYTask).filter(ZYTask.TaskStatus == TaskStatus,
+#                                                               ZYTask.PUID == APUID).order_by(desc("EnterTime")).all()[inipage:endpage]
+#                 elif (APUID != "" and TaskStatus != "" and BatchID != ""):
+#                     total = db_session.query(ZYTask).filter(ZYTask.BatchID == BatchID,
+#                                                             ZYTask.TaskStatus == TaskStatus,
+#                                                             ZYTask.PUID == APUID).count()
+#                     ZYTasks = db_session.query(ZYTask).filter(ZYTask.BatchID == BatchID,
+#                                                               ZYTask.TaskStatus == TaskStatus,
+#                                                               ZYTask.PUID == APUID).order_by(desc("EnterTime")).all()[inipage:endpage]
+#                 jsonZYTasks = json.dumps(ZYTasks, cls=AlchemyEncoder, ensure_ascii=False)
+#                 jsonZYTasks = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonZYTasks + "}"
+#                 return jsonZYTasks
+#         except Exception as e:
+#             print(e)
+#             logger.error(e)
+#             insertSyslog("error", "获取任务确认的任务列表报错Error：" + str(e), current_user.Name)
+
+# 任务确认查询任务
 @app.route('/processMonitorLine/taskConfirmSearch', methods=['POST', 'GET'])
 def taskConfirmSearch():
     if request.method == 'GET':
@@ -4326,47 +4391,20 @@ def taskConfirmSearch():
                 rowsnumber = int(data['rows'])  # 行数
                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
-                APUID = data['PUID']  # 工艺段编码
-                TaskStatus = data['TaskStatus']  # 任务的执行状态
-                BatchID = data['BatchID']#批次号
-                if(APUID == "" and TaskStatus == ""):
-                    total = db_session.query(ZYTask).filter(ZYTask.TaskStatus.in_((32,40,50))).count()
-                    ZYTasks = db_session.query(ZYTask).filter(ZYTask.TaskStatus.in_((32,40,50))).order_by(desc("EnterTime")).all()[inipage:endpage]
-                elif(APUID != "" and TaskStatus == "" and BatchID == ""):
-                    total = db_session.query(ZYTask).filter(ZYTask.TaskStatus.in_((32, 40, 50)),
-                                                            ZYTask.PUID == APUID).count()
-                    ZYTasks = db_session.query(ZYTask).filter(ZYTask.TaskStatus.in_((32, 40, 50)),
-                                                              ZYTask.PUID == APUID).order_by(desc("EnterTime")).all()[inipage:endpage]
-                elif(APUID != "" and TaskStatus == "" and BatchID != ""):
-                    total = db_session.query(ZYTask).filter(ZYTask.BatchID == BatchID,
-                                                            ZYTask.TaskStatus.in_((32, 40, 50)),
-                                                            ZYTask.PUID == APUID).count()
-                    ZYTasks = db_session.query(ZYTask).filter(ZYTask.BatchID == BatchID,
-                                                              ZYTask.TaskStatus.in_((32, 40, 50)),
-                                                              ZYTask.PUID == APUID).order_by(desc("EnterTime")).all()[inipage:endpage]
-                elif (APUID == "" and TaskStatus != ""):
-                    total = db_session.query(ZYTask).filter(ZYTask.TaskStatus == TaskStatus).count()
-                    ZYTasks = db_session.query(ZYTask).filter(ZYTask.TaskStatus == TaskStatus).order_by(desc("EnterTime")).all()[inipage:endpage]
-                elif (APUID != "" and TaskStatus != "" and BatchID == ""):
-                    total = db_session.query(ZYTask).filter(ZYTask.TaskStatus == TaskStatus,
-                                                            ZYTask.PUID == APUID).count()
-                    ZYTasks = db_session.query(ZYTask).filter(ZYTask.TaskStatus == TaskStatus,
-                                                              ZYTask.PUID == APUID).order_by(desc("EnterTime")).all()[inipage:endpage]
-                elif (APUID != "" and TaskStatus != "" and BatchID != ""):
-                    total = db_session.query(ZYTask).filter(ZYTask.BatchID == BatchID,
-                                                            ZYTask.TaskStatus == TaskStatus,
-                                                            ZYTask.PUID == APUID).count()
-                    ZYTasks = db_session.query(ZYTask).filter(ZYTask.BatchID == BatchID,
-                                                              ZYTask.TaskStatus == TaskStatus,
-                                                              ZYTask.PUID == APUID).order_by(desc("EnterTime")).all()[inipage:endpage]
-                jsonZYTasks = json.dumps(ZYTasks, cls=AlchemyEncoder, ensure_ascii=False)
+                data = request.values
+                ID = data['ID']
+                name = data['name']
+                BatchID = db_session.query(PlanManager.BatchID).filter(PlanManager.ID == ID).first()
+                PUID = db_session.query(ProductUnitRoute.PUID).filter(ProductUnitRoute.PDUnitRouteName == name).first()
+                total = db_session.query(ZYTask.ID).filter(ZYTask.PUID == PUID[0], ZYTask.BatchID == BatchID[0]).count()
+                tasks = db_session.query(ZYTask).filter(ZYTask.PUID == PUID[0], ZYTask.BatchID == BatchID[0]).all()[inipage:endpage]
+                jsonZYTasks = json.dumps(tasks, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonZYTasks = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonZYTasks + "}"
                 return jsonZYTasks
         except Exception as e:
             print(e)
             logger.error(e)
             insertSyslog("error", "获取任务确认的任务列表报错Error：" + str(e), current_user.Name)
-
 #任务确认工艺段下的所有设备
 @app.route('/processMonitorLine/searchAllEquipments', methods=['POST', 'GET'])
 def searchAllEquipments():
@@ -4405,16 +4443,16 @@ def saveEQPCode():
                 oclass.EquipmentID = EQPCode
                 oclass.TaskStatus = Model.Global.TASKSTATUS.COMFIRM.value
                 db_session.commit()
-                oclassplan = db_session.query(ZYPlan).filter(ZYPlan.PUID == oclass.PUID, ZYPlan.BatchID == oclass.BatchID).first()
-                oclasstasks = db_session.query(ZYTask).filter(ZYTask.PUID == oclass.PUID,
-                                                             ZYTask.BatchID == oclass.BatchID).all()
-                flag = "TRUE"
-                for task in oclasstasks:
-                    if(task.TaskStatus != Model.Global.TASKSTATUS.COMFIRM.value):
-                        flag = "FALSE"
-                if(flag == "TRUE"):
-                    oclassplan.ZYPlanStatus = Model.Global.ZYPlanStatus.COMFIRM.value
-                    db_session.commit()
+                # oclassplan = db_session.query(ZYPlan).filter(ZYPlan.PUID == oclass.PUID, ZYPlan.BatchID == oclass.BatchID).first()
+                # oclasstasks = db_session.query(ZYTask).filter(ZYTask.PUID == oclass.PUID,
+                #                                              ZYTask.BatchID == oclass.BatchID).all()
+                # flag = "TRUE"
+                # for task in oclasstasks:
+                #     if(task.TaskStatus != Model.Global.TASKSTATUS.COMFIRM.value):
+                #         flag = "FALSE"
+                # if(flag == "TRUE"):
+                #     oclassplan.ZYPlanStatus = Model.Global.ZYPlanStatus.COMFIRM.value
+                #     db_session.commit()
                 return "OK"
         except Exception as e:
             db_session.rollback()
@@ -5046,98 +5084,63 @@ def planmanagerProgressTuSearch():
                 jsonstr = json.dumps(data.to_dict())
                 jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
                 ID = int(jsonnumber[0])
-                name = '（备料段）生产前准备（QA签名）'
-                a1 = queryFlow(ID, name)
-                # if (PName == "备料"):
-                #     if (PUName == "生产前的准备"):
-                #
-                #     elif (PUName == "备料开始"):
-                #         name = '备料操作按SOP执行（QA签名）'
-                #         return QAflow(ID, statusName, name)
-                #     elif (PUName == "备料结束清场"):
-                #         name = '（备料段）生产结束清场（QA签名）'
-                #         return QAflow(ID, statusName, name)
-                # elif (PName == "煎煮"):
-                #     if (PUName == "生产前的准备"):
-                #         name = '（煎煮段）生产前准备（QA签名）'
-                #         return QAflow(ID, statusName, name)
-                #     elif (PUName == "煎煮开始"):
-                #         name = '煎煮开始，操作按SOP执行（QA签名）'
-                #         return QAflow(ID, statusName, name)
-                #     elif (PUName == "静置开始"):
-                #         name = '静置开始，操作按SOP执行（QA签名）'
-                #         return QAflow(ID, statusName, name)
-                #     elif (PUName == "煎煮结束清场"):
-                #         name = '（煎煮段）生产结束清场（QA签名）'
-                #         return QAflow(ID, statusName, name)
-                # elif (PName == "浓缩"):
-                #     if (PUName == "生产前的准备"):
-                #         name = '（浓缩段）生产前准备流程（QA签名）'
-                #         return QAflow(ID, statusName, name)
-                #     elif (PUName == "浓缩开始"):
-                #         name = '浓缩开始，操作按SOP执行（QA签名）'
-                #         return QAflow(ID, statusName, name)
-                #     elif (PUName == "浓缩结束清场"):
-                #         name = '浓缩结束清场（QA签名）'
-                #         return QAflow(ID, statusName, name)
-                # elif (PName == "喷雾干燥"):
-                #     if (PUName == "生产前的准备"):
-                #         name = '（喷雾干燥段）生产前准备流程（QA签名）'
-                #         return QAflow(ID, statusName, name)
-                #     elif (PUName == "喷雾干燥开始"):
-                #         name = '喷雾干燥开始，操作按SOP执行（QA签名）'
-                #         return QAflow(ID, statusName, name)
-                #     elif (PUName == "喷雾干燥结束清场"):
-                #         name = '喷雾干燥结束，按SOP清场（QA签名）'
-                #         return QAflow(ID, statusName, name)
-                # elif (PName == "收粉"):
-                #     if (PUName == "生产前的准备"):
-                #         name = '（收粉段）生产前准备流程（QA签名）'
-                #         return QAflow(ID, statusName, name)
-                #     elif (PUName == "收粉开始"):
-                #         name = '收粉开始，操作按SOP执行（QA签名）'
-                #         return QAflow(ID, statusName, name)
-                #     elif (PUName == "收粉结束清场"):
-                #         name = '收粉结束，按SOP清场（QA签名）'
-                #         return QAflow(ID, statusName, name)
-                # elif (PName == "醇沉"):
-                #     if (PUName == "生产前的准备"):
-                #         name = '（醇沉段）生产前准备（QA签名）'
-                #         return QAflow(ID, statusName, name)
-                #     elif (PUName == "醇沉开始"):
-                #         name = '醇沉开始，操作按SOP执行（QA签名）'
-                #         return QAflow(ID, statusName, name)
-                #     elif (PUName == "醇沉结束清场"):
-                #         name = '醇沉结束，按SOP清场（QA签名）'
-                #         return QAflow(ID, statusName, name)
-                # elif (PName == "单效浓缩段"):
-                #     if (PUName == "生产前的准备"):
-                #         name = '（单效浓缩段）生产前准备（QA签名）'
-                #         return QAflow(ID, statusName, name)
-                #     elif (PUName == "单效浓缩开始"):
-                #         name = '单效浓缩段开始，操作按SOP执行（QA签名）'
-                #         return QAflow(ID, statusName, name)
-                #     elif (PUName == "单效浓缩结束清场"):
-                #         name = '单效浓缩段结束，按SOP清场（QA签名）'
-                #         return QAflow(ID, statusName, name)
-                # elif (PName == "收膏"):
-                #     if (PUName == "生产前的准备"):
-                #         name = '（收膏段）生产前准备（QA签名）'
-                #         return QAflow(ID, statusName, name)
-                #     elif (PUName == "收膏开始"):
-                #         name = '收膏段开始，操作按SOP执行（QA签名）'
-                #         return QAflow(ID, statusName, name)
-                #     elif (PUName == "收膏结束清场"):
-                #         name = '收膏结束，按SOP清场（QA签名）'
-                #         return QAflow(ID, statusName, name)
-                #
-                # jsonzyplans = json.dumps(zyplans, cls=AlchemyEncoder, ensure_ascii=False)
-                # jsonzyplans = '{"total"' + ":" + str() + ',"rows"' + ":\n" + jsonzyplans + "}"
-                # return jsonzyplans
+                dic = {}
+                a1 = '（备料段）生产前准备（QA签名）'
+                dic['a1'] = queryFlow(ID, a1)
+                a2 = '备料操作按SOP执行（QA签名）'
+                dic['a2'] = queryFlow(ID, a2)
+                a3 = '（备料段）生产结束清场（QA签名）'
+                dic['a3'] = queryFlow(ID, a3)
+                b1 = '（煎煮段）生产前准备（QA签名）'
+                dic['b1'] = queryFlow(ID, b1)
+                b2 = '煎煮开始，操作按SOP执行（QA签名）'
+                dic['b2'] = queryFlow(ID, b2)
+                b3 = '静置开始，操作按SOP执行（QA签名）'
+                dic['b3'] = queryFlow(ID, b3)
+                b4 = '（煎煮段）生产结束清场（QA签名）'
+                dic['b4'] = queryFlow(ID, b4)
+                c1 = '（浓缩段）生产前准备流程（QA签名）'
+                dic['c1'] = queryFlow(ID, c1)
+                c2 = '浓缩开始，操作按SOP执行（QA签名）'
+                dic['c2'] = queryFlow(ID, c2)
+                c3 = '浓缩结束清场（QA签名）'
+                dic['c3'] = queryFlow(ID, c3)
+                d1 = '（喷雾干燥段）生产前准备流程（QA签名）'
+                dic['d1'] = queryFlow(ID, d1)
+                d2 = '喷雾干燥开始，操作按SOP执行（QA签名）'
+                dic['d2'] = queryFlow(ID, d2)
+                d3 = '喷雾干燥结束，按SOP清场（QA签名）'
+                dic['d3'] = queryFlow(ID, d3)
+                e1 = '（收粉段）生产前准备流程（QA签名）'
+                dic['e1'] = queryFlow(ID, e1)
+                e2 = '收粉开始，操作按SOP执行（QA签名）'
+                dic['e2'] = queryFlow(ID, e2)
+                e3 = '收粉结束，按SOP清场（QA签名）'
+                dic['e3'] = queryFlow(ID, e3)
+                f1 = '（醇沉段）生产前准备（QA签名）'
+                dic['f1'] = queryFlow(ID, f1)
+                f2 = '醇沉开始，操作按SOP执行（QA签名）'
+                dic['f2'] = queryFlow(ID, f2)
+                f3 = '醇沉结束，按SOP清场（QA签名）'
+                dic['f3'] = queryFlow(ID, f3)
+                g1 = '（单效浓缩段）生产前准备（QA签名）'
+                dic['g1'] = queryFlow(ID, g1)
+                g2 = '单效浓缩段开始，操作按SOP执行（QA签名）'
+                dic['g2'] = queryFlow(ID, g2)
+                g3 = '单效浓缩段结束，按SOP清场（QA签名）'
+                dic['g3'] = queryFlow(ID, g3)
+                h1 = '（收膏段）生产前准备（QA签名）'
+                dic['h1'] = queryFlow(ID, h1)
+                h2 = '收膏段开始，操作按SOP执行（QA签名）'
+                dic['h2'] = queryFlow(ID,h2)
+                h3 = '收膏结束，按SOP清场（QA签名）'
+                dic['h3'] = queryFlow(ID, h3)
+                print(json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False))
+                return json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "计划执行进度查询计划明细Error：" + str(e), current_user.Name)
+            insertSyslog("error", "计划执行进度查询流程图查询报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 def queryFlow(ID, name):
     status = db_session.query(Model.node.NodeCollection.status).filter(Model.node.NodeCollection.oddNum == ID,

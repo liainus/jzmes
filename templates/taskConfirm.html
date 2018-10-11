@@ -17,71 +17,67 @@
     <script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
 </head>
 <body>
-    <div class="">
-		<div class="left-tree" style="width:16%;float:left;vertical-align: top;padding: 0 1%;">
-            <div style="margin-top: 20px;margin-bottom: 10px;border-bottom: 1px solid #ccc;padding-bottom: 10px;">
-                <span style="color:#1da02b;">工艺列表</span>
-            </div>
-            <div style="min-height: 500px;border: 1px solid #ccc;margin: 1%;padding: 1% 0;">
-                <ul class="easyui-tree" id="tree"></ul>
-            </div>
-		</div>
-		<div class="content" style="width:79%;float:left;vertical-align: top;">
+    <div class="" style="margin: 1%;">
+{#		<div class="left-tree" style="width:16%;float:left;vertical-align: top;padding: 0 1%;">#}
+{#            <div style="margin-top: 20px;margin-bottom: 10px;border-bottom: 1px solid #ccc;padding-bottom: 10px;">#}
+{#                <span style="color:#1da02b;">工艺列表</span>#}
+{#            </div>#}
+{#            <div style="min-height: 500px;border: 1px solid #ccc;margin: 1%;padding: 1% 0;">#}
+{#                <ul class="easyui-tree" id="tree"></ul>#}
+{#            </div>#}
+{#		</div>#}
+		<div class="content" style="width:100%;float:left;vertical-align: top;">
+{#            <div style="margin-top: 1%;">#}
+{#                <div style="margin-top: 20px;margin-bottom: 10px;border-bottom: 1px solid #ccc;padding-bottom: 10px;">#}
+{#                    <span style="color:#1da02b;">选择计划查询对应任务</span>#}
+{#                </div>#}
+{#                <table class="easyui-datagrid" id="tabPlan" title="计划查询列表" style="width:100%;" data-options="#}
+{#                    queryParams: {#}
+{#                        PUID: ''#}
+{#                    },#}
+{#                    loadMsg:false,#}
+{#                    rownumbers:true,#}
+{#                    singleSelect:true,#}
+{#                    autoRowHeight:false,#}
+{#                    pagination:true,#}
+{#                    pageSize:10,#}
+{#                    url:'/processMonitorLine/planConfirmSearch',#}
+{#                    method:'get'">#}
+{#                    <thead>#}
+{#                        <tr>#}
+{#                            <th field="ck" checkbox="true"></th>#}
+{#                            <th data-options="field:'BrandName',width:100,align:'center'">品名</th>#}
+{#                            <th data-options="field:'BatchID',width:120,align:'center'">批次号</th>#}
+{#                            <th data-options="field:'ZYPlanStatus',width:100,align:'center'" formatter="formatterStatus" styler="styleStatus">计划状态</th>#}
+{#                            <th data-options="field:'PlanDate',width:120,align:'center'">计划日期</th>#}
+{#                            <th data-options="field:'PlanNo',width:100,align:'center'">制药计划单号</th>#}
+{#                            <th data-options="field:'PlanType',width:100,align:'center'">计划类型</th>#}
+{#                            <th data-options="field:'BrandID',width:100,align:'center'">品名编码</th>#}
+{#                            <th data-options="field:'ERPOrderNo',width:100,align:'center'">ERP订单号</th>#}
+{#                            <th data-options="field:'PlanQuantity',width:100,align:'center'">计划重量</th>#}
+{#                            <th data-options="field:'ActQuantity',width:100,align:'center'">实际重量</th>#}
+{#                            <th data-options="field:'Unit',width:100,align:'center'">单位</th>#}
+{#                            <th data-options="field:'EnterTime',width:150,align:'center'">录入时间</th>#}
+{#                            <th data-options="field:'PlanBeginTime',width:150,align:'center'">计划开始时间</th>#}
+{#                            <th data-options="field:'PlanEndTime',width:150,align:'center'">计划结束时间</th>#}
+{#                            <th data-options="field:'ActBeginTime',width:150,align:'center'">实际开始时间</th>#}
+{#                            <th data-options="field:'ActEndTime',width:150,align:'center'">实际完成时间</th>#}
+{#                            <th data-options="field:'PlanSeq',width:150,align:'center'">顺序号</th>#}
+{#                            <th data-options="field:'PUID',width:120,align:'center'">工艺段</th>#}
+{#                            <th data-options="field:'LockStatus',width:100,align:'center'"formatter="formatterLockStatus">计划锁定状态</th>#}
+{#                            <th data-options="field:'INFStatus',width:100,align:'center'">接口处理状态</th>#}
+{#                            <th data-options="field:'WMSStatus',width:100,align:'center'">仓储送料状态</th>#}
+{#                        </tr>#}
+{#                    </thead>#}
+{#                </table>#}
+{#            </div>#}
             <div style="margin-top: 1%;">
-                <div style="margin-top: 20px;margin-bottom: 10px;border-bottom: 1px solid #ccc;padding-bottom: 10px;">
-                    <span style="color:#1da02b;">选择计划查询对应任务</span>
-                </div>
-                <table class="easyui-datagrid" id="tabPlan" title="计划查询列表" style="width:100%;" data-options="
-                    queryParams: {
-                        PUID: ''
-                    },
-                    loadMsg:false,
-                    rownumbers:true,
-                    singleSelect:true,
-                    autoRowHeight:false,
-                    pagination:true,
-                    pageSize:10,
-                    url:'/processMonitorLine/planConfirmSearch',
-                    method:'get'">
-                    <thead>
-                        <tr>
-                            <th field="ck" checkbox="true"></th>
-                            <th data-options="field:'BrandName',width:100,align:'center'">品名</th>
-                            <th data-options="field:'BatchID',width:120,align:'center'">批次号</th>
-                            <th data-options="field:'ZYPlanStatus',width:100,align:'center'" formatter="formatterStatus" styler="styleStatus">计划状态</th>
-                            <th data-options="field:'PlanDate',width:120,align:'center'">计划日期</th>
-                            <th data-options="field:'PlanNo',width:100,align:'center'">制药计划单号</th>
-                            <th data-options="field:'PlanType',width:100,align:'center'">计划类型</th>
-                            <th data-options="field:'BrandID',width:100,align:'center'">品名编码</th>
-                            <th data-options="field:'ERPOrderNo',width:100,align:'center'">ERP订单号</th>
-                            <th data-options="field:'PlanQuantity',width:100,align:'center'">计划重量</th>
-                            <th data-options="field:'ActQuantity',width:100,align:'center'">实际重量</th>
-                            <th data-options="field:'Unit',width:100,align:'center'">单位</th>
-                            <th data-options="field:'EnterTime',width:150,align:'center'">录入时间</th>
-                            <th data-options="field:'PlanBeginTime',width:150,align:'center'">计划开始时间</th>
-                            <th data-options="field:'PlanEndTime',width:150,align:'center'">计划结束时间</th>
-                            <th data-options="field:'ActBeginTime',width:150,align:'center'">实际开始时间</th>
-                            <th data-options="field:'ActEndTime',width:150,align:'center'">实际完成时间</th>
-                            <th data-options="field:'PlanSeq',width:150,align:'center'">顺序号</th>
-                            <th data-options="field:'PUID',width:120,align:'center'">工艺段</th>
-                            <th data-options="field:'LockStatus',width:100,align:'center'"formatter="formatterLockStatus">计划锁定状态</th>
-                            <th data-options="field:'INFStatus',width:100,align:'center'">接口处理状态</th>
-                            <th data-options="field:'WMSStatus',width:100,align:'center'">仓储送料状态</th>
-                        </tr>
-                    </thead>
-                </table>
-            </div>
-            <div style="margin-top: 1%;">
-                <div id="opt-buttons">
-                    <a href="#" class="easyui-linkbutton" status="40">已确认</a>
-                    <a href="#" class="easyui-linkbutton" status="50">正在执行</a>
-                    <a href="#" class="easyui-linkbutton" status="20">待确认</a>
-                </div>
+{#                <div id="opt-buttons">#}
+{#                    <a href="#" class="easyui-linkbutton" status="40">已确认</a>#}
+{#                    <a href="#" class="easyui-linkbutton" status="50">正在执行</a>#}
+{#                    <a href="#" class="easyui-linkbutton" status="20">待确认</a>#}
+{#                </div>#}
                 <table class="easyui-datagrid" id="tabTask" title="任务查询列表" style="width:100%;" data-options="
-                    queryParams: {
-                        PUID: '',
-                        BatchID:''
-                    },
                     loadMsg:false,
                     rownumbers:true,
                     singleSelect:true,
@@ -267,52 +263,51 @@
          var APUID = "" //工艺默认参数
          var ABatchID = "" //计划查询批次号参数
          var task = "" //状态按钮参数
-        $("#tree").tree({
-            url:'/processMonitorLine/taskConfirmPuid',
-            method: 'get',
-            animate:true,
-            loadFilter:function(data){
-                return data
-            },
-            onClick :function(node){
-                APUID = node.id
-                $('#tabPlan').datagrid('load',{
-                    PUID: APUID
-                });
-                $('#tabTask').datagrid('load',{
-                    PUID: APUID,
-                    BatchID:ABatchID,
-                    TaskStatus:task
-                });
-            }
-        })
-        $('#tabPlan').datagrid({
-            onLoadSuccess:function(){
-                $(this).datagrid('selectRow', 0)
-                var planFirstRow = $(this).datagrid('getSelected') //获取默认被选中的第一行数据
-                var iPUID = planFirstRow.PUID
-                var iBatchID = planFirstRow.BatchID
-                $('#tabTask').datagrid('load',{
-                    PUID: iPUID,
-                    BatchID:iBatchID,
-                    TaskStatus:task
-                });
-            },
-            onClickRow:function(rowIndex,rowData){
-                APUID = rowData.PUID
-                ABatchID = rowData.BatchID
-                $('#tabTask').datagrid('load',{
-                    PUID: APUID,
-                    BatchID:ABatchID,
-                    TaskStatus:task
-                });
-            }
-        });
+{#        $("#tree").tree({#}
+{#            url:'/processMonitorLine/taskConfirmPuid',#}
+{#            method: 'get',#}
+{#            animate:true,#}
+{#            loadFilter:function(data){#}
+{#                return data#}
+{#            },#}
+{#            onClick :function(node){#}
+{#                APUID = node.id#}
+{#                $('#tabPlan').datagrid('load',{#}
+{#                    PUID: APUID#}
+{#                });#}
+{#                $('#tabTask').datagrid('load',{#}
+{#                    PUID: APUID,#}
+{#                    BatchID:ABatchID,#}
+{#                    TaskStatus:task#}
+{#                });#}
+{#            }#}
+{#        })#}
+{#        $('#tabPlan').datagrid({#}
+{#            onLoadSuccess:function(){#}
+{#                $(this).datagrid('selectRow', 0)#}
+{#                var planFirstRow = $(this).datagrid('getSelected') //获取默认被选中的第一行数据#}
+{#                var iPUID = planFirstRow.PUID#}
+{#                var iBatchID = planFirstRow.BatchID#}
+{#                $('#tabTask').datagrid('load',{#}
+{#                    PUID: iPUID,#}
+{#                    BatchID:iBatchID,#}
+{#                    TaskStatus:task#}
+{#                });#}
+{#            },#}
+{#            onClickRow:function(rowIndex,rowData){#}
+{#                APUID = rowData.PUID#}
+{#                ABatchID = rowData.BatchID#}
+{#                $('#tabTask').datagrid('load',{#}
+{#                    PUID: APUID,#}
+{#                    BatchID:ABatchID,#}
+{#                    TaskStatus:task#}
+{#                });#}
+{#            }#}
+{#        });#}
         $('#tabTask').datagrid({
             queryParams: {
-                PUID: APUID,
-                BatchID:ABatchID,
-                TaskStatus:task
+                ID:getUrlParam('ID'),
+                name:getUrlParam('name')
             },
             onClickRow:function(rowIndex,rowData){
                 $('#updataPlanDialog').dialog("open").dialog('setTitle', '修改设备编码');
@@ -350,14 +345,20 @@
                  })
             }
         });
-        $("#opt-buttons a").on('click',function(){
-            task = $(this).attr("status")
-            $('#tabTask').datagrid('load',{
-                PUID: APUID,
-                BatchID:ABatchID,
-                TaskStatus:task
-            });
-        })
+        //获取页面传参
+         function getUrlParam(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+            var r = window.location.search.substr(1).match(reg); //匹配目标参数
+            if (r != null) return unescape(r[2]); return null; //返回参数值
+         }
+{#        $("#opt-buttons a").on('click',function(){#}
+{#            task = $(this).attr("status")#}
+{#            $('#tabTask').datagrid('load',{#}
+{#                PUID: APUID,#}
+{#                BatchID:ABatchID,#}
+{#                TaskStatus:task#}
+{#            });#}
+{#        })#}
         function EquipmentIDSave(){
             var EquipmentIDVal = $("#EquipmentID").combobox('getValue')
             var stmp = EquipmentIDVal;
