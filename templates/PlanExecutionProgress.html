@@ -351,7 +351,7 @@
                 var rows = $("#tab").datagrid('getSelections');
                 var name = $(this).attr("name")
                 var jumpUrl = encodeURI("/taskConfirm?ID=" + rows[0].ID + "&name=" + name);
-                addTab("任务确认",jumpUrl)
+                addTab(name + "任务确认",jumpUrl)
             })
             //有此权限时增加tabs跳转到操作页面
             $(".handlePlan").on('click',function(){
