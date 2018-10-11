@@ -200,14 +200,8 @@
                     }
                 }
             });
-            //有此权限时增加tabs跳转到操作页面
-            $(".handlePlan").on('click',function(){
-                var text = $(this).html()
-                var src = $(this).attr("skip-src")
-                addTab(text,src)
-            })
             //节点右键操作
-            $(".ball").contextMenu('myMenu',{
+            $(".operMenu").contextMenu('myMenu',{
                 onContextMenu: function(e) {
                     return true;
                 },
@@ -352,6 +346,19 @@
                     }
                 }
             })
+            //任务确认
+            $(".taskConfirm").on('click',function(){
+                var rows = $("#tab").datagrid('getSelections');
+                var name = $(this).attr("name")
+                var jumpUrl = encodeURI("/taskConfirm?ID=" + rows[0].ID + "&name=" + name);
+                addTab("任务确认",jumpUrl)
+            })
+            //有此权限时增加tabs跳转到操作页面
+            $(".handlePlan").on('click',function(){
+                var text = $(this).html()
+                var src = $(this).attr("skip-src")
+                addTab(text,src)
+            })
         })
         //按钮点击后添加选项卡
         function addTab(title, url) {
@@ -471,21 +478,28 @@
                             <div class="childBox">
                                 <div class="childNode">
                                     <div class="progress-line"></div>
-                                    <a class="ball" title="右击操作确认" name="备料" rel="生产前的准备"></a>
+                                    <a class="ball taskConfirm" title="点击对任务操作确认" name="备料段"></a>
+                                    <div class="detail">
+                                        <div class="flow-detail">任务确认</div>
+                                    </div>
+                                    <div class="progress-line"></div>
+                                </div>
+                                <div class="childNode">
+                                    <a class="ball operMenu" title="右击操作确认" name="备料" rel="生产前的准备"></a>
                                     <div class="detail">
                                         <div class="flow-detail">生产前的准备</div>
                                     </div>
                                     <div class="progress-line"></div>
                                 </div>
                                 <div class="childNode">
-                                    <a class="ball" title="右击操作确认" name="备料" rel="备料开始"></a>
+                                    <a class="ball operMenu" title="右击操作确认" name="备料" rel="备料开始"></a>
                                     <div class="detail">
                                         <div class="flow-detail">备料开始</div>
                                     </div>
                                     <div class="progress-line"></div>
                                 </div>
                                 <div class="childNode">
-                                    <a class="ball" title="右击操作确认" name="备料" rel="备料结束清场"></a>
+                                    <a class="ball operMenu" title="右击操作确认" name="备料" rel="备料结束清场"></a>
                                     <div class="detail">
                                         <div class="flow-detail">备料结束清场</div>
                                     </div>
@@ -499,28 +513,35 @@
                             <div class="childBox">
                                 <div class="childNode">
                                     <div class="progress-line"></div>
-                                    <a class="ball" title="右击操作确认" name="煎煮" rel="生产前的准备"></a>
+                                    <a class="ball taskConfirm" title="点击对任务操作确认" name="煎煮段"></a>
+                                    <div class="detail">
+                                        <div class="flow-detail">任务确认</div>
+                                    </div>
+                                    <div class="progress-line"></div>
+                                </div>
+                                <div class="childNode">
+                                    <a class="ball operMenu" title="右击操作确认" name="煎煮" rel="生产前的准备"></a>
                                     <div class="detail">
                                         <div class="flow-detail">生产前的准备</div>
                                     </div>
                                     <div class="progress-line"></div>
                                 </div>
                                 <div class="childNode">
-                                    <a class="ball" title="右击操作确认" name="煎煮" rel="煎煮开始"></a>
+                                    <a class="ball operMenu" title="右击操作确认" name="煎煮" rel="煎煮开始"></a>
                                     <div class="detail">
                                         <div class="flow-detail">煎煮开始</div>
                                     </div>
                                     <div class="progress-line"></div>
                                 </div>
                                 <div class="childNode">
-                                    <a class="ball" title="右击操作确认" name="煎煮" rel="静置开始"></a>
+                                    <a class="ball operMenu" title="右击操作确认" name="煎煮" rel="静置开始"></a>
                                     <div class="detail">
                                         <div class="flow-detail">静置开始</div>
                                     </div>
                                     <div class="progress-line"></div>
                                 </div>
                                 <div class="childNode">
-                                    <a class="ball" title="右击操作确认" name="煎煮" rel="煎煮结束清场"></a>
+                                    <a class="ball operMenu" title="右击操作确认" name="煎煮" rel="煎煮结束清场"></a>
                                     <div class="detail">
                                         <div class="flow-detail">煎煮结束清场</div>
                                     </div>
@@ -534,21 +555,28 @@
                             <div class="childBox">
                                 <div class="childNode">
                                     <div class="progress-line"></div>
-                                    <a class="ball" title="右击操作确认" name="浓缩" rel="生产前的准备"></a>
+                                    <a class="ball taskConfirm" title="点击对任务操作确认" name="浓缩段"></a>
+                                    <div class="detail">
+                                        <div class="flow-detail">任务确认</div>
+                                    </div>
+                                    <div class="progress-line"></div>
+                                </div>
+                                <div class="childNode">
+                                    <a class="ball operMenu" title="右击操作确认" name="浓缩" rel="生产前的准备"></a>
                                     <div class="detail">
                                         <div class="flow-detail">生产前的准备</div>
                                     </div>
                                     <div class="progress-line"></div>
                                 </div>
                                 <div class="childNode">
-                                    <a class="ball" title="右击操作确认" name="浓缩" rel="浓缩开始"></a>
+                                    <a class="ball operMenu" title="右击操作确认" name="浓缩" rel="浓缩开始"></a>
                                     <div class="detail">
                                         <div class="flow-detail">浓缩开始</div>
                                     </div>
                                     <div class="progress-line"></div>
                                 </div>
                                 <div class="childNode">
-                                    <a class="ball" title="右击操作确认" name="浓缩" rel="浓缩结束清场"></a>
+                                    <a class="ball operMenu" title="右击操作确认" name="浓缩" rel="浓缩结束清场"></a>
                                     <div class="detail">
                                         <div class="flow-detail">浓缩结束清场</div>
                                     </div>
@@ -562,21 +590,28 @@
                             <div class="childBox">
                                 <div class="childNode">
                                     <div class="progress-line"></div>
-                                    <a class="ball" title="右击操作确认" name="喷雾干燥" rel="生产前的准备"></a>
+                                    <a class="ball taskConfirm" title="点击对任务操作确认" name="喷雾干燥段"></a>
+                                    <div class="detail">
+                                        <div class="flow-detail">任务确认</div>
+                                    </div>
+                                    <div class="progress-line"></div>
+                                </div>
+                                <div class="childNode">
+                                    <a class="ball operMenu" title="右击操作确认" name="喷雾干燥" rel="生产前的准备"></a>
                                     <div class="detail">
                                         <div class="flow-detail">生产前的准备</div>
                                     </div>
                                     <div class="progress-line"></div>
                                 </div>
                                 <div class="childNode">
-                                    <a class="ball" title="右击操作确认" name="喷雾干燥" rel="喷雾干燥开始"></a>
+                                    <a class="ball operMenu" title="右击操作确认" name="喷雾干燥" rel="喷雾干燥开始"></a>
                                     <div class="detail">
                                         <div class="flow-detail">喷雾干燥开始</div>
                                     </div>
                                     <div class="progress-line"></div>
                                 </div>
                                 <div class="childNode">
-                                    <a class="ball" title="右击操作确认" name="喷雾干燥" rel="喷雾干燥结束清场"></a>
+                                    <a class="ball operMenu" title="右击操作确认" name="喷雾干燥" rel="喷雾干燥结束清场"></a>
                                     <div class="detail">
                                         <div class="flow-detail">喷雾干燥结束清场</div>
                                     </div>
@@ -590,21 +625,28 @@
                             <div class="childBox">
                                 <div class="childNode">
                                     <div class="progress-line"></div>
-                                    <a class="ball" title="右击操作确认" name="收粉" rel="生产前的准备"></a>
+                                    <a class="ball taskConfirm" title="点击对任务操作确认" name="收粉段"></a>
+                                    <div class="detail">
+                                        <div class="flow-detail">任务确认</div>
+                                    </div>
+                                    <div class="progress-line"></div>
+                                </div>
+                                <div class="childNode">
+                                    <a class="ball operMenu" title="右击操作确认" name="收粉" rel="生产前的准备"></a>
                                     <div class="detail">
                                         <div class="flow-detail">生产前的准备</div>
                                     </div>
                                     <div class="progress-line"></div>
                                 </div>
                                 <div class="childNode">
-                                    <a class="ball" title="右击操作确认" name="收粉" rel="收粉开始"></a>
+                                    <a class="ball operMenu" title="右击操作确认" name="收粉" rel="收粉开始"></a>
                                     <div class="detail">
                                         <div class="flow-detail">收粉开始</div>
                                     </div>
                                     <div class="progress-line"></div>
                                 </div>
                                 <div class="childNode">
-                                    <a class="ball" title="右击操作确认" name="收粉" rel="收粉结束清场"></a>
+                                    <a class="ball operMenu" title="右击操作确认" name="收粉" rel="收粉结束清场"></a>
                                     <div class="detail">
                                         <div class="flow-detail">收粉结束清场</div>
                                     </div>
