@@ -4395,6 +4395,7 @@ def taskConfirmSearch():
                 data = request.values
                 ID = data['ID']
                 name = data['name']
+                print(name)
                 BatchID = db_session.query(PlanManager.BatchID).filter(PlanManager.ID == ID).first()
                 PUID = db_session.query(ProductUnitRoute.PUID).filter(ProductUnitRoute.PDUnitRouteName == name).first()
                 total = db_session.query(ZYTask.ID).filter(ZYTask.PUID == PUID[0], ZYTask.BatchID == BatchID[0]).count()
