@@ -51,7 +51,7 @@
                 </h2>
 
                 <ul class="sider-nav">
-                {% if isIn(['2', '3', '4', '5','7'], session.get('menus')) %}
+                {% if isIn(['2', '3', '4','5'], session.get('menus')) %}
                     <li>
                         <a href="javascript:;">
                             <span class="iconfont sider-nav-icon">&#xe611;</span>
@@ -184,7 +184,7 @@
                         </ul>
                     </li>
                 {% endif %}
-                {% if isIn(['25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37','83'], session.get('menus')) %}
+                {% if isIn(['25', '26', '27', '28', '29', '30'], session.get('menus')) %}
                     <li>
                         <a href="javascript:;">
                             <span class="iconfont sider-nav-icon">&#xe6c3;</span>
@@ -194,7 +194,7 @@
                         <ul class="sider-nav-s">
                             {% if '25' in session.get('menus') %}
                                 <li>
-                                    <a href="#" onclick="addTab('制药计划管理','/PlanExecutionProgress')">制药计划管理</a>
+                                    <a href="#" onclick="addTab('制药计划管理','/ZYPlanManage')">制药计划管理</a>
                                 </li>
                             {% endif %}
 {#                            {% if '25' in session.get('menus') %}#}
@@ -227,7 +227,7 @@
 {#                                    <a href="#" onclick="addTab('QA计划确认','QAPlanConfirm')">QA计划确认</a>#}
 {#                                </li>#}
 {#                            {% endif %}#}
-                            {% if '25' in session.get('menus') %}
+                            {% if '26' in session.get('menus') %}
                                 <li>
                                     <a href="#" onclick="addTab('计划明细','/ZYPlan')">计划明细</a>
                                 </li>
@@ -252,12 +252,12 @@
 {#                                    <a href="#" onclick="addTab('制药计划物料','ZYPlanMaterial')">制药计划物料</a>#}
 {#                                </li>#}
 {#                            {% endif %}#}
-                            {% if '30' in session.get('menus') %}
+                            {% if '29' in session.get('menus') %}
                                 <li>
                                     <a href="#" onclick="addTab('批次管理','batchmanager')">批次管理</a>
                                 </li>
                             {% endif %}
-                            {% if '31' in session.get('menus') %}
+                            {% if '30' in session.get('menus') %}
                                 <li>
                                     <a href="#" onclick="addTab('查询全天计划','PlanManager')">查询全天计划</a>
                                 </li>
@@ -295,7 +295,7 @@
                         </ul>
                     </li>
                 {% endif %}
-                {% if isIn(['39', '40', '41', '42', '43', '44', '45', '46'], session.get('menus')) %}
+                {% if isIn(['32', '33', '34', '35', '36', '37'], session.get('menus')) %}
                     <li>
                         <a href="javascript:;">
                             <span class="iconfont sider-nav-icon">&#xe65b;</span>
@@ -303,32 +303,32 @@
                             <i class="iconfont">&#xe642;</i>
                         </a>
                         <ul class="sider-nav-s">
-                            {% if '39' in session.get('menus') %}
+                            {% if '32' in session.get('menus') %}
                                 <li>
                                     <a href="#" onClick="addTab('产品定义','ProductRule')">产品定义</a>
                                 </li>
                             {% endif %}
-                            {% if '40' in session.get('menus') %}
+                            {% if '33' in session.get('menus') %}
                                 <li>
                                     <a href="#" onClick="addTab('产品段定义','ProductUnit')">产品段定义</a>
                                 </li>
                             {% endif %}
-                            {% if '41' in session.get('menus') %}
+                            {% if '34' in session.get('menus') %}
                                 <li>
                                     <a href="#" onClick="addTab('产品段任务配置','ProductControlTask')">产品段任务配置</a>
                                 </li>
                             {% endif %}
-                            {% if '42' in session.get('menus') %}
+                            {% if '35' in session.get('menus') %}
                                 <li>
                                     <a href="#" onClick="addTab('工艺参数配置','ProductParameter')">工艺参数配置</a>
                                 </li>
                             {% endif %}
-                            {% if '43' in session.get('menus') %}
+                            {% if '36' in session.get('menus') %}
                                 <li>
                                     <a href="#" onClick="addTab('物料BOM','MaterialBOM')">物料BOM</a>
                                 </li>
                             {% endif %}
-                            {% if '44' in session.get('menus') %}
+                            {% if '37' in session.get('menus') %}
                                  <li>
                                     <a href="#" onClick="addTab('工艺路线','ProductUnitRoute')">工艺路线</a>
                                 </li>
@@ -346,7 +346,7 @@
                         </ul>
                     </li>
                 {% endif %}
-                {% if isIn(['48', '49', '50', '51', '52', '53'], session.get('menus')) %}
+                {% if isIn(['39', '40', '41', '42'], session.get('menus')) %}
                     <li>
                         <a href="javascript:;">
                             <span class="iconfont sider-nav-icon">&#xe611;</span>
@@ -354,22 +354,22 @@
                             <i class="iconfont">&#xe642;</i>
                         </a>
                         <ul class="sider-nav-s">
-                            {% if '48' in session.get('menus') %}
+                            {% if '39' in session.get('menus') %}
                                 <li>
                                     <a href="#">电子批记录</a>
                                 </li>
                             {% endif %}
-                            {% if '49' in session.get('menus') %}
+                            {% if '40' in session.get('menus') %}
                                 <li>
                                     <a href="#">批物料平衡统计</a>
                                 </li>
                             {% endif %}
-                            {% if '50' in session.get('menus') %}
+                            {% if '41' in session.get('menus') %}
                                 <li>
                                     <a href="#">作业数据管理</a>
                                 </li>
                             {% endif %}
-                            {% if '51' in session.get('menus') %}
+                            {% if '42' in session.get('menus') %}
                                 <li>
                                     <a href="#">产量数据管理</a>
                                 </li>
@@ -387,7 +387,7 @@
                         </ul>
                     </li>
                 {% endif %}
-                {% if isIn(['55', '56', '57', '58', '59', '60', '61'], session.get('menus')) %}
+                {% if isIn(['44', '45', '46', '47', '48', '49', '50'], session.get('menus')) %}
                     <li>
                         <a href="javascript:;">
                             <span class="iconfont sider-nav-icon">&#xe64c;</span>
@@ -395,37 +395,37 @@
                             <i class="iconfont">&#xe642;</i>
                         </a>
                         <ul class="sider-nav-s">
-                            {% if '55' in session.get('menus') %}
+                            {% if '44' in session.get('menus') %}
                                 <li>
                                     <a href="#" onClick="addTab('过程连续数据','BatchData_Process.html')">过程连续数据</a>
                                 </li>
                             {% endif %}
-                            {% if '56' in session.get('menus') %}
+                            {% if '45' in session.get('menus') %}
                                 <li>
                                     <a href="#" onClick="addTab('离散数据录入','BatchData_Scatter.html')">离散数据录入</a>
                                 </li>
                             {% endif %}
-                            {% if '57' in session.get('menus') %}
+                            {% if '46' in session.get('menus') %}
                                 <li>
                                     <a href="#" onClick="addTab('统计-数据点','BatchStatistics_Point.html')">统计-数据点</a>
                                 </li>
                             {% endif %}
-                            {% if '58' in session.get('menus') %}
+                            {% if '47' in session.get('menus') %}
                                 <li>
                                     <a href="#">质量标准管理</a>
                                 </li>
                             {% endif %}
-                            {% if '59' in session.get('menus') %}
+                            {% if '48' in session.get('menus') %}
                                 <li>
                                     <a href="#">质量统计分析</a>
                                 </li>
                             {% endif %}
-                            {% if '60' in session.get('menus') %}
+                            {% if '49' in session.get('menus') %}
                                 <li>
                                     <a href="#">质量考核统计过程控制</a>
                                 </li>
                             {% endif %}
-                            {% if '61' in session.get('menus') %}
+                            {% if '50' in session.get('menus') %}
                                 <li>
                                     <a href="#">SPC控制</a>
                                 </li>
@@ -433,7 +433,7 @@
                         </ul>
                     </li>
                 {% endif %}
-                {% if isIn(['63', '64', '65', '66', '67', '68', '84'], session.get('menus')) %}
+                {% if isIn(['52', '53', '54', '55', '56', '57', '58'], session.get('menus')) %}
                     <li>
                         <a href="javascript:;">
                             <span class="iconfont sider-nav-icon">&#xe69e;</span>
@@ -441,37 +441,37 @@
                             <i class="iconfont">&#xe642;</i>
                         </a>
                         <ul class="sider-nav-s">
-                            {% if '84' in session.get('menus') %}
+                            {% if '52' in session.get('menus') %}
                                 <li>
                                     <a href="#" onclick="addTab('设备信息','Equipment')">设备信息</a>
                                 </li>
                             {% endif %}
-                            {% if '63' in session.get('menus') %}
+                            {% if '53' in session.get('menus') %}
                                 <li>
                                     <a href="#" onclick="addTab('参数模型','product_device.html')">设备档案管理</a>
                                 </li>
                             {% endif %}
-                            {% if '64' in session.get('menus') %}
+                            {% if '54' in session.get('menus') %}
                                 <li>
                                     <a href="#">设备备件查询</a>
                                 </li>
                             {% endif %}
-                            {% if '65' in session.get('menus') %}
+                            {% if '55' in session.get('menus') %}
                                 <li>
                                     <a href="#">设备故障管理</a>
                                 </li>
                             {% endif %}
-                            {% if '66' in session.get('menus') %}
+                            {% if '56' in session.get('menus') %}
                                 <li>
                                     <a href="#">设备运行分析</a>
                                 </li>
                             {% endif %}
-                            {% if '67' in session.get('menus') %}
+                            {% if '57' in session.get('menus') %}
                                 <li>
                                     <a href="#">原/设备维护记录</a>
                                 </li>
                             {% endif %}
-                            {% if '68' in session.get('menus') %}
+                            {% if '58' in session.get('menus') %}
                                 <li>
                                     <a href="#">设备润滑管理</a>
                                 </li>
@@ -479,7 +479,7 @@
                         </ul>
                     </li>
                 {% endif %}
-                {% if isIn(['70', '71', '72', '73', '74', '75'], session.get('menus')) %}
+                {% if isIn(['60', '61', '62', '63', '64', '65'], session.get('menus')) %}
                     <li>
                         <a href="javascript:;">
                             <span class="iconfont sider-nav-icon">&#xe620;</span>
@@ -487,32 +487,32 @@
                             <i class="iconfont">&#xe642;</i>
                         </a>
                         <ul class="sider-nav-s">
-                            {% if '70' in session.get('menus') %}
+                            {% if '60' in session.get('menus') %}
                                 <li>
                                     <a href="#" onClick="addTab('物料类型','MaterialType')">物料类型</a>
                                 </li>
                             {% endif %}
-                            {% if '71' in session.get('menus') %}
+                            {% if '61' in session.get('menus') %}
                                 <li>
                                     <a href="#" onClick="addTab('物料信息','Material')">物料信息</a>
                                 </li>
                             {% endif %}
-                            {% if '72' in session.get('menus') %}
+                            {% if '62' in session.get('menus') %}
                                 <li>
                                     <a href="#">物料投料管理</a>
                                 </li>
                             {% endif %}
-                            {% if '73' in session.get('menus') %}
+                            {% if '63' in session.get('menus') %}
                                 <li>
                                     <a href="#">在制品管理</a>
                                 </li>
                             {% endif %}
-                            {% if '74' in session.get('menus') %}
+                            {% if '64' in session.get('menus') %}
                                 <li>
                                     <a href="#">物料追踪</a>
                                 </li>
                             {% endif %}
-                            {% if '75' in session.get['menus'] %}
+                            {% if '65' in session.get['menus'] %}
                                 <li>
                                     <a href="#">物料追溯</a>
                                 </li>
@@ -520,7 +520,7 @@
                         </ul>
                     </li>
                 {% endif %}
-                {% if isIn(['77', '78'], session.get('menus')) %}
+                {% if isIn(['67', '68'], session.get('menus')) %}
                     <li>
                         <a href="javascript:;">
                             <span class="iconfont sider-nav-icon">&#xe65f;</span>
@@ -528,12 +528,12 @@
                             <i class="iconfont">&#xe642;</i>
                         </a>
                         <ul class="sider-nav-s">
-                            {% if '77' in session.get('menus') %}
+                            {% if '67' in session.get('menus') %}
                                 <li>
                                     <a href="#">能耗数据采集配置</a>
                                 </li>
                             {% endif %}
-                            {% if '78' in session.get('menus') %}
+                            {% if '68' in session.get('menus') %}
                                 <li>
                                     <a href="#">能耗数据分析</a>
                                 </li>
@@ -541,7 +541,7 @@
                         </ul>
                     </li>
                 {% endif %}
-                {% if isIn(['80', '81', '82'], session.get('menus')) %}
+                {% if isIn(['70', '71', '72'], session.get('menus')) %}
                     <li>
                         <a href="javascript:;">
                             <span class="iconfont sider-nav-icon">&#xe6ec;</span>
@@ -549,17 +549,17 @@
                             <i class="iconfont">&#xe642;</i>
                         </a>
                         <ul class="sider-nav-s">
-                            {% if '80' in session.get('menus') %}
+                            {% if '70' in session.get('menus') %}
                                 <li>
                                     <a href="#" onclick="addTab('文档分类维护','/document_classManager')">文档分类维护</a>
                                 </li>
                             {% endif %}
-                            {% if '81' in session.get('menus') %}
+                            {% if '71' in session.get('menus') %}
                                 <li>
                                     <a href="#" onclick="addTab('文档管理','/document_Manager')">文档管理</a>
                                 </li>
                             {% endif %}
-                            {% if '82' in session.get('menus') %}
+                            {% if '72' in session.get('menus') %}
                                 <li>
                                     <a href="#" onclick="addTab('文档查询','/document_query')">文档查询</a>
                                 </li>
@@ -567,7 +567,7 @@
                         </ul>
                     </li>
                 {% endif %}
-                {% if isIn(['86', '87', '88'], session.get('menus')) %}
+                {% if isIn(['74', '75', '76', '77', '78', '79', '80', '81'], session.get('menus')) %}
                     <li>
                         <a href="javascript:;">
                             <span class="iconfont sider-nav-icon">&#xe6ec;</span>
@@ -575,42 +575,42 @@
                             <i class="iconfont">&#xe642;</i>
                         </a>
                         <ul class="sider-nav-s">
-                            {% if '86' in session.get('menus') %}
+                            {% if '74' in session.get('menus') %}
                                 <li>
                                     <a href="#" onclick="addTab('实时数据服务配置','/RealTime_DataServerConfig')">实时数据服务配置</a>
                                 </li>
                             {% endif %}
-                            {% if '87' in session.get('menus') %}
+                            {% if '75' in session.get('menus') %}
                                 <li>
                                     <a href="#" onclick="addTab('OPC服务配置','/OpcServer')">OPC服务配置</a>
                                 </li>
                             {% endif %}
-                            {% if '88' in session.get('menus') %}
+                            {% if '76' in session.get('menus') %}
                                 <li>
                                     <a href="#" onclick="addTab('加载OPC-Tag','/OpcTag/load')">加载OPC-Tag</a>
                                 </li>
                             {% endif %}
-                            {% if '88' in session.get('menus') %}
+                            {% if '77' in session.get('menus') %}
                                 <li>
                                     <a href="#" onclick="addTab('管理采集模板','/CollectParamsTemplate/config')">管理采集模板</a>
                                 </li>
                             {% endif %}
-                            {% if '88' in session.get('menus') %}
+                            {% if '78' in session.get('menus') %}
                                 <li>
                                     <a href="#" onclick="addTab('配置采集模板','/CollectParams/config')">配置采集模板</a>
                                 </li>
                             {% endif %}
-                            {% if '88' in session.get('menus') %}
+                            {% if '79' in session.get('menus') %}
                                 <li>
                                     <a href="#" onclick="addTab('配置采集策略','/Collectionstrategy/config')">配置采集策略</a>
                                 </li>
                             {% endif %}
-                            {% if '88' in session.get('menus') %}
+                            {% if '80' in session.get('menus') %}
                                 <li>
                                     <a href="#" onclick="addTab('配置采集任务','/CollectTask/config')">配置采集任务</a>
                                 </li>
                             {% endif %}
-                            {% if '88' in session.get('menus') %}
+                            {% if '81' in session.get('menus') %}
                                 <li>
                                     <a href="#" onclick="addTab('NodeID注释配置','/NodeIdNote/config')">NodeID注释配置</a>
                                 </li>

@@ -4986,8 +4986,16 @@ def QAflow(ID, statusName, name):
         node.status = Model.node.NodeStatus.PASSED.value
         node.opertionTime = datetime.datetime.now()
         node.oddUser = current_user.Name
-        db_session.commit(Model.node.NodeCollection)
-        status = db_session.query()
+        db_session.commit()
+        PStatuss = db_session.query(Model.node.NodeCollection.status).filter(Model.node.NodeCollection.oddNum == ID).all()
+        fl = "TRUE"
+        for pst in PStatuss:
+            if(pst[0] != 10):
+                fl = "FALSE"
+        if(fl == "TRUE"):
+            planaMStatus = db_session.query(PlanManager.PlanStatus).filter(PlanManager.ID == ID).first()
+            planaMStatus.PlanStatus = Model.Global.PlanStatus.FINISH.value
+            db_session.commit()
         return flag
     except Exception as e:
         db_session.rollback()
@@ -5010,14 +5018,14 @@ def QAPassSearch():
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
                 ABatchID = data['BatchID']  # 批次号
                 if (ABatchID == None or ABatchID == ""):
-                    total = db_session.query(PlanManager.ID).filter(PlanManager.PlanStatus == Model.Global.PlanStatus.AgainQAChecked.value).count()
-                    PlanManagers = db_session.query(PlanManager).filter(PlanManager.PlanStatus == Model.Global.PlanStatus.AgainQAChecked.value).order_by(
+                    total = db_session.query(PlanManager.ID).filter(PlanManager.PlanStatus == Model.Global.PlanStatus.FINISH.value).count()
+                    PlanManagers = db_session.query(PlanManager).filter(PlanManager.PlanStatus == Model.Global.PlanStatus.FINISH.value).order_by(
                         desc("EnterTime")).all()[inipage:endpage]
                 else:
                     total = db_session.query(PlanManager.ID).filter(PlanManager.BatchID == ABatchID,
-                                                               PlanManager.PlanStatus == Model.Global.PlanStatus.AgainQAChecked.value).count()
+                                                               PlanManager.PlanStatus == Model.Global.PlanStatus.FINISH.value).count()
                     PlanManagers = db_session.query(PlanManager).filter(ZYPlan.BatchID == ABatchID,
-                                                              PlanManager.PlanStatus == Model.Global.PlanStatus.AgainQAChecked.value).order_by(
+                                                              PlanManager.PlanStatus == Model.Global.PlanStatus.FINISH.value).order_by(
                         desc("EnterTime")).all()[inipage:endpage]
                 PlanManagers = json.dumps(PlanManagers, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonPlanManagers = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + PlanManagers + "}"
@@ -5040,12 +5048,6 @@ def QAPass():
                     id = int(key)
                     try:
                         oclass = db_session.query(PlanManager).filter(PlanManager.ID == id).first()
-                        oclassZYPlans = db_session.query(ZYPlan).filter(ZYPlan.BatchID == oclass.BatchID).all()
-                        for plan in oclassZYPlans:
-                            if(plan.ZYPlanStatus != Model.Global.ZYPlanStatus.AgainQAChecked.value):
-                                return "请先确认此批次下的计划都已QA清场复核，QA清场复核后再进行放行！"
-                            else:
-                                pass
                         oclass.PlanStatus = Model.Global.PlanStatus.QApass.value
                         oclassW = db_session.query(WorkFlowStatus).filter(WorkFlowStatus.PlanManageID == id).all()
                         for oc in oclassW:
@@ -5057,8 +5059,6 @@ def QAPass():
                         Type = Model.Global.Type.QApass.value
                         PlanCreate = ctrlPlan('PlanCreate')
                         wReturn = PlanCreate.createWorkFlowEventPlan(id, userName, Desc, Type)
-                        if(wReturn == False):
-                            return 'NO'
                         return 'OK'
                     except Exception as e:
                         db_session.rollback()
@@ -5179,18 +5179,7 @@ def queryFlow(ID, name):
 
 # 计划管理
 @app.route('/ZYPlanManage')
-def zYPlanManage(): # 1           2           3               4            5            6          7
-    # rights = ['制药计划向导','生产计划审核','生产计划下发', '中控计划确认', '中控计划复核', '任务确认', 'QA计划确认']
-    # rolename = db_session.query(User.RoleName).filter_by(Name=current_user.Name).first()
-    # role_id = db_session.query(Role.ID).filter_by(RoleName=rolename).first()
-    # notVip = []
-    # for right in rights:
-    #     menu_id = db_session.query(Menu.ID).filter_by(ModuleName=right).first()[0]
-    #     # db_session.query(Menu).join(Role_Menu, isouter=True).filter_by(Role_ID=id).all()
-    #     menu = db_session.query(Menu).join(Role_Menu, isouter=True).filter(and_(Role_Menu.Role_ID==role_id, Role_Menu.Menu_ID==menu_id)).first()
-    #     if menu:
-    #         continue
-    #     notVip.append(rights.index(right)+1)
+def zYPlanManage():
     return render_template('ZYPlanManage.html')
 
 # QA放行
