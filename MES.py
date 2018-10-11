@@ -3373,12 +3373,11 @@ def collectParamsDelete():
         try:
             jsonstr = json.dumps(data.to_dict())
             if len(jsonstr) > 10:
-                NodeID = data['NodeID']
-                nodeIds = re.findall(r"i=\d+", NodeID)
-                if nodeIds is None:
-                    return
-                for nodeId in nodeIds:
-                    OpcTagID = db_session.query(OpcTag.ID).filter_by(NodeID=nodeId).first()[0]
+                NodeIDs = json.loads(data['NodeID'])
+                for NodeID in NodeIDs:
+                    if NodeID['nodeId'] is None or NodeID['nodeId'] == '':
+                        continue
+                    OpcTagID = db_session.query(OpcTag.ID).filter_by(NodeID=NodeID['nodeId']).first()[0]
                     try:
                         oclass = db_session.query(CollectParams).filter_by(OpcTagID=OpcTagID).first()
                         db_session.delete(oclass)

@@ -3675,7 +3675,11 @@ class NodeIdNote(Base):
 	# Note
 	Note = Column(Unicode(32), nullable=True)
 
-
+# all = session.query(OpcTag).all()
+# print(all)
+# for oclass in all:
+# 	session.delete(oclass)
+# 	session.commit()
 # 生成表单的执行语句
 Base.metadata.create_all(engine)
 
