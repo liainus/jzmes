@@ -24,7 +24,7 @@ from Model.core import Enterprise, Area, Factory, ProductLine, ProcessUnit, Equi
     ProductUnit, ProductRule, ZYTask, ZYPlanMaterial, ZYPlan, Unit, PlanManager, SchedulePlan, ProductControlTask, \
     OpcServer, Pequipment, WorkFlowStatus, WorkFlowEventZYPlan, WorkFlowEventPlan, \
     OpcTag, CollectParamsTemplate, CollectParams, Collectionstrategy, CollectTask, \
-    CollectTaskCollection, ReadyWork, NodeIdNote
+    CollectTaskCollection, ReadyWork, NodeIdNote, ProductUnitRoute
 from Model.system import Role, Organization, User, Menu, Role_Menu
 from tools.MESLogger import MESLogger
 from Model.core import SysLog
@@ -4256,7 +4256,19 @@ def processMonitor():
 #任务确认
 @app.route('/taskConfirm')
 def taskConfirm():
-    return render_template('taskConfirm.html')
+    if request.method == 'GET':
+        data = request.values
+        ID = data['ID']
+        name = data['NAME']
+        PUID = db_session.query(ProductUnitRoute.PUID).filter(ProductUnitRoute.PDUnitRouteName == name).first()
+        zyp = db_session.query(ZYPlan).filter(ZYPlan.ID == ID, ZYPlan.PUID == PUID).first()
+        zytasks = []
+        tasks = db_session.query(ZYTask).filter(ZYTask.PUID == zyp.PUID, ZYTask.BatchID == zyp.BatchID).all()
+        for task in set(tasks):
+            tas = {'ZYTask': task}
+            zytasks.append(tas)
+        print(zytasks)
+        return render_template('taskConfirm.html',zytasks=zytasks)
 
 #任务确认获取工艺段
 @app.route('/processMonitorLine/taskConfirmPuid', methods=['POST', 'GET'])
@@ -4406,16 +4418,16 @@ def saveEQPCode():
                 oclass.EquipmentID = EQPCode
                 oclass.TaskStatus = Model.Global.TASKSTATUS.COMFIRM.value
                 db_session.commit()
-                oclassplan = db_session.query(ZYPlan).filter(ZYPlan.PUID == oclass.PUID, ZYPlan.BatchID == oclass.BatchID).first()
-                oclasstasks = db_session.query(ZYTask).filter(ZYTask.PUID == oclass.PUID,
-                                                             ZYTask.BatchID == oclass.BatchID).all()
-                flag = "TRUE"
-                for task in oclasstasks:
-                    if(task.TaskStatus != Model.Global.TASKSTATUS.COMFIRM.value):
-                        flag = "FALSE"
-                if(flag == "TRUE"):
-                    oclassplan.ZYPlanStatus = Model.Global.ZYPlanStatus.COMFIRM.value
-                    db_session.commit()
+                # oclassplan = db_session.query(ZYPlan).filter(ZYPlan.PUID == oclass.PUID, ZYPlan.BatchID == oclass.BatchID).first()
+                # oclasstasks = db_session.query(ZYTask).filter(ZYTask.PUID == oclass.PUID,
+                #                                              ZYTask.BatchID == oclass.BatchID).all()
+                # flag = "TRUE"
+                # for task in oclasstasks:
+                #     if(task.TaskStatus != Model.Global.TASKSTATUS.COMFIRM.value):
+                #         flag = "FALSE"
+                # if(flag == "TRUE"):
+                #     oclassplan.ZYPlanStatus = Model.Global.ZYPlanStatus.COMFIRM.value
+                #     db_session.commit()
                 return "OK"
         except Exception as e:
             db_session.rollback()
