@@ -5417,7 +5417,7 @@ def CPK():
     return render_template('BatchData_Process_CPK.html')
 
 # 过程连续数据—— 直方图
-@app.route('/ProcessContinuousData/CPK')
+@app.route('/ProcessContinuousData/Histogram')
 def histogram():
     return render_template('BatchData_Process_Histogram.html')
 
