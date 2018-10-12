@@ -5401,6 +5401,26 @@ def NodeIdNoteSearch():
 def processContinuousData():
     return render_template('BatchData_Process.html')
 
+# 过程连续数据——Data
+@app.route('/ProcessContinuousData/DataPart')
+def DataPart():
+    return render_template('BatchData_Process_Data.html')
+
+# 过程连续数据——彩虹图
+@app.route('ProcessContinuousData/Rainbow')
+def Rainbow():
+    return render_template('BatchData_Process_Trend.html')
+
+# 过程连续数据——CPK
+@app.route('ProcessContinuousData/CPK')
+def CPK():
+    return render_template('BatchData_Process_CPK.html')
+
+# 过程连续数据—— 直方图
+@app.route('ProcessContinuousData/CPK')
+def histogram():
+    return render_template('BatchData_Process_Histogram.html')
+
 #离散数据录入
 @app.route('/DiscreteDataEntry')
 def discreteDataEntry():
