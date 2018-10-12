@@ -3148,9 +3148,6 @@ def templateUpdate():
             insertSyslog("error", "CollectParamsTemplate数据更新失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
-            # 查询Opc服务
-
-
 @app.route('/CollectParamsTemplate/config/search', methods=['POST', 'GET'])
 def templateSearch():
     if request.method == 'POST':
@@ -3443,9 +3440,6 @@ def collectParamsUpdate():
             insertSyslog("error", "CollectParamsTemplate数据更新失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
-            # 查询Opc服务
-
-
 @app.route('/CollectParams/search', methods=['POST', 'GET'])
 def collectParamsSearch():
     if request.method == 'POST':
@@ -3568,9 +3562,6 @@ def strategyUpdate():
             logger.error(e)
             insertSyslog("error", "Collectionstrategy数据更新失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
-
-            # 查询Opc服务
-
 
 @app.route('/Collectionstrategy/config/search', methods=['POST', 'GET'])
 def strategySearch():
@@ -3722,9 +3713,6 @@ def CollectTaskUpdate():
             logger.error(e)
             insertSyslog("error", "CollectTask数据更新失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
-
-            # 查询Opc服务
-
 
 @app.route('/CollectTask/config/search', methods=['POST', 'GET'])
 def CollectTaskSearch():
@@ -3884,9 +3872,6 @@ def TaskCollectionUpdate():
             insertSyslog("error", "CollectTaskCollection数据更新失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
-            # 查询Opc服务
-
-
 @app.route('/CollectTaskConfig/search', methods=['POST', 'GET'])
 def TaskCollectionSearch():
     if request.method == 'POST':
@@ -3943,8 +3928,29 @@ def searchPlanmanager():
             logger.error(e)
             insertSyslog("error", "计划向导生成的计划查询报错Error：" + str(e), current_user.Name)
 
-
-
+#菜单权限控制
+@app.route('/ZYPlanGuid/menuRedirect', methods=['POST', 'GET'])
+def menuRedirect():
+    if request.method == 'POST':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            menuName = data['menuName']
+            RoleNames = db_session.query(User.RoleName).filter(User.Name == current_user.Name).all()
+            flag = 'OK'
+            for rN in RoleNames:
+                roleID = db_session.query(Role.ID).filter(Role.RoleName == rN[0]).first()
+                menus = db_session.query(Menu.ModuleName).join(Role_Menu, isouter=True).filter_by(Role_ID=roleID).all()
+                for menu in menus:
+                    if(menu[0] == menuName):
+                        return 'OK'
+                    else:
+                        flag = '当前用户没有此菜单操作权限！'
+            return flag
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "计划向导生成计划报错Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 # 计划向导生成计划
 @app.route('/ZYPlanGuid/makePlan', methods=['POST', 'GET'])
 def makePlan():
