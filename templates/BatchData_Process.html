@@ -4,16 +4,44 @@
     <meta charset="utf-8"> 
     <meta name="viewport" content="width=device-width, initial-scale=1"> 
     <title>过程数据</title> 
-    <link href="css/base.css" rel="stylesheet">
-    <link rel="stylesheet" href="../custom/uimaker/easyui.css">
-	<link rel="stylesheet" type="text/css" href="../custom/uimaker/icon.css">
-    <link href="css/basic_info.css" rel="stylesheet">
-	<script type="text/javascript" src="../custom/jquery.min.js"></script>
-    <script type="text/javascript" src="../custom/jquery.easyui.min.js"></script>
+    <link href="../static/css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
+	<link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
+    <link href="../static/css/basic_info.css" rel="stylesheet">
+	<script type="text/javascript" src="../static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
     <script type="text/javascript">
+        $(function(){
+            $('#btn').bind('click', function(){
+                var data,json;
+                data = [];
+                data.push({ "text": "20170206_Brand1_1", "id": 101 });
+                data.push({ "text": "20170206_Brand2_1", "id": 102 });
+                $("#rwlb").combobox("loadData", data);
+            });
+            $('#LeftTree').tree({
+                onClick: function (node) {
+                    var nodePar = $('#LeftTree').tree("getParent", node.target);
+                    var comboxtext = $('#rwlb').combobox('getText');
+                    if (nodePar.text == "投料段") {
+                        if (node.text == "工序1温度") {
+                            addTab(comboxtext + "  " + nodePar.text + "  " + node.text + "  数据", "/ProcessContinuousData/DataPart");
+                            addTab(comboxtext + "  " + nodePar.text + "  " + node.text + "  彩虹图", "/ProcessContinuousData/Rainbow");
+                            addTab(comboxtext + "  " + nodePar.text + "  " + node.text + "  CPK", "/ProcessContinuousData/CPK");
+                            addTab(comboxtext + "  " + nodePar.text + "  " + node.text + "  直方图", "/ProcessContinuousData/Histogram");
+                        }
+                    }
+                    else if (nodePar.text == "提取浓缩段") {
+
+                    }else {
+
+                    }
+                }
+            })
+        });
         //按钮点击后添加选项卡
-        function addTab(title,url)
-        {
+        function addTab(title,url){
             if($('#tt').tabs('exists',title))
             {
                 $('#tt').tabs('select',title);
@@ -28,45 +56,12 @@
                 });
             }
         }
-
-        $(function(){
-            $('#btn').bind('click', function(){
-                var data,json;
-                data = [];
-                data.push({ "text": "20170206_Brand1_1", "id": 101 });
-                data.push({ "text": "20170206_Brand2_1", "id": 102 });
-                $("#rwlb").combobox("loadData", data);
-            });
-        });
-
-        $('#LeftTree').tree({
-            onClick: function(node){
-               var nodePar = $('#LeftTree').tree("getParent",node.target);
-               var comboxtext = $('#rwlb').combobox('getText');
-               if (nodePar.text == "投料段")
-               {
-                 if(node.text == "工序1温度")
-                 {
-                 addTab(comboxtext + "  " + nodePar.text + "  " + node.text + "  数据","BatchData_Process_Data.html");
-                 addTab(comboxtext + "  " + nodePar.text + "  " + node.text + "  彩虹图","BatchData_Process_Trend.html");
-                 addTab(comboxtext + "  " + nodePar.text + "  " + node.text + "  CPK","BatchData_Process_CPK.html");
-                 addTab(comboxtext + "  " + nodePar.text + "  " + node.text + "  直方图","BatchData_Process_Histogram.html");
-                 }
-               }
-               else if (nodePar.text == "提取浓缩段")
-               {
-               }
-               else
-               {
-               }
-            }
-        });
     </script>
 </head> 
 <body>
 	<div class="container">
 		<div class="left-tree" >
-			<ul id="LeftTree" class="easyui-tree" data-options="url:'data/tree_ProcessItem.json',method:'get',animate:true,checkbox:false"></ul>
+			<ul id="LeftTree" class="easyui-tree" data-options="url:'../static/data/tree_ProcessItem.json',method:'get',animate:true,checkbox:false"></ul>
 		</div>
 		
             <div id="pf-page">
