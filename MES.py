@@ -4421,7 +4421,7 @@ def searchAllEquipments():
             if len(jsonstr) > 10:
                 APUID = data['PUID']  # 工艺段编码
                 dataequipmentNames = []
-                equipmentNames = db_session.query(Pequipment.EQPCode,Pequipment.EQPName).filter(Pequipment.PUID == 1)
+                equipmentNames = db_session.query(Pequipment.EQPCode,Pequipment.EQPName).filter(Pequipment.PUID == APUID).all()
                 for equip in equipmentNames:
                     li = list(equip)
                     id = li[0]
