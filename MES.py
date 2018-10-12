@@ -5395,6 +5395,27 @@ def NodeIdNoteSearch():
             insertSyslog("error", "NodeIdNote数据查询失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
+# 质量管理
+# 过程连续数据
+@app.route('/ProcessContinuousData')
+def processContinuousData():
+    return render_template('BatchData_Process.html')
+
+#离散数据录入
+@app.route('/DiscreteDataEntry')
+def discreteDataEntry():
+    return render_template('DataEntry_Discrete.html')
+
+# 统计-数据点
+@app.route('/StatisticDataSpot')
+def statisticDataSpot():
+    return render_template('DataSpot_Statistic.html')
+
+# 质量标准管理
+@app.route('/QualityStandardManagement')
+def qualityStandardManagement():
+    return render_template('QualityStandard_Management.html')
+
 
 if __name__ == '__main__':
     app.run(debug=True)
