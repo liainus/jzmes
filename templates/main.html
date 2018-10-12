@@ -397,22 +397,22 @@
                         <ul class="sider-nav-s">
                             {% if '44' in session.get('menus') %}
                                 <li>
-                                    <a href="#" onClick="addTab('过程连续数据','BatchData_Process.html')">过程连续数据</a>
+                                    <a href="#" onClick="addTab('过程连续数据','/ProcessContinuousData')">过程连续数据</a>
                                 </li>
                             {% endif %}
                             {% if '45' in session.get('menus') %}
                                 <li>
-                                    <a href="#" onClick="addTab('离散数据录入','BatchData_Scatter.html')">离散数据录入</a>
+                                    <a href="#" onClick="addTab('离散数据录入','/DiscreteDataEntry')">离散数据录入</a>
                                 </li>
                             {% endif %}
                             {% if '46' in session.get('menus') %}
                                 <li>
-                                    <a href="#" onClick="addTab('统计-数据点','BatchStatistics_Point.html')">统计-数据点</a>
+                                    <a href="#" onClick="addTab('统计-数据点','/StatisticDataSpot')">统计-数据点</a>
                                 </li>
                             {% endif %}
                             {% if '47' in session.get('menus') %}
                                 <li>
-                                    <a href="#">质量标准管理</a>
+                                    <a href="#" onClick="addTab('质量标准管理','/QualityStandardManagement')">质量标准管理</a>
                                 </li>
                             {% endif %}
 {#                            {% if '48' in session.get('menus') %}#}
