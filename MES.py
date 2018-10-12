@@ -3944,7 +3944,7 @@ def menuRedirect():
                     if(menu[0] == menuName):
                         return 'OK'
                     else:
-                        flag = '当前用户没有此菜单操作权限！'
+                        flag = '当前用户没有此操作权限！'
             return flag
         except Exception as e:
             print(e)
@@ -5187,6 +5187,12 @@ def queryFlow(ID, name):
 @app.route('/ZYPlanManage')
 def zYPlanManage():
     return render_template('ZYPlanManage.html')
+
+# 电子批记录跳转
+@app.route('/electronicBatchRecord')
+def electronicBatchRecord():
+    return render_template('electronicBatchRecord.html')
+
 
 # QA放行
 @app.route('/QAauthPass')
