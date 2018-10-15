@@ -5394,6 +5394,26 @@ def NodeIdNoteSearch():
 def processContinuousData():
     return render_template('BatchData_Process.html')
 
+# 过程连续数据——Data
+@app.route('/ProcessContinuousData/DataPart')
+def DataPart():
+    return render_template('BatchData_Process_Data.html')
+
+# 过程连续数据——彩虹图
+@app.route('/ProcessContinuousData/Rainbow')
+def Rainbow():
+    return render_template('BatchData_Process_Trend.html')
+
+# 过程连续数据——CPK
+@app.route('/ProcessContinuousData/CPK')
+def CPK():
+    return render_template('BatchData_Process_CPK.html')
+
+# 过程连续数据—— 直方图
+@app.route('/ProcessContinuousData/Histogram')
+def histogram():
+    return render_template('BatchData_Process_Histogram.html')
+
 #离散数据录入
 @app.route('/DiscreteDataEntry')
 def discreteDataEntry():
@@ -5403,6 +5423,26 @@ def discreteDataEntry():
 @app.route('/StatisticDataSpot')
 def statisticDataSpot():
     return render_template('DataSpot_Statistic.html')
+
+# 统计-数据点-批次数据列表
+@app.route('/StatisticDataSpot/BatchDataList')
+def BatchDataList():
+    return render_template('BatchStatistics_Point_Data.html')
+
+# 统计-数据点-批次数据趋势
+@app.route('/StatisticDataSpot/BatchDataTrend')
+def BatchDataTrend():
+    return render_template('BatchStatistics_Point_Trend.html')
+
+# 统计-数据点-批次数据CPK
+@app.route('/StatisticDataSpot/BatchDataCPK')
+def BatchDataCPK():
+    return render_template('BatchStatistics_Point_CPK.html')
+
+# 统计-数据点-批次数据直方图
+@app.route('/StatisticDataSpot/BatchDataHistogram')
+def BatchDataHistogram():
+    return render_template('BatchStatistics_Point_Histogram.html')
 
 # 质量标准管理
 @app.route('/QualityStandardManagement')
