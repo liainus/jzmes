@@ -5431,6 +5431,26 @@ def discreteDataEntry():
 def statisticDataSpot():
     return render_template('DataSpot_Statistic.html')
 
+# 统计-数据点-批次数据列表
+@app.route('/StatisticDataSpot/BatchDataList')
+def BatchDataList():
+    return render_template('BatchStatistics_Point_Data.html')
+
+# 统计-数据点-批次数据趋势
+@app.route('/StatisticDataSpot/BatchDataTrend')
+def BatchDataTrend():
+    return render_template('BatchStatistics_Point_Trend.html')
+
+# 统计-数据点-批次数据CPK
+@app.route('/StatisticDataSpot/BatchDataCPK')
+def BatchDataCPK():
+    return render_template('BatchStatistics_Point_CPK.html')
+
+# 统计-数据点-批次数据直方图
+@app.route('/StatisticDataSpot/BatchDataHistogram')
+def BatchDataHistogram():
+    return render_template('BatchStatistics_Point_Histogram.html')
+
 # 质量标准管理
 @app.route('/QualityStandardManagement')
 def qualityStandardManagement():
