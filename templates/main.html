@@ -356,24 +356,24 @@
                         <ul class="sider-nav-s">
                             {% if '39' in session.get('menus') %}
                                 <li>
-                                    <a href="#">电子批记录</a>
+                                    <a href="#" onClick="addTab('电子批记录','/ElectronicBatchRecord')">电子批记录</a>
                                 </li>
                             {% endif %}
                             {% if '40' in session.get('menus') %}
                                 <li>
-                                    <a href="#">批物料平衡统计</a>
+                                    <a href="#" onClick="addTab('批物料平衡统计','/BatchMaterielBalanceStatistic')">批物料平衡统计</a>
                                 </li>
                             {% endif %}
-                            {% if '41' in session.get('menus') %}
-                                <li>
-                                    <a href="#">作业数据管理</a>
-                                </li>
-                            {% endif %}
-                            {% if '42' in session.get('menus') %}
-                                <li>
-                                    <a href="#">产量数据管理</a>
-                                </li>
-                            {% endif %}
+{#                            {% if '41' in session.get('menus') %}#}
+{#                                <li>#}
+{#                                    <a href="#">作业数据管理</a>#}
+{#                                </li>#}
+{#                            {% endif %}#}
+{#                            {% if '42' in session.get('menus') %}#}
+{#                                <li>#}
+{#                                    <a href="#">产量数据管理</a>#}
+{#                                </li>#}
+{#                            {% endif %}#}
 {#                            {% if '52' in session.get('menus') %}#}
 {#                                <li>#}
 {#                                    <a href="#">原/辅料数据管理</a>#}
