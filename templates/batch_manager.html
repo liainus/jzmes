@@ -274,7 +274,7 @@
             $("#ttplan").datagrid({
                 onClickRow:function(rowIndex,rowData){
                     //传参到批次任务明细
-                    $("#tttasks").datagrid('load',{
+                    $("#ttTasks").datagrid('load',{
                         ID:rowData.ID
                     })
                 }
@@ -282,25 +282,19 @@
         })
         function formatterStatus(value, row, index){
             if (value == 10){
-                return '编制'
+                return '新增计划'
             }else if(value == 20){
-                return '下达'
-            }else if(value == 30){
-                return '新增'
+                return '审核计划'
+            }else if(value == 21){
+                return '下发计划'
             }else if(value == 40){
-                return '确认'
+                return '撤回'
             }else if(value == 50){
                 return '执行'
             }else if(value == 60){
-                return '完成'
+                return '已完成'
             }else if(value == 70){
-                return '取消'
-            }else if(value == 80){
-                return '暂停'
-            }else if(value == 85){
-                return '故障'
-            }else if(value == 90){
-                return '中止'
+                return 'QA放行'
             }
         }
         function formatterLockStatus(value, row, index){

@@ -595,7 +595,7 @@ def SearchBatchZYTask():
                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
                 ID = data["ID"]
-                plan = db_session.query(ZYPlan).filter(ZYPlan.ID == ID)
+                plan = db_session.query(ZYPlan).filter(ZYPlan.ID == ID).first()
                 total = db_session.query(ZYTask.ID).filter(ZYTask.BatchID == plan.BatchID,
                                                            ZYTask.PUID == plan.PUID).count()
                 zYPlans = db_session.query(ZYTask).filter(ZYTask.BatchID == plan.BatchID,
