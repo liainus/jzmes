@@ -5456,6 +5456,15 @@ def BatchDataHistogram():
 def qualityStandardManagement():
     return render_template('QualityStandard_Management.html')
 
+# 生产数据管理-电子批记录
+@app.route('/ElectronicBatchRecord')
+def ElectronicBatchRecord():
+    return render_template('ElectronicBatchRecordParent.html')
+
+# 生产数据管理-批物料平衡统计
+@app.route('/BatchMaterielBalanceStatistic')
+def BatchMaterielBalanceStatistic():
+    return render_template('BatchMaterielBalanceStatistic.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
