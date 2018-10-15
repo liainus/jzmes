@@ -4611,7 +4611,7 @@ def operateConfirm():
                 elif(PName == "浓缩"):
                     PName = "浓缩段"
                     if (PUName == "生产前的准备"):
-                        name = '（浓缩段）生产前准备流程（操作人）'
+                        name = '（浓缩段）生产前准备（操作人）'
                         return operateflow(ID, name, PName)
                     elif (PUName == "浓缩开始"):
                         name = '浓缩开始，操作按SOP执行（操作人）'
@@ -4622,7 +4622,7 @@ def operateConfirm():
                 elif(PName == "喷雾干燥"):
                     PName = "喷雾干燥段"
                     if (PUName == "生产前的准备"):
-                        name = '（喷雾干燥段）生产前准备流程（操作人）'
+                        name = '（喷雾干燥段）生产前准备（操作人）'
                         return operateflow(ID, name, PName)
                     elif (PUName == "喷雾干燥开始"):
                         name = '喷雾干燥开始，操作按SOP执行（操作人）'
@@ -4633,7 +4633,7 @@ def operateConfirm():
                 elif(PName == "收粉"):
                     PName = '收粉段'
                     if (PUName == "生产前的准备"):
-                        name = '（收粉段）生产前准备流程（操作人）'
+                        name = '（收粉段）生产前准备（操作人）'
                         return operateflow(ID, name, PName)
                     elif (PUName == "收粉开始"):
                         name = '收粉开始，操作按SOP执行（操作人）'
@@ -4749,8 +4749,8 @@ def checkedConfirm():
                         return checkflow(ID, statusName, name)
                 elif (PName == "浓缩"):
                     if (PUName == "生产前的准备"):
-                        statusName = '（浓缩段）生产前准备流程（操作人）'
-                        name = '（浓缩段）生产前准备流程（复核人）'
+                        statusName = '（浓缩段）生产前准备（操作人）'
+                        name = '（浓缩段）生产前准备（复核人）'
                         return checkflow(ID, statusName, name)
                     elif (PUName == "浓缩开始"):
                         statusName = '浓缩开始，操作按SOP执行（操作人）'
@@ -4762,8 +4762,8 @@ def checkedConfirm():
                         return checkflow(ID, statusName, name)
                 elif (PName == "喷雾干燥"):
                     if (PUName == "生产前的准备"):
-                        statusName = '（喷雾干燥段）生产前准备流程（操作人）'
-                        name = '（喷雾干燥段）生产前准备流程（复核人）'
+                        statusName = '（喷雾干燥段）生产前准备（操作人）'
+                        name = '（喷雾干燥段）生产前准备（复核人）'
                         return checkflow(ID, statusName, name)
                     elif (PUName == "喷雾干燥开始"):
                         statusName = '喷雾干燥开始，操作按SOP执行（操作人）'
@@ -4775,8 +4775,8 @@ def checkedConfirm():
                         return checkflow(ID, statusName, name)
                 elif (PName == "收粉"):
                     if (PUName == "生产前的准备"):
-                        statusName = '（收粉段）生产前准备流程（操作人）'
-                        name = '（收粉段）生产前准备流程（复核人）'
+                        statusName = '（收粉段）生产前准备（操作人）'
+                        name = '（收粉段）生产前准备（复核人）'
                         return checkflow(ID, statusName, name)
                     elif (PUName == "收粉开始"):
                         statusName = '收粉开始，操作按SOP执行（操作人）'
@@ -4897,8 +4897,8 @@ def QAautograph():
                         return QAflow(ID, statusName, name)
                 elif (PName == "浓缩"):
                     if (PUName == "生产前的准备"):
-                        statusName = '（浓缩段）生产前准备流程（复核人）'
-                        name = '（浓缩段）生产前准备流程（QA签名）'
+                        statusName = '（浓缩段）生产前准备（复核人）'
+                        name = '（浓缩段）生产前准备（QA签名）'
                         return QAflow(ID, statusName, name)
                     elif (PUName == "浓缩开始"):
                         statusName = '浓缩开始，操作按SOP执行（复核人）'
@@ -4910,8 +4910,8 @@ def QAautograph():
                         return QAflow(ID, statusName, name)
                 elif (PName == "喷雾干燥"):
                     if (PUName == "生产前的准备"):
-                        statusName = '（喷雾干燥段）生产前准备流程（复核人）'
-                        name = '（喷雾干燥段）生产前准备流程（QA签名）'
+                        statusName = '（喷雾干燥段）生产前准备（复核人）'
+                        name = '（喷雾干燥段）生产前准备（QA签名）'
                         return QAflow(ID, statusName, name)
                     elif (PUName == "喷雾干燥开始"):
                         statusName = '喷雾干燥开始，操作按SOP执行（复核人）'
@@ -4923,8 +4923,8 @@ def QAautograph():
                         return QAflow(ID, statusName, name)
                 elif (PName == "收粉"):
                     if (PUName == "生产前的准备"):
-                        statusName = '（收粉段）生产前准备流程（复核人）'
-                        name = '（收粉段）生产前准备流程（QA签名）'
+                        statusName = '（收粉段）生产前准备（复核人）'
+                        name = '（收粉段）生产前准备（QA签名）'
                         return QAflow(ID, statusName, name)
                     elif (PUName == "收粉开始"):
                         statusName = '收粉开始，操作按SOP执行（复核人）'
@@ -4993,13 +4993,13 @@ def QAflow(ID, statusName, name):
         node.opertionTime = datetime.datetime.now()
         node.oddUser = current_user.Name
         db_session.commit()
-        PStatuss = db_session.query(Model.node.NodeCollection.status).filter(Model.node.NodeCollection.oddNum == ID).all()
+        PStatuss = db_session.query(Model.node.NodeCollection.status).filter(Model.node.NodeCollection.oddNum == ID, Model.node.NodeCollection.name != 'QA放行').all()
         fl = "TRUE"
         for pst in PStatuss:
             if(pst[0] != 10):
                 fl = "FALSE"
         if(fl == "TRUE"):
-            planaMStatus = db_session.query(PlanManager.PlanStatus).filter(PlanManager.ID == ID).first()
+            planaMStatus = db_session.query(PlanManager).filter(PlanManager.ID == ID).first()
             planaMStatus.PlanStatus = Model.Global.PlanStatus.FINISH.value
             db_session.commit()
         return flag
@@ -5053,28 +5053,21 @@ def QAPass():
                 for key in jsonnumber:
                     id = int(key)
                     try:
+                        nodec = db_session.query(Model.node.NodeCollection).filter(Model.node.NodeCollection.oddNum == id, Model.node.NodeCollection.name == 'QA放行').first()
+                        nodec.status = Model.node.NodeStatus.PASSED.value
                         oclass = db_session.query(PlanManager).filter(PlanManager.ID == id).first()
                         oclass.PlanStatus = Model.Global.PlanStatus.QApass.value
-                        oclassW = db_session.query(WorkFlowStatus).filter(WorkFlowStatus.PlanManageID == id).all()
-                        for oc in oclassW:
-                            oc.AuditStatus = Model.Global.AuditStatus.BatchEndPass.value
-                            oc.DescF = "QA放行"
                         db_session.commit()
-                        userName = current_user.Name
-                        Desc = "QA放行"
-                        Type = Model.Global.Type.QApass.value
-                        PlanCreate = ctrlPlan('PlanCreate')
-                        wReturn = PlanCreate.createWorkFlowEventPlan(id, userName, Desc, Type)
                         return 'OK'
                     except Exception as e:
                         db_session.rollback()
                         print(e)
                         logger.error(e)
-                        insertSyslog("error", "QA复核报错Error：" + str(e), current_user.Name)
+                        insertSyslog("error", "QA放行报错Error：" + str(e), current_user.Name)
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "QA复核报错Error：" + str(e), current_user.Name)
+            insertSyslog("error", "QA放行报错Error：" + str(e), current_user.Name)
 
 # 计划执行进度
 @app.route('/PlanExecutionProgress')
