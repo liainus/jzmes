@@ -5024,15 +5024,15 @@ def QAPassSearch():
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
                 ABatchID = data['BatchID']  # 批次号
                 if (ABatchID == None or ABatchID == ""):
-                    total = db_session.query(PlanManager.ID).filter(PlanManager.PlanStatus == Model.Global.PlanStatus.FINISH.value).count()
-                    PlanManagers = db_session.query(PlanManager).filter(PlanManager.PlanStatus == Model.Global.PlanStatus.FINISH.value).order_by(
-                        desc("EnterTime")).all()[inipage:endpage]
+                    total = db_session.query(PlanManager.ID).filter(PlanManager.PlanStatus.in_((60, 70))).count()
+                    PlanManagers = db_session.query(PlanManager).filter(PlanManager.PlanStatus.in_((60, 70))).order_by(
+                        desc("PlanBeginTime")).all()[inipage:endpage]
                 else:
                     total = db_session.query(PlanManager.ID).filter(PlanManager.BatchID == ABatchID,
-                                                               PlanManager.PlanStatus == Model.Global.PlanStatus.FINISH.value).count()
+                                                               PlanManager.PlanStatus.in_((60, 70))).count()
                     PlanManagers = db_session.query(PlanManager).filter(ZYPlan.BatchID == ABatchID,
-                                                              PlanManager.PlanStatus == Model.Global.PlanStatus.FINISH.value).order_by(
-                        desc("EnterTime")).all()[inipage:endpage]
+                                                              PlanManager.PlanStatus.in_((60, 70))).order_by(
+                        desc("PlanBeginTime")).all()[inipage:endpage]
                 PlanManagers = json.dumps(PlanManagers, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonPlanManagers = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + PlanManagers + "}"
                 return jsonPlanManagers
