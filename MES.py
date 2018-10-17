@@ -4607,6 +4607,11 @@ def cshflowtu():
 def jwxspflowtu():
     return render_template('jwxspflowtu.html')
 
+#生产监控详情页面
+@app.route('/ZYPlanGuid/processMonitorLineDetails')
+def processMonitorLineDetails():
+    return render_template('processMonitorLineDetails.html')
+
 #操作人确认
 @app.route('/ZYPlanGuid/operateConfirm', methods=['POST', 'GET'])
 def operateConfirm():
