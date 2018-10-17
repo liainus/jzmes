@@ -5102,14 +5102,12 @@ def zyPlanProgressSearch():
 # 计划执行进度查询流程图
 @app.route('/PlanExecutionProgress/planmanagerProgressTuSearch', methods=['POST', 'GET'])
 def planmanagerProgressTuSearch():
-    if request.method == 'GET':
+    if request.method == 'POST':
         data = request.values
         try:
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 2:
-                jsonstr = json.dumps(data.to_dict())
-                jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
-                ID = int(jsonnumber[0])
+                ID = int(data['ID'])
                 dic = {}
                 a1 = '（备料段）生产前准备（QA签名）'
                 dic['a1'] = queryFlow(ID, a1)
@@ -5161,7 +5159,6 @@ def planmanagerProgressTuSearch():
                 dic['h2'] = queryFlow(ID,h2)
                 h3 = '收膏结束，按SOP清场（QA签名）'
                 dic['h3'] = queryFlow(ID, h3)
-                print(json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False))
                 return json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
