@@ -726,6 +726,16 @@ class ctrlPlan:
         re = self.sessionadd(APlanManageID, R)
         S = Model.node.flowPathNameJWXSP.S.value
         re = self.sessionadd(APlanManageID, S)
+        aa = Model.node.flowPathNameJWXSP.aa.value
+        re = self.sessionadd(APlanManageID, aa)
+        bb = Model.node.flowPathNameJWXSP.bb.value
+        re = self.sessionadd(APlanManageID, bb)
+        cc = Model.node.flowPathNameJWXSP.cc.value
+        re = self.sessionadd(APlanManageID, cc)
+        dd = Model.node.flowPathNameJWXSP.dd.value
+        re = self.sessionadd(APlanManageID, dd)
+        ee = Model.node.flowPathNameJWXSP.ee.value
+        re = self.sessionadd(APlanManageID, ee)
         return re
     def createOddC(self,APlanManageID):
         A = Model.node.flowPathNameCSHHP.A.value
@@ -772,6 +782,18 @@ class ctrlPlan:
         re = self.sessionadd(APlanManageID, U)
         V = Model.node.flowPathNameCSHHP.V.value
         re = self.sessionadd(APlanManageID, V)
+        aa = Model.node.flowPathNameCSHHP.aa.value
+        re = self.sessionadd(APlanManageID, aa)
+        bb = Model.node.flowPathNameCSHHP.bb.value
+        re = self.sessionadd(APlanManageID, bb)
+        cc = Model.node.flowPathNameCSHHP.cc.value
+        re = self.sessionadd(APlanManageID, cc)
+        dd = Model.node.flowPathNameCSHHP.dd.value
+        re = self.sessionadd(APlanManageID, dd)
+        ee = Model.node.flowPathNameCSHHP.ee.value
+        re = self.sessionadd(APlanManageID, ee)
+        ff = Model.node.flowPathNameCSHHP.ff.value
+        re = self.sessionadd(APlanManageID, ff)
         return re
 
 

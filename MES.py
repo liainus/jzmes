@@ -4446,19 +4446,45 @@ def saveEQPCode():
                 EQPCode = data['EQPCode']
                 ID = data['ID']
                 oclass = db_session.query(ZYTask).filter(ZYTask.ID == ID).first()
+                PUID = oclass.PUID
                 oclass.EquipmentID = EQPCode
                 oclass.TaskStatus = Model.Global.TASKSTATUS.COMFIRM.value
                 db_session.commit()
-                # oclassplan = db_session.query(ZYPlan).filter(ZYPlan.PUID == oclass.PUID, ZYPlan.BatchID == oclass.BatchID).first()
-                # oclasstasks = db_session.query(ZYTask).filter(ZYTask.PUID == oclass.PUID,
-                #                                              ZYTask.BatchID == oclass.BatchID).all()
-                # flag = "TRUE"
-                # for task in oclasstasks:
-                #     if(task.TaskStatus != Model.Global.TASKSTATUS.COMFIRM.value):
-                #         flag = "FALSE"
-                # if(flag == "TRUE"):
-                #     oclassplan.ZYPlanStatus = Model.Global.ZYPlanStatus.COMFIRM.value
-                #     db_session.commit()
+                IDm = db_session.query(PlanManager.ID).filter(PlanManager.BatchID == oclass.BatchID).first()
+                IDm = IDm[0]
+                oclasstasks = db_session.query(ZYTask).filter(ZYTask.PUID == PUID,
+                                                             ZYTask.BatchID == oclass.BatchID).all()
+                flag = "TRUE"
+                for task in oclasstasks:
+                    if(task.TaskStatus != Model.Global.TASKSTATUS.COMFIRM.value):
+                        flag = "FALSE"
+                nameP = db_session.query(ProductUnitRoute.PDUnitRouteName).filter(ProductUnitRoute.PUID == PUID).first()
+                na = nameP[0]
+                if(flag == "TRUE"):
+                    if(na == "备料段"):
+                        aa = '（备料段）任务确认'
+                        updateNodeA(IDm,aa)
+                    elif(na == "煎煮段"):
+                        bb = '（煎煮段）任务确认'
+                        updateNodeA(IDm, bb)
+                    elif (na == "浓缩段"):
+                        cc = '（浓缩段）任务确认'
+                        updateNodeA(IDm, cc)
+                    elif (na == "喷雾干燥段"):
+                        dd = '（喷雾干燥段）任务确认'
+                        updateNodeA(IDm, dd)
+                    elif (na == "收粉段"):
+                        ee = '（收粉段）任务确认'
+                        updateNodeA(IDm, ee)
+                    elif (na == "醇沉段"):
+                        ff = '（醇沉段）任务确认'
+                        updateNodeA(IDm, ff)
+                    elif (na == "单效浓缩段"):
+                        gg = '（单效浓缩段）任务确认'
+                        updateNodeA(IDm, gg)
+                    elif (na == "收膏段"):
+                        hh = '（收膏段）任务确认'
+                        updateNodeA(IDm, hh)
                 return "OK"
         except Exception as e:
             db_session.rollback()
@@ -4466,6 +4492,17 @@ def saveEQPCode():
             logger.error(e)
             insertSyslog("error", "任务确认保存设备code报错Error：" + str(e), current_user.Name)
             return "NO"
+def updateNodeA(id,name):
+    try:
+        noclass = db_session.query(Model.node.NodeCollection).filter(Model.node.NodeCollection.name == name,
+                                                                     Model.node.NodeCollection.oddNum == id).first()
+        noclass.status = Model.node.NodeStatus.PASSED.value
+        db_session.commit()
+    except Exception as e:
+        db_session.rollback()
+        print(e)
+        logger.error(e)
+        insertSyslog("error", "更新NodeCollection报错Error：" + str(e), current_user.Name)
 
 #任务确认查询设备下任务
 @app.route('/processMonitorLine/searchTasksByEquipmentID', methods=['POST', 'GET'])
@@ -5109,12 +5146,16 @@ def planmanagerProgressTuSearch():
             if len(json_str) > 2:
                 ID = int(data['ID'])
                 dic = {}
+                aa = '（备料段）任务确认'
+                dic['aa'] = queryFlow(ID, aa)
                 a1 = '（备料段）生产前准备（QA签名）'
                 dic['a1'] = queryFlow(ID, a1)
                 a2 = '备料操作按SOP执行（QA签名）'
                 dic['a2'] = queryFlow(ID, a2)
                 a3 = '（备料段）生产结束清场（QA签名）'
                 dic['a3'] = queryFlow(ID, a3)
+                bb = '（煎煮段）任务确认'
+                dic['bb'] = queryFlow(ID, bb)
                 b1 = '（煎煮段）生产前准备（QA签名）'
                 dic['b1'] = queryFlow(ID, b1)
                 b2 = '煎煮开始，操作按SOP执行（QA签名）'
@@ -5123,36 +5164,48 @@ def planmanagerProgressTuSearch():
                 dic['b3'] = queryFlow(ID, b3)
                 b4 = '（煎煮段）生产结束清场（QA签名）'
                 dic['b4'] = queryFlow(ID, b4)
+                cc = '（浓缩段）任务确认'
+                dic['cc'] = queryFlow(ID, cc)
                 c1 = '（浓缩段）生产前准备流程（QA签名）'
                 dic['c1'] = queryFlow(ID, c1)
                 c2 = '浓缩开始，操作按SOP执行（QA签名）'
                 dic['c2'] = queryFlow(ID, c2)
                 c3 = '浓缩结束清场（QA签名）'
                 dic['c3'] = queryFlow(ID, c3)
+                dd = '（喷雾干燥段）任务确认'
+                dic['dd'] = queryFlow(ID, dd)
                 d1 = '（喷雾干燥段）生产前准备流程（QA签名）'
                 dic['d1'] = queryFlow(ID, d1)
                 d2 = '喷雾干燥开始，操作按SOP执行（QA签名）'
                 dic['d2'] = queryFlow(ID, d2)
                 d3 = '喷雾干燥结束，按SOP清场（QA签名）'
                 dic['d3'] = queryFlow(ID, d3)
+                ee = '（收粉段）任务确认'
+                dic['ee'] = queryFlow(ID, ee)
                 e1 = '（收粉段）生产前准备流程（QA签名）'
                 dic['e1'] = queryFlow(ID, e1)
                 e2 = '收粉开始，操作按SOP执行（QA签名）'
                 dic['e2'] = queryFlow(ID, e2)
                 e3 = '收粉结束，按SOP清场（QA签名）'
                 dic['e3'] = queryFlow(ID, e3)
+                ff = '（醇沉段）任务确认'
+                dic['ff'] = queryFlow(ID, ff)
                 f1 = '（醇沉段）生产前准备（QA签名）'
                 dic['f1'] = queryFlow(ID, f1)
                 f2 = '醇沉开始，操作按SOP执行（QA签名）'
                 dic['f2'] = queryFlow(ID, f2)
                 f3 = '醇沉结束，按SOP清场（QA签名）'
                 dic['f3'] = queryFlow(ID, f3)
+                gg = '（单效浓缩段）任务确认'
+                dic['gg'] = queryFlow(ID, gg)
                 g1 = '（单效浓缩段）生产前准备（QA签名）'
                 dic['g1'] = queryFlow(ID, g1)
                 g2 = '单效浓缩段开始，操作按SOP执行（QA签名）'
                 dic['g2'] = queryFlow(ID, g2)
                 g3 = '单效浓缩段结束，按SOP清场（QA签名）'
                 dic['g3'] = queryFlow(ID, g3)
+                hh = '（收膏段）任务确认'
+                dic['hh'] = queryFlow(ID, hh)
                 h1 = '（收膏段）生产前准备（QA签名）'
                 dic['h1'] = queryFlow(ID, h1)
                 h2 = '收膏段开始，操作按SOP执行（QA签名）'
@@ -5168,7 +5221,7 @@ def planmanagerProgressTuSearch():
 def queryFlow(ID, name):
     status = db_session.query(Model.node.NodeCollection.status).filter(Model.node.NodeCollection.oddNum == ID,
                                                                        Model.node.NodeCollection.name == name).first()
-    if(status == 10):
+    if(status[0] == 10):
         return 'OK'
     else:
         return 'NO'
