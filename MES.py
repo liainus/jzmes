@@ -4695,16 +4695,16 @@ def operateConfirm():
                     elif (PUName == "醇沉结束清场"):
                         name = '醇沉结束，按SOP清场（操作人）'
                         return operateflow(ID, name, PName)
-                elif(PName == "单效浓缩段"):
+                elif(PName == "单效浓缩"):
                     PName = "单效浓缩段"
                     if (PUName == "生产前的准备"):
                         name = '（单效浓缩段）生产前准备（操作人）'
                         return operateflow(ID, name, PName)
                     elif (PUName == "单效浓缩开始"):
-                        name = '单效浓缩段开始，操作按SOP执行（操作人）'
+                        name = '单效浓缩开始，操作按SOP执行（操作人）'
                         return operateflow(ID, name, PName)
                     elif (PUName == "单效浓缩结束清场"):
-                        name = '单效浓缩段结束，按SOP清场（操作人）'
+                        name = '单效浓缩结束，按SOP清场（操作人）'
                         return operateflow(ID, name, PName)
                 elif(PName == "收膏"):
                     PName = "收膏段"
@@ -4712,7 +4712,7 @@ def operateConfirm():
                         name = '（收膏段）生产前准备（操作人）'
                         return operateflow(ID, name, PName)
                     elif (PUName == "收膏开始"):
-                        name = '收膏段开始，操作按SOP执行（操作人）'
+                        name = '收膏开始，操作按SOP执行（操作人）'
                         return operateflow(ID, name, PName)
                     elif (PUName == "收膏结束清场"):
                         name = '收膏结束，按SOP清场（操作人）'
@@ -4842,18 +4842,18 @@ def checkedConfirm():
                         statusName = '醇沉结束，按SOP清场（操作人）'
                         name = '醇沉结束，按SOP清场（复核人）'
                         return checkflow(ID, statusName, name)
-                elif (PName == "单效浓缩段"):
+                elif (PName == "单效浓缩"):
                     if (PUName == "生产前的准备"):
                         statusName = '（单效浓缩段）生产前准备（操作人）'
                         name = '（单效浓缩段）生产前准备（复核人）'
                         return checkflow(ID, statusName, name)
                     elif (PUName == "单效浓缩开始"):
-                        statusName = '单效浓缩段开始，操作按SOP执行（操作人）'
-                        name = '单效浓缩段开始，操作按SOP执行（复核人）'
+                        statusName = '单效浓缩开始，操作按SOP执行（操作人）'
+                        name = '单效浓缩开始，操作按SOP执行（复核人）'
                         return checkflow(ID, statusName, name)
                     elif (PUName == "单效浓缩结束清场"):
-                        statusName = '单效浓缩段结束，按SOP清场（操作人）'
-                        name = '单效浓缩段结束，按SOP清场（复核人）'
+                        statusName = '单效浓缩结束，按SOP清场（操作人）'
+                        name = '单效浓缩结束，按SOP清场（复核人）'
                         return checkflow(ID, statusName, name)
                 elif (PName == "收膏"):
                     if (PUName == "生产前的准备"):
@@ -4861,8 +4861,8 @@ def checkedConfirm():
                         name = '（收膏段）生产前准备（复核人）'
                         return checkflow(ID, statusName, name)
                     elif (PUName == "收膏开始"):
-                        statusName = '收膏段开始，操作按SOP执行（操作人）'
-                        name = '收膏段开始，操作按SOP执行（复核人）'
+                        statusName = '收膏开始，操作按SOP执行（操作人）'
+                        name = '收膏开始，操作按SOP执行（复核人）'
                         return checkflow(ID, statusName, name)
                     elif (PUName == "收膏结束清场"):
                         statusName = '收膏结束，按SOP清场（操作人）'
@@ -4990,18 +4990,18 @@ def QAautograph():
                         statusName = '醇沉结束，按SOP清场（复核人）'
                         name = '醇沉结束，按SOP清场（QA签名）'
                         return QAflow(ID, statusName, name)
-                elif (PName == "单效浓缩段"):
+                elif (PName == "单效浓缩"):
                     if (PUName == "生产前的准备"):
                         statusName = '（单效浓缩段）生产前准备（复核人）'
                         name = '（单效浓缩段）生产前准备（QA签名）'
                         return QAflow(ID, statusName, name)
                     elif (PUName == "单效浓缩开始"):
-                        statusName = '单效浓缩段开始，操作按SOP执行（复核人）'
-                        name = '单效浓缩段开始，操作按SOP执行（QA签名）'
+                        statusName = '单效浓缩开始，操作按SOP执行（复核人）'
+                        name = '单效浓缩开始，操作按SOP执行（QA签名）'
                         return QAflow(ID, statusName, name)
                     elif (PUName == "单效浓缩结束清场"):
-                        statusName = '单效浓缩段结束，按SOP清场（复核人）'
-                        name = '单效浓缩段结束，按SOP清场（QA签名）'
+                        statusName = '单效浓缩结束，按SOP清场（复核人）'
+                        name = '单效浓缩结束，按SOP清场（QA签名）'
                         return QAflow(ID, statusName, name)
                 elif (PName == "收膏"):
                     if (PUName == "生产前的准备"):
@@ -5009,8 +5009,8 @@ def QAautograph():
                         name = '（收膏段）生产前准备（QA签名）'
                         return QAflow(ID, statusName, name)
                     elif (PUName == "收膏开始"):
-                        statusName = '收膏段开始，操作按SOP执行（复核人）'
-                        name = '收膏段开始，操作按SOP执行（QA签名）'
+                        statusName = '收膏开始，操作按SOP执行（复核人）'
+                        name = '收膏开始，操作按SOP执行（QA签名）'
                         return QAflow(ID, statusName, name)
                     elif (PUName == "收膏结束清场"):
                         statusName = '收膏结束，按SOP清场（复核人）'
