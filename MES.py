@@ -1232,7 +1232,7 @@ def pequipmentCreate():
                         EQPName=data['EQPName'],
                         PUID=data['PUID'],
                         Desc=data['Desc']))
-                session.commit()
+                db_session.commit()
                 return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
                               ensure_ascii=False)
         except Exception as e:
@@ -1251,12 +1251,12 @@ def pequipmentUpdate():
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 10:
                 id = int(data['ID'])
-                oclass = session.query(Pequipment).filter_by(ID=id).first()
+                oclass = db_session.query(Pequipment).filter_by(ID=id).first()
                 oclass.EQPCode=data['EQPCode']
                 oclass.EQPName=data['EQPName']
                 oclass.PUID=data['PUID']
                 oclass.Desc=data['Desc']
-                session.commit()
+                db_session.commit()
                 return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
                                   ensure_ascii=False)
         except Exception as e:
@@ -1280,9 +1280,9 @@ def pequipmentDelete():
                     # for subkey in list(key):
                     id = int(key)
                     try:
-                        oclass = session.query(Pequipment).filter_by(ID=id).first()
-                        session.delete(oclass)
-                        session.commit()
+                        oclass = db_session.query(Pequipment).filter_by(ID=id).first()
+                        db_session.delete(oclass)
+                        db_session.commit()
                     except Exception as ee:
                         db_session.rollback()
                         print(ee)
@@ -4399,10 +4399,12 @@ def taskConfirmSearch():
                 data = request.values
                 ID = data['ID']
                 name = data['name']
-                BatchID = db_session.query(PlanManager.BatchID).filter(PlanManager.ID == ID).first()
-                PUID = db_session.query(ProductUnitRoute.PUID).filter(ProductUnitRoute.PDUnitRouteName == name).first()
-                total = db_session.query(ZYTask.ID).filter(ZYTask.PUID == PUID[0], ZYTask.BatchID == BatchID[0]).count()
-                tasks = db_session.query(ZYTask).filter(ZYTask.PUID == PUID[0], ZYTask.BatchID == BatchID[0]).all()[inipage:endpage]
+                planM = db_session.query(PlanManager).filter(PlanManager.ID == ID).first()
+                BrandID = planM.BrandID
+                BatchID = planM.BatchID
+                PUID = db_session.query(ProductUnitRoute.PUID).filter(ProductUnitRoute.PDUnitRouteName == name, ProductUnitRoute.ProductRuleID == BrandID).first()
+                total = db_session.query(ZYTask.ID).filter(ZYTask.PUID == PUID[0], ZYTask.BatchID == BatchID).count()
+                tasks = db_session.query(ZYTask).filter(ZYTask.PUID == PUID[0], ZYTask.BatchID == BatchID).all()[inipage:endpage]
                 jsonZYTasks = json.dumps(tasks, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonZYTasks = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonZYTasks + "}"
                 return jsonZYTasks
