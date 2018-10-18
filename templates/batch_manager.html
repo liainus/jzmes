@@ -10,94 +10,24 @@
     <link href="../static/css/platform.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
     <link href="../static/js/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
-    <style>
-        .colorBox {color:#fff;border-color:black;margin:0px;padding:5px 10px 5px 10px; text-align:center;display:inline;cursor: default;}
-    </style>
     <script type="text/javascript " src="../static/custom/jquery.min.js "></script>
     <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
     <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
 </head>
 <body>
     <div class="container" style="margin:3px;">
-        <div style="margin:3px;">
-            <table class="kv-table">
-                <tbody>
-                    <tr>
-                        <td class="kv-label">计划状态色卡</td>
-                        <td class="kv-content" style="width:90%">
-                            <div class="colorBox pp1" style="background-color:#007bff;">任务编制</div>
-                            <div class="colorBox pp2" style="background-color:#17a2b8;">任务下达</div>
-                            <div class="colorBox pp3" style="background-color:#009688">任务新建</div>
-                            <div class="colorBox pp4" style="background-color:#01aaed;">任务确认</div>
-                            <div class="colorBox pp5" style="background-color:#2F4056;">任务执行</div>
-                            <div class="colorBox pp6" style="background-color:#28a745;">任务完成</div>
-                            <div class="colorBox pp7" style="background-color:#ffc107;">任务暂停</div>
-                            <div class="colorBox pp8" style="background-color:#dc3545;">任务错误</div>
-                            <div class="colorBox pp9" style="background-color:#6c757d;">任务中止</div>
-
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div id="Toolbar" style="padding:0 10px;">
-            当前工作日:
-            <input id="currentWorkdate" type="text" class="easyui-datebox" style="height: 28px;width: 150px;" data-options="required:true,showSeconds:false,editable:false" autocomplete="off" placeholder="">
-            工艺段名称:
-             <select name="PUID" id="PUID" type="text" style="height: 28px;width: 150px;" autocomplete="off" placeholder="">
-                <option value="">请选择</option>
-                {% for id in Product_unit_ID %}
-                    <option value="{{ id['ID'] }}">{{ id['text'] }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <table id="tt" class="easyui-datagrid" style="width:100%;height:300px;" title="批次计划信息" data-options="
-                url:'/batchManager/SearchBatchManager',
-                method:'GET',
-                rownumbers:true,
-                singleSelect:true,
-                autoRowHeight:false,
-                pagination:true,
-                striped:false,
-                checkOnSelect:true,
-                selectOnCheck:true,
-                collapsible:true,
-                toolbar:'#Toolbar',
-                pageSize:10">
-            <thead>
-                <tr>
-                    <th data-options="field: 'checked',align: 'center', checkbox:'true'"></th>
-                    <th data-options="field: 'PlanStatus',width:100,align: 'center'," formatter="formatterStatus">计划状态</th>
-                    <th data-options="field: 'SchedulePlanCode',width:200,align: 'center' ">调度编号</th>
-                    <th data-options="field: 'BatchID',width:200,align: 'center' ">批次号</th>
-                    <th data-options="field: 'PlanQuantity',width:100,align: 'center' ">计划重量</th>
-                    <th data-options="field: 'Unit',width:100,align: 'center' ">单位</th>
-                    <th data-options="field: 'BrandName',width:150,align: 'center' ">品名</th>
-                    <th data-options="field: 'PlanBeginTime',width:200,align: 'center' ">计划开始时间</th>
-                    <th data-options="field: 'PlanEndTime',width:200,align: 'center' ">计划完成时间</th>
-                    <th data-options="field: 'Type',width:100,align: 'center' ">调度类型</th>
-                </tr>
-            </thead>
-        </table>
-        <div id="ToolbarPlan" style="padding:0 10px;">
-            <a href="#" class="easyui-linkbutton">操作人确认</a>
-            <a href="#" class="easyui-linkbutton">复核人确认</a>
-            <a href="#" class="easyui-linkbutton">QA确认</a>
-            <a href="#" class="easyui-linkbutton">刷新</a>
-        </div>
         <table id="ttplan" class="easyui-datagrid" style="width:100%;height:300px;" title="批次计划明细" data-options="
-                url:'/batchManager/SearchBatchZYPlan',
-                method:'GET',
-                rownumbers:true,
-                singleSelect:true,
-                autoRowHeight:false,
-                pagination:true,
-                striped:false,
-                checkOnSelect:true,
-                selectOnCheck:true,
-                collapsible:true,
-                toolbar:'#ToolbarPlan',
-                pageSize:10">
+            url:'/batchManager/SearchBatchZYPlan',
+            method:'GET',
+            rownumbers:true,
+            singleSelect:true,
+            autoRowHeight:false,
+            pagination:true,
+            striped:false,
+            checkOnSelect:true,
+            selectOnCheck:true,
+            collapsible:true,
+            pageSize:10">
             <thead>
                 <tr>
                     <th data-options="field: 'checked',align: 'center', checkbox:'true'"></th>
@@ -123,9 +53,9 @@
                 </tr>
             </thead>
         </table>
-        <div id="tab" class="easyui-tabs" style="width:100%;height:250px;">
+        <div id="tab" class="easyui-tabs" style="width:100%;height:250px;margin-top: 10px;">
             <div title="批次任务明细" data-options="closable:false"  style="padding:0px;display:none;">
-                <table id="ttTasks" class="easyui-datagrid" style="width:100%;"  data-options="url:
+                <table id="TasksTab" class="easyui-datagrid" style="width:100%;"  data-options="url:
                 '/batchManager/SearchBatchZYTask', method: 'get', rownumbers:true, singleSelect:false, autoRowHeight:false, pagination:true, striped:true, checkOnSelect:false,
                 selectOnCheck:false, collapsible:true, pageSize:10 " >
                 <thead>
@@ -157,7 +87,7 @@
             </table>
             </div>
             <div title="批次物料明细" data-options="closable:false" style="overflow:auto;padding:0px;display:none;">
-                <table id="ttMaterials" class="easyui-datagrid" style="width:100%;" data-options="url:
+                <table id="MaterialsTab" class="easyui-datagrid" style="width:100%;" data-options="url:
                 '/ZYPlanGuid/CriticalMaterials', method: 'get', rownumbers:true, singleSelect:false, autoRowHeight:false, pagination:true, striped:true, checkOnSelect:false,
                 selectOnCheck:false, collapsible:true, pageSize:10 " >
                 <thead>
@@ -189,97 +119,26 @@
         </div>
     </div>
     <script type="text/javascript">
-        //当前日期
-        function getCurentDateStr() {
-            var now = new Date();
-            var year = now.getFullYear();       //年
-            var month = now.getMonth() + 1;     //月
-            var day = now.getDate();            //日
-            var clock = year + "-";
-            if (month < 10) clock += "0";
-            clock += month + "-";
-            if (day < 10) clock += "0";
-            clock += day;
-            return clock;
-        }
         $(function(){
-            //设置默认当前日期
-            $('#currentWorkdate').datebox('setValue', getCurentDateStr());
-            //选择工作日更新计划
-            var today = $('#currentWorkdate').datebox('getValue')
-            var selectPUID = ""
-            $('#currentWorkdate').datebox('calendar').calendar({
-                validator: function (date) {
-                    var now = new Date();
-                    var d1 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-                    return date <= d1;
-                },
-                onSelect: function(date){
-                    today = date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()
-                    $('#tt').datagrid('load',{
-                        currentWorkdate:today,
-                        PUID:selectPUID
-                    })
-                }
-            })
-            //选择工艺段更新计划
-            $("#PUID").on('change',function(){
-                selectPUID = $(this).children('option:selected').val()
-                $('#tt').datagrid('load',{
-                        currentWorkdate:today,
-                        PUID:selectPUID
-                    })
-            })
-            $('#tt').datagrid({
+            $("#TasksTab").datagrid({
                 queryParams: {
-                    currentWorkdate:today,
-                    PUID:selectPUID
+                    ID: getUrlParam('ID'),
+                    PName: getUrlParam('text')
                 },
-                rowStyler:function(index,row){
-                    if (row.TaskStatus=='任务编制'){
-                        return 'background-color:#007bff; color:white;font-weight:bold;';
-                    }
-                    if (row.TaskStatus=='任务下达'){
-                        return 'background-color:#17a2b8; color:white;font-weight:bold;';
-                    }
-                    if (row.TaskStatus=='任务新建'){
-                        return 'background-color:#009688; color:white;font-weight:bold;';
-                    }
-                    if (row.TaskStatus=='任务确认'){
-                        return 'background-color:#01aaed; color:white;font-weight:bold;';
-                    }
-                    if (row.TaskStatus=='任务执行'){
-                        return 'background-color:#2F4056; color:white;font-weight:bold;';
-                    }
-                    if (row.TaskStatus=='任务完成'){
-                        return 'background-color:#28a745; color:white;font-weight:bold;';
-                    }
-                    if (row.TaskStatus=='任务暂停'){
-                        return 'background-color:#ffc107; color:white;font-weight:bold;';
-                    }
-                    if (row.TaskStatus=='任务错误'){
-                        return 'background-color:#dc3545; color:white;font-weight:bold;';
-                    }
-                    if (row.TaskStatus=='任务中止'){
-                        return 'background-color:#6c757d; color:white;font-weight:bold;';
-                    }
-                },
-                onClickRow:function(rowIndex,rowData){
-                    //传参到批次计划明细
-                    $("#ttplan").datagrid('load',{
-                        ID:rowData.ID
-                    })
-                }
-            });
-            $("#ttplan").datagrid({
                 onClickRow:function(rowIndex,rowData){
                     //传参到批次任务明细
-                    $("#ttTasks").datagrid('load',{
+                    $("#TasksTab").datagrid('load',{
                         ID:rowData.ID
                     })
                 }
             })
         })
+        //获取页面传参
+        function getUrlParam(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+            var r = decodeURI(window.location.search).substr(1).match(reg); //匹配目标参数
+            if (r != null) return unescape(r[2]); return null; //返回参数值
+        }
         function formatterStatus(value, row, index){
             if (value == 10){
                 return '新增计划'
