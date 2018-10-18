@@ -513,19 +513,18 @@ def menuToUser():
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
-# 加载工作台
-# 左右滑动添加
-@app.route('/batchmanager')  # 批次管理
+# 批次管理
+@app.route('/batchmanager')
 def batchmanager():
-    productUnit_ID = db_session.query(ProcessUnit.ID, ProcessUnit.PUName).all()
-    data = []
-    for tu in productUnit_ID:
-        li = list(tu)
-        id = li[0]
-        name = li[1]
-        pro_unit_id = {'ID': id, 'text': name}
-        data.append(pro_unit_id)
-    return render_template('batch_manager.html',Product_unit_ID=data)
+    # productUnit_ID = db_session.query(ProcessUnit.ID, ProcessUnit.PUName).all()
+    # data = []
+    # for tu in productUnit_ID:
+    #     li = list(tu)
+    #     id = li[0]
+    #     name = li[1]
+    #     pro_unit_id = {'ID': id, 'text': name}
+    #     data.append(pro_unit_id)
+    return render_template('batch_manager.html')
 
 #批次管理查询计划
 @app.route('/batchManager/SearchBatchManager')
