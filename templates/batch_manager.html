@@ -16,7 +16,7 @@
 </head>
 <body>
     <div class="container" style="margin:3px;">
-        <table id="ttplan" class="easyui-datagrid" style="width:100%;height:300px;" title="批次计划明细" data-options="
+        <table id="planTab" class="easyui-datagrid" style="width:100%;height:300px;" title="批次计划明细" data-options="
             url:'/batchManager/SearchBatchZYPlan',
             method:'GET',
             rownumbers:true,
@@ -120,10 +120,10 @@
     </div>
     <script type="text/javascript">
         $(function(){
-            $("#TasksTab").datagrid({
+            $("#planTab").datagrid({
                 queryParams: {
                     ID: getUrlParam('ID'),
-                    PName: getUrlParam('text')+"段"
+                    PName: getUrlParam('name')+"段"
                 },
                 onClickRow:function(rowIndex,rowData){
                     //传参到批次任务明细
