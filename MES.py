@@ -568,9 +568,11 @@ def SearchBatchZYPlan():
                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
                 ID = data["ID"]
+                PName = data["PName"]
                 planMa = db_session.query(PlanManager).filter(PlanManager.ID == ID).first()
-                total = db_session.query(ZYPlan.ID).filter(ZYPlan.BatchID == planMa.BatchID).count()
-                zYPlans = db_session.query(ZYPlan).filter(ZYPlan.BatchID == planMa.BatchID).order_by(desc("EnterTime")).all()[
+                PUID = db_session.query(ProductUnitRoute.PUID).filter(ProductUnitRoute.PDUnitRouteName == PName, ProductUnitRoute.ProductRuleID == planMa.BrandID).first()
+                total = db_session.query(ZYPlan.ID).filter(ZYPlan.BatchID == planMa.BatchID, ZYPlan.PUID == PUID[0]).count()
+                zYPlans = db_session.query(ZYPlan).filter(ZYPlan.BatchID == planMa.BatchID, ZYPlan.PUID == PUID[0]).order_by(desc("EnterTime")).all()[
                           inipage:endpage]
                 jsonzyplans = json.dumps(zYPlans, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonzyplans = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonzyplans + "}"
