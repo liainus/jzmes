@@ -5340,7 +5340,7 @@ def PUIDChargeBatchMaterielBalance():
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 # #查询待办
-@app.route("maindaiban")
+@app.route('/maindaiban')
 def maindaiban():
     if request.method == 'POST':
         data = request.values
