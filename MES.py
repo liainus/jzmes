@@ -25,7 +25,7 @@ from Model.core import Enterprise, Area, Factory, ProductLine, ProcessUnit, Equi
     OpcServer, Pequipment, WorkFlowStatus, WorkFlowEventZYPlan, WorkFlowEventPlan, \
     OpcTag, CollectParamsTemplate, CollectParams, Collectionstrategy, CollectTask, \
     CollectTaskCollection, ReadyWork, NodeIdNote, ProductUnitRoute
-from Model.system import Role, Organization, User, Menu, Role_Menu
+from Model.system import Role, Organization, User, Menu, Role_Menu, BatchMaterielBalance
 from tools.MESLogger import MESLogger
 from Model.core import SysLog
 from sqlalchemy import func
@@ -5279,6 +5279,61 @@ def electronicBatchRecord():
 @app.route('/QAauthPass')
 def QApass():
     return render_template('QAPassAuth.html')
+
+#批物料平衡审核人确认
+@app.route('/CheckedBatchMaterielBalance')
+def CheckedBatchMaterielBalance():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 2:
+                ID = data['ID']  # 计划ID
+                PName = data['PName']  # 工艺段名称
+                CheckedSuggestion = data['CheckedSuggestion']  # 审核意见
+                DeviationDescription = data['DeviationDescription']  # 偏差说明
+                PMClass = db_session.query(PlanManager).filter(PlanManager.ID == ID).first()
+                PUID = db_session.query(ProductUnitRoute.PUID).filter(ProductUnitRoute.PDUnitRouteName == PName, ProductUnitRoute.ProductRuleID == PMClass.BrandID).first()
+                db_session.add(
+                    BatchMaterielBalance(
+                        PlanManagerID=PMClass.ID,
+                        DeviationDescription=DeviationDescription,
+                        CheckedSuggestion=CheckedSuggestion,
+                        CheckedPerson=current_user.Name,
+                        OperationDate=datetime.datetime.now()
+                    ))
+                db_session.commit()
+        except Exception as e:
+            db_session.rollback()
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "批物料平衡审核人确认报错Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+#批物料平衡工序负责人确认
+@app.route('/CheckedBatchMaterielBalance')
+def CheckedBatchMaterielBalance():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 2:
+                ID = data['ID']  # 计划ID
+                PName = data['PName']  # 工艺段名称
+                OperationSpaceNum = data['OperationSpaceNum']  # 操作间编号
+                PMClass = db_session.query(PlanManager).filter(PlanManager.ID == ID).first()
+                PUID = db_session.query(ProductUnitRoute.PUID).filter(ProductUnitRoute.PDUnitRouteName == PName, ProductUnitRoute.ProductRuleID == PMClass.BrandID).first()
+                oclass = db_session.query(BatchMaterielBalance).filter(BatchMaterielBalance.PlanManagerID == PMClass.ID, BatchMaterielBalance.PUID == PUID)
+                oclass.PUIDChargePerson = current_user.Name
+                oclass.OperationSpaceNum = OperationSpaceNum
+                oclass.OperationDate = datetime.datetime.now()
+                db_session.commit()
+        except Exception as e:
+            db_session.rollback()
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "批物料平衡工序负责人确认报错Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 
 def getExcel(file, method='r'):
