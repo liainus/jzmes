@@ -5311,8 +5311,8 @@ def CheckedBatchMaterielBalance():
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 #批物料平衡工序负责人确认
-@app.route('/CheckedBatchMaterielBalance')
-def CheckedBatchMaterielBalance():
+@app.route('/PUIDChargeBatchMaterielBalance')
+def PUIDChargeBatchMaterielBalance():
     if request.method == 'POST':
         data = request.values
         try:
