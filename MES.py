@@ -5325,6 +5325,8 @@ def PUIDChargeBatchMaterielBalance():
                 PMClass = db_session.query(PlanManager).filter(PlanManager.ID == ID).first()
                 PUID = db_session.query(ProductUnitRoute.PUID).filter(ProductUnitRoute.PDUnitRouteName == PName, ProductUnitRoute.ProductRuleID == PMClass.BrandID).first()
                 oclass = db_session.query(BatchMaterielBalance).filter(BatchMaterielBalance.PlanManagerID == PMClass.ID, BatchMaterielBalance.PUID == PUID)
+                if(oclass == None):
+                    return "请先进行批物料平衡审核人确认！"
                 oclass.PUIDChargePerson = current_user.Name
                 oclass.OperationSpaceNum = OperationSpaceNum
                 oclass.OperationDate = datetime.datetime.now()
@@ -5337,6 +5339,26 @@ def PUIDChargeBatchMaterielBalance():
             insertSyslog("error", "批物料平衡工序负责人确认报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
+# #查询待办
+@app.route("maindaiban")
+def maindaiban():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            Name = current_user.Name
+            db_session.commit()
+            return 'OK'
+        except Exception as e:
+            db_session.rollback()
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "批物料平衡工序负责人确认报错Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+# 收粉监控画面
+@app.route('/processMonitorLineCollect')
+def processMonitorLineCollect():
+    return render_template('processMonitorLineCollect.html')
 
 def getExcel(file, method='r'):
     '''
