@@ -5303,6 +5303,7 @@ def CheckedBatchMaterielBalance():
                         OperationDate=datetime.datetime.now()
                     ))
                 db_session.commit()
+                return 'OK'
         except Exception as e:
             db_session.rollback()
             print(e)
@@ -5328,6 +5329,7 @@ def PUIDChargeBatchMaterielBalance():
                 oclass.OperationSpaceNum = OperationSpaceNum
                 oclass.OperationDate = datetime.datetime.now()
                 db_session.commit()
+                return 'OK'
         except Exception as e:
             db_session.rollback()
             print(e)
