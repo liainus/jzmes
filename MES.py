@@ -41,6 +41,7 @@ import socket
 from opcua import Client
 from Model.dynamic_model import make_dynamic_classes
 import Model.node
+from threading import Timer
 
 #flask_login的初始化
 login_manager = LoginManager()
@@ -4614,6 +4615,17 @@ def jwxspflowtu():
 @app.route('/ZYPlanGuid/processMonitorLineDetails')
 def processMonitorLineDetails():
     return render_template('processMonitorLineDetails.html')
+
+def GetEquipmentData():
+    # productUnit = db_session.query(ProductUnit.ID).filter_by(PDUnitName='前处理段')
+    # PUID = db_session.query(Equipment.PUID).filter_by(PUID=)
+    # ProcessSection = db_session.query(Equipment.Equipment_State).all()
+    pass
+
+def Productmonitor():
+    t = Timer(2, GetEquipmentData)
+    t.start()
+app.add_template_global(Productmonitor, 'Productmonitor')
 
 #操作人确认
 @app.route('/ZYPlanGuid/operateConfirm', methods=['POST', 'GET'])
