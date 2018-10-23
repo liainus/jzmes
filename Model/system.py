@@ -254,6 +254,35 @@ class Organization(Base):
     # 显示图标:
     Color = Column(Unicode(40), primary_key=False, autoincrement=False, nullable=True)
 
+# 批物料平衡
+class BatchMaterielBalance(Base):
+    __tablename__ = 'BatchMaterielBalance'
+    # id:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+    # 计划ID:
+    PlanManagerID = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
+
+    # 工艺段ID:
+    PUID = Column(Integer, nullable=False, primary_key=False)
+
+    # 偏差说明:
+    DeviationDescription = Column(String(800), primary_key=False, autoincrement=False, nullable=True)
+
+    # 审核意见:
+    CheckedSuggestion = Column(Unicode(800), primary_key=False, autoincrement=False, nullable=True)
+
+    # 审核人:
+    CheckedPerson = Column(Unicode(20), primary_key=False, autoincrement=False, nullable=True)
+
+    # 工序负责人:
+    PUIDChargePerson = Column(Unicode(20), primary_key=False, autoincrement=False, nullable=True)
+
+    # 操作间编号:
+    OperationSpaceNum = Column(Unicode(20), primary_key=False, autoincrement=False, nullable=True)
+
+    # 操作时间:
+    OperationDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
 
 
 
