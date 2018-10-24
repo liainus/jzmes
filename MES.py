@@ -5351,15 +5351,20 @@ def PUIDChargeBatchMaterielBalance():
             insertSyslog("error", "批物料平衡工序负责人确认报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
-# #查询待办
+#查询待办
 @app.route('/maindaiban')
 def maindaiban():
-    if request.method == 'POST':
+    if request.method == 'GET':
         data = request.values
         try:
             Name = current_user.Name
-            db_session.commit()
-            return 'OK'
+            roleclass = db_session.query(Role).join(User, Role.RoleName == User.RoleName).filter(User.Name == Name).all()
+            for rol in roleclass:
+                return json.dumps(rol, cls=AlchemyEncoder, ensure_ascii=False)
+                Role_Menuclass = db_session.query(Role_Menu).filter(Role_Menu.Role_ID == rol.ID).all()
+                for men in Role_Menuclass:
+                    db_session.query(Menu).filter()
+            return json.dumps(roleclass, cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             db_session.rollback()
             print(e)
