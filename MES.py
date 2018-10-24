@@ -5364,7 +5364,7 @@ def maindaiban():
                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
                 Name = current_user.Name
-                total = db_session.query(PlanManager).filter(PlanManager.PlanStatus == "70").count()
+                total = db_session.query(PlanManager.ID).filter(PlanManager.PlanStatus == "70").count()
                 oclass = db_session.query(PlanManager).filter(PlanManager.PlanStatus == "70").order_by(desc("PlanBeginTime")).all()[inipage:endpage]
                 jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
                 return '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
