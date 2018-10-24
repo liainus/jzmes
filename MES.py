@@ -5361,8 +5361,8 @@ def maindaiban():
             if len(json_str) > 2:
                 pages = int(data['offset'])  # 页数
                 rowsnumber = int(data['limit'])  # 行数
-                inipage = (pages - 1) * rowsnumber + 0  # 起始页
-                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+                inipage = pages * rowsnumber + 0  # 起始页
+                endpage = pages * rowsnumber + rowsnumber  # 截止页
                 Name = current_user.Name
                 total = db_session.query(PlanManager.ID).filter(PlanManager.PlanStatus == "70").count()
                 oclass = db_session.query(PlanManager).filter(PlanManager.PlanStatus == "70").order_by(desc("PlanBeginTime")).all()[inipage:endpage]
