@@ -35,7 +35,7 @@
     <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
 </head>
 <body>
-    <div class="content">
+    <div class="content clearfix">
         <div class="col-md-12">
             <div class="row AgencyArea">
                 <div class="col-md-2">
@@ -63,7 +63,7 @@
                         height="280px" width="100%" scrolling="auto"></iframe>
                 </div>
                 <div class="col-md-5" style="height: 300px;border-radius: 3px;padding-right: 0">
-                    <div class="panel panel-widget">
+                    <div class="panel panel-widget" style="height: 100%;">
                       <div class="panel-heading">制药计划待处理列表<a href="javascript:;" id="toZYPlanManage" style="float: right">点击进行管理</a></div>
                       <div class="panel-body">
                         <table class="table table-striped" id="planTable">
@@ -73,15 +73,23 @@
                 </div>
             </div>
         </div>
-        <div class="center-items chart1">
-            <div class="chart1-inner">
-                <div class="item-hd">产量数据</div>
-                <div style="height:280px;width:100%">
-                    <iframe class="page-iframe" src="../static/Highcharts-4.0.3/examples/dynamic-update/index.htm" frameborder="no" border="no" height="100%"
-                        width="100%" scrolling="auto"></iframe>
-                </div>
-            </div>
-        </div>
+{#        <div class="col-md-12">#}
+{#            <div class="row">#}
+{#                <div class="col-md-5" style="height:300px;border-radius: 3px;padding-left: 0">#}
+{#                    <div class="panel panel-widget">#}
+{#                      <div class="panel-heading">设备信息<a href="javascript:;" id="toZYPlanManage" style="float: right">点击进行管理</a></div>#}
+{#                      <div class="panel-body">#}
+{#                        <table class="table table-striped" id="planTable">#}
+{#                        </table>#}
+{#                      </div>#}
+{#                    </div>#}
+{#                </div>#}
+{#                <div class="col-md-7" style="height: 300px;border-radius: 3px;background: #fff;">#}
+{#                    <iframe class="page-iframe" src="../static/Highcharts-4.0.3/examples/dynamic-update/index.htm" frameborder="no" border="no" height="100%"#}
+{#                        width="100%" scrolling="auto"></iframe>#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
     </div>
     <script type="text/javascript">
         //chart0
