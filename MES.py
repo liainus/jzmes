@@ -5359,8 +5359,8 @@ def maindaiban():
         try:
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 2:
-                pages = int(data['page'])  # 页数
-                rowsnumber = int(data['rows'])  # 行数
+                pages = int(data['offset'])  # 页数
+                rowsnumber = int(data['limit'])  # 行数
                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
                 Name = current_user.Name
