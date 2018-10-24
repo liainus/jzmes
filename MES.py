@@ -5357,14 +5357,23 @@ def maindaiban():
     if request.method == 'GET':
         data = request.values
         try:
-            Name = current_user.Name
-            roleclass = db_session.query(Role).join(User, Role.RoleName == User.RoleName).filter(User.Name == Name).all()
-            for rol in roleclass:
-                return json.dumps(rol, cls=AlchemyEncoder, ensure_ascii=False)
-                Role_Menuclass = db_session.query(Role_Menu).filter(Role_Menu.Role_ID == rol.ID).all()
-                for men in Role_Menuclass:
-                    db_session.query(Menu).filter()
-            return json.dumps(roleclass, cls=AlchemyEncoder, ensure_ascii=False)
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 2:
+                pages = int(data['page'])  # 页数
+                rowsnumber = int(data['rows'])  # 行数
+                inipage = (pages - 1) * rowsnumber + 0  # 起始页
+                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+                Name = current_user.Name
+                total = db_session.query(PlanManager).filter(PlanManager.PlanStatus != "70").count()
+                oclass = db_session.query(PlanManager).filter(PlanManager.PlanStatus != "70").order_by(desc("PlanBeginTime")).all()[inipage:endpage]
+                jsonoclass = json.dumps(oclass, cls=Model.BSFramwork.AlchemyEncoder,ensure_ascii=False)
+                jsonoclass = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
+                return jsonoclass
+                roleclass = db_session.query(Role).join(User, Role.RoleName == User.RoleName).filter(User.Name == Name).all()
+                for rol in roleclass:
+                    Role_Menuclass = db_session.query(Role_Menu).filter(Role_Menu.Role_ID == rol.ID).all()
+                    for men in Role_Menuclass:
+                        db_session.query(Menu).filter()
         except Exception as e:
             db_session.rollback()
             print(e)
