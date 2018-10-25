@@ -5414,12 +5414,11 @@ def maindaiban():
             # rowsnumber = int(data['limit'])  # 行数
             # inipage = pages * rowsnumber + 0  # 起始页
             # endpage = pages * rowsnumber + rowsnumber  # 截止页
-            Name = current_user.Name
-            total = db_session.query(PlanManager.ID).filter(PlanManager.PlanStatus != "70").count()
+            # Name = current_user.Name
             oclass = db_session.query(PlanManager).filter(PlanManager.PlanStatus != "70").order_by(
                 desc("PlanBeginTime")).all()
-            jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
-            return '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
+            print(json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False))
+            return json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
             # roleclass = db_session.query(Role).join(User, Role.RoleName == User.RoleName).filter(User.Name == Name).all()
             # for rol in roleclass:
             #     Role_Menuclass = db_session.query(Role_Menu).filter(Role_Menu.Role_ID == rol.ID).all()

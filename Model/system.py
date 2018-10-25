@@ -285,6 +285,27 @@ class BatchMaterielBalance(Base):
     OperationDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
 
 
+# 操作手册
+class OperationManual(Base):
+    __tablename__ = 'OperationManual'
+    # id:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+    # 手册名称:
+    ManualName = Column(String(800), primary_key=False, autoincrement=False, nullable=True)
+
+    # 手册文件:
+    ManualFile = Column(String(800), primary_key=False, autoincrement=False, nullable=True)
+
+    # 描述:
+    Description = Column(String(800), primary_key=False, autoincrement=False, nullable=True)
+
+    # 类型:
+    Type = Column(String(800), primary_key=False, autoincrement=False, nullable=True)
+
+    # 操作时间:
+    UploadDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+
 
 # 生成表单的执行语句
 Base.metadata.create_all(engine)
