@@ -81,7 +81,7 @@
                     <div class="panel panel-widget" style="height: 100%;">
                       <div class="panel-heading">制药计划待处理列表<a href="javascript:;" id="toZYPlanManage" style="float: right">点击进行管理</a></div>
                       <div class="panel-body">
-                        <table class="table" id="planTable"></table>
+                        <table id="planTable"></table>
                       </div>
                     </div>
                 </div>
@@ -111,18 +111,7 @@
             $("#planTable").bootstrapTable({
                 url:'/maindaiban',
                 method: 'get',
-                height:400,
-                //dataField: "rows",//服务端返回数据键值 就是说记录放的键值是rows，分页时使用总记录数的键值为total
-                //pageSize: 5,//单页记录数s
-                //pageList: [5, 10, 20, 50],//分页步进值
-                //sidePagination: "server",//服务端分页
-                dataType: "json",
-                cache: true,
-                //queryParamsType : "undefined",
-                queryParams: function queryParams(params) {   //设置查询参数
-                    var param = {};
-                    return param;
-                },
+                height:320,
                 columns: [{
                     field: 'BrandName',
                     title: '品名'
