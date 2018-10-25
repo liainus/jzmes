@@ -3680,11 +3680,20 @@ class NodeIdNote(Base):
 	# Note
 	Note = Column(Unicode(32), nullable=True)
 
+
 # all = session.query(OpcTag).all()
 # print(all)
 # for oclass in all:
 # 	session.delete(oclass)
 # 	session.commit()
+#equipment.BrandOpcTag, task.BrandName
+# equipment.BatchOpcTag, task.BatchID
+# first = session.query(Equipment.BrandOpcTag).filter_by(EQPCode='R1101-1').first()
+# second = session.query(ZYTask.BrandName).first()
+# print(first,second)
+# first = session.query(Equipment.BatchOpcTag).filter_by(EQPCode='R1101-1').first()
+# second = session.query(ZYTask.BatchID).first()
+# print(first,second)
 # 生成表单的执行语句
 Base.metadata.create_all(engine)
 

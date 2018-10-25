@@ -6,434 +6,188 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>工作台</title>
     <link href="../static/css/base.css" rel="stylesheet">
-    <link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
-    <link rel="stylesheet" href="../static/css/workbench.css">
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/css/bootstrap-table.min.css">
+    <style>
+        .content{
+            background: #f5f5f5;
+            padding:20px;
+        }
+        .AgencyArea{
+            position: relative;
+            background: #fff;
+            color: #76747a;
+            font-size: 14px;
+            border-radius: 3px;
+            padding: 12px 0;
+            margin-bottom:10px;
+            text-align: center;
+        }
+        .AgencyArea .col-md-2:hover{
+            cursor: pointer;
+        }
+        .AgencyArea h3{
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .AgencyArea .AgencyArea-item:nth-child(4n+1) h3{
+            color: #46b8da;
+        }
+        .AgencyArea .AgencyArea-item:nth-child(4n+2) h3{
+            color: #f0ad4e;
+        }
+        .AgencyArea .AgencyArea-item:nth-child(4n+3) h3{
+            color: #5cb85c;
+        }
+        .AgencyArea .AgencyArea-item:nth-child(4n) h3{
+            color: #337ab7;
+        }
+    </style>
+    <script type="text/javascript" src="../static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootstrap-table.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootstrap-table-zh-CN.min.js"></script>
+    <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
 </head>
 <body>
-    <div class="container">
-        <div id="hd">
-
+    <div class="content clearfix">
+        <div class="col-md-12">
+            <div class="row AgencyArea">
+                <div class="col-md-2 AgencyArea-item" skip-src="/ZYPlanGuid/checkplanmanager" title="审核计划">
+                    <h3>1</h3>
+                    <span><i class="glyphicon glyphicon-check"></i> 计划待审核</span>
+                </div>
+                <div class="col-md-2 AgencyArea-item" skip-src="/ZYPlanGuid/planmanager" title="下发计划">
+                    <h3>2</h3>
+                    <span><i class="glyphicon glyphicon-send"></i> 计划待下发</span>
+                </div>
+                <div class="col-md-2 AgencyArea-item" skip-src="/QAauthPass" title="QA放行">
+                    <h3>1</h3>
+                    <span><i class="glyphicon glyphicon-log-out"></i> 计划待放行</span>
+                </div>
+                <div class="col-md-2 AgencyArea-item" skip-src="/BatchMaterielBalanceStatistic" title="批物料平衡统计">
+                    <h3>5</h3>
+                    <span><i class="glyphicon glyphicon-pencil"></i> 物料平衡待确认</span>
+                </div>
+            </div>
         </div>
-        <div id="bd">
-            <div class="bd-content">
-{#                <div class="right-zone">#}
-{#                    <div class="inform item-box">#}
-{#                        <div class="inform-hd">#}
-{#                            <label>通知公告</label>#}
-{#                            <a href="javascript:;">更多<span>&gt;</span></a>#}
-{#                        </div>#}
-{#                        <ul>#}
-{#                            <li>#}
-{#                                <span></span>#}
-{#                                <a href="javascript:;" class="ellipsis" onclick="$('#dlgAdd1').dialog('open')">以人为本 用心创新 ——“江中元素”闪耀首届中国药品零售经营创新峰会<i></i></a>#}
-{#                                <label>04-13</label>#}
-{#                            </li>#}
-{#                            <li>#}
-{#                                <span></span>#}
-{#                                <a href="javascript:;" class="ellipsis" onclick="$('#dlgAdd2').dialog('open')">首届全国中医药教育国际化研讨会在南昌举行<i></i></a>#}
-{#                                <label>04-12</label>#}
-{#                            </li>#}
-{##}
-{##}
-{#                        </ul>#}
-{#                    </div>#}
-{#                    <div class="price item-box">#}
-{#                        <div class="inform-hd">#}
-{#                            <label>新闻</label>#}
-{#                            <a href="javascript:;">更多<span>&gt;</span></a>#}
-{#                        </div>#}
-{#                        <ul>#}
-{#                            <li>#}
-{#                                <span></span>#}
-{#                                <a href="javascript:;" class="ellipsis" onclick="$('#dlgAdd1').dialog('open')">外国政要谈习近平治国理政思想研讨会暨习近平中医药发展思想座谈会</a>#}
-{#                                <label>04-13</label>#}
-{#                            </li>#}
-{#                            <li>#}
-{#                                <span></span>#}
-{#                                <a href="javascript:;" class="ellipsis" onclick="$('#dlgAdd1').dialog('open')">全国中医药工作座谈会与会代表观摩考察江中药谷实地学习领会习近平总书记重要指示精神</a>#}
-{#                                <label>04-12</label>#}
-{#                            </li>#}
-{#                            <li>#}
-{#                                <span></span>#}
-{#                                <a href="javascript:;" class="ellipsis" onclick="$('#dlgAdd1').dialog('open')">世界领袖论坛江中首倡吃出健康 获外国政要点赞</a>#}
-{#                                <label>04-11</label>#}
-{#                            </li>#}
-{##}
-{#                        </ul>#}
-{#                    </div>#}
-{#                    <div class="attached item-box">#}
-{#                        <div class="inform-hd">#}
-{#                            <label>常用文件下载</label>#}
-{#                            <!--<a href="javascript:;">更多<span>&gt;</span></a>-->#}
-{#                        </div>#}
-{#                        <div class="attached-tab">#}
-{#                            <a href="javascript:;" class="current item-left" attached="public-attached">GMP认证</a>#}
-{#                            <a href="javascript:;" class="item-right" attached="inner-attached">设备管理</a>#}
-{#                        </div>#}
-{#                        <ul class="public-attached">#}
-{#                            <li>#}
-{#                                <span></span>#}
-{#                                <a href="javascript:;" class="ellipsis">GMP认证流程及资料</a>#}
-{#                            </li>#}
-{#                            <li>#}
-{#                                <span></span>#}
-{#                                <a href="javascript:;" class="ellipsis">新版GMP认证检查内容 </a>#}
-{#                            </li>#}
-{#                            <li>#}
-{#                                <span></span>#}
-{#                                <a href="javascript:;" class="ellipsis">中药饮片GMP认证检查项目</a>#}
-{#                            </li>#}
-{#                            <li>#}
-{#                                <span></span>#}
-{#                                <a href="javascript:;" class="ellipsis">GMP认证管理办法 </a>#}
-{#                            </li>#}
-{#                            <li>#}
-{#                                <span></span>#}
-{#                                <a href="javascript:;" class="ellipsis">药品GMP认证申报资料模板 </a>#}
-{#                            </li>#}
-{#                        </ul>#}
-{#                        <ul class="inner-attached hide">#}
-{#                            <li>#}
-{#                                <span></span>#}
-{#                                <a href="javascript:;" class="ellipsis">提取罐操作手册</a>#}
-{#                            </li>#}
-{#                            <li>#}
-{#                                <span></span>#}
-{#                                <a href="javascript:;" class="ellipsis">浓缩罐操作手册</a>#}
-{#                            </li>#}
-{##}
-{#                        </ul>#}
-{#                    </div>#}
-{#                </div>#}
-                <div class="center-part">
-                    <div class="center-items todo">
-                        <!--<div class="calendar-part">
-                             <div class="easyui-calendar" style="width:205px;height:231px;"></div>
-                        </div>-->
-                        <ul class="work-items clearfix">
-                            <li>
-                                <div class="work-inner">
-                                    <div class="work-item green">
-                                        <i class="iconfont">&#xe61f;</i>
-                                        <span class="num">生产计划<span class="unit"> </span></span>
-                                        <label>生产计划</label>
-                                    </div>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="work-inner">
-                                    <div class="work-item red">
-                                        <i class="iconfont">&#xe622;</i>
-                                        <span class="num">故障信息&nbsp;<span class="unit"> </span></span>
-                                        <label>故障信息</label>
-                                    </div>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="work-inner">
-                                    <div class="work-item yellow">
-                                        <i class="iconfont">&#xe61d;</i>
-                                        <span class="num">生产数据&nbsp;<span class="unit"> </span></span>
-                                        <label>生产数据</label>
-                                    </div>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="work-inner">
-                                    <div class="work-item blue">
-                                        <i class="iconfont">&#xe621;</i>
-                                        <span title="2000,00万" class="num">库存信息&nbsp;<span class="unit"> </span></span>
-                                        <label>库存信息</label>
-                                    </div>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="work-inner">
-                                    <div class="work-item purple">
-                                        <i class="iconfont">&#xe61e;</i>
-                                        <span title="2000,00万" class="num">设备信息&nbsp;<span class="unit"> </span></span>
-                                        <label>设备信息</label>
-                                    </div>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="work-inner">
-                                    <div class="work-item gray">
-                                        <i class="iconfont">&#xe620;</i>
-                                        <span class="num">能耗信息&nbsp;<span class="unit"> </span></span>
-                                        <label>能耗信息</label>
-                                    </div>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="center-items chart0 clearfix">
-                        <div style="float:left;height:300px;width:100%">
-                            <iframe class="page-iframe" src="../static/Highcharts-4.0.3/examples/column-drilldown/index_height.htm" frameborder="no" border="no"
-                                height="280px" width="100%" scrolling="auto"></iframe>
-                        </div>
-                        <!--                         <div class="chart0-item">
-                            <div class="item-inner">
-                                <div class="item-content">
-                                    <div class="content-hd">货源风险</div>
-                                    <div class="chart-chart" id="chart0"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="chart0-item">
-                            <div class="item-inner">
-                                <div class="item-content">
-                                    <div class="content-hd">交货准确率</div>
-                                    <div class="chart-chart" id="chart1"></div>
-                                </div>
-                            </div>
-                        </div> -->
-                    </div>
-                    <div class="center-items chart1">
-                        <div class="chart1-inner">
-                            <div class="item-hd">产量数据</div>
-                            <div style="height:280px;width:100%">
-                                <iframe class="page-iframe" src="../static/Highcharts-4.0.3/examples/dynamic-update/index.htm" frameborder="no" border="no" height="100%"
-                                    width="100%" scrolling="auto"></iframe>
-                            </div>
-                            <!--  <div class="chart1-chart" id="chart3"></div> -->
-                        </div>
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-7" style="height:400px;background: #fff;border-radius: 3px;">
+                    <iframe class="page-iframe" src="../static/Highcharts-4.0.3/examples/column-drilldown/index_height.htm" frameborder="no" border="no"
+                        height="280px" width="100%" scrolling="auto"></iframe>
+                </div>
+                <div class="col-md-5" style="height: 400px;border-radius: 3px;padding-right: 0">
+                    <div class="panel panel-widget" style="height: 100%;">
+                      <div class="panel-heading">制药计划待处理列表<a href="javascript:;" id="toZYPlanManage" style="float: right">点击进行管理</a></div>
+                      <div class="panel-body">
+                        <table class="table" id="planTable">
+                        </table>
+                      </div>
                     </div>
                 </div>
             </div>
         </div>
-
-        <div id="ft"></div>
+{#        <div class="col-md-12">#}
+{#            <div class="row">#}
+{#                <div class="col-md-5" style="height:300px;border-radius: 3px;padding-left: 0">#}
+{#                    <div class="panel panel-widget">#}
+{#                      <div class="panel-heading">设备信息<a href="javascript:;" id="toZYPlanManage" style="float: right">点击进行管理</a></div>#}
+{#                      <div class="panel-body">#}
+{#                        <table class="table table-striped" id="planTable">#}
+{#                        </table>#}
+{#                      </div>#}
+{#                    </div>#}
+{#                </div>#}
+{#                <div class="col-md-7" style="height: 300px;border-radius: 3px;background: #fff;">#}
+{#                    <iframe class="page-iframe" src="../static/Highcharts-4.0.3/examples/dynamic-update/index.htm" frameborder="no" border="no" height="100%"#}
+{#                        width="100%" scrolling="auto"></iframe>#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
     </div>
-    <div class="todo-panel">
-        <div class="todo-title">
-            <i class="iconfont">&#xe61f;</i>
-            <span class="num">14&nbsp;<span class="unit">个</span></span>
-            <label>待办事项</label>
-        </div>
-        <div class="todo-items">
-            <ul>
-                <li>
-                    <span></span>
-                    <a href="javascript:;" class="ellipsis">您有<span>2条</span>供应商开发申请未处理<i></i></a>
-                    <label>04-13</label>
-                </li>
-                <li>
-                    <span></span>
-                    <a href="javascript:;" class="ellipsis">您有<span>10条</span>供应商开发申请未处理<i></i></a></a>
-                    <label>04-13</label>
-                </li>
-                <li>
-                    <span></span>
-                    <a href="javascript:;" class="ellipsis">您有<span>0条</span>供应商开发申请未处理，请及时审批<i></i></a></a>
-                    <label>04-13</label>
-                </li>
-                <li>
-                    <span></span>
-                    <a href="javascript:;" class="ellipsis">您有<span>1条</span>供应商开发申请未处理，请及时审批</a></a>
-                    <label>04-13</label>
-                </li>
-                <li>
-                    <span></span>
-                    <a href="javascript:;" class="ellipsis">您有<span>4条</span>供应商开发申请未处理，请及时审批</a></a>
-                    <label>04-13</label>
-                </li>
-                <li>
-                    <span></span>
-                    <a href="javascript:;" class="ellipsis">您有<span>6条</span>供应商开发申请未处理，请及时审批，未处理会导致失效</a></a>
-                    <label>04-13</label>
-                </li>
-                <li>
-                    <span></span>
-                    <a href="javascript:;" class="ellipsis">您有<span>2条</span>供应商开发申请未处理，请及时审批，未处理会导致失效</a></a>
-                    <label>04-13</label>
-                </li>
-                <li>
-                    <span></span>
-                    <a href="javascript:;" class="ellipsis">您有<span>2条</span>供应商开发申请未处理，请及时审批，未处理会导致失效</a></a>
-                    <label>04-13</label>
-                </li>
-                <li>
-                    <span></span>
-                    <a href="javascript:;" class="ellipsis">您有<span>2条</span>供应商开发申请未处理，请及时审批，未处理</a></a>
-                    <label>04-13</label>
-                </li>
-                <li>
-                    <span></span>
-                    <a href="javascript:;" class="ellipsis">您有<span>2条</span>供应商开发申请未处理，请及时审批，未处理会导致失效</a></a>
-                    <label>04-13</label>
-                </li>
-                <li>
-                    <span></span>
-                    <a href="javascript:;" class="ellipsis">您有<span>2条</span>供应商开发申请未处理，未处理会导致失效</a></a>
-                    <label>04-13</label>
-                </li>
-                <li>
-                    <span></span>
-                    <a href="javascript:;" class="ellipsis">您有<span>2条</span>开发申请未处理，请及时审批，未处理会导致失效</a></a>
-                    <label>04-13</label>
-                </li>
-                <li>
-                    <span></span>
-                    <a href="javascript:;" class="ellipsis">您有<span>2条</span>供应商开发申请未处理，请及时审批，未处理会导致失效</a></a>
-                    <label>04-13</label>
-                </li>
-                <li>
-                    <span></span>
-                    <a href="javascript:;" class="ellipsis">您有<span>2条</span>供应商开发申请未处理，请及时审批，会导致失效</a></a>
-                    <label>04-13</label>
-                </li>
-                <li>
-                    <span></span>
-                    <a href="javascript:;" class="ellipsis">您有<span>2条</span>供应商开发申请未处理，请及时审批，未处理</a></a>
-                    <label>04-13</label>
-                </li>
-                <li>
-                    <span></span>
-                    <a href="javascript:;" class="ellipsis">您有<span>2条</span>供应商开发申请未处理，请及时审批</a></a>
-                    <label>04-13</label>
-                </li>
-            </ul>
-        </div>
-
-    </div>
-    <script type="text/javascript" src="../static/custom/jquery.min.js"></script>
-    <script type="text/javascript" src="../static/custom/jquery.easyui.min.js"></script>
-    <!-- <script type="text/javascript" src="js/menu.js"></script> -->
-    <script type="text/javascript" src="../static/js/echarts-all.js"></script>
-
-
-
-
     <script type="text/javascript">
         //chart0
-
         $(document).ready(function () {
+            $("#planTable").bootstrapTable({
+                url:'/maindaiban',
+                dataField: "rows",//服务端返回数据键值 就是说记录放的键值是rows，分页时使用总记录数的键值为total
+                pagination: true,//是否分页
+                pageSize: 10,//单页记录数
+                pageList: [5, 10, 20, 50],//分页步进值
+                sidePagination: "server",//服务端分页
+                sortable: true,
+                columns: [{
+                    field: 'BrandName',
+                    title: '品名'
+                }, {
+                    field: 'BatchID',
+                    title: '批次号'
+                }, {
+                    field: 'PlanStatus',
+                    title: '计划状态',
+                    formatter:function(value,row,index){
+                        if (value == 10){
+                            return '新增计划'
+                        }else if(value == 11){
+                            return '审核计划'
+                        }else if(value == 20){
+                            return '下发计划'
+                        }else if(value == 40){
+                            return '撤回计划'
+                        }else if(value == 50){
+                            return '执行计划'
+                        }else if(value == 60){
+                            return '完成计划'
+                        }else if(value == 70){
+                            return 'QA放行'
+                        }
+                    }
+                }, ]
+            })
 
+            //有此权限时增加tabs跳转到操作页面 审核-下发-放行-物料平衡
+            $(".AgencyArea-item").on('click',function(){
+                var text = $(this).attr("title")
+                var src = $(this).attr("skip-src")
+                $.ajax({
+                    url: '/ZYPlanGuid/menuRedirect',
+                    method: 'POST',
+                    data: {
+                        menuName: text
+                    },
+                    success: function (data) {
+                        if (data == "OK") {
+                            addTab(text,src)
+                        }else{
+                            $.messager.alert('提示', data, 'info');
+                        }
+                    },
+                    error: function () {
+                        alert("请求失败，请稍后重试！")
+                    }
+                });
+            })
 
-            //我的待办点击事件
-            $(document).on('click', '.work-item.green', function (event) {
-                var width = (2 * $(this).width()) + 10;
-                $(".todo-panel").width(width - 2).css({ top: $(this).offset().top, left: $(this).offset().left }).show();
-                event.stopPropagation();
-            });
-            $(".todo-panel").click(function () {
-                event.stopPropagation();
-            });
-            $(".todo-panel").click(function () {
-                $(".todo-panel").hide();
-            });
-            /*        $(document).click(function(){
-                        $(".todo-panel").hide();
-                    });  */
-
+            //增加tabs跳转到制药计划管理
+            $("#toZYPlanManage").on('click',function(){
+                addTab("制药计划管理","/ZYPlanManage")
+            })
         });
-
-        //公开附件tab事件处理
-        $(".attached-tab").on("click", "a", function () {
-            $(this).closest(".attached-tab").find("a").removeClass("current");
-            $(this).addClass("current");
-            $(this).closest(".attached").find("ul").addClass("hide");
-            $(this).closest(".attached").find("ul." + $(this).attr("attached")).removeClass("hide");
-        })
-
+        //按钮点击后添加选项卡
+        function addTab(title, url) {
+            if (parent.$('.easyui-tabs1').tabs('exists', title)) {
+                parent.$('.easyui-tabs1').tabs('select', title);
+            }
+            else {
+                var content = '<iframe class="page-iframe" src="' + url + '" frameborder="no" border="no" height="100%" width="100%" scrolling="auto"></iframe>';
+                parent.$('.easyui-tabs1').tabs('add', {
+                    title: title,
+                    content: content,
+                    closable: true
+                });
+            }
+        }
     </script>
-
-
-    <div id="dlgAdd1" class="easyui-dialog" title="以人为本 用心创新 ——“江中元素”闪耀首届中国药品零售经营创新峰会" data-options="closed:true" style="width:720px;height:590px;padding:10px;">
-
-        <div style="margin:5px 0px 5px 5px; font-size:14px;line-height: 28px;">
-            <p>
-
-                日，首届中国药品零售经营创新会（下称经新会）在南昌万达嘉华酒店召开。来自全国个地级市标杆连锁药店的掌舵人与运营高管，以及品牌工业、新技术伙伴、智囊专家，齐聚英雄城南昌，通过新趋势、新营销、新落地、新模式、新思维五大板块，循序渐进地探索连锁药店经营创新之路。
-            </p>
-            <p>
-                <img src="" alt=" ">
-</p>
-<p>
-	<span></span>
-</p>
-<p >
-	<span>&nbsp;&nbsp;&nbsp;&nbsp; </span>本届经新会旨在聚焦顾客需求，构建专业服务能力，创新药品零售经营模式。大会由中康资讯和江中集团联合主办。江中集团副总经理卢小青女士在大会首日的“新趋势：以满足消费者健康需求为导向的药品零售趋势”板块，作了“以人为本，用心创新”的主题演讲。卢总从中国消费者对药店商品的安全性、有效性、体验性等三大关切出发，指出品牌药企的创新之道在于紧扣关切，让消费者更满意。并且以江中乳酸菌素片、参灵草、猴姑饼干、猴姑米稀等产品为例，阐述了“药品—保健品—食疗”的江中产品创新模式与路径，受到了与会嘉宾的广泛赞同和热烈反响。
-</p>
-<p class="MsoNormal " style="text-indent:21.0pt; ">
-	<span>5</span>月<span>21</span>日晚，江中集团还专门为参会来宾举行了“江中之夜”主题欢迎晚会。中康资讯副总裁黄警代表大会主办方致辞。江中集团副总经理卢小青代表主办方和东道主企业携高管团队致祝酒辞，预祝首届经新会圆满成功。
-</p>
-<p class="MsoNormal " style="text-align:center;text-indent:21pt; ">
-	<img src="../static/images_news/5927ef7d70584.png?v=1 " alt=" ">
-</p>
-<p class="MsoNormal " style="text-align:center;text-indent:21pt; ">
-	<img src=../static/images_news/5927ef8b94c6d.png?v=1" alt="">
-            </p>
-            <p class="MsoNormal" style="text-align:center;text-indent:21pt;">
-                <img src="../static/images_news/5927ef99cc406.png?v=1" alt="">
-            </p>
-            <p class="MsoNormal" style="text-align:center;text-indent:21pt;">
-                <br>
-            </p>
-            <p class="MsoNormal">
-                <span></span>
-            </p>
-            <p class="MsoNormal">
-                <span></span>
-            </p>
-            <p class="MsoNormal">
-                <span></span>
-            </p>
-            <p class="MsoNormal" style="text-indent:21.0pt;">
-                晚会上，江中集团<span> OTC</span>运营总监万松做了题为“江中的九个一”企业介绍，讲述江中研发、制造、工艺、产品等背后的故事，让大家更深入地了解江中。随后的“我与江中的故事”环节， 来自
-                <span>2015-2016</span>年中国药品零售企业综合竞争力冠军老百姓大药房股份有限公司的采购中心高级总经理王琴女士，回顾了<span>2014</span>年江中乳酸菌素片在老百姓大药房成功打造“千万坦克战车计划”的故事。来自中原大地的河南豫合医药联盟秘书长张振峰先生分享了江中乳酸菌素片单品爆破合作的故事，让大家对“供零携手，共创价值”的宏伟蓝图有了更加美好的憧憬。
-            </p>
-            <p class="MsoNormal" style="text-indent:21.0pt;">
-                晚会还演出了《青花瓷》、《踏歌药谷》等富有江西地方特色和江中特点的的歌舞节目，让现场嘉宾大呼过瘾，印象深刻。
-            </p>
-            <p class="MsoNormal" style="text-indent:21.0pt;">
-                <span>5</span>月<span>21</span>日下午，出席经新会的部分连锁药店企业家和代表一行共<span>200</span>余人，走进“中国最美工厂”——江中药谷，参观了年产能<span>100</span>亿片国内最大的中药片剂生产车间和世界先进的全自动液体制剂生产车间。嘉宾们对融环境、研发、制造、工艺、产品诸美于一体的江中药谷赞叹不已，对与江中集团的合作充满信心。江中集团销售管理部部长严京斌、<span>OTC</span>销售线总经理王涛全程陪同参观。
-            </p>   <p class="MsoNormal" style="text-indent:21.0pt;">
-                晚会上，江中集团<span> OTC</span>运营总监万松做了题为“江中的九个一”企业介绍，讲述江中研发、制造、工艺、产品等背后的故事，让大家更深入地了解江中。随后的“我与江中的故事”环节， 来自
-                <span>2015-2016</span>年中国药品零售企业综合竞争力冠军老百姓大药房股份有限公司的采购中心高级总经理王琴女士，回顾了<span>2014</span>年江中乳酸菌素片在老百姓大药房成功打造“千万坦克战车计划”的故事。来自中原大地的河南豫合医药联盟秘书长张振峰先生分享了江中乳酸菌素片单品爆破合作的故事，让大家对“供零携手，共创价值”的宏伟蓝图有了更加美好的憧憬。
-            </p>
-            <p class="MsoNormal" style="text-indent:21.0pt;">
-                晚会还演出了《青花瓷》、《踏歌药谷》等富有江西地方特色和江中特点的的歌舞节目，让现场嘉宾大呼过瘾，印象深刻。
-            </p>
-            <p class="MsoNormal" style="text-indent:21.0pt;">
-                <span>5</span>月<span>21</span>日下午，出席经新会的部分连锁药店企业家和代表一行共<span>200</span>余人，走进“中国最美工厂”——江中药谷，参观了年产能<span>100</span>亿片国内最大的中药片剂生产车间和世界先进的全自动液体制剂生产车间。嘉宾们对融环境、研发、制造、工艺、产品诸美于一体的江中药谷赞叹不已，对与江中集团的合作充满信心。江中集团销售管理部部长严京斌、<span>OTC</span>销售线总经理王涛全程陪同参观。
-            </p>
-            <p class="MsoNormal" style="text-align:center;text-indent:21pt;">
-                <img src="../static/images_news/5927efdda27bd.png?v=1" alt="">
-            </p>
-            <p class="MsoNormal" style="text-indent:21.0pt;">
-                <span></span>
-            </p>
-            <p class="MsoNormal" style="text-indent:21.0pt;">
-                在药品零售行业经营模式迭代升级的关键时期，我们坚信，一切以消费者健康需求为导向，是药品零售业创新发展的必由之路。“让人类充分享受健康的快乐”<span>,</span>是江中人的不懈追求<span>,</span>更是江中人崇高的使命，让我们“供零携手，共创价值”，共同书写中国药品零售行业经营转型的新篇章。
-            </p>
-
-        </div>
-
-        <div style="padding:10px 0;text-align:center;">
-
-            <a href="#" class="easyui-linkbutton" onclick="$('#dlgAdd1').dialog('close')">关闭</a>
-        </div>
-    </div>
-
-    -----------------------------------------
-
-    <div id="dlgAdd2" class="easyui-dialog" title="全国中医药工作座谈会与会代表观摩考察江中药谷实地学习领会习近平总书记重要指示精神" data-options="closed:true" style="width:720px;height:590px;padding:10px;">
-
-        <div style="margin:5px 0px 5px 5px; font-size:14px;line-height: 28px;">
-            中国江西网讯 张安然、记者朱正报道：5月21日，由教育部教育发展研究中心、江西中医药大学、江中制药集团联合举办的首届全国中医药教育国际化暨产学研协同创新研讨会在南昌召开。国家卫计委副主任、国家中医药管理局局长王国强，江西省副省长李利，中国工程院院士黄璐琦，国医大师刘敏如，中华中医药学会副会长、山东省政协原副主席王新陆等领导、知名专家和代表出席会议。
-            　　研讨会围绕中医药教育国际化、中医药产学研协同创新两大主题进行了分会场研讨。主要议题包括：与会专家就高校面向国家中医药发展战略需求、创新中医药人才培养模式的重点思路,中医药高校开展中外合作办学的现状分析与需要的政策支持,我国中医药高校到境外合作办学的可行性分析与近中期策略,中医药领域产学研协同创新促进研发成果转化的主要需求，旨在推进中医药产业“走出去”的产学研协同创新运行机制,组建产学研协同创新共同体及共建信息资源交流平台可行性等。会议讨论热烈，观点犀利，专家们提出了许多宝贵的意见和建议。
-            　　与会专家认为，中医药振兴迎来了前所未有的大好时机，中医药教育国际化在落实“一带一路”重大合作倡议中大有可为，要把中医药高等教育打造成为中外人文交流的新名片，不断提高中医药在国际传统医药领域的话语权、主导权。许多专家表示，推动中医药走向世界，必须坚持走产学研协同创新之路，不断加大现代中医药人才培养力度，持续加强中医药文化传承与创新，着力推进中医药国际传播，开创中医药全方位对外开放新格局。用中医药这把钥匙，走教育国际化之路，助推中国优秀传统文化走向世界。同时，要加快中医药教育国际化试验区建设，形成样板经验，尽快在全国建设若干个中医药产学研区域协作体和资源贡献共享平台，助推中医药教育国际化迈上新的台阶。
-
-        </div>
-
-        <div style="padding:10px 0;text-align:center;">
-
-            <a href="#" class="easyui-linkbutton" onclick="$('#dlgAdd2').dialog('close')">关闭</a>
-    </div>
-    </div>
-
-</body>
 </body>
 </html>
