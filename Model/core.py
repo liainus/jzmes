@@ -3680,7 +3680,35 @@ class NodeIdNote(Base):
 	# Note
 	Note = Column(Unicode(32), nullable=True)
 
+# 生产监控
+class ProductionMonitor(Base):
+    __tablename__ = 'ProductionMonitor'
+    # ID
+    ID = Column(BigInteger, primary_key=True, autoincrement=True, nullable=False)
 
+    # 设备编码
+    EQPCode = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+
+    # 设备名称:
+    EQPName = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+
+    # 设备状态:
+    Equipment_State = Column(Boolean, primary_key=False, autoincrement=False, nullable=True)
+
+    # 工艺段:
+    ProductUnit = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+
+    # 工艺段tag
+    # ProductUnitTag = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+
+    # 批次对应的opc变量名
+    Batch = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+
+    # 品名对应的opc变量名
+    Brand = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+
+    # 刷新时间:
+    Refresh_Date = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
 # all = session.query(OpcTag).all()
 # print(all)
 # for oclass in all:
