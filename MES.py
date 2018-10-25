@@ -4022,6 +4022,36 @@ def checkPlanManager():
             insertSyslog("error", "生产管理部审核计划报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
+# 计划下发查询
+@app.route('/RealsePlanManagersearch')
+def RealsePlanManagersearch():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 2:
+                pages = int(data['page'])  # 页数
+                rowsnumber = int(data['rows'])  # 行数
+                inipage = (pages - 1) * rowsnumber + 0  # 起始页
+                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+                Name = current_user.Name
+                ABatchID = data['BatchID']  # 批次号
+                if (ABatchID == None or ABatchID == ""):
+                    total = db_session.query(PlanManager.ID).filter(PlanManager.PlanStatus == "20").count()
+                    oclass = db_session.query(PlanManager).filter(
+                        PlanManager.PlanStatus == "20").order_by(desc("PlanBeginTime")).all()[inipage:endpage]
+                else:
+                    total = db_session.query(PlanManager.ID).filter(PlanManager.PlanStatus == "20", PlanManager.BatchID == ABatchID).count()
+                    oclass = db_session.query(PlanManager).filter(
+                        PlanManager.PlanStatus == "20", PlanManager.BatchID == ABatchID).order_by(desc("PlanBeginTime")).all()[inipage:endpage]
+                jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
+                return '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "计划下发查询报错Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
+                              ensure_ascii=False)
 
 # 下发计划生成ZY计划、任务
 @app.route('/ZYPlanGuid/createZYPlanZYtask', methods=['POST', 'GET'])
@@ -5351,7 +5381,30 @@ def PUIDChargeBatchMaterielBalance():
             insertSyslog("error", "批物料平衡工序负责人确认报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
-#查询待办
+#查询批物料平衡
+@app.route('/MaterielBalanceSearch')
+def MaterielBalanceSearch():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 2:
+                pages = int(data['page'])  # 页数
+                rowsnumber = int(data['rows'])  # 行数
+                inipage = (pages - 1) * rowsnumber + 0  # 起始页
+                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+                Name = current_user.Name
+                total = db_session.query(PlanManager.ID).filter(PlanManager.PlanStatus.in_((20, 40, 50, 60, 70))).count()
+                oclass = db_session.query(PlanManager).filter(PlanManager.PlanStatus.in_((20, 40, 50, 60, 70))).order_by(desc("PlanBeginTime")).all()[inipage:endpage]
+                jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
+                return '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "查询批物料平衡报错Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+# 查询待办
 @app.route('/maindaiban')
 def maindaiban():
     if request.method == 'GET':
@@ -5364,21 +5417,22 @@ def maindaiban():
                 inipage = pages * rowsnumber + 0  # 起始页
                 endpage = pages * rowsnumber + rowsnumber  # 截止页
                 Name = current_user.Name
-                total = db_session.query(PlanManager.ID).filter(PlanManager.PlanStatus == "70").count()
-                oclass = db_session.query(PlanManager).filter(PlanManager.PlanStatus == "70").order_by(desc("PlanBeginTime")).all()[inipage:endpage]
+                total = db_session.query(PlanManager.ID).filter(PlanManager.PlanStatus != "70").count()
+                oclass = db_session.query(PlanManager).filter(PlanManager.PlanStatus != "70").order_by(
+                    desc("PlanBeginTime")).all()[inipage:endpage]
                 jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
                 return '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
-                roleclass = db_session.query(Role).join(User, Role.RoleName == User.RoleName).filter(User.Name == Name).all()
-                for rol in roleclass:
-                    Role_Menuclass = db_session.query(Role_Menu).filter(Role_Menu.Role_ID == rol.ID).all()
-                    for men in Role_Menuclass:
-                        db_session.query(Menu).filter()
+                # roleclass = db_session.query(Role).join(User, Role.RoleName == User.RoleName).filter(User.Name == Name).all()
+                # for rol in roleclass:
+                #     Role_Menuclass = db_session.query(Role_Menu).filter(Role_Menu.Role_ID == rol.ID).all()
+                #     for men in Role_Menuclass:
+                #         db_session.query(Menu).filter()
         except Exception as e:
-            db_session.rollback()
             print(e)
             logger.error(e)
-            insertSyslog("error", "批物料平衡工序负责人确认报错Error：" + str(e), current_user.Name)
-            return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+            insertSyslog("error", "查询待办报错Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
+                              ensure_ascii=False)
 
 # 收粉监控画面
 @app.route('/processMonitorLineCollect')
