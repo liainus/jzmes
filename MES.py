@@ -1,3 +1,4 @@
+# coding:utf8
 import datetime
 import decimal
 import json
@@ -5468,33 +5469,57 @@ def maindaiban():
 @app.route('/aa')
 def aa():
     return render_template('aa.html')
+
 # 操作手册
 @app.route('/CreateOperationManual', methods=['POST', 'GET'])
 def CreateOperationManual():
-    if request.method == "POST":
+    if request.method == "GET":
         data = request.values
         try:
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 2:
-                book = xlwt.Workbook(encoding='utf-8')
                 ManualName = data['ManualName']
                 ManualFile = data['ManualFile']
-                String = []
-                String = ManualFile.split(" ")
-                output = StringIO.StringIO(String)
-                file = open('D:/Temp' + ManualName + '.docx', 'w')
-                file.write(output)
+                book = xlwt.Workbook(encoding='utf-8')
+                print(ManualFile)
+                bb = re.findall(r'.{7}', ManualFile)
+                print(bb)
+                aa = ""
+                [chr(i) for i in [int(b, 2) for b in ManualFile.split(' ')]]
+                for b in bb:
+                    aa += chr(int(b, 2))
+                print(aa)
+                output = StringIO.StringIO(aa)
                 book.save(output)
                 response = make_response(output.getvalue())
                 response.headers['Content-Type'] = 'application/vnd.ms-excel'
-                response.headers['Content-Disposition'] = 'attachment; filename=' + ManualName + '.xls'
+                response.headers['Content-Disposition'] = 'attachment; filename=' + ManualName + '.doc'
                 output.closed
-                Description = data['Description']
-                Type = data['Type']
-                UploadDate = datetime.datetime.now()
-                db_session.add(OperationManual(ManualName = ManualName,ManualFile = ManualFile,Description = Description,Type = Type,UploadDate = UploadDate))
-                db_session.commit()
                 return response
+                ManualName = data['ManualName']
+                ManualFile = data['ManualFile']
+                print(ManualFile)
+                bb = re.findall(r'.{7}', ManualFile)
+                print(bb)
+                String = []
+                # String = ManualFile.split(" ")
+                aa = ""
+                for b in bb:
+                    aa += chr(int(b, 2))
+                print(aa)
+                # print(A.encode(encoding="utf-8").decode(encoding="utf-8"))
+                file = open('D:/Temp/' + ManualName + '.doc', 'wr')
+                file.write(aa.encode(encoding="utf-8").decode(encoding="utf-8"))
+                file.closed
+                # response = make_response(aa.getvalue())
+                # response.headers['Content-Type'] = 'application/vnd.ms-excel'
+                # response.headers['Content-Disposition'] = 'attachment; filename=' + ManualName + '.xls'
+                # Description = data['Description']
+                # Type = data['Type']
+                # UploadDate = datetime.datetime.now()
+                # db_session.add(OperationManual(ManualName = ManualName,ManualFile = ManualFile,Description = Description,Type = Type,UploadDate = UploadDate))
+                # db_session.commit()
+                return 'OK'
         except Exception as e:
             db_session.rollback()
             print(e)
