@@ -4,6 +4,7 @@ import json
 import os
 import re
 import string
+from io import StringIO
 import time
 from collections import Counter
 
@@ -11,7 +12,7 @@ import xlwt
 from flask import Flask, jsonify, redirect, url_for, flash
 import xlrd
 from flask import Flask, jsonify, redirect, url_for
-from flask import render_template, request
+from flask import render_template, request, make_response
 from flask import session
 from sqlalchemy import create_engine, Column, ForeignKey, Table, Integer, String, and_, or_, desc
 from sqlalchemy import func
@@ -25,7 +26,7 @@ from Model.core import Enterprise, Area, Factory, ProductLine, ProcessUnit, Equi
     OpcServer, Pequipment, WorkFlowStatus, WorkFlowEventZYPlan, WorkFlowEventPlan, \
     OpcTag, CollectParamsTemplate, CollectParams, Collectionstrategy, CollectTask, \
     CollectTaskCollection, ReadyWork, NodeIdNote, ProductUnitRoute
-from Model.system import Role, Organization, User, Menu, Role_Menu, BatchMaterielBalance
+from Model.system import Role, Organization, User, Menu, Role_Menu, BatchMaterielBalance, OperationManual
 from tools.MESLogger import MESLogger
 from Model.core import SysLog
 from sqlalchemy import func
@@ -5339,6 +5340,7 @@ def CheckedBatchMaterielBalance():
                 db_session.add(
                     BatchMaterielBalance(
                         PlanManagerID=PMClass.ID,
+                        PUID=PUID,
                         DeviationDescription=DeviationDescription,
                         CheckedSuggestion=CheckedSuggestion,
                         CheckedPerson=current_user.Name,
@@ -5352,6 +5354,28 @@ def CheckedBatchMaterielBalance():
             logger.error(e)
             insertSyslog("error", "批物料平衡审核人确认报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+# 查询批物料平衡审核人确认信息
+@app.route('/MaterielBalanceCheckedInfoSearch')
+def MaterielBalanceCheckedInfoSearch():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 2:
+                ID = data['ID']  # 计划ID
+                PName = data['PName']  # 工艺段名称
+                PMClass = db_session.query(PlanManager).filter(PlanManager.ID == ID).first()
+                PUID = db_session.query(ProductUnitRoute.PUID).filter(ProductUnitRoute.PDUnitRouteName == PName,
+                                                                      ProductUnitRoute.ProductRuleID == PMClass.BrandID).first()
+                oclass = db_session.query(BatchMaterielBalance).filter(BatchMaterielBalance.PlanManagerID == ID, BatchMaterielBalance.PUID == PUID).first()
+                return json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "查询批物料平衡审核人确认信息报错Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
+                              ensure_ascii=False)
 
 #批物料平衡工序负责人确认
 @app.route('/PUIDChargeBatchMaterielBalance')
@@ -5428,6 +5452,40 @@ def maindaiban():
             print(e)
             logger.error(e)
             insertSyslog("error", "查询待办报错Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
+                              ensure_ascii=False)
+
+
+# 操作手册
+@app.route('/CreateOperationManual')
+def CreateOperationManual():
+    if request.method == "POST":
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 2:
+                book = xlwt.Workbook(encoding='utf-8')
+                ManualFile = data['ManualFile']
+                dir[''] = ManualFile.split(" ")
+                output = StringIO.StringIO()
+                book.save(output)
+                response = make_response(output.getvalue())
+                response.headers['Content-Type'] = 'application/vnd.ms-excel'
+                response.headers['Content-Disposition'] = 'attachment; filename=' + 'filename' + '.xls'
+                output.closed
+                return response
+                ManualName = data['ManualName']
+                ManualFile = data['ManualFile']
+                Description = data['Description']
+                Type = data['Type']
+                UploadDate = datetime.datetime.now()
+                db_session.add(OperationManual(ManualName = ManualName,ManualFile = ManualFile,Description = Description,Type = Type,UploadDate = UploadDate))
+                db_session.commit()
+        except Exception as e:
+            db_session.rollback()
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "创建操作手册报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
                               ensure_ascii=False)
 
