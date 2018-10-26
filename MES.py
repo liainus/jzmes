@@ -4289,6 +4289,16 @@ def FeedingSection():
 #生产线监控
 @app.route('/processMonitorLine')
 def processMonitor():
+    # Equips_data = []
+    # eqpCodes = db_session.query(ProductionMonitor.EQPCode).all()
+    # for eqpCode in set(eqpCodes):
+    #     eqp_code = eqpCode[0].strip()
+    #     num = re.findall(r'_(\d+)_', eqp_code)[0]
+    #     batch = db_session.query(ProductionMonitor.Batch).filter_by(EQPCode=eqpCode).first()[0]
+    #     Batch = 'Batch_' + num
+    #     Batch_data = {Batch: batch}
+    #     # Equips_data.insert(int(num)-1, Batch_data)
+    # print(Equips_data)
     return render_template('processMonitorLine.html')
 
 #任务确认
