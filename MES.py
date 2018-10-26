@@ -5334,7 +5334,7 @@ def QApass():
     return render_template('QAPassAuth.html')
 
 #批物料平衡审核人确认
-@app.route('/CheckedBatchMaterielBalance')
+@app.route('/CheckedBatchMaterielBalance', methods=['POST', 'GET'])
 def CheckedBatchMaterielBalance():
     if request.method == 'POST':
         data = request.values
@@ -5388,7 +5388,7 @@ def MaterielBalanceCheckedInfoSearch():
                               ensure_ascii=False)
 
 #批物料平衡工序负责人确认
-@app.route('/PUIDChargeBatchMaterielBalance')
+@app.route('/PUIDChargeBatchMaterielBalance', methods=['POST', 'GET'])
 def PUIDChargeBatchMaterielBalance():
     if request.method == 'POST':
         data = request.values
@@ -5467,7 +5467,7 @@ def maindaiban():
 
 
 # 操作手册
-@app.route('/CreateOperationManual')
+@app.route('/CreateOperationManual', methods=['POST', 'GET'])
 def CreateOperationManual():
     if request.method == "POST":
         data = request.values
