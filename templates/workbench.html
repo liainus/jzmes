@@ -70,19 +70,14 @@
                     <span><i class="glyphicon glyphicon-pencil"></i> 物料平衡待确认</span>
                 </div>
             </div>
-            <!-- loading -->
-{#            <div class="modal fade" id="loading" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static">#}
-{#              <div class="modal-dialog" role="document">#}
-{#                <div class="modal-content">#}
-{#                  <div class="modal-header">#}
-{#                    <h4 class="modal-title" id="myModalLabel">提示</h4>#}
-{#                  </div>#}
-{#                  <div class="modal-body">#}
-{#                    请稍候。。。#}
-{#                  </div>#}
-{#                </div>#}
-{#              </div>#}
-{#            </div>#}
+            <div class="modal" id="loadingModal">
+                <div style="width: 200px;height:20px; z-index: 20000; position: absolute; text-align: center; left: 50%; top: 50%;margin-left:-100px;margin-top:-10px">
+                    <div class="progress progress-striped active" style="margin-bottom: 0;">
+                        <div class="progress-bar" style="width: 100%;"></div>
+                    </div>
+                    <h5>正在加载...</h5>
+                </div>
+            </div>
         </div>
         <div class="col-md-12">
             <div class="row">
@@ -167,14 +162,14 @@
                         menuName: text
                     },
                     beforeSend:function (){
-                        //$('#loading').modal('show');
+                        $("#loadingModal").modal('show');
                     },
                     success: function (data) {
                         if (data == "OK") {
+                            $("#loadingModal").modal('hide');
                             addTab(text,src)
-                            //$('#loading').modal('hide');
                         }else{
-                            //$('#loading').modal('hide');
+                            $("#loadingModal").modal('hide');
                             $.messager.alert('提示', data, 'info');
                         }
                     },
