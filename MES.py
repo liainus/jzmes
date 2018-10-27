@@ -5466,6 +5466,24 @@ def maindaiban():
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
                               ensure_ascii=False)
 
+#首页查询
+@app.route('/souyesearch')
+def souyesearch():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            A = db_session.query(PlanManager.ID).filter(PlanManager.PlanStatus == "10").count()
+            B = db_session.query(PlanManager.ID).filter(PlanManager.PlanStatus == "11").count()
+            C = db_session.query(PlanManager.ID).filter(PlanManager.PlanStatus == "60").count()
+            D = db_session.query(PlanManager.ID).filter(PlanManager.PlanStatus.in_((20, 40, 50, 60, 70))).count()
+            return '{"A"' + ":" + str(A) + ',"B"' + ":" + str(B) + ',"C"' + ":" + str(C) +',"D"' + ":" + str(D)+ "}"
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "首页查询报错Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+
 @app.route('/aa')
 def aa():
     return render_template('aa.html')
