@@ -54,19 +54,19 @@
         <div class="col-md-12">
             <div class="row AgencyArea">
                 <div class="col-md-2 AgencyArea-item" skip-src="/ZYPlanGuid/checkplanmanager" title="审核计划">
-                    <h3>1</h3>
+                    <h3>0</h3>
                     <span><i class="glyphicon glyphicon-check"></i> 计划待审核</span>
                 </div>
                 <div class="col-md-2 AgencyArea-item" skip-src="/ZYPlanGuid/planmanager" title="下发计划">
-                    <h3>2</h3>
+                    <h3>0</h3>
                     <span><i class="glyphicon glyphicon-send"></i> 计划待下发</span>
                 </div>
                 <div class="col-md-2 AgencyArea-item" skip-src="/QAauthPass" title="QA放行">
-                    <h3>1</h3>
+                    <h3>0</h3>
                     <span><i class="glyphicon glyphicon-log-out"></i> 计划待放行</span>
                 </div>
                 <div class="col-md-2 AgencyArea-item" skip-src="/BatchMaterielBalanceStatistic" title="批物料平衡统计">
-                    <h3>5</h3>
+                    <h3>0</h3>
                     <span><i class="glyphicon glyphicon-pencil"></i> 物料平衡待确认</span>
                 </div>
             </div>
@@ -118,6 +118,62 @@
     <script type="text/javascript">
         //chart0
         $(document).ready(function () {
+            //待审核
+            $.ajax({
+                url: '/MaterielBalanceSearch',
+                method: 'get',
+                data:{
+                    BatchID:""
+                },
+                success: function (data) {
+                    console.log(data)
+                },
+                error: function () {
+                    alert("获取待审核数据失败，请稍后重试！")
+                }
+            });
+            //待下发
+            $.ajax({
+                url: '/RealsePlanManagersearch',
+                method: 'get',
+                data:{
+                    BatchID:""
+                },
+                success: function (data) {
+                    console.log(data)
+                },
+                error: function () {
+                    alert("获取待下发数据失败，请稍后重试！")
+                }
+            });
+            //待放行
+            $.ajax({
+                url: '/ZYPlanGuid/QAPassSearch',
+                method: 'get',
+                data:{
+                    BatchID:""
+                },
+                success: function (data) {
+                    console.log(data)
+                },
+                error: function () {
+                    alert("获取待放行数据失败，请稍后重试！")
+                }
+            });
+            //物料平衡待确认
+            $.ajax({
+                url: '/MaterielBalanceSearch',
+                method: 'get',
+                data:{
+                    BatchID:""
+                },
+                success: function (data) {
+                    console.log(data)
+                },
+                error: function () {
+                    alert("获取物料平衡待确认数据失败，请稍后重试！")
+                }
+            });
             $("#planTable").bootstrapTable({
                 url:'/maindaiban',
                 method: 'get',
