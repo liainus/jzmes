@@ -1,9 +1,11 @@
+# coding:utf8
 import datetime
 import decimal
 import json
 import os
 import re
 import string
+from io import StringIO
 import time
 from collections import Counter
 
@@ -11,7 +13,7 @@ import xlwt
 from flask import Flask, jsonify, redirect, url_for, flash
 import xlrd
 from flask import Flask, jsonify, redirect, url_for
-from flask import render_template, request
+from flask import render_template, request, make_response
 from flask import session
 from sqlalchemy import create_engine, Column, ForeignKey, Table, Integer, String, and_, or_, desc
 from sqlalchemy import func
@@ -24,8 +26,8 @@ from Model.core import Enterprise, Area, Factory, ProductLine, ProcessUnit, Equi
     ProductUnit, ProductRule, ZYTask, ZYPlanMaterial, ZYPlan, Unit, PlanManager, SchedulePlan, ProductControlTask, \
     OpcServer, Pequipment, WorkFlowStatus, WorkFlowEventZYPlan, WorkFlowEventPlan, \
     OpcTag, CollectParamsTemplate, CollectParams, Collectionstrategy, CollectTask, \
-    CollectTaskCollection, ReadyWork, NodeIdNote, ProductUnitRoute, ProductionMonitor
-from Model.system import Role, Organization, User, Menu, Role_Menu, BatchMaterielBalance
+    CollectTaskCollection, ReadyWork, NodeIdNote, ProductUnitRoute
+from Model.system import Role, Organization, User, Menu, Role_Menu, BatchMaterielBalance, OperationManual
 from tools.MESLogger import MESLogger
 from Model.core import SysLog
 from sqlalchemy import func
@@ -5357,7 +5359,7 @@ def QApass():
     return render_template('QAPassAuth.html')
 
 #批物料平衡审核人确认
-@app.route('/CheckedBatchMaterielBalance')
+@app.route('/CheckedBatchMaterielBalance', methods=['POST', 'GET'])
 def CheckedBatchMaterielBalance():
     if request.method == 'POST':
         data = request.values
@@ -5373,6 +5375,7 @@ def CheckedBatchMaterielBalance():
                 db_session.add(
                     BatchMaterielBalance(
                         PlanManagerID=PMClass.ID,
+                        PUID=PUID,
                         DeviationDescription=DeviationDescription,
                         CheckedSuggestion=CheckedSuggestion,
                         CheckedPerson=current_user.Name,
@@ -5387,8 +5390,30 @@ def CheckedBatchMaterielBalance():
             insertSyslog("error", "批物料平衡审核人确认报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
+# 查询批物料平衡审核人确认信息
+@app.route('/MaterielBalanceCheckedInfoSearch')
+def MaterielBalanceCheckedInfoSearch():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 2:
+                ID = data['ID']  # 计划ID
+                PName = data['PName']  # 工艺段名称
+                PMClass = db_session.query(PlanManager).filter(PlanManager.ID == ID).first()
+                PUID = db_session.query(ProductUnitRoute.PUID).filter(ProductUnitRoute.PDUnitRouteName == PName,
+                                                                      ProductUnitRoute.ProductRuleID == PMClass.BrandID).first()
+                oclass = db_session.query(BatchMaterielBalance).filter(BatchMaterielBalance.PlanManagerID == ID, BatchMaterielBalance.PUID == PUID).first()
+                return json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "查询批物料平衡审核人确认信息报错Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
+                              ensure_ascii=False)
+
 #批物料平衡工序负责人确认
-@app.route('/PUIDChargeBatchMaterielBalance')
+@app.route('/PUIDChargeBatchMaterielBalance', methods=['POST', 'GET'])
 def PUIDChargeBatchMaterielBalance():
     if request.method == 'POST':
         data = request.values
@@ -5428,8 +5453,17 @@ def MaterielBalanceSearch():
                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
                 Name = current_user.Name
-                total = db_session.query(PlanManager.ID).filter(PlanManager.PlanStatus.in_((20, 40, 50, 60, 70))).count()
-                oclass = db_session.query(PlanManager).filter(PlanManager.PlanStatus.in_((20, 40, 50, 60, 70))).order_by(desc("PlanBeginTime")).all()[inipage:endpage]
+                BatchID = data['BatchID']
+                BrandName = data['name']
+                if BatchID == None or BatchID == "":
+                    total = db_session.query(PlanManager.ID).filter(PlanManager.PlanStatus.in_((20, 40, 50, 60, 70)), PlanManager.BrandName == BrandName).count()
+                    oclass = db_session.query(PlanManager).filter(PlanManager.PlanStatus.in_((20, 40, 50, 60, 70)), PlanManager.BrandName == BrandName).order_by(desc("PlanBeginTime")).all()[inipage:endpage]
+                else:
+                    total = db_session.query(PlanManager.ID).filter(PlanManager.BatchID == BatchID, PlanManager.BrandName == BrandName,
+                        PlanManager.PlanStatus.in_((20, 40, 50, 60, 70))).count()
+                    oclass = db_session.query(PlanManager).filter(PlanManager.BatchID == BatchID, PlanManager.BrandName == BrandName,
+                        PlanManager.PlanStatus.in_((20, 40, 50, 60, 70))).order_by(desc("PlanBeginTime")).all()[
+                             inipage:endpage]
                 jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
                 return '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
         except Exception as e:
@@ -5462,6 +5496,86 @@ def maindaiban():
             print(e)
             logger.error(e)
             insertSyslog("error", "查询待办报错Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
+                              ensure_ascii=False)
+
+#首页查询
+@app.route('/souyesearch')
+def souyesearch():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            A = db_session.query(PlanManager.ID).filter(PlanManager.PlanStatus == "10").count()
+            B = db_session.query(PlanManager.ID).filter(PlanManager.PlanStatus == "11").count()
+            C = db_session.query(PlanManager.ID).filter(PlanManager.PlanStatus == "60").count()
+            D = db_session.query(PlanManager.ID).filter(PlanManager.PlanStatus.in_((20, 40, 50, 60, 70))).count()
+            return '{"A"' + ":" + str(A) + ',"B"' + ":" + str(B) + ',"C"' + ":" + str(C) +',"D"' + ":" + str(D)+ "}"
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "首页查询报错Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+
+@app.route('/aa')
+def aa():
+    return render_template('aa.html')
+
+# 操作手册
+@app.route('/CreateOperationManual', methods=['POST', 'GET'])
+def CreateOperationManual():
+    if request.method == "GET":
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 2:
+                ManualName = data['ManualName']
+                ManualFile = data['ManualFile']
+                book = xlwt.Workbook(encoding='utf-8')
+                print(ManualFile)
+                bb = re.findall(r'.{7}', ManualFile)
+                print(bb)
+                aa = ""
+                [chr(i) for i in [int(b, 2) for b in ManualFile.split(' ')]]
+                for b in bb:
+                    aa += chr(int(b, 2))
+                print(aa)
+                output = StringIO.StringIO(aa)
+                book.save(output)
+                response = make_response(output.getvalue())
+                response.headers['Content-Type'] = 'application/vnd.ms-excel'
+                response.headers['Content-Disposition'] = 'attachment; filename=' + ManualName + '.doc'
+                output.closed
+                return response
+                ManualName = data['ManualName']
+                ManualFile = data['ManualFile']
+                print(ManualFile)
+                bb = re.findall(r'.{7}', ManualFile)
+                print(bb)
+                String = []
+                # String = ManualFile.split(" ")
+                aa = ""
+                for b in bb:
+                    aa += chr(int(b, 2))
+                print(aa)
+                # print(A.encode(encoding="utf-8").decode(encoding="utf-8"))
+                file = open('D:/Temp/' + ManualName + '.doc', 'wr')
+                file.write(aa.encode(encoding="utf-8").decode(encoding="utf-8"))
+                file.closed
+                # response = make_response(aa.getvalue())
+                # response.headers['Content-Type'] = 'application/vnd.ms-excel'
+                # response.headers['Content-Disposition'] = 'attachment; filename=' + ManualName + '.xls'
+                # Description = data['Description']
+                # Type = data['Type']
+                # UploadDate = datetime.datetime.now()
+                # db_session.add(OperationManual(ManualName = ManualName,ManualFile = ManualFile,Description = Description,Type = Type,UploadDate = UploadDate))
+                # db_session.commit()
+                return 'OK'
+        except Exception as e:
+            db_session.rollback()
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "创建操作手册报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
                               ensure_ascii=False)
 
