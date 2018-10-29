@@ -5362,6 +5362,10 @@ def zYPlanManage():
 # 电子批记录跳转
 @app.route('/electronicBatchRecord')
 def electronicBatchRecord():
+    if request.method == "GET":
+        data = request.values
+        title = data["title"]
+        session['title'] = title
     return render_template('electronicBatchRecord.html')
 
 
