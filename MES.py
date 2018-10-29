@@ -26,7 +26,7 @@ from Model.core import Enterprise, Area, Factory, ProductLine, ProcessUnit, Equi
     ProductUnit, ProductRule, ZYTask, ZYPlanMaterial, ZYPlan, Unit, PlanManager, SchedulePlan, ProductControlTask, \
     OpcServer, Pequipment, WorkFlowStatus, WorkFlowEventZYPlan, WorkFlowEventPlan, \
     OpcTag, CollectParamsTemplate, CollectParams, Collectionstrategy, CollectTask, \
-    CollectTaskCollection, ReadyWork, NodeIdNote, ProductUnitRoute
+    CollectTaskCollection, ReadyWork, NodeIdNote, ProductUnitRoute, ProductionMonitor
 from Model.system import Role, Organization, User, Menu, Role_Menu, BatchMaterielBalance, OperationManual
 from tools.MESLogger import MESLogger
 from Model.core import SysLog
@@ -4290,17 +4290,41 @@ def FeedingSection():
 #生产线监控
 @app.route('/processMonitorLine')
 def processMonitor():
-    # Equips_data = []
-    # eqpCodes = db_session.query(ProductionMonitor.EQPCode).all()
-    # for eqpCode in set(eqpCodes):
-    #     eqp_code = eqpCode[0].strip()
-    #     num = re.findall(r'_(\d+)_', eqp_code)[0]
-    #     batch = db_session.query(ProductionMonitor.Batch).filter_by(EQPCode=eqpCode).first()[0]
-    #     Batch = 'Batch_' + num
-    #     Batch_data = {Batch: batch}
-    #     # Equips_data.insert(int(num)-1, Batch_data)
-    # print(Equips_data)
     return render_template('processMonitorLine.html')
+
+@app.route('/processMonitorLine/extract')
+def extract():
+    if request.method == 'POST':
+        try:
+            equip1 = db_session.query(ProductionMonitor).filter_by(EQPName='提取设备一').all()
+            time = datetime.datetime.strptime(equip1.Refresh_Date, "%Y-%m-%d %H:%M:%S")
+            equip1_data = {'a1': equip1.Batch,'a2':time.hour,'a3':time.minute,'a4':time.second,'a5':equip1.TankOver,'a6':equip1.Equipment_State,'a7':equip1.Height}
+            equip2 = db_session.query(ProductionMonitor).filter_by(EQPName='提取设备二').all()
+            time = datetime.datetime.strptime(equip2.Refresh_Date, "%Y-%m-%d %H:%M:%S")
+            equip2_data = {'b1': equip2.Batch, 'b2': time.hour, 'b3': time.minute, 'b4': time.second,
+                           'b5': equip2.TankOver, 'b6': equip2.Equipment_State,'b7':equip2.Height}
+            equip3 = db_session.query(ProductionMonitor).filter_by(EQPName='提取设备三').all()
+            time = datetime.datetime.strptime(equip3.Refresh_Date, "%Y-%m-%d %H:%M:%S")
+            equip3_data = {'c1': equip3.Batch, 'c2': time.hour, 'c3': time.minute, 'c4': time.second,
+                           'c5': equip3.TankOver, 'c6': equip3.Equipment_State,'c7':equip3.Height}
+            equip4 = db_session.query(ProductionMonitor).filter_by(EQPName='提取设备四').all()
+            time = datetime.datetime.strptime(equip4.Refresh_Date, "%Y-%m-%d %H:%M:%S")
+            equip4_data = {'d1': equip4.Batch, 'd2': time.hour, 'd3': time.minute, 'd4': time.second,
+                           'd5': equip4.TankOver, 'd6': equip4.Equipment_State,'d7':equip4.Height}
+            equip5 = db_session.query(ProductionMonitor).filter_by(EQPName='提取设备五').all()
+            time = datetime.datetime.strptime(equip5.Refresh_Date, "%Y-%m-%d %H:%M:%S")
+            equip5_data = {'e1': equip5.Batch, 'e2': time.hour, 'e3': time.minute, 'e4': time.second,
+                           'e5': equip5.TankOver, 'e6': equip5.Equipment_State,'e7':equip5.Height}
+            equip6 = db_session.query(ProductionMonitor).filter_by(EQPName='提取设备六').all()
+            time = datetime.datetime.strptime(equip6.Refresh_Date, "%Y-%m-%d %H:%M:%S")
+            equip6_data = {'f1': equip6.Batch, 'f2': time.hour, 'f3': time.minute, 'f4': time.second,
+                           'f5': equip6.TankOver, 'f6': equip6.Equipment_State,'f7':equip6.Height}
+            Equips_data = [equip1_data,equip2_data,equip3_data,equip4_data,equip5_data,equip6_data]
+            return Equips_data
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "生长线监控提取段数据获取报错Error：" + str(e), current_user.Name)
 
 #任务确认
 @app.route('/taskConfirm')

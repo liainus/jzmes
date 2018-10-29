@@ -3682,46 +3682,49 @@ class NodeIdNote(Base):
 
 # 生产监控
 class ProductionMonitor(Base):
-    __tablename__ = 'ProductionMonitor'
-    # ID
-    ID = Column(BigInteger, primary_key=True, autoincrement=True, nullable=False)
+	__tablename__ = 'ProductionMonitor'
+	# ID
+	ID = Column(BigInteger, primary_key=True, autoincrement=True, nullable=False)
 
-    # 设备编码
-    EQPCode = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+	# 设备编码
+	EQPCode = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
 
-    # 设备名称:
-    EQPName = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+	# 设备名称:
+	EQPName = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
 
-    # 设备状态:
-    Equipment_State = Column(Boolean, primary_key=False, autoincrement=False, nullable=True)
+	# 设备状态:
+	Equipment_State = Column(Boolean, primary_key=False, autoincrement=False, nullable=True)
 
-    # 工艺段:
-    ProductUnit = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+	# 罐盖状态
+	TankOver = Column(Boolean, primary_key=False, autoincrement=False, nullable=True)
 
-    # 工艺段tag
-    # ProductUnitTag = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+	# 工艺段:
+	ProductUnit = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
 
-    # 批次对应的opc变量名
-    Batch = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+	# 批次对应的opc变量名
+	Batch = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
 
-    # 品名对应的opc变量名
-    Brand = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+	# 品名对应的opc变量名
+	Brand = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
 
-    # 刷新时间:
-    Refresh_Date = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
-# all = session.query(OpcTag).all()
-# print(all)
-# for oclass in all:
-# 	session.delete(oclass)
-# 	session.commit()
-#equipment.BrandOpcTag, task.BrandName
-# equipment.BatchOpcTag, task.BatchID
-# first = session.query(Equipment.BrandOpcTag).filter_by(EQPCode='R1101-1').first()
-# second = session.query(ZYTask.BrandName).first()
-# print(first,second)
-# first = session.query(Equipment.BatchOpcTag).filter_by(EQPCode='R1101-1').first()
-# second = session.query(ZYTask.BatchID).first()
-# print(first,second)
+	# 料液高度
+	Height = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+
+	# 体积
+	Volumn = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+
+	# 进料时间
+	Feed_Time = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+
+	# 流量
+	Flow = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+
+	# 温度
+	Temperature = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+
+	# 刷新时间:
+	Refresh_Date = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+
 # 生成表单的执行语句
 Base.metadata.create_all(engine)
 
