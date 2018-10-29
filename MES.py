@@ -4294,10 +4294,11 @@ def processMonitor():
 
 @app.route('/processMonitorLine/extract')
 def extract():
-    if request.method == 'POST':
+    if request.method == 'GET':
         try:
             equip1 = db_session.query(ProductionMonitor).filter_by(EQPName='提取设备一').all()
-            time = datetime.datetime.strptime(equip1.Refresh_Date, "%Y-%m-%d %H:%M:%S")
+            time = str(equip1.Refresh_Date)[0:equip1.Refresh_Date.indesx('.')]
+            time = datetime.datetime.strptime(time, "%Y-%m-%d %H:%M:%S")
             equip1_data = {'a1': equip1.Batch,'a2':time.hour,'a3':time.minute,'a4':time.second,'a5':equip1.TankOver,'a6':equip1.Equipment_State,'a7':equip1.Height}
             equip2 = db_session.query(ProductionMonitor).filter_by(EQPName='提取设备二').all()
             time = datetime.datetime.strptime(equip2.Refresh_Date, "%Y-%m-%d %H:%M:%S")
