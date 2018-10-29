@@ -5429,8 +5429,17 @@ def MaterielBalanceSearch():
                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
                 Name = current_user.Name
-                total = db_session.query(PlanManager.ID).filter(PlanManager.PlanStatus.in_((20, 40, 50, 60, 70))).count()
-                oclass = db_session.query(PlanManager).filter(PlanManager.PlanStatus.in_((20, 40, 50, 60, 70))).order_by(desc("PlanBeginTime")).all()[inipage:endpage]
+                BatchID = data['BatchID']
+                BrandName = data['name']
+                if BatchID == None or BatchID == "":
+                    total = db_session.query(PlanManager.ID).filter(PlanManager.PlanStatus.in_((20, 40, 50, 60, 70)), PlanManager.BrandName == BrandName).count()
+                    oclass = db_session.query(PlanManager).filter(PlanManager.PlanStatus.in_((20, 40, 50, 60, 70)), PlanManager.BrandName == BrandName).order_by(desc("PlanBeginTime")).all()[inipage:endpage]
+                else:
+                    total = db_session.query(PlanManager.ID).filter(PlanManager.BatchID == BatchID, PlanManager.BrandName == BrandName,
+                        PlanManager.PlanStatus.in_((20, 40, 50, 60, 70))).count()
+                    oclass = db_session.query(PlanManager).filter(PlanManager.BatchID == BatchID, PlanManager.BrandName == BrandName,
+                        PlanManager.PlanStatus.in_((20, 40, 50, 60, 70))).order_by(desc("PlanBeginTime")).all()[
+                             inipage:endpage]
                 jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
                 return '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
         except Exception as e:
