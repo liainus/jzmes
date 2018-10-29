@@ -5501,7 +5501,6 @@ def maindaiban():
             # Name = current_user.Name
             oclass = db_session.query(PlanManager).filter(PlanManager.PlanStatus != "70").order_by(
                 desc("PlanBeginTime")).all()
-            print(json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False))
             return json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
             # roleclass = db_session.query(Role).join(User, Role.RoleName == User.RoleName).filter(User.Name == Name).all()
             # for rol in roleclass:
@@ -5532,10 +5531,6 @@ def souyesearch():
             insertSyslog("error", "首页查询报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
-
-@app.route('/aa')
-def aa():
-    return render_template('aa.html')
 
 # 操作手册
 @app.route('/CreateOperationManual', methods=['POST', 'GET'])
