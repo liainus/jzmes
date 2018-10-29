@@ -4518,13 +4518,18 @@ def saveEQPCode():
                 ID = data['ID']
                 oclass = db_session.query(ZYTask).filter(ZYTask.ID == ID).first()
                 PUID = oclass.PUID
+                oclasstasks = db_session.query(ZYTask).filter(ZYTask.PUID == PUID,
+                                                              ZYTask.BatchID == oclass.BatchID).all()
+                equipments = db_session.query(Pequipment).filter(Pequipment.PUID == PUID).all()
+                # for eq in equipments:
+                # 
+                # for tas in oclasstasks:
+                #     tas.EquipmentID =
                 oclass.EquipmentID = EQPCode
                 oclass.TaskStatus = Model.Global.TASKSTATUS.COMFIRM.value
                 db_session.commit()
                 IDm = db_session.query(PlanManager.ID).filter(PlanManager.BatchID == oclass.BatchID).first()
                 IDm = IDm[0]
-                oclasstasks = db_session.query(ZYTask).filter(ZYTask.PUID == PUID,
-                                                             ZYTask.BatchID == oclass.BatchID).all()
                 flag = "TRUE"
                 for task in oclasstasks:
                     if(task.TaskStatus != Model.Global.TASKSTATUS.COMFIRM.value):
