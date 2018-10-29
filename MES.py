@@ -26,7 +26,7 @@ from Model.core import Enterprise, Area, Factory, ProductLine, ProcessUnit, Equi
     ProductUnit, ProductRule, ZYTask, ZYPlanMaterial, ZYPlan, Unit, PlanManager, SchedulePlan, ProductControlTask, \
     OpcServer, Pequipment, WorkFlowStatus, WorkFlowEventZYPlan, WorkFlowEventPlan, \
     OpcTag, CollectParamsTemplate, CollectParams, Collectionstrategy, CollectTask, \
-    CollectTaskCollection, ReadyWork, NodeIdNote, ProductUnitRoute
+    CollectTaskCollection, ReadyWork, NodeIdNote, ProductUnitRoute, ProductionMonitor
 from Model.system import Role, Organization, User, Menu, Role_Menu, BatchMaterielBalance, OperationManual
 from tools.MESLogger import MESLogger
 from Model.core import SysLog
@@ -4318,7 +4318,7 @@ def extract():
             equip6 = db_session.query(ProductionMonitor).filter_by(EQPName='提取设备六').all()
             time = datetime.datetime.strptime(equip6.Refresh_Date, "%Y-%m-%d %H:%M:%S")
             equip6_data = {'f1': equip6.Batch, 'f2': time.hour, 'f3': time.minute, 'f4': time.second,
-                           'f5': equip6.TankOver, 'f6': equip6.Equipment_State'f7':equip6.Height}
+                           'f5': equip6.TankOver, 'f6': equip6.Equipment_State,'f7':equip6.Height}
             Equips_data = [equip1_data,equip2_data,equip3_data,equip4_data,equip5_data,equip6_data]
             return Equips_data
         except Exception as e:
