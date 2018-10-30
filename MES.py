@@ -2,7 +2,7 @@
 import datetime
 import decimal
 import json
-import os
+import os,time
 import re
 import string
 from io import StringIO
@@ -4293,13 +4293,14 @@ def processMonitor():
     return render_template('processMonitorLine.html')
 
 def time_transform(equip_object):
-    if equip_object.Refresh_Date is None:
-        equip_object.Refresh_Date = datetime.datetime.now()
-    time_str = str(equip_object.Refresh_Date)
+    if equip_object.Feed_Time is None:
+        equip_object.Feed_Time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+    time_str = str(equip_object.Feed_Time)
     time = time_str[0:time_str.index('.')]
     time = datetime.datetime.strptime(time, "%Y-%m-%d %H:%M:%S")
     return time
 
+# 生产监控提取段——健胃消食片
 @app.route('/processMonitorLine/extract')
 def extract():
     if request.method == 'GET':
@@ -4340,6 +4341,88 @@ def extract():
             print(e)
             logger.error(e)
             insertSyslog("error", "生长线监控提取段数据获取报错Error：" + str(e), current_user.Name)
+
+def standing_consentrate_collect(a,b,c,d,e,f,g,h,j):
+    Equips_data = {}
+    equip1 = db_session.query(ProductionMonitor).filter_by(EQPName=a).first()
+    time = time_transform(equip1)
+    equip1_data = {'a1': equip1.Batch, 'a2': time.hour, 'a3': time.minute, 'a4': time.second, 'a5': equip1.TankOver,
+                   'a6': equip1.Equipment_State, 'a7': round(equip1.Volume)}
+    Equips_data.update(equip1_data)
+    equip2 = db_session.query(ProductionMonitor).filter_by(EQPName=b).first()
+    time = time_transform(equip2)
+    equip2_data = {'b1': equip2.Batch, 'b2': time.hour, 'b3': time.minute, 'b4': time.second,
+                   'b5': equip2.TankOver, 'b6': equip2.Equipment_State, 'b7': round(equip2.Volume)}
+    Equips_data.update(equip2_data)
+    equip3 = db_session.query(ProductionMonitor).filter_by(EQPName=c).first()
+    time = time_transform(equip3)
+    equip3_data = {'c1': equip3.Batch, 'c2': time.hour, 'c3': time.minute, 'c4': time.second,
+                   'c5': equip3.TankOver, 'c6': equip3.Equipment_State, 'c7': round(equip3.Volume)}
+    Equips_data.update(equip3_data)
+    equip4 = db_session.query(ProductionMonitor).filter_by(EQPName=d).first()
+    time = time_transform(equip4)
+    equip4_data = {'d1': equip4.Batch, 'd2': time.hour, 'd3': time.minute, 'd4': time.second,
+                   'd5': equip4.TankOver, 'd6': equip4.Equipment_State, 'd7': round(equip4.Volume)}
+    Equips_data.update(equip4_data)
+    equip5 = db_session.query(ProductionMonitor).filter_by(EQPName=e).first()
+    time = time_transform(equip5)
+    equip5_data = {'e1': equip5.Batch, 'e2': time.hour, 'e3': time.minute, 'e4': time.second,
+                   'e5': equip5.TankOver, 'e6': equip5.Equipment_State, 'e7': round(equip5.Volume)}
+    Equips_data.update(equip5_data)
+    equip6 = db_session.query(ProductionMonitor).filter_by(EQPName=f).first()
+    time = time_transform(equip6)
+    equip6_data = {'f1': equip6.Batch, 'f2': time.hour, 'f3': time.minute, 'f4': time.second,
+                   'f5': equip6.TankOver, 'f6': equip6.Equipment_State, 'f7': round(equip6.Volume)}
+    Equips_data.update(equip6_data)
+    equip7 = db_session.query(ProductionMonitor).filter_by(EQPName=g).first()
+    time = time_transform(equip7)
+    equip7_data = {'g1': equip7.Batch, 'g2': time.hour, 'g3': time.minute, 'g4': time.second,
+                   'g5': equip7.TankOver, 'g6': equip7.Equipment_State, 'g7': round(equip7.Volume)}
+    Equips_data.update(equip7_data)
+    equip8 = db_session.query(ProductionMonitor).filter_by(EQPName=h).first()
+    time = time_transform(equip8)
+    equip8_data = {'h1': equip8.Batch, 'h2': time.hour, 'h3': time.minute, 'h4': time.second,
+                   'h5': equip8.TankOver, 'h6': equip8.Equipment_State, 'h7': round(equip8.Volume)}
+    Equips_data.update(equip8_data)
+    equip9 = db_session.query(ProductionMonitor).filter_by(EQPName=j).first()
+    time = time_transform(equip9)
+    equip9_data = {'j1': equip9.Batch, 'j2': time.hour, 'j3': time.minute, 'j4': time.second,
+                   'j5': equip9.TankOver, 'j6': equip9.Equipment_State, 'j7': round(equip9.Volume)}
+    Equips_data.update(equip9_data)
+    return Equips_data
+
+# 生产监控静止浓缩段-健胃消食片
+@app.route('/processMonitorLine/StandingAndConsentrate')
+def StandingAndConsentrate():
+    if request.method == 'GET':
+        try:
+            data = request.values
+            group = data['group']
+            if group is None:
+                return
+            if group == 'A':
+                equipments_data = standing_consentrate_collect(a='提取设备一', b='静置设备1-1', c='静置设备1-2', d='静置设备1-3',
+                                                               e='提取设备二', f='静置设备2-1', g='静置设备2-2', h='静置设备2-3',
+                                                               j='浓缩设备一')
+                jsonsz = json.dumps(equipments_data, cls=AlchemyEncoder, ensure_ascii=False)
+                return jsonsz
+            if group == 'B':
+                equipments_data = standing_consentrate_collect(a='提取设备三', b='静置设备3-1', c='静置设备3-2', d='静置设备3-3',
+                                                               e='提取设备四', f='静置设备4-1', g='静置设备4-2', h='静置设备4-3',
+                                                               j='浓缩设备二')
+                jsonsz = json.dumps(equipments_data, cls=AlchemyEncoder, ensure_ascii=False)
+                return jsonsz
+            if group == 'C':
+                equipments_data = standing_consentrate_collect(a='提取设备五', b='静置设备5-1', c='静置设备5-2', d='静置设备5-3',
+                                                               e='提取设备六', f='静置设备6-1', g='静置设备6-2', h='静置设备6-3',
+                                                               j='浓缩设备三')
+                jsonsz = json.dumps(equipments_data, cls=AlchemyEncoder, ensure_ascii=False)
+                return jsonsz
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "生长线监控静止浓缩段数据获取报错Error：" + str(e), current_user.Name)
+
 
 #任务确认
 @app.route('/taskConfirm')
