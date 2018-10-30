@@ -285,7 +285,7 @@ class BatchMaterielBalance(Base):
     OperationDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
 
 
-# 操作手册
+# 设备操作手册
 class OperationManual(Base):
     __tablename__ = 'OperationManual'
     # id:
@@ -305,6 +305,108 @@ class OperationManual(Base):
 
     # 操作时间:
     UploadDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+
+# 批记录操作步骤（SOP）
+class OperationProcedure(Base):
+    __tablename__ = 'OperationProcedure'
+    # id:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+    # 批次号:
+    BatchID = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 工艺段ID:
+    PUID = Column(Integer, nullable=False, primary_key=False)
+
+    # 设备编码
+    EQPCode = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+
+    # 操作步骤内容:
+    Content = Column(String(800), primary_key=False, autoincrement=False, nullable=True)
+
+    # 操作值:
+    OperationpValue = Column(Unicode(20), primary_key=False, autoincrement=False, nullable=True)
+
+    # 开始时间:
+    StartTime = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+
+    # 结束时间:
+    EndTime = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+
+    # 类型:
+    Type = Column(String(800), primary_key=False, autoincrement=False, nullable=True)
+
+    #顺序号:
+    Seq = Column(Unicode(32), primary_key = False, autoincrement = False, nullable = True)
+
+    # 描述:
+    Description = Column(String(800), primary_key=False, autoincrement=False, nullable=True)
+
+# 电子批记录
+class ElectronicBatch(Base):
+    __tablename__ = 'ElectronicBatch'
+    # id:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+    # 批次号:
+    BatchID = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 工艺段ID:
+    PUID = Column(Integer, nullable=False, primary_key=False)
+
+    # 设备编码
+    EQPCode = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+
+    # 类型:
+    Type = Column(Unicode(800), primary_key=False, autoincrement=False, nullable=True)
+
+    # 采样值:
+    SampleValue = Column(Unicode(800), primary_key=False, autoincrement=False, nullable=True)
+
+    # 采样时间:
+    SampleDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+
+    # 描述:
+    Description = Column(Unicode(800), primary_key=False, autoincrement=False, nullable=True)
+
+# 质量控制
+class QualityControl(Base):
+    __tablename__ = 'QualityControl'
+    # id:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+    # 批次号:
+    BatchID = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 工艺段ID:
+    PUID = Column(Integer, nullable=False, primary_key=False)
+
+    # 设备编码
+    EQPCode = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+
+    # 温度:
+    Temperature = Column(Unicode(20), primary_key=False, autoincrement=False, nullable=True)
+
+    # 比重值:
+    ProportionValue = Column(Unicode(20), primary_key=False, autoincrement=False, nullable=True)
+
+    # 测量时间:
+    MeasureDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+
+    # 描述:
+    Description = Column(Unicode(800), primary_key=False, autoincrement=False, nullable=True)
+
+# 类型
+class Type(Base):
+    __tablename__ = 'Type'
+    # id:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+    # 类型编码:
+    TypeCode = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
+
+    # 类型描述:
+    TypeDescription = Column(Unicode(100), primary_key=False, autoincrement=False, nullable=True)
 
 
 # 生成表单的执行语句

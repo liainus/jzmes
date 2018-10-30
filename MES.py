@@ -4535,12 +4535,48 @@ def saveEQPCode():
                 oclasstasks = db_session.query(ZYTask).filter(ZYTask.PUID == PUID,
                                                               ZYTask.BatchID == oclass.BatchID).all()
                 equipments = db_session.query(Pequipment).filter(Pequipment.PUID == PUID).all()
-                # for eq in equipments:
-                # 
-                # for tas in oclasstasks:
-                #     tas.EquipmentID =
-                oclass.EquipmentID = EQPCode
-                oclass.TaskStatus = Model.Global.TASKSTATUS.COMFIRM.value
+                code1 = ""
+                code2 = ""
+                code3 = ""
+                code4 = ""
+                code5 = ""
+                code6 = ""
+                for i in range(len(equipments)):
+                    if(i == 0):
+                        code1 = equipments[i].EQPCode
+                    elif(i == 1):
+                        code2 = equipments[i].EQPCode
+                    elif(i == 2):
+                        code3 = equipments[i].EQPCode
+                    elif(i == 3):
+                        code4 = equipments[i].EQPCode
+                    elif(i == 4):
+                        code5 = equipments[i].EQPCode
+                    elif(i == 5):
+                        code6 = equipments[i].EQPCode
+                if(EQPCode == None or EQPCode == ""):
+                    for i in range(len(oclasstasks)):
+                        if (i == 0):
+                            oclasstasks[i].EquipmentID = code1
+                            oclasstasks[i].TaskStatus = Model.Global.TASKSTATUS.COMFIRM.value
+                        elif (i == 1):
+                            oclasstasks[i].EquipmentID = code2
+                            oclasstasks[i].TaskStatus = Model.Global.TASKSTATUS.COMFIRM.value
+                        elif (i == 2):
+                            oclasstasks[i].EquipmentID = code3
+                            oclasstasks[i].TaskStatus = Model.Global.TASKSTATUS.COMFIRM.value
+                        elif (i == 3):
+                            oclasstasks[i].EquipmentID = code4
+                            oclasstasks[i].TaskStatus = Model.Global.TASKSTATUS.COMFIRM.value
+                        elif (i == 4):
+                            oclasstasks[i].EquipmentID = code5
+                            oclasstasks[i].TaskStatus = Model.Global.TASKSTATUS.COMFIRM.value
+                        elif (i == 5):
+                            oclasstasks[i].EquipmentID = code6
+                            oclasstasks[i].TaskStatus = Model.Global.TASKSTATUS.COMFIRM.value
+                else:
+                    oclass.EquipmentID = EQPCode
+                    oclass.TaskStatus = Model.Global.TASKSTATUS.COMFIRM.value
                 db_session.commit()
                 IDm = db_session.query(PlanManager.ID).filter(PlanManager.BatchID == oclass.BatchID).first()
                 IDm = IDm[0]
