@@ -4304,30 +4304,37 @@ def time_transform(equip_object):
 def extract():
     if request.method == 'GET':
         try:
+            Equips_data = {}
             equip1 = db_session.query(ProductionMonitor).filter_by(EQPName='提取设备一').first()
             time = time_transform(equip1)
             equip1_data = {'a1': equip1.Batch,'a2':time.hour,'a3':time.minute,'a4':time.second,'a5':equip1.TankOver,'a6':equip1.Equipment_State,'a7':equip1.Height}
+            Equips_data.update(equip1_data)
             equip2 = db_session.query(ProductionMonitor).filter_by(EQPName='提取设备二').first()
             time = time_transform(equip2)
             equip2_data = {'b1': equip2.Batch, 'b2': time.hour, 'b3': time.minute, 'b4': time.second,
                            'b5': equip2.TankOver, 'b6': equip2.Equipment_State,'b7':equip2.Height}
+            Equips_data.update(equip2_data)
             equip3 = db_session.query(ProductionMonitor).filter_by(EQPName='提取设备三').first()
             time = time_transform(equip3)
             equip3_data = {'c1': equip3.Batch, 'c2': time.hour, 'c3': time.minute, 'c4': time.second,
                            'c5': equip3.TankOver, 'c6': equip3.Equipment_State,'c7':equip3.Height}
+            Equips_data.update(equip3_data)
             equip4 = db_session.query(ProductionMonitor).filter_by(EQPName='提取设备四').first()
             time = time_transform(equip4)
             equip4_data = {'d1': equip4.Batch, 'd2': time.hour, 'd3': time.minute, 'd4': time.second,
                            'd5': equip4.TankOver, 'd6': equip4.Equipment_State,'d7':equip4.Height}
+            Equips_data.update(equip4_data)
             equip5 = db_session.query(ProductionMonitor).filter_by(EQPName='提取设备五').first()
             time = time_transform(equip5)
             equip5_data = {'e1': equip5.Batch, 'e2': time.hour, 'e3': time.minute, 'e4': time.second,
                            'e5': equip5.TankOver, 'e6': equip5.Equipment_State,'e7':equip5.Height}
+            Equips_data.update(equip5_data)
             equip6 = db_session.query(ProductionMonitor).filter_by(EQPName='提取设备六').first()
             time = time_transform(equip6)
             equip6_data = {'f1': equip6.Batch, 'f2': time.hour, 'f3': time.minute, 'f4': time.second,
                            'f5': equip6.TankOver, 'f6': equip6.Equipment_State,'f7':equip6.Height}
-            Equips_data = [equip1_data,equip2_data,equip3_data,equip4_data,equip5_data,equip6_data]
+            Equips_data.update(equip6_data)
+            print(Equips_data)
             jsonsz = json.dumps(Equips_data, cls=AlchemyEncoder, ensure_ascii=False)
             return jsonsz
         except Exception as e:
