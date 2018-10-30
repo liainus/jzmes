@@ -4295,7 +4295,8 @@ def processMonitor():
 def time_transform(equip_object):
     if equip_object.Refresh_Date is None:
         equip_object.Refresh_Date = datetime.datetime.now()
-    time = str(equip_object.Refresh_Date)[0:equip_object.Refresh_Date.index('.')]
+    time_str = str(equip_object.Refresh_Date)
+    time = time_str[0:time_str.index('.')]
     time = datetime.datetime.strptime(time, "%Y-%m-%d %H:%M:%S")
     return time
 
