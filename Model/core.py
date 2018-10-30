@@ -3711,10 +3711,10 @@ class ProductionMonitor(Base):
 	Height = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
 
 	# 体积
-	Volumn = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+	Volume = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
 
 	# 进料时间
-	Feed_Time = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+	Feed_Time = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
 
 	# 流量
 	Flow = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
