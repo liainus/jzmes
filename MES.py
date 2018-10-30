@@ -4328,7 +4328,8 @@ def extract():
             equip6_data = {'f1': equip6.Batch, 'f2': time.hour, 'f3': time.minute, 'f4': time.second,
                            'f5': equip6.TankOver, 'f6': equip6.Equipment_State,'f7':equip6.Height}
             Equips_data = [equip1_data,equip2_data,equip3_data,equip4_data,equip5_data,equip6_data]
-            return Equips_data
+            jsonsz = json.dumps(Equips_data, cls=AlchemyEncoder, ensure_ascii=False)
+            return jsonsz
         except Exception as e:
             print(e)
             logger.error(e)
