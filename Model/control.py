@@ -154,7 +154,7 @@ class ctrlPlan:
                     # ActQuantity=0,
                     Unit=AUnit,
                     EnterTime=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-                    # PlanBeginTime=APlanBeginTime,
+                    PlanBeginTime=APlanBeginTime,
                     # PlanEndTime=APlanEndTime,
                     # ActBeginTime="",
                     # ActEndTime="",

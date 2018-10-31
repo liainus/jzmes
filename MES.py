@@ -34,7 +34,7 @@ from sqlalchemy import func
 import string
 import re
 from collections import Counter
-from Model.system import User
+from Model.system import User, OperationProcedure, ElectronicBatch, QualityControl
 from Model.Global import WeightUnit
 from Model.control import ctrlPlan
 from flask_login import LoginManager, current_user
@@ -4037,15 +4037,9 @@ def RealsePlanManagersearch():
                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
                 Name = current_user.Name
-                ABatchID = data['BatchID']  # 批次号
-                if (ABatchID == None or ABatchID == ""):
-                    total = db_session.query(PlanManager.ID).filter(PlanManager.PlanStatus == "20").count()
-                    oclass = db_session.query(PlanManager).filter(
-                        PlanManager.PlanStatus == "20").order_by(desc("PlanBeginTime")).all()[inipage:endpage]
-                else:
-                    total = db_session.query(PlanManager.ID).filter(PlanManager.PlanStatus == "20", PlanManager.BatchID == ABatchID).count()
-                    oclass = db_session.query(PlanManager).filter(
-                        PlanManager.PlanStatus == "20", PlanManager.BatchID == ABatchID).order_by(desc("PlanBeginTime")).all()[inipage:endpage]
+                total = db_session.query(PlanManager.ID).filter(PlanManager.PlanStatus == "11").count()
+                oclass = db_session.query(PlanManager).filter(
+                    PlanManager.PlanStatus == "11").order_by(desc("PlanBeginTime")).all()[inipage:endpage]
                 jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
                 return '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
         except Exception as e:
@@ -5410,8 +5404,46 @@ def electronicBatchRecord():
         data = request.values
         title = data["title"]
         session['title'] = title
-    return render_template('electronicBatchRecord.html')
-
+        ID = data["ID"]
+        oclass = db_session.query(PlanManager).filter(PlanManager.ID == ID).first()
+        if(title == "备料"):
+            re = electronicBatchRecords("备料段", oclass.BrandID, oclass.BatchID)
+            Pclass = re[0]
+            Zclass = re[1]
+        elif(title == "煎煮"):
+            re = electronicBatchRecords("煎煮段", oclass.BrandID, oclass.BatchID)
+            Pclass = re[0]
+            Zclass = re[1]
+        elif (title == "浓缩"):
+            re = electronicBatchRecords("浓缩段", oclass.BrandID, oclass.BatchID)
+            Pclass = re[0]
+            Zclass = re[1]
+        elif (title == "喷雾干燥"):
+            re = electronicBatchRecords("喷雾干燥段", oclass.BrandID, oclass.BatchID)
+            Pclass = re[0]
+            Zclass = re[1]
+        elif (title == "收粉"):
+            re = electronicBatchRecords("收粉段", oclass.BrandID, oclass.BatchID)
+            Pclass = re[0]
+            Zclass = re[1]
+        elif (title == "醇沉"):
+            re = electronicBatchRecords("醇沉段", oclass.BrandID, oclass.BatchID)
+            Pclass = re[0]
+            Zclass = re[1]
+        elif (title == "单效浓缩"):
+            re = electronicBatchRecords("单效浓缩段", oclass.BrandID, oclass.BatchID)
+            Pclass = re[0]
+            Zclass = re[1]
+        elif (title == "收膏"):
+            re = electronicBatchRecords("收膏段", oclass.BrandID, oclass.BatchID)
+            Pclass = re[0]
+            Zclass = re[1]
+    return render_template('electronicBatchRecord.html',PName=Pclass.PDUnitRouteName,PUID=Pclass.PUID,BatchID=oclass.BatchID,PlanQuantity=oclass.PlanQuantity,ActBeginTime=Zclass.ActBeginTime)
+def electronicBatchRecords(name,BrandID,BatchID):
+    Pclass = db_session.query(ProductUnitRoute).filter(ProductUnitRoute.PDUnitRouteName == name,
+                                                       ProductUnitRoute.ProductRuleID == BrandID).first()
+    Zclass = db_session.query(ZYPlan).filter(ZYPlan.BatchID == BatchID,ZYPlan.PUID == Pclass.PUID).first()
+    return Pclass,Zclass
 
 # QA放行
 @app.route('/QAauthPass')
@@ -5574,6 +5606,23 @@ def souyesearch():
             logger.error(e)
             insertSyslog("error", "首页查询报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+# 批记录查询
+@app.route('/batchjiluSearch')
+def batchjiluSearch():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            A = db_session.query(OperationProcedure.OperationpValue).filter(PlanManager.PlanStatus == "10").count()
+            B = db_session.query(ElectronicBatch.SampleValue).filter(PlanManager.PlanStatus == "11").count()
+            C = db_session.query(QualityControl.Temperature).filter(PlanManager.PlanStatus == "60").count()
+            return '{"A"' + ":" + str(A) + ',"B"' + ":" + str(B) + ',"C"' + ":" + str(C) + ',"D"' + ":" + str(C) + "}"
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "首页查询报错Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
+                              ensure_ascii=False)
 
 
 # 操作手册
