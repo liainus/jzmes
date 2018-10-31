@@ -24,27 +24,10 @@
             }
             CollectToolbar = {
                 search:function(){
-                    $.ajax({
-                        url: '/allPlanManagers/Search',
-                        method: 'POST',
-                        traditional: true,
-                        data: {BatchID:$('input[name="search"]').val()},
-                        dataType: 'json',
-                        success: function (data) {
-                            $.messager.progress('close');
-                            if (data) {
-                                $("#tab").datagrid('loadData', data);
-                                $.messager.show({
-                                    title: '提示',
-                                    timeout: 1000,
-                                    msg: '查询成功',
-                                    style: {
-                                        right: '',
-                                        top: document.body.scrollTop + document.documentElement.scrollTop,
-                                        bottom: ''
-                                    }
-                                });
-                            }
+                    var search =  $('input[name="search"]').val()
+                    $("#tab").datagrid({
+                        queryParams: {
+                            BatchID: search
                         }
                     })
                 },
@@ -415,6 +398,9 @@
             <a href="#" class="easyui-linkbutton" id="reload" data-options="iconCls:'icon-reload'" onclick="CollectToolbar.refresh();">刷新</a>
         </div>
         <table class="easyui-datagrid" id="tab" title="" style="width:100%;" data-options="
+            queryParams: {
+                BatchID: ''
+            },
             rownumbers:true,
             singleSelect:false,
             autoRowHeight:false,
