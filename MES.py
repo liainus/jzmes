@@ -4305,22 +4305,22 @@ def extract():
         try:
             Equips_data = {}
             equip1 = db_session.query(ProductionMonitor).filter_by(EQPName='提取设备一').first()
-            equip1_data = {'a1': equip1.Batch,'a2': equip1.Brand,'a5':equip1.TankOver,'a6':equip1.Equipment_State,'a7':equip1.Height}
+            equip1_data = {'a1': equip1.Batch,'a2': equip1.Brand,'a3':equip1.EQPCode,'a5':equip1.TankOver,'a6':equip1.Equipment_State,'a7':equip1.Height}
             Equips_data.update(equip1_data)
             equip2 = db_session.query(ProductionMonitor).filter_by(EQPName='提取设备二').first()
-            equip2_data = {'b1': equip2.Batch, 'b2': equip2.Brand,'b5': equip2.TankOver, 'b6': equip2.Equipment_State,'b7':equip2.Height}
+            equip2_data = {'b1': equip2.Batch, 'b2': equip2.Brand,'b3':equip2.EQPCode,'b5': equip2.TankOver, 'b6': equip2.Equipment_State,'b7':equip2.Height}
             Equips_data.update(equip2_data)
             equip3 = db_session.query(ProductionMonitor).filter_by(EQPName='提取设备三').first()
-            equip3_data = {'c1': equip3.Batch, 'c2': equip3.Brand,'c5': equip3.TankOver, 'c6': equip3.Equipment_State,'c7':equip3.Height}
+            equip3_data = {'c1': equip3.Batch, 'c2': equip3.Brand,'c3':equip3.EQPCode,'c5': equip3.TankOver, 'c6': equip3.Equipment_State,'c7':equip3.Height}
             Equips_data.update(equip3_data)
             equip4 = db_session.query(ProductionMonitor).filter_by(EQPName='提取设备四').first()
-            equip4_data = {'d1': equip4.Batch, 'd2': equip4.Brand,'d5': equip4.TankOver, 'd6': equip4.Equipment_State,'d7':equip4.Height}
+            equip4_data = {'d1': equip4.Batch, 'd2': equip4.Brand,'d3':equip4.EQPCode,'d5': equip4.TankOver, 'd6': equip4.Equipment_State,'d7':equip4.Height}
             Equips_data.update(equip4_data)
             equip5 = db_session.query(ProductionMonitor).filter_by(EQPName='提取设备五').first()
-            equip5_data = {'e1': equip5.Batch, 'e2': equip5.Brand,'e5': equip5.TankOver, 'e6': equip5.Equipment_State,'e7':equip5.Height}
+            equip5_data = {'e1': equip5.Batch, 'e2': equip5.Brand,'e3':equip5.EQPCode,'e5': equip5.TankOver, 'e6': equip5.Equipment_State,'e7':equip5.Height}
             Equips_data.update(equip5_data)
             equip6 = db_session.query(ProductionMonitor).filter_by(EQPName='提取设备六').first()
-            equip6_data = {'f1': equip6.Batch, 'f2': equip6.Brand,'f5': equip6.TankOver, 'f6': equip6.Equipment_State,'f7':equip6.Height}
+            equip6_data = {'f1': equip6.Batch, 'f2': equip6.Brand,'f3':equip6.EQPCode,'f5': equip6.TankOver, 'f6': equip6.Equipment_State,'f7':equip6.Height}
             Equips_data.update(equip6_data)
             jsonsz = json.dumps(Equips_data, cls=AlchemyEncoder, ensure_ascii=False)
             return jsonsz
@@ -4332,31 +4332,31 @@ def extract():
 def standing_consentrate_collect(a,b,c,d,e,f,g,h,j):
     Equips_data = {}
     equip1 = db_session.query(ProductionMonitor).filter_by(EQPName=a).first()
-    equip1_data = {'a1': equip1.Batch, 'a2': round(equip1.Feed_Time), 'a5': equip1.TankOver,'a6': equip1.Equipment_State, 'a7': round(equip1.Volume,1)}
+    equip1_data = {'a1': equip1.Batch, 'a2': equip1.Brand, 'a3':equip1.EQPCode,'a5': equip1.TankOver,'a6': equip1.Equipment_State}
     Equips_data.update(equip1_data)
     equip2 = db_session.query(ProductionMonitor).filter_by(EQPName=b).first()
-    equip2_data = {'b1': equip2.Batch, 'b2': round(equip2.Feed_Time),'b5': equip2.TankOver, 'b6': equip2.Equipment_State, 'b7': round(equip2.Volume,1)}
+    equip2_data = {'b1': equip2.Batch, 'b2': round(float(equip2.Feed_Time)),'b5': equip2.EQPCode, 'b6': equip2.Equipment_State, 'b7': round(float(equip2.Volume),1)}
     Equips_data.update(equip2_data)
     equip3 = db_session.query(ProductionMonitor).filter_by(EQPName=c).first()
-    equip3_data = {'c1': equip3.Batch, 'c2': round(equip3.Feed_Time),'c5': equip3.TankOver, 'c6': equip3.Equipment_State, 'c7': round(equip3.Volume,1)}
+    equip3_data = {'c1': equip3.Batch, 'c2': round(float(equip3.Feed_Time)),'c5': equip3.EQPCode, 'c6': equip3.Equipment_State, 'c7': round(float(equip3.Volume),1)}
     Equips_data.update(equip3_data)
     equip4 = db_session.query(ProductionMonitor).filter_by(EQPName=d).first()
-    equip4_data = {'d1': equip4.Batch, 'd2': round(equip4.Feed_Time),'d5': equip4.TankOver, 'd6': equip4.Equipment_State, 'd7': round(equip4.Volume,1)}
+    equip4_data = {'d1': equip4.Batch, 'd2': round(float(equip4.Feed_Time)),'d5': equip4.EQPCode, 'd6': equip4.Equipment_State, 'd7': round(float(equip4.Volume),1)}
     Equips_data.update(equip4_data)
     equip5 = db_session.query(ProductionMonitor).filter_by(EQPName=e).first()
-    equip5_data = {'e1': equip5.Batch, 'e2': round(equip5.Feed_Time),'e5': equip5.TankOver, 'e6': equip5.Equipment_State, 'e7': round(equip5.Volume,1)}
+    equip5_data = {'e1': equip5.Batch, 'e2': equip5.Brand,'e3':equip5.EQPCode,'e5': equip5.TankOver, 'e6': equip5.Equipment_State}
     Equips_data.update(equip5_data)
     equip6 = db_session.query(ProductionMonitor).filter_by(EQPName=f).first()
-    equip6_data = {'f1': equip6.Batch, 'f2': round(equip6.Feed_Time),'f5': equip6.TankOver, 'f6': equip6.Equipment_State, 'f7': round(equip6.Volume,1)}
+    equip6_data = {'f1': equip6.Batch, 'f2': round(float(equip6.Feed_Time)),'f5': equip6.EQPCode, 'f6': equip6.Equipment_State, 'f7': round(float(equip6.Volume),1)}
     Equips_data.update(equip6_data)
     equip7 = db_session.query(ProductionMonitor).filter_by(EQPName=g).first()
-    equip7_data = {'g1': equip7.Batch, 'g2': round(equip7.Feed_Time),'g5': equip7.TankOver, 'g6': equip7.Equipment_State, 'g7': round(equip7.Volume,1)}
+    equip7_data = {'g1': equip7.Batch, 'g2': round(float(equip7.Feed_Time)),'g5': equip7.EQPCode, 'g6': equip7.Equipment_State, 'g7': round(float(equip7.Volume),1)}
     Equips_data.update(equip7_data)
     equip8 = db_session.query(ProductionMonitor).filter_by(EQPName=h).first()
-    equip8_data = {'h1': equip8.Batch, 'h2': round(equip8.Feed_Time),'h5': equip8.TankOver, 'h6': equip8.Equipment_State, 'h7': round(equip8.Volume,1)}
+    equip8_data = {'h1': equip8.Batch, 'h2': round(float(equip8.Feed_Time)),'h5': equip8.EQPCode, 'h6': equip8.Equipment_State, 'h7': round(float(equip8.Volume),1)}
     Equips_data.update(equip8_data)
     equip9 = db_session.query(ProductionMonitor).filter_by(EQPName=j).first()
-    equip9_data = {'j1': equip9.Batch, 'j2': round(equip9.Feed_Time),'j5': equip9.TankOver, 'j6': equip9.Equipment_State, 'j7': round(equip9.Volume,1)}
+    equip9_data = {'i1': equip9.Batch, 'i2': equip9.Brand, 'i3': equip9.EQPCode}
     Equips_data.update(equip9_data)
     return Equips_data
 
