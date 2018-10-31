@@ -2,7 +2,7 @@
 import datetime
 import decimal
 import json
-import os,time
+import os
 import re
 import string
 from io import StringIO
@@ -4293,9 +4293,9 @@ def processMonitor():
     return render_template('processMonitorLine.html')
 
 def time_transform(equip_object):
-    if equip_object.Feed_Time is None:
-        equip_object.Feed_Time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
-    time_str = str(equip_object.Feed_Time)
+    if equip_object.Refresh_Date is None:
+        equip_object.Refresh_Date = datetime.datetime.now()
+    time_str = str(equip_object.Refresh_Date)
     time = time_str[0:time_str.index('.')]
     time = datetime.datetime.strptime(time, "%Y-%m-%d %H:%M:%S")
     return time
