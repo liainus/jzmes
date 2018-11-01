@@ -109,6 +109,7 @@ def login():
             error = '用户名或密码错误'
             return render_template('login.html', error=error)
     except Exception as e:
+        db_session.rollback()
         print(e)
         logger.error(e)
         return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
