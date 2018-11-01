@@ -4387,19 +4387,18 @@ def Total_MixtureAndDry():
     if request.method == 'GET':
         Equips_data = {}
         equip1 = db_session.query(ProductionMonitor).filter_by(EQPName='总混设备一').first()
-        equip1_data = {'a1': equip1.Batch, 'a2': equip1.Brand, 'a3': round(float(equip1.Height)), 'a4': round(float(equip1.Volume)),
-                       'a5': round(float(equip1.Flow)),'a6': round(float(equip1.Temperature))}
+        equip1_data = {'a1': equip1.Batch, 'a2': equip1.Brand, 'a3': round(float(equip1.Height),1), 'a4': round(float(equip1.Volume),1),
+                       'a5': round(float(equip1.Flow),1),'a6': round(float(equip1.Temperature),1)}
         Equips_data.update(equip1_data)
         equip2 = db_session.query(ProductionMonitor).filter_by(EQPName='干燥设备一').first()
         equip2_data = {'b1': equip2.Batch, 'b2': equip2.Brand}
         Equips_data.update(equip2_data)
         equip3 = db_session.query(ProductionMonitor).filter_by(EQPName='总混设备二').first()
-        equip3_data = {'c1': equip3.Batch, 'a2': equip3.Brand, 'a3': equip3.Height, 'a4': equip3.Volume,
-                       'a5': equip3.Flow, 'a6': equip3.Temperature}
+        equip3_data = {'c1': equip3.Batch, 'c2': equip3.Brand, 'c3': round(float(equip3.Height),1), 'c4': round(float(equip3.Volume),1),
+                       'c5': round(float(equip3.Flow),1),'c6': round(float(equip3.Temperature),1)}
         Equips_data.update(equip3_data)
         equip4 = db_session.query(ProductionMonitor).filter_by(EQPName='干燥设备二').first()
-        equip4_data = {'d1': equip4.Batch, 'd2': equip4.Brand, 'd3': round(float(equip1.Height)), 'd4': round(float(equip1.Volume)),
-                       'd5': round(float(equip1.Flow)),'d6': round(float(equip1.Temperature))}
+        equip4_data = {'d1': equip4.Batch, 'd2': equip4.Brand}
         Equips_data.update(equip4_data)
         jsonsz = json.dumps(Equips_data, cls=AlchemyEncoder, ensure_ascii=False)
         return jsonsz
