@@ -5522,7 +5522,6 @@ def electronicBatchRecord():
             re = electronicBatchRecords("收膏段", oclass.BrandID, oclass.BatchID)
             Pclass = re[0]
             Zclass = re[1]
-        menuName = ""
         RoleNames = db_session.query(User.RoleName).filter(User.Name == current_user.Name).all()
         flag = ""
         for rN in RoleNames:
@@ -5535,12 +5534,32 @@ def electronicBatchRecord():
                     flag = "83"
                 elif(menu[0] == "QA确认"):
                     flag = "84"
-    return render_template('electronicBatchRecord.html',PName=Pclass.PDUnitRouteName,PUID=Pclass.PUID,BatchID=oclass.BatchID,PlanQuantity=oclass.PlanQuantity,ActBeginTime=Zclass.ActBeginTime,flag=flag)
+    return render_template('electronicBatchRecord.html',
+                           PName=Pclass.PDUnitRouteName,PUID=Pclass.PUID,BatchID=oclass.BatchID,PlanQuantity=oclass.PlanQuantity,
+                           ActBeginTime=Zclass.ActBeginTime,OperationPeople1=re[2],CheckedPeople1=re[3],QAConfirmPeople1=re[4],OperationPeople2=re[5],
+                           CheckedPeople2=re[6],QAConfirmPeople2=re[7],flag=flag)
 def electronicBatchRecords(name,BrandID,BatchID):
     Pclass = db_session.query(ProductUnitRoute).filter(ProductUnitRoute.PDUnitRouteName == name,
                                                        ProductUnitRoute.ProductRuleID == BrandID).first()
     Zclass = db_session.query(ZYPlan).filter(ZYPlan.BatchID == BatchID,ZYPlan.PUID == Pclass.PUID).first()
-    return Pclass,Zclass
+    oclasss = db_session.query(NewReadyWork).filter(NewReadyWork.PUID == Pclass.PUID,
+                                                    NewReadyWork.BatchID == BatchID).all()
+    OperationPeople1 = ""
+    CheckedPeople1 = ""
+    QAConfirmPeople1 =""
+    OperationPeople2 = ""
+    CheckedPeople2 = ""
+    QAConfirmPeople2 =""
+    for oclass in oclasss:
+        if (oclass.Type == "1"):
+            OperationPeople1 = oclass.OperationPeople
+            CheckedPeople1 = oclass.CheckedPeople
+            QAConfirmPeople1 = oclass.QAConfirmPeople
+        if (oclass.Type == "8"):
+            OperationPeople2 = oclass.OperationPeople
+            CheckedPeople2 = oclass.CheckedPeople
+            QAConfirmPeople2 = oclass.QAConfirmPeople
+    return Pclass,Zclass,OperationPeople1,CheckedPeople1,QAConfirmPeople1,OperationPeople2,CheckedPeople2,QAConfirmPeople2
 
 # QA放行
 @app.route('/QAauthPass')
@@ -5719,9 +5738,6 @@ def batchjiluSearch():
                     dic["s1"] = oclass.ISConfirm
                     dic["StartTime1"] = str(oclass.StartTime)
                     dic["EndTime1"] = str(oclass.EndTime)
-                    dic["OperationPeople1"] = oclass.OperationPeople
-                    dic["CheckedPeople1"] = oclass.CheckedPeople
-                    dic["QAConfirmPeople1"] = oclass.QAConfirmPeople
                 elif (oclass.Type == "2"):
                     dic["s2"] = oclass.ISConfirm
                 elif (oclass.Type == "3"):
