@@ -4406,19 +4406,6 @@ def Total_MixtureAndDry():
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 #任务确认
 @app.route('/taskConfirm')
 def taskConfirm():
