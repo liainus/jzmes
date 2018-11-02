@@ -405,8 +405,47 @@ class Type(Base):
     # 类型编码:
     TypeCode = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
 
-    # 类型描述:
+    # 类型:
     TypeDescription = Column(Unicode(100), primary_key=False, autoincrement=False, nullable=True)
+
+    #描述
+    Desc = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+
+# 准备工作NEW
+class NewReadyWork(Base):
+    __tablename__ = 'NewReadyWork'
+    # id:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+    # 批次号:
+    BatchID = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 工艺段ID:
+    PUID = Column(Integer, nullable=False, primary_key=False)
+
+    # 类型:
+    Type = Column(String(800), primary_key=False, autoincrement=False, nullable=True)
+
+    # 是否打钩
+    ISConfirm = Column(Unicode(20), primary_key=False, autoincrement=False, nullable=True)
+
+    # 操作人:
+    OperationPeople = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
+
+    # 复核人:
+    CheckedPeople = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
+
+    # QA确认人:
+    QAConfirmPeople = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
+
+    # 描述:
+    Description = Column(String(800), primary_key=False, autoincrement=False, nullable=True)
+
+    # 开始时间:
+    StartTime = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+
+    # 结束时间:
+    EndTime = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
 
 
 # 生成表单的执行语句

@@ -27,7 +27,7 @@ from Model.core import Enterprise, Area, Factory, ProductLine, ProcessUnit, Equi
     OpcServer, Pequipment, WorkFlowStatus, WorkFlowEventZYPlan, WorkFlowEventPlan, \
     OpcTag, CollectParamsTemplate, CollectParams, Collectionstrategy, CollectTask, \
     CollectTaskCollection, ReadyWork, NodeIdNote, ProductUnitRoute, ProductionMonitor
-from Model.system import Role, Organization, User, Menu, Role_Menu, BatchMaterielBalance, OperationManual
+from Model.system import Role, Organization, User, Menu, Role_Menu, BatchMaterielBalance, OperationManual, NewReadyWork
 from tools.MESLogger import MESLogger
 from Model.core import SysLog
 from sqlalchemy import func
@@ -5509,12 +5509,44 @@ def electronicBatchRecord():
             re = electronicBatchRecords("收膏段", oclass.BrandID, oclass.BatchID)
             Pclass = re[0]
             Zclass = re[1]
-    return render_template('electronicBatchRecord.html',PName=Pclass.PDUnitRouteName,PUID=Pclass.PUID,BatchID=oclass.BatchID,PlanQuantity=oclass.PlanQuantity,ActBeginTime=Zclass.ActBeginTime)
+        RoleNames = db_session.query(User.RoleName).filter(User.Name == current_user.Name).all()
+        flag = ""
+        for rN in RoleNames:
+            roleID = db_session.query(Role.ID).filter(Role.RoleName == rN[0]).first()
+            menus = db_session.query(Menu.ModuleName).join(Role_Menu, isouter=True).filter_by(Role_ID=roleID).all()
+            for menu in menus:
+                if (menu[0] == "操作人确认"):
+                    flag = "82"
+                elif(menu[0] == "复核人确认"):
+                    flag = "83"
+                elif(menu[0] == "QA确认"):
+                    flag = "84"
+    return render_template('electronicBatchRecord.html',
+                           PName=Pclass.PDUnitRouteName,PUID=Pclass.PUID,BatchID=oclass.BatchID,PlanQuantity=oclass.PlanQuantity,
+                           ActBeginTime=Zclass.ActBeginTime,OperationPeople1=re[2],CheckedPeople1=re[3],QAConfirmPeople1=re[4],OperationPeople2=re[5],
+                           CheckedPeople2=re[6],QAConfirmPeople2=re[7],flag=flag)
 def electronicBatchRecords(name,BrandID,BatchID):
     Pclass = db_session.query(ProductUnitRoute).filter(ProductUnitRoute.PDUnitRouteName == name,
                                                        ProductUnitRoute.ProductRuleID == BrandID).first()
     Zclass = db_session.query(ZYPlan).filter(ZYPlan.BatchID == BatchID,ZYPlan.PUID == Pclass.PUID).first()
-    return Pclass,Zclass
+    oclasss = db_session.query(NewReadyWork).filter(NewReadyWork.PUID == Pclass.PUID,
+                                                    NewReadyWork.BatchID == BatchID).all()
+    OperationPeople1 = ""
+    CheckedPeople1 = ""
+    QAConfirmPeople1 =""
+    OperationPeople2 = ""
+    CheckedPeople2 = ""
+    QAConfirmPeople2 =""
+    for oclass in oclasss:
+        if (oclass.Type == "1"):
+            OperationPeople1 = oclass.OperationPeople
+            CheckedPeople1 = oclass.CheckedPeople
+            QAConfirmPeople1 = oclass.QAConfirmPeople
+        if (oclass.Type == "8"):
+            OperationPeople2 = oclass.OperationPeople
+            CheckedPeople2 = oclass.CheckedPeople
+            QAConfirmPeople2 = oclass.QAConfirmPeople
+    return Pclass,Zclass,OperationPeople1,CheckedPeople1,QAConfirmPeople1,OperationPeople2,CheckedPeople2,QAConfirmPeople2
 
 # QA放行
 @app.route('/QAauthPass')
@@ -5684,7 +5716,49 @@ def batchjiluSearch():
     if request.method == 'GET':
         data = request.values
         try:
-            A = db_session.query(OperationProcedure.OperationpValue).filter(PlanManager.PlanStatus == "10").count()
+            PUID = data["PUID"]
+            BatchID = data["BatchID"]
+            oclasss = db_session.query(NewReadyWork).filter(NewReadyWork.PUID == PUID, NewReadyWork.BatchID == BatchID).all()
+            dic = {}
+            for oclass in oclasss:
+                if(oclass.Type=="1"):
+                    dic["s1"] = oclass.ISConfirm
+                    dic["StartTime1"] = str(oclass.StartTime)
+                    dic["EndTime1"] = str(oclass.EndTime)
+                elif (oclass.Type == "2"):
+                    dic["s2"] = oclass.ISConfirm
+                elif (oclass.Type == "3"):
+                    dic["s3"] = oclass.ISConfirm
+                elif (oclass.Type == "4"):
+                    dic["s4"] = oclass.ISConfirm
+                elif (oclass.Type == "5"):
+                    dic["s5"] = oclass.ISConfirm
+                elif (oclass.Type == "6"):
+                    dic["s6"] = oclass.ISConfirm
+                elif (oclass.Type == "7"):
+                    dic["s7"] = oclass.ISConfirm
+                elif (oclass.Type == "8"):
+                    dic["s8"] = oclass.ISConfirm
+                    dic["StartTime2"] = str(oclass.StartTime)
+                    dic["EndTime2"] = str(oclass.EndTime)
+                    dic["OperationPeople2"] = oclass.OperationPeople
+                    dic["CheckedPeople2"] = oclass.CheckedPeople
+                    dic["QAConfirmPeople2"] = oclass.QAConfirmPeople
+                elif (oclass.Type == "9"):
+                    dic["s9"] = oclass.ISConfirm
+                elif (oclass.Type == "10"):
+                    dic["s10"] = oclass.ISConfirm
+                elif (oclass.Type == "11"):
+                    dic["s11"] = oclass.ISConfirm
+                elif (oclass.Type == "12"):
+                    dic["s12"] = oclass.ISConfirm
+                elif (oclass.Type == "13"):
+                    dic["s13"] = oclass.ISConfirm
+                elif (oclass.Type == "14"):
+                    dic["s14"] = oclass.ISConfirm
+            print(dic)
+            return json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False)
+            A = db_session.query(OperationProcedure.OperationpValue).filter(OperationProcedure.EQPCode == "10").count()
             B = db_session.query(ElectronicBatch.SampleValue).filter(PlanManager.PlanStatus == "11").count()
             C = db_session.query(QualityControl.Temperature).filter(PlanManager.PlanStatus == "60").count()
             return '{"A"' + ":" + str(A) + ',"B"' + ":" + str(B) + ',"C"' + ":" + str(C) + ',"D"' + ":" + str(C) + "}"
