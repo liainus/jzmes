@@ -447,6 +447,43 @@ class NewReadyWork(Base):
     # 结束时间:
     EndTime = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
 
+# 设备运转情况表
+class EquipmentWork(Base):
+    __tablename__ = 'EquipmentWork'
+    # id:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+    # 批次号:
+    BatchID = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 工艺段ID:
+    PUID = Column(Integer, nullable=False, primary_key=False)
+
+    # 设备名称:
+    EQPName = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+
+    # 设备编码
+    EQPCode = Column(Unicode(30), primary_key=False, autoincrement=False, nullable=True)
+
+    # 设备运转情况
+    ISNormal = Column(Unicode(20), primary_key=False, autoincrement=False, nullable=True)
+
+    # 操作人:
+    OperationPeople = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
+
+    # 复核人:
+    CheckedPeople = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
+
+    # 生产过程是否符合安全管理规定:
+    IsStandard = Column(String(20), primary_key=False, autoincrement=False, nullable=True)
+
+    # QA确认人:
+    QAConfirmPeople = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
+
+    # 操作时间:
+    OperationDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+
+
 
 # 生成表单的执行语句
 Base.metadata.create_all(engine)
