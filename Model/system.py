@@ -406,7 +406,7 @@ class Type(Base):
     TypeCode = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
 
     # 类型:
-    TypeDescription = Column(Unicode(100), primary_key=False, autoincrement=False, nullable=True)
+    TypeDescription = Column(Unicode(200), primary_key=False, autoincrement=False, nullable=True)
 
     #描述
     Desc = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
