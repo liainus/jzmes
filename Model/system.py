@@ -488,7 +488,3 @@ class EquipmentWork(Base):
 # 生成表单的执行语句
 Base.metadata.create_all(engine)
 
-# users_data = db_session.query(User).join(user_role, isouter=True).filter_by(Role_ID=1).all()
-# print(users_data)
-# per_data = db_session.query(Permission.Per_ID).join(Permission_User, isouter=True).filter_by(User_ID=1).all()
-# print(per_data)
