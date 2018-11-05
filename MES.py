@@ -4701,7 +4701,7 @@ def searchAllEquipments():
             if len(jsonstr) > 10:
                 APUID = data['PUID']  # 工艺段编码
                 dataequipmentNames = []
-                equipmentNames = db_session.query(Pequipment.EQPCode,Pequipment.EQPName).filter(Pequipment.PUID == APUID).all()
+                equipmentNames = db_session.query(Pequipment.ID,Pequipment.EQPName).filter(Pequipment.PUID == APUID).all()
                 for equip in equipmentNames:
                     li = list(equip)
                     id = li[0]
@@ -4738,17 +4738,17 @@ def saveEQPCode():
                 code6 = ""
                 for i in range(len(equipments)):
                     if(i == 0):
-                        code1 = equipments[i].EQPCode
+                        code1 = equipments[i].ID
                     elif(i == 1):
-                        code2 = equipments[i].EQPCode
+                        code2 = equipments[i].ID
                     elif(i == 2):
-                        code3 = equipments[i].EQPCode
+                        code3 = equipments[i].ID
                     elif(i == 3):
-                        code4 = equipments[i].EQPCode
+                        code4 = equipments[i].ID
                     elif(i == 4):
-                        code5 = equipments[i].EQPCode
+                        code5 = equipments[i].ID
                     elif(i == 5):
-                        code6 = equipments[i].EQPCode
+                        code6 = equipments[i].ID
                 if(EQPCode == None or EQPCode == ""):
                     for i in range(len(oclasstasks)):
                         if (i == 0):
@@ -5659,6 +5659,37 @@ def electronicBatchRecord():
         QAConfirmPeople_c6 = ""
         OperationPeople_c7 = ""
         CheckedPeople_c7 = ""
+
+        OperationPeople_d1 = ""
+        CheckedPeople_d1 = ""
+        QAConfirmPeople_d1 = ""
+        OperationPeople_d2 = ""
+        CheckedPeople_d2 = ""
+        OperationPeople_d3 = ""
+        CheckedPeople_d3 = ""
+        QAConfirmPeople_d3 = ""
+        OperationPeople_d4 = ""
+        CheckedPeople_d4 = ""
+
+        OperationPeople_e1 = ""
+        CheckedPeople_e1 = ""
+        QAConfirmPeople_e1 = ""
+        OperationPeople_e2 = ""
+        CheckedPeople_e2 = ""
+        QAConfirmPeople_e2 = ""
+        OperationPeople_e3 = ""
+        CheckedPeople_e3 = ""
+        QAConfirmPeople_e3 = ""
+        QAConfirmPeople_e4 = ""
+        OperationPeople_e5 = ""
+        CheckedPeople_e5 = ""
+        OperationPeople_e6 = ""
+        CheckedPeople_e6 = ""
+        QAConfirmPeople_e6 = ""
+        OperationPeople_e7 = ""
+        CheckedPeople_e7 = ""
+        OperationPeople_e8 = ""
+        CheckedPeople_e8 = ""
         if(title == "备料"):
             re = electronicBatchRecords("备料段", oclass.BrandID, oclass.BatchID, ID)
             Pclass = re[0]
@@ -5801,8 +5832,8 @@ def electronicBatchRecord():
             Pclass = re[0]
             Zclass = re[1]
             if (re[2] != None):
-                OperationPeople_e8 = re[2].OperationPeople
-                CheckedPeople_e8 = re[2].CheckedPeople
+                OperationPeople_e7 = re[2].OperationPeople
+                CheckedPeople_e7 = re[2].CheckedPeople
             Noclas = re[3]
             for no in Noclas:
                 if (no.name == "（收粉段）生产前准备（操作人）"):
@@ -5818,22 +5849,27 @@ def electronicBatchRecord():
                 elif (no.name == "收粉开始，操作按SOP执行（QA签名）"):
                     QAConfirmPeople_e3 = no.oddUser
                 elif (no.name == "收粉结束，按SOP清场（操作人）"):
-                    OperationPeople_e7 = no.oddUser
+                    OperationPeople_e6 = no.oddUser
                 elif (no.name == "收粉结束，按SOP清场（复核人）"):
-                    CheckedPeople_e7 = no.oddUser
+                    CheckedPeople_e6 = no.oddUser
                 elif (no.name == "收粉结束，按SOP清场（QA签名）"):
-                    QAConfirmPeople_e7 = no.oddUser
+                    QAConfirmPeople_e6 = no.oddUser
             Newoclasss = db_session.query(NewReadyWork).filter(NewReadyWork.PUID == Pclass.PUID, NewReadyWork.BatchID ==
-                                                               oclass.BatchID, NewReadyWork.Type.in_(("48", "49", "50", "51"))).all()
+                                                               oclass.BatchID, NewReadyWork.Type.in_(("48", "50", "51", "52"))).all()
             if(len(Newoclasss) > 0):
                 for nc in Newoclasss:
                     if(nc.Type == "48"):
                         OperationPeople_e2 = nc.OperationPeople
                         CheckedPeople_e2 = nc.CheckedPeople
                         QAConfirmPeople_e2 = nc.QAConfirmPeople
-                    elif(nc.Type == "49"):
+                    elif(nc.Type == "50"):
+                        OperationPeople_e5 = nc.OperationPeople
+                        CheckedPeople_e5 = nc.CheckedPeople
+                    elif (nc.Type == "51"):
+                        OperationPeople_e8 = nc.OperationPeople
+                        CheckedPeople_e8 = nc.CheckedPeople
+                    elif (nc.Type == "52"):
                         QAConfirmPeople_e4 = nc.QAConfirmPeople
-
         elif (title == "醇沉"):
             re = electronicBatchRecords("醇沉段", oclass.BrandID, oclass.BatchID,ID)
             Pclass = re[0]
@@ -5862,7 +5898,25 @@ def electronicBatchRecord():
                            PName=Pclass.PDUnitRouteName,PUID=Pclass.PUID,BatchID=oclass.BatchID,PlanQuantity=oclass.PlanQuantity,
                            ActBeginTime=Zclass.ActBeginTime,flag=flag,OperationPeople_a1=OperationPeople_a1,CheckedPeople_a1=CheckedPeople_a1,QAConfirmPeople_a1=QAConfirmPeople_a1,
                            OperationPeople_a2=OperationPeople_a2,CheckedPeople_a2=CheckedPeople_a2,OperationPeople_a3=OperationPeople_a3,CheckedPeople_a3=CheckedPeople_a3,
-                           QAConfirmPeople_a3=QAConfirmPeople_a3,OperationPeople_a4=OperationPeople_a4,CheckedPeople_a4=CheckedPeople_a4,QAConfirmPeople_a4=QAConfirmPeople_a4,OperationPeople_a5=OperationPeople_a5,CheckedPeople_a5=CheckedPeople_a5)
+                           QAConfirmPeople_a3=QAConfirmPeople_a3,OperationPeople_a4=OperationPeople_a4,CheckedPeople_a4=CheckedPeople_a4,QAConfirmPeople_a4=QAConfirmPeople_a4,
+                           OperationPeople_a5=OperationPeople_a5,CheckedPeople_a5=CheckedPeople_a5,OperationPeople_b1 = OperationPeople_b1,CheckedPeople_b1 = CheckedPeople_b1,
+                           QAConfirmPeople_b1 = QAConfirmPeople_b1,OperationPeople_b2 = OperationPeople_b2,CheckedPeople_b2 = CheckedPeople_b2,QAConfirmPeople_b2 = QAConfirmPeople_b2,
+                           OperationPeople_b3 = OperationPeople_b3,CheckedPeople_b3 = CheckedPeople_b3,QAConfirmPeople_b3 = QAConfirmPeople_b3,OperationPeople_b4 = OperationPeople_b4,
+                           CheckedPeople_b4 = CheckedPeople_b4,QAConfirmPeople_b4 = QAConfirmPeople_b4,OperationPeople_b5 = OperationPeople_b5,CheckedPeople_b5 = CheckedPeople_b5,
+                           QAConfirmPeople_b5 = QAConfirmPeople_b5,OperationPeople_b6 = OperationPeople_b6,CheckedPeople_b6 = CheckedPeople_b6,
+                           OperationPeople_c1=OperationPeople_c1,CheckedPeople_c1 = CheckedPeople_c1,QAConfirmPeople_c1 = QAConfirmPeople_c1,OperationPeople_c2 = OperationPeople_c2,
+                           CheckedPeople_c2 = CheckedPeople_c2,QAConfirmPeople_c2 = QAConfirmPeople_c2,OperationPeople_c3 = OperationPeople_c3,CheckedPeople_c3 = CheckedPeople_c3,
+                           QAConfirmPeople_c3 = QAConfirmPeople_c3,OperationPeople_c4 = OperationPeople_c4,CheckedPeople_c4 = CheckedPeople_c4,QAConfirmPeople_c4 = QAConfirmPeople_c4,
+                           OperationPeople_c5 = OperationPeople_c5,CheckedPeople_c5 = CheckedPeople_c5,QAConfirmPeople_c5 = QAConfirmPeople_c5,OperationPeople_c6 = OperationPeople_c6,
+                           CheckedPeople_c6 = CheckedPeople_c6,QAConfirmPeople_c6 = QAConfirmPeople_c6,OperationPeople_c7 = OperationPeople_c7,CheckedPeople_c7 = CheckedPeople_c7,
+                           OperationPeople_d1=OperationPeople_d1,CheckedPeople_d1 = CheckedPeople_d1,QAConfirmPeople_d1 = QAConfirmPeople_d1,OperationPeople_d2 = OperationPeople_d2,
+                           CheckedPeople_d2 = CheckedPeople_d2,OperationPeople_d3 = OperationPeople_d3,CheckedPeople_d3 = CheckedPeople_d3,QAConfirmPeople_d3 = QAConfirmPeople_d3,
+                           OperationPeople_d4 = OperationPeople_d4,CheckedPeople_d4 = CheckedPeople_d4,
+                           OperationPeople_e1 = OperationPeople_e1,CheckedPeople_e1 = CheckedPeople_e1,QAConfirmPeople_e1 = QAConfirmPeople_e1,OperationPeople_e2 = OperationPeople_e2,
+                           CheckedPeople_e2 = CheckedPeople_e2,QAConfirmPeople_e2 = QAConfirmPeople_e2,OperationPeople_e3 = OperationPeople_e3,CheckedPeople_e3 = CheckedPeople_e3,
+                           QAConfirmPeople_e3 = QAConfirmPeople_e3,QAConfirmPeople_e4 = QAConfirmPeople_e4,OperationPeople_e5 = OperationPeople_e5,CheckedPeople_e5 = CheckedPeople_e5,
+                           OperationPeople_e6 = OperationPeople_e6,CheckedPeople_e6 = CheckedPeople_e6,QAConfirmPeople_e6 = QAConfirmPeople_e6,OperationPeople_e7 = OperationPeople_e7,
+                           CheckedPeople_e7 = CheckedPeople_e7,OperationPeople_e8 = OperationPeople_e8,CheckedPeople_e8 = CheckedPeople_e8)
 def electronicBatchRecords(name,BrandID,BatchID,ID):
     Pclass = db_session.query(ProductUnitRoute).filter(ProductUnitRoute.PDUnitRouteName == name,
                                                        ProductUnitRoute.ProductRuleID == BrandID).first()
@@ -5870,6 +5924,94 @@ def electronicBatchRecords(name,BrandID,BatchID,ID):
     Eoclas = db_session.query(EquipmentWork).filter(EquipmentWork.PUID == Pclass.PUID, EquipmentWork.BatchID == BatchID).first()
     Noclas = db_session.query(Model.node.NodeCollection).filter(Model.node.NodeCollection.oddNum == ID).all()
     return Pclass,Zclass,Eoclas,Noclas
+
+#设备工作情况确认
+@app.route('/addEquipmentWork', methods=['POST', 'GET'])
+def addEquipmentWork():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 2:
+                PUID = data['PUID']
+                BatchID = data['BatchID']
+                # EQPName = data['EQPName']
+                # EQPCode = data['EQPCode']
+                # ISNormal = data['ISNormal']
+                # IsStandard = data['IsStandard']
+                confirm = data['confirm']
+                if(confirm == "1"):
+                    db_session.add(
+                        EquipmentWork(
+                            BatchID=BatchID,
+                            PUID=PUID,
+                            # EQPName=EQPName,
+                            # EQPCode=EQPCode,
+                            # ISNormal=ISNormal,
+                            OperationPeople=current_user.Name,
+                            # CheckedPeople="",
+                            # IsStandard=IsStandard,
+                            # QAConfirmPeople="",
+                            OperationDate=datetime.datetime.now()
+                        ))
+                else:
+                    oclasss = db_session.query(EquipmentWork.CheckedPeople).filter(EquipmentWork.PUID == PUID,EquipmentWork.BatchID == BatchID).all()
+                    for oc in oclasss:
+                        oc.CheckedPeople = current_user.Name
+                        oc.OperationDate = datetime.datetime.now()
+                db_session.commit()
+                return 'OK'
+        except Exception as e:
+            db_session.rollback()
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "设备工作情况确认报错Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+# 新加流程确认复核
+@app.route('/addNewReadyWork', methods=['POST', 'GET'])
+def addNewReadyWork():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 2:
+                PUID = data['PUID']
+                BatchID = data['BatchID']
+                # EQPName = data['EQPName']
+                # EQPCode = data['EQPCode']
+                # ISNormal = data['ISNormal']
+                # IsStandard = data['IsStandard']
+                confirm = data['confirm']
+                if (confirm == "1"):
+                    db_session.add(
+                        EquipmentWork(
+                            BatchID=BatchID,
+                            PUID=PUID,
+                            # EQPName=EQPName,
+                            # EQPCode=EQPCode,
+                            # ISNormal=ISNormal,
+                            OperationPeople=current_user.Name,
+                            # CheckedPeople="",
+                            # IsStandard=IsStandard,
+                            # QAConfirmPeople="",
+                            OperationDate=datetime.datetime.now()
+                        ))
+                else:
+                    oclasss = db_session.query(EquipmentWork.CheckedPeople).filter(EquipmentWork.PUID == PUID,
+                                                                                   EquipmentWork.BatchID == BatchID).all()
+                    for oc in oclasss:
+                        oc.CheckedPeople = current_user.Name
+                        oc.OperationDate = datetime.datetime.now()
+                db_session.commit()
+                return 'OK'
+        except Exception as e:
+            db_session.rollback()
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "新加流程确认复核报错Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
+                              ensure_ascii=False)
 
 # QA放行
 @app.route('/QAauthPass')
