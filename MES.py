@@ -4701,7 +4701,7 @@ def searchAllEquipments():
             if len(jsonstr) > 10:
                 APUID = data['PUID']  # 工艺段编码
                 dataequipmentNames = []
-                equipmentNames = db_session.query(Pequipment.EQPCode,Pequipment.EQPName).filter(Pequipment.PUID == APUID).all()
+                equipmentNames = db_session.query(Pequipment.ID,Pequipment.EQPName).filter(Pequipment.PUID == APUID).all()
                 for equip in equipmentNames:
                     li = list(equip)
                     id = li[0]
@@ -4738,17 +4738,17 @@ def saveEQPCode():
                 code6 = ""
                 for i in range(len(equipments)):
                     if(i == 0):
-                        code1 = equipments[i].EQPCode
+                        code1 = equipments[i].ID
                     elif(i == 1):
-                        code2 = equipments[i].EQPCode
+                        code2 = equipments[i].ID
                     elif(i == 2):
-                        code3 = equipments[i].EQPCode
+                        code3 = equipments[i].ID
                     elif(i == 3):
-                        code4 = equipments[i].EQPCode
+                        code4 = equipments[i].ID
                     elif(i == 4):
-                        code5 = equipments[i].EQPCode
+                        code5 = equipments[i].ID
                     elif(i == 5):
-                        code6 = equipments[i].EQPCode
+                        code6 = equipments[i].ID
                 if(EQPCode == None or EQPCode == ""):
                     for i in range(len(oclasstasks)):
                         if (i == 0):
@@ -5924,6 +5924,94 @@ def electronicBatchRecords(name,BrandID,BatchID,ID):
     Eoclas = db_session.query(EquipmentWork).filter(EquipmentWork.PUID == Pclass.PUID, EquipmentWork.BatchID == BatchID).first()
     Noclas = db_session.query(Model.node.NodeCollection).filter(Model.node.NodeCollection.oddNum == ID).all()
     return Pclass,Zclass,Eoclas,Noclas
+
+#设备工作情况确认
+@app.route('/addEquipmentWork', methods=['POST', 'GET'])
+def addEquipmentWork():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 2:
+                PUID = data['PUID']
+                BatchID = data['BatchID']
+                # EQPName = data['EQPName']
+                # EQPCode = data['EQPCode']
+                # ISNormal = data['ISNormal']
+                # IsStandard = data['IsStandard']
+                confirm = data['confirm']
+                if(confirm == "1"):
+                    db_session.add(
+                        EquipmentWork(
+                            BatchID=BatchID,
+                            PUID=PUID,
+                            # EQPName=EQPName,
+                            # EQPCode=EQPCode,
+                            # ISNormal=ISNormal,
+                            OperationPeople=current_user.Name,
+                            # CheckedPeople="",
+                            # IsStandard=IsStandard,
+                            # QAConfirmPeople="",
+                            OperationDate=datetime.datetime.now()
+                        ))
+                else:
+                    oclasss = db_session.query(EquipmentWork.CheckedPeople).filter(EquipmentWork.PUID == PUID,EquipmentWork.BatchID == BatchID).all()
+                    for oc in oclasss:
+                        oc.CheckedPeople = current_user.Name
+                        oc.OperationDate = datetime.datetime.now()
+                db_session.commit()
+                return 'OK'
+        except Exception as e:
+            db_session.rollback()
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "设备工作情况确认报错Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+# 新加流程确认复核
+@app.route('/addNewReadyWork', methods=['POST', 'GET'])
+def addNewReadyWork():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 2:
+                PUID = data['PUID']
+                BatchID = data['BatchID']
+                # EQPName = data['EQPName']
+                # EQPCode = data['EQPCode']
+                # ISNormal = data['ISNormal']
+                # IsStandard = data['IsStandard']
+                confirm = data['confirm']
+                if (confirm == "1"):
+                    db_session.add(
+                        EquipmentWork(
+                            BatchID=BatchID,
+                            PUID=PUID,
+                            # EQPName=EQPName,
+                            # EQPCode=EQPCode,
+                            # ISNormal=ISNormal,
+                            OperationPeople=current_user.Name,
+                            # CheckedPeople="",
+                            # IsStandard=IsStandard,
+                            # QAConfirmPeople="",
+                            OperationDate=datetime.datetime.now()
+                        ))
+                else:
+                    oclasss = db_session.query(EquipmentWork.CheckedPeople).filter(EquipmentWork.PUID == PUID,
+                                                                                   EquipmentWork.BatchID == BatchID).all()
+                    for oc in oclasss:
+                        oc.CheckedPeople = current_user.Name
+                        oc.OperationDate = datetime.datetime.now()
+                db_session.commit()
+                return 'OK'
+        except Exception as e:
+            db_session.rollback()
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "新加流程确认复核报错Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
+                              ensure_ascii=False)
 
 # QA放行
 @app.route('/QAauthPass')
