@@ -1210,11 +1210,11 @@ def pequipmentFind():
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
                 EQPName = data['EQPName']  # 设备名称
                 if(EQPName == "" or EQPName == None):
-                    total = db_session.query(Pequipment).count()
-                    pequipments = db_session.query(Pequipment).all()[inipage:endpage]
+                    total = db_session.query(Equipment).count()
+                    pequipments = db_session.query(Equipment).all()[inipage:endpage]
                 else:
-                    total = db_session.query(Pequipment).filter(Pequipment.EQPName.like("%" + EQPName + "%")).count()
-                    pequipments = db_session.query(Pequipment).filter(Pequipment.EQPName.like("%" + EQPName + "%")).all()[inipage:endpage]
+                    total = db_session.query(Equipment).filter(Equipment.EQPName.like("%" + EQPName + "%")).count()
+                    pequipments = db_session.query(Equipment).filter(Equipment.EQPName.like("%" + EQPName + "%")).all()[inipage:endpage]
                 jsonpequipments = json.dumps(pequipments, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonpequipments = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonpequipments + "}"
                 return jsonpequipments
@@ -1256,7 +1256,7 @@ def pequipmentUpdate():
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 10:
                 id = int(data['ID'])
-                oclass = db_session.query(Pequipment).filter_by(ID=id).first()
+                oclass = db_session.query(Equipment).filter_by(ID=id).first()
                 oclass.EQPCode=data['EQPCode']
                 oclass.EQPName=data['EQPName']
                 oclass.PUID=data['PUID']
@@ -1285,7 +1285,7 @@ def pequipmentDelete():
                     # for subkey in list(key):
                     id = int(key)
                     try:
-                        oclass = db_session.query(Pequipment).filter_by(ID=id).first()
+                        oclass = db_session.query(Equipment).filter_by(ID=id).first()
                         db_session.delete(oclass)
                         db_session.commit()
                     except Exception as ee:
@@ -4701,7 +4701,7 @@ def searchAllEquipments():
             if len(jsonstr) > 10:
                 APUID = data['PUID']  # 工艺段编码
                 dataequipmentNames = []
-                equipmentNames = db_session.query(Pequipment.ID,Pequipment.EQPName).filter(Pequipment.PUID == APUID).all()
+                equipmentNames = db_session.query(Equipment.ID,Equipment.EQPName).filter(Equipment.PUID == APUID).all()
                 for equip in equipmentNames:
                     li = list(equip)
                     id = li[0]
@@ -4729,7 +4729,7 @@ def saveEQPCode():
                 PUID = oclass.PUID
                 oclasstasks = db_session.query(ZYTask).filter(ZYTask.PUID == PUID,
                                                               ZYTask.BatchID == oclass.BatchID).all()
-                equipments = db_session.query(Pequipment).filter(Pequipment.PUID == PUID).all()
+                equipments = db_session.query(Equipment).filter(Equipment.PUID == PUID).all()
                 code1 = ""
                 code2 = ""
                 code3 = ""
