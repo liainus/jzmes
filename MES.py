@@ -4492,7 +4492,7 @@ def get_data_Total_MixtureAndDry(num,Unit=None):
             Flow = share_data.get(flow_tag)
             return Batch, Brand, Height, Volume,Temperature,Flow
         if Unit == 'Dry':
-            batch_tag = '|PGPC_' + num
+            batch_tag = 't|PGPC_' + num
             brand_tag = 't|PGPM_' + num
 
             Batch = share_data.get(batch_tag)
