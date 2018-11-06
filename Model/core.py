@@ -3725,6 +3725,41 @@ class ProductionMonitor(Base):
 	# 刷新时间:
 	Refresh_Date = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
 
+
+# NewZYPlanMaterial:
+class NewZYPlanMaterial(Base):
+	__tablename__ = "NewZYPlanMaterial"
+
+	# ID:
+	ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+	# 物料名称:
+	MaterialName = Column(Float(53), primary_key=False, autoincrement=False, nullable=True)
+
+	# 物料号	:
+	MaterialCode = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+	# 批次号:
+	BatchID = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+	# 检验单号:
+	CheckedCode = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+	# 工艺段:
+	PUID = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
+
+	# 数量:
+	count = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+	# 罐号:
+	TankNum = Column(Unicode(20), primary_key=False, autoincrement=False, nullable=True)
+
+	# 单位:
+	Unit = Column(Unicode(20), primary_key=False, autoincrement=False, nullable=True)
+
+	# 录入时间:
+	EnterTime = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+
 # 生成表单的执行语句
 Base.metadata.create_all(engine)
 
