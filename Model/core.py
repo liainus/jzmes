@@ -3465,6 +3465,9 @@ class OpcTag(Base):
 	# 备注
 	Desc = Column(Unicode(100), nullable=True)
 
+	# 单位
+	Unit = Column(Unicode(100), nullable=True)
+
 
 class CollectParamsTemplate(Base):
 	__tablename__ = 'CollectParamsTemplate'
