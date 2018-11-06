@@ -6330,7 +6330,7 @@ def nodeIdNote():
                 return
             file.save(os.path.join(os.getcwd(), file.filename))
             new_file = '%s%s%s'%(os.getcwd(), "\\", file.filename)
-            data = getExcel(new_file) # [['i=1100', '温度'], ['i=1112', '气压'], ['i=1123', '湿度']]
+            data = getExcel(new_file)
             for index in data:
                 if index[1].lower() == 'note': #去表头
                     continue
