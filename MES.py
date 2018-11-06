@@ -24,7 +24,7 @@ from Model.core import Enterprise, Area, Factory, ProductLine, ProcessUnit, Equi
     ProductUnit, ProductRule, ZYTask, ZYPlanMaterial, ZYPlan, Unit, PlanManager, SchedulePlan, ProductControlTask, \
     OpcServer, Pequipment, WorkFlowStatus, WorkFlowEventZYPlan, WorkFlowEventPlan, \
     OpcTag, CollectParamsTemplate, CollectParams, Collectionstrategy, CollectTask, \
-    CollectTaskCollection, ReadyWork, NodeIdNote, ProductUnitRoute, ProductionMonitor
+    CollectTaskCollection, ReadyWork, NodeIdNote, ProductUnitRoute, ProductionMonitor, NewZYPlanMaterial
 from Model.system import Role, Organization, User, Menu, Role_Menu, BatchMaterielBalance, OperationManual, NewReadyWork, EquipmentWork
 from tools.MESLogger import MESLogger
 from Model.core import SysLog
@@ -5922,7 +5922,7 @@ def electronicBatchRecords(name,BrandID,BatchID,ID):
                                                        ProductUnitRoute.ProductRuleID == BrandID).first()
     Zclass = db_session.query(ZYPlan).filter(ZYPlan.BatchID == BatchID,ZYPlan.PUID == Pclass.PUID).first()
     Eoclas = db_session.query(EquipmentWork).filter(EquipmentWork.PUID == Pclass.PUID, EquipmentWork.BatchID == BatchID).first()
-    Noclas = db_session.query(Model.node.NodeCollection).filter(Model.node.NodeCollection.oddNum == ID).all()
+    Noclas = db_session.query(Model.node.NodeCollection).filter(Model.node.NodeCollection.oddNum == ID,Model.node.NodeCollection.status == "10").all()
     return Pclass,Zclass,Eoclas,Noclas
 
 #设备工作情况确认
@@ -6012,6 +6012,45 @@ def addNewReadyWork():
             insertSyslog("error", "新加流程确认复核报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
                               ensure_ascii=False)
+
+# 备料操作按SOP执行物料列表明细
+@app.route('/addNewZYPlanMaterial', methods=['POST', 'GET'])
+def addNewZYPlanMaterial():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 2:
+                PUID = data['PUID']
+                BatchID = data['BatchID']
+                MaterialName = data['MaterialName']# 物料名称
+                MaterialCode = data['MaterialCode']# 物料号
+                CheckedCode = data['CheckedCode']# 检验单号
+                Count = data['Count']# 数量
+                TankNum = data['TankNum']  # 罐号
+                Unit = data['Unit']  # 单位
+                db_session.add(
+                    NewZYPlanMaterial(
+                        MaterialName=MaterialName,
+                        MaterialCode=MaterialCode,
+                        BatchID=BatchID,
+                        CheckedCode=CheckedCode,
+                        PUID=PUID,
+                        Count=Count,
+                        TankNum=TankNum,
+                        Unit=Unit,
+                        EnterTime=datetime.datetime.now()
+                    ))
+                db_session.commit()
+                return 'OK'
+        except Exception as e:
+            db_session.rollback()
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "备料操作按SOP执行物料列表明细保存报错Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
+                              ensure_ascii=False)
+
 
 # QA放行
 @app.route('/QAauthPass')

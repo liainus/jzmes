@@ -3752,7 +3752,7 @@ class NewZYPlanMaterial(Base):
 	PUID = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
 
 	# 数量:
-	count = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+	Count = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
 	# 罐号:
 	TankNum = Column(Unicode(20), primary_key=False, autoincrement=False, nullable=True)
