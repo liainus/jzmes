@@ -32,7 +32,7 @@ from sqlalchemy import func
 import string
 import re
 from collections import Counter
-from Model.system import User, OperationProcedure, ElectronicBatch, QualityControl
+from Model.system import User, OperationProcedure, ElectronicBatch, QualityControl, PackMaterial
 from Model.Global import WeightUnit
 from Model.control import ctrlPlan
 from flask_login import LoginManager, current_user
@@ -5935,12 +5935,12 @@ def addEquipmentWork():
             if len(json_str) > 2:
                 PUID = data['PUID']
                 BatchID = data['BatchID']
-                # EQPName = data['EQPName']
-                # EQPCode = data['EQPCode']
-                # ISNormal = data['ISNormal']
-                # IsStandard = data['IsStandard']
+                # EQPName = data['EQPName']# 设备名称
+                # EQPCode = data['EQPCode']# 设备编码
+                # ISNormal = data['ISNormal']# 设备运转情况
+                # IsStandard = data['IsStandard']# 生产过程是否符合安全管理规定
                 confirm = data['confirm']
-                if(confirm == "1"):
+                if(confirm == "操作人"):
                     db_session.add(
                         EquipmentWork(
                             BatchID=BatchID,
@@ -5955,7 +5955,7 @@ def addEquipmentWork():
                             OperationDate=datetime.datetime.now()
                         ))
                 else:
-                    oclasss = db_session.query(EquipmentWork.CheckedPeople).filter(EquipmentWork.PUID == PUID,EquipmentWork.BatchID == BatchID).all()
+                    oclasss = db_session.query(EquipmentWork).filter(EquipmentWork.PUID == PUID,EquipmentWork.BatchID == BatchID).all()
                     for oc in oclasss:
                         oc.CheckedPeople = current_user.Name
                         oc.OperationDate = datetime.datetime.now()
@@ -6048,6 +6048,62 @@ def addNewZYPlanMaterial():
             print(e)
             logger.error(e)
             insertSyslog("error", "备料操作按SOP执行物料列表明细保存报错Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
+                              ensure_ascii=False)
+
+# 收粉结束，包装材料统计
+@app.route('/addPackMaterial', methods=['POST', 'GET'])
+def addPackMaterial():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 2:
+                PUID = data['PUID']
+                BatchID = data['BatchID']
+                MaterialName = data['MaterialName']
+                MaterialCode = data['MaterialCode']
+                ReadyUnit = data['ReadyUnit']
+                UserUnit = data['UserUnit']
+                SurplusUnit = data['SurplusUnit']
+                DefectiveUnit = data['DefectiveUnit']
+                AttritionUnit = data['AttritionUnit']
+                CancelStocksUnit = data['CancelStocksUnit']
+                OperationPeople = data['OperationPeople']
+                CheckedPeople = data['CheckedPeople']
+                QAConfirmPeople = data['QAConfirmPeople']
+                confirm = data['confirm']
+                if (confirm == "1"):
+                    db_session.add(
+                        PackMaterial(
+                            MaterialName=MaterialName,
+                            MaterialCode=MaterialCode,
+                            BatchID=BatchID,
+                            ReadyUnit=ReadyUnit,
+                            UserUnit=UserUnit,
+                            SurplusUnit=SurplusUnit,
+                            DefectiveUnit=DefectiveUnit,
+                            AttritionUnit=AttritionUnit,
+                            CancelStocksUnit=CancelStocksUnit,
+                            OperationPeople=OperationPeople,
+                            CheckedPeople=CheckedPeople,
+                            QAConfirmPeople=QAConfirmPeople,
+                            PUID=PUID,
+                            OperationDate=datetime.datetime.now()
+                        ))
+                else:
+                    oclasss = db_session.query(PackMaterial.CheckedPeople).filter(PackMaterial.PUID == PUID,
+                                                                                  PackMaterial.BatchID == BatchID).all()
+                    for oc in oclasss:
+                        oc.CheckedPeople = current_user.Name
+                        oc.OperationDate = datetime.datetime.now()
+                db_session.commit()
+                return 'OK'
+        except Exception as e:
+            db_session.rollback()
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "收粉结束，包装材料统计报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
                               ensure_ascii=False)
 
