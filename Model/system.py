@@ -351,8 +351,8 @@ class ElectronicBatch(Base):
     # 批次号:
     BatchID = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
-    # 工艺段ID:
-    PUID = Column(Integer, nullable=False, primary_key=False)
+    # 工艺路线编码：
+    PDUnitRouteCode = Column(Unicode(64), nullable=False, primary_key=False)
 
     # 设备编码
     EQPCode = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)

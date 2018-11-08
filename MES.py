@@ -5966,7 +5966,7 @@ def addEquipmentWork():
             print(e)
             logger.error(e)
             insertSyslog("error", "设备工作情况确认报错Error：" + str(e), current_user.Name)
-            return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+            return json.dumps([{"status": "设备工作情况确认报错Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 # 新加流程确认复核
 @app.route('/addNewReadyWork', methods=['POST', 'GET'])
