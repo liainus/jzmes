@@ -5944,7 +5944,7 @@ def addEquipmentWork():
                     db_session.add(
                         EquipmentWork(
                             BatchID=BatchID,
-                            PUID=PUID,
+                            PUID=int(PUID),
                             # EQPName=EQPName,
                             # EQPCode=EQPCode,
                             # ISNormal=ISNormal,
