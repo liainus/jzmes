@@ -366,6 +366,9 @@ class ElectronicBatch(Base):
     # 采样时间:
     SampleDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
 
+    # 重复次数：
+    RepeatCount = Column(Integer, primary_key=False, autoincrement=False, nullable=True,default=0)
+
     # 描述:
     Description = Column(Unicode(800), primary_key=False, autoincrement=False, nullable=True)
 
@@ -483,7 +486,53 @@ class EquipmentWork(Base):
     # 操作时间:
     OperationDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
 
+#收粉结束，包装材料统计
+class PackMaterial(Base):
+    __tablename__ = 'PackMaterial'
+    # id:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
 
+    # 名称:
+    MaterialName = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+
+    # 物料号：
+    MaterialCode = Column(Unicode(30), primary_key=False, autoincrement=False, nullable=True)
+
+    # 批号:
+    BatchID = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 准备只：
+    ReadyUnit = Column(Unicode(20), primary_key=False, autoincrement=False, nullable=True)
+
+    # 使用只：
+    UserUnit = Column(Unicode(20), primary_key=False, autoincrement=False, nullable=True)
+
+    # 余只：
+    SurplusUnit = Column(Unicode(20), primary_key=False, autoincrement=False, nullable=True)
+
+    # 不合格只：
+    DefectiveUnit = Column(Unicode(20), primary_key=False, autoincrement=False, nullable=True)
+
+    # 损耗只：
+    AttritionUnit = Column(Unicode(20), primary_key=False, autoincrement=False, nullable=True)
+
+    # 退库只：
+    CancelStocksUnit = Column(Unicode(20), primary_key=False, autoincrement=False, nullable=True)
+
+    # 统计人:
+    OperationPeople = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
+
+    # 复核人:
+    CheckedPeople = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
+
+    # QA确认人:
+    QAConfirmPeople = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
+
+    # 工艺段ID:
+    PUID = Column(Integer, nullable=False, primary_key=False)
+
+    # 操作时间:
+    OperationDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
 
 # 生成表单的执行语句
 Base.metadata.create_all(engine)
