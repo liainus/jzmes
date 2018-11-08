@@ -352,16 +352,19 @@ class ElectronicBatch(Base):
     BatchID = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
     # 工艺路线编码：
-    PDUnitRouteCode = Column(Unicode(64), nullable=False, primary_key=False)
+    PDUnitRouteCode = Column(Unicode(32), nullable=False, primary_key=False)
 
     # 设备编码
-    EQPCode = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+    EQPCode = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
     # 类型:
-    Type = Column(Unicode(800), primary_key=False, autoincrement=False, nullable=True)
+    Type = Column(Unicode(64), primary_key=False, autoincrement=False, nullable=True)
 
     # 采样值:
-    SampleValue = Column(Unicode(800), primary_key=False, autoincrement=False, nullable=True)
+    SampleValue = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 单位:
+    Unit = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
     # 采样时间:
     SampleDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
@@ -370,7 +373,7 @@ class ElectronicBatch(Base):
     RepeatCount = Column(Integer, primary_key=False, autoincrement=False, nullable=True,default=0)
 
     # 描述:
-    Description = Column(Unicode(800), primary_key=False, autoincrement=False, nullable=True)
+    Description = Column(Unicode(100), primary_key=False, autoincrement=False, nullable=True)
 
 # 质量控制
 class QualityControl(Base):
@@ -460,7 +463,7 @@ class EquipmentWork(Base):
     BatchID = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
     # 工艺段ID:
-    PUID = Column(Integer, nullable=False, primary_key=False)
+    PUID = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
 
     # 设备名称:
     EQPName = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
