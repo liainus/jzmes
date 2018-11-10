@@ -358,16 +358,16 @@ class ElectronicBatch(Base):
     EQPCode = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
     # 类型:
-    Type = Column(Unicode(64), primary_key=False, autoincrement=False, nullable=True)
+    OpcTagID = Column(Unicode(100), primary_key=False, autoincrement=False, nullable=True)
 
     # 采样值:
     SampleValue = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
-    # 单位:
-    Unit = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
-
     # 采样时间:
     SampleDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+
+    # 单位:
+    Unit = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
     # 重复次数：
     RepeatCount = Column(Integer, primary_key=False, autoincrement=False, nullable=True,default=0)
@@ -413,6 +413,21 @@ class Type(Base):
 
     # 类型:
     TypeDescription = Column(Unicode(200), primary_key=False, autoincrement=False, nullable=True)
+
+    #描述
+    Desc = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+
+# 类型模板
+class TypeCollection(Base):
+    __tablename__ = 'TypeCollection'
+    # id:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+    # 类型编码:
+    TypeCode = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
+
+    # 类型:
+    OpcTagID = Column(Unicode(100), primary_key=False, autoincrement=False, nullable=True)
 
     #描述
     Desc = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)

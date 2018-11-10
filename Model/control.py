@@ -235,7 +235,7 @@ class ctrlPlan:
                 Model.core.ProductParameter.PUID == APUID).first() #.filter(Model.core.ProductParameter.PDParaCode ==APUPara)
             if oclass is None:
                 bReturn = True
-                paraValue = 0
+                paraValue = 1
             else:
                 paraValue = int(oclass.Value)
             return bReturn, paraValue
