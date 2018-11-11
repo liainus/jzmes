@@ -6116,7 +6116,7 @@ def electionBatchSearch():
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 2:
                 PName = data['PName']
-                BatchID = data['BatchID']
+                BatchID = data['batchID']
                 Pclass = db_session.query(ProductUnitRoute).filter(ProductUnitRoute.PDUnitRouteName == PName).first()
                 if(Pclass.PDUnitRouteName == "煎煮段"):
                     EQPCodes = db_session.query(ElectronicBatch.EQPCode).distinct().filter(ElectronicBatch.BatchID == BatchID,
@@ -6158,27 +6158,27 @@ def electionBatchSearch():
                                                                         EQPCodes[i],
                                                                         ElectronicBatch.PDUnitRouteCode == "提取",
                                                                         ElectronicBatch.RepeatCount == 1).all()
-                        for i in range(len(esss)):
-                            time1s["time1s"+str(i)] = str(esss[i].SampleDate)[10:-10]
-                            value1s["value1s"+str(i)] = esss[i].SampleValue
+                        for t in range(len(esss)):
+                            time1s["time1s"+str(i)] = str(esss[t].SampleDate)[10:-10]
+                            value1s["value1s"+str(i)] = esss[t].SampleValue
                         esssa = db_session.query(ElectronicBatch).filter(ElectronicBatch.BatchID == BatchID,
                                                                         ElectronicBatch.EQPCode ==
                                                                         EQPCodes[i],
                                                                         ElectronicBatch.PDUnitRouteCode == "提取",
                                                                         ElectronicBatch.RepeatCount == 2).all()
-                        for i in range(len(esssa)):
-                            time2s["time2s" + str(i)] = str(esssa[i].SampleDate)[10:-10]
-                            value2s["value2s" + str(i)] = esssa[i].SampleValue
-                        Eos = db_session.query(ElectronicBatch).filter(ElectronicBatch.BatchID == BatchID,
+                        for n in range(len(esssa)):
+                            time2s["time2s" + str(i)] = str(esssa[n].SampleDate)[10:-10]
+                            value2s["value2s" + str(i)] = esssa[n].SampleValue
+                        cssc = db_session.query(ElectronicBatch).filter(ElectronicBatch.BatchID == BatchID,
                                                                        ElectronicBatch.EQPCode ==
                                                                        EQPCodes[i],
                                                                        ElectronicBatch.PDUnitRouteCode == "静置").order_by(
                             desc("SampleDate")).all()
-                        for j in range(len(Eos)):
-                            if (j == 0):
-                                jstarttimes["jstarttime" + str(j)] = str(Eos[j].SampleDate)[10:-10]
-                            if (j == len(Eos)-1):
-                                jendtimes["jendtime" + str(j)] = str(Eos[j].SampleDate)[10:-10]
+                        for k in range(len(cssc)):
+                            if (k == 0):
+                                jstarttimes["jstarttime" + str(k)] = str(cssc[k].SampleDate)[10:-10]
+                            if (k == len(cssc)-1):
+                                jendtimes["jendtime" + str(k)] = str(cssc[k].SampleDate)[10:-10]
                     dic = {}
                     dic["EQPNames"] = EQPNames
                     dic["starttimes"] = starttimes
