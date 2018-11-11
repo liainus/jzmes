@@ -5487,7 +5487,7 @@ def planmanagerProgressTuSearch():
                 BrandName = planM.BrandName
                 if(BrandName == "健胃消食片浸膏粉"):
                     aa = '（备料段）任务确认'
-                    dic['aa'] = queryFlow(ID, aa)
+                    dic['aa'] = 'OK'#queryFlow(ID, aa)
                     a1 = '（备料段）生产前准备（QA签名）'
                     dic['a1'] = queryFlow(ID, a1)
                     a2 = '备料操作按SOP执行（QA签名）'
@@ -5521,7 +5521,7 @@ def planmanagerProgressTuSearch():
                     d3 = '喷雾干燥结束，按SOP清场（QA签名）'
                     dic['d3'] = queryFlow(ID, d3)
                     ee = '（收粉段）任务确认'
-                    dic['ee'] = queryFlow(ID, ee)
+                    dic['ee'] = 'OK'#queryFlow(ID, ee)
                     e1 = '（收粉段）生产前准备（QA签名）'
                     dic['e1'] = queryFlow(ID, e1)
                     e2 = '收粉开始，操作按SOP执行（QA签名）'
@@ -5530,7 +5530,7 @@ def planmanagerProgressTuSearch():
                     dic['e3'] = queryFlow(ID, e3)
                 elif(BrandName == "肿节风浸膏"):
                     aa = '（备料段）任务确认'
-                    dic['aa'] = queryFlow(ID, aa)
+                    dic['aa'] = 'OK'#queryFlow(ID, aa)
                     a1 = '（备料段）生产前准备（QA签名）'
                     dic['a1'] = queryFlow(ID, a1)
                     a2 = '备料操作按SOP执行（QA签名）'
@@ -5578,7 +5578,7 @@ def planmanagerProgressTuSearch():
                     h2 = '收膏开始，操作按SOP执行（QA签名）'
                     dic['h2'] = queryFlow(ID,h2)
                     h3 = '收膏结束，按SOP清场（QA签名）'
-                    dic['h3'] = queryFlow(ID, h3)
+                    dic['h3'] = 'OK'#queryFlow(ID, h3)
                 return json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
@@ -6107,7 +6107,7 @@ def addPackMaterial():
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
                               ensure_ascii=False)
 
-# 煎煮段数据提取
+# 电子批记录查询
 @app.route('/electionBatchSearch')
 def electionBatchSearch():
     if request.method == 'GET':
