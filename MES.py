@@ -6115,9 +6115,9 @@ def electionBatchSearch():
         try:
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 2:
-                PUID = data['PUID']
+                PName = data['PName']
                 BatchID = data['BatchID']
-                Pclass = db_session.query(ProductUnitRoute).filter(ProductUnitRoute.PUID == PUID).first()
+                Pclass = db_session.query(ProductUnitRoute).filter(ProductUnitRoute.PDUnitRouteName == PName).first()
                 if(Pclass.PDUnitRouteName == "煎煮段"):
                     EQPCodes = db_session.query(ElectronicBatch.EQPCode).distinct().filter(ElectronicBatch.BatchID == BatchID,
                                                                                   ElectronicBatch.PDUnitRouteCode == "提取").all()
@@ -6190,6 +6190,76 @@ def electionBatchSearch():
                     dic["value2s"] = value2s
                     dic["jstarttimes"] = jstarttimes
                     dic["jendtimes"] = jendtimes
+                    print(dic)
+                    return json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False)
+                elif (Pclass.PDUnitRouteName == "浓缩段"):
+                    EQPCodes = db_session.query(ElectronicBatch.EQPCode).distinct().filter(
+                        ElectronicBatch.BatchID == BatchID,
+                        ElectronicBatch.PDUnitRouteCode == "MVR").all()
+                    EQPNames = {}  # 提取罐号
+                    starttimes = {}  # 开始时间
+                    endtimes = {}  # 结束时间
+                    zkds = {}#真空度
+                    zkdtimes = {}#真空度时间
+                    wds = {}  # 温度
+                    wdstimes = {}#温度时间
+                    for i in range(len(EQPCodes)):
+                        EQPName = db_session.query(Equipment.EQPName).filter(Equipment.EQPCode == EQPCodes[i]).first()
+                        EQPNames["EQPName" + str(i)] = EQPName[0]
+                        Eos = db_session.query(ElectronicBatch).filter(ElectronicBatch.BatchID == BatchID,
+                                                                       ElectronicBatch.EQPCode ==
+                                                                       EQPCodes[i],
+                                                                       ElectronicBatch.PDUnitRouteCode == "MVR").order_by(
+                            desc("SampleDate")).all()
+                        for j in range(len(Eos)):
+                            if (j == 0):
+                                starttimes["starttime" + str(j)] = str(Eos[j].SampleDate)[0:-7]
+                            if (j == len(Eos) - 1):
+                                endtimes["endtime" + str(j)] = str(Eos[j].SampleDate)[0:-7]
+                        Num = str(EQPCodes[i])[5:-3]
+                        zk = "B24_" + Num
+                        wd = "TT002_" + Num
+
+                        occs = db_session.query(ElectronicBatch).filter(ElectronicBatch.BatchID == BatchID,
+                                                                        ElectronicBatch.EQPCode ==
+                                                                        EQPCodes[i],
+                                                                        ElectronicBatch.PDUnitRouteCode == "MVR",
+                                                                        ElectronicBatch.OpcTagID == zk).all()
+                        if (occs != None):
+                            for j in range(len(occs)):
+                                zkds["zkd" + str(j)] = occs[j].SampleValue + occs.Unit
+                                zkdtimes["zkd" + str(j)] = str(occs[j].SampleDate)[10:-10]
+                        else:
+                            zkds["zkd" + str(i)] = ""
+                            zkdtimes["zkd" + str(j)] = ""
+                        esss = db_session.query(ElectronicBatch).filter(ElectronicBatch.BatchID == BatchID,
+                                                                        ElectronicBatch.EQPCode ==
+                                                                        EQPCodes[i],
+                                                                        ElectronicBatch.PDUnitRouteCode == "MVR",
+                                                                        ElectronicBatch.OpcTagID == wd).all()
+                        for i in range(len(esss)):
+                            zkds["time1s" + str(i)] = str(esss[i].SampleDate)[10:-10]
+                            zkds["value1s" + str(i)] = esss[i].SampleValue
+                        occs = db_session.query(ElectronicBatch).filter(ElectronicBatch.BatchID == BatchID,
+                                                                        ElectronicBatch.EQPCode ==
+                                                                        EQPCodes[i],
+                                                                        ElectronicBatch.PDUnitRouteCode == "MVR",
+                                                                        ElectronicBatch.OpcTagID == zk).all()
+                        if (occs != None):
+                            for j in range(len(occs)):
+                                zkds["zkd" + str(j)] = occs[j].SampleValue + occs.Unit
+                                zkdtimes["zkd" + str(j)] = str(occs[j].SampleDate)[10:-10]
+                        else:
+                            zkds["zkd" + str(i)] = ""
+                            zkdtimes["zkd" + str(j)] = ""
+                    dic = {}
+                    dic["EQPNames"] = EQPNames
+                    dic["starttimes"] = starttimes
+                    dic["endtimes"] = endtimes
+                    dic["zkds"] = zkds
+                    dic["wds"] = wds
+                    # dic["time2s"] = time2s
+                    # dic["value2s"] = value2s
                     print(dic)
                     return json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
