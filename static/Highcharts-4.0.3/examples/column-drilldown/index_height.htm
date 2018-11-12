@@ -6,10 +6,12 @@
     <style type="text/css">
         ${demo.css}
     </style>
-    <script type="text/javascript" src="../../../static/js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="../../js/jquery-3.3.1.min.js"></script>
+    <script src="../../js/highcharts.js"></script>
+    <script src="../../js/modules/data.js"></script>
+    <script src="../../js/modules/drilldown.js"></script>
     <script type="text/javascript">
         $(function () {
-
             Highcharts.data({
                 csv: document.getElementById('tsv').innerHTML,
                 //itemDelimiter: '\t',
@@ -131,10 +133,6 @@
     </script>
 </head>
 <body style="margin: 0;">
-    <script src="../../js/highcharts.js"></script>
-    <script src="../../js/modules/data.js"></script>
-    <script src="../../js/modules/drilldown.js"></script>
-
     <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
 
     <!-- Data from www.netmarketshare.com. Select Browsers => Desktop share by version. Download as tsv. -->
