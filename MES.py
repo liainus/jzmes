@@ -6186,9 +6186,9 @@ def electionBatchSearch():
                             desc("SampleDate")).all()
                         for k in range(len(cssc)):
                             if (k == 0):
-                                dic["jstarttime" + str(i)] = str(cssc[k].SampleDate)[10:-10]
+                                dic["jStartTime" + str(i)] = str(cssc[k].SampleDate)[10:-10]
                             if (k == len(cssc)-1):
-                                dic["jendtime" + str(i)] = str(cssc[k].SampleDate)[10:-10]
+                                dic["jEndTime" + str(i)] = str(cssc[k].SampleDate)[10:-10]
                     print(dic)
                     return json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False)
                 elif (Pclass.PDUnitRouteName == "浓缩段"):
@@ -6206,9 +6206,9 @@ def electionBatchSearch():
                             desc("SampleDate")).all()
                         for j in range(len(Eos)):
                             if (j == 0):
-                                dir["starttime" + str(i)] = str(Eos[j].SampleDate)[0:-7]
+                                dir["startTime" + str(i)] = str(Eos[j].SampleDate)[0:-7]
                             if (j == len(Eos) - 1):
-                                dir["endtime" + str(i)] = str(Eos[j].SampleDate)[0:-7]
+                                dir["endTime" + str(i)] = str(Eos[j].SampleDate)[0:-7]
                         Num = str(EQPCodes[i])[5:-3]
                         zk = "B24_" + Num
                         wd = "TT002_" + Num
@@ -6220,11 +6220,11 @@ def electionBatchSearch():
                                                                         ElectronicBatch.OpcTagID == zk).all()
                         if (occs != None):
                             for t in range(len(occs)):
-                                dir["zkd" + str(t)] = occs[t].SampleValue + occs.Unit
-                                dir["zkdtime" + str(t)] = str(occs[t].SampleDate)[10:-10]
+                                dic["zkd" + "_" + str(i) + "_" + str(t)] = occs[t].SampleValue + occs.Unit
+                                dic["zkdTime" + "_" + str(i) + "_" + str(t)] = str(occs[t].SampleDate)[10:-10]
                         else:
                             dir["zkd" + str(i)] = ""
-                            dir["zkdtime" + str(i)] = ""
+                            dir["zkdTime" + str(i)] = ""
                         esss = db_session.query(ElectronicBatch).filter(ElectronicBatch.BatchID == BatchID,
                                                                         ElectronicBatch.EQPCode ==
                                                                         EQPCodes[i],
@@ -6232,11 +6232,11 @@ def electionBatchSearch():
                                                                         ElectronicBatch.OpcTagID == wd).all()
                         if (esss != None):
                             for y in range(len(esss)):
-                                dir["wd" + str(y)] = str(esss[y].SampleDate)[10:-10]
-                                dir["zkdtime" + str(y)] = esss[y].SampleValue
+                                dic["wdTime" + "_" + str(i) + "_" + str(y)] = str(esss[y].SampleDate)[10:-10]
+                                dic["wd" + "_" + str(i) + "_" + str(y)] = esss[y].SampleValue
                         else:
+                            dir["wdTime" + str(i)] = ""
                             dir["wd" + str(i)] = ""
-                            dir["zkdtime" + str(i)] = ""
                     return json.dumps(dir, cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
