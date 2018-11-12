@@ -8,6 +8,8 @@ import string
 from io import StringIO
 import time
 from collections import Counter
+
+import redis
 import xlwt
 from flask import Flask, jsonify, redirect, url_for, flash
 import xlrd
@@ -43,7 +45,6 @@ from Model.dynamic_model import make_dynamic_classes
 import Model.node
 from threading import Timer
 from constant import constant
-from tools import manager
 #flask_login的初始化
 login_manager = LoginManager()
 login_manager.db_session_protection = 'strong'
@@ -4288,14 +4289,12 @@ def processMonitor():
 
 def get_data_from_realtime_Decocting(batch,brand,tankOver,status):
     try:
-        # 新建一个客户端,并在初始化的时候进行连接实时数据服务
-        manager_client = manager.ManagerClient(manager.MANAGER_DOMAIN, manager.MANAGER_PORT, manager.MANAGER_AUTH_KEY)
-        # 进程间共享变量， equipment与realtime处于不同的进程
-        share_data = manager_client.get_dict()
-        Batch = share_data.get(batch)
-        Brand = share_data.get(brand)
-        TankOver = share_data.get(tankOver)
-        Status = share_data.get(status)
+        pool = redis.ConnectionPool(host=constant.REDIS_HOST, password=constant.REDIS_PASSWORD)  # 实现一个连接池
+        redis_conn = redis.Redis(connection_pool=pool)
+        Batch = redis_conn.get(batch)
+        Brand = redis_conn.get(brand)
+        TankOver = redis_conn.get(tankOver)
+        Status = redis_conn.get(status)
         return Batch, Brand, TankOver, Status
     except Exception as e:
         print('连接实时数据服务器失败!')
@@ -4357,8 +4356,8 @@ def extract():
 def get_data_from_realtime_Standing(name,Unit=None):
     try:
         # 新建一个客户端,并在初始化的时候进行连接实时数据服务
-        manager_client = manager.ManagerClient(manager.MANAGER_DOMAIN, manager.MANAGER_PORT, manager.MANAGER_AUTH_KEY)
-        share_data = manager_client.get_dict()
+        pool = redis.ConnectionPool(host=constant.REDIS_HOST, password=constant.REDIS_PASSWORD)  # 实现一个连接池
+        share_data = redis.Redis(connection_pool=pool)
         if Unit == 'Concentrate':
             batch_tag = 't|MVRPC_' + name[-1]
             brand_tag = 't|MVRPM_' + name[-1]
@@ -4473,8 +4472,8 @@ def StandingAndConsentrate():
 
 def get_data_Total_MixtureAndDry(num,Unit=None):
     try:
-        manager_client = manager.ManagerClient(manager.MANAGER_DOMAIN, manager.MANAGER_PORT, manager.MANAGER_AUTH_KEY)
-        share_data = manager_client.get_dict()
+        pool = redis.ConnectionPool(host=constant.REDIS_HOST, password=constant.REDIS_PASSWORD)  # 实现一个连接池
+        share_data = redis.Redis(connection_pool=pool)
 
         if Unit == 'Total_Mixture':
             batch_tag = 't|ZHPC_' + num
@@ -6186,9 +6185,9 @@ def electionBatchSearch():
                             desc("SampleDate")).all()
                         for k in range(len(cssc)):
                             if (k == 0):
-                                dic["jstarttime" + str(i)] = str(cssc[k].SampleDate)[10:-10]
+                                dic["jStartTime" + str(i)] = str(cssc[k].SampleDate)[10:-10]
                             if (k == len(cssc)-1):
-                                dic["jendtime" + str(i)] = str(cssc[k].SampleDate)[10:-10]
+                                dic["jEndTime" + str(i)] = str(cssc[k].SampleDate)[10:-10]
                     print(dic)
                     return json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False)
                 elif (Pclass.PDUnitRouteName == "浓缩段"):
@@ -6206,9 +6205,9 @@ def electionBatchSearch():
                             desc("SampleDate")).all()
                         for j in range(len(Eos)):
                             if (j == 0):
-                                dir["starttime" + str(i)] = str(Eos[j].SampleDate)[0:-7]
+                                dir["startTime" + str(i)] = str(Eos[j].SampleDate)[0:-7]
                             if (j == len(Eos) - 1):
-                                dir["endtime" + str(i)] = str(Eos[j].SampleDate)[0:-7]
+                                dir["endTime" + str(i)] = str(Eos[j].SampleDate)[0:-7]
                         Num = str(EQPCodes[i])[5:-3]
                         zk = "B24_" + Num
                         wd = "TT002_" + Num
@@ -6220,11 +6219,11 @@ def electionBatchSearch():
                                                                         ElectronicBatch.OpcTagID == zk).all()
                         if (occs != None):
                             for t in range(len(occs)):
-                                dir["zkd" + str(t)] = occs[t].SampleValue + occs.Unit
-                                dir["zkdtime" + str(t)] = str(occs[t].SampleDate)[10:-10]
+                                dic["zkd" + "_" + str(i) + "_" + str(t)] = occs[t].SampleValue + occs.Unit
+                                dic["zkdTime" + "_" + str(i) + "_" + str(t)] = str(occs[t].SampleDate)[10:-10]
                         else:
                             dir["zkd" + str(i)] = ""
-                            dir["zkdtime" + str(i)] = ""
+                            dir["zkdTime" + str(i)] = ""
                         esss = db_session.query(ElectronicBatch).filter(ElectronicBatch.BatchID == BatchID,
                                                                         ElectronicBatch.EQPCode ==
                                                                         EQPCodes[i],
@@ -6232,11 +6231,11 @@ def electionBatchSearch():
                                                                         ElectronicBatch.OpcTagID == wd).all()
                         if (esss != None):
                             for y in range(len(esss)):
-                                dir["wd" + str(y)] = str(esss[y].SampleDate)[10:-10]
-                                dir["zkdtime" + str(y)] = esss[y].SampleValue
+                                dic["wdTime" + "_" + str(i) + "_" + str(y)] = str(esss[y].SampleDate)[10:-10]
+                                dic["wd" + "_" + str(i) + "_" + str(y)] = esss[y].SampleValue
                         else:
+                            dir["wdTime" + str(i)] = ""
                             dir["wd" + str(i)] = ""
-                            dir["zkdtime" + str(i)] = ""
                     return json.dumps(dir, cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
