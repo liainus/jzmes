@@ -8,6 +8,8 @@ import string
 from io import StringIO
 import time
 from collections import Counter
+
+import redis
 import xlwt
 from flask import Flask, jsonify, redirect, url_for, flash
 import xlrd
@@ -43,7 +45,6 @@ from Model.dynamic_model import make_dynamic_classes
 import Model.node
 from threading import Timer
 from constant import constant
-from tools import manager
 #flask_login的初始化
 login_manager = LoginManager()
 login_manager.db_session_protection = 'strong'
@@ -4288,14 +4289,12 @@ def processMonitor():
 
 def get_data_from_realtime_Decocting(batch,brand,tankOver,status):
     try:
-        # 新建一个客户端,并在初始化的时候进行连接实时数据服务
-        manager_client = manager.ManagerClient(manager.MANAGER_DOMAIN, manager.MANAGER_PORT, manager.MANAGER_AUTH_KEY)
-        # 进程间共享变量， equipment与realtime处于不同的进程
-        share_data = manager_client.get_dict()
-        Batch = share_data.get(batch)
-        Brand = share_data.get(brand)
-        TankOver = share_data.get(tankOver)
-        Status = share_data.get(status)
+        pool = redis.ConnectionPool(host=constant.REDIS_HOST, password=constant.REDIS_PASSWORD)  # 实现一个连接池
+        redis_conn = redis.Redis(connection_pool=pool)
+        Batch = redis_conn.get(batch)
+        Brand = redis_conn.get(brand)
+        TankOver = redis_conn.get(tankOver)
+        Status = redis_conn.get(status)
         return Batch, Brand, TankOver, Status
     except Exception as e:
         print('连接实时数据服务器失败!')
@@ -4357,8 +4356,8 @@ def extract():
 def get_data_from_realtime_Standing(name,Unit=None):
     try:
         # 新建一个客户端,并在初始化的时候进行连接实时数据服务
-        manager_client = manager.ManagerClient(manager.MANAGER_DOMAIN, manager.MANAGER_PORT, manager.MANAGER_AUTH_KEY)
-        share_data = manager_client.get_dict()
+        pool = redis.ConnectionPool(host=constant.REDIS_HOST, password=constant.REDIS_PASSWORD)  # 实现一个连接池
+        share_data = redis.Redis(connection_pool=pool)
         if Unit == 'Concentrate':
             batch_tag = 't|MVRPC_' + name[-1]
             brand_tag = 't|MVRPM_' + name[-1]
@@ -4473,8 +4472,8 @@ def StandingAndConsentrate():
 
 def get_data_Total_MixtureAndDry(num,Unit=None):
     try:
-        manager_client = manager.ManagerClient(manager.MANAGER_DOMAIN, manager.MANAGER_PORT, manager.MANAGER_AUTH_KEY)
-        share_data = manager_client.get_dict()
+        pool = redis.ConnectionPool(host=constant.REDIS_HOST, password=constant.REDIS_PASSWORD)  # 实现一个连接池
+        share_data = redis.Redis(connection_pool=pool)
 
         if Unit == 'Total_Mixture':
             batch_tag = 't|ZHPC_' + num
