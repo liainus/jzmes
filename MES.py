@@ -6192,8 +6192,8 @@ def electionBatchSearch():
                             dic["wdTime" + "_" + str(i) + "_" + str(y)] = strchange(esss[y].SampleDate)[10:-10]
                             dic["wd" + "_" + str(i) + "_" + str(y)] = floatcut(esss[y].SampleValue) + esss[y].Unit
                 elif (Pclass.PDUnitRouteName == "喷雾干燥段"):
-                    name = "总混"
-                    ZHEQPCodes = db_session.query(ElectronicBatch.EQPCode).distinct().filter(ElectronicBatch.BatchID == BatchID,ElectronicBatch.PDUnitRouteCode == name).all()
+                    name = "喷雾干燥"
+                    ZHEQPCodes = db_session.query(ElectronicBatch.EQPCode).distinct().filter(ElectronicBatch.BatchID == BatchID,ElectronicBatch.PDUnitRouteCode == "总混").all()
                     if len(ZHEQPCodes)!=0:
                         for a in range(len(ZHEQPCodes)):
                             ZHEQPName = db_session.query(Equipment.EQPName).filter(Equipment.EQPCode == ZHEQPCodes[a]).first()
@@ -6204,54 +6204,47 @@ def electionBatchSearch():
                                     dic["zhStartTime"+str(a)] = strchange(zhs[zh].SampleDate)[0:-7]
                                 if zh==len(zhs)-1:
                                     dic["zhEndTime"+str(a)] = strchange(zhs[zh].SampleDate)[0:-7]
-                    PWEQPCodes = db_session.query(ElectronicBatch.EQPCode).distinct().filter(
-                        ElectronicBatch.BatchID == BatchID,
-                        ElectronicBatch.PDUnitRouteCode == "喷雾干燥").all()
+                    PWEQPCodes = db_session.query(ElectronicBatch.EQPCode).distinct().filter(ElectronicBatch.BatchID == BatchID,ElectronicBatch.PDUnitRouteCode == "喷雾干燥").all()
                     if len(PWEQPCodes) != 0:
                         for i in range(len(PWEQPCodes)):
                             PWEQPName = db_session.query(Equipment.EQPName).filter(Equipment.EQPCode == PWEQPCodes[i]).first()
-                            dir["PWEQPName" + str(i)] = PWEQPName[0]
-                            Eos = db_session.query(ElectronicBatch).filter(ElectronicBatch.BatchID == BatchID,
-                                                                           ElectronicBatch.EQPCode ==
-                                                                           PWEQPCodes[i],
-                                                                           ElectronicBatch.PDUnitRouteCode == "喷雾干燥").order_by(
-                                desc("SampleDate")).all()
+                            dic["PWEQPName" + str(i)] = PWEQPName[0]
+                            Eos = searO(BatchID,PWEQPCodes[i],name)
                             for j in range(len(Eos)):
                                 if (j == 0):
-                                    dir["pwStartTime" + str(i)] = strchange(Eos[j].SampleDate)[0:-7]
+                                    dic["pwStartTime" + str(i)] = strchange(Eos[j].SampleDate)[0:-7]
                                 if (j == len(Eos) - 1):
-                                    dir["pwEndTime" + str(i)] = strchange(Eos[j].SampleDate)[0:-7]
+                                    dic["pwEndTime" + str(i)] = strchange(Eos[j].SampleDate)[0:-7]
                             hf = "混风温度显示_" + i
                             zjf = "主进风温度显示_" + i
                             pf = "排风温度显示_" + i
-                            occs = db_session.query(ElectronicBatch).filter(ElectronicBatch.BatchID == BatchID,
-                                                                            ElectronicBatch.EQPCode ==
-                                                                            PWEQPCodes[i],
-                                                                            ElectronicBatch.PDUnitRouteCode == "喷雾干燥",
-                                                                            ElectronicBatch.OpcTagID == hf).all()
+                            occs = searY(BatchID,PWEQPCodes[i],name,hf)
                             for t in range(len(occs)):
                                 dic["hfTemp" + "_" + str(i) + "_" + str(t)] = floatcut(occs[t].SampleValue) + occs.Unit
                                 dic["hfTime" + "_" + str(i) + "_" + str(t)] = strchange(occs[t].SampleDate)[10:-10]
-                            esss = db_session.query(ElectronicBatch).filter(ElectronicBatch.BatchID == BatchID,
-                                                                            ElectronicBatch.EQPCode ==
-                                                                            PWEQPCodes[i],
-                                                                            ElectronicBatch.PDUnitRouteCode == "喷雾干燥",
-                                                                            ElectronicBatch.OpcTagID == zjf).all()
+                            esss = searY(BatchID,PWEQPCodes[i],name,zjf)
                             for y in range(len(esss)):
                                 dic["zjfTime" + "_" + str(i) + "_" + str(y)] = strchange(esss[y].SampleDate)[10:-10]
                                 dic["zjfTemp" + "_" + str(i) + "_" + str(y)] = floatcut(esss[y].SampleValue) + esss[y].Unit
-                            pfss = db_session.query(ElectronicBatch).filter(ElectronicBatch.BatchID == BatchID,
-                                                                            ElectronicBatch.EQPCode ==
-                                                                            PWEQPCodes[i],
-                                                                            ElectronicBatch.PDUnitRouteCode == "喷雾干燥",
-                                                                            ElectronicBatch.OpcTagID == pf).all()
+                            pfss = searY(BatchID,PWEQPCodes[i],name,pf)
                             for z in range(len(pfss)):
                                 dic["cfTime" + "_" + str(i) + "_" + str(z)] = strchange(pfss[z].SampleDate)[10:-10]
                                 dic["cfTemp" + "_" + str(i) + "_" + str(z)] = floatcut(pfss[z].SampleValue) + pfss[z].Unit
                 elif (Pclass.PDUnitRouteName == "醇沉段"):
-                        aa =""
+                    name = "醇沉"
+                    CCEQPCodes = db_session.query(ElectronicBatch.EQPCode).distinct().filter(ElectronicBatch.BatchID == BatchID, ElectronicBatch.PDUnitRouteCode == name).all()
+                    if len(CCEQPCodes) == 0:
+                        return ""
+                    for i in range(len(CCEQPCodes)):
+                        PWEQPName = db_session.query(Equipment.EQPName).filter(Equipment.EQPCode == CCEQPCodes[i]).first()
+                        dic["CCEQPName" + str(i)] = PWEQPName[0]
+                        yc = "过程值_"+str(i)+"#酒精累计值"
+                        ycs = searY(BatchID,CCEQPCodes[i],name,yc)
+                        for y in range(len(ycs)):
+                            dic["yc_"+str(i)+"_"+str(y)] = floatcut(ycs[y].SampleValue) + ycs[y].Unit
 
-                return json.dumps(dir, cls=AlchemyEncoder, ensure_ascii=False)
+
+                return json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
             logger.error(e)
