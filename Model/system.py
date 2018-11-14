@@ -552,6 +552,40 @@ class PackMaterial(Base):
     # 操作时间:
     OperationDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
 
+
+# 物料来源
+class MaterialSource(Base):
+    __tablename__ = 'MaterialSource'
+    # id:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+    # 物料名称:
+    MaterialName = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+
+    # 物料号：
+    MaterialCode = Column(Unicode(30), primary_key=False, autoincrement=False, nullable=True)
+
+    # 批号:
+    BatchID = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 检验单号：
+    CheckedNum = Column(Unicode(20), primary_key=False, autoincrement=False, nullable=True)
+
+    # 数量（只）：
+    Number = Column(Unicode(20), primary_key=False, autoincrement=False, nullable=True)
+
+    # 复核人:
+    CheckedPeople = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
+
+    # QA确认人:
+    QAConfirmPeople = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
+
+    # 工艺段ID:
+    PUID = Column(Integer, nullable=False, primary_key=False)
+
+    # 操作时间:
+    OperationDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+
 # 批记录操作步骤（SOP）
 class EletronicBatchDataStore(Base):
     __tablename__ = 'EletronicBatchDataStore'
