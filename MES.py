@@ -27,7 +27,7 @@ from Model.core import Enterprise, Area, Factory, ProductLine, ProcessUnit, Equi
     OpcServer, Pequipment, WorkFlowStatus, WorkFlowEventZYPlan, WorkFlowEventPlan, \
     OpcTag, CollectParamsTemplate, CollectParams, Collectionstrategy, CollectTask, \
     CollectTaskCollection, ReadyWork, NodeIdNote, ProductUnitRoute, ProductionMonitor, NewZYPlanMaterial
-from Model.system import Role, Organization, User, Menu, Role_Menu, BatchMaterielBalance, OperationManual, NewReadyWork, EquipmentWork
+from Model.system import Role, Organization, User, Menu, Role_Menu, BatchMaterielBalance, OperationManual, NewReadyWork, EquipmentWork, EletronicBatchDataStore
 from tools.MESLogger import MESLogger
 from Model.core import SysLog
 from sqlalchemy import func
@@ -6123,6 +6123,25 @@ def prepareSaveUpdate():
             insertSyslog("error", "收粉结束，包装材料统计报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
                               ensure_ascii=False)
+
+def addUpdateEletronicBatchDataStore(PUID,BatchID,ke,val):
+    try:
+        oc = db_session.query(EletronicBatchDataStore).filter(EletronicBatchDataStore.PUID == PUID,
+                                                              EletronicBatchDataStore.BatchID == BatchID, EletronicBatchDataStore.Content == ke).first()
+        if oc==None or oc=="":
+            db_session.add(EletronicBatchDataStore(BatchID=BatchID,PUID=PUID,Content=ke,OperationpValue=val,Operator=current_user.Name))
+        else:
+            oc.Content = ke
+            oc.OperationpValue = val
+            oc.Operator = current_user.Name
+        db_session.commit()
+    except Exception as e:
+        db_session.rollback()
+        print(e)
+        logger.error(e)
+        insertSyslog("error", "保存更新EletronicBatchDataStore报错：" + str(e), current_user.Name)
+        return json.dumps("保存更新EletronicBatchDataStore报错", cls=Model.BSFramwork.AlchemyEncoder,
+                          ensure_ascii=False)
 
 # 电子批记录查询
 @app.route('/electionBatchSearch')
