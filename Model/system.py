@@ -552,6 +552,31 @@ class PackMaterial(Base):
     # 操作时间:
     OperationDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
 
+# 批记录操作步骤（SOP）
+class EletronicBatchDataStore(Base):
+    __tablename__ = 'EletronicBatchDataStore'
+    # id:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+    # 批次号:
+    BatchID = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 工艺段ID:
+    PUID = Column(Integer, nullable=False, primary_key=False)
+
+    # 操作步骤内容:
+    Content = Column(String(60), primary_key=False, autoincrement=False, nullable=True)
+
+    # 操作值:
+    OperationpValue = Column(Unicode(20), primary_key=False, autoincrement=False, nullable=True)
+
+    #操作人:
+    Operator = Column(Unicode(32), primary_key = False, autoincrement = False, nullable = True)
+
+    # 描述:
+    Description = Column(String(100), primary_key=False, autoincrement=False, nullable=True)
+
+
 # 生成表单的执行语句
 Base.metadata.create_all(engine)
 
