@@ -6066,61 +6066,45 @@ def addPackMaterial():
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
                               ensure_ascii=False)
 
-# 备料段保存操作
-@app.route('/prepareSaveUpdate', methods=['POST', 'GET'])
-def prepareSaveUpdate():
+# 所有工艺段保存查询操作
+@app.route('/allUnitDataMutual', methods=['POST', 'GET'])
+def allUnitDataMutual():
     if request.method == 'POST':
+        data = request.values
+        data = data.to_dict()
+        try:
+            for key in data.keys():
+                if key=="PUID":
+                    continue
+                if key=="BatchID":
+                    continue
+                val = data.get(key)
+                addUpdateEletronicBatchDataStore(data.get("PUID"), data.get("BatchID"), key, val)
+            return 'OK'
+        except Exception as e:
+            db_session.rollback()
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "所有工艺段保存查询操作报错Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
+                              ensure_ascii=False)
+    if request.method == 'GET':
         data = request.values
         try:
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 2:
                 PUID = data['PUID']
                 BatchID = data['BatchID']
-                StartReadyTime = data['StratReadyTime']
-                StratReadyTime = data['StratReadyTime']
-                MaterialName = data['MaterialName']
-                MaterialCode = data['MaterialCode']
-                ReadyUnit = data['ReadyUnit']
-                UserUnit = data['UserUnit']
-                SurplusUnit = data['SurplusUnit']
-                DefectiveUnit = data['DefectiveUnit']
-                AttritionUnit = data['AttritionUnit']
-                CancelStocksUnit = data['CancelStocksUnit']
-                OperationPeople = data['OperationPeople']
-                CheckedPeople = data['CheckedPeople']
-                QAConfirmPeople = data['QAConfirmPeople']
-                confirm = data['confirm']
-                if (confirm == "1"):
-                    db_session.add(
-                        PackMaterial(
-                            MaterialName=MaterialName,
-                            MaterialCode=MaterialCode,
-                            BatchID=BatchID,
-                            ReadyUnit=ReadyUnit,
-                            UserUnit=UserUnit,
-                            SurplusUnit=SurplusUnit,
-                            DefectiveUnit=DefectiveUnit,
-                            AttritionUnit=AttritionUnit,
-                            CancelStocksUnit=CancelStocksUnit,
-                            OperationPeople=OperationPeople,
-                            CheckedPeople=CheckedPeople,
-                            QAConfirmPeople=QAConfirmPeople,
-                            PUID=PUID,
-                            OperationDate=datetime.datetime.now()
-                        ))
-                else:
-                    oclasss = db_session.query(PackMaterial.CheckedPeople).filter(PackMaterial.PUID == PUID,
-                                                                                  PackMaterial.BatchID == BatchID).all()
-                    for oc in oclasss:
-                        oc.CheckedPeople = current_user.Name
-                        oc.OperationDate = datetime.datetime.now()
-                db_session.commit()
-                return 'OK'
+                oclasss = db_session.query(EletronicBatchDataStore).filter(EletronicBatchDataStore.PUID == PUID,EletronicBatchDataStore.BatchID == BatchID).all()
+                dic = {}
+                for oclass in oclasss:
+                    dic[oclass.Content] = oclass.OperationpValue
+            return json.dumps(dic,cls=Model.BSFramwork.AlchemyEncoder,ensure_ascii=False)
         except Exception as e:
             db_session.rollback()
             print(e)
             logger.error(e)
-            insertSyslog("error", "收粉结束，包装材料统计报错Error：" + str(e), current_user.Name)
+            insertSyslog("error", "所有工艺段保存查询操作报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
                               ensure_ascii=False)
 
@@ -6128,7 +6112,7 @@ def addUpdateEletronicBatchDataStore(PUID,BatchID,ke,val):
     try:
         oc = db_session.query(EletronicBatchDataStore).filter(EletronicBatchDataStore.PUID == PUID,
                                                               EletronicBatchDataStore.BatchID == BatchID, EletronicBatchDataStore.Content == ke).first()
-        if oc==None or oc=="":
+        if oc==None:
             db_session.add(EletronicBatchDataStore(BatchID=BatchID,PUID=PUID,Content=ke,OperationpValue=val,Operator=current_user.Name))
         else:
             oc.Content = ke
