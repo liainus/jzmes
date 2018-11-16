@@ -4002,7 +4002,7 @@ def checkPlanManager():
                         oclassNodeColl = db_session.query(Model.node.NodeCollection).filter_by(oddNum=id, name="审核计划").first()
                         oclassNodeColl.status = Model.node.NodeStatus.PASSED.value
                         oclassNodeColl.oddUser = userName
-                        oclassNodeColl.opertionTime = datetime.datetime.now()
+                        oclassNodeColl.opertionTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                         oclassNodeColl.seq = 1
                         db_session.commit()
                         # oclassW = db_session.query(WorkFlowStatus).filter_by(PlanManageID=id).first()
@@ -4609,59 +4609,6 @@ def planConfirmSearch():
             print(e)
             logger.error(e)
             insertSyslog("error", "任务确认查询计划报错Error：" + str(e), current_user.Name)
-
-# #任务确认查询任务
-# @app.route('/processMonitorLine/taskConfirmSearch', methods=['POST', 'GET'])
-# def taskConfirmSearch():
-#     if request.method == 'GET':
-#         data = request.values  # 返回请求中的参数和form
-#         try:
-#             jsonstr = json.dumps(data.to_dict())
-#             if len(jsonstr) > 10:
-#                 pages = int(data['page'])  # 页数
-#                 rowsnumber = int(data['rows'])  # 行数
-#                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
-#                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
-#                 APUID = data['PUID']  # 工艺段编码
-#                 TaskStatus = data['TaskStatus']  # 任务的执行状态
-#                 BatchID = data['BatchID']#批次号
-#                 if(APUID == "" and TaskStatus == ""):
-#                     total = db_session.query(ZYTask).filter(ZYTask.TaskStatus.in_((32,40,50))).count()
-#                     ZYTasks = db_session.query(ZYTask).filter(ZYTask.TaskStatus.in_((32,40,50))).order_by(desc("EnterTime")).all()[inipage:endpage]
-#                 elif(APUID != "" and TaskStatus == "" and BatchID == ""):
-#                     total = db_session.query(ZYTask).filter(ZYTask.TaskStatus.in_((32, 40, 50)),
-#                                                             ZYTask.PUID == APUID).count()
-#                     ZYTasks = db_session.query(ZYTask).filter(ZYTask.TaskStatus.in_((32, 40, 50)),
-#                                                               ZYTask.PUID == APUID).order_by(desc("EnterTime")).all()[inipage:endpage]
-#                 elif(APUID != "" and TaskStatus == "" and BatchID != ""):
-#                     total = db_session.query(ZYTask).filter(ZYTask.BatchID == BatchID,
-#                                                             ZYTask.TaskStatus.in_((32, 40, 50)),
-#                                                             ZYTask.PUID == APUID).count()
-#                     ZYTasks = db_session.query(ZYTask).filter(ZYTask.BatchID == BatchID,
-#                                                               ZYTask.TaskStatus.in_((32, 40, 50)),
-#                                                               ZYTask.PUID == APUID).order_by(desc("EnterTime")).all()[inipage:endpage]
-#                 elif (APUID == "" and TaskStatus != ""):
-#                     total = db_session.query(ZYTask).filter(ZYTask.TaskStatus == TaskStatus).count()
-#                     ZYTasks = db_session.query(ZYTask).filter(ZYTask.TaskStatus == TaskStatus).order_by(desc("EnterTime")).all()[inipage:endpage]
-#                 elif (APUID != "" and TaskStatus != "" and BatchID == ""):
-#                     total = db_session.query(ZYTask).filter(ZYTask.TaskStatus == TaskStatus,
-#                                                             ZYTask.PUID == APUID).count()
-#                     ZYTasks = db_session.query(ZYTask).filter(ZYTask.TaskStatus == TaskStatus,
-#                                                               ZYTask.PUID == APUID).order_by(desc("EnterTime")).all()[inipage:endpage]
-#                 elif (APUID != "" and TaskStatus != "" and BatchID != ""):
-#                     total = db_session.query(ZYTask).filter(ZYTask.BatchID == BatchID,
-#                                                             ZYTask.TaskStatus == TaskStatus,
-#                                                             ZYTask.PUID == APUID).count()
-#                     ZYTasks = db_session.query(ZYTask).filter(ZYTask.BatchID == BatchID,
-#                                                               ZYTask.TaskStatus == TaskStatus,
-#                                                               ZYTask.PUID == APUID).order_by(desc("EnterTime")).all()[inipage:endpage]
-#                 jsonZYTasks = json.dumps(ZYTasks, cls=AlchemyEncoder, ensure_ascii=False)
-#                 jsonZYTasks = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonZYTasks + "}"
-#                 return jsonZYTasks
-#         except Exception as e:
-#             print(e)
-#             logger.error(e)
-#             insertSyslog("error", "获取任务确认的任务列表报错Error：" + str(e), current_user.Name)
 
 # 任务确认查询任务
 @app.route('/processMonitorLine/taskConfirmSearch', methods=['POST', 'GET'])
@@ -5854,29 +5801,75 @@ def electronicBatchRecord():
                     flag = "83"
                 elif(menu[0] == "QA确认"):
                     flag = "84"
-    return render_template('electronicBatchRecord.html',
-                           PName=Pclass.PDUnitRouteName,PUID=Pclass.PUID,BatchID=oclass.BatchID,PlanQuantity=oclass.PlanQuantity,
-                           ActBeginTime=Zclass.ActBeginTime,flag=flag,OperationPeople_a1=OperationPeople_a1,CheckedPeople_a1=CheckedPeople_a1,QAConfirmPeople_a1=QAConfirmPeople_a1,
-                           OperationPeople_a2=OperationPeople_a2,CheckedPeople_a2=CheckedPeople_a2,OperationPeople_a3=OperationPeople_a3,CheckedPeople_a3=CheckedPeople_a3,
-                           QAConfirmPeople_a3=QAConfirmPeople_a3,OperationPeople_a4=OperationPeople_a4,CheckedPeople_a4=CheckedPeople_a4,QAConfirmPeople_a4=QAConfirmPeople_a4,
-                           OperationPeople_a5=OperationPeople_a5,CheckedPeople_a5=CheckedPeople_a5,OperationPeople_b1 = OperationPeople_b1,CheckedPeople_b1 = CheckedPeople_b1,
-                           QAConfirmPeople_b1 = QAConfirmPeople_b1,OperationPeople_b2 = OperationPeople_b2,CheckedPeople_b2 = CheckedPeople_b2,QAConfirmPeople_b2 = QAConfirmPeople_b2,
-                           OperationPeople_b3 = OperationPeople_b3,CheckedPeople_b3 = CheckedPeople_b3,QAConfirmPeople_b3 = QAConfirmPeople_b3,OperationPeople_b4 = OperationPeople_b4,
-                           CheckedPeople_b4 = CheckedPeople_b4,QAConfirmPeople_b4 = QAConfirmPeople_b4,OperationPeople_b5 = OperationPeople_b5,CheckedPeople_b5 = CheckedPeople_b5,
-                           QAConfirmPeople_b5 = QAConfirmPeople_b5,OperationPeople_b6 = OperationPeople_b6,CheckedPeople_b6 = CheckedPeople_b6,
-                           OperationPeople_c1=OperationPeople_c1,CheckedPeople_c1 = CheckedPeople_c1,QAConfirmPeople_c1 = QAConfirmPeople_c1,OperationPeople_c2 = OperationPeople_c2,
-                           CheckedPeople_c2 = CheckedPeople_c2,QAConfirmPeople_c2 = QAConfirmPeople_c2,OperationPeople_c3 = OperationPeople_c3,CheckedPeople_c3 = CheckedPeople_c3,
-                           QAConfirmPeople_c3 = QAConfirmPeople_c3,OperationPeople_c4 = OperationPeople_c4,CheckedPeople_c4 = CheckedPeople_c4,QAConfirmPeople_c4 = QAConfirmPeople_c4,
-                           OperationPeople_c5 = OperationPeople_c5,CheckedPeople_c5 = CheckedPeople_c5,QAConfirmPeople_c5 = QAConfirmPeople_c5,OperationPeople_c6 = OperationPeople_c6,
-                           CheckedPeople_c6 = CheckedPeople_c6,QAConfirmPeople_c6 = QAConfirmPeople_c6,OperationPeople_c7 = OperationPeople_c7,CheckedPeople_c7 = CheckedPeople_c7,
-                           OperationPeople_d1=OperationPeople_d1,CheckedPeople_d1 = CheckedPeople_d1,QAConfirmPeople_d1 = QAConfirmPeople_d1,OperationPeople_d2 = OperationPeople_d2,
-                           CheckedPeople_d2 = CheckedPeople_d2,OperationPeople_d3 = OperationPeople_d3,CheckedPeople_d3 = CheckedPeople_d3,QAConfirmPeople_d3 = QAConfirmPeople_d3,
-                           OperationPeople_d4 = OperationPeople_d4,CheckedPeople_d4 = CheckedPeople_d4,
-                           OperationPeople_e1 = OperationPeople_e1,CheckedPeople_e1 = CheckedPeople_e1,QAConfirmPeople_e1 = QAConfirmPeople_e1,OperationPeople_e2 = OperationPeople_e2,
-                           CheckedPeople_e2 = CheckedPeople_e2,QAConfirmPeople_e2 = QAConfirmPeople_e2,OperationPeople_e3 = OperationPeople_e3,CheckedPeople_e3 = CheckedPeople_e3,
-                           QAConfirmPeople_e3 = QAConfirmPeople_e3,QAConfirmPeople_e4 = QAConfirmPeople_e4,OperationPeople_e5 = OperationPeople_e5,CheckedPeople_e5 = CheckedPeople_e5,
-                           OperationPeople_e6 = OperationPeople_e6,CheckedPeople_e6 = CheckedPeople_e6,QAConfirmPeople_e6 = QAConfirmPeople_e6,OperationPeople_e7 = OperationPeople_e7,
-                           CheckedPeople_e7 = CheckedPeople_e7,OperationPeople_e8 = OperationPeople_e8,CheckedPeople_e8 = CheckedPeople_e8)
+    if(oclass.BrandID == "1"):
+        return render_template('electronicBatchRecord.html',
+                               PName=Pclass.PDUnitRouteName,PUID=Pclass.PUID,BatchID=oclass.BatchID,PlanQuantity=oclass.PlanQuantity,
+                               ActBeginTime=Zclass.ActBeginTime,flag=flag,OperationPeople_a1=OperationPeople_a1,CheckedPeople_a1=CheckedPeople_a1,QAConfirmPeople_a1=QAConfirmPeople_a1,
+                               OperationPeople_a2=OperationPeople_a2,CheckedPeople_a2=CheckedPeople_a2,OperationPeople_a3=OperationPeople_a3,CheckedPeople_a3=CheckedPeople_a3,
+                               QAConfirmPeople_a3=QAConfirmPeople_a3,OperationPeople_a4=OperationPeople_a4,CheckedPeople_a4=CheckedPeople_a4,QAConfirmPeople_a4=QAConfirmPeople_a4,
+                               OperationPeople_a5=OperationPeople_a5,CheckedPeople_a5=CheckedPeople_a5,OperationPeople_b1 = OperationPeople_b1,CheckedPeople_b1 = CheckedPeople_b1,
+                               QAConfirmPeople_b1 = QAConfirmPeople_b1,OperationPeople_b2 = OperationPeople_b2,CheckedPeople_b2 = CheckedPeople_b2,QAConfirmPeople_b2 = QAConfirmPeople_b2,
+                               OperationPeople_b3 = OperationPeople_b3,CheckedPeople_b3 = CheckedPeople_b3,QAConfirmPeople_b3 = QAConfirmPeople_b3,OperationPeople_b4 = OperationPeople_b4,
+                               CheckedPeople_b4 = CheckedPeople_b4,QAConfirmPeople_b4 = QAConfirmPeople_b4,OperationPeople_b5 = OperationPeople_b5,CheckedPeople_b5 = CheckedPeople_b5,
+                               QAConfirmPeople_b5 = QAConfirmPeople_b5,OperationPeople_b6 = OperationPeople_b6,CheckedPeople_b6 = CheckedPeople_b6,
+                               OperationPeople_c1=OperationPeople_c1,CheckedPeople_c1 = CheckedPeople_c1,QAConfirmPeople_c1 = QAConfirmPeople_c1,OperationPeople_c2 = OperationPeople_c2,
+                               CheckedPeople_c2 = CheckedPeople_c2,QAConfirmPeople_c2 = QAConfirmPeople_c2,OperationPeople_c3 = OperationPeople_c3,CheckedPeople_c3 = CheckedPeople_c3,
+                               QAConfirmPeople_c3 = QAConfirmPeople_c3,OperationPeople_c4 = OperationPeople_c4,CheckedPeople_c4 = CheckedPeople_c4,QAConfirmPeople_c4 = QAConfirmPeople_c4,
+                               OperationPeople_c5 = OperationPeople_c5,CheckedPeople_c5 = CheckedPeople_c5,QAConfirmPeople_c5 = QAConfirmPeople_c5,OperationPeople_c6 = OperationPeople_c6,
+                               CheckedPeople_c6 = CheckedPeople_c6,QAConfirmPeople_c6 = QAConfirmPeople_c6,OperationPeople_c7 = OperationPeople_c7,CheckedPeople_c7 = CheckedPeople_c7,
+                               OperationPeople_d1=OperationPeople_d1,CheckedPeople_d1 = CheckedPeople_d1,QAConfirmPeople_d1 = QAConfirmPeople_d1,OperationPeople_d2 = OperationPeople_d2,
+                               CheckedPeople_d2 = CheckedPeople_d2,OperationPeople_d3 = OperationPeople_d3,CheckedPeople_d3 = CheckedPeople_d3,QAConfirmPeople_d3 = QAConfirmPeople_d3,
+                               OperationPeople_d4 = OperationPeople_d4,CheckedPeople_d4 = CheckedPeople_d4,
+                               OperationPeople_e1 = OperationPeople_e1,CheckedPeople_e1 = CheckedPeople_e1,QAConfirmPeople_e1 = QAConfirmPeople_e1,OperationPeople_e2 = OperationPeople_e2,
+                               CheckedPeople_e2 = CheckedPeople_e2,QAConfirmPeople_e2 = QAConfirmPeople_e2,OperationPeople_e3 = OperationPeople_e3,CheckedPeople_e3 = CheckedPeople_e3,
+                               QAConfirmPeople_e3 = QAConfirmPeople_e3,QAConfirmPeople_e4 = QAConfirmPeople_e4,OperationPeople_e5 = OperationPeople_e5,CheckedPeople_e5 = CheckedPeople_e5,
+                               OperationPeople_e6 = OperationPeople_e6,CheckedPeople_e6 = CheckedPeople_e6,QAConfirmPeople_e6 = QAConfirmPeople_e6,OperationPeople_e7 = OperationPeople_e7,
+                               CheckedPeople_e7 = CheckedPeople_e7,OperationPeople_e8 = OperationPeople_e8,CheckedPeople_e8 = CheckedPeople_e8)
+    elif(oclass.BrandID == "2"):
+        return render_template('electronicBatchRecordcaoshanhu.html',
+                               PName=Pclass.PDUnitRouteName, PUID=Pclass.PUID, BatchID=oclass.BatchID,
+                               PlanQuantity=oclass.PlanQuantity,
+                               ActBeginTime=Zclass.ActBeginTime, flag=flag, OperationPeople_a1=OperationPeople_a1,
+                               CheckedPeople_a1=CheckedPeople_a1, QAConfirmPeople_a1=QAConfirmPeople_a1,
+                               OperationPeople_a2=OperationPeople_a2, CheckedPeople_a2=CheckedPeople_a2,
+                               OperationPeople_a3=OperationPeople_a3, CheckedPeople_a3=CheckedPeople_a3,
+                               QAConfirmPeople_a3=QAConfirmPeople_a3, OperationPeople_a4=OperationPeople_a4,
+                               CheckedPeople_a4=CheckedPeople_a4, QAConfirmPeople_a4=QAConfirmPeople_a4,
+                               OperationPeople_a5=OperationPeople_a5, CheckedPeople_a5=CheckedPeople_a5,
+                               OperationPeople_b1=OperationPeople_b1, CheckedPeople_b1=CheckedPeople_b1,
+                               QAConfirmPeople_b1=QAConfirmPeople_b1, OperationPeople_b2=OperationPeople_b2,
+                               CheckedPeople_b2=CheckedPeople_b2, QAConfirmPeople_b2=QAConfirmPeople_b2,
+                               OperationPeople_b3=OperationPeople_b3, CheckedPeople_b3=CheckedPeople_b3,
+                               QAConfirmPeople_b3=QAConfirmPeople_b3, OperationPeople_b4=OperationPeople_b4,
+                               CheckedPeople_b4=CheckedPeople_b4, QAConfirmPeople_b4=QAConfirmPeople_b4,
+                               OperationPeople_b5=OperationPeople_b5, CheckedPeople_b5=CheckedPeople_b5,
+                               QAConfirmPeople_b5=QAConfirmPeople_b5, OperationPeople_b6=OperationPeople_b6,
+                               CheckedPeople_b6=CheckedPeople_b6,
+                               OperationPeople_c1=OperationPeople_c1, CheckedPeople_c1=CheckedPeople_c1,
+                               QAConfirmPeople_c1=QAConfirmPeople_c1, OperationPeople_c2=OperationPeople_c2,
+                               CheckedPeople_c2=CheckedPeople_c2, QAConfirmPeople_c2=QAConfirmPeople_c2,
+                               OperationPeople_c3=OperationPeople_c3, CheckedPeople_c3=CheckedPeople_c3,
+                               QAConfirmPeople_c3=QAConfirmPeople_c3, OperationPeople_c4=OperationPeople_c4,
+                               CheckedPeople_c4=CheckedPeople_c4, QAConfirmPeople_c4=QAConfirmPeople_c4,
+                               OperationPeople_c5=OperationPeople_c5, CheckedPeople_c5=CheckedPeople_c5,
+                               QAConfirmPeople_c5=QAConfirmPeople_c5, OperationPeople_c6=OperationPeople_c6,
+                               CheckedPeople_c6=CheckedPeople_c6, QAConfirmPeople_c6=QAConfirmPeople_c6,
+                               OperationPeople_c7=OperationPeople_c7, CheckedPeople_c7=CheckedPeople_c7,
+                               OperationPeople_d1=OperationPeople_d1, CheckedPeople_d1=CheckedPeople_d1,
+                               QAConfirmPeople_d1=QAConfirmPeople_d1, OperationPeople_d2=OperationPeople_d2,
+                               CheckedPeople_d2=CheckedPeople_d2, OperationPeople_d3=OperationPeople_d3,
+                               CheckedPeople_d3=CheckedPeople_d3, QAConfirmPeople_d3=QAConfirmPeople_d3,
+                               OperationPeople_d4=OperationPeople_d4, CheckedPeople_d4=CheckedPeople_d4,
+                               OperationPeople_e1=OperationPeople_e1, CheckedPeople_e1=CheckedPeople_e1,
+                               QAConfirmPeople_e1=QAConfirmPeople_e1, OperationPeople_e2=OperationPeople_e2,
+                               CheckedPeople_e2=CheckedPeople_e2, QAConfirmPeople_e2=QAConfirmPeople_e2,
+                               OperationPeople_e3=OperationPeople_e3, CheckedPeople_e3=CheckedPeople_e3,
+                               QAConfirmPeople_e3=QAConfirmPeople_e3, QAConfirmPeople_e4=QAConfirmPeople_e4,
+                               OperationPeople_e5=OperationPeople_e5, CheckedPeople_e5=CheckedPeople_e5,
+                               OperationPeople_e6=OperationPeople_e6, CheckedPeople_e6=CheckedPeople_e6,
+                               QAConfirmPeople_e6=QAConfirmPeople_e6, OperationPeople_e7=OperationPeople_e7,
+                               CheckedPeople_e7=CheckedPeople_e7, OperationPeople_e8=OperationPeople_e8,
+                               CheckedPeople_e8=CheckedPeople_e8)
 def electronicBatchRecords(name,BrandID,BatchID,ID):
     Pclass = db_session.query(ProductUnitRoute).filter(ProductUnitRoute.PDUnitRouteName == name,
                                                        ProductUnitRoute.ProductRuleID == BrandID).first()
@@ -5973,100 +5966,6 @@ def addNewReadyWork():
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
                               ensure_ascii=False)
 
-# 备料操作按SOP执行物料列表明细
-@app.route('/addNewZYPlanMaterial', methods=['POST', 'GET'])
-def addNewZYPlanMaterial():
-    if request.method == 'POST':
-        data = request.values
-        try:
-            json_str = json.dumps(data.to_dict())
-            if len(json_str) > 2:
-                PUID = data['PUID']
-                BatchID = data['BatchID']
-                MaterialName = data['MaterialName']# 物料名称
-                MaterialCode = data['MaterialCode']# 物料号
-                CheckedCode = data['CheckedCode']# 检验单号
-                Count = data['Count']# 数量
-                TankNum = data['TankNum']  # 罐号
-                Unit = data['Unit']  # 单位
-                db_session.add(
-                    NewZYPlanMaterial(
-                        MaterialName=MaterialName,
-                        MaterialCode=MaterialCode,
-                        BatchID=BatchID,
-                        CheckedCode=CheckedCode,
-                        PUID=PUID,
-                        Count=Count,
-                        TankNum=TankNum,
-                        Unit=Unit,
-                        EnterTime=datetime.datetime.now()
-                    ))
-                db_session.commit()
-                return 'OK'
-        except Exception as e:
-            db_session.rollback()
-            print(e)
-            logger.error(e)
-            insertSyslog("error", "备料操作按SOP执行物料列表明细保存报错Error：" + str(e), current_user.Name)
-            return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
-                              ensure_ascii=False)
-
-# 收粉结束，包装材料统计
-@app.route('/addPackMaterial', methods=['POST', 'GET'])
-def addPackMaterial():
-    if request.method == 'POST':
-        data = request.values
-        try:
-            json_str = json.dumps(data.to_dict())
-            if len(json_str) > 2:
-                PUID = data['PUID']
-                BatchID = data['BatchID']
-                MaterialName = data['MaterialName']
-                MaterialCode = data['MaterialCode']
-                ReadyUnit = data['ReadyUnit']
-                UserUnit = data['UserUnit']
-                SurplusUnit = data['SurplusUnit']
-                DefectiveUnit = data['DefectiveUnit']
-                AttritionUnit = data['AttritionUnit']
-                CancelStocksUnit = data['CancelStocksUnit']
-                OperationPeople = data['OperationPeople']
-                CheckedPeople = data['CheckedPeople']
-                QAConfirmPeople = data['QAConfirmPeople']
-                confirm = data['confirm']
-                if (confirm == "1"):
-                    db_session.add(
-                        PackMaterial(
-                            MaterialName=MaterialName,
-                            MaterialCode=MaterialCode,
-                            BatchID=BatchID,
-                            ReadyUnit=ReadyUnit,
-                            UserUnit=UserUnit,
-                            SurplusUnit=SurplusUnit,
-                            DefectiveUnit=DefectiveUnit,
-                            AttritionUnit=AttritionUnit,
-                            CancelStocksUnit=CancelStocksUnit,
-                            OperationPeople=OperationPeople,
-                            CheckedPeople=CheckedPeople,
-                            QAConfirmPeople=QAConfirmPeople,
-                            PUID=PUID,
-                            OperationDate=datetime.datetime.now()
-                        ))
-                else:
-                    oclasss = db_session.query(PackMaterial.CheckedPeople).filter(PackMaterial.PUID == PUID,
-                                                                                  PackMaterial.BatchID == BatchID).all()
-                    for oc in oclasss:
-                        oc.CheckedPeople = current_user.Name
-                        oc.OperationDate = datetime.datetime.now()
-                db_session.commit()
-                return 'OK'
-        except Exception as e:
-            db_session.rollback()
-            print(e)
-            logger.error(e)
-            insertSyslog("error", "收粉结束，包装材料统计报错Error：" + str(e), current_user.Name)
-            return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
-                              ensure_ascii=False)
-
 # 所有工艺段保存查询操作
 @app.route('/allUnitDataMutual', methods=['POST', 'GET'])
 def allUnitDataMutual():
@@ -6142,8 +6041,11 @@ def electionBatchSearch():
                 dic = {}
                 if(Pclass.PDUnitRouteName == "煎煮段"):
                     name = '提取'
-                    EQPCodes = db_session.query(ElectronicBatch.EQPCode).distinct().filter(ElectronicBatch.BatchID == BatchID,ElectronicBatch.PDUnitRouteCode == name).all()
-                    if EQPCodes[0] != None:
+                    EQPCodesLen = db_session.query(ElectronicBatch.EQPCode).distinct().filter(
+                        ElectronicBatch.BatchID == BatchID, ElectronicBatch.PDUnitRouteCode == name).count()
+                    if EQPCodesLen != 0:
+                        EQPCodes = db_session.query(ElectronicBatch.EQPCode).distinct().filter(
+                            ElectronicBatch.BatchID == BatchID, ElectronicBatch.PDUnitRouteCode == name).all()
                         for i in range(0,len(EQPCodes)):
                             EQPName = db_session.query(Equipment.EQPName).filter(Equipment.EQPCode == EQPCodes[i]).first()
                             dic["EQPName"+str(i)] = EQPName[0]
@@ -6188,8 +6090,10 @@ def electionBatchSearch():
                                     dic["jEndTime" + str(i)] = strchange(cssc[k].SampleDate)[10:-10]
                 elif (Pclass.PDUnitRouteName == "浓缩段"):
                     name = "MVR"
-                    EQPCodes = db_session.query(ElectronicBatch.EQPCode).distinct().filter(ElectronicBatch.BatchID == BatchID,ElectronicBatch.PDUnitRouteCode == name).all()
-                    if EQPCodes[0] != None:
+                    EQPCodesLen = db_session.query(ElectronicBatch.EQPCode).distinct().filter(
+                        ElectronicBatch.BatchID == BatchID, ElectronicBatch.PDUnitRouteCode == name).count()
+                    if EQPCodesLen != 0:
+                        EQPCodes = db_session.query(ElectronicBatch.EQPCode).distinct().filter(ElectronicBatch.BatchID == BatchID,ElectronicBatch.PDUnitRouteCode == name).all()
                         for i in range(len(EQPCodes)):
                             EQPName = db_session.query(Equipment.EQPName).filter(Equipment.EQPCode == EQPCodes[i]).first()
                             dic["EQPName" + str(i)] = EQPName[0]
@@ -6212,8 +6116,10 @@ def electionBatchSearch():
                                 dic["wd" + "_" + str(i) + "_" + str(y)] = floatcut(esss[y].SampleValue) + esss[y].Unit
                 elif (Pclass.PDUnitRouteName == "喷雾干燥段"):
                     name = "喷雾干燥"
-                    ZHEQPCodes = db_session.query(ElectronicBatch.EQPCode).distinct().filter(ElectronicBatch.BatchID == BatchID,ElectronicBatch.PDUnitRouteCode == "总混").all()
-                    if ZHEQPCodes[0] != None:
+                    EQPCodesLen = db_session.query(ElectronicBatch.EQPCode).distinct().filter(
+                        ElectronicBatch.BatchID == BatchID, ElectronicBatch.PDUnitRouteCode == name).count()
+                    if EQPCodesLen != 0:
+                        ZHEQPCodes = db_session.query(ElectronicBatch.EQPCode).distinct().filter(ElectronicBatch.BatchID == BatchID,ElectronicBatch.PDUnitRouteCode == "总混").all()
                         for a in range(len(ZHEQPCodes)):
                             ZHEQPName = db_session.query(Equipment.EQPName).filter(Equipment.EQPCode == ZHEQPCodes[a]).first()
                             dic["ZHEQPName"+str(a)] = ZHEQPName[0]
@@ -6223,8 +6129,10 @@ def electionBatchSearch():
                                     dic["zhStartTime"+str(a)] = strchange(zhs[zh].SampleDate)[0:-7]
                                 if zh==len(zhs)-1:
                                     dic["zhEndTime"+str(a)] = strchange(zhs[zh].SampleDate)[0:-7]
-                    PWEQPCodes = db_session.query(ElectronicBatch.EQPCode).distinct().filter(ElectronicBatch.BatchID == BatchID,ElectronicBatch.PDUnitRouteCode == "喷雾干燥").all()
-                    if PWEQPCodes[0] != None:
+                    EQPCodesL = db_session.query(ElectronicBatch.EQPCode).distinct().filter(
+                        ElectronicBatch.BatchID == BatchID, ElectronicBatch.PDUnitRouteCode == name).count()
+                    if EQPCodesL != 0:
+                        PWEQPCodes = db_session.query(ElectronicBatch.EQPCode).distinct().filter(ElectronicBatch.BatchID == BatchID,ElectronicBatch.PDUnitRouteCode == "喷雾干燥").all()
                         for i in range(len(PWEQPCodes)):
                             PWEQPName = db_session.query(Equipment.EQPName).filter(Equipment.EQPCode == PWEQPCodes[i]).first()
                             dic["PWEQPName" + str(i)] = PWEQPName[0]
@@ -6251,8 +6159,10 @@ def electionBatchSearch():
                                 dic["cfTemp" + "_" + str(i) + "_" + str(z)] = floatcut(pfss[z].SampleValue) + pfss[z].Unit
                 elif (Pclass.PDUnitRouteName == "醇沉段"):
                     name = "醇沉"
-                    CCEQPCodes = db_session.query(ElectronicBatch.EQPCode).distinct().filter(ElectronicBatch.BatchID == BatchID, ElectronicBatch.PDUnitRouteCode == name).all()
-                    if CCEQPCodes[0] != None:
+                    EQPCodesLen = db_session.query(ElectronicBatch.EQPCode).distinct().filter(
+                        ElectronicBatch.BatchID == BatchID, ElectronicBatch.PDUnitRouteCode == name).count()
+                    if EQPCodesLen != 0:
+                        CCEQPCodes = db_session.query(ElectronicBatch.EQPCode).distinct().filter(ElectronicBatch.BatchID == BatchID, ElectronicBatch.PDUnitRouteCode == name).all()
                         for i in range(len(CCEQPCodes)):
                             PWEQPName = db_session.query(Equipment.EQPName).filter(Equipment.EQPCode == CCEQPCodes[i]).first()
                             dic["CCEQPName" + str(i)] = PWEQPName[0]
