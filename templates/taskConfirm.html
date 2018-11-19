@@ -305,7 +305,11 @@
             }
             $.ajax({
                 url:"/processMonitorLine/saveEQPCode",
-                data:{EQPCode:EquipmentIDVal,ID:$("#ID").val()},
+                data:{
+                    EQPCode:EquipmentIDVal,
+                    ID:$("#ID").val(),
+                    confirm:""
+                },
                 type:"get",
                 success:function(res){
                     if(res == "OK"){
