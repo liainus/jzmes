@@ -4680,7 +4680,10 @@ def saveEQPCode():
                 if confirm == "1":
                     if PUID == 2:
                         for i in range(len(oclasstasks)):
-                            oclasstasks[i].EquipmentID = "R1101-"+ str(i+1)
+                            oclasstasks[i].EquipmentID = ""
+                            id = db_session.query(Equipment.ID).filter(Equipment.EQPCode == "R1101-"+ str(i+1)).first()
+                            if id != None:
+                                oclasstasks[i].EquipmentID = id[0]
                             oclasstasks[i].TaskStatus = Model.Global.TASKSTATUS.COMFIRM.value
                     else:
                         return "只能是煎煮段的可以一键分配！"
