@@ -5801,7 +5801,7 @@ def electronicBatchRecord():
                     flag = "83"
                 elif(menu[0] == "QA确认"):
                     flag = "84"
-    if(oclass.BrandID == "1"):
+    if(oclass.BrandID == 1):
         return render_template('electronicBatchRecord.html',
                                PName=Pclass.PDUnitRouteName,PUID=Pclass.PUID,BatchID=oclass.BatchID,PlanQuantity=oclass.PlanQuantity,
                                ActBeginTime=Zclass.ActBeginTime,flag=flag,OperationPeople_a1=OperationPeople_a1,CheckedPeople_a1=CheckedPeople_a1,QAConfirmPeople_a1=QAConfirmPeople_a1,
@@ -5825,7 +5825,7 @@ def electronicBatchRecord():
                                QAConfirmPeople_e3 = QAConfirmPeople_e3,QAConfirmPeople_e4 = QAConfirmPeople_e4,OperationPeople_e5 = OperationPeople_e5,CheckedPeople_e5 = CheckedPeople_e5,
                                OperationPeople_e6 = OperationPeople_e6,CheckedPeople_e6 = CheckedPeople_e6,QAConfirmPeople_e6 = QAConfirmPeople_e6,OperationPeople_e7 = OperationPeople_e7,
                                CheckedPeople_e7 = CheckedPeople_e7,OperationPeople_e8 = OperationPeople_e8,CheckedPeople_e8 = CheckedPeople_e8)
-    elif(oclass.BrandID == "2"):
+    elif(oclass.BrandID == 2):
         return render_template('electronicBatchRecordcaoshanhu.html',
                                PName=Pclass.PDUnitRouteName, PUID=Pclass.PUID, BatchID=oclass.BatchID,
                                PlanQuantity=oclass.PlanQuantity,
