@@ -189,6 +189,7 @@
                         }
                     },
                     error: function () {
+                        $("#loadingModal").modal('hide');
                         alert("请求失败，请稍后重试！")
                     }
                 });
