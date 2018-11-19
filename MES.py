@@ -4727,7 +4727,7 @@ def saveEQPCode():
             print(e)
             logger.error(e)
             insertSyslog("error", "任务确认保存设备code报错Error：" + str(e), current_user.Name)
-            return "NO"
+            return "任务确认保存设备code报错"
 def updateNodeA(id,name):
     try:
         noclass = db_session.query(Model.node.NodeCollection).filter(Model.node.NodeCollection.name == name,
@@ -5487,13 +5487,13 @@ def planmanagerProgressTuSearch():
                     g3 = '单效浓缩结束，按SOP清场（QA签名）'
                     dic['g3'] = queryFlow(ID, g3)
                     hh = '（收膏段）任务确认'
-                    dic['hh'] = queryFlow(ID, hh)
+                    dic['hh'] = 'OK'#queryFlow(ID, hh)
                     h1 = '（收膏段）生产前准备（QA签名）'
                     dic['h1'] = queryFlow(ID, h1)
                     h2 = '收膏开始，操作按SOP执行（QA签名）'
                     dic['h2'] = queryFlow(ID,h2)
                     h3 = '收膏结束，按SOP清场（QA签名）'
-                    dic['h3'] = 'OK'#queryFlow(ID, h3)
+                    dic['h3'] = queryFlow(ID, h3)
                 return json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
