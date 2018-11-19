@@ -6508,49 +6508,6 @@ def CreateOperationManual():
             insertSyslog("error", "创建操作手册报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
                               ensure_ascii=False)
-# 收粉段数据保存
-@app.route('/EletronicBitch/PowderCollecting/DataStore')
-def PowderCollectingDataStore():
-    if request.method == 'POST':
-        try:
-            data = request.values
-            puid = data['PUID']
-            BatchID = data['BatchID']
-            # 生产前的准备
-            ready_begin_time = data['ready_begin_time']
-            ready_end_atime = data['ready_end_atime']
-
-            ready_plastic_batch_number_1 = data['ready_plastic_batch_number_1']
-            ready_plastic_batch_number_2 = data['ready_plastic_batch_number_2']
-            ready_plastic_test_number_1 = data['ready_plastic_test_number_1']
-            ready_plastic_test_number_2 = data['ready_plastic_test_number_2']
-            ready_plastic_count_1 = data['ready_plastic_count_1']
-            ready_plastic_count_2 = data['ready_plastic_count_2']
-
-            ready_paper_batch_number_1 = data['ready_paper_batch_number_1']
-            ready_paper_batch_number_2 = data['ready_paper_batch_number_2']
-            ready_paper_test_number_1 = data['ready_paper_test_number_1']
-            ready_paper_test_number_2 = data['ready_paper_test_number_2']
-            ready_paper_count_1 = data['ready_paper_count_1']
-            ready_paper_count_2 = data['ready_paper_count_2']
-
-            powder_collecting_begin_time_1 = data['powder_collecting_begin_time_1']
-            powder_collecting_begin_time_2 = data['powder_collecting_begin_time_2']
-            powder_collecting_number_1 = data['powder_collecting_number_1']
-            powder_collecting_number_2 = data['powder_collecting_number_2']
-            powder_collecting_speed_1 = data['powder_collecting_speed_1']
-            powder_collecting_speed_2 = data['powder_collecting_speed_2']
-            powder_collecting_end_time_1 = data['powder_collecting_end_time_1']
-            powder_collecting_end_time_2 = data['powder_collecting_end_time_2']
-
-
-
-            oclass = db_session.query(EletronicBatchDataStore)
-        except Exception as e:
-            print(e)
-            logger.error(e)
-            insertSyslog("error", "Excel数据读取失败报错Error：" + str(e), current_user.Name)
-            return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 
 # 收粉监控画面
