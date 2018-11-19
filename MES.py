@@ -4672,13 +4672,21 @@ def saveEQPCode():
             if len(jsonstr) > 10:
                 EQPCode = data['EQPCode']
                 ID = data['ID']
+                confirm = data['confirm']
                 oclass = db_session.query(ZYTask).filter(ZYTask.ID == ID).first()
                 PUID = oclass.PUID
                 oclasstasks = db_session.query(ZYTask).filter(ZYTask.PUID == PUID,
                                                               ZYTask.BatchID == oclass.BatchID).all()
-                equipments = db_session.query(Equipment).filter(Equipment.PUID == PUID).all()
-                oclass.EquipmentID = EQPCode
-                oclass.TaskStatus = Model.Global.TASKSTATUS.COMFIRM.value
+                if confirm == "1":
+                    if PUID == 2:
+                        for i in range(len(oclasstasks)):
+                            oclasstasks[i].EquipmentID = "R1101-"+ str(i+1)
+                            oclasstasks[i].TaskStatus = Model.Global.TASKSTATUS.COMFIRM.value
+                    else:
+                        return "只能是煎煮段的可以一键分配！"
+                else:
+                    oclass.EquipmentID = EQPCode
+                    oclass.TaskStatus = Model.Global.TASKSTATUS.COMFIRM.value
                 db_session.commit()
                 IDm = db_session.query(PlanManager.ID).filter(PlanManager.BatchID == oclass.BatchID).first()
                 IDm = IDm[0]
