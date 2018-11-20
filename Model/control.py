@@ -558,7 +558,6 @@ class ctrlPlan:
                                 for num in range(0, iTaskCount):
                                     iTaskSeq = iTaskSeq + 1
                                     bReturn, strTaskNo = self.getTaskNo()
-                                    print(bReturn,type)
                                     if bReturn == False:
                                         return False
                                     bReturn = self.createPUTask(iPUID, ABatchID, ABrandID, ABrandName, APlanWeight,
