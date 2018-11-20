@@ -62,6 +62,8 @@ Session = sessionmaker(bind=engine)
 db_session = Session()
 logger = MESLogger('../logs', 'log')
 
+pool = redis.ConnectionPool(host=constant.REDIS_HOST, password=constant.REDIS_PASSWORD)  # 实现一个连接池
+
 # 存储
 def store(data):
     # 调用__enter__函数，该函数把返回值传给变量json_file
@@ -4283,12 +4285,11 @@ def processMonitor():
 
 def get_data_from_realtime_Decocting(batch,brand,tankOver,status):
     try:
-        pool = redis.ConnectionPool(host=constant.REDIS_HOST, password=constant.REDIS_PASSWORD)  # 实现一个连接池
         redis_conn = redis.Redis(connection_pool=pool)
-        Batch = redis_conn.get(batch)
-        Brand = redis_conn.get(brand)
-        TankOver = redis_conn.get(tankOver)
-        Status = redis_conn.get(status)
+        Batch = redis_conn.hget(constant.REDIS_TABLENAME, batch).decode('utf-8')
+        Brand = redis_conn.hget(constant.REDIS_TABLENAME,brand).decode('utf-8')
+        TankOver = redis_conn.hget(constant.REDIS_TABLENAME,tankOver) if redis_conn.hget(constant.REDIS_TABLENAME,tankOver) is not None else False
+        Status = redis_conn.hget(constant.REDIS_TABLENAME,status).decode('utf-8')
         return Batch, Brand, TankOver, Status
     except Exception as e:
         print('连接实时数据服务器失败!')
@@ -4350,13 +4351,12 @@ def extract():
 def get_data_from_realtime_Standing(name,Unit=None):
     try:
         # 新建一个客户端,并在初始化的时候进行连接实时数据服务
-        pool = redis.ConnectionPool(host=constant.REDIS_HOST, password=constant.REDIS_PASSWORD)  # 实现一个连接池
-        share_data = redis.Redis(connection_pool=pool)
+        redis_conn = redis.Redis(connection_pool=pool)
         if Unit == 'Concentrate':
             batch_tag = 't|MVRPC_' + name[-1]
             brand_tag = 't|MVRPM_' + name[-1]
-            Batch = share_data.get(batch_tag)
-            Brand = share_data.get(brand_tag)
+            Batch = redis_conn.hget(constant.REDIS_TABLENAME, str(batch_tag)).decode('utf-8')
+            Brand = redis_conn.hget(constant.REDIS_TABLENAME, str(brand_tag)).decode('utf-8')
             return Batch,Brand
         batch_tag = 't|PC' + name[4:]
         brand_tag = 't|PM' + name[4:]
@@ -4364,11 +4364,11 @@ def get_data_from_realtime_Standing(name,Unit=None):
         volume_tag = 't|' + name[4:] + 'JZ'
         feed_time_tag = 't|' + name[4:] + 'MIN'
 
-        Batch = share_data.get(batch_tag)
-        Brand = share_data.get(brand_tag)
-        Height = share_data.get(height_tag)
-        Feed_time = share_data.get(feed_time_tag)
-        Volume = share_data.get(volume_tag)
+        Batch = redis_conn.hget(constant.REDIS_TABLENAME, str(batch_tag))
+        Brand = redis_conn.hget(constant.REDIS_TABLENAME, str(brand_tag))
+        Height = redis_conn.hget(constant.REDIS_TABLENAME, str(height_tag))
+        Feed_time = redis_conn.hget(constant.REDIS_TABLENAME, str(feed_time_tag))
+        Volume = redis_conn.hget(constant.REDIS_TABLENAME, str(volume_tag))
         return Batch, Brand, Height, Feed_time, Volume
     except Exception as e:
         print('连接实时数据服务器失败!')
@@ -4477,19 +4477,19 @@ def get_data_Total_MixtureAndDry(num,Unit=None):
             volume_tag = 't|ZH_' + num + 'TJ'
             flow_tag = 't|' + num + '_zonghunf'
 
-            Batch = share_data.get(batch_tag)
-            Brand = share_data.get(brand_tag)
-            Height = share_data.get(height_tag)
-            Volume = share_data.get(volume_tag)
-            Temperature = share_data.get(temp_tag)
-            Flow = share_data.get(flow_tag)
+            Batch = share_data.hget(constant.REDIS_TABLENAME, batch_tag).decode('utf-8')
+            Brand = share_data.hget(constant.REDIS_TABLENAME, brand_tag).decode('utf-8')
+            Height = share_data.hget(constant.REDIS_TABLENAME, height_tag).decode('utf-8')
+            Volume = share_data.hget(constant.REDIS_TABLENAME, volume_tag).decode('utf-8')
+            Temperature = share_data.hget(constant.REDIS_TABLENAME, temp_tag).decode('utf-8')
+            Flow = share_data.hget(constant.REDIS_TABLENAME, flow_tag).decode('utf-8')
             return Batch, Brand, Height, Volume,Temperature,Flow
         if Unit == 'Dry':
             batch_tag = 't|PGPC_' + num
             brand_tag = 't|PGPM_' + num
 
-            Batch = share_data.get(batch_tag)
-            Brand = share_data.get(brand_tag)
+            Batch = share_data.get(batch_tag).decode('utf-8')
+            Brand = share_data.get(brand_tag).decode('utf-8')
             return Batch, Brand
     except Exception as e:
         print(e)
