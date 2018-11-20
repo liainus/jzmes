@@ -4004,16 +4004,9 @@ def checkPlanManager():
                         oclassNodeColl = db_session.query(Model.node.NodeCollection).filter_by(oddNum=id, name="审核计划").first()
                         oclassNodeColl.status = Model.node.NodeStatus.PASSED.value
                         oclassNodeColl.oddUser = userName
-                        oclassNodeColl.opertionTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                        oclassNodeColl.opertionTime = datetime.datetime.now()
                         oclassNodeColl.seq = 1
                         db_session.commit()
-                        # oclassW = db_session.query(WorkFlowStatus).filter_by(PlanManageID=id).first()
-                        # oclassW.AuditStatus = Model.Global.AuditStatus.Checked.value
-                        # oclassW.DescF = "生产管理部审核计划"
-                        # Desc = "生产管理部审核计划"
-                        # Type = Model.Global.Type.NEW.value
-                        # PlanCreate = ctrlPlan('PlanCreate')
-                        # wReturn = PlanCreate.createWorkFlowEventPlan(id, userName, Desc, Type)
                     except Exception as ee:
                         db_session.rollback()
                         print(ee)
