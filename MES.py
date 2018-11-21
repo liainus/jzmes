@@ -5576,6 +5576,7 @@ def electronicBatchRecord():
         QAConfirmPeople_d1 = ""
         OperationPeople_d2 = ""
         CheckedPeople_d2 = ""
+        QAConfirmPeople_d2 = ""
         OperationPeople_d3 = ""
         CheckedPeople_d3 = ""
         QAConfirmPeople_d3 = ""
@@ -5847,7 +5848,7 @@ def electronicBatchRecord():
                                OperationPeople_c5 = OperationPeople_c5,CheckedPeople_c5 = CheckedPeople_c5,QAConfirmPeople_c5 = QAConfirmPeople_c5,OperationPeople_c6 = OperationPeople_c6,
                                CheckedPeople_c6 = CheckedPeople_c6,QAConfirmPeople_c6 = QAConfirmPeople_c6,OperationPeople_c7 = OperationPeople_c7,CheckedPeople_c7 = CheckedPeople_c7,
                                OperationPeople_d1=OperationPeople_d1,CheckedPeople_d1 = CheckedPeople_d1,QAConfirmPeople_d1 = QAConfirmPeople_d1,OperationPeople_d2 = OperationPeople_d2,
-                               CheckedPeople_d2 = CheckedPeople_d2,OperationPeople_d3 = OperationPeople_d3,CheckedPeople_d3 = CheckedPeople_d3,QAConfirmPeople_d3 = QAConfirmPeople_d3,
+                               CheckedPeople_d2 = CheckedPeople_d2,QAConfirmPeople_d2 = QAConfirmPeople_d2,OperationPeople_d3 = OperationPeople_d3,CheckedPeople_d3 = CheckedPeople_d3,QAConfirmPeople_d3 = QAConfirmPeople_d3,
                                OperationPeople_d4 = OperationPeople_d4,CheckedPeople_d4 = CheckedPeople_d4,
                                OperationPeople_e1 = OperationPeople_e1,CheckedPeople_e1 = CheckedPeople_e1,QAConfirmPeople_e1 = QAConfirmPeople_e1,OperationPeople_e2 = OperationPeople_e2,
                                CheckedPeople_e2 = CheckedPeople_e2,QAConfirmPeople_e2 = QAConfirmPeople_e2,OperationPeople_e3 = OperationPeople_e3,CheckedPeople_e3 = CheckedPeople_e3,
@@ -5976,10 +5977,22 @@ def addNewReadyWork():
                     oclass.CheckedPeople = current_user.Name
                     oclass.OperationDate = datetime.datetime.now()
                 elif confirm == "3":
-                    oclass = db_session.query(NewReadyWork).filter(NewReadyWork.PUID == PUID,
-                                                                                   NewReadyWork.BatchID == BatchID,NewReadyWork.Type == Type).first()
-                    oclass.QAConfirmPeople = current_user.Name
-                    oclass.OperationDate = datetime.datetime.now()
+                    if Type == "52":
+                        db_session.add(
+                            NewReadyWork(
+                                BatchID=BatchID,
+                                PUID=PUID,
+                                Type=Type,
+                                QAConfirmPeople=current_user.Name,
+                                OperationDate=datetime.datetime.now()
+                            ))
+                    else:
+                        oclass = db_session.query(NewReadyWork).filter(NewReadyWork.PUID == PUID,
+                                                                       NewReadyWork.BatchID == BatchID,
+                                                                       NewReadyWork.Type == Type).first()
+
+                        oclass.QAConfirmPeople = current_user.Name
+                        oclass.OperationDate = datetime.datetime.now()
                 db_session.commit()
                 return 'OK'
         except Exception as e:
