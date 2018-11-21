@@ -4970,7 +4970,7 @@ def operateflow(ID, name, PName):
         PUID = db_session.query(ProductUnitRoute.PUID).filter(ProductUnitRoute.PDUnitRouteName == PName).first()
         taskStatuss = db_session.query(ZYTask.TaskStatus).filter(ZYTask.PUID == PUID[0], ZYTask.BatchID == BatchID[0]).all()
         for status in taskStatuss:
-            if(status[0] != "40"):
+            if(status[0] == Model.Global.TASKSTATUS.NEW.value):
                 return "请先进行任务确认，再进行操作！"
             else:
                 pass
@@ -5630,6 +5630,8 @@ def electronicBatchRecord():
             if(Newoclass != None):
                 OperationPeople_a2 = Newoclass.OperationPeople
                 CheckedPeople_a2 = Newoclass.CheckedPeople
+                if CheckedPeople_a2 == None:
+                    CheckedPeople_a2 = ""
             if(re[2] != None):
                 OperationPeople_a5 = re[2].OperationPeople
                 CheckedPeople_a5 = re[2].CheckedPeople
@@ -5668,7 +5670,11 @@ def electronicBatchRecord():
             if(Newoclass != None):
                 OperationPeople_b5 = Newoclass.OperationPeople
                 CheckedPeople_b5 = Newoclass.CheckedPeople
+                if CheckedPeople_b5 == None:
+                    CheckedPeople_b5 = ""
                 QAConfirmPeople_b5 = Newoclass.QAConfirmPeople
+                if QAConfirmPeople_b5 == None:
+                    QAConfirmPeople_b5 = ""
             if (re[2] != None):
                 OperationPeople_b6 = re[2].OperationPeople
                 CheckedPeople_b6 = re[2].CheckedPeople
@@ -5702,15 +5708,23 @@ def electronicBatchRecord():
             if (len(Newoclasss) > 0):
                 for nc in Newoclasss:
                     if (nc.Type == "45"):
-                        OperationPeople_c3 = Newoclasss.OperationPeople
-                        CheckedPeople_c3 = Newoclasss.CheckedPeople
-                        QAConfirmPeople_c3 = Newoclasss.QAConfirmPeople
+                        OperationPeople_c3 = nc.OperationPeople
+                        CheckedPeople_c3 = nc.CheckedPeople
+                        if CheckedPeople_c3 == None:
+                            CheckedPeople_c3 = ""
+                        QAConfirmPeople_c3 = nc.QAConfirmPeople
+                        if QAConfirmPeople_c3 == None:
+                            QAConfirmPeople_c3 = ""
                     elif (nc.Type == "46"):
-                        OperationPeople_c4 = Newoclasss.OperationPeople
-                        CheckedPeople_c4 = Newoclasss.CheckedPeople
-                        QAConfirmPeople_c4 = Newoclasss.QAConfirmPeople
+                        OperationPeople_c4 = nc.OperationPeople
+                        CheckedPeople_c4 = nc.CheckedPeople
+                        if CheckedPeople_c4 == None:
+                            CheckedPeople_c4 = ""
+                        QAConfirmPeople_c4 = nc.QAConfirmPeople
+                        if QAConfirmPeople_c4 == None:
+                            QAConfirmPeople_c4 = ""
                     elif (nc.Type == "54"):
-                        QAConfirmPeople_c5 = Newoclasss.QAConfirmPeople
+                        QAConfirmPeople_c5 = nc.QAConfirmPeople
             if (re[2] != None):
                 OperationPeople_c7 = re[2].OperationPeople
                 CheckedPeople_c7 = re[2].CheckedPeople
@@ -5775,13 +5789,21 @@ def electronicBatchRecord():
                     if(nc.Type == "48"):
                         OperationPeople_e2 = nc.OperationPeople
                         CheckedPeople_e2 = nc.CheckedPeople
+                        if CheckedPeople_e2 == None:
+                            CheckedPeople_e2 = ""
                         QAConfirmPeople_e2 = nc.QAConfirmPeople
+                        if QAConfirmPeople_e2 == None:
+                            QAConfirmPeople_e2 = ""
                     elif(nc.Type == "50"):
                         OperationPeople_e5 = nc.OperationPeople
                         CheckedPeople_e5 = nc.CheckedPeople
+                        if CheckedPeople_e5 == None:
+                            CheckedPeople_e5 = ""
                     elif (nc.Type == "51"):
                         OperationPeople_e8 = nc.OperationPeople
                         CheckedPeople_e8 = nc.CheckedPeople
+                        if CheckedPeople_e8 == None:
+                            CheckedPeople_e8 = ""
                     elif (nc.Type == "52"):
                         QAConfirmPeople_e4 = nc.QAConfirmPeople
         elif (title == "醇沉"):
@@ -5937,7 +5959,7 @@ def addNewReadyWork():
             if len(json_str) > 2:
                 PUID = data['PUID']
                 BatchID = data['BatchID']
-                Type = data['Type']
+                Type = data['type']
                 confirm = data['confirm']
                 if (confirm == "1"):
                     db_session.add(
