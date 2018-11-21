@@ -4872,6 +4872,13 @@ def operateConfirm():
                     PName = '备料段'
                     if(PUName == "生产前的准备"):
                         name = '（备料段）生产前准备（操作人）'
+                        node = db_session.query(Model.node.NodeCollection).filter(
+                            Model.node.NodeCollection.oddNum == ID,
+                            Model.node.NodeCollection.name == '（备料段）任务确认').first()
+                        node.status = Model.node.NodeStatus.PASSED.value
+                        node.opertionTime = datetime.datetime.now()
+                        node.oddUser = current_user.Name
+                        db_session.commit()
                         return operateflow(ID, name, PName)
                     elif(PUName == "备料开始"):
                         name = '备料操作按SOP执行（操作人）'
@@ -4919,6 +4926,13 @@ def operateConfirm():
                     PName = '收粉段'
                     if (PUName == "生产前的准备"):
                         name = '（收粉段）生产前准备（操作人）'
+                        node = db_session.query(Model.node.NodeCollection).filter(
+                            Model.node.NodeCollection.oddNum == ID,
+                            Model.node.NodeCollection.name == '（收粉段）任务确认').first()
+                        node.status = Model.node.NodeStatus.PASSED.value
+                        node.opertionTime = datetime.datetime.now()
+                        node.oddUser = current_user.Name
+                        db_session.commit()
                         return operateflow(ID, name, PName)
                     elif (PUName == "收粉开始"):
                         name = '收粉开始，操作按SOP执行（操作人）'
@@ -5040,7 +5054,16 @@ def checkedConfirm():
                     elif (PUName == "浓缩开始"):
                         statusName = '浓缩开始，操作按SOP执行（操作人）'
                         name = '浓缩开始，操作按SOP执行（复核人）'
-                        return checkflow(ID, statusName, name)
+                        re = checkflow(ID, statusName, name)
+                        if re == 'OK':
+                            node = db_session.query(Model.node.NodeCollection).filter(
+                                Model.node.NodeCollection.oddNum == ID,
+                                Model.node.NodeCollection.name == '浓缩开始，操作按SOP执行（QA签名）').first()
+                            node.status = Model.node.NodeStatus.PASSED.value
+                            node.opertionTime = datetime.datetime.now()
+                            node.oddUser = current_user.Name
+                            db_session.commit()
+                        return 'OK'
                     elif (PUName == "浓缩结束清场"):
                         statusName = '浓缩结束清场（操作人）'
                         name = '浓缩结束清场（复核人）'
@@ -5636,6 +5659,8 @@ def electronicBatchRecord():
             if(re[2] != None):
                 OperationPeople_a5 = re[2].OperationPeople
                 CheckedPeople_a5 = re[2].CheckedPeople
+                if CheckedPeople_a5 == None:
+                    CheckedPeople_a5 = ""
         elif(title == "煎煮"):
             re = electronicBatchRecords("煎煮段", oclass.BrandID, oclass.BatchID, ID)
             Pclass = re[0]
@@ -5679,6 +5704,8 @@ def electronicBatchRecord():
             if (re[2] != None):
                 OperationPeople_b6 = re[2].OperationPeople
                 CheckedPeople_b6 = re[2].CheckedPeople
+                if CheckedPeople_b6 == None:
+                    CheckedPeople_b6 = ""
         elif (title == "浓缩"):
             re = electronicBatchRecords("浓缩段", oclass.BrandID, oclass.BatchID, ID)
             Pclass = re[0]
@@ -5729,6 +5756,8 @@ def electronicBatchRecord():
             if (re[2] != None):
                 OperationPeople_c7 = re[2].OperationPeople
                 CheckedPeople_c7 = re[2].CheckedPeople
+                if CheckedPeople_c7 == None:
+                    CheckedPeople_c7 = ""
         elif (title == "喷雾干燥"):
             re = electronicBatchRecords("喷雾干燥段", oclass.BrandID, oclass.BatchID, ID)
             Pclass = re[0]
@@ -5736,6 +5765,8 @@ def electronicBatchRecord():
             if (re[2] != None):
                 OperationPeople_d4 = re[2].OperationPeople
                 CheckedPeople_d4 = re[2].CheckedPeople
+                if CheckedPeople_d4 == None:
+                    CheckedPeople_d4 = ""
             Noclas = re[3]
             for no in Noclas:
                 if (no.name == "（喷雾干燥段）生产前准备（操作人）"):
@@ -5763,6 +5794,8 @@ def electronicBatchRecord():
             if (re[2] != None):
                 OperationPeople_e7 = re[2].OperationPeople
                 CheckedPeople_e7 = re[2].CheckedPeople
+                if CheckedPeople_e7 == None:
+                    CheckedPeople_e7 = ""
             Noclas = re[3]
             for no in Noclas:
                 if (no.name == "（收粉段）生产前准备（操作人）"):
