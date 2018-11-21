@@ -4295,7 +4295,7 @@ def get_data_from_realtime_Decocting(batch,brand,tankOver,status):
         redis_conn = redis.Redis(connection_pool=pool)
         Batch = redis_conn.hget(constant.REDIS_TABLENAME, batch).decode('utf-8')
         Brand = redis_conn.hget(constant.REDIS_TABLENAME,brand).decode('utf-8')
-        TankOver = redis_conn.hget(constant.REDIS_TABLENAME,tankOver) if redis_conn.hget(constant.REDIS_TABLENAME,tankOver) is not None else False
+        TankOver = redis_conn.hget(constant.REDIS_TABLENAME,tankOver) if redis_conn.hget(constant.REDIS_TABLENAME,str(tankOver)) is not None else False
         Status = redis_conn.hget(constant.REDIS_TABLENAME,status).decode('utf-8')
         return Batch, Brand, TankOver, Status
     except Exception as e:
@@ -4362,8 +4362,8 @@ def get_data_from_realtime_Standing(name,Unit=None):
         if Unit == 'Concentrate':
             batch_tag = 't|MVRPC_' + name[-1]
             brand_tag = 't|MVRPM_' + name[-1]
-            Batch = redis_conn.hget(constant.REDIS_TABLENAME, str(batch_tag)).decode('utf-8')
-            Brand = redis_conn.hget(constant.REDIS_TABLENAME, str(brand_tag)).decode('utf-8')
+            Batch = redis_conn.hget(constant.REDIS_TABLENAME, str(batch_tag)).decode('utf-8') if redis_conn.hget(constant.REDIS_TABLENAME, str(batch_tag)) else 'init'
+            Brand = redis_conn.hget(constant.REDIS_TABLENAME, str(brand_tag)).decode('utf-8') if redis_conn.hget(constant.REDIS_TABLENAME, str(brand_tag)) else 'init'
             return Batch,Brand
         batch_tag = 't|PC' + name[4:]
         brand_tag = 't|PM' + name[4:]
@@ -4371,11 +4371,11 @@ def get_data_from_realtime_Standing(name,Unit=None):
         volume_tag = 't|' + name[4:] + 'JZ'
         feed_time_tag = 't|' + name[4:] + 'MIN'
 
-        Batch = redis_conn.hget(constant.REDIS_TABLENAME, str(batch_tag))
-        Brand = redis_conn.hget(constant.REDIS_TABLENAME, str(brand_tag))
-        Height = redis_conn.hget(constant.REDIS_TABLENAME, str(height_tag))
-        Feed_time = redis_conn.hget(constant.REDIS_TABLENAME, str(feed_time_tag))
-        Volume = redis_conn.hget(constant.REDIS_TABLENAME, str(volume_tag))
+        Batch = redis_conn.hget(constant.REDIS_TABLENAME, str(batch_tag)) if redis_conn.hget(constant.REDIS_TABLENAME, str(batch_tag)) else 'init'
+        Brand = redis_conn.hget(constant.REDIS_TABLENAME, str(brand_tag)) if redis_conn.hget(constant.REDIS_TABLENAME, str(brand_tag)) else 'init'
+        Height = redis_conn.hget(constant.REDIS_TABLENAME, str(height_tag)) if redis_conn.hget(constant.REDIS_TABLENAME, str(height_tag)) is not 'init' else '0.0'
+        Feed_time = redis_conn.hget(constant.REDIS_TABLENAME, str(feed_time_tag)) if redis_conn.hget(constant.REDIS_TABLENAME, str(feed_time_tag)) is not 'init' else '0.0'
+        Volume = redis_conn.hget(constant.REDIS_TABLENAME, str(volume_tag)) if redis_conn.hget(constant.REDIS_TABLENAME, str(volume_tag)) is not 'init' else '0.0'
         return Batch, Brand, Height, Feed_time, Volume
     except Exception as e:
         print('连接实时数据服务器失败!')
@@ -4449,20 +4449,20 @@ def StandingAndConsentrate():
             if group is None:
                 return
             if group == 'A':
-                equipments_data = standing_consentrate_collect(a='提取设备一', b='静置设备1-1', c='静置设备1-2', d='静置设备1-3',
-                                                               e='提取设备二', f='静置设备2-1', g='静置设备2-2', h='静置设备2-3',
+                equipments_data = standing_consentrate_collect(a='提取设备一', b='静置设备1_1', c='静置设备1_2', d='静置设备1_3',
+                                                               e='提取设备二', f='静置设备2_1', g='静置设备2_2', h='静置设备2_3',
                                                                j='浓缩设备1')
                 jsonsz = json.dumps(equipments_data, cls=AlchemyEncoder, ensure_ascii=False)
                 return jsonsz
             if group == 'B':
-                equipments_data = standing_consentrate_collect(a='提取设备三', b='静置设备3-1', c='静置设备3-2', d='静置设备3-3',
-                                                               e='提取设备四', f='静置设备4-1', g='静置设备4-2', h='静置设备4-3',
+                equipments_data = standing_consentrate_collect(a='提取设备三', b='静置设备3_1', c='静置设备3_2', d='静置设备3_3',
+                                                               e='提取设备四', f='静置设备4_1', g='静置设备4_2', h='静置设备4_3',
                                                                j='浓缩设备2')
                 jsonsz = json.dumps(equipments_data, cls=AlchemyEncoder, ensure_ascii=False)
                 return jsonsz
             if group == 'C':
-                equipments_data = standing_consentrate_collect(a='提取设备五', b='静置设备5-1', c='静置设备5-2', d='静置设备5-3',
-                                                               e='提取设备六', f='静置设备6-1', g='静置设备6-2', h='静置设备6-3',
+                equipments_data = standing_consentrate_collect(a='提取设备五', b='静置设备5_1', c='静置设备5_2', d='静置设备5_3',
+                                                               e='提取设备六', f='静置设备6_1', g='静置设备6_2', h='静置设备6_3',
                                                                j='浓缩设备3')
                 jsonsz = json.dumps(equipments_data, cls=AlchemyEncoder, ensure_ascii=False)
                 return jsonsz
@@ -4486,10 +4486,10 @@ def get_data_Total_MixtureAndDry(num,Unit=None):
 
             Batch = share_data.hget(constant.REDIS_TABLENAME, batch_tag).decode('utf-8')
             Brand = share_data.hget(constant.REDIS_TABLENAME, brand_tag).decode('utf-8')
-            Height = share_data.hget(constant.REDIS_TABLENAME, height_tag).decode('utf-8')
-            Volume = share_data.hget(constant.REDIS_TABLENAME, volume_tag).decode('utf-8')
-            Temperature = share_data.hget(constant.REDIS_TABLENAME, temp_tag).decode('utf-8')
-            Flow = share_data.hget(constant.REDIS_TABLENAME, flow_tag).decode('utf-8')
+            Height = share_data.hget(constant.REDIS_TABLENAME, height_tag).decode('utf-8') if share_data.hget(constant.REDIS_TABLENAME, str(height_tag)) is not 'init' else '0.0'
+            Volume = share_data.hget(constant.REDIS_TABLENAME, volume_tag).decode('utf-8') if share_data.hget(constant.REDIS_TABLENAME, str(volume_tag)) is not 'init' else '0.0'
+            Temperature = share_data.hget(constant.REDIS_TABLENAME, temp_tag).decode('utf-8') if share_data.hget(constant.REDIS_TABLENAME, str(temp_tag)) is not 'init' else '0.0'
+            Flow = share_data.hget(constant.REDIS_TABLENAME, flow_tag).decode('utf-8') if share_data.hget(constant.REDIS_TABLENAME, str(flow_tag)) is not 'init' else '0.0'
             return Batch, Brand, Height, Volume,Temperature,Flow
         if Unit == 'Dry':
             batch_tag = 't|PGPC_' + num
