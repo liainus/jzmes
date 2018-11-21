@@ -445,10 +445,7 @@ class NewReadyWork(Base):
     PUID = Column(Integer, nullable=False, primary_key=False)
 
     # 类型:
-    Type = Column(String(800), primary_key=False, autoincrement=False, nullable=True)
-
-    # 是否打钩
-    ISConfirm = Column(Unicode(20), primary_key=False, autoincrement=False, nullable=True)
+    Type = Column(String(20), primary_key=False, autoincrement=False, nullable=True)
 
     # 操作人:
     OperationPeople = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
@@ -460,13 +457,10 @@ class NewReadyWork(Base):
     QAConfirmPeople = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
 
     # 描述:
-    Description = Column(String(800), primary_key=False, autoincrement=False, nullable=True)
+    Description = Column(String(60), primary_key=False, autoincrement=False, nullable=True)
 
-    # 开始时间:
-    StartTime = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
-
-    # 结束时间:
-    EndTime = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+    # 操作时间:
+    OperationDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
 
 # 设备运转情况表
 class EquipmentWork(Base):
