@@ -50,6 +50,12 @@
                 minuteStep:1, //分钟间隔1
                 startView: 1 //从小时开始选
             });
+            //生产日期
+            $('#PNameProDate').datetimepicker({
+                format: 'yy-mm-dd hh:ii',
+                autoclose: true,
+                minuteStep:1, //分钟间隔1
+            });
             //判断hidden是否有值，有值就选中复选框
             var readycheckbox = $("#readycheckbox").val(),  //所有生产前的准备 判断操作人是否有值
                 QAreadycheckbox = $("#QAreadycheckbox").val(), //所有生产前的准备 判断QA确认是否有值
@@ -101,21 +107,21 @@
     </div>
     <div class="col-md-12" id="pdfMain" style="font-size: 14px;padding-top: 20px;background-color: #ffffff;">
         <input type="hidden" id="PUID" value={{ PUID }}>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <td>工序</td>
-                    <td class="middle-center">{{ PName }}</td>
-                    <td>产品批号</td>
-                    <td class="middle-center" id="batchID">{{ BatchID }}</td>
-                    <td>批量</td>
-                    <td class="middle-center">{{ PlanQuantity }}kg</td>
-                    <td>生产日期</td>
-                    <td class="middle-center">{{ ActBeginTime }}</td>
-                </tr>
-            </thead>
-        </table>
         {% if isIn(['备料'], session.get('title')) %}
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <td class="middle-center">工序</td>
+                        <td class="middle-center">{{ PName }}</td>
+                        <td class="middle-center">产品批号</td>
+                        <td class="middle-center" id="batchID">{{ BatchID }}</td>
+                        <td class="middle-center">批量</td>
+                        <td class="middle-center">{{ PlanQuantity }}kg</td>
+                        <td class="middle-center">生产日期</td>
+                        <td class="middle-center tdWidth250"><input type="text" class="form-control batchInput" id="PNameProDate"></td>
+                    </tr>
+                </thead>
+            </table>
             <!--生产前的准备-->
             <h4 class="text-center">生产前的准备</h4>
             <table class="table table-bordered">
@@ -233,6 +239,20 @@
 
         {% endif %}
         {% if isIn(['煎煮'], session.get('title')) %}
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <td class="middle-center">工序</td>
+                        <td class="middle-center">{{ PName }}</td>
+                        <td class="middle-center">产品批号</td>
+                        <td class="middle-center" id="batchID">{{ BatchID }}</td>
+                        <td class="middle-center">批量</td>
+                        <td class="middle-center">{{ PlanQuantity }}kg</td>
+                        <td class="middle-center">生产日期</td>
+                        <td class="middle-center tdWidth250"><input type="text" class="form-control batchInput" id="PNameProDate"></td>
+                    </tr>
+                </thead>
+            </table>
             <!--生产前的准备-->
             <h4 class="text-center">生产前的准备</h4>
             <table class="table table-bordered">
@@ -831,7 +851,7 @@
                                 {{ OperationPeople_b4 }}
                             {% endif %}
                         </td>
-                        <td rowspan="5" class="middle-center">
+                        <td rowspan="4" class="middle-center">
                             {% if '82' == flag %}
                                 {{ CheckedPeople_b4 }}
                             {% endif %}
@@ -930,7 +950,7 @@
                                 {{ OperationPeople_b5 }}
                             {% endif %}
                         </td>
-                        <td rowspan="5" class="middle-center">
+                        <td rowspan="4" class="middle-center">
                             {% if '82' == flag %}
                                 {{ CheckedPeople_b5 }}
                             {% endif %}
@@ -1066,7 +1086,21 @@
             </table>
         {% endif %}
 
-        {% if isIn(['MVR浓缩'], session.get('title')) %}
+        {% if isIn(['浓缩'], session.get('title')) %}
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <td class="middle-center">工序</td>
+                        <td class="middle-center">{{ PName }}</td>
+                        <td class="middle-center">产品批号</td>
+                        <td class="middle-center" id="batchID">{{ BatchID }}</td>
+                        <td class="middle-center">批量</td>
+                        <td class="middle-center">{{ PlanQuantity }}kg</td>
+                        <td class="middle-center">生产日期</td>
+                        <td class="middle-center tdWidth250"><input type="text" class="form-control batchInput" id="PNameProDate"></td>
+                    </tr>
+                </thead>
+            </table>
             <!--生产前的准备-->
             <h4 class="text-center">生产前的准备</h4>
             <table class="table table-bordered">
@@ -1181,7 +1215,7 @@
                 </tbody>
             </table>
             <!--MVR浓缩  开始-->
-            <h4 class="text-center">MVR浓缩开始，操作按SOP执行</h4>
+            <h4 class="text-center">浓缩开始，操作按SOP执行</h4>
             <table class="table table-bordered">
                 <tbody>
                     <tr>
@@ -1657,7 +1691,7 @@
                 </tbody>
             </table>
             <!--生产结束清场-->
-            <h4 class="text-center">MVR浓缩结束清场</h4>
+            <h4 class="text-center">浓缩结束清场</h4>
             <table class="table table-bordered">
                 <thead>
                     <tr>
@@ -1834,6 +1868,20 @@
         {% endif %}
 
         {% if isIn(['醇沉'], session.get('title')) %}
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <td class="middle-center">工序</td>
+                        <td class="middle-center">{{ PName }}</td>
+                        <td class="middle-center">产品批号</td>
+                        <td class="middle-center" id="batchID">{{ BatchID }}</td>
+                        <td class="middle-center">批量</td>
+                        <td class="middle-center">{{ PlanQuantity }}kg</td>
+                        <td class="middle-center">生产日期</td>
+                        <td class="middle-center tdWidth250"><input type="text" class="form-control batchInput" id="PNameProDate"></td>
+                    </tr>
+                </thead>
+            </table>
             <!--生产前的准备-->
             <h4 class="text-center">生产前的准备</h4>
             <table class="table table-bordered">
@@ -2303,6 +2351,20 @@
         {% endif %}
 
         {% if isIn(['单效浓缩'], session.get('title')) %}
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <td class="middle-center">工序</td>
+                        <td class="middle-center">{{ PName }}</td>
+                        <td class="middle-center">产品批号</td>
+                        <td class="middle-center" id="batchID">{{ BatchID }}</td>
+                        <td class="middle-center">批量</td>
+                        <td class="middle-center">{{ PlanQuantity }}kg</td>
+                        <td class="middle-center">生产日期</td>
+                        <td class="middle-center tdWidth250"><input type="text" class="form-control batchInput" id="PNameProDate"></td>
+                    </tr>
+                </thead>
+            </table>
             <!--生产前的准备-->
             <h4 class="text-center">生产前的准备</h4>
             <table class="table table-bordered">
@@ -2880,6 +2942,20 @@
         {% endif %}
 
         {% if isIn(['收膏'], session.get('title')) %}
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <td class="middle-center">工序</td>
+                        <td class="middle-center">{{ PName }}</td>
+                        <td class="middle-center">产品批号</td>
+                        <td class="middle-center" id="batchID">{{ BatchID }}</td>
+                        <td class="middle-center">批量</td>
+                        <td class="middle-center">{{ PlanQuantity }}kg</td>
+                        <td class="middle-center">生产日期</td>
+                        <td class="middle-center tdWidth250"><input type="text" class="form-control batchInput" id="PNameProDate"></td>
+                    </tr>
+                </thead>
+            </table>
             <!--生产前的准备-->
             <h4 class="text-center">生产前的准备</h4>
             <table class="table table-bordered">
