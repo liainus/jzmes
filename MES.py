@@ -231,13 +231,13 @@ def MyUserSelect():
                         total = db_session.query(User).filter(and_(User.OrganizationName.like("%" + OrganizationName + "%") if OrganizationName is not None else "",
                                                            User.Name.like("%" + Name + "%") if Name is not None else "")).count()
                         oclass = db_session.query(User).filter(and_(User.OrganizationName.like("%" + OrganizationName + "%") if OrganizationName is not None else "",
-                                                           User.Name.like("%" + Name + "%") if Name is not None else ""))[inipage:endpage]
+                                                           User.Name.like("%" + Name + "%") if Name is not None else "")).order_by(desc("CreateTime")).all()[inipage:endpage]
                     else:
                         total = db_session.query(User).filter(User.Name.like("%" + Name + "%") if Name is not None else "").count()
-                        oclass = db_session.query(User).filter(User.Name.like("%" + Name + "%") if Name is not None else "")[inipage:endpage]
+                        oclass = db_session.query(User).filter(User.Name.like("%" + Name + "%") if Name is not None else "").order_by(desc("CreateTime")).all()[inipage:endpage]
                 else:
                     total = db_session.query(User).filter(User.Name.like("%" + Name + "%") if Name is not None else "").count()
-                    oclass = db_session.query(User).filter(User.Name.like("%" + Name + "%") if Name is not None else "")[inipage:endpage]
+                    oclass = db_session.query(User).filter(User.Name.like("%" + Name + "%") if Name is not None else "").order_by(desc("CreateTime")).all()[inipage:endpage]
                 jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonoclass = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
             return jsonoclass
@@ -4004,16 +4004,9 @@ def checkPlanManager():
                         oclassNodeColl = db_session.query(Model.node.NodeCollection).filter_by(oddNum=id, name="审核计划").first()
                         oclassNodeColl.status = Model.node.NodeStatus.PASSED.value
                         oclassNodeColl.oddUser = userName
-                        oclassNodeColl.opertionTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                        oclassNodeColl.opertionTime = datetime.datetime.now()
                         oclassNodeColl.seq = 1
                         db_session.commit()
-                        # oclassW = db_session.query(WorkFlowStatus).filter_by(PlanManageID=id).first()
-                        # oclassW.AuditStatus = Model.Global.AuditStatus.Checked.value
-                        # oclassW.DescF = "生产管理部审核计划"
-                        # Desc = "生产管理部审核计划"
-                        # Type = Model.Global.Type.NEW.value
-                        # PlanCreate = ctrlPlan('PlanCreate')
-                        # wReturn = PlanCreate.createWorkFlowEventPlan(id, userName, Desc, Type)
                     except Exception as ee:
                         db_session.rollback()
                         print(ee)
@@ -5703,18 +5696,21 @@ def electronicBatchRecord():
                     CheckedPeople_c6 = no.oddUser
                 elif (no.name == "浓缩结束清场（QA签名）"):
                     QAConfirmPeople_c6 = no.oddUser
-            Newoclass1 = db_session.query(NewReadyWork).filter(NewReadyWork.PUID == Pclass.PUID, NewReadyWork.BatchID ==
-                                                              oclass.BatchID, NewReadyWork.Type == "45").first()
-            if(Newoclass1 != None):
-                OperationPeople_c3 = Newoclass1.OperationPeople
-                CheckedPeople_c3 = Newoclass1.CheckedPeople
-                QAConfirmPeople_c3 = Newoclass1.QAConfirmPeople
-            Newoclass2 = db_session.query(NewReadyWork).filter(NewReadyWork.PUID == Pclass.PUID, NewReadyWork.BatchID ==
-                                                               oclass.BatchID, NewReadyWork.Type == "46").first()
-            if (Newoclass2 != None):
-                OperationPeople_c4 = Newoclass2.OperationPeople
-                CheckedPeople_c4 = Newoclass2.CheckedPeople
-                QAConfirmPeople_c4 = Newoclass2.QAConfirmPeople
+            Newoclasss = db_session.query(NewReadyWork).filter(NewReadyWork.PUID == Pclass.PUID, NewReadyWork.BatchID ==
+                                                               oclass.BatchID,
+                                                               NewReadyWork.Type.in_(("45", "46", "54"))).all()
+            if (len(Newoclasss) > 0):
+                for nc in Newoclasss:
+                    if (nc.Type == "45"):
+                        OperationPeople_c3 = Newoclasss.OperationPeople
+                        CheckedPeople_c3 = Newoclasss.CheckedPeople
+                        QAConfirmPeople_c3 = Newoclasss.QAConfirmPeople
+                    elif (nc.Type == "46"):
+                        OperationPeople_c4 = Newoclasss.OperationPeople
+                        CheckedPeople_c4 = Newoclasss.CheckedPeople
+                        QAConfirmPeople_c4 = Newoclasss.QAConfirmPeople
+                    elif (nc.Type == "54"):
+                        QAConfirmPeople_c5 = Newoclasss.QAConfirmPeople
             if (re[2] != None):
                 OperationPeople_c7 = re[2].OperationPeople
                 CheckedPeople_c7 = re[2].CheckedPeople
@@ -5815,7 +5811,7 @@ def electronicBatchRecord():
     if(oclass.BrandID == 1):
         return render_template('electronicBatchRecord.html',
                                PName=Pclass.PDUnitRouteName,PUID=Pclass.PUID,BatchID=oclass.BatchID,PlanQuantity=oclass.PlanQuantity,
-                               ActBeginTime=Zclass.ActBeginTime,flag=flag,OperationPeople_a1=OperationPeople_a1,CheckedPeople_a1=CheckedPeople_a1,QAConfirmPeople_a1=QAConfirmPeople_a1,
+                               flag=flag,OperationPeople_a1=OperationPeople_a1,CheckedPeople_a1=CheckedPeople_a1,QAConfirmPeople_a1=QAConfirmPeople_a1,
                                OperationPeople_a2=OperationPeople_a2,CheckedPeople_a2=CheckedPeople_a2,OperationPeople_a3=OperationPeople_a3,CheckedPeople_a3=CheckedPeople_a3,
                                QAConfirmPeople_a3=QAConfirmPeople_a3,OperationPeople_a4=OperationPeople_a4,CheckedPeople_a4=CheckedPeople_a4,QAConfirmPeople_a4=QAConfirmPeople_a4,
                                OperationPeople_a5=OperationPeople_a5,CheckedPeople_a5=CheckedPeople_a5,OperationPeople_b1 = OperationPeople_b1,CheckedPeople_b1 = CheckedPeople_b1,
@@ -5839,8 +5835,7 @@ def electronicBatchRecord():
     elif(oclass.BrandID == 2):
         return render_template('electronicBatchRecordcaoshanhu.html',
                                PName=Pclass.PDUnitRouteName, PUID=Pclass.PUID, BatchID=oclass.BatchID,
-                               PlanQuantity=oclass.PlanQuantity,
-                               ActBeginTime=Zclass.ActBeginTime, flag=flag, OperationPeople_a1=OperationPeople_a1,
+                               PlanQuantity=oclass.PlanQuantity, flag=flag, OperationPeople_a1=OperationPeople_a1,
                                CheckedPeople_a1=CheckedPeople_a1, QAConfirmPeople_a1=QAConfirmPeople_a1,
                                OperationPeople_a2=OperationPeople_a2, CheckedPeople_a2=CheckedPeople_a2,
                                OperationPeople_a3=OperationPeople_a3, CheckedPeople_a3=CheckedPeople_a3,
@@ -5942,31 +5937,27 @@ def addNewReadyWork():
             if len(json_str) > 2:
                 PUID = data['PUID']
                 BatchID = data['BatchID']
-                # EQPName = data['EQPName']
-                # EQPCode = data['EQPCode']
-                # ISNormal = data['ISNormal']
-                # IsStandard = data['IsStandard']
+                Type = data['Type']
                 confirm = data['confirm']
                 if (confirm == "1"):
                     db_session.add(
-                        EquipmentWork(
+                        NewReadyWork(
                             BatchID=BatchID,
                             PUID=PUID,
-                            # EQPName=EQPName,
-                            # EQPCode=EQPCode,
-                            # ISNormal=ISNormal,
+                            Type=Type,
                             OperationPeople=current_user.Name,
-                            # CheckedPeople="",
-                            # IsStandard=IsStandard,
-                            # QAConfirmPeople="",
                             OperationDate=datetime.datetime.now()
                         ))
-                else:
-                    oclasss = db_session.query(EquipmentWork.CheckedPeople).filter(EquipmentWork.PUID == PUID,
-                                                                                   EquipmentWork.BatchID == BatchID).all()
-                    for oc in oclasss:
-                        oc.CheckedPeople = current_user.Name
-                        oc.OperationDate = datetime.datetime.now()
+                elif confirm == "2":
+                    oclass = db_session.query(NewReadyWork).filter(NewReadyWork.PUID == PUID,
+                                                                                   NewReadyWork.BatchID == BatchID,NewReadyWork.Type == Type).first()
+                    oclass.CheckedPeople = current_user.Name
+                    oclass.OperationDate = datetime.datetime.now()
+                elif confirm == "3":
+                    oclass = db_session.query(NewReadyWork).filter(NewReadyWork.PUID == PUID,
+                                                                                   NewReadyWork.BatchID == BatchID,NewReadyWork.Type == Type).first()
+                    oclass.QAConfirmPeople = current_user.Name
+                    oclass.OperationDate = datetime.datetime.now()
                 db_session.commit()
                 return 'OK'
         except Exception as e:
@@ -5974,7 +5965,7 @@ def addNewReadyWork():
             print(e)
             logger.error(e)
             insertSyslog("error", "新加流程确认复核报错Error：" + str(e), current_user.Name)
-            return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
+            return json.dumps("新加流程确认复核报错", cls=Model.BSFramwork.AlchemyEncoder,
                               ensure_ascii=False)
 
 # 所有工艺段保存查询操作
