@@ -6574,6 +6574,16 @@ def CreateOperationManual():
 def processMonitorLineCollect():
     return render_template('processMonitorLineCollect.html')
 
+# 收粉监控画面
+@app.route('/electronicBatchRecordNav1')
+def electronicBatchRecordNav1():
+    return render_template('electronicBatchRecordNav1.html')
+
+# 收粉监控画面
+@app.route('/electronicBatchRecordNav2')
+def electronicBatchRecordNav2():
+    return render_template('electronicBatchRecordNav2.html')
+
 def getExcel(file, method='r'):
     '''
     改变数据结构 -- 方便前端显示
