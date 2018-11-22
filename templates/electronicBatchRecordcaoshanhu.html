@@ -236,7 +236,369 @@
                 </tbody>
             </table>
             <!--备料  开始-->
-
+            <table class="table table-bordered">
+                <tbody>
+                    <tr>
+                        <td>领取本批物料并复核品名、批号、检验单号、数量是否无误</td>
+                        <td>
+                            <label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="BLFilterCheckbox1"> 是 / 否</label>
+                        </td>
+                        <td>操作人</td>
+                        <td class="middle-center">
+                            <input type="hidden" id="CollectMaterialCheckbox" value={{ OperationPeople_a2 }}>
+                            {% if '82' == flag %}
+                                {% if None == OperationPeople_a2 or "" == OperationPeople_a2 %}
+                                    <a href="javascript:;" class="btn btn-primary OperationConfirm" name="32" rel="1">确认</a>
+                                {% else %}
+                                    {{ OperationPeople_a2 }}
+                                {% endif %}
+                            {% endif %}
+                            {% if '83' == flag %}
+                                {{ OperationPeople_a2 }}
+                            {% endif %}
+                            {% if '84' == flag %}
+                                {{ OperationPeople_a2 }}
+                            {% endif %}
+                        </td>
+                        <td>复核人</td>
+                        <td class="middle-center">
+                            {% if '82' == flag %}
+                                {{ CheckedPeople_a2 }}
+                            {% endif %}
+                            {% if '83' == flag %}
+                                {% if None == OperationPeople_a2 or "" == OperationPeople_a2 %}
+                                {% else %}
+                                    {% if None == CheckedPeople_a2 or "" == CheckedPeople_a2 %}
+                                        <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="32" rel="2">确认</a>
+                                    {% else %}
+                                        {{ CheckedPeople_a2 }}
+                                    {% endif %}
+                                {% endif %}
+                            {% endif %}
+                            {% if '84' == flag %}
+                                {{ CheckedPeople_a2 }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th class="tdWidth250">物料名称</th>
+                        <th class="tdWidth250">物料号</th>
+                        <th>批号</th>
+                        <th>检验单号</th>
+                        <th>数量（kg）</th>
+                        <th>合计（kg）</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td rowspan="3" class="middle-center">净肿节风</td>
+                        <td rowspan="3" class="middle-center">2118</td>
+                        <td><input type="text" class="form-control batchInput" id="TZSBatch1"></td>
+                        <td><input type="text" class="form-control batchInput" id="TZSTestNumber1"></td>
+                        <td><input type="text" class="form-control batchInput" id="TZSNumber1"></td>
+                        <td rowspan="3"></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" class="form-control batchInput" id="TZSBatch2"></td>
+                        <td><input type="text" class="form-control batchInput" id="TZSTestNumber2"></td>
+                        <td><input type="text" class="form-control batchInput" id="TZSNumber2"></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" class="form-control batchInput" id="TZSBatch3"></td>
+                        <td><input type="text" class="form-control batchInput" id="TZSTestNumber3"></td>
+                        <td><input type="text" class="form-control batchInput" id="TZSNumber3"></td>
+                    </tr>
+                </tbody>
+            </table>
+            <table class="table table-bordered">
+                <tr>
+                    <td>根据生产指令，开启自动投料系统，每批药材分8罐次称量投料，每锅药材分3个吊篮分装</td>
+                    <td>每锅药材量：净肿节风270kg</td>
+                </tr>
+            </table>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th class="tdWidth250">物料名称</th>
+                        <th>第1锅量（kg）</th>
+                        <th>第2锅量（kg）</th>
+                        <th>第3锅量（kg）</th>
+                        <th>第4锅量（kg）</th>
+                        <th>第5锅量（kg）</th>
+                        <th>第6锅量（kg）</th>
+                        <th>第7锅量（kg）</th>
+                        <th>第8锅量（kg）</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>净肿节风</td>
+                        <td><input type="text" class="form-control batchInput" id="TZSWeight1"></td>
+                        <td><input type="text" class="form-control batchInput" id="TZSWeight2"></td>
+                        <td><input type="text" class="form-control batchInput" id="TZSWeight3"></td>
+                        <td><input type="text" class="form-control batchInput" id="TZSWeight4"></td>
+                        <td><input type="text" class="form-control batchInput" id="TZSWeight5"></td>
+                        <td><input type="text" class="form-control batchInput" id="TZSWeight6"></td>
+                        <td><input type="text" class="form-control batchInput" id="TZSWeight7"></td>
+                        <td><input type="text" class="form-control batchInput" id="TZSWeight8"></td>
+                    </tr>
+                    <tr>
+                        <td>开始时间</td>
+                        <td><input type="text" value="" id="startDate1" class="datetimepicker selectDateTime" readonly></td>
+                        <td><input type="text" value="" id="startDate2" class="datetimepicker selectDateTime" readonly></td>
+                        <td><input type="text" value="" id="startDate3" class="datetimepicker selectDateTime" readonly></td>
+                        <td><input type="text" value="" id="startDate4" class="datetimepicker selectDateTime" readonly></td>
+                        <td><input type="text" value="" id="startDate5" class="datetimepicker selectDateTime" readonly></td>
+                        <td><input type="text" value="" id="startDate6" class="datetimepicker selectDateTime" readonly></td>
+                        <td><input type="text" value="" id="startDate7" class="datetimepicker selectDateTime" readonly></td>
+                        <td><input type="text" value="" id="startDate8" class="datetimepicker selectDateTime" readonly></td>
+                    </tr>
+                    <tr>
+                        <td>结束时间</td>
+                        <td><input type="text" value="" id="endDate1" class="datetimepicker selectDateTime" readonly></td>
+                        <td><input type="text" value="" id="endDate2" class="datetimepicker selectDateTime" readonly></td>
+                        <td><input type="text" value="" id="endDate3" class="datetimepicker selectDateTime" readonly></td>
+                        <td><input type="text" value="" id="endDate4" class="datetimepicker selectDateTime" readonly></td>
+                        <td><input type="text" value="" id="endDate5" class="datetimepicker selectDateTime" readonly></td>
+                        <td><input type="text" value="" id="endDate6" class="datetimepicker selectDateTime" readonly></td>
+                        <td><input type="text" value="" id="endDate7" class="datetimepicker selectDateTime" readonly></td>
+                        <td><input type="text" value="" id="endDate8" class="datetimepicker selectDateTime" readonly></td>
+                    </tr>
+                    <tr>
+                        <td>操作人</td>
+                        <td colspan="8" class="text-center">
+                            {% if '82' == flag %}
+                                {% if None == OperationPeople_a3 or "" == OperationPeople_a3 %}
+                                    <a href="javascript:;" class="btn btn-primary OperationConfirm" name="备料开始">确认</a>
+                                {% else %}
+                                    {{ OperationPeople_a3 }}
+                                {% endif %}
+                            {% endif %}
+                            {% if '83' == flag %}
+                                {{ OperationPeople_a3 }}
+                            {% endif %}
+                            {% if '84' == flag %}
+                                {{ OperationPeople_a3 }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>复核人</td>
+                        <td colspan="8" class="text-center">
+                            {% if '82' == flag %}
+                                {{ CheckedPeople_a3 }}
+                            {% endif %}
+                            {% if '83' == flag %}
+                                {% if None == OperationPeople_a3 or "" == OperationPeople_a3 %}
+                                {% else %}
+                                    {% if None == CheckedPeople_a3 or "" == CheckedPeople_a3 %}
+                                        <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="备料开始">确认</a>
+                                    {% else %}
+                                        {{ CheckedPeople_a3 }}
+                                    {% endif %}
+                                {% endif %}
+                            {% endif %}
+                            {% if '84' == flag %}
+                                {{ CheckedPeople_a3 }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>QA确认人</td>
+                        <td colspan="8" class="text-center">
+                            {% if '82' == flag %}
+                                {{ QAConfirmPeople_a3 }}
+                            {% endif %}
+                            {% if '83' == flag %}
+                                {{ QAConfirmPeople_a3 }}
+                            {% endif %}
+                            {% if '84' == flag %}
+                                {% if None == OperationPeople_a3 or None == CheckedPeople_a3 or "" == OperationPeople_a3 or "" == CheckedPeople_a3 %}
+                                {% else %}
+                                    {% if None == QAConfirmPeople_a3 or "" == QAConfirmPeople_a3 %}
+                                        <a href="javascript:;" class="btn btn-primary QAConfirm" name="备料开始">确认</a>
+                                    {% else %}
+                                        {{ QAConfirmPeople_a3 }}
+                                    {% endif %}
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <!--生产结束清场-->
+            <h4 class="text-center">生产结束清场</h4>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th class="tdWidth100">时间</th>
+                        <th>清场要求及内容</th>
+                        <th>打√选择</th>
+                        <th>操作人</th>
+                        <th>复核人</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td rowspan="2" style="text-align: center"><input type="text" value="" id="startOverDate" class="datetimepicker selectDateTime" readonly></td>
+                        <td>设备、衡器是否按照清洁SOP要求完成</td>
+                        <td>
+                            <label class="checkbox-inline"><input type="checkbox" name="overcheckbox"> 是 / 否</label>
+                        </td>
+                        <td rowspan="4" class="middle-center">
+                            <input type="hidden" id="overcheckbox" value={{ OperationPeople_a4 }}>
+                            {% if '82' == flag %}
+                                {% if None == OperationPeople_a4 or "" == OperationPeople_a4 %}
+                                    <a href="javascript:;" class="btn btn-primary OperationConfirm" name="备料结束清场">确认</a>
+                                {% else %}
+                                    {{ OperationPeople_a4 }}
+                                {% endif %}
+                            {% endif %}
+                            {% if '83' == flag %}
+                                {{ OperationPeople_a4 }}
+                            {% endif %}
+                            {% if '84' == flag %}
+                                {{ OperationPeople_a4 }}
+                            {% endif %}
+                        </td>
+                        <td rowspan="4" class="middle-center">
+                            {% if '82' == flag %}
+                                {{ CheckedPeople_a4 }}
+                            {% endif %}
+                            {% if '83' == flag %}
+                                {% if None == OperationPeople_a4 or "" == OperationPeople_a4 %}
+                                {% else %}
+                                    {% if None == CheckedPeople_a4 or "" == CheckedPeople_a4 %}
+                                        <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="备料结束清场">确认</a>
+                                    {% else %}
+                                        {{ CheckedPeople_a4 }}
+                                    {% endif %}
+                                {% endif %}
+                            {% endif %}
+                            {% if '84' == flag %}
+                                {{ CheckedPeople_a4 }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>清除工作区域内本批物料、状态标志和生产用文件</td>
+                        <td>
+                            <label class="checkbox-inline"><input type="checkbox" name="overcheckbox"> 是 / 否</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td rowspan="2" style="vertical-align: bottom;text-align: center;"><input type="text" value="" id="endOverDate" class="datetimepicker selectDateTime" readonly></td>
+                        <td>工作区域、工器具、洁具是否清洁并按定置摆放</td>
+                        <td>
+                            <label class="checkbox-inline"><input type="checkbox" name="overcheckbox"> 是 / 否</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>是否按《清场管理规程》进行清场</td>
+                        <td>
+                            <label class="checkbox-inline"><input type="checkbox" name="overcheckbox"> 是 / 否</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">QA对生产现场进行检查，合格后发放《生产许可证》</td>
+                        <td>
+                            <label class="checkbox-inline"><input type="checkbox" name="QAovercheckbox"> 合格 / 不合格</label>
+                        </td>
+                        <td>QA确认人</td>
+                        <td class="middle-center">
+                            <input type="hidden" id="QAovercheckbox" value={{ QAConfirmPeople_a4 }}>
+                            {% if '82' == flag %}
+                                {{ QAConfirmPeople_a4 }}
+                            {% endif %}
+                            {% if '83' == flag %}
+                                {{ QAConfirmPeople_a4 }}
+                            {% endif %}
+                            {% if '84' == flag %}
+                                {% if None == OperationPeople_a4 or None == CheckedPeople_a4 or "" == OperationPeople_a4 or "" == CheckedPeople_a4 %}
+                                {% else %}
+                                    {% if None == QAConfirmPeople_a4 or "" == QAConfirmPeople_a4 %}
+                                        <a href="javascript:;" class="btn btn-primary QAConfirm" name="备料结束清场">确认</a>
+                                    {% else %}
+                                        {{ QAConfirmPeople_a4 }}
+                                    {% endif %}
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <!--备料设备-->
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>设备名称</th>
+                        <th>设备编号</th>
+                        <th>设备运转情况</th>
+                        <th>操作人</th>
+                        <th>复核人</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="equipmentName">自动投料系统</td>
+                        <td>22123</td>
+                        <td>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox"> 正常 / 不正常 </label>
+                        </td>
+                        <td rowspan="2" class="middle-center">
+                            <input type="hidden" id="equipmentCheckbox" value={{ OperationPeople_a5 }}>
+                            {% if '82' == flag %}
+                                {% if None == OperationPeople_a5 or "" == OperationPeople_a5 %}
+                                    <a href="javascript:;" class="btn btn-primary equipmentConfirm" name="操作人">确认</a>
+                                {% else %}
+                                    {{ OperationPeople_a5 }}
+                                {% endif %}
+                            {% endif %}
+                            {% if '83' == flag %}
+                                {{ OperationPeople_a5 }}
+                            {% endif %}
+                            {% if '84' == flag %}
+                                {{ OperationPeople_a5 }}
+                            {% endif %}
+                        </td>
+                        <td rowspan="2" class="middle-center">
+                            {% if '82' == flag %}
+                                {{ CheckedPeople_a5 }}
+                            {% endif %}
+                            {% if '83' == flag %}
+                                {% if None == OperationPeople_a5 or "" == OperationPeople_a5 %}
+                                {% else %}
+                                    {% if None == CheckedPeople_a5 or "" == CheckedPeople_a5 %}
+                                        <a href="javascript:;" class="btn btn-primary equipmentConfirm" name="复核人">确认</a>
+                                    {% else %}
+                                        {{ CheckedPeople_a5 }}
+                                    {% endif %}
+                                {% endif %}
+                            {% endif %}
+                            {% if '84' == flag %}
+                                {{ CheckedPeople_a5 }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="equipmentName">隧道式高压清洗机</td>
+                        <td>22207</td>
+                        <td>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox"> 正常 / 不正常 </label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3">生产过程是否符合安全管理规定</td>
+                        <td colspan="2">
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox"> 是 / 否</label>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         {% endif %}
         {% if isIn(['煎煮'], session.get('title')) %}
             <table class="table table-bordered">
@@ -759,17 +1121,17 @@
                     <td>操作人</td>
                     <td colspan="6" class="middle-center">
                         {% if '82' == flag %}
-                            {% if None == OperationPeople_b2 or "" == OperationPeople_b2 %}
+                            {% if None == OperationPeople_b3 or "" == OperationPeople_b3 %}
                                 <a href="javascript:;" class="btn btn-primary OperationConfirm" name="煎煮开始">确认</a>
                             {% else %}
-                                {{ OperationPeople_b2 }}
+                                {{ OperationPeople_b3 }}
                             {% endif %}
                         {% endif %}
                         {% if '83' == flag %}
-                            {{ OperationPeople_b2 }}
+                            {{ OperationPeople_b3 }}
                         {% endif %}
                         {% if '84' == flag %}
-                            {{ OperationPeople_b2 }}
+                            {{ OperationPeople_b3 }}
                         {% endif %}
                     </td>
                 </tr>
@@ -780,17 +1142,17 @@
                             {{ CheckedPeople_b2 }}
                         {% endif %}
                         {% if '83' == flag %}
-                            {% if None == OperationPeople_b2 or "" == OperationPeople_b2 %}
+                            {% if None == OperationPeople_b3 or "" == OperationPeople_b3 %}
                             {% else %}
-                                {% if None == CheckedPeople_b2 or "" == CheckedPeople_b2 %}
+                                {% if None == CheckedPeople_b3 or "" == CheckedPeople_b3 %}
                                     <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="煎煮开始">确认</a>
                                 {% else %}
-                                    {{ CheckedPeople_b2 }}
+                                    {{ CheckedPeople_b3 }}
                                 {% endif %}
                             {% endif %}
                         {% endif %}
                         {% if '84' == flag %}
-                            {{ CheckedPeople_b2 }}
+                            {{ CheckedPeople_b3 }}
                         {% endif %}
                     </td>
                 </tr>
@@ -798,18 +1160,18 @@
                     <td>QA签名</td>
                     <td colspan="6" class="middle-center">
                         {% if '82' == flag %}
-                            {{ QAConfirmPeople_b2 }}
+                            {{ QAConfirmPeople_b3 }}
                         {% endif %}
                         {% if '83' == flag %}
-                            {{ QAConfirmPeople_b2 }}
+                            {{ QAConfirmPeople_b3 }}
                         {% endif %}
                         {% if '84' == flag %}
-                            {% if None == OperationPeople_b2 or None == CheckedPeople_b2 or "" == OperationPeople_b2 or "" == CheckedPeople_b2 %}
+                            {% if None == OperationPeople_b3 or None == CheckedPeople_b3 or "" == OperationPeople_b3 or "" == CheckedPeople_b3 %}
                             {% else %}
-                                {% if None == QAConfirmPeople_b2 or "" == QAConfirmPeople_b2 %}
+                                {% if None == QAConfirmPeople_b3 or "" == QAConfirmPeople_b3 %}
                                     <a href="javascript:;" class="btn btn-primary QAConfirm" name="煎煮开始">确认</a>
                                 {% else %}
-                                    {{ QAConfirmPeople_b2 }}
+                                    {{ QAConfirmPeople_b3 }}
                                 {% endif %}
                             {% endif %}
                         {% endif %}
@@ -1086,7 +1448,7 @@
             </table>
         {% endif %}
 
-        {% if isIn(['浓缩'], session.get('title')) %}
+        {% if session.get('title') == "浓缩" %}
             <table class="table table-bordered">
                 <thead>
                     <tr>
@@ -1263,10 +1625,6 @@
                             {% endif %}
                         </td>
                     </tr>
-                    <tr>
-                        <td colspan="3">抽取上清液至浓缩器中</td>
-                        <td><label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="NCFilterCheckbox1"> 是 / 否</label></td>
-                    </tr>
                 </tbody>
             </table>
             <!--MVR浓缩  参数控制-->
@@ -1274,8 +1632,8 @@
             <table class="table table-bordered">
                 <tbody>
                     <tr>
-                        <td rowspan="13" class="middle-center tdWidth50">真空度</td>
-                        <td rowspan="13" class="middle-center tdWidth250">0.07~0.10MPa每60分钟至少记录1次实时参数值</td>
+                        <td rowspan="21" class="middle-center tdWidth50">真空度</td>
+                        <td rowspan="21" class="middle-center tdWidth250">0.07~0.10MPa每60分钟至少记录1次实时参数值</td>
                         <td>时间</td>
                         <td>参数值</td>
                         <td>时间</td>
@@ -1288,7 +1646,7 @@
                         <td id="zkd_0_0"></td>
                         <td id="zkdTime_1_0"></td>
                         <td id="zkd_1_0"></td>
-                        <td rowspan="11" class="middle-center">
+                        <td rowspan="19" class="middle-center">
                             {% if '82' == flag %}
                                 {% if None == OperationPeople_c3 or "" == OperationPeople_c3 %}
                                     <a href="javascript:;" class="btn btn-primary OperationConfirm" name="45">确认</a>
@@ -1303,7 +1661,7 @@
                                 {{ OperationPeople_c3 }}
                             {% endif %}
                         </td>
-                        <td rowspan="11" class="middle-center">
+                        <td rowspan="19" class="middle-center">
                             {% if '82' == flag %}
                                 {{ CheckedPeople_c3 }}
                             {% endif %}
@@ -1435,7 +1793,7 @@
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td>QA签名</td>
+                        <td>QA确认人</td>
                         <td class="middle-center">
                             {% if '82' == flag %}
                                 {{ QAConfirmPeople_c3 }}
@@ -1460,8 +1818,8 @@
             <table class="table table-bordered">
                 <tbody>
                     <tr>
-                        <td rowspan="13" class="middle-center tdWidth50">温度</td>
-                        <td rowspan="13" class="middle-center tdWidth250">90~99℃每60分钟至少记录1次实时参数值</td>
+                        <td rowspan="21" class="middle-center tdWidth50">温度</td>
+                        <td rowspan="21" class="middle-center tdWidth250">90~99℃每60分钟至少记录1次实时参数值</td>
                         <td>时间</td>
                         <td>参数值</td>
                         <td>时间</td>
@@ -1474,7 +1832,7 @@
                         <td id="wd_0_0"></td>
                         <td id="wdTime_1_0"></td>
                         <td id="wd_1_0"></td>
-                        <td rowspan="13" class="middle-center">
+                        <td rowspan="21" class="middle-center">
                             {% if '82' == flag %}
                                 {% if None == OperationPeople_c4 or "" == OperationPeople_c4 %}
                                     <a href="javascript:;" class="btn btn-primary OperationConfirm" name="46">确认</a>
@@ -1489,7 +1847,7 @@
                                 {{ OperationPeople_c4 }}
                             {% endif %}
                         </td>
-                        <td rowspan="13" class="middle-center">
+                        <td rowspan="21" class="middle-center">
                             {% if '82' == flag %}
                                 {{ CheckedPeople_c4 }}
                             {% endif %}
@@ -1628,9 +1986,9 @@
                         <td colspan="2" id="endTime1"></td>
                     </tr>
                     <tr>
-                        <td colspan="6">浓缩液过80目过滤器过滤后抽至醇沉罐</td>
-                        <td colspan="2"><label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="NCFilterCheckbox2"> 是 / 否</label></td>
-                        <td>QA签名</td>
+                        <td colspan="5">浓缩液过80目过滤器过滤后抽至醇沉罐</td>
+                        <td><label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="NCFilterCheckbox2"> 是 / 否</label></td>
+                        <td>QA确认人</td>
                         <td class="middle-center">
                             {% if '82' == flag %}
                                 {{ QAConfirmPeople_c4 }}
@@ -1657,12 +2015,12 @@
             <table class="table table-bordered">
                 <tbody>
                     <tr>
-                        <td rowspan="2" class="tdWidth300">比重1.15（80℃）</td>
+                        <td rowspan="2" class="tdWidth300 middle-center">比重1.15（80℃）</td>
                         <td>温度</td>
                         <td>比重</td>
                         <td>温度</td>
                         <td>比重</td>
-                        <td rowspan="2">QA签名</td>
+                        <td rowspan="2">QA确认人</td>
                         <td rowspan="2" class="middle-center tdWidth100">
                             {% if '82' == flag %}
                                 {{ QAConfirmPeople_c5 }}
@@ -1815,7 +2173,7 @@
                         <td>
                             <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox"> 正常 / 不正常</label>
                         </td>
-                        <td rowspan="5" class="middle-center">
+                        <td rowspan="2" class="middle-center">
                             <input type="hidden" id="equipmentCheckbox" value={{ OperationPeople_c7 }}>
                             {% if '82' == flag %}
                                 {% if None == OperationPeople_c7 or "" == OperationPeople_c7 %}
@@ -1831,7 +2189,7 @@
                                 {{ OperationPeople_c7 }}
                             {% endif %}
                         </td>
-                        <td rowspan="5" class="middle-center">
+                        <td rowspan="2" class="middle-center">
                             {% if '82' == flag %}
                                 {{ CheckedPeople_c7 }}
                             {% endif %}
@@ -2539,7 +2897,7 @@
                         <td>复核人</td>
                     </tr>
                     <tr>
-                        <td colspan="2">浓缩蒸汽压力≤0.09Mpa每60分钟至少记录1次实时参数值</td>
+                        <td colspan="2" rowspan="6" class="middle-center">浓缩蒸汽压力≤0.09Mpa每60分钟至少记录1次实时参数值</td>
                         <td></td>
                         <td></td>
                         <td rowspan="13" class="middle-center">
@@ -2627,8 +2985,8 @@
             <table class="table table-bordered">
                 <tbody>
                     <tr>
-                        <td rowspan="7" class="middle-center tdWidth50">温度</td>
-                        <td rowspan="7" class="middle-center tdWidth250">50~90℃每60分钟至少记录1次实时参数值</td>
+                        <td rowspan="8" class="middle-center tdWidth50">温度</td>
+                        <td rowspan="8" class="middle-center tdWidth250">50~90℃每60分钟至少记录1次实时参数值</td>
                         <td>时间</td>
                         <td>参数值</td>
                         <td>操作人</td>
@@ -2637,7 +2995,7 @@
                     <tr>
                         <td></td>
                         <td></td>
-                        <td rowspan="6" class="middle-center">
+                        <td rowspan="5" class="middle-center">
                             {% if '82' == flag %}
                                 {% if None == OperationPeople_c4 or "" == OperationPeople_c4 %}
                                     <a href="javascript:;" class="btn btn-primary OperationConfirm" name="46">确认</a>
@@ -2652,7 +3010,7 @@
                                 {{ OperationPeople_c4 }}
                             {% endif %}
                         </td>
-                        <td rowspan="6" class="middle-center">
+                        <td rowspan="5" class="middle-center">
                             {% if '82' == flag %}
                                 {{ CheckedPeople_c4 }}
                             {% endif %}
@@ -2670,10 +3028,6 @@
                                 {{ CheckedPeople_c4 }}
                             {% endif %}
                         </td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td></td>
                     </tr>
                     <tr>
                         <td></td>
@@ -3081,8 +3435,8 @@
                         <td>复核人</td>
                     </tr>
                     <tr>
-                        <td rowspan="2">复合塑料袋</td>
-                        <td rowspan="2">100090</td>
+                        <td rowspan="2" class="middle-center">复合塑料袋</td>
+                        <td rowspan="2" class="middle-center">100090</td>
                         <td><input type="text" class="form-control batchInput" id="plasticBatch1"></td>
                         <td><input type="text" class="form-control batchInput" id="plasticTestNumber1"></td>
                         <td><input type="text" class="form-control batchInput" id="plasticNumber1"></td>
@@ -3140,7 +3494,7 @@
                         <td>复核人</td>
                     </tr>
                     <tr>
-                        <td colspan="8">参数控制</td>
+                        <td colspan="8" class="middle-center">参数控制</td>
                         <td rowspan="5" class="middle-center">
                             <input type="hidden" id="overcheckbox" value={{ OperationPeople_c6 }}>
                             {% if '82' == flag %}
@@ -3173,6 +3527,34 @@
                                 {{ OperationPeople_c6 }}
                             {% endif %}
                         </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4">浸膏装桶前过120目筛网</td>
+                        <td colspan="4"><label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox"> 是 / 否</label></td>
+                    </tr>
+                    <tr>
+                        <td colspan="4">将浸膏装入塑料袋放入塑料桶中</td>
+                        <td colspan="4"><label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox"> 是 / 否</label></td>
+                    </tr>
+                    <tr>
+                        <td>桶号</td>
+                        <td>1</td>
+                        <td>2</td>
+                        <td>3</td>
+                        <td>4</td>
+                        <td>5</td>
+                        <td>6</td>
+                        <td>7</td>
+                    </tr>
+                    <tr>
+                        <td>重量</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
                     </tr>
                     <tr>
                         <td colspan="8">合计：kg</td>
@@ -3216,9 +3598,15 @@
                         <td>复核人</td>
                     </tr>
                     <tr>
-                        <td rowspan="2">复合塑料袋</td>
-                        <td rowspan="2">100090</td>
-                        <td><input type="text" class="form-control batchInput" id="plastic_1_1"></td>
+                        <td rowspan="2" class="middle-center">复合塑料袋</td>
+                        <td rowspan="2" class="middle-center">100090</td>
+                        <td><input type="text" class="form-control batchInput" id=""></td>
+                        <td><input type="text" class="form-control batchInput" id=""></td>
+                        <td><input type="text" class="form-control batchInput" id=""></td>
+                        <td><input type="text" class="form-control batchInput" id=""></td>
+                        <td><input type="text" class="form-control batchInput" id=""></td>
+                        <td><input type="text" class="form-control batchInput" id=""></td>
+                        <td><input type="text" class="form-control batchInput" id=""></td>
                         <td rowspan="2" class="middle-center">
                             {% if '82' == flag %}
                                 {% if None == OperationPeople_e5 or "" == OperationPeople_e5 %}
@@ -3254,7 +3642,13 @@
                         </td>
                     </tr>
                     <tr>
-                        <td><input type="text" class="form-control batchInput" id="plastic_2_1"></td>
+                        <td><input type="text" class="form-control batchInput" id=""></td>
+                        <td><input type="text" class="form-control batchInput" id=""></td>
+                        <td><input type="text" class="form-control batchInput" id=""></td>
+                        <td><input type="text" class="form-control batchInput" id=""></td>
+                        <td><input type="text" class="form-control batchInput" id=""></td>
+                        <td><input type="text" class="form-control batchInput" id=""></td>
+                        <td><input type="text" class="form-control batchInput" id=""></td>
                     </tr>
                     <tr>
                         <td colspan="11">备注：准备量=不合格数+使用量+损耗量+余量，退库量=不合格数+损耗量，如有不符须进行偏差说明</td>
@@ -3275,7 +3669,7 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td rowspan="3" style="text-align: center"><input type="text" value="" id="startOverDate" class="datetimepicker selectDateTime" readonly></td>
+                        <td rowspan="2" style="text-align: center"><input type="text" value="" id="startOverDate" class="datetimepicker selectDateTime" readonly></td>
                         <td>设备、衡器是否按照清洁SOP要求完成</td>
                         <td>
                             <label class="checkbox-inline"><input type="checkbox" name="overcheckbox"> 是 / 否</label>
