@@ -2368,7 +2368,7 @@
                             <input type="hidden" id="readycheckbox" value={{ OperationPeople_d2 }}>
                             {% if '82' == flag %}
                                 {% if None == OperationPeople_d2 or "" == OperationPeople_d2 %}
-                                    <a href="javascript:;" class="btn btn-primary OperationConfirm" name="生产前的准备">确认</a>
+                                    <a href="javascript:;" class="btn btn-primary OperationConfirm" name="">确认</a>
                                 {% else %}
                                     {{ OperationPeople_d2 }}
                                 {% endif %}
@@ -2388,7 +2388,7 @@
                                 {% if None == OperationPeople_d2 or "" == OperationPeople_d2 %}
                                 {% else %}
                                     {% if None == CheckedPeople_d2 or "" == CheckedPeople_d2 %}
-                                        <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="生产前的准备">确认</a>
+                                        <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="">确认</a>
                                     {% else %}
                                         {{ CheckedPeople_d2 }}
                                     {% endif %}
@@ -2438,7 +2438,7 @@
                         <td rowspan="7" class="middle-center">
                             {% if '82' == flag %}
                                 {% if None == OperationPeople_d3 or "" == OperationPeople_d3 %}
-                                    <a href="javascript:;" class="btn btn-primary OperationConfirm" name="浓缩开始">确认</a>
+                                    <a href="javascript:;" class="btn btn-primary OperationConfirm" name="醇沉开始">确认</a>
                                 {% else %}
                                     {{ OperationPeople_d3 }}
                                 {% endif %}
@@ -2458,7 +2458,7 @@
                                 {% if None == OperationPeople_d3 or "" == OperationPeople_d3 %}
                                 {% else %}
                                     {% if None == CheckedPeople_d3 or "" == CheckedPeople_d3 %}
-                                        <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="浓缩开始">确认</a>
+                                        <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="醇沉开始">确认</a>
                                     {% else %}
                                         {{ CheckedPeople_d3 }}
                                     {% endif %}
@@ -2510,7 +2510,7 @@
                                 {% if None == OperationPeople_d3 or None == CheckedPeople_d3 or "" == OperationPeople_d3 or "" == CheckedPeople_d3 %}
                                 {% else %}
                                     {% if None == QAConfirmPeople_d3 or "" == QAConfirmPeople_d3 %}
-                                        <a href="javascript:;" class="btn btn-primary QAConfirm" name="生产前的准备">确认</a>
+                                        <a href="javascript:;" class="btn btn-primary QAConfirm" name="醇沉开始">确认</a>
                                     {% else %}
                                         {{ QAConfirmPeople_d3 }}
                                     {% endif %}
@@ -2543,7 +2543,7 @@
                             <input type="hidden" id="overcheckbox" value={{ OperationPeople_d4 }}>
                             {% if '82' == flag %}
                                 {% if None == OperationPeople_d4 or "" == OperationPeople_d4 %}
-                                    <a href="javascript:;" class="btn btn-primary OperationConfirm" name="浓缩结束清场">确认</a>
+                                    <a href="javascript:;" class="btn btn-primary OperationConfirm" name="醇沉结束清场">确认</a>
                                 {% else %}
                                     {{ OperationPeople_d4 }}
                                 {% endif %}
@@ -2563,7 +2563,7 @@
                                 {% if None == OperationPeople_d4 or "" == OperationPeople_d4 %}
                                 {% else %}
                                     {% if None == CheckedPeople_d4 or "" == CheckedPeople_d4 %}
-                                        <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="浓缩结束清场">确认</a>
+                                        <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="醇沉结束清场">确认</a>
                                     {% else %}
                                         {{ CheckedPeople_d4 }}
                                     {% endif %}
@@ -2611,7 +2611,7 @@
                                 {% if None == OperationPeople_d4 or None == CheckedPeople_d4 or "" == OperationPeople_d4 or "" == CheckedPeople_d4 %}
                                 {% else %}
                                     {% if None == QAConfirmPeople_d4 or "" == QAConfirmPeople_d4 %}
-                                        <a href="javascript:;" class="btn btn-primary QAConfirm" name="浓缩结束清场">确认</a>
+                                        <a href="javascript:;" class="btn btn-primary QAConfirm" name="醇沉结束清场">确认</a>
                                     {% else %}
                                         {{ QAConfirmPeople_d4 }}
                                     {% endif %}
@@ -2855,7 +2855,7 @@
                         <td class="middle-center">
                             {% if '82' == flag %}
                                 {% if None == OperationPeople_e2 or "" == OperationPeople_e2 %}
-                                    <a href="javascript:;" class="btn btn-primary OperationConfirm" name="浓缩开始">确认</a>
+                                    <a href="javascript:;" class="btn btn-primary OperationConfirm" name="单效浓缩开始">确认</a>
                                 {% else %}
                                     {{ OperationPeople_e2 }}
                                 {% endif %}
@@ -2875,7 +2875,7 @@
                                 {% if None == OperationPeople_e2 or "" == OperationPeople_e2 %}
                                 {% else %}
                                     {% if None == CheckedPeople_e2 or "" == CheckedPeople_e2 %}
-                                        <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="浓缩开始">确认</a>
+                                        <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="单效浓缩开始">确认</a>
                                     {% else %}
                                         {{ CheckedPeople_e2 }}
                                     {% endif %}
@@ -3078,7 +3078,7 @@
                     <tr>
                         <td class="tdWidth300">比重1.15（80℃）</td>
                         <td><label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox"> 是 / 否</label></td>
-                        <td rowspan="2">QA签名</td>
+                        <td rowspan="2">QA确认人</td>
                         <td rowspan="2" class="middle-center tdWidth100">
                             {% if '82' == flag %}
                                 {{ QAConfirmPeople_e5 }}
@@ -3127,7 +3127,7 @@
                             <input type="hidden" id="overcheckbox" value={{ OperationPeople_e6 }}>
                             {% if '82' == flag %}
                                 {% if None == OperationPeople_e6 or "" == OperationPeople_e6 %}
-                                    <a href="javascript:;" class="btn btn-primary OperationConfirm" name="浓缩结束清场">确认</a>
+                                    <a href="javascript:;" class="btn btn-primary OperationConfirm" name="单效浓缩结束清场">确认</a>
                                 {% else %}
                                     {{ OperationPeople_e6 }}
                                 {% endif %}
@@ -3147,7 +3147,7 @@
                                 {% if None == OperationPeople_e6 or "" == OperationPeople_e6 %}
                                 {% else %}
                                     {% if None == CheckedPeople_e6 or "" == CheckedPeople_e6 %}
-                                        <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="浓缩结束清场">确认</a>
+                                        <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="单效浓缩结束清场">确认</a>
                                     {% else %}
                                         {{ CheckedPeople_e6 }}
                                     {% endif %}
@@ -3195,7 +3195,7 @@
                                 {% if None == OperationPeople_e6 or None == CheckedPeople_e6 or "" == OperationPeople_e6 or "" == CheckedPeople_e6 %}
                                 {% else %}
                                     {% if None == QAConfirmPeople_e6 or "" == QAConfirmPeople_e6 %}
-                                        <a href="javascript:;" class="btn btn-primary QAConfirm" name="浓缩结束清场">确认</a>
+                                        <a href="javascript:;" class="btn btn-primary QAConfirm" name="单效浓缩结束清场">确认</a>
                                     {% else %}
                                         {{ QAConfirmPeople_e6 }}
                                     {% endif %}
@@ -3500,7 +3500,7 @@
                             <input type="hidden" id="overcheckbox" value={{ OperationPeople_f3 }}>
                             {% if '82' == flag %}
                                 {% if None == OperationPeople_f3 or "" == OperationPeople_f3 %}
-                                    <a href="javascript:;" class="btn btn-primary OperationConfirm" name="浓缩结束清场">确认</a>
+                                    <a href="javascript:;" class="btn btn-primary OperationConfirm" name="收膏开始">确认</a>
                                 {% else %}
                                     {{ OperationPeople_f3 }}
                                 {% endif %}
@@ -3516,7 +3516,7 @@
                             <input type="hidden" id="overcheckbox" value={{ OperationPeople_f3 }}>
                             {% if '82' == flag %}
                                 {% if None == OperationPeople_f3 or "" == OperationPeople_f3 %}
-                                    <a href="javascript:;" class="btn btn-primary OperationConfirm" name="浓缩结束清场">确认</a>
+                                    <a href="javascript:;" class="btn btn-primary OperationConfirm" name="收膏开始">确认</a>
                                 {% else %}
                                     {{ OperationPeople_f3 }}
                                 {% endif %}
@@ -3559,7 +3559,7 @@
                     </tr>
                     <tr>
                         <td colspan="8">合计：kg</td>
-                        <td>QA确认</td>
+                        <td>QA确认人</td>
                         <td class="middle-center">
                             {% if '82' == flag %}
                                 {{ QAConfirmPeople_f3 }}
@@ -3571,7 +3571,7 @@
                                 {% if None == OperationPeople_f3 or None == CheckedPeople_f3 or "" == OperationPeople_f3 or "" == CheckedPeople_f3 %}
                                 {% else %}
                                     {% if None == QAConfirmPeople_f3 or "" == QAConfirmPeople_f3 %}
-                                        <a href="javascript:;" class="btn btn-primary QAConfirm" name="46">确认</a>
+                                        <a href="javascript:;" class="btn btn-primary QAConfirm" name="收膏开始">确认</a>
                                     {% else %}
                                         {{ QAConfirmPeople_f3 }}
                                     {% endif %}
@@ -3679,7 +3679,7 @@
                             <input type="hidden" id="overcheckbox" value={{ OperationPeople_f5 }}>
                             {% if '82' == flag %}
                                 {% if None == OperationPeople_f5 or "" == OperationPeople_f5 %}
-                                    <a href="javascript:;" class="btn btn-primary OperationConfirm" name="收粉结束清场">确认</a>
+                                    <a href="javascript:;" class="btn btn-primary OperationConfirm" name="收膏结束清场">确认</a>
                                 {% else %}
                                     {{ OperationPeople_f5 }}
                                 {% endif %}
@@ -3699,7 +3699,7 @@
                                 {% if None == OperationPeople_f5 or "" == OperationPeople_f5 %}
                                 {% else %}
                                     {% if None == CheckedPeople_f5 or "" == CheckedPeople_f5 %}
-                                        <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="收粉结束清场">确认</a>
+                                        <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="收膏结束清场">确认</a>
                                     {% else %}
                                         {{ CheckedPeople_f5 }}
                                     {% endif %}
@@ -3747,7 +3747,7 @@
                                 {% if None == OperationPeople_f5 or None == CheckedPeople_f5 or "" == OperationPeople_f5 or "" == CheckedPeople_f5 %}
                                 {% else %}
                                     {% if None == QAConfirmPeople_f5 or "" == QAConfirmPeople_f5 %}
-                                        <a href="javascript:;" class="btn btn-primary QAConfirm" name="收粉结束清场">确认</a>
+                                        <a href="javascript:;" class="btn btn-primary QAConfirm" name="收膏结束清场">确认</a>
                                     {% else %}
                                         {{ QAConfirmPeople_f5 }}
                                     {% endif %}
@@ -3838,6 +3838,10 @@
             </table>
         {% endif %}
     </div>
+    <link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
+    <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../static/js/html2canvas.js"></script>
+    <script type="text/javascript" src="../static/js/jsPdf.debug.js"></script>
     <script>
         $(function(){
             //操作人确认请求方法，制药计划管理页面里已有的确认，包括生产前的准备，开始，结束清场
@@ -4079,26 +4083,14 @@
                 if(name == "生产前的准备") {
                     $.messager.confirm('确定操作', '是否要进行确认？确认后不允许撤回。', function (flag) {
                         if (flag) {
-                            if(title == "收粉"){
-                                var number = ""
-                                $("input:checkbox[name=QAreadycheckbox]:checked").each(function(k){
-                                    number = k
-                                })
-                                if(number == 1){
-                                    QAConfirmFun(ID,title,name)
-                                }else{
-                                    $.messager.alert('提示', "全部检查无误才可以做确认操作", 'info');
-                                }
-                            }else {
-                                var number = ""
-                                $("input:checkbox[name=QAreadycheckbox]:checked").each(function(k){
-                                    number = k
-                                })
-                                if(number == 0){
-                                    QAConfirmFun(ID, title, name)
-                                }else{
-                                    $.messager.alert('提示', "当前的准备工作检查合格才可以做确认操作", 'info');
-                                }
+                            var number = ""
+                            $("input:checkbox[name=QAreadycheckbox]:checked").each(function(k){
+                                number = k
+                            })
+                            if(number == 0){
+                                QAConfirmFun(ID, title, name)
+                            }else{
+                                $.messager.alert('提示', "当前的准备工作检查合格才可以做确认操作", 'info');
                             }
                         }
                     })
@@ -4127,6 +4119,12 @@
                 }
             })
         })
+        //获取页面传参
+        function getUrlParam(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+            var r = decodeURI(window.location.search).substr(1).match(reg); //匹配目标参数
+            if (r != null) return unescape(r[2]); return null; //返回参数值
+        }
     </script>
 </body>
 </html>
