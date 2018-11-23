@@ -600,6 +600,7 @@
                 </tbody>
             </table>
         {% endif %}
+
         {% if isIn(['煎煮'], session.get('title')) %}
             <table class="table table-bordered">
                 <thead>
@@ -3807,7 +3808,10 @@
                         </td>
                         <td rowspan="2" class="middle-center">
                             {% if '82' == flag %}
-                                {{ Che% if None == OperationPeople_f6 or "" == OperationPeople_f6 %}
+                                {{ CheckedPeople_f6 }}
+                            {% endif %}
+                            {% if '83' == flag %}
+                                {% if None == OperationPeople_f6 or "" == OperationPeople_f6 %}
                                 {% else %}
                                     {% if None == CheckedPeople_f6 or "" == CheckedPeople_f6 %}
                                         <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="51">确认</a>
@@ -3818,10 +3822,7 @@
                             {% endif %}
                             {% if '84' == flag %}
                                 {{ CheckedPeople_f6 }}
-                            {% endif %}ckedPeople_f6 }}
                             {% endif %}
-                            {% if '83' == flag %}
-                                {
                         </td>
                     </tr>
                     <tr>
@@ -3837,5 +3838,295 @@
             </table>
         {% endif %}
     </div>
+    <script>
+        $(function(){
+            //操作人确认请求方法，制药计划管理页面里已有的确认，包括生产前的准备，开始，结束清场
+            function OperationConfirmFun(ID,title,name){
+                $.ajax({
+                    url: '/ZYPlanGuid/operateConfirm',
+                    method: 'POST',
+                    data: {
+                        ID: ID,
+                        PName:title,
+                        PUName:name
+                    },
+                    success: function (data) {
+                        if (data == "OK") {
+                            $.messager.show({
+                                title: '提示',
+                                timeout: 1000,
+                                msg: '操作成功！',
+                                style: {
+                                    right: '',
+                                    top: document.body.scrollTop + document.documentElement.scrollTop,
+                                    bottom: ''
+                                }
+                            });
+                            window.location.reload();
+                        }else{
+                            $.messager.alert('提示', data, 'info');
+                        }
+                    },
+                    error: function () {
+                        alert("请求失败，请稍后重试！")
+                    }
+                });
+            }
+            //复核人确认请求方法，制药计划管理页面里已有的确认，包括生产前的准备，开始，结束清场
+            function CheckedConfirmFun(ID,title,name){
+                $.ajax({
+                    url: '/ZYPlanGuid/checkedConfirm',
+                    method: 'POST',
+                    data: {
+                        ID: ID,
+                        PName:title,
+                        PUName:name
+                    },
+                    success: function (data) {
+                        if (data == "OK") {
+                            $.messager.show({
+                                title: '提示',
+                                timeout: 1000,
+                                msg: '复核成功！',
+                                style: {
+                                    right: '',
+                                    top: document.body.scrollTop + document.documentElement.scrollTop,
+                                    bottom: ''
+                                }
+                            });
+                            window.location.reload();
+                        }else{
+                            $.messager.alert('提示', data, 'info');
+                        }
+                    },
+                    error: function () {
+                        alert("请求失败，请稍后重试！")
+                    }
+                });
+            }
+            //QA确认请求方法，制药计划管理页面里已有的确认，包括生产前的准备，开始，结束清场
+            function QAConfirmFun(ID,title,name){
+                $.ajax({
+                    url: '/ZYPlanGuid/QAautograph',
+                    method: 'POST',
+                    data: {
+                        ID: ID,
+                        PName: title,
+                        PUName: name
+                    },
+                    success: function (data) {
+                        if (data == "OK") {
+                            $.messager.show({
+                                title: '提示',
+                                timeout: 1000,
+                                msg: '确认成功！',
+                                style: {
+                                    right: '',
+                                    top: document.body.scrollTop + document.documentElement.scrollTop,
+                                    bottom: ''
+                                }
+                            });
+                            window.location.reload();
+                        } else {
+                            $.messager.alert('提示', data, 'info');
+                        }
+                    },
+                    error: function () {
+                        alert("请求失败，请稍后重试！")
+                    }
+                });
+            }
+            //额外确认内容请求方法，包括质量控制，参数控制，领取物料等。。
+            function elseConfirmFun(PUID,BatchID,type,confirm){
+                $.ajax({
+                    url: '/addNewReadyWork',
+                    method: 'POST',
+                    data: {
+                        PUID: PUID,
+                        BatchID: BatchID,
+                        type:type,
+                        confirm: confirm
+                    },
+                    success: function (data) {
+                        if (data == "OK") {
+                            $.messager.show({
+                                title: '提示',
+                                timeout: 1000,
+                                msg: '操作成功！',
+                                style: {
+                                    right: '',
+                                    top: document.body.scrollTop + document.documentElement.scrollTop,
+                                    bottom: ''
+                                }
+                            });
+                            window.location.reload();
+                        }else{
+                            $.messager.alert('提示', data, 'info');
+                        }
+                    },
+                    error: function () {
+                        alert("请求失败，请稍后重试！")
+                    }
+                });
+            }
+            //操作人确认
+            $(".OperationConfirm").on('click',function(){
+                var ID = getUrlParam('ID'),
+                    title = getUrlParam('title'),
+                    name = $(this).attr("name"),
+                    PUID = $("#PUID").val(),
+                    BatchID = $("#batchID").html(),
+                    type = $(this).attr("name"),
+                    confirm = $(this).attr("rel")
+                if(name == "生产前的准备"){
+                    $.messager.confirm('确定操作', '是否要进行确认？确认后您无法撤回和修改时间，请认真检查。', function (flag) {
+                        if(flag) {
+                            var number = ""
+                            $("input:checkbox[name=readycheckbox]:checked").each(function(k){
+                                number = k
+                            })
+                            if(number == 5){
+                                OperationConfirmFun(ID,title,name)
+                            }else{
+                                $.messager.alert('提示', "完成当前所有的准备工作才可以做确认操作", 'info');
+                            }
+                        }
+                    })
+                }else if(name == "备料结束清场" || name == "煎煮结束清场" || name == "浓缩结束清场" || name == "浓缩结束清场" || name == "喷雾干燥结束清场" || name == "收粉结束清场"){
+                    $.messager.confirm('确定操作', '是否要进行确认？确认后您无法撤回和修改时间，请认真检查。', function (flag) {
+                        if(flag) {
+                            var number = ""
+                            $("input:checkbox[name=overcheckbox]:checked").each(function(k){
+                                number = k
+                            })
+                            if(number == 4){
+                                OperationConfirmFun(ID,title,name)
+                            }else{
+                                $.messager.alert('提示', "完成当前所有的清场工作才可以做确认操作", 'info');
+                            }
+                        }
+                    })
+                }else if(name == "32"){ //领取物料操作人确认
+                    $.messager.confirm('确定操作', '是否要进行确认？确认后您无法撤回，请认真检查。', function (flag) {
+                        if(flag) {
+                            if($("#BLFilterCheckbox1").prop("checked") == true){
+                                elseConfirmFun(PUID,BatchID,type,confirm)
+                            }else{
+                                $.messager.alert('提示', "物料复核无误才可以做确认操作", 'info');
+                            }
+                        }
+                    })
+                }else if(name == "42"){ //静置结束清场操作人确认
+                    $.messager.confirm('确定操作', '是否要进行确认？确认后您无法撤回和修改时间，请认真检查。', function (flag) {
+                        if(flag) {
+                            var number = ""
+                            $("input:checkbox[name=stewingOvercheckbox]:checked").each(function(k){
+                                number = k
+                            })
+                            if(number == 4){
+                                elseConfirmFun(PUID,BatchID,type,confirm)
+                            }else{
+                                $.messager.alert('提示', "完成当前所有的清场工作才可以做确认操作", 'info');
+                            }
+                        }
+                    })
+                }else if(name == "45" || name == "46" || name == "54" || name == "48" || name == "52" || name == "50" || name == "51"){
+                    $.messager.confirm('确定操作', '是否要进行确认？确认后您无法撤回，请认真检查。', function (flag) {
+                        if(flag) {
+                            elseConfirmFun(PUID,BatchID,type,confirm)
+                        }
+                    })
+                }else{
+                    $.messager.confirm('确定操作', '是否要进行确认？确认后不允许撤回。', function (flag) {
+                        if(flag) {
+                            OperationConfirmFun(ID,title,name)
+                        }
+                    })
+                }
+            })
+            //复核人确认
+            $(".CheckedConfirm").on('click',function(){
+                var ID = getUrlParam('ID'),
+                    title = getUrlParam('title'),
+                    name = $(this).attr("name"),
+                    PUID = $("#PUID").val(),
+                    BatchID = $("#batchID").html(),
+                    type = $(this).attr("name"),
+                    confirm = $(this).attr("rel")
+                if(name == "32" || name == "42" || name == "45" || name == "46" || name == "48" || name == "50" || name == "51") {
+                    $.messager.confirm('确定操作', '是否要进行确认？确认后您无法撤回，请认真检查。', function (flag) {
+                        if(flag) {
+                            elseConfirmFun(PUID,BatchID,type,confirm)
+                        }
+                    })
+                }else{
+                    $.messager.confirm('确定操作', '是否要进行确认？确认后不允许撤回。', function (flag) {
+                        if (flag) {
+                            CheckedConfirmFun(ID, title, name)
+                        }
+                    })
+                }
+            })
+            //QA确认
+            $(".QAConfirm").on('click',function(){
+                var ID = getUrlParam('ID'),
+                    title = getUrlParam('title'),
+                    name = $(this).attr("name"),
+                    PUID = $("#PUID").val(),
+                    BatchID = $("#batchID").html(),
+                    type = $(this).attr("name"),
+                    confirm = $(this).attr("rel")
+                if(name == "生产前的准备") {
+                    $.messager.confirm('确定操作', '是否要进行确认？确认后不允许撤回。', function (flag) {
+                        if (flag) {
+                            if(title == "收粉"){
+                                var number = ""
+                                $("input:checkbox[name=QAreadycheckbox]:checked").each(function(k){
+                                    number = k
+                                })
+                                if(number == 1){
+                                    QAConfirmFun(ID,title,name)
+                                }else{
+                                    $.messager.alert('提示', "全部检查无误才可以做确认操作", 'info');
+                                }
+                            }else {
+                                var number = ""
+                                $("input:checkbox[name=QAreadycheckbox]:checked").each(function(k){
+                                    number = k
+                                })
+                                if(number == 0){
+                                    QAConfirmFun(ID, title, name)
+                                }else{
+                                    $.messager.alert('提示', "当前的准备工作检查合格才可以做确认操作", 'info');
+                                }
+                            }
+                        }
+                    })
+                }else if(name == "42"){
+                    $.messager.confirm('确定操作', '是否要进行确认？确认后不允许撤回。', function (flag) {
+                        if (flag) {
+                            if($("#QAstewingOvercheckbox").prop("checked") == true){
+                                elseConfirmFun(PUID,BatchID,type,confirm)
+                            }else{
+                                $.messager.alert('提示', "当前的清场工作检查合格才可以做确认操作", 'info');
+                            }
+                        }
+                    })
+                }else if(name == "45" || name == "46" || name == "54" || name == "52"){
+                    $.messager.confirm('确定操作', '是否要进行确认？确认后不允许撤回。', function (flag) {
+                        if (flag) {
+                            elseConfirmFun(PUID,BatchID,type,confirm)
+                        }
+                    })
+                }else{
+                    $.messager.confirm('确定操作', '是否要进行确认？确认后不允许撤回。', function (flag) {
+                        if (flag) {
+                            QAConfirmFun(ID, title, name)
+                        }
+                    })
+                }
+            })
+        })
+    </script>
 </body>
 </html>
