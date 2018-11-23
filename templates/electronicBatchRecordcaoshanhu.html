@@ -142,37 +142,37 @@
                             <label class="checkbox-inline"><input type="checkbox" name="readycheckbox"> 是 / 否</label>
                         </td>
                         <td rowspan="6" class="middle-center">
-                            <input type="hidden" id="readycheckbox" value={{ OperationPeople_a1 }}>
+                            <input type="hidden" id="readycheckbox" value={{ dir[0]["OperationPeople_a1"] }}>
                             {% if '82' == flag %}
-                                {% if None == OperationPeople_a1 or "" == OperationPeople_a1 %}
+                                {% if None == dir[0]["OperationPeople_a1"] or "" == dir[0]["OperationPeople_a1"] %}
                                     <a href="javascript:;" class="btn btn-primary OperationConfirm" name="生产前的准备">确认</a>
                                 {% else %}
-                                    {{ OperationPeople_a1 }}
+                                    {{ dir[0]["OperationPeople_a1"] }}
                                 {% endif %}
                             {% endif %}
                             {% if '83' == flag %}
-                                {{ OperationPeople_a1 }}
+                                {{ dir[0]["OperationPeople_a1"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ OperationPeople_a1 }}
+                                {{ dir[0]["OperationPeople_a1"] }}
                             {% endif %}
                         </td>
                         <td rowspan="6" class="middle-center">
                             {% if '82' == flag %}
-                                {{ CheckedPeople_a1 }}
+                                {{ dir[0]["CheckedPeople_a1"] }}
                             {% endif %}
                             {% if '83' == flag %}
-                                {% if None == OperationPeople_a1 or "" == OperationPeople_a1 %}
+                                {% if None == dir[0]["OperationPeople_a1"] or "" == dir[0]["OperationPeople_a1"] %}
                                 {% else %}
-                                    {% if None == CheckedPeople_a1 or "" == CheckedPeople_a1 %}
+                                    {% if None == dir[0]["CheckedPeople_a1"] or "" == dir[0]["CheckedPeople_a1"] %}
                                         <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="生产前的准备">确认</a>
                                     {% else %}
-                                        {{ CheckedPeople_a1 }}
+                                        {{ dir[0]["CheckedPeople_a1"] }}
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ CheckedPeople_a1 }}
+                                {{ dir[0]["CheckedPeople_a1"] }}
                             {% endif %}
                         </td>
                     </tr>
@@ -214,20 +214,20 @@
                         </td>
                         <td>QA确认人</td>
                         <td class="middle-center">
-                            <input type="hidden" id="QAreadycheckbox" value={{ QAConfirmPeople_a1 }}>
+                            <input type="hidden" id="QAreadycheckbox" value={{ dir[0]["QAConfirmPeople_a1"] }}>
                             {% if '82' == flag %}
-                                {{ OperationPeople_a1 }}
+                                {{ dir[0]["OperationPeople_a1"] }}
                             {% endif %}
                             {% if '83' == flag %}
-                                {{ OperationPeople_a1 }}
+                                {{ dir[0]["OperationPeople_a1"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {% if None == OperationPeople_a1 or None == CheckedPeople_a1 or "" == OperationPeople_a1 or "" == CheckedPeople_a1 %}
+                                {% if None == dir[0]["OperationPeople_a1"] or None == dir[0]["CheckedPeople_a1"] or "" == dir[0]["OperationPeople_a1"] or "" == dir[0]["CheckedPeople_a1"] %}
                                 {% else %}
-                                    {% if None == QAConfirmPeople_a1 or "" == QAConfirmPeople_a1 %}
+                                    {% if None == dir[0]["QAConfirmPeople_a1"] or "" == dir[0]["QAConfirmPeople_a1"] %}
                                         <a href="javascript:;" class="btn btn-primary QAConfirm" name="生产前的准备">确认</a>
                                     {% else %}
-                                        {{ QAConfirmPeople_a1 }}
+                                        {{ dir[0]["QAConfirmPeople_a1"] }}
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
@@ -245,38 +245,38 @@
                         </td>
                         <td>操作人</td>
                         <td class="middle-center">
-                            <input type="hidden" id="CollectMaterialCheckbox" value={{ OperationPeople_a2 }}>
+                            <input type="hidden" id="CollectMaterialCheckbox" value={{ dir[0]["OperationPeople_a2"] }}>
                             {% if '82' == flag %}
-                                {% if None == OperationPeople_a2 or "" == OperationPeople_a2 %}
+                                {% if None == dir[0]["OperationPeople_a2"] or "" == dir[0]["OperationPeople_a2"] %}
                                     <a href="javascript:;" class="btn btn-primary OperationConfirm" name="32" rel="1">确认</a>
                                 {% else %}
-                                    {{ OperationPeople_a2 }}
+                                    {{ dir[0]["OperationPeople_a2"] }}
                                 {% endif %}
                             {% endif %}
                             {% if '83' == flag %}
-                                {{ OperationPeople_a2 }}
+                                {{ dir[0]["OperationPeople_a2"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ OperationPeople_a2 }}
+                                {{ dir[0]["OperationPeople_a2"] }}
                             {% endif %}
                         </td>
                         <td>复核人</td>
                         <td class="middle-center">
                             {% if '82' == flag %}
-                                {{ CheckedPeople_a2 }}
+                                {{ dir[0]["CheckedPeople_a2"] }}
                             {% endif %}
                             {% if '83' == flag %}
-                                {% if None == OperationPeople_a2 or "" == OperationPeople_a2 %}
+                                {% if None == dir[0]["OperationPeople_a2"] or "" == dir[0]["OperationPeople_a2"] %}
                                 {% else %}
-                                    {% if None == CheckedPeople_a2 or "" == CheckedPeople_a2 %}
+                                    {% if None == dir[0]["CheckedPeople_a2"] or "" == dir[0]["CheckedPeople_a2"] %}
                                         <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="32" rel="2">确认</a>
                                     {% else %}
-                                        {{ CheckedPeople_a2 }}
+                                        {{ dir[0]["CheckedPeople_a2"] }}
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ CheckedPeople_a2 }}
+                                {{ dir[0]["CheckedPeople_a2"] }}
                             {% endif %}
                         </td>
                     </tr>
@@ -372,17 +372,17 @@
                         <td>操作人</td>
                         <td colspan="8" class="text-center">
                             {% if '82' == flag %}
-                                {% if None == OperationPeople_a3 or "" == OperationPeople_a3 %}
+                                {% if None == dir[0]["OperationPeople_a3"] or "" == dir[0]["OperationPeople_a3"] %}
                                     <a href="javascript:;" class="btn btn-primary OperationConfirm" name="备料开始">确认</a>
                                 {% else %}
-                                    {{ OperationPeople_a3 }}
+                                    {{ dir[0]["OperationPeople_a3"] }}
                                 {% endif %}
                             {% endif %}
                             {% if '83' == flag %}
-                                {{ OperationPeople_a3 }}
+                                {{ dir[0]["OperationPeople_a3"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ OperationPeople_a3 }}
+                                {{ dir[0]["OperationPeople_a3"] }}
                             {% endif %}
                         </td>
                     </tr>
@@ -390,20 +390,20 @@
                         <td>复核人</td>
                         <td colspan="8" class="text-center">
                             {% if '82' == flag %}
-                                {{ CheckedPeople_a3 }}
+                                {{ dir[0]["CheckedPeople_a3"] }}
                             {% endif %}
                             {% if '83' == flag %}
-                                {% if None == OperationPeople_a3 or "" == OperationPeople_a3 %}
+                                {% if None == dir[0]["OperationPeople_a3"] or "" == dir[0]["OperationPeople_a3"] %}
                                 {% else %}
-                                    {% if None == CheckedPeople_a3 or "" == CheckedPeople_a3 %}
+                                    {% if None == dir[0]["CheckedPeople_a3"] or "" == dir[0]["CheckedPeople_a3"] %}
                                         <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="备料开始">确认</a>
                                     {% else %}
-                                        {{ CheckedPeople_a3 }}
+                                        {{ dir[0]["CheckedPeople_a3"] }}
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ CheckedPeople_a3 }}
+                                {{ dir[0]["CheckedPeople_a3"] }}
                             {% endif %}
                         </td>
                     </tr>
@@ -411,18 +411,18 @@
                         <td>QA确认人</td>
                         <td colspan="8" class="text-center">
                             {% if '82' == flag %}
-                                {{ QAConfirmPeople_a3 }}
+                                {{ dir[0]["QAConfirmPeople_a3"] }}
                             {% endif %}
                             {% if '83' == flag %}
-                                {{ QAConfirmPeople_a3 }}
+                                {{ dir[0]["QAConfirmPeople_a3"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {% if None == OperationPeople_a3 or None == CheckedPeople_a3 or "" == OperationPeople_a3 or "" == CheckedPeople_a3 %}
+                                {% if None == dir[0]["OperationPeople_a3"] or None == dir[0]["CheckedPeople_a3"] or "" == dir[0]["OperationPeople_a3"] or "" == dir[0]["CheckedPeople_a3"] %}
                                 {% else %}
-                                    {% if None == QAConfirmPeople_a3 or "" == QAConfirmPeople_a3 %}
+                                    {% if None == dir[0]["QAConfirmPeople_a3"] or "" == dir[0]["QAConfirmPeople_a3"] %}
                                         <a href="javascript:;" class="btn btn-primary QAConfirm" name="备料开始">确认</a>
                                     {% else %}
-                                        {{ QAConfirmPeople_a3 }}
+                                        {{ dir[0]["QAConfirmPeople_a3"] }}
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
@@ -450,37 +450,37 @@
                             <label class="checkbox-inline"><input type="checkbox" name="overcheckbox"> 是 / 否</label>
                         </td>
                         <td rowspan="4" class="middle-center">
-                            <input type="hidden" id="overcheckbox" value={{ OperationPeople_a4 }}>
+                            <input type="hidden" id="overcheckbox" value={{ dir[0]["OperationPeople_a4"] }}>
                             {% if '82' == flag %}
-                                {% if None == OperationPeople_a4 or "" == OperationPeople_a4 %}
+                                {% if None == dir[0]["OperationPeople_a4"] or "" == dir[0]["OperationPeople_a4"] %}
                                     <a href="javascript:;" class="btn btn-primary OperationConfirm" name="备料结束清场">确认</a>
                                 {% else %}
-                                    {{ OperationPeople_a4 }}
+                                    {{ dir[0]["OperationPeople_a4"] }}
                                 {% endif %}
                             {% endif %}
                             {% if '83' == flag %}
-                                {{ OperationPeople_a4 }}
+                                {{ dir[0]["OperationPeople_a4"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ OperationPeople_a4 }}
+                                {{ dir[0]["OperationPeople_a4"] }}
                             {% endif %}
                         </td>
                         <td rowspan="4" class="middle-center">
                             {% if '82' == flag %}
-                                {{ CheckedPeople_a4 }}
+                                {{ dir[0]["CheckedPeople_a4"] }}
                             {% endif %}
                             {% if '83' == flag %}
-                                {% if None == OperationPeople_a4 or "" == OperationPeople_a4 %}
+                                {% if None == dir[0]["OperationPeople_a4"] or "" == dir[0]["OperationPeople_a4"] %}
                                 {% else %}
-                                    {% if None == CheckedPeople_a4 or "" == CheckedPeople_a4 %}
+                                    {% if None == dir[0]["CheckedPeople_a4"] or "" == dir[0]["CheckedPeople_a4"] %}
                                         <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="备料结束清场">确认</a>
                                     {% else %}
-                                        {{ CheckedPeople_a4 }}
+                                        {{ dir[0]["CheckedPeople_a4"] }}
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ CheckedPeople_a4 }}
+                                {{ dir[0]["CheckedPeople_a4"] }}
                             {% endif %}
                         </td>
                     </tr>
@@ -510,20 +510,20 @@
                         </td>
                         <td>QA确认人</td>
                         <td class="middle-center">
-                            <input type="hidden" id="QAovercheckbox" value={{ QAConfirmPeople_a4 }}>
+                            <input type="hidden" id="QAovercheckbox" value={{ dir[0]["QAConfirmPeople_a4"] }}>
                             {% if '82' == flag %}
-                                {{ QAConfirmPeople_a4 }}
+                                {{ dir[0]["QAConfirmPeople_a4"] }}
                             {% endif %}
                             {% if '83' == flag %}
-                                {{ QAConfirmPeople_a4 }}
+                                {{ dir[0]["QAConfirmPeople_a4"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {% if None == OperationPeople_a4 or None == CheckedPeople_a4 or "" == OperationPeople_a4 or "" == CheckedPeople_a4 %}
+                                {% if None == dir[0]["OperationPeople_a4"] or None == dir[0]["CheckedPeople_a4"] or "" == dir[0]["OperationPeople_a4"] or "" == dir[0]["CheckedPeople_a4"] %}
                                 {% else %}
-                                    {% if None == QAConfirmPeople_a4 or "" == QAConfirmPeople_a4 %}
+                                    {% if None == dir[0]["QAConfirmPeople_a4"] or "" == dir[0]["QAConfirmPeople_a4"] %}
                                         <a href="javascript:;" class="btn btn-primary QAConfirm" name="备料结束清场">确认</a>
                                     {% else %}
-                                        {{ QAConfirmPeople_a4 }}
+                                        {{ dir[0]["QAConfirmPeople_a4"] }}
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
@@ -550,37 +550,37 @@
                             <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox"> 正常 / 不正常 </label>
                         </td>
                         <td rowspan="2" class="middle-center">
-                            <input type="hidden" id="equipmentCheckbox" value={{ OperationPeople_a5 }}>
+                            <input type="hidden" id="equipmentCheckbox" value={{ dir[0]["OperationPeople_a5"] }}>
                             {% if '82' == flag %}
-                                {% if None == OperationPeople_a5 or "" == OperationPeople_a5 %}
+                                {% if None == dir[0]["OperationPeople_a5"] or "" == dir[0]["OperationPeople_a5"] %}
                                     <a href="javascript:;" class="btn btn-primary equipmentConfirm" name="操作人">确认</a>
                                 {% else %}
-                                    {{ OperationPeople_a5 }}
+                                    {{ dir[0]["OperationPeople_a5"] }}
                                 {% endif %}
                             {% endif %}
                             {% if '83' == flag %}
-                                {{ OperationPeople_a5 }}
+                                {{ dir[0]["OperationPeople_a5"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ OperationPeople_a5 }}
+                                {{ dir[0]["OperationPeople_a5"] }}
                             {% endif %}
                         </td>
                         <td rowspan="2" class="middle-center">
                             {% if '82' == flag %}
-                                {{ CheckedPeople_a5 }}
+                                {{ dir[0]["CheckedPeople_a5"] }}
                             {% endif %}
                             {% if '83' == flag %}
-                                {% if None == OperationPeople_a5 or "" == OperationPeople_a5 %}
+                                {% if None == dir[0]["OperationPeople_a5"] or "" == dir[0]["OperationPeople_a5"] %}
                                 {% else %}
-                                    {% if None == CheckedPeople_a5 or "" == CheckedPeople_a5 %}
+                                    {% if None == dir[0]["CheckedPeople_a5"] or "" == dir[0]["CheckedPeople_a5"] %}
                                         <a href="javascript:;" class="btn btn-primary equipmentConfirm" name="复核人">确认</a>
                                     {% else %}
-                                        {{ CheckedPeople_a5 }}
+                                        {{ dir[0]["CheckedPeople_a5"] }}
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ CheckedPeople_a5 }}
+                                {{ dir[0]["CheckedPeople_a5"] }}
                             {% endif %}
                         </td>
                     </tr>
@@ -636,37 +636,37 @@
                             <label class="checkbox-inline"><input type="checkbox" name="readycheckbox"> 是 / 否</label>
                         </td>
                         <td rowspan="6" class="middle-center">
-                            <input type="hidden" id="readycheckbox" value={{ OperationPeople_b1 }}>
+                            <input type="hidden" id="readycheckbox" value={{ dir[0]["OperationPeople_b1"] }}>
                             {% if '82' == flag %}
-                                {% if None == OperationPeople_b1 or "" == OperationPeople_b1 %}
+                                {% if None == dir[0]["OperationPeople_b1"] or "" == dir[0]["OperationPeople_b1"] %}
                                     <a href="javascript:;" class="btn btn-primary OperationConfirm" name="生产前的准备">确认</a>
                                 {% else %}
-                                    {{ OperationPeople_b1 }}
+                                    {{ dir[0]["OperationPeople_b1"] }}
                                 {% endif %}
                             {% endif %}
                             {% if '83' == flag %}
-                                {{ OperationPeople_b1 }}
+                                {{ dir[0]["OperationPeople_b1"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ OperationPeople_b1 }}
+                                {{ dir[0]["OperationPeople_b1"] }}
                             {% endif %}
                         </td>
                         <td rowspan="6" class="middle-center">
                             {% if '82' == flag %}
-                                {{ CheckedPeople_b1 }}
+                                {{ dir[0]["CheckedPeople_b1"] }}
                             {% endif %}
                             {% if '83' == flag %}
-                                {% if None == OperationPeople_b1 or "" == OperationPeople_b1 %}
+                                {% if None == dir[0]["OperationPeople_b1"] or "" == dir[0]["OperationPeople_b1"] %}
                                 {% else %}
-                                    {% if None == CheckedPeople_b1 or "" == CheckedPeople_b1 %}
+                                    {% if None == dir[0]["CheckedPeople_b1"] or "" == dir[0]["CheckedPeople_b1"] %}
                                         <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="生产前的准备">确认</a>
                                     {% else %}
-                                        {{ CheckedPeople_b1 }}
+                                        {{ dir[0]["CheckedPeople_b1"] }}
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ CheckedPeople_b1 }}
+                                {{ dir[0]["CheckedPeople_b1"] }}
                             {% endif %}
                         </td>
                     </tr>
@@ -708,20 +708,20 @@
                         </td>
                         <td>QA确认人</td>
                         <td class="middle-center">
-                            <input type="hidden" id="QAreadycheckbox" value={{ QAConfirmPeople_b1 }}>
+                            <input type="hidden" id="QAreadycheckbox" value={{ dir[0]["QAConfirmPeople_b1"] }}>
                             {% if '82' == flag %}
-                                {{ QAConfirmPeople_b1 }}
+                                {{ dir[0]["QAConfirmPeople_b1"] }}
                             {% endif %}
                             {% if '83' == flag %}
-                                {{ QAConfirmPeople_b1 }}
+                                {{ dir[0]["QAConfirmPeople_b1"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {% if None == OperationPeople_b1 or None == CheckedPeople_b1 or "" == OperationPeople_b1 or "" == CheckedPeople_b1 %}
+                                {% if None == dir[0]["OperationPeople_b1"] or None == dir[0]["CheckedPeople_b1"] or "" == dir[0]["OperationPeople_b1"] or "" == dir[0]["CheckedPeople_b1"] %}
                                 {% else %}
-                                    {% if None == QAConfirmPeople_b1 or "" == QAConfirmPeople_b1 %}
+                                    {% if None == dir[0]["QAConfirmPeople_b1"] or "" == dir[0]["QAConfirmPeople_b1"] %}
                                         <a href="javascript:;" class="btn btn-primary QAConfirm" name="生产前的准备">确认</a>
                                     {% else %}
-                                        {{ QAConfirmPeople_b1 }}
+                                        {{ dir[0]["QAConfirmPeople_b1"] }}
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
@@ -894,17 +894,17 @@
                     <td>操作人</td>
                     <td colspan="6" class="middle-center">
                         {% if '82' == flag %}
-                            {% if None == OperationPeople_b2 or "" == OperationPeople_b2 %}
+                            {% if None == dir[0]["OperationPeople_b2"] or "" == dir[0]["OperationPeople_b2"] %}
                                 <a href="javascript:;" class="btn btn-primary OperationConfirm" name="煎煮开始">确认</a>
                             {% else %}
-                                {{ OperationPeople_b2 }}
+                                {{ dir[0]["OperationPeople_b2"] }}
                             {% endif %}
                         {% endif %}
                         {% if '83' == flag %}
-                            {{ OperationPeople_b2 }}
+                            {{ dir[0]["OperationPeople_b2"] }}
                         {% endif %}
                         {% if '84' == flag %}
-                            {{ OperationPeople_b2 }}
+                            {{ dir[0]["OperationPeople_b2"] }}
                         {% endif %}
                     </td>
                 </tr>
@@ -912,20 +912,20 @@
                     <td>复核人</td>
                     <td colspan="6" class="middle-center">
                         {% if '82' == flag %}
-                            {{ CheckedPeople_b2 }}
+                            {{ dir[0]["CheckedPeople_b2"] }}
                         {% endif %}
                         {% if '83' == flag %}
-                            {% if None == OperationPeople_b2 or "" == OperationPeople_b2 %}
+                            {% if None == dir[0]["OperationPeople_b2"] or "" == dir[0]["OperationPeople_b2"] %}
                             {% else %}
-                                {% if None == CheckedPeople_b2 or "" == CheckedPeople_b2 %}
+                                {% if None == dir[0]["CheckedPeople_b2"] or "" == dir[0]["CheckedPeople_b2"] %}
                                     <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="煎煮开始">确认</a>
                                 {% else %}
-                                    {{ CheckedPeople_b2 }}
+                                    {{ dir[0]["CheckedPeople_b2"] }}
                                 {% endif %}
                             {% endif %}
                         {% endif %}
                         {% if '84' == flag %}
-                            {{ CheckedPeople_b2 }}
+                            {{ dir[0]["CheckedPeople_b2"] }}
                         {% endif %}
                     </td>
                 </tr>
@@ -933,18 +933,18 @@
                     <td>QA签名</td>
                     <td colspan="6" class="middle-center">
                         {% if '82' == flag %}
-                            {{ QAConfirmPeople_b2 }}
+                            {{ dir[0]["QAConfirmPeople_b2"] }}
                         {% endif %}
                         {% if '83' == flag %}
-                            {{ QAConfirmPeople_b2 }}
+                            {{ dir[0]["QAConfirmPeople_b2"] }}
                         {% endif %}
                         {% if '84' == flag %}
-                            {% if None == OperationPeople_b2 or None == CheckedPeople_b2 or "" == OperationPeople_b2 or "" == CheckedPeople_b2 %}
+                            {% if None == dir[0]["OperationPeople_b2"] or None == dir[0]["CheckedPeople_b2"] or "" == dir[0]["OperationPeople_b2"] or "" == dir[0]["CheckedPeople_b2"] %}
                             {% else %}
-                                {% if None == QAConfirmPeople_b2 or "" == QAConfirmPeople_b2 %}
+                                {% if None == dir[0]["QAConfirmPeople_b2"] or "" == dir[0]["QAConfirmPeople_b2"] %}
                                     <a href="javascript:;" class="btn btn-primary QAConfirm" name="煎煮开始">确认</a>
                                 {% else %}
-                                    {{ QAConfirmPeople_b2 }}
+                                    {{ dir[0]["QAConfirmPeople_b2"] }}
                                 {% endif %}
                             {% endif %}
                         {% endif %}
@@ -1122,17 +1122,17 @@
                     <td>操作人</td>
                     <td colspan="6" class="middle-center">
                         {% if '82' == flag %}
-                            {% if None == OperationPeople_b3 or "" == OperationPeople_b3 %}
+                            {% if None == dir[0]["OperationPeople_b3"] or "" == dir[0]["OperationPeople_b3"] %}
                                 <a href="javascript:;" class="btn btn-primary OperationConfirm" name="煎煮开始">确认</a>
                             {% else %}
-                                {{ OperationPeople_b3 }}
+                                {{ dir[0]["OperationPeople_b3"] }}
                             {% endif %}
                         {% endif %}
                         {% if '83' == flag %}
-                            {{ OperationPeople_b3 }}
+                            {{ dir[0]["OperationPeople_b3"] }}
                         {% endif %}
                         {% if '84' == flag %}
-                            {{ OperationPeople_b3 }}
+                            {{ dir[0]["OperationPeople_b3"] }}
                         {% endif %}
                     </td>
                 </tr>
@@ -1140,20 +1140,20 @@
                     <td>复核人</td>
                     <td colspan="6" class="middle-center">
                         {% if '82' == flag %}
-                            {{ CheckedPeople_b2 }}
+                            {{ dir[0]["CheckedPeople_b2"] }}
                         {% endif %}
                         {% if '83' == flag %}
-                            {% if None == OperationPeople_b3 or "" == OperationPeople_b3 %}
+                            {% if None == dir[0]["OperationPeople_b3"] or "" == dir[0]["OperationPeople_b3"] %}
                             {% else %}
-                                {% if None == CheckedPeople_b3 or "" == CheckedPeople_b3 %}
+                                {% if None == dir[0]["CheckedPeople_b3"] or "" == dir[0]["CheckedPeople_b3"] %}
                                     <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="煎煮开始">确认</a>
                                 {% else %}
-                                    {{ CheckedPeople_b3 }}
+                                    {{ dir[0]["CheckedPeople_b3"] }}
                                 {% endif %}
                             {% endif %}
                         {% endif %}
                         {% if '84' == flag %}
-                            {{ CheckedPeople_b3 }}
+                            {{ dir[0]["CheckedPeople_b3"] }}
                         {% endif %}
                     </td>
                 </tr>
@@ -1161,18 +1161,18 @@
                     <td>QA签名</td>
                     <td colspan="6" class="middle-center">
                         {% if '82' == flag %}
-                            {{ QAConfirmPeople_b3 }}
+                            {{ dir[0]["QAConfirmPeople_b3"] }}
                         {% endif %}
                         {% if '83' == flag %}
-                            {{ QAConfirmPeople_b3 }}
+                            {{ dir[0]["QAConfirmPeople_b3"] }}
                         {% endif %}
                         {% if '84' == flag %}
-                            {% if None == OperationPeople_b3 or None == CheckedPeople_b3 or "" == OperationPeople_b3 or "" == CheckedPeople_b3 %}
+                            {% if None == dir[0]["OperationPeople_b3"] or None == dir[0]["CheckedPeople_b3"] or "" == dir[0]["OperationPeople_b3"] or "" == dir[0]["CheckedPeople_b3"] %}
                             {% else %}
-                                {% if None == QAConfirmPeople_b3 or "" == QAConfirmPeople_b3 %}
+                                {% if None == dir[0]["QAConfirmPeople_b3"] or "" == dir[0]["QAConfirmPeople_b3"] %}
                                     <a href="javascript:;" class="btn btn-primary QAConfirm" name="煎煮开始">确认</a>
                                 {% else %}
-                                    {{ QAConfirmPeople_b3 }}
+                                    {{ dir[0]["QAConfirmPeople_b3"] }}
                                 {% endif %}
                             {% endif %}
                         {% endif %}
@@ -1199,37 +1199,37 @@
                             <label class="checkbox-inline"><input type="checkbox" name="overcheckbox"> 是 / 否</label>
                         </td>
                         <td rowspan="4" class="middle-center">
-                            <input type="hidden" id="overcheckbox" value={{ OperationPeople_b4 }}>
+                            <input type="hidden" id="overcheckbox" value={{ dir[0]["OperationPeople_b4"] }}>
                             {% if '82' == flag %}
-                                {% if None == OperationPeople_b4 or "" == OperationPeople_b4 %}
+                                {% if None == dir[0]["OperationPeople_b4"] or "" == dir[0]["OperationPeople_b4"] %}
                                     <a href="javascript:;" class="btn btn-primary OperationConfirm" name="煎煮结束清场">确认</a>
                                 {% else %}
-                                    {{ OperationPeople_b4 }}
+                                    {{ dir[0]["OperationPeople_b4"] }}
                                 {% endif %}
                             {% endif %}
                             {% if '83' == flag %}
-                                {{ OperationPeople_b4 }}
+                                {{ dir[0]["OperationPeople_b4"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ OperationPeople_b4 }}
+                                {{ dir[0]["OperationPeople_b4"] }}
                             {% endif %}
                         </td>
                         <td rowspan="4" class="middle-center">
                             {% if '82' == flag %}
-                                {{ CheckedPeople_b4 }}
+                                {{ dir[0]["CheckedPeople_b4"] }}
                             {% endif %}
                             {% if '83' == flag %}
-                                {% if None == OperationPeople_b4 or "" == OperationPeople_b4 %}
+                                {% if None == dir[0]["OperationPeople_b4"] or "" == dir[0]["OperationPeople_b4"] %}
                                 {% else %}
-                                    {% if None == CheckedPeople_b4 or "" == CheckedPeople_b4 %}
+                                    {% if None == dir[0]["CheckedPeople_b4"] or "" == dir[0]["CheckedPeople_b4"] %}
                                         <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="煎煮结束清场">确认</a>
                                     {% else %}
-                                        {{ CheckedPeople_b4 }}
+                                        {{ dir[0]["CheckedPeople_b4"] }}
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ CheckedPeople_b4 }}
+                                {{ dir[0]["CheckedPeople_b4"] }}
                             {% endif %}
                         </td>
                     </tr>
@@ -1259,20 +1259,20 @@
                         </td>
                         <td>QA确认人</td>
                         <td class="middle-center">
-                            <input type="hidden" id="QAovercheckbox" value={{ QAConfirmPeople_b4 }}>
+                            <input type="hidden" id="QAovercheckbox" value={{ dir[0]["QAConfirmPeople_b4"] }}>
                             {% if '82' == flag %}
-                                {{ QAConfirmPeople_b4 }}
+                                {{ dir[0]["QAConfirmPeople_b4"] }}
                             {% endif %}
                             {% if '83' == flag %}
-                                {{ QAConfirmPeople_b4 }}
+                                {{ dir[0]["QAConfirmPeople_b4"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {% if None == OperationPeople_b4 or None == CheckedPeople_b4 or "" == OperationPeople_b4 or "" == CheckedPeople_b4 %}
+                                {% if None == dir[0]["OperationPeople_b4"] or None == dir[0]["CheckedPeople_b4"] or "" == dir[0]["OperationPeople_b4"] or "" == dir[0]["CheckedPeople_b4"] %}
                                 {% else %}
-                                    {% if None == QAConfirmPeople_b4 or "" == QAConfirmPeople_b4 %}
+                                    {% if None == dir[0]["QAConfirmPeople_b4"] or "" == dir[0]["QAConfirmPeople_b4"] %}
                                         <a href="javascript:;" class="btn btn-primary QAConfirm" name="煎煮结束清场">确认</a>
                                     {% else %}
-                                        {{ QAConfirmPeople_b4 }}
+                                        {{ dir[0]["QAConfirmPeople_b4"] }}
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
@@ -1398,37 +1398,37 @@
                             <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox"> 正常 / 不正常 </label>
                         </td>
                         <td rowspan="2" class="middle-center">
-                            <input type="hidden" id="equipmentCheckbox" value={{ OperationPeople_b6 }}>
+                            <input type="hidden" id="equipmentCheckbox" value={{ dir[0]["OperationPeople_b6"] }}>
                             {% if '82' == flag %}
-                                {% if None == OperationPeople_b6 or "" == OperationPeople_b6 %}
+                                {% if None == dir[0]["OperationPeople_b6"] or "" == dir[0]["OperationPeople_b6"] %}
                                     <a href="javascript:;" class="btn btn-primary OperationConfirm" name="操作人">确认</a>
                                 {% else %}
-                                    {{ OperationPeople_b6 }}
+                                    {{ dir[0]["OperationPeople_b6"] }}
                                 {% endif %}
                             {% endif %}
                             {% if '83' == flag %}
-                                {{ OperationPeople_b6 }}
+                                {{ dir[0]["OperationPeople_b6"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ OperationPeople_b6 }}
+                                {{ dir[0]["OperationPeople_b6"] }}
                             {% endif %}
                         </td>
                         <td rowspan="2" class="middle-center">
                             {% if '82' == flag %}
-                                {{ CheckedPeople_b6 }}
+                                {{ dir[0]["CheckedPeople_b6"] }}
                             {% endif %}
                             {% if '83' == flag %}
-                                {% if None == OperationPeople_b6 or "" == OperationPeople_b6 %}
+                                {% if None == dir[0]["OperationPeople_b6"] or "" == dir[0]["OperationPeople_b6"] %}
                                 {% else %}
-                                    {% if None == CheckedPeople_b6 or "" == CheckedPeople_b6 %}
+                                    {% if None == dir[0]["CheckedPeople_b6"] or "" == dir[0]["CheckedPeople_b6"] %}
                                         <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="复核人">确认</a>
                                     {% else %}
-                                        {{ CheckedPeople_b6 }}
+                                        {{ dir[0]["CheckedPeople_b6"] }}
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ CheckedPeople_b6 }}
+                                {{ dir[0]["CheckedPeople_b6"] }}
                             {% endif %}
                         </td>
                     </tr>
@@ -1484,37 +1484,37 @@
                             <label class="checkbox-inline"><input type="checkbox" name="readycheckbox"> 是 / 否</label>
                         </td>
                         <td rowspan="6" class="middle-center">
-                            <input type="hidden" id="readycheckbox" value={{ OperationPeople_c1 }}>
+                            <input type="hidden" id="readycheckbox" value={{ dir[0]["OperationPeople_c1"] }}>
                             {% if '82' == flag %}
-                                {% if None == OperationPeople_c1 or "" == OperationPeople_c1 %}
+                                {% if None == dir[0]["OperationPeople_c1"] or "" == dir[0]["OperationPeople_c1"] %}
                                     <a href="javascript:;" class="btn btn-primary OperationConfirm" name="生产前的准备">确认</a>
                                 {% else %}
-                                    {{ OperationPeople_c1 }}
+                                    {{ dir[0]["OperationPeople_c1"] }}
                                 {% endif %}
                             {% endif %}
                             {% if '83' == flag %}
-                                {{ OperationPeople_c1 }}
+                                {{ dir[0]["OperationPeople_c1"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ OperationPeople_c1 }}
+                                {{ dir[0]["OperationPeople_c1"] }}
                             {% endif %}
                         </td>
                         <td rowspan="6" class="middle-center">
                             {% if '82' == flag %}
-                                {{ CheckedPeople_c1 }}
+                                {{ dir[0]["CheckedPeople_c1"] }}
                             {% endif %}
                             {% if '83' == flag %}
-                                {% if None == OperationPeople_c1 or "" == OperationPeople_c1 %}
+                                {% if None == dir[0]["OperationPeople_c1"] or "" == dir[0]["OperationPeople_c1"] %}
                                 {% else %}
-                                    {% if None == CheckedPeople_c1 or "" == CheckedPeople_c1 %}
+                                    {% if None == dir[0]["CheckedPeople_c1"] or "" == dir[0]["CheckedPeople_c1"] %}
                                         <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="生产前的准备">确认</a>
                                     {% else %}
-                                        {{ CheckedPeople_c1 }}
+                                        {{ dir[0]["CheckedPeople_c1"] }}
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ CheckedPeople_c1 }}
+                                {{ dir[0]["CheckedPeople_c1"] }}
                             {% endif %}
                         </td>
                     </tr>
@@ -1556,20 +1556,20 @@
                         </td>
                         <td>QA确认人</td>
                         <td class="middle-center">
-                            <input type="hidden" id="QAreadycheckbox" value={{ QAConfirmPeople_c1 }}>
+                            <input type="hidden" id="QAreadycheckbox" value={{ dir[0]["QAConfirmPeople_c1"] }}>
                             {% if '82' == flag %}
-                                {{ QAConfirmPeople_c1 }}
+                                {{ dir[0]["QAConfirmPeople_c1"] }}
                             {% endif %}
                             {% if '83' == flag %}
-                                {{ QAConfirmPeople_c1 }}
+                                {{ dir[0]["QAConfirmPeople_c1"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {% if None == OperationPeople_c1 or None == CheckedPeople_c1 or "" == OperationPeople_c1 or "" == CheckedPeople_c1 %}
+                                {% if None == dir[0]["OperationPeople_c1"] or None == dir[0]["CheckedPeople_c1"] or "" == dir[0]["OperationPeople_c1"] or "" == dir[0]["CheckedPeople_c1"] %}
                                 {% else %}
-                                    {% if None == QAConfirmPeople_c1 or "" == QAConfirmPeople_c1 %}
+                                    {% if None == dir[0]["QAConfirmPeople_c1"] or "" == dir[0]["QAConfirmPeople_c1"] %}
                                         <a href="javascript:;" class="btn btn-primary QAConfirm" name="生产前的准备">确认</a>
                                     {% else %}
-                                        {{ QAConfirmPeople_c1 }}
+                                        {{ dir[0]["QAConfirmPeople_c1"] }}
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
@@ -1594,35 +1594,35 @@
                         <td id="startTime1"></td>
                         <td rowspan="2" class="middle-center">
                             {% if '82' == flag %}
-                                {% if None == OperationPeople_c2 or "" == OperationPeople_c2 %}
+                                {% if None == dir[0]["OperationPeople_c2"] or "" == dir[0]["OperationPeople_c2"] %}
                                     <a href="javascript:;" class="btn btn-primary OperationConfirm" name="浓缩开始">确认</a>
                                 {% else %}
-                                    {{ OperationPeople_c2 }}
+                                    {{ dir[0]["OperationPeople_c2"] }}
                                 {% endif %}
                             {% endif %}
                             {% if '83' == flag %}
-                                {{ OperationPeople_c2 }}
+                                {{ dir[0]["OperationPeople_c2"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ OperationPeople_c2 }}
+                                {{ dir[0]["OperationPeople_c2"] }}
                             {% endif %}
                         </td>
                         <td rowspan="2" class="middle-center">
                             {% if '82' == flag %}
-                                {{ CheckedPeople_c2 }}
+                                {{ dir[0]["CheckedPeople_c2"] }}
                             {% endif %}
                             {% if '83' == flag %}
-                                {% if None == OperationPeople_c2 or "" == OperationPeople_c2 %}
+                                {% if None == dir[0]["OperationPeople_c2"] or "" == dir[0]["OperationPeople_c2"] %}
                                 {% else %}
-                                    {% if None == CheckedPeople_c2 or "" == CheckedPeople_c2 %}
+                                    {% if None == dir[0]["CheckedPeople_c2"] or "" == dir[0]["CheckedPeople_c2"] %}
                                         <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="浓缩开始">确认</a>
                                     {% else %}
-                                        {{ CheckedPeople_c2 }}
+                                        {{ dir[0]["CheckedPeople_c2"] }}
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ CheckedPeople_c2 }}
+                                {{ dir[0]["CheckedPeople_c2"] }}
                             {% endif %}
                         </td>
                     </tr>
@@ -1649,35 +1649,35 @@
                         <td id="zkd_1_0"></td>
                         <td rowspan="19" class="middle-center">
                             {% if '82' == flag %}
-                                {% if None == OperationPeople_c3 or "" == OperationPeople_c3 %}
+                                {% if None == dir[0]["OperationPeople_c3"] or "" == dir[0]["OperationPeople_c3"] %}
                                     <a href="javascript:;" class="btn btn-primary OperationConfirm" name="45">确认</a>
                                 {% else %}
-                                    {{ OperationPeople_c3 }}
+                                    {{ dir[0]["OperationPeople_c3"] }}
                                 {% endif %}
                             {% endif %}
                             {% if '83' == flag %}
-                                {{ OperationPeople_c3 }}
+                                {{ dir[0]["OperationPeople_c3"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ OperationPeople_c3 }}
+                                {{ dir[0]["OperationPeople_c3"] }}
                             {% endif %}
                         </td>
                         <td rowspan="19" class="middle-center">
                             {% if '82' == flag %}
-                                {{ CheckedPeople_c3 }}
+                                {{ dir[0]["CheckedPeople_c3"] }}
                             {% endif %}
                             {% if '83' == flag %}
-                                {% if None == OperationPeople_c3 or "" == OperationPeople_c3 %}
+                                {% if None == dir[0]["OperationPeople_c3"] or "" == dir[0]["OperationPeople_c3"] %}
                                 {% else %}
-                                    {% if None == CheckedPeople_c3 or "" == CheckedPeople_c3 %}
+                                    {% if None == dir[0]["CheckedPeople_c3"] or "" == dir[0]["CheckedPeople_c3"] %}
                                         <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="45">确认</a>
                                     {% else %}
-                                        {{ CheckedPeople_c3 }}
+                                        {{ dir[0]["CheckedPeople_c3"] }}
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ CheckedPeople_c3 }}
+                                {{ dir[0]["CheckedPeople_c3"] }}
                             {% endif %}
                         </td>
                     </tr>
@@ -1797,18 +1797,18 @@
                         <td>QA确认人</td>
                         <td class="middle-center">
                             {% if '82' == flag %}
-                                {{ QAConfirmPeople_c3 }}
+                                {{ dir[0]["QAConfirmPeople_c3"] }}
                             {% endif %}
                             {% if '83' == flag %}
-                                {{ QAConfirmPeople_c3 }}
+                                {{ dir[0]["QAConfirmPeople_c3"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {% if None == OperationPeople_c3 or None == CheckedPeople_c3 or "" == OperationPeople_c3 or "" == CheckedPeople_c3 %}
+                                {% if None == dir[0]["OperationPeople_c3"] or None == dir[0]["CheckedPeople_c3"] or "" == dir[0]["OperationPeople_c3"] or "" == dir[0]["CheckedPeople_c3"] %}
                                 {% else %}
-                                    {% if None == QAConfirmPeople_c3 or "" == QAConfirmPeople_c3 %}
+                                    {% if None == dir[0]["QAConfirmPeople_c3"] or "" == dir[0]["QAConfirmPeople_c3"] %}
                                         <a href="javascript:;" class="btn btn-primary QAConfirm" name="45">确认</a>
                                     {% else %}
-                                        {{ QAConfirmPeople_c3 }}
+                                        {{ dir[0]["QAConfirmPeople_c3"] }}
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
@@ -1835,35 +1835,35 @@
                         <td id="wd_1_0"></td>
                         <td rowspan="21" class="middle-center">
                             {% if '82' == flag %}
-                                {% if None == OperationPeople_c4 or "" == OperationPeople_c4 %}
+                                {% if None == dir[0]["OperationPeople_c4"] or "" == dir[0]["OperationPeople_c4"] %}
                                     <a href="javascript:;" class="btn btn-primary OperationConfirm" name="46">确认</a>
                                 {% else %}
-                                    {{ OperationPeople_c4 }}
+                                    {{ dir[0]["OperationPeople_c4"] }}
                                 {% endif %}
                             {% endif %}
                             {% if '83' == flag %}
-                                {{ OperationPeople_c4 }}
+                                {{ dir[0]["OperationPeople_c4"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ OperationPeople_c4 }}
+                                {{ dir[0]["OperationPeople_c4"] }}
                             {% endif %}
                         </td>
                         <td rowspan="21" class="middle-center">
                             {% if '82' == flag %}
-                                {{ CheckedPeople_c4 }}
+                                {{ dir[0]["CheckedPeople_c4"] }}
                             {% endif %}
                             {% if '83' == flag %}
-                                {% if None == OperationPeople_c4 or "" == OperationPeople_c4 %}
+                                {% if None == dir[0]["OperationPeople_c4"] or "" == dir[0]["OperationPeople_c4"] %}
                                 {% else %}
-                                    {% if None == CheckedPeople_c4 or "" == CheckedPeople_c4 %}
+                                    {% if None == dir[0]["CheckedPeople_c4"] or "" == dir[0]["CheckedPeople_c4"] %}
                                         <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="46">确认</a>
                                     {% else %}
-                                        {{ CheckedPeople_c4 }}
+                                        {{ dir[0]["CheckedPeople_c4"] }}
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ CheckedPeople_c4 }}
+                                {{ dir[0]["CheckedPeople_c4"] }}
                             {% endif %}
                         </td>
                     </tr>
@@ -1992,18 +1992,18 @@
                         <td>QA确认人</td>
                         <td class="middle-center">
                             {% if '82' == flag %}
-                                {{ QAConfirmPeople_c4 }}
+                                {{ dir[0]["QAConfirmPeople_c4"] }}
                             {% endif %}
                             {% if '83' == flag %}
-                                {{ QAConfirmPeople_c4 }}
+                                {{ dir[0]["QAConfirmPeople_c4"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {% if None == OperationPeople_c4 or None == CheckedPeople_c4 or "" == OperationPeople_c4 or "" == CheckedPeople_c4 %}
+                                {% if None == dir[0]["OperationPeople_c4"] or None == dir[0]["CheckedPeople_c4"] or "" == dir[0]["OperationPeople_c4"] or "" == dir[0]["CheckedPeople_c4"] %}
                                 {% else %}
-                                    {% if None == QAConfirmPeople_c4 or "" == QAConfirmPeople_c4 %}
+                                    {% if None == dir[0]["QAConfirmPeople_c4"] or "" == dir[0]["QAConfirmPeople_c4"] %}
                                         <a href="javascript:;" class="btn btn-primary QAConfirm" name="46">确认</a>
                                     {% else %}
-                                        {{ QAConfirmPeople_c4 }}
+                                        {{ dir[0]["QAConfirmPeople_c4"] }}
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
@@ -2024,18 +2024,18 @@
                         <td rowspan="2">QA确认人</td>
                         <td rowspan="2" class="middle-center tdWidth100">
                             {% if '82' == flag %}
-                                {{ QAConfirmPeople_c5 }}
+                                {{ dir[0]["QAConfirmPeople_c5"] }}
                             {% endif %}
                             {% if '83' == flag %}
-                                {{ QAConfirmPeople_c5 }}
+                                {{ dir[0]["QAConfirmPeople_c5"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {% if None == OperationPeople_c5 or None == CheckedPeople_c5 or "" == OperationPeople_c5 or "" == CheckedPeople_c5 %}
+                                {% if None == dir[0]["OperationPeople_c5"] or None == dir[0]["CheckedPeople_c5"] or "" == dir[0]["OperationPeople_c5"] or "" == dir[0]["CheckedPeople_c5"] %}
                                 {% else %}
-                                    {% if None == QAConfirmPeople_c5 or "" == QAConfirmPeople_c5 %}
+                                    {% if None == dir[0]["QAConfirmPeople_c5"] or "" == dir[0]["QAConfirmPeople_c5"] %}
                                         <a href="javascript:;" class="btn btn-primary QAConfirm" name="质量控制">确认</a>
                                     {% else %}
-                                        {{ QAConfirmPeople_c5 }}
+                                        {{ dir[0]["QAConfirmPeople_c5"] }}
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
@@ -2069,37 +2069,37 @@
                             <label class="checkbox-inline"><input type="checkbox" name="overcheckbox"> 是 / 否</label>
                         </td>
                         <td rowspan="5" class="middle-center">
-                            <input type="hidden" id="overcheckbox" value={{ OperationPeople_c6 }}>
+                            <input type="hidden" id="overcheckbox" value={{ dir[0]["OperationPeople_c6"] }}>
                             {% if '82' == flag %}
-                                {% if None == OperationPeople_c6 or "" == OperationPeople_c6 %}
+                                {% if None == dir[0]["OperationPeople_c6"] or "" == dir[0]["OperationPeople_c6"] %}
                                     <a href="javascript:;" class="btn btn-primary OperationConfirm" name="浓缩结束清场">确认</a>
                                 {% else %}
-                                    {{ OperationPeople_c6 }}
+                                    {{ dir[0]["OperationPeople_c6"] }}
                                 {% endif %}
                             {% endif %}
                             {% if '83' == flag %}
-                                {{ OperationPeople_c6 }}
+                                {{ dir[0]["OperationPeople_c6"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ OperationPeople_c6 }}
+                                {{ dir[0]["OperationPeople_c6"] }}
                             {% endif %}
                         </td>
                         <td rowspan="5" class="middle-center">
                             {% if '82' == flag %}
-                                {{ CheckedPeople_c6 }}
+                                {{ dir[0]["CheckedPeople_c6"] }}
                             {% endif %}
                             {% if '83' == flag %}
-                                {% if None == OperationPeople_c6 or "" == OperationPeople_c6 %}
+                                {% if None == dir[0]["OperationPeople_c6"] or "" == dir[0]["OperationPeople_c6"] %}
                                 {% else %}
-                                    {% if None == CheckedPeople_c6 or "" == CheckedPeople_c6 %}
+                                    {% if None == dir[0]["CheckedPeople_c6"] or "" == dir[0]["CheckedPeople_c6"] %}
                                         <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="浓缩结束清场">确认</a>
                                     {% else %}
-                                        {{ CheckedPeople_c6 }}
+                                        {{ dir[0]["CheckedPeople_c6"] }}
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ CheckedPeople_c6 }}
+                                {{ dir[0]["CheckedPeople_c6"] }}
                             {% endif %}
                         </td>
                     </tr>
@@ -2135,20 +2135,20 @@
                         </td>
                         <td>QA确认人</td>
                         <td class="middle-center">
-                            <input type="hidden" id="QAovercheckbox" value={{ QAConfirmPeople_c6 }}>
+                            <input type="hidden" id="QAovercheckbox" value={{ dir[0]["QAConfirmPeople_c6"] }}>
                             {% if '82' == flag %}
-                                {{ QAConfirmPeople_c6 }}
+                                {{ dir[0]["QAConfirmPeople_c6"] }}
                             {% endif %}
                             {% if '83' == flag %}
-                                {{ QAConfirmPeople_c6 }}
+                                {{ dir[0]["QAConfirmPeople_c6"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {% if None == OperationPeople_c6 or None == CheckedPeople_c6 or "" == OperationPeople_c6 or "" == CheckedPeople_c6 %}
+                                {% if None == dir[0]["OperationPeople_c6"] or None == dir[0]["CheckedPeople_c6"] or "" == dir[0]["OperationPeople_c6"] or "" == dir[0]["CheckedPeople_c6"] %}
                                 {% else %}
-                                    {% if None == QAConfirmPeople_c6 or "" == QAConfirmPeople_c6 %}
+                                    {% if None == dir[0]["QAConfirmPeople_c6"] or "" == dir[0]["QAConfirmPeople_c6"] %}
                                         <a href="javascript:;" class="btn btn-primary QAConfirm" name="浓缩结束清场">确认</a>
                                     {% else %}
-                                        {{ QAConfirmPeople_c6 }}
+                                        {{ dir[0]["QAConfirmPeople_c6"] }}
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
@@ -2175,37 +2175,37 @@
                             <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox"> 正常 / 不正常</label>
                         </td>
                         <td rowspan="2" class="middle-center">
-                            <input type="hidden" id="equipmentCheckbox" value={{ OperationPeople_c7 }}>
+                            <input type="hidden" id="equipmentCheckbox" value={{ dir[0]["OperationPeople_c7"] }}>
                             {% if '82' == flag %}
-                                {% if None == OperationPeople_c7 or "" == OperationPeople_c7 %}
+                                {% if None == dir[0]["OperationPeople_c7"] or "" == dir[0]["OperationPeople_c7"] %}
                                     <a href="javascript:;" class="btn btn-primary OperationConfirm" name="操作人">确认</a>
                                 {% else %}
-                                    {{ OperationPeople_c7 }}
+                                    {{ dir[0]["OperationPeople_c7"] }}
                                 {% endif %}
                             {% endif %}
                             {% if '83' == flag %}
-                                {{ OperationPeople_c7 }}
+                                {{ dir[0]["OperationPeople_c7"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ OperationPeople_c7 }}
+                                {{ dir[0]["OperationPeople_c7"] }}
                             {% endif %}
                         </td>
                         <td rowspan="2" class="middle-center">
                             {% if '82' == flag %}
-                                {{ CheckedPeople_c7 }}
+                                {{ dir[0]["CheckedPeople_c7"] }}
                             {% endif %}
                             {% if '83' == flag %}
-                                {% if None == OperationPeople_c7 or "" == OperationPeople_c7 %}
+                                {% if None == dir[0]["OperationPeople_c7"] or "" == dir[0]["OperationPeople_c7"] %}
                                 {% else %}
-                                    {% if None == CheckedPeople_c7 or "" == CheckedPeople_c7 %}
+                                    {% if None == dir[0]["CheckedPeople_c7"] or "" == dir[0]["CheckedPeople_c7"] %}
                                         <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="复核人">确认</a>
                                     {% else %}
-                                        {{ CheckedPeople_c7 }}
+                                        {{ dir[0]["CheckedPeople_c7"] }}
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ CheckedPeople_c7 }}
+                                {{ dir[0]["CheckedPeople_c7"] }}
                             {% endif %}
                         </td>
                     </tr>
@@ -2261,37 +2261,37 @@
                             <label class="checkbox-inline"><input type="checkbox" name="readycheckbox"> 是 / 否</label>
                         </td>
                         <td rowspan="6" class="middle-center">
-                            <input type="hidden" id="readycheckbox" value={{ OperationPeople_d1 }}>
+                            <input type="hidden" id="readycheckbox" value={{ dir[0]["OperationPeople_d1"] }}>
                             {% if '82' == flag %}
-                                {% if None == OperationPeople_d1 or "" == OperationPeople_d1 %}
+                                {% if None == dir[0]["OperationPeople_d1"] or "" == dir[0]["OperationPeople_d1"] %}
                                     <a href="javascript:;" class="btn btn-primary OperationConfirm" name="生产前的准备">确认</a>
                                 {% else %}
-                                    {{ OperationPeople_d1 }}
+                                    {{ dir[0]["OperationPeople_d1"] }}
                                 {% endif %}
                             {% endif %}
                             {% if '83' == flag %}
-                                {{ OperationPeople_d1 }}
+                                {{ dir[0]["OperationPeople_d1"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ OperationPeople_d1 }}
+                                {{ dir[0]["OperationPeople_d1"] }}
                             {% endif %}
                         </td>
                         <td rowspan="6" class="middle-center">
                             {% if '82' == flag %}
-                                {{ CheckedPeople_d1 }}
+                                {{ dir[0]["CheckedPeople_d1"] }}
                             {% endif %}
                             {% if '83' == flag %}
-                                {% if None == OperationPeople_d1 or "" == OperationPeople_d1 %}
+                                {% if None == dir[0]["OperationPeople_d1"] or "" == dir[0]["OperationPeople_d1"] %}
                                 {% else %}
-                                    {% if None == CheckedPeople_d1 or "" == CheckedPeople_d1 %}
+                                    {% if None == dir[0]["CheckedPeople_d1"] or "" == dir[0]["CheckedPeople_d1"] %}
                                         <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="生产前的准备">确认</a>
                                     {% else %}
-                                        {{ CheckedPeople_d1 }}
+                                        {{ dir[0]["CheckedPeople_d1"] }}
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ CheckedPeople_d1 }}
+                                {{ dir[0]["CheckedPeople_d1"] }}
                             {% endif %}
                         </td>
                     </tr>
@@ -2333,20 +2333,20 @@
                         </td>
                         <td>QA确认人</td>
                         <td class="middle-center">
-                            <input type="hidden" id="QAreadycheckbox" value={{ QAConfirmPeople_d1 }}>
+                            <input type="hidden" id="QAreadycheckbox" value={{ dir[0]["QAConfirmPeople_d1"] }}>
                             {% if '82' == flag %}
-                                {{ QAConfirmPeople_d1 }}
+                                {{ dir[0]["QAConfirmPeople_d1"] }}
                             {% endif %}
                             {% if '83' == flag %}
-                                {{ QAConfirmPeople_d1 }}
+                                {{ dir[0]["QAConfirmPeople_d1"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {% if None == OperationPeople_d1 or None == CheckedPeople_d1 or "" == OperationPeople_d1 or "" == CheckedPeople_d1 %}
+                                {% if None == dir[0]["OperationPeople_d1"] or None == dir[0]["CheckedPeople_d1"] or "" == dir[0]["OperationPeople_d1"] or "" == dir[0]["CheckedPeople_d1"] %}
                                 {% else %}
-                                    {% if None == QAConfirmPeople_d1 or "" == QAConfirmPeople_d1 %}
+                                    {% if None == dir[0]["QAConfirmPeople_d1"] or "" == dir[0]["QAConfirmPeople_d1"] %}
                                         <a href="javascript:;" class="btn btn-primary QAConfirm" name="生产前的准备">确认</a>
                                     {% else %}
-                                        {{ QAConfirmPeople_d1 }}
+                                        {{ dir[0]["QAConfirmPeople_d1"] }}
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
@@ -2365,37 +2365,37 @@
                         <td colspan="4">领取本批生产的物料并复核品名、批号、检验单号、数量是否无误</td>
                         <td><label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox"> 是 / 否</label></td>
                         <td rowspan="4" class="middle-center">
-                            <input type="hidden" id="readycheckbox" value={{ OperationPeople_d2 }}>
+                            <input type="hidden" id="readycheckbox" value={{ dir[0]["OperationPeople_d2"] }}>
                             {% if '82' == flag %}
-                                {% if None == OperationPeople_d2 or "" == OperationPeople_d2 %}
+                                {% if None == dir[0]["OperationPeople_d2"] or "" == dir[0]["OperationPeople_d2"] %}
                                     <a href="javascript:;" class="btn btn-primary OperationConfirm" name="">确认</a>
                                 {% else %}
-                                    {{ OperationPeople_d2 }}
+                                    {{ dir[0]["OperationPeople_d2"] }}
                                 {% endif %}
                             {% endif %}
                             {% if '83' == flag %}
-                                {{ OperationPeople_d2 }}
+                                {{ dir[0]["OperationPeople_d2"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ OperationPeople_d2 }}
+                                {{ dir[0]["OperationPeople_d2"] }}
                             {% endif %}
                         </td>
                         <td rowspan="4" class="middle-center">
                             {% if '82' == flag %}
-                                {{ CheckedPeople_d2 }}
+                                {{ dir[0]["CheckedPeople_d2"] }}
                             {% endif %}
                             {% if '83' == flag %}
-                                {% if None == OperationPeople_d2 or "" == OperationPeople_d2 %}
+                                {% if None == dir[0]["OperationPeople_d2"] or "" == dir[0]["OperationPeople_d2"] %}
                                 {% else %}
-                                    {% if None == CheckedPeople_d2 or "" == CheckedPeople_d2 %}
+                                    {% if None == dir[0]["CheckedPeople_d2"] or "" == dir[0]["CheckedPeople_d2"] %}
                                         <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="">确认</a>
                                     {% else %}
-                                        {{ CheckedPeople_d2 }}
+                                        {{ dir[0]["CheckedPeople_d2"] }}
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ CheckedPeople_d2 }}
+                                {{ dir[0]["CheckedPeople_d2"] }}
                             {% endif %}
                         </td>
                     </tr>
@@ -2437,35 +2437,35 @@
                         <td></td>
                         <td rowspan="7" class="middle-center">
                             {% if '82' == flag %}
-                                {% if None == OperationPeople_d3 or "" == OperationPeople_d3 %}
+                                {% if None == dir[0]["OperationPeople_d3"] or "" == dir[0]["OperationPeople_d3"] %}
                                     <a href="javascript:;" class="btn btn-primary OperationConfirm" name="醇沉开始">确认</a>
                                 {% else %}
-                                    {{ OperationPeople_d3 }}
+                                    {{ dir[0]["OperationPeople_d3"] }}
                                 {% endif %}
                             {% endif %}
                             {% if '83' == flag %}
-                                {{ OperationPeople_d3 }}
+                                {{ dir[0]["OperationPeople_d3"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ OperationPeople_d3 }}
+                                {{ dir[0]["OperationPeople_d3"] }}
                             {% endif %}
                         </td>
                         <td rowspan="7" class="middle-center">
                             {% if '82' == flag %}
-                                {{ CheckedPeople_d3 }}
+                                {{ dir[0]["CheckedPeople_d3"] }}
                             {% endif %}
                             {% if '83' == flag %}
-                                {% if None == OperationPeople_d3 or "" == OperationPeople_d3 %}
+                                {% if None == dir[0]["OperationPeople_d3"] or "" == dir[0]["OperationPeople_d3"] %}
                                 {% else %}
-                                    {% if None == CheckedPeople_d3 or "" == CheckedPeople_d3 %}
+                                    {% if None == dir[0]["CheckedPeople_d3"] or "" == dir[0]["CheckedPeople_d3"] %}
                                         <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="醇沉开始">确认</a>
                                     {% else %}
-                                        {{ CheckedPeople_d3 }}
+                                        {{ dir[0]["CheckedPeople_d3"] }}
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ CheckedPeople_d3 }}
+                                {{ dir[0]["CheckedPeople_d3"] }}
                             {% endif %}
                         </td>
                     </tr>
@@ -2499,20 +2499,20 @@
                         <td></td>
                         <td>QA签名</td>
                         <td class="middle-center">
-                            <input type="hidden" id="QAreadycheckbox" value={{ QAConfirmPeople_d3 }}>
+                            <input type="hidden" id="QAreadycheckbox" value={{ dir[0]["QAConfirmPeople_d3"] }}>
                             {% if '82' == flag %}
-                                {{ QAConfirmPeople_d3 }}
+                                {{ dir[0]["QAConfirmPeople_d3"] }}
                             {% endif %}
                             {% if '83' == flag %}
-                                {{ QAConfirmPeople_d3 }}
+                                {{ dir[0]["QAConfirmPeople_d3"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {% if None == OperationPeople_d3 or None == CheckedPeople_d3 or "" == OperationPeople_d3 or "" == CheckedPeople_d3 %}
+                                {% if None == dir[0]["OperationPeople_d3"] or None == dir[0]["CheckedPeople_d3"] or "" == dir[0]["OperationPeople_d3"] or "" == dir[0]["CheckedPeople_d3"] %}
                                 {% else %}
-                                    {% if None == QAConfirmPeople_d3 or "" == QAConfirmPeople_d3 %}
+                                    {% if None == dir[0]["QAConfirmPeople_d3"] or "" == dir[0]["QAConfirmPeople_d3"] %}
                                         <a href="javascript:;" class="btn btn-primary QAConfirm" name="醇沉开始">确认</a>
                                     {% else %}
-                                        {{ QAConfirmPeople_d3 }}
+                                        {{ dir[0]["QAConfirmPeople_d3"] }}
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
@@ -2540,37 +2540,37 @@
                             <label class="checkbox-inline"><input type="checkbox" name="overcheckbox"> 是 / 否</label>
                         </td>
                         <td rowspan="4" class="middle-center">
-                            <input type="hidden" id="overcheckbox" value={{ OperationPeople_d4 }}>
+                            <input type="hidden" id="overcheckbox" value={{ dir[0]["OperationPeople_d4"] }}>
                             {% if '82' == flag %}
-                                {% if None == OperationPeople_d4 or "" == OperationPeople_d4 %}
+                                {% if None == dir[0]["OperationPeople_d4"] or "" == dir[0]["OperationPeople_d4"] %}
                                     <a href="javascript:;" class="btn btn-primary OperationConfirm" name="醇沉结束清场">确认</a>
                                 {% else %}
-                                    {{ OperationPeople_d4 }}
+                                    {{ dir[0]["OperationPeople_d4"] }}
                                 {% endif %}
                             {% endif %}
                             {% if '83' == flag %}
-                                {{ OperationPeople_d4 }}
+                                {{ dir[0]["OperationPeople_d4"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ OperationPeople_d4 }}
+                                {{ dir[0]["OperationPeople_d4"] }}
                             {% endif %}
                         </td>
                         <td rowspan="4" class="middle-center">
                             {% if '82' == flag %}
-                                {{ CheckedPeople_d4 }}
+                                {{ dir[0]["CheckedPeople_d4"] }}
                             {% endif %}
                             {% if '83' == flag %}
-                                {% if None == OperationPeople_d4 or "" == OperationPeople_d4 %}
+                                {% if None == dir[0]["OperationPeople_d4"] or "" == dir[0]["OperationPeople_d4"] %}
                                 {% else %}
-                                    {% if None == CheckedPeople_d4 or "" == CheckedPeople_d4 %}
+                                    {% if None == dir[0]["CheckedPeople_d4"] or "" == dir[0]["CheckedPeople_d4"] %}
                                         <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="醇沉结束清场">确认</a>
                                     {% else %}
-                                        {{ CheckedPeople_d4 }}
+                                        {{ dir[0]["CheckedPeople_d4"] }}
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ CheckedPeople_d4 }}
+                                {{ dir[0]["CheckedPeople_d4"] }}
                             {% endif %}
                         </td>
                     </tr>
@@ -2600,20 +2600,20 @@
                         </td>
                         <td>QA确认人</td>
                         <td class="middle-center">
-                            <input type="hidden" id="QAovercheckbox" value={{ QAConfirmPeople_d4 }}>
+                            <input type="hidden" id="QAovercheckbox" value={{ dir[0]["QAConfirmPeople_d4"] }}>
                             {% if '82' == flag %}
-                                {{ QAConfirmPeople_d4 }}
+                                {{ dir[0]["QAConfirmPeople_d4"] }}
                             {% endif %}
                             {% if '83' == flag %}
-                                {{ QAConfirmPeople_d4 }}
+                                {{ dir[0]["QAConfirmPeople_d4"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {% if None == OperationPeople_d4 or None == CheckedPeople_d4 or "" == OperationPeople_d4 or "" == CheckedPeople_d4 %}
+                                {% if None == dir[0]["OperationPeople_d4"] or None == dir[0]["CheckedPeople_d4"] or "" == dir[0]["OperationPeople_d4"] or "" == dir[0]["CheckedPeople_d4"] %}
                                 {% else %}
-                                    {% if None == QAConfirmPeople_d4 or "" == QAConfirmPeople_d4 %}
+                                    {% if None == dir[0]["QAConfirmPeople_d4"] or "" == dir[0]["QAConfirmPeople_d4"] %}
                                         <a href="javascript:;" class="btn btn-primary QAConfirm" name="醇沉结束清场">确认</a>
                                     {% else %}
-                                        {{ QAConfirmPeople_d4 }}
+                                        {{ dir[0]["QAConfirmPeople_d4"] }}
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
@@ -2640,37 +2640,37 @@
                             <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox"> 正常 / 不正常</label>
                         </td>
                         <td rowspan="5" class="middle-center">
-                            <input type="hidden" id="equipmentCheckbox" value={{ OperationPeople_d5 }}>
+                            <input type="hidden" id="equipmentCheckbox" value={{ dir[0]["OperationPeople_d5"] }}>
                             {% if '82' == flag %}
-                                {% if None == OperationPeople_d5 or "" == OperationPeople_d5 %}
+                                {% if None == dir[0]["OperationPeople_d5"] or "" == dir[0]["OperationPeople_d5"] %}
                                     <a href="javascript:;" class="btn btn-primary OperationConfirm" name="操作人">确认</a>
                                 {% else %}
-                                    {{ OperationPeople_d5 }}
+                                    {{ dir[0]["OperationPeople_d5"] }}
                                 {% endif %}
                             {% endif %}
                             {% if '83' == flag %}
-                                {{ OperationPeople_d5 }}
+                                {{ dir[0]["OperationPeople_d5"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ OperationPeople_d5 }}
+                                {{ dir[0]["OperationPeople_d5"] }}
                             {% endif %}
                         </td>
                         <td rowspan="5" class="middle-center">
                             {% if '82' == flag %}
-                                {{ CheckedPeople_d5 }}
+                                {{ dir[0]["CheckedPeople_d5"] }}
                             {% endif %}
                             {% if '83' == flag %}
-                                {% if None == OperationPeople_d5 or "" == OperationPeople_d5 %}
+                                {% if None == dir[0]["OperationPeople_d5"] or "" == dir[0]["OperationPeople_d5"] %}
                                 {% else %}
-                                    {% if None == CheckedPeople_d5 or "" == CheckedPeople_d5 %}
+                                    {% if None == dir[0]["CheckedPeople_d5"] or "" == dir[0]["CheckedPeople_d5"] %}
                                         <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="复核人">确认</a>
                                     {% else %}
-                                        {{ CheckedPeople_d5 }}
+                                        {{ dir[0]["CheckedPeople_d5"] }}
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ CheckedPeople_d5 }}
+                                {{ dir[0]["CheckedPeople_d5"] }}
                             {% endif %}
                         </td>
                     </tr>
@@ -2744,37 +2744,37 @@
                             <label class="checkbox-inline"><input type="checkbox" name="readycheckbox"> 是 / 否</label>
                         </td>
                         <td rowspan="6" class="middle-center">
-                            <input type="hidden" id="readycheckbox" value={{ OperationPeople_e1 }}>
+                            <input type="hidden" id="readycheckbox" value={{ dir[0]["OperationPeople_e1"] }}>
                             {% if '82' == flag %}
-                                {% if None == OperationPeople_e1 or "" == OperationPeople_e1 %}
+                                {% if None == dir[0]["OperationPeople_e1"] or "" == dir[0]["OperationPeople_e1"] %}
                                     <a href="javascript:;" class="btn btn-primary OperationConfirm" name="生产前的准备">确认</a>
                                 {% else %}
-                                    {{ OperationPeople_e1 }}
+                                    {{ dir[0]["OperationPeople_e1"] }}
                                 {% endif %}
                             {% endif %}
                             {% if '83' == flag %}
-                                {{ OperationPeople_e1 }}
+                                {{ dir[0]["OperationPeople_e1"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ OperationPeople_e1 }}
+                                {{ dir[0]["OperationPeople_e1"] }}
                             {% endif %}
                         </td>
                         <td rowspan="6" class="middle-center">
                             {% if '82' == flag %}
-                                {{ CheckedPeople_e1 }}
+                                {{ dir[0]["CheckedPeople_e1"] }}
                             {% endif %}
                             {% if '83' == flag %}
-                                {% if None == OperationPeople_e1 or "" == OperationPeople_e1 %}
+                                {% if None == dir[0]["OperationPeople_e1"] or "" == dir[0]["OperationPeople_e1"] %}
                                 {% else %}
-                                    {% if None == CheckedPeople_e1 or "" == CheckedPeople_e1 %}
+                                    {% if None == dir[0]["CheckedPeople_e1"] or "" == dir[0]["CheckedPeople_e1"] %}
                                         <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="生产前的准备">确认</a>
                                     {% else %}
-                                        {{ CheckedPeople_e1 }}
+                                        {{ dir[0]["CheckedPeople_e1"] }}
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ CheckedPeople_e1 }}
+                                {{ dir[0]["CheckedPeople_e1"] }}
                             {% endif %}
                         </td>
                     </tr>
@@ -2816,20 +2816,20 @@
                         </td>
                         <td>QA确认人</td>
                         <td class="middle-center">
-                            <input type="hidden" id="QAreadycheckbox" value={{ QAConfirmPeople_e1 }}>
+                            <input type="hidden" id="QAreadycheckbox" value={{ dir[0]["QAConfirmPeople_e1"] }}>
                             {% if '82' == flag %}
-                                {{ QAConfirmPeople_e1 }}
+                                {{ dir[0]["QAConfirmPeople_e1"] }}
                             {% endif %}
                             {% if '83' == flag %}
-                                {{ QAConfirmPeople_e1 }}
+                                {{ dir[0]["QAConfirmPeople_e1"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {% if None == OperationPeople_e1 or None == CheckedPeople_e1 or "" == OperationPeople_e1 or "" == CheckedPeople_e1 %}
+                                {% if None == dir[0]["OperationPeople_e1"] or None == dir[0]["CheckedPeople_e1"] or "" == dir[0]["OperationPeople_e1"] or "" == dir[0]["CheckedPeople_e1"] %}
                                 {% else %}
-                                    {% if None == QAConfirmPeople_e1 or "" == QAConfirmPeople_e1 %}
+                                    {% if None == dir[0]["QAConfirmPeople_e1"] or "" == dir[0]["QAConfirmPeople_e1"] %}
                                         <a href="javascript:;" class="btn btn-primary QAConfirm" name="生产前的准备">确认</a>
                                     {% else %}
-                                        {{ QAConfirmPeople_e1 }}
+                                        {{ dir[0]["QAConfirmPeople_e1"] }}
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
@@ -2854,35 +2854,35 @@
                         <td><label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox"> 是 / 否</label></td>
                         <td class="middle-center">
                             {% if '82' == flag %}
-                                {% if None == OperationPeople_e2 or "" == OperationPeople_e2 %}
+                                {% if None == dir[0]["OperationPeople_e2"] or "" == dir[0]["OperationPeople_e2"] %}
                                     <a href="javascript:;" class="btn btn-primary OperationConfirm" name="单效浓缩开始">确认</a>
                                 {% else %}
-                                    {{ OperationPeople_e2 }}
+                                    {{ dir[0]["OperationPeople_e2"] }}
                                 {% endif %}
                             {% endif %}
                             {% if '83' == flag %}
-                                {{ OperationPeople_e2 }}
+                                {{ dir[0]["OperationPeople_e2"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ OperationPeople_e2 }}
+                                {{ dir[0]["OperationPeople_e2"] }}
                             {% endif %}
                         </td>
                         <td rowspan="2" class="middle-center">
                             {% if '82' == flag %}
-                                {{ CheckedPeople_e2 }}
+                                {{ dir[0]["CheckedPeople_e2"] }}
                             {% endif %}
                             {% if '83' == flag %}
-                                {% if None == OperationPeople_e2 or "" == OperationPeople_e2 %}
+                                {% if None == dir[0]["OperationPeople_e2"] or "" == dir[0]["OperationPeople_e2"] %}
                                 {% else %}
-                                    {% if None == CheckedPeople_e2 or "" == CheckedPeople_e2 %}
+                                    {% if None == dir[0]["CheckedPeople_e2"] or "" == dir[0]["CheckedPeople_e2"] %}
                                         <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="单效浓缩开始">确认</a>
                                     {% else %}
-                                        {{ CheckedPeople_e2 }}
+                                        {{ dir[0]["CheckedPeople_e2"] }}
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ CheckedPeople_e2 }}
+                                {{ dir[0]["CheckedPeople_e2"] }}
                             {% endif %}
                         </td>
                     </tr>
@@ -2903,35 +2903,35 @@
                         <td></td>
                         <td rowspan="13" class="middle-center">
                             {% if '82' == flag %}
-                                {% if None == OperationPeople_e3 or "" == OperationPeople_e3 %}
+                                {% if None == dir[0]["OperationPeople_e3"] or "" == dir[0]["OperationPeople_e3"] %}
                                     <a href="javascript:;" class="btn btn-primary OperationConfirm" name="45">确认</a>
                                 {% else %}
-                                    {{ OperationPeople_e3 }}
+                                    {{ dir[0]["OperationPeople_e3"] }}
                                 {% endif %}
                             {% endif %}
                             {% if '83' == flag %}
-                                {{ OperationPeople_e3 }}
+                                {{ dir[0]["OperationPeople_e3"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ OperationPeople_e3 }}
+                                {{ dir[0]["OperationPeople_e3"] }}
                             {% endif %}
                         </td>
                         <td rowspan="13" class="middle-center">
                             {% if '82' == flag %}
-                                {{ CheckedPeople_e3 }}
+                                {{ dir[0]["CheckedPeople_e3"] }}
                             {% endif %}
                             {% if '83' == flag %}
-                                {% if None == OperationPeople_e3 or "" == OperationPeople_e3 %}
+                                {% if None == dir[0]["OperationPeople_e3"] or "" == dir[0]["OperationPeople_e3"] %}
                                 {% else %}
-                                    {% if None == CheckedPeople_e3 or "" == CheckedPeople_e3 %}
+                                    {% if None == dir[0]["CheckedPeople_e3"] or "" == dir[0]["CheckedPeople_e3"] %}
                                         <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="45">确认</a>
                                     {% else %}
-                                        {{ CheckedPeople_e3 }}
+                                        {{ dir[0]["CheckedPeople_e3"] }}
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ CheckedPeople_e3 }}
+                                {{ dir[0]["CheckedPeople_e3"] }}
                             {% endif %}
                         </td>
                     </tr>
@@ -2998,35 +2998,35 @@
                         <td></td>
                         <td rowspan="5" class="middle-center">
                             {% if '82' == flag %}
-                                {% if None == OperationPeople_e4 or "" == OperationPeople_e4 %}
+                                {% if None == dir[0]["OperationPeople_e4"] or "" == dir[0]["OperationPeople_e4"] %}
                                     <a href="javascript:;" class="btn btn-primary OperationConfirm" name="46">确认</a>
                                 {% else %}
-                                    {{ OperationPeople_e4 }}
+                                    {{ dir[0]["OperationPeople_e4"] }}
                                 {% endif %}
                             {% endif %}
                             {% if '83' == flag %}
-                                {{ OperationPeople_e4 }}
+                                {{ dir[0]["OperationPeople_e4"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ OperationPeople_e4 }}
+                                {{ dir[0]["OperationPeople_e4"] }}
                             {% endif %}
                         </td>
                         <td rowspan="5" class="middle-center">
                             {% if '82' == flag %}
-                                {{ CheckedPeople_e4 }}
+                                {{ dir[0]["CheckedPeople_e4"] }}
                             {% endif %}
                             {% if '83' == flag %}
-                                {% if None == OperationPeople_e4 or "" == OperationPeople_e4 %}
+                                {% if None == dir[0]["OperationPeople_e4"] or "" == dir[0]["OperationPeople_e4"] %}
                                 {% else %}
-                                    {% if None == CheckedPeople_e4 or "" == CheckedPeople_e4 %}
+                                    {% if None == dir[0]["CheckedPeople_e4"] or "" == dir[0]["CheckedPeople_e4"] %}
                                         <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="46">确认</a>
                                     {% else %}
-                                        {{ CheckedPeople_e4 }}
+                                        {{ dir[0]["CheckedPeople_e4"] }}
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ CheckedPeople_e4 }}
+                                {{ dir[0]["CheckedPeople_e4"] }}
                             {% endif %}
                         </td>
                     </tr>
@@ -3052,18 +3052,18 @@
                         <td>QA签名</td>
                         <td class="middle-center">
                             {% if '82' == flag %}
-                                {{ QAConfirmPeople_e4 }}
+                                {{ dir[0]["QAConfirmPeople_e4"] }}
                             {% endif %}
                             {% if '83' == flag %}
-                                {{ QAConfirmPeople_e4 }}
+                                {{ dir[0]["QAConfirmPeople_e4"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {% if None == OperationPeople_e4 or None == CheckedPeople_e4 or "" == OperationPeople_e4 or "" == CheckedPeople_e4 %}
+                                {% if None == dir[0]["OperationPeople_e4"] or None == dir[0]["CheckedPeople_e4"] or "" == dir[0]["OperationPeople_e4"] or "" == dir[0]["CheckedPeople_e4"] %}
                                 {% else %}
-                                    {% if None == QAConfirmPeople_e4 or "" == QAConfirmPeople_e4 %}
+                                    {% if None == dir[0]["QAConfirmPeople_e4"] or "" == dir[0]["QAConfirmPeople_e4"] %}
                                         <a href="javascript:;" class="btn btn-primary QAConfirm" name="46">确认</a>
                                     {% else %}
-                                        {{ QAConfirmPeople_e4 }}
+                                        {{ dir[0]["QAConfirmPeople_e4"] }}
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
@@ -3081,18 +3081,18 @@
                         <td rowspan="2">QA确认人</td>
                         <td rowspan="2" class="middle-center tdWidth100">
                             {% if '82' == flag %}
-                                {{ QAConfirmPeople_e5 }}
+                                {{ dir[0]["QAConfirmPeople_e5"] }}
                             {% endif %}
                             {% if '83' == flag %}
-                                {{ QAConfirmPeople_e5 }}
+                                {{ dir[0]["QAConfirmPeople_e5"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {% if None == OperationPeople_e5 or None == CheckedPeople_e5 or "" == OperationPeople_e5 or "" == CheckedPeople_e5 %}
+                                {% if None == dir[0]["OperationPeople_e5"] or None == dir[0]["CheckedPeople_e5"] or "" == dir[0]["OperationPeople_e5"] or "" == dir[0]["CheckedPeople_e5"] %}
                                 {% else %}
-                                    {% if None == QAConfirmPeople_e5 or "" == QAConfirmPeople_e5 %}
+                                    {% if None == dir[0]["QAConfirmPeople_e5"] or "" == dir[0]["QAConfirmPeople_e5"] %}
                                         <a href="javascript:;" class="btn btn-primary QAConfirm" name="质量控制">确认</a>
                                     {% else %}
-                                        {{ QAConfirmPeople_e5 }}
+                                        {{ dir[0]["QAConfirmPeople_e5"] }}
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
@@ -3124,37 +3124,37 @@
                             <label class="checkbox-inline"><input type="checkbox" name="overcheckbox"> 是 / 否</label>
                         </td>
                         <td rowspan="4" class="middle-center">
-                            <input type="hidden" id="overcheckbox" value={{ OperationPeople_e6 }}>
+                            <input type="hidden" id="overcheckbox" value={{ dir[0]["OperationPeople_e6"] }}>
                             {% if '82' == flag %}
-                                {% if None == OperationPeople_e6 or "" == OperationPeople_e6 %}
+                                {% if None == dir[0]["OperationPeople_e6"] or "" == dir[0]["OperationPeople_e6"] %}
                                     <a href="javascript:;" class="btn btn-primary OperationConfirm" name="单效浓缩结束清场">确认</a>
                                 {% else %}
-                                    {{ OperationPeople_e6 }}
+                                    {{ dir[0]["OperationPeople_e6"] }}
                                 {% endif %}
                             {% endif %}
                             {% if '83' == flag %}
-                                {{ OperationPeople_e6 }}
+                                {{ dir[0]["OperationPeople_e6"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ OperationPeople_e6 }}
+                                {{ dir[0]["OperationPeople_e6"] }}
                             {% endif %}
                         </td>
                         <td rowspan="4" class="middle-center">
                             {% if '82' == flag %}
-                                {{ CheckedPeople_e6 }}
+                                {{ dir[0]["CheckedPeople_e6"] }}
                             {% endif %}
                             {% if '83' == flag %}
-                                {% if None == OperationPeople_e6 or "" == OperationPeople_e6 %}
+                                {% if None == dir[0]["OperationPeople_e6"] or "" == dir[0]["OperationPeople_e6"] %}
                                 {% else %}
-                                    {% if None == CheckedPeople_e6 or "" == CheckedPeople_e6 %}
+                                    {% if None == dir[0]["CheckedPeople_e6"] or "" == dir[0]["CheckedPeople_e6"] %}
                                         <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="单效浓缩结束清场">确认</a>
                                     {% else %}
-                                        {{ CheckedPeople_e6 }}
+                                        {{ dir[0]["CheckedPeople_e6"] }}
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ CheckedPeople_e6 }}
+                                {{ dir[0]["CheckedPeople_e6"] }}
                             {% endif %}
                         </td>
                     </tr>
@@ -3184,20 +3184,20 @@
                         </td>
                         <td>QA确认人</td>
                         <td class="middle-center">
-                            <input type="hidden" id="QAovercheckbox" value={{ QAConfirmPeople_e6 }}>
+                            <input type="hidden" id="QAovercheckbox" value={{ dir[0]["QAConfirmPeople_e6"] }}>
                             {% if '82' == flag %}
-                                {{ QAConfirmPeople_e6 }}
+                                {{ dir[0]["QAConfirmPeople_e6"] }}
                             {% endif %}
                             {% if '83' == flag %}
-                                {{ QAConfirmPeople_e6 }}
+                                {{ dir[0]["QAConfirmPeople_e6"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {% if None == OperationPeople_e6 or None == CheckedPeople_e6 or "" == OperationPeople_e6 or "" == CheckedPeople_e6 %}
+                                {% if None == dir[0]["OperationPeople_e6"] or None == dir[0]["CheckedPeople_e6"] or "" == dir[0]["OperationPeople_e6"] or "" == dir[0]["CheckedPeople_e6"] %}
                                 {% else %}
-                                    {% if None == QAConfirmPeople_e6 or "" == QAConfirmPeople_e6 %}
+                                    {% if None == dir[0]["QAConfirmPeople_e6"] or "" == dir[0]["QAConfirmPeople_e6"] %}
                                         <a href="javascript:;" class="btn btn-primary QAConfirm" name="单效浓缩结束清场">确认</a>
                                     {% else %}
-                                        {{ QAConfirmPeople_e6 }}
+                                        {{ dir[0]["QAConfirmPeople_e6"] }}
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
@@ -3224,37 +3224,37 @@
                             <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox"> 正常 / 不正常</label>
                         </td>
                         <td rowspan="5" class="middle-center">
-                            <input type="hidden" id="equipmentCheckbox" value={{ OperationPeople_e7 }}>
+                            <input type="hidden" id="equipmentCheckbox" value={{ dir[0]["OperationPeople_e7"] }}>
                             {% if '82' == flag %}
-                                {% if None == OperationPeople_e7 or "" == OperationPeople_e7 %}
+                                {% if None == dir[0]["OperationPeople_e7"] or "" == dir[0]["OperationPeople_e7"] %}
                                     <a href="javascript:;" class="btn btn-primary OperationConfirm" name="操作人">确认</a>
                                 {% else %}
-                                    {{ OperationPeople_e7 }}
+                                    {{ dir[0]["OperationPeople_e7"] }}
                                 {% endif %}
                             {% endif %}
                             {% if '83' == flag %}
-                                {{ OperationPeople_e7 }}
+                                {{ dir[0]["OperationPeople_e7"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ OperationPeople_e7 }}
+                                {{ dir[0]["OperationPeople_e7"] }}
                             {% endif %}
                         </td>
                         <td rowspan="5" class="middle-center">
                             {% if '82' == flag %}
-                                {{ CheckedPeople_e7 }}
+                                {{ dir[0]["CheckedPeople_e7"] }}
                             {% endif %}
                             {% if '83' == flag %}
-                                {% if None == OperationPeople_e7 or "" == OperationPeople_e7 %}
+                                {% if None == dir[0]["OperationPeople_e7"] or "" == dir[0]["OperationPeople_e7"] %}
                                 {% else %}
-                                    {% if None == CheckedPeople_e7 or "" == CheckedPeople_e7 %}
+                                    {% if None == dir[0]["CheckedPeople_e7"] or "" == dir[0]["CheckedPeople_e7"] %}
                                         <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="复核人">确认</a>
                                     {% else %}
-                                        {{ CheckedPeople_e7 }}
+                                        {{ dir[0]["CheckedPeople_e7"] }}
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ CheckedPeople_e7 }}
+                                {{ dir[0]["CheckedPeople_e7"] }}
                             {% endif %}
                         </td>
                     </tr>
@@ -3331,37 +3331,37 @@
                             <label class="checkbox-inline"><input type="checkbox" name="readycheckbox"> 是 / 否</label>
                         </td>
                         <td rowspan="6" class="middle-center">
-                            <input type="hidden" id="readycheckbox" value={{ OperationPeople_f1 }}>
+                            <input type="hidden" id="readycheckbox" value={{ dir[0]["OperationPeople_f1"] }}>
                             {% if '82' == flag %}
-                                {% if None == OperationPeople_f1 or "" == OperationPeople_f1 %}
+                                {% if None == dir[0]["OperationPeople_f1"] or "" == dir[0]["OperationPeople_f1"] %}
                                     <a href="javascript:;" class="btn btn-primary OperationConfirm" name="生产前的准备">确认</a>
                                 {% else %}
-                                    {{ OperationPeople_f1 }}
+                                    {{ dir[0]["OperationPeople_f1"] }}
                                 {% endif %}
                             {% endif %}
                             {% if '83' == flag %}
-                                {{ OperationPeople_f1 }}
+                                {{ dir[0]["OperationPeople_f1"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ OperationPeople_f1 }}
+                                {{ dir[0]["OperationPeople_f1"] }}
                             {% endif %}
                         </td>
                         <td rowspan="6" class="middle-center">
                             {% if '82' == flag %}
-                                {{ CheckedPeople_f1 }}
+                                {{ dir[0]["CheckedPeople_f1"] }}
                             {% endif %}
                             {% if '83' == flag %}
-                                {% if None == OperationPeople_f1 or "" == OperationPeople_f1 %}
+                                {% if None == dir[0]["OperationPeople_f1"] or "" == dir[0]["OperationPeople_f1"] %}
                                 {% else %}
-                                    {% if None == CheckedPeople_f1 or "" == CheckedPeople_f1 %}
+                                    {% if None == dir[0]["CheckedPeople_f1"] or "" == dir[0]["CheckedPeople_f1"] %}
                                         <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="生产前的准备">确认</a>
                                     {% else %}
-                                        {{ CheckedPeople_f1 }}
+                                        {{ dir[0]["CheckedPeople_f1"] }}
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ CheckedPeople_f1 }}
+                                {{ dir[0]["CheckedPeople_f1"] }}
                             {% endif %}
                         </td>
                     </tr>
@@ -3403,20 +3403,20 @@
                         </td>
                         <td>QA确认人</td>
                         <td class="middle-center">
-                            <input type="hidden" id="QAreadycheckbox" value={{ QAConfirmPeople_f1 }}>
+                            <input type="hidden" id="QAreadycheckbox" value={{ dir[0]["QAConfirmPeople_f1"] }}>
                             {% if '82' == flag %}
-                                {{ QAConfirmPeople_f1 }}
+                                {{ dir[0]["QAConfirmPeople_f1"] }}
                             {% endif %}
                             {% if '83' == flag %}
-                                {{ QAConfirmPeople_f1 }}
+                                {{ dir[0]["QAConfirmPeople_f1"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {% if None == OperationPeople_f1 or None == CheckedPeople_f1 or "" == OperationPeople_f1 or "" == CheckedPeople_f1 %}
+                                {% if None == dir[0]["OperationPeople_f1"] or None == dir[0]["CheckedPeople_f1"] or "" == dir[0]["OperationPeople_f1"] or "" == dir[0]["CheckedPeople_f1"] %}
                                 {% else %}
-                                    {% if None == QAConfirmPeople_f1 or "" == QAConfirmPeople_f1 %}
+                                    {% if None == dir[0]["QAConfirmPeople_f1"] or "" == dir[0]["QAConfirmPeople_f1"] %}
                                         <a href="javascript:;" class="btn btn-primary QAConfirm" name="生产前的准备">确认</a>
                                     {% else %}
-                                        {{ QAConfirmPeople_f1 }}
+                                        {{ dir[0]["QAConfirmPeople_f1"] }}
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
@@ -3443,35 +3443,35 @@
                         <td><input type="text" class="form-control batchInput" id="plasticNumber1"></td>
                         <td class="middle-center" rowspan="2">
                             {% if '82' == flag %}
-                                {% if None == OperationPeople_f2 or "" == OperationPeople_f2 %}
+                                {% if None == dir[0]["OperationPeople_f2"] or "" == dir[0]["OperationPeople_f2"] %}
                                     <a href="javascript:;" class="btn btn-primary OperationConfirm" name="48">确认</a>
                                 {% else %}
-                                    {{ OperationPeople_f2 }}
+                                    {{ dir[0]["OperationPeople_f2"] }}
                                 {% endif %}
                             {% endif %}
                             {% if '83' == flag %}
-                                {{ OperationPeople_f2 }}
+                                {{ dir[0]["OperationPeople_f2"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ OperationPeople_f2 }}
+                                {{ dir[0]["OperationPeople_f2"] }}
                             {% endif %}
                         </td>
                         <td class="middle-center" rowspan="2">
                             {% if '82' == flag %}
-                                {{ CheckedPeople_f2 }}
+                                {{ dir[0]["CheckedPeople_f2"] }}
                             {% endif %}
                             {% if '83' == flag %}
-                                {% if None == OperationPeople_f2 or "" == OperationPeople_f2 %}
+                                {% if None == dir[0]["OperationPeople_f2"] or "" == dir[0]["OperationPeople_f2"] %}
                                 {% else %}
-                                    {% if None == CheckedPeople_f2 or "" == CheckedPeople_f2 %}
+                                    {% if None == dir[0]["CheckedPeople_f2"] or "" == dir[0]["CheckedPeople_f2"] %}
                                         <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="48">确认</a>
                                     {% else %}
-                                        {{ CheckedPeople_f2 }}
+                                        {{ dir[0]["CheckedPeople_f2"] }}
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ CheckedPeople_f2 }}
+                                {{ dir[0]["CheckedPeople_f2"] }}
                             {% endif %}
                         </td>
                     </tr>
@@ -3497,35 +3497,35 @@
                     <tr>
                         <td colspan="8" class="middle-center">参数控制</td>
                         <td rowspan="5" class="middle-center">
-                            <input type="hidden" id="overcheckbox" value={{ OperationPeople_f3 }}>
+                            <input type="hidden" id="overcheckbox" value={{ dir[0]["OperationPeople_f3"] }}>
                             {% if '82' == flag %}
-                                {% if None == OperationPeople_f3 or "" == OperationPeople_f3 %}
+                                {% if None == dir[0]["OperationPeople_f3"] or "" == dir[0]["OperationPeople_f3"] %}
                                     <a href="javascript:;" class="btn btn-primary OperationConfirm" name="收膏开始">确认</a>
                                 {% else %}
-                                    {{ OperationPeople_f3 }}
+                                    {{ dir[0]["OperationPeople_f3"] }}
                                 {% endif %}
                             {% endif %}
                             {% if '83' == flag %}
-                                {{ OperationPeople_f3 }}
+                                {{ dir[0]["OperationPeople_f3"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ OperationPeople_f3 }}
+                                {{ dir[0]["OperationPeople_f3"] }}
                             {% endif %}
                         </td>
                         <td rowspan="5" class="middle-center">
-                            <input type="hidden" id="overcheckbox" value={{ OperationPeople_f3 }}>
+                            <input type="hidden" id="overcheckbox" value={{ dir[0]["OperationPeople_f3"] }}>
                             {% if '82' == flag %}
-                                {% if None == OperationPeople_f3 or "" == OperationPeople_f3 %}
+                                {% if None == dir[0]["OperationPeople_f3"] or "" == dir[0]["OperationPeople_f3"] %}
                                     <a href="javascript:;" class="btn btn-primary OperationConfirm" name="收膏开始">确认</a>
                                 {% else %}
-                                    {{ OperationPeople_f3 }}
+                                    {{ dir[0]["OperationPeople_f3"] }}
                                 {% endif %}
                             {% endif %}
                             {% if '83' == flag %}
-                                {{ OperationPeople_f3 }}
+                                {{ dir[0]["OperationPeople_f3"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ OperationPeople_f3 }}
+                                {{ dir[0]["OperationPeople_f3"] }}
                             {% endif %}
                         </td>
                     </tr>
@@ -3562,18 +3562,18 @@
                         <td>QA确认人</td>
                         <td class="middle-center">
                             {% if '82' == flag %}
-                                {{ QAConfirmPeople_f3 }}
+                                {{ dir[0]["QAConfirmPeople_f3"] }}
                             {% endif %}
                             {% if '83' == flag %}
-                                {{ QAConfirmPeople_f3 }}
+                                {{ dir[0]["QAConfirmPeople_f3"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {% if None == OperationPeople_f3 or None == CheckedPeople_f3 or "" == OperationPeople_f3 or "" == CheckedPeople_f3 %}
+                                {% if None == dir[0]["OperationPeople_f3"] or None == dir[0]["CheckedPeople_f3"] or "" == dir[0]["OperationPeople_f3"] or "" == dir[0]["CheckedPeople_f3"] %}
                                 {% else %}
-                                    {% if None == QAConfirmPeople_f3 or "" == QAConfirmPeople_f3 %}
+                                    {% if None == dir[0]["QAConfirmPeople_f3"] or "" == dir[0]["QAConfirmPeople_f3"] %}
                                         <a href="javascript:;" class="btn btn-primary QAConfirm" name="收膏开始">确认</a>
                                     {% else %}
-                                        {{ QAConfirmPeople_f3 }}
+                                        {{ dir[0]["QAConfirmPeople_f3"] }}
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
@@ -3610,35 +3610,35 @@
                         <td><input type="text" class="form-control batchInput" id=""></td>
                         <td rowspan="2" class="middle-center">
                             {% if '82' == flag %}
-                                {% if None == OperationPeople_f4 or "" == OperationPeople_f4 %}
+                                {% if None == dir[0]["OperationPeople_f4"] or "" == dir[0]["OperationPeople_f4"] %}
                                     <a href="javascript:;" class="btn btn-primary OperationConfirm" name="50">确认</a>
                                 {% else %}
-                                    {{ OperationPeople_f4 }}
+                                    {{ dir[0]["OperationPeople_f4"] }}
                                 {% endif %}
                             {% endif %}
                             {% if '83' == flag %}
-                                {{ OperationPeople_f4 }}
+                                {{ dir[0]["OperationPeople_f4"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ OperationPeople_f4 }}
+                                {{ dir[0]["OperationPeople_f4"] }}
                             {% endif %}
                         </td>
                         <td rowspan="2" class="middle-center">
                             {% if '82' == flag %}
-                                {{ CheckedPeople_f4 }}
+                                {{ dir[0]["CheckedPeople_f4"] }}
                             {% endif %}
                             {% if '83' == flag %}
-                                {% if None == OperationPeople_f4 or "" == OperationPeople_f4 %}
+                                {% if None == dir[0]["OperationPeople_f4"] or "" == dir[0]["OperationPeople_f4"] %}
                                 {% else %}
-                                    {% if None == CheckedPeople_f4 or "" == CheckedPeople_f4 %}
+                                    {% if None == dir[0]["CheckedPeople_f4"] or "" == dir[0]["CheckedPeople_f4"] %}
                                         <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="50">确认</a>
                                     {% else %}
-                                        {{ CheckedPeople_f4 }}
+                                        {{ dir[0]["CheckedPeople_f4"] }}
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ CheckedPeople_f4 }}
+                                {{ dir[0]["CheckedPeople_f4"] }}
                             {% endif %}
                         </td>
                     </tr>
@@ -3676,37 +3676,37 @@
                             <label class="checkbox-inline"><input type="checkbox" name="overcheckbox"> 是 / 否</label>
                         </td>
                         <td rowspan="4" class="middle-center">
-                            <input type="hidden" id="overcheckbox" value={{ OperationPeople_f5 }}>
+                            <input type="hidden" id="overcheckbox" value={{ dir[0]["OperationPeople_f5"] }}>
                             {% if '82' == flag %}
-                                {% if None == OperationPeople_f5 or "" == OperationPeople_f5 %}
+                                {% if None == dir[0]["OperationPeople_f5"] or "" == dir[0]["OperationPeople_f5"] %}
                                     <a href="javascript:;" class="btn btn-primary OperationConfirm" name="收膏结束清场">确认</a>
                                 {% else %}
-                                    {{ OperationPeople_f5 }}
+                                    {{ dir[0]["OperationPeople_f5"] }}
                                 {% endif %}
                             {% endif %}
                             {% if '83' == flag %}
-                                {{ OperationPeople_f5 }}
+                                {{ dir[0]["OperationPeople_f5"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ OperationPeople_f5 }}
+                                {{ dir[0]["OperationPeople_f5"] }}
                             {% endif %}
                         </td>
                         <td rowspan="4" class="middle-center">
                             {% if '82' == flag %}
-                                {{ CheckedPeople_f5 }}
+                                {{ dir[0]["CheckedPeople_f5"] }}
                             {% endif %}
                             {% if '83' == flag %}
-                                {% if None == OperationPeople_f5 or "" == OperationPeople_f5 %}
+                                {% if None == dir[0]["OperationPeople_f5"] or "" == dir[0]["OperationPeople_f5"] %}
                                 {% else %}
-                                    {% if None == CheckedPeople_f5 or "" == CheckedPeople_f5 %}
+                                    {% if None == dir[0]["CheckedPeople_f5"] or "" == dir[0]["CheckedPeople_f5"] %}
                                         <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="收膏结束清场">确认</a>
                                     {% else %}
-                                        {{ CheckedPeople_f5 }}
+                                        {{ dir[0]["CheckedPeople_f5"] }}
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ CheckedPeople_f5 }}
+                                {{ dir[0]["CheckedPeople_f5"] }}
                             {% endif %}
                         </td>
                     </tr>
@@ -3736,20 +3736,20 @@
                         </td>
                         <td>QA确认人</td>
                         <td class="middle-center">
-                            <input type="hidden" id="QAovercheckbox" value={{ QAConfirmPeople_f5 }}>
+                            <input type="hidden" id="QAovercheckbox" value={{ dir[0]["QAConfirmPeople_f5"] }}>
                             {% if '82' == flag %}
-                                {{ QAConfirmPeople_f5 }}
+                                {{ dir[0]["QAConfirmPeople_f5"] }}
                             {% endif %}
                             {% if '83' == flag %}
-                                {{ QAConfirmPeople_f5 }}
+                                {{ dir[0]["QAConfirmPeople_f5"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {% if None == OperationPeople_f5 or None == CheckedPeople_f5 or "" == OperationPeople_f5 or "" == CheckedPeople_f5 %}
+                                {% if None == dir[0]["OperationPeople_f5"] or None == dir[0]["CheckedPeople_f5"] or "" == dir[0]["OperationPeople_f5"] or "" == dir[0]["CheckedPeople_f5"] %}
                                 {% else %}
-                                    {% if None == QAConfirmPeople_f5 or "" == QAConfirmPeople_f5 %}
+                                    {% if None == dir[0]["QAConfirmPeople_f5"] or "" == dir[0]["QAConfirmPeople_f5"] %}
                                         <a href="javascript:;" class="btn btn-primary QAConfirm" name="收膏结束清场">确认</a>
                                     {% else %}
-                                        {{ QAConfirmPeople_f5 }}
+                                        {{ dir[0]["QAConfirmPeople_f5"] }}
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
@@ -3793,35 +3793,35 @@
                         </td>
                         <td rowspan="2" class="middle-center">
                             {% if '82' == flag %}
-                                {% if None == OperationPeople_f6 or "" == OperationPeople_f6 %}
+                                {% if None == dir[0]["OperationPeople_f6"] or "" == dir[0]["OperationPeople_f6"] %}
                                     <a href="javascript:;" class="btn btn-primary OperationConfirm" name="51">确认</a>
                                 {% else %}
-                                    {{ OperationPeople_f6 }}
+                                    {{ dir[0]["OperationPeople_f6"] }}
                                 {% endif %}
                             {% endif %}
                             {% if '83' == flag %}
-                                {{ OperationPeople_f6 }}
+                                {{ dir[0]["OperationPeople_f6"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ OperationPeople_f6 }}
+                                {{ dir[0]["OperationPeople_f6"] }}
                             {% endif %}
                         </td>
                         <td rowspan="2" class="middle-center">
                             {% if '82' == flag %}
-                                {{ CheckedPeople_f6 }}
+                                {{ dir[0]["CheckedPeople_f6"] }}
                             {% endif %}
                             {% if '83' == flag %}
-                                {% if None == OperationPeople_f6 or "" == OperationPeople_f6 %}
+                                {% if None == dir[0]["OperationPeople_f6"] or "" == dir[0]["OperationPeople_f6"] %}
                                 {% else %}
-                                    {% if None == CheckedPeople_f6 or "" == CheckedPeople_f6 %}
+                                    {% if None == dir[0]["CheckedPeople_f6"] or "" == dir[0]["CheckedPeople_f6"] %}
                                         <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="51">确认</a>
                                     {% else %}
-                                        {{ CheckedPeople_f6 }}
+                                        {{ dir[0]["CheckedPeople_f6"] }}
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ CheckedPeople_f6 }}
+                                {{ dir[0]["CheckedPeople_f6"] }}
                             {% endif %}
                         </td>
                     </tr>
