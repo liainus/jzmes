@@ -167,7 +167,7 @@
                 var text = $(this).html()
                 var rows = $("#tab").datagrid('getSelections');
                 if(rows.length == 1){
-                    addTab("健胃消食片批记录（" + text +"）","/electronicBatchRecord?title=" + text + "&ID=" + rows[0].ID)
+                    addTab("肿节风浸膏批记录（" + text +"）","/electronicBatchRecord?title=" + text + "&ID=" + rows[0].ID)
                 }else{
                     $.messager.alert('提示', "请选择计划", 'info');
                 }
