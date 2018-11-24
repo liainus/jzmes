@@ -1,5 +1,4 @@
 # coding:utf8
-import datetime
 import decimal
 import json
 import os
@@ -8,6 +7,7 @@ import string
 from io import StringIO
 import time
 from collections import Counter
+import datetime
 
 import redis
 import xlwt
@@ -5451,7 +5451,7 @@ def planmanagerProgressTuSearch():
                     dic['cc'] = queryFlow(ID, cc)
                     c1 = '（浓缩段）生产前准备（QA签名）'
                     dic['c1'] = queryFlow(ID, c1)
-                    c2 = '浓缩开始，操作按SOP执行（QA签名）'
+                    c2 = '浓缩开始，操作按SOP执行（复核人）'
                     dic['c2'] = queryFlow(ID, c2)
                     c3 = '浓缩结束清场（QA签名）'
                     dic['c3'] = queryFlow(ID, c3)
@@ -5494,7 +5494,7 @@ def planmanagerProgressTuSearch():
                     dic['cc'] = queryFlow(ID, cc)
                     c1 = '（浓缩段）生产前准备（QA签名）'
                     dic['c1'] = queryFlow(ID, c1)
-                    c2 = '浓缩开始，操作按SOP执行（QA签名）'
+                    c2 = '浓缩开始，操作按SOP执行（复核人）'
                     dic['c2'] = queryFlow(ID, c2)
                     c3 = '浓缩结束清场（QA签名）'
                     dic['c3'] = queryFlow(ID, c3)
@@ -5510,7 +5510,7 @@ def planmanagerProgressTuSearch():
                     dic['gg'] = queryFlow(ID, gg)
                     g1 = '（单效浓缩段）生产前准备（QA签名）'
                     dic['g1'] = queryFlow(ID, g1)
-                    g2 = '单效浓缩开始，操作按SOP执行（QA签名）'
+                    g2 = '单效浓缩开始，操作按SOP执行（复核人）'
                     dic['g2'] = queryFlow(ID, g2)
                     g3 = '单效浓缩结束，按SOP清场（QA签名）'
                     dic['g3'] = queryFlow(ID, g3)
@@ -6017,23 +6017,23 @@ def electronicBatchRecord():
                         if nc.CheckedPeople == None:
                             dic["CheckedPeople_f6"] = ""
             for no in Noclas:
-                if (no.name == "（单效浓缩段）生产前准备（操作人）"):
+                if (no.name == "（收膏段）生产前准备（操作人）"):
                     dic["OperationPeople_f1"] = no.oddUser
-                elif (no.name == "（单效浓缩段）生产前准备（复核人）"):
+                elif (no.name == "（收膏段）生产前准备（复核人）"):
                     dic["CheckedPeople_f1"] = no.oddUser
-                elif (no.name == "（单效浓缩段）生产前准备（QA签名）"):
+                elif (no.name == "（收膏段）生产前准备（QA签名）"):
                     dic["QAConfirmPeople_f1"] = no.oddUser
-                elif (no.name == "单效浓缩开始，操作按SOP执行（操作人）"):
+                elif (no.name == "收膏开始，操作按SOP执行（操作人）"):
                     dic["OperationPeople_f3"] = no.oddUser
-                elif (no.name == "单效浓缩开始，操作按SOP执行（复核人）"):
+                elif (no.name == "收膏开始，操作按SOP执行（复核人）"):
                     dic["CheckedPeople_f3"] = no.oddUser
-                elif (no.name == "单效浓缩开始，操作按SOP执行（QA签名）"):
+                elif (no.name == "收膏开始，操作按SOP执行（QA签名）"):
                     dic["QAConfirmPeople_f3"] = no.oddUser
-                elif (no.name == "单效浓缩结束，按SOP清场（操作人）"):
+                elif (no.name == "收膏结束，按SOP清场（操作人）"):
                     dic["OperationPeople_f5"] = no.oddUser
-                elif (no.name == "单效浓缩结束，按SOP清场（复核人）"):
+                elif (no.name == "收膏结束，按SOP清场（复核人）"):
                     dic["CheckedPeople_f5"] = no.oddUser
-                elif (no.name == "单效浓缩结束，按SOP清场（QA签名）"):
+                elif (no.name == "收膏结束，按SOP清场（QA签名）"):
                     dic["QAConfirmPeople_f5"] = no.oddUser
         RoleNames = db_session.query(User.RoleName).filter(User.Name == current_user.Name).all()
         flag = ""
