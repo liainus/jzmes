@@ -5115,7 +5115,16 @@ def checkedConfirm():
                     elif (PUName == "单效浓缩开始"):
                         statusName = '单效浓缩开始，操作按SOP执行（操作人）'
                         name = '单效浓缩开始，操作按SOP执行（复核人）'
-                        return checkflow(ID, statusName, name)
+                        re = checkflow(ID, statusName, name)
+                        if re == 'OK':
+                            node = db_session.query(Model.node.NodeCollection).filter(
+                                Model.node.NodeCollection.oddNum == ID,
+                                Model.node.NodeCollection.name == '浓缩开始，操作按SOP执行（QA签名）').first()
+                            node.status = Model.node.NodeStatus.PASSED.value
+                            node.opertionTime = datetime.datetime.now()
+                            node.oddUser = current_user.Name
+                            db_session.commit()
+                        return 'OK'
                     elif (PUName == "单效浓缩结束清场"):
                         statusName = '单效浓缩结束，按SOP清场（操作人）'
                         name = '单效浓缩结束，按SOP清场（复核人）'
@@ -5544,6 +5553,19 @@ def electronicBatchRecord():
         dic = {}
         dir = []
         if(title == "备料"):
+            dic["OperationPeople_a1"] = ""
+            dic["CheckedPeople_a1"] = ""
+            dic["QAConfirmPeople_a1"] = ""
+            dic["OperationPeople_a2"] = ""
+            dic["CheckedPeople_a2"] = ""
+            dic["OperationPeople_a3"] = ""
+            dic["CheckedPeople_a3"] = ""
+            dic["QAConfirmPeople_a3"] = ""
+            dic["OperationPeople_a4"] = ""
+            dic["CheckedPeople_a4"] = ""
+            dic["QAConfirmPeople_a4"] = ""
+            dic["OperationPeople_a5"] = ""
+            dic["CheckedPeople_a5"] = ""
             re = electronicBatchRecords("备料段", oclass.BrandID, oclass.BatchID, ID)
             Pclass = re[0]
             Zclass = re[1]
@@ -5580,6 +5602,22 @@ def electronicBatchRecord():
                 if re[2].CheckedPeople == None:
                     dic["CheckedPeople_a5"] = ""
         elif(title == "煎煮"):
+            dic["OperationPeople_b1"] = ""
+            dic["CheckedPeople_b1"] = ""
+            dic["QAConfirmPeople_b1"] = ""
+            dic["OperationPeople_b2"] = ""
+            dic["CheckedPeople_b2"] = ""
+            dic["QAConfirmPeople_b2"] = ""
+            dic["OperationPeople_b3"] = ""
+            dic["CheckedPeople_b3"] = ""
+            dic["QAConfirmPeople_b3"] = ""
+            dic["OperationPeople_b4"] = ""
+            dic["CheckedPeople_b4"] = ""
+            dic["QAConfirmPeople_b4"] = ""
+            dic["OperationPeople_b5"] = ""
+            dic["CheckedPeople_b5"] = ""
+            dic["OperationPeople_b6"] = ""
+            dic["CheckedPeople_b6"] = ""
             re = electronicBatchRecords("煎煮段", oclass.BrandID, oclass.BatchID, ID)
             Pclass = re[0]
             Zclass = re[1]
@@ -5625,6 +5663,26 @@ def electronicBatchRecord():
                 if re[2].CheckedPeople == None:
                     dic["CheckedPeople_b6"] = ""
         elif (title == "浓缩"):
+            dic["OperationPeople_c1"] = ""
+            dic["CheckedPeople_c1"] = ""
+            dic["QAConfirmPeople_c1"] = ""
+            dic["OperationPeople_c2"] = ""
+            dic["CheckedPeople_c2"] = ""
+            dic["QAConfirmPeople_c2"] = ""
+            dic["OperationPeople_c3"] = ""
+            dic["CheckedPeople_c3"] = ""
+            dic["QAConfirmPeople_c3"] = ""
+            dic["OperationPeople_c4"] = ""
+            dic["CheckedPeople_c4"] = ""
+            dic["QAConfirmPeople_c4"] = ""
+            dic["OperationPeople_c5"] = ""
+            dic["CheckedPeople_c5"] = ""
+            dic["OperationPeople_c6"] = ""
+            dic["CheckedPeople_c6"] = ""
+            dic["QAConfirmPeople_c6"] = ""
+            dic["OperationPeople_c7"] = ""
+            dic["CheckedPeople_c7"] = ""
+            dic["QAConfirmPeople_c7"] = ""
             re = electronicBatchRecords("浓缩段", oclass.BrandID, oclass.BatchID, ID)
             Pclass = re[0]
             Zclass = re[1]
@@ -5677,6 +5735,18 @@ def electronicBatchRecord():
                 if re[2].CheckedPeople == None:
                     dic["CheckedPeople_c7"] = ""
         elif (title == "喷雾干燥"):
+            dic["OperationPeople_d1"] = ""
+            dic["CheckedPeople_d1"] = ""
+            dic["QAConfirmPeople_d1"] = ""
+            dic["OperationPeople_d2"] = ""
+            dic["CheckedPeople_d2"] = ""
+            dic["QAConfirmPeople_d2"] = ""
+            dic["OperationPeople_d3"] = ""
+            dic["CheckedPeople_d3"] = ""
+            dic["QAConfirmPeople_d3"] = ""
+            dic["OperationPeople_d4"] = ""
+            dic["CheckedPeople_d4"] = ""
+            dic["QAConfirmPeople_d4"] = ""
             re = electronicBatchRecords("喷雾干燥段", oclass.BrandID, oclass.BatchID, ID)
             Pclass = re[0]
             Zclass = re[1]
@@ -5706,6 +5776,29 @@ def electronicBatchRecord():
                 elif (no.name == "喷雾干燥结束，按SOP清场（QA签名）"):
                     dic["QAConfirmPeople_d3"] = no.oddUser
         elif (title == "收粉"):
+            dic["OperationPeople_e1"] = ""
+            dic["CheckedPeople_e1"] = ""
+            dic["QAConfirmPeople_e1"] = ""
+            dic["OperationPeople_e2"] = ""
+            dic["CheckedPeople_e2"] = ""
+            dic["QAConfirmPeople_e2"] = ""
+            dic["OperationPeople_e3"] = ""
+            dic["CheckedPeople_e3"] = ""
+            dic["QAConfirmPeople_e3"] = ""
+            dic["OperationPeople_e4"] = ""
+            dic["CheckedPeople_e4"] = ""
+            dic["QAConfirmPeople_e4"] = ""
+            dic["OperationPeople_e5"] = ""
+            dic["CheckedPeople_e5"] = ""
+            dic["OperationPeople_e6"] = ""
+            dic["CheckedPeople_e6"] = ""
+            dic["QAConfirmPeople_e6"] = ""
+            dic["OperationPeople_e7"] = ""
+            dic["CheckedPeople_e7"] = ""
+            dic["QAConfirmPeople_e7"] = ""
+            dic["OperationPeople_e8"] = ""
+            dic["CheckedPeople_e8"] = ""
+            dic["QAConfirmPeople_e8"] = ""
             re = electronicBatchRecords("收粉段", oclass.BrandID, oclass.BatchID, ID)
             Pclass = re[0]
             Zclass = re[1]
@@ -5743,7 +5836,7 @@ def electronicBatchRecord():
                         dic["CheckedPeople_e2"] = nc.CheckedPeople
                         if nc.CheckedPeople == None:
                             dic["CheckedPeople_e2"] = ""
-                            dic["QAConfirmPeople_e2"] = nc.QAConfirmPeople
+                        dic["QAConfirmPeople_e2"] = nc.QAConfirmPeople
                         if nc.QAConfirmPeople == None:
                             dic["QAConfirmPeople_e2"] = ""
                     elif(nc.Type == "50"):
@@ -5759,42 +5852,189 @@ def electronicBatchRecord():
                     elif (nc.Type == "52"):
                         dic["QAConfirmPeople_e4"] = nc.QAConfirmPeople
         elif (title == "醇沉"):
+            dic["OperationPeople_d1"] = ""
+            dic["CheckedPeople_d1"] = ""
+            dic["QAConfirmPeople_d1"] = ""
+            dic["OperationPeople_d2"] = ""
+            dic["CheckedPeople_d2"] = ""
+            dic["QAConfirmPeople_d2"] = ""
+            dic["OperationPeople_d3"] = ""
+            dic["CheckedPeople_d3"] = ""
+            dic["QAConfirmPeople_d3"] = ""
+            dic["OperationPeople_d4"] = ""
+            dic["CheckedPeople_d4"] = ""
+            dic["QAConfirmPeople_d4"] = ""
+            dic["OperationPeople_d5"] = ""
+            dic["CheckedPeople_d5"] = ""
             re = electronicBatchRecords("醇沉段", oclass.BrandID, oclass.BatchID,ID)
             Pclass = re[0]
             Zclass = re[1]
+            Newoclasss = db_session.query(NewReadyWork).filter(NewReadyWork.PUID == Pclass.PUID, NewReadyWork.BatchID ==
+                                                               oclass.BatchID,
+                                                               NewReadyWork.Type == "55").first()
+            if Newoclasss != None:
+                dic["OperationPeople_d2"] = Newoclasss.OperationPeople
+                dic["CheckedPeople_d2"] = Newoclasss.CheckedPeople
+                if Newoclasss.CheckedPeople == None:
+                    dic["CheckedPeople_d2"] = ""
+
             if (re[2] != None):
-                OperationPeople_d4 = re[2].OperationPeople
-                CheckedPeople_d4 = re[2].CheckedPeople
-                if CheckedPeople_d4 == None:
-                    CheckedPeople_d4 = ""
+                dic["OperationPeople_d5"] = re[2].OperationPeople
+                dic["CheckedPeople_d5"] = re[2].CheckedPeople
+                if re[2].CheckedPeople == None:
+                    dic["CheckedPeople_d5"] = ""
             Noclas = re[3]
             for no in Noclas:
                 if (no.name == "（醇沉段）生产前准备（操作人）"):
-                    OperationPeople_d1 = no.oddUser
+                    dic["OperationPeople_d1"] = no.oddUser
                 elif (no.name == "（醇沉段）生产前准备（复核人）"):
-                    CheckedPeople_d1 = no.oddUser
+                    dic["CheckedPeople_d1"] = no.oddUser
                 elif (no.name == "（醇沉段）生产前准备（QA签名）"):
-                    QAConfirmPeople_d1 = no.oddUser
+                    dic["QAConfirmPeople_d1"] = no.oddUser
                 elif (no.name == "醇沉开始，操作按SOP执行（操作人）"):
-                    OperationPeople_d2 = no.oddUser
+                    dic["OperationPeople_d3"] = no.oddUser
                 elif (no.name == "醇沉开始，操作按SOP执行（复核人）"):
-                    CheckedPeople_d2 = no.oddUser
+                    dic["CheckedPeople_d3"] = no.oddUser
                 elif (no.name == "醇沉开始，操作按SOP执行（QA签名）"):
-                    QAConfirmPeople_d2 = no.oddUser
+                    dic["QAConfirmPeople_d3"] = no.oddUser
                 elif (no.name == "醇沉结束，按SOP清场（操作人）"):
-                    OperationPeople_d3 = no.oddUser
+                    dic["OperationPeople_d4"] = no.oddUser
                 elif (no.name == "醇沉结束，按SOP清场（复核人）"):
-                    CheckedPeople_d3 = no.oddUser
+                    dic["CheckedPeople_d4"] = no.oddUser
                 elif (no.name == "醇沉结束，按SOP清场（QA签名）"):
-                    QAConfirmPeople_d3 = no.oddUser
+                    dic["QAConfirmPeople_d4"] = no.oddUser
         elif (title == "单效浓缩"):
+            dic["OperationPeople_e1"] = ""
+            dic["CheckedPeople_e1"] = ""
+            dic["QAConfirmPeople_e1"] = ""
+            dic["OperationPeople_e2"] = ""
+            dic["CheckedPeople_e2"] = ""
+            dic["QAConfirmPeople_e2"] = ""
+            dic["OperationPeople_e3"] = ""
+            dic["CheckedPeople_e3"] = ""
+            dic["QAConfirmPeople_e3"] = ""
+            dic["OperationPeople_e4"] = ""
+            dic["CheckedPeople_e4"] = ""
+            dic["QAConfirmPeople_e4"] = ""
+            dic["OperationPeople_e5"] = ""
+            dic["CheckedPeople_e5"] = ""
+            dic["OperationPeople_e6"] = ""
+            dic["CheckedPeople_e6"] = ""
+            dic["QAConfirmPeople_e6"] = ""
+            dic["OperationPeople_e7"] = ""
+            dic["CheckedPeople_e7"] = ""
+            dic["QAConfirmPeople_e7"] = ""
             re = electronicBatchRecords("单效浓缩段", oclass.BrandID, oclass.BatchID,ID)
             Pclass = re[0]
             Zclass = re[1]
+            Noclas = re[3]
+            for no in Noclas:
+                if (no.name == "（单效浓缩段）生产前准备（操作人）"):
+                    dic["OperationPeople_e1"] = no.oddUser
+                elif (no.name == "（单效浓缩段）生产前准备（复核人）"):
+                    dic["CheckedPeople_e1"] = no.oddUser
+                elif (no.name == "（单效浓缩段）生产前准备（QA签名）"):
+                    dic["QAConfirmPeople_e1"] = no.oddUser
+                elif (no.name == "单效浓缩开始，操作按SOP执行（操作人）"):
+                    dic["OperationPeople_e2"] = no.oddUser
+                elif (no.name == "单效浓缩开始，操作按SOP执行（复核人）"):
+                    dic["CheckedPeople_e2"] = no.oddUser
+                elif (no.name == "单效浓缩开始，操作按SOP执行（QA签名）"):
+                    dic["QAConfirmPeople_e2"] = no.oddUser
+                elif (no.name == "单效浓缩结束，按SOP清场（操作人）"):
+                    dic["OperationPeople_e6"] = no.oddUser
+                elif (no.name == "单效浓缩结束，按SOP清场（复核人）"):
+                    dic["CheckedPeople_e6"] = no.oddUser
+                elif (no.name == "单效浓缩结束，按SOP清场（QA签名）"):
+                    dic["QAConfirmPeople_e6"] = no.oddUser
+            if (re[2] != None):
+                dic["OperationPeople_e7"] = re[2].OperationPeople
+                dic["CheckedPeople_e7"] = re[2].CheckedPeople
+                if re[2].CheckedPeople == None:
+                    dic["CheckedPeople_e7"] = ""
+            Newoclasss = db_session.query(NewReadyWork).filter(NewReadyWork.PUID == Pclass.PUID, NewReadyWork.BatchID ==
+                                                               oclass.BatchID,
+                                                               NewReadyWork.Type.in_(("56", "57", "58"))).all()
+            if (len(Newoclasss) > 0):
+                for nc in Newoclasss:
+                    if (nc.Type == "56"):
+                        dic["OperationPeople_e3"] = nc.OperationPeople
+                        dic["CheckedPeople_e3"] = nc.CheckedPeople
+                        if nc.CheckedPeople == None:
+                            dic["CheckedPeople_e3"] = ""
+                    elif (nc.Type == "57"):
+                        dic["OperationPeople_e4"] = nc.OperationPeople
+                        dic["CheckedPeople_e4"] = nc.CheckedPeople
+                        if nc.CheckedPeople == None:
+                            dic["CheckedPeople_e4"] = ""
+                        dic["QAConfirmPeople_e4"] = nc.QAConfirmPeople
+                        if nc.QAConfirmPeople == None:
+                            dic["QAConfirmPeople_e4"] = ""
+                    elif (nc.Type == "58"):
+                        dic["QAConfirmPeople_e5"] = nc.QAConfirmPeople
+                        if nc.QAConfirmPeople == None:
+                            dic["QAConfirmPeople_e5"] = ""
         elif (title == "收膏"):
+            dic["OperationPeople_f1"] = ""
+            dic["CheckedPeople_f1"] = ""
+            dic["QAConfirmPeople_f1"] = ""
+            dic["OperationPeople_f2"] = ""
+            dic["CheckedPeople_f2"] = ""
+            dic["QAConfirmPeople_f2"] = ""
+            dic["OperationPeople_f3"] = ""
+            dic["CheckedPeople_f3"] = ""
+            dic["QAConfirmPeople_f3"] = ""
+            dic["OperationPeople_f4"] = ""
+            dic["CheckedPeople_f4"] = ""
+            dic["QAConfirmPeople_f4"] = ""
+            dic["OperationPeople_f5"] = ""
+            dic["CheckedPeople_f5"] = ""
+            dic["OperationPeople_f6"] = ""
+            dic["CheckedPeople_f6"] = ""
+            dic["QAConfirmPeople_f6"] = ""
             re = electronicBatchRecords("收膏段", oclass.BrandID, oclass.BatchID,ID)
             Pclass = re[0]
             Zclass = re[1]
+            Noclas = re[3]
+            Newoclasss = db_session.query(NewReadyWork).filter(NewReadyWork.PUID == Pclass.PUID, NewReadyWork.BatchID ==
+                                                               oclass.BatchID,
+                                                               NewReadyWork.Type.in_(("59", "60", "61"))).all()
+            if (len(Newoclasss) > 0):
+                for nc in Newoclasss:
+                    if (nc.Type == "59"):
+                        dic["OperationPeople_f2"] = nc.OperationPeople
+                        dic["CheckedPeople_f2"] = nc.CheckedPeople
+                        if nc.CheckedPeople == None:
+                            dic["CheckedPeople_f2"] = ""
+                    elif (nc.Type == "60"):
+                        dic["OperationPeople_f4"] = nc.OperationPeople
+                        dic["CheckedPeople_f4"] = nc.CheckedPeople
+                        if nc.CheckedPeople == None:
+                            dic["CheckedPeople_f4"] = ""
+                    elif (nc.Type == "61"):
+                        dic["OperationPeople_f6"] = nc.OperationPeople
+                        dic["CheckedPeople_f6"] = nc.CheckedPeople
+                        if nc.CheckedPeople == None:
+                            dic["CheckedPeople_f6"] = ""
+            for no in Noclas:
+                if (no.name == "（单效浓缩段）生产前准备（操作人）"):
+                    dic["OperationPeople_f1"] = no.oddUser
+                elif (no.name == "（单效浓缩段）生产前准备（复核人）"):
+                    dic["CheckedPeople_f1"] = no.oddUser
+                elif (no.name == "（单效浓缩段）生产前准备（QA签名）"):
+                    dic["QAConfirmPeople_f1"] = no.oddUser
+                elif (no.name == "单效浓缩开始，操作按SOP执行（操作人）"):
+                    dic["OperationPeople_f3"] = no.oddUser
+                elif (no.name == "单效浓缩开始，操作按SOP执行（复核人）"):
+                    dic["CheckedPeople_f3"] = no.oddUser
+                elif (no.name == "单效浓缩开始，操作按SOP执行（QA签名）"):
+                    dic["QAConfirmPeople_f3"] = no.oddUser
+                elif (no.name == "单效浓缩结束，按SOP清场（操作人）"):
+                    dic["OperationPeople_f5"] = no.oddUser
+                elif (no.name == "单效浓缩结束，按SOP清场（复核人）"):
+                    dic["CheckedPeople_f5"] = no.oddUser
+                elif (no.name == "单效浓缩结束，按SOP清场（QA签名）"):
+                    dic["QAConfirmPeople_f5"] = no.oddUser
         RoleNames = db_session.query(User.RoleName).filter(User.Name == current_user.Name).all()
         flag = ""
         for rN in RoleNames:
@@ -5815,7 +6055,7 @@ def electronicBatchRecord():
         elif(oclass.BrandID == 2):
             return render_template('electronicBatchRecordcaoshanhu.html',
                                    PName=Pclass.PDUnitRouteName, PUID=Pclass.PUID, BatchID=oclass.BatchID,
-                                   PlanQuantity=oclass.PlanQuantity, flag=flag, dir=dir.append(dic))
+                                   PlanQuantity=oclass.PlanQuantity, flag=flag, dir=dir)
 def electronicBatchRecords(name,BrandID,BatchID,ID):
     Pclass = db_session.query(ProductUnitRoute).filter(ProductUnitRoute.PDUnitRouteName == name,
                                                        ProductUnitRoute.ProductRuleID == BrandID).first()
