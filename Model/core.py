@@ -3787,9 +3787,6 @@ class MaterialInfo(Base):
     DeviceCode = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
     BatchCode = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
-all = session.query(MaterialInfo).all()
-print(all)
-
 # 生成表单的执行语句
 Base.metadata.create_all(engine)
 

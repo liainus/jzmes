@@ -5549,7 +5549,6 @@ def electronicBatchRecord():
             Zclass = re[1]
             Noclas = re[3]
             for no in Noclas:
-                print(no.name)
                 if(no.name == "（备料段）生产前准备（操作人）"):
                     dic["OperationPeople_a1"] = no.oddUser
                 elif(no.name == "（备料段）生产前准备（复核人）"):
@@ -5808,14 +5807,15 @@ def electronicBatchRecord():
                     flag = "83"
                 elif(menu[0] == "QA确认"):
                     flag = "84"
-    if(oclass.BrandID == 1):
-        return render_template('electronicBatchRecord.html',
-                               PName=Pclass.PDUnitRouteName,PUID=Pclass.PUID,BatchID=oclass.BatchID,PlanQuantity=oclass.PlanQuantity,
-                               flag=flag,dir=dir)
-    elif(oclass.BrandID == 2):
-        return render_template('electronicBatchRecordcaoshanhu.html',
-                               PName=Pclass.PDUnitRouteName, PUID=Pclass.PUID, BatchID=oclass.BatchID,
-                               PlanQuantity=oclass.PlanQuantity, flag=flag, dir=dir)
+        dir.append(dic)
+        if(oclass.BrandID == 1):
+            return render_template('electronicBatchRecord.html',
+                                   PName=Pclass.PDUnitRouteName,PUID=Pclass.PUID,BatchID=oclass.BatchID,PlanQuantity=oclass.PlanQuantity,
+                                   flag=flag,dir=dir)
+        elif(oclass.BrandID == 2):
+            return render_template('electronicBatchRecordcaoshanhu.html',
+                                   PName=Pclass.PDUnitRouteName, PUID=Pclass.PUID, BatchID=oclass.BatchID,
+                                   PlanQuantity=oclass.PlanQuantity, flag=flag, dir=dir.append(dic))
 def electronicBatchRecords(name,BrandID,BatchID,ID):
     Pclass = db_session.query(ProductUnitRoute).filter(ProductUnitRoute.PDUnitRouteName == name,
                                                        ProductUnitRoute.ProductRuleID == BrandID).first()
