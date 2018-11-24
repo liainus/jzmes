@@ -4872,6 +4872,13 @@ def operateConfirm():
                     PName = '备料段'
                     if(PUName == "生产前的准备"):
                         name = '（备料段）生产前准备（操作人）'
+                        node = db_session.query(Model.node.NodeCollection).filter(
+                            Model.node.NodeCollection.oddNum == ID,
+                            Model.node.NodeCollection.name == '（备料段）任务确认').first()
+                        node.status = Model.node.NodeStatus.PASSED.value
+                        node.opertionTime = datetime.datetime.now()
+                        node.oddUser = current_user.Name
+                        db_session.commit()
                         return operateflow(ID, name, PName)
                     elif(PUName == "备料开始"):
                         name = '备料操作按SOP执行（操作人）'
@@ -4919,6 +4926,13 @@ def operateConfirm():
                     PName = '收粉段'
                     if (PUName == "生产前的准备"):
                         name = '（收粉段）生产前准备（操作人）'
+                        node = db_session.query(Model.node.NodeCollection).filter(
+                            Model.node.NodeCollection.oddNum == ID,
+                            Model.node.NodeCollection.name == '（收粉段）任务确认').first()
+                        node.status = Model.node.NodeStatus.PASSED.value
+                        node.opertionTime = datetime.datetime.now()
+                        node.oddUser = current_user.Name
+                        db_session.commit()
                         return operateflow(ID, name, PName)
                     elif (PUName == "收粉开始"):
                         name = '收粉开始，操作按SOP执行（操作人）'
@@ -4970,7 +4984,7 @@ def operateflow(ID, name, PName):
         PUID = db_session.query(ProductUnitRoute.PUID).filter(ProductUnitRoute.PDUnitRouteName == PName).first()
         taskStatuss = db_session.query(ZYTask.TaskStatus).filter(ZYTask.PUID == PUID[0], ZYTask.BatchID == BatchID[0]).all()
         for status in taskStatuss:
-            if(status[0] != "40"):
+            if(status[0] == Model.Global.TASKSTATUS.NEW.value):
                 return "请先进行任务确认，再进行操作！"
             else:
                 pass
@@ -5040,7 +5054,16 @@ def checkedConfirm():
                     elif (PUName == "浓缩开始"):
                         statusName = '浓缩开始，操作按SOP执行（操作人）'
                         name = '浓缩开始，操作按SOP执行（复核人）'
-                        return checkflow(ID, statusName, name)
+                        re = checkflow(ID, statusName, name)
+                        if re == 'OK':
+                            node = db_session.query(Model.node.NodeCollection).filter(
+                                Model.node.NodeCollection.oddNum == ID,
+                                Model.node.NodeCollection.name == '浓缩开始，操作按SOP执行（QA签名）').first()
+                            node.status = Model.node.NodeStatus.PASSED.value
+                            node.opertionTime = datetime.datetime.now()
+                            node.oddUser = current_user.Name
+                            db_session.commit()
+                        return 'OK'
                     elif (PUName == "浓缩结束清场"):
                         statusName = '浓缩结束清场（操作人）'
                         name = '浓缩结束清场（复核人）'
@@ -5518,121 +5541,45 @@ def electronicBatchRecord():
         session['title'] = title
         ID = data["ID"]
         oclass = db_session.query(PlanManager).filter(PlanManager.ID == ID).first()
-        OperationPeople_a1 = ""
-        CheckedPeople_a1 = ""
-        QAConfirmPeople_a1 = ""
-        OperationPeople_a2 = ""
-        CheckedPeople_a2 = ""
-        OperationPeople_a3 = ""
-        CheckedPeople_a3 = ""
-        QAConfirmPeople_a3 = ""
-        OperationPeople_a4 = ""
-        CheckedPeople_a4 = ""
-        QAConfirmPeople_a4 = ""
-        OperationPeople_a5 = ""
-        CheckedPeople_a5 = ""
-
-        OperationPeople_b1 = ""
-        CheckedPeople_b1 = ""
-        QAConfirmPeople_b1 = ""
-        OperationPeople_b2 = ""
-        CheckedPeople_b2 = ""
-        QAConfirmPeople_b2 = ""
-        OperationPeople_b3 = ""
-        CheckedPeople_b3 = ""
-        QAConfirmPeople_b3 = ""
-        OperationPeople_b4 = ""
-        CheckedPeople_b4 = ""
-        QAConfirmPeople_b4 = ""
-        OperationPeople_b5 = ""
-        CheckedPeople_b5 = ""
-        QAConfirmPeople_b5 = ""
-        OperationPeople_b6 = ""
-        CheckedPeople_b6 = ""
-
-        OperationPeople_c1 = ""
-        CheckedPeople_c1 = ""
-        QAConfirmPeople_c1 = ""
-        OperationPeople_c2 = ""
-        CheckedPeople_c2 = ""
-        QAConfirmPeople_c2 = ""
-        OperationPeople_c3 = ""
-        CheckedPeople_c3 = ""
-        QAConfirmPeople_c3 = ""
-        OperationPeople_c4 = ""
-        CheckedPeople_c4 = ""
-        QAConfirmPeople_c4 = ""
-        OperationPeople_c5 = ""
-        CheckedPeople_c5 = ""
-        QAConfirmPeople_c5 = ""
-        OperationPeople_c6 = ""
-        CheckedPeople_c6 = ""
-        QAConfirmPeople_c6 = ""
-        OperationPeople_c7 = ""
-        CheckedPeople_c7 = ""
-
-        OperationPeople_d1 = ""
-        CheckedPeople_d1 = ""
-        QAConfirmPeople_d1 = ""
-        OperationPeople_d2 = ""
-        CheckedPeople_d2 = ""
-        OperationPeople_d3 = ""
-        CheckedPeople_d3 = ""
-        QAConfirmPeople_d3 = ""
-        OperationPeople_d4 = ""
-        CheckedPeople_d4 = ""
-
-        OperationPeople_e1 = ""
-        CheckedPeople_e1 = ""
-        QAConfirmPeople_e1 = ""
-        OperationPeople_e2 = ""
-        CheckedPeople_e2 = ""
-        QAConfirmPeople_e2 = ""
-        OperationPeople_e3 = ""
-        CheckedPeople_e3 = ""
-        QAConfirmPeople_e3 = ""
-        QAConfirmPeople_e4 = ""
-        OperationPeople_e5 = ""
-        CheckedPeople_e5 = ""
-        OperationPeople_e6 = ""
-        CheckedPeople_e6 = ""
-        QAConfirmPeople_e6 = ""
-        OperationPeople_e7 = ""
-        CheckedPeople_e7 = ""
-        OperationPeople_e8 = ""
-        CheckedPeople_e8 = ""
+        dic = {}
+        dir = []
         if(title == "备料"):
             re = electronicBatchRecords("备料段", oclass.BrandID, oclass.BatchID, ID)
             Pclass = re[0]
             Zclass = re[1]
             Noclas = re[3]
             for no in Noclas:
+                print(no.name)
                 if(no.name == "（备料段）生产前准备（操作人）"):
-                    OperationPeople_a1 = no.oddUser
+                    dic["OperationPeople_a1"] = no.oddUser
                 elif(no.name == "（备料段）生产前准备（复核人）"):
-                    CheckedPeople_a1 = no.oddUser
+                    dic["CheckedPeople_a1"] = no.oddUser
                 elif (no.name == "（备料段）生产前准备（QA签名）"):
-                    QAConfirmPeople_a1 = no.oddUser
+                    dic["QAConfirmPeople_a1"] = no.oddUser
                 elif (no.name == "备料操作按SOP执行（操作人）"):
-                    OperationPeople_a3 = no.oddUser
+                    dic["OperationPeople_a3"] = no.oddUser
                 elif (no.name == "备料操作按SOP执行（复核人）"):
-                    CheckedPeople_a3 = no.oddUser
+                    dic["CheckedPeople_a3"] = no.oddUser
                 elif (no.name == "备料操作按SOP执行（QA签名）"):
-                    QAConfirmPeople_a3 = no.oddUser
+                    dic["QAConfirmPeople_a3"] = no.oddUser
                 elif (no.name == "（备料段）生产结束清场（操作人）"):
-                    OperationPeople_a4 = no.oddUser
+                    dic["OperationPeople_a4"] = no.oddUser
                 elif (no.name == "（备料段）生产结束清场（复核人）"):
-                    CheckedPeople_a4 = no.oddUser
+                    dic["CheckedPeople_a4"] = no.oddUser
                 elif (no.name == "（备料段）生产结束清场（QA签名）"):
-                    QAConfirmPeople_a4 = no.oddUser
+                    dic["QAConfirmPeople_a4"] = no.oddUser
             Newoclass = db_session.query(NewReadyWork).filter(NewReadyWork.PUID == Pclass.PUID,NewReadyWork.BatchID ==
                                                             oclass.BatchID,NewReadyWork.Type == "32").first()
             if(Newoclass != None):
-                OperationPeople_a2 = Newoclass.OperationPeople
-                CheckedPeople_a2 = Newoclass.CheckedPeople
+                dic["OperationPeople_a2"] = Newoclass.OperationPeople
+                dic["CheckedPeople_a2"] = Newoclass.CheckedPeople
+                if Newoclass.CheckedPeople == None:
+                    dic["CheckedPeople_a2"] = ""
             if(re[2] != None):
-                OperationPeople_a5 = re[2].OperationPeople
-                CheckedPeople_a5 = re[2].CheckedPeople
+                dic["OperationPeople_a5"] = re[2].OperationPeople
+                dic["CheckedPeople_a5"] = re[2].CheckedPeople
+                if re[2].CheckedPeople == None:
+                    dic["CheckedPeople_a5"] = ""
         elif(title == "煎煮"):
             re = electronicBatchRecords("煎煮段", oclass.BrandID, oclass.BatchID, ID)
             Pclass = re[0]
@@ -5640,38 +5587,44 @@ def electronicBatchRecord():
             Noclas = re[3]
             for no in Noclas:
                 if(no.name == "（煎煮段）生产前准备（操作人）"):
-                    OperationPeople_b1 = no.oddUser
+                    dic["OperationPeople_b1"] = no.oddUser
                 elif(no.name == "（煎煮段）生产前准备（复核人）"):
-                    CheckedPeople_b1 = no.oddUser
+                    dic["CheckedPeople_b1"] = no.oddUser
                 elif (no.name == "（煎煮段）生产前准备（QA签名）"):
-                    QAConfirmPeople_b1 = no.oddUser
+                    dic["QAConfirmPeople_b1"] = no.oddUser
                 elif (no.name == "煎煮开始，操作按SOP执行（操作人）"):
-                    OperationPeople_b2 = no.oddUser
+                    dic["OperationPeople_b2"] = no.oddUser
                 elif (no.name == "煎煮开始，操作按SOP执行（复核人）"):
-                    CheckedPeople_b2 = no.oddUser
+                    dic["CheckedPeople_b2"] = no.oddUser
                 elif (no.name == "煎煮开始，操作按SOP执行（QA签名）"):
-                    QAConfirmPeople_b2 = no.oddUser
+                    dic["QAConfirmPeople_b2"] = no.oddUser
                 elif (no.name == "静置开始，操作按SOP执行（操作人）"):
-                    OperationPeople_b3 = no.oddUser
+                    dic["OperationPeople_b3"] = no.oddUser
                 elif (no.name == "静置开始，操作按SOP执行（复核人）"):
-                    CheckedPeople_b3 = no.oddUser
+                    dic["CheckedPeople_b3"] = no.oddUser
                 elif (no.name == "静置开始，操作按SOP执行（QA签名）"):
-                    QAConfirmPeople_b3 = no.oddUser
+                    dic["QAConfirmPeople_b3"] = no.oddUser
                 elif (no.name == "（煎煮段）生产结束清场（操作人）"):
-                    OperationPeople_b4 = no.oddUser
+                    dic["OperationPeople_b4"] = no.oddUser
                 elif (no.name == "（煎煮段）生产结束清场（复核人）"):
-                    CheckedPeople_b4 = no.oddUser
+                    dic["CheckedPeople_b4"] = no.oddUser
                 elif (no.name == "（煎煮段）生产结束清场（QA签名）"):
-                    QAConfirmPeople_b4 = no.oddUser
+                    dic["QAConfirmPeople_b4"] = no.oddUser
             Newoclass = db_session.query(NewReadyWork).filter(NewReadyWork.PUID == Pclass.PUID, NewReadyWork.BatchID ==
                                                             oclass.BatchID,NewReadyWork.Type == "42").first()
             if(Newoclass != None):
-                OperationPeople_b5 = Newoclass.OperationPeople
-                CheckedPeople_b5 = Newoclass.CheckedPeople
-                QAConfirmPeople_b5 = Newoclass.QAConfirmPeople
+                dic["OperationPeople_b5"] = Newoclass.OperationPeople
+                dic["CheckedPeople_b5"] = Newoclass.CheckedPeople
+                if Newoclass.CheckedPeople == None:
+                    dic["CheckedPeople_b5"] = ""
+                dic["QAConfirmPeople_b5"] = Newoclass.QAConfirmPeople
+                if Newoclass.QAConfirmPeople == None:
+                    dic["QAConfirmPeople_b5"] = ""
             if (re[2] != None):
-                OperationPeople_b6 = re[2].OperationPeople
-                CheckedPeople_b6 = re[2].CheckedPeople
+                dic["OperationPeople_b6"] = re[2].OperationPeople
+                dic["CheckedPeople_b6"] = re[2].CheckedPeople
+                if re[2].CheckedPeople == None:
+                    dic["CheckedPeople_b6"] = ""
         elif (title == "浓缩"):
             re = electronicBatchRecords("浓缩段", oclass.BrandID, oclass.BatchID, ID)
             Pclass = re[0]
@@ -5679,115 +5632,162 @@ def electronicBatchRecord():
             Noclas = re[3]
             for no in Noclas:
                 if (no.name == "（浓缩段）生产前准备（操作人）"):
-                    OperationPeople_c1 = no.oddUser
+                    dic["OperationPeople_c1"] = no.oddUser
                 elif (no.name == "（浓缩段）生产前准备（复核人）"):
-                    CheckedPeople_c1 = no.oddUser
+                    dic["CheckedPeople_c1"] = no.oddUser
                 elif (no.name == "（浓缩段）生产前准备（QA签名）"):
-                    QAConfirmPeople_c1 = no.oddUser
+                    dic["QAConfirmPeople_c1"] = no.oddUser
                 elif (no.name == "浓缩开始，操作按SOP执行（操作人）"):
-                    OperationPeople_c2 = no.oddUser
+                    dic["OperationPeople_c2"] = no.oddUser
                 elif (no.name == "浓缩开始，操作按SOP执行（复核人）"):
-                    CheckedPeople_c2 = no.oddUser
+                    dic["CheckedPeople_c2"] = no.oddUser
                 elif (no.name == "浓缩开始，操作按SOP执行（QA签名）"):
-                    QAConfirmPeople_c2 = no.oddUser
+                    dic["QAConfirmPeople_c2"] = no.oddUser
                 elif (no.name == "浓缩结束清场（操作人）"):
-                    OperationPeople_c6 = no.oddUser
+                    dic["OperationPeople_c6"] = no.oddUser
                 elif (no.name == "浓缩结束清场（复核人）"):
-                    CheckedPeople_c6 = no.oddUser
+                    dic["CheckedPeople_c6"] = no.oddUser
                 elif (no.name == "浓缩结束清场（QA签名）"):
-                    QAConfirmPeople_c6 = no.oddUser
+                    dic["QAConfirmPeople_c6"] = no.oddUser
             Newoclasss = db_session.query(NewReadyWork).filter(NewReadyWork.PUID == Pclass.PUID, NewReadyWork.BatchID ==
                                                                oclass.BatchID,
                                                                NewReadyWork.Type.in_(("45", "46", "54"))).all()
             if (len(Newoclasss) > 0):
                 for nc in Newoclasss:
                     if (nc.Type == "45"):
-                        OperationPeople_c3 = Newoclasss.OperationPeople
-                        CheckedPeople_c3 = Newoclasss.CheckedPeople
-                        QAConfirmPeople_c3 = Newoclasss.QAConfirmPeople
+                        dic["OperationPeople_c3"] = nc.OperationPeople
+                        dic["CheckedPeople_c3"] = nc.CheckedPeople
+                        if nc.CheckedPeople == None:
+                            dic["CheckedPeople_c3"] = ""
+                        dic["QAConfirmPeople_c3"] = nc.QAConfirmPeople
+                        if nc.QAConfirmPeople == None:
+                            dic["QAConfirmPeople_c3"] = ""
                     elif (nc.Type == "46"):
-                        OperationPeople_c4 = Newoclasss.OperationPeople
-                        CheckedPeople_c4 = Newoclasss.CheckedPeople
-                        QAConfirmPeople_c4 = Newoclasss.QAConfirmPeople
+                        dic["OperationPeople_c4"] = nc.OperationPeople
+                        dic["CheckedPeople_c4"] = nc.CheckedPeople
+                        if nc.CheckedPeople == None:
+                            dic["CheckedPeople_c4"] = ""
+                        dic["QAConfirmPeople_c4"] = nc.QAConfirmPeople
+                        if nc.QAConfirmPeople == None:
+                            dic["QAConfirmPeople_c4"] = ""
                     elif (nc.Type == "54"):
-                        QAConfirmPeople_c5 = Newoclasss.QAConfirmPeople
+                        dic["QAConfirmPeople_c5"] = nc.QAConfirmPeople
             if (re[2] != None):
-                OperationPeople_c7 = re[2].OperationPeople
-                CheckedPeople_c7 = re[2].CheckedPeople
+                dic["OperationPeople_c7"] = re[2].OperationPeople
+                dic["CheckedPeople_c7"] = re[2].CheckedPeople
+                if re[2].CheckedPeople == None:
+                    dic["CheckedPeople_c7"] = ""
         elif (title == "喷雾干燥"):
             re = electronicBatchRecords("喷雾干燥段", oclass.BrandID, oclass.BatchID, ID)
             Pclass = re[0]
             Zclass = re[1]
             if (re[2] != None):
-                OperationPeople_d4 = re[2].OperationPeople
-                CheckedPeople_d4 = re[2].CheckedPeople
+                dic["OperationPeople_d4"] = re[2].OperationPeople
+                dic["CheckedPeople_d4"] = re[2].CheckedPeople
+                if re[2].CheckedPeople == None:
+                    dic["CheckedPeople_d4"] = ""
             Noclas = re[3]
             for no in Noclas:
                 if (no.name == "（喷雾干燥段）生产前准备（操作人）"):
-                    OperationPeople_d1 = no.oddUser
+                    dic["OperationPeople_d1"] = no.oddUser
                 elif (no.name == "（喷雾干燥段）生产前准备（复核人）"):
-                    CheckedPeople_d1 = no.oddUser
+                    dic["CheckedPeople_d1"] = no.oddUser
                 elif (no.name == "（喷雾干燥段）生产前准备（QA签名）"):
-                    QAConfirmPeople_d1 = no.oddUser
+                    dic["QAConfirmPeople_d1"] = no.oddUser
                 elif (no.name == "喷雾干燥开始，操作按SOP执行（操作人）"):
-                    OperationPeople_d2 = no.oddUser
+                    dic["OperationPeople_d2"] = no.oddUser
                 elif (no.name == "喷雾干燥开始，操作按SOP执行（复核人）"):
-                    CheckedPeople_d2 = no.oddUser
+                    dic["CheckedPeople_d2"] = no.oddUser
                 elif (no.name == "喷雾干燥开始，操作按SOP执行（QA签名）"):
-                    QAConfirmPeople_d2 = no.oddUser
+                    dic["QAConfirmPeople_d2"] = no.oddUser
                 elif (no.name == "喷雾干燥结束，按SOP清场（操作人）"):
-                    OperationPeople_d3 = no.oddUser
+                    dic["OperationPeople_d3"] = no.oddUser
                 elif (no.name == "喷雾干燥结束，按SOP清场（复核人）"):
-                    CheckedPeople_d3 = no.oddUser
+                    dic["CheckedPeople_d3"] = no.oddUser
                 elif (no.name == "喷雾干燥结束，按SOP清场（QA签名）"):
-                    QAConfirmPeople_d3 = no.oddUser
+                    dic["QAConfirmPeople_d3"] = no.oddUser
         elif (title == "收粉"):
             re = electronicBatchRecords("收粉段", oclass.BrandID, oclass.BatchID, ID)
             Pclass = re[0]
             Zclass = re[1]
             if (re[2] != None):
-                OperationPeople_e7 = re[2].OperationPeople
-                CheckedPeople_e7 = re[2].CheckedPeople
+                dic["OperationPeople_e7"] = re[2].OperationPeople
+                dic["CheckedPeople_e7"] = re[2].CheckedPeople
+                if re[2].CheckedPeople == None:
+                    dic["CheckedPeople_e7"] = ""
             Noclas = re[3]
             for no in Noclas:
                 if (no.name == "（收粉段）生产前准备（操作人）"):
-                    OperationPeople_e1 = no.oddUser
+                    dic["OperationPeople_e1"] = no.oddUser
                 elif (no.name == "（收粉段）生产前准备（复核人）"):
-                    CheckedPeople_e1 = no.oddUser
+                    dic["CheckedPeople_e1"] = no.oddUser
                 elif (no.name == "（收粉段）生产前准备（QA签名）"):
-                    QAConfirmPeople_e1 = no.oddUser
+                    dic["QAConfirmPeople_e1"] = no.oddUser
                 elif (no.name == "收粉开始，操作按SOP执行（操作人）"):
-                    OperationPeople_e3 = no.oddUser
+                    dic["OperationPeople_e3"] = no.oddUser
                 elif (no.name == "收粉开始，操作按SOP执行（复核人）"):
-                    CheckedPeople_e3 = no.oddUser
+                    dic["CheckedPeople_e3"] = no.oddUser
                 elif (no.name == "收粉开始，操作按SOP执行（QA签名）"):
-                    QAConfirmPeople_e3 = no.oddUser
+                    dic["QAConfirmPeople_e3"] = no.oddUser
                 elif (no.name == "收粉结束，按SOP清场（操作人）"):
-                    OperationPeople_e6 = no.oddUser
+                    dic["OperationPeople_e6"] = no.oddUser
                 elif (no.name == "收粉结束，按SOP清场（复核人）"):
-                    CheckedPeople_e6 = no.oddUser
+                    dic["CheckedPeople_e6"] = no.oddUser
                 elif (no.name == "收粉结束，按SOP清场（QA签名）"):
-                    QAConfirmPeople_e6 = no.oddUser
+                    dic["QAConfirmPeople_e6"] = no.oddUser
             Newoclasss = db_session.query(NewReadyWork).filter(NewReadyWork.PUID == Pclass.PUID, NewReadyWork.BatchID ==
                                                                oclass.BatchID, NewReadyWork.Type.in_(("48", "50", "51", "52"))).all()
             if(len(Newoclasss) > 0):
                 for nc in Newoclasss:
                     if(nc.Type == "48"):
-                        OperationPeople_e2 = nc.OperationPeople
-                        CheckedPeople_e2 = nc.CheckedPeople
-                        QAConfirmPeople_e2 = nc.QAConfirmPeople
+                        dic["OperationPeople_e2"] = nc.OperationPeople
+                        dic["CheckedPeople_e2"] = nc.CheckedPeople
+                        if nc.CheckedPeople == None:
+                            dic["CheckedPeople_e2"] = ""
+                            dic["QAConfirmPeople_e2"] = nc.QAConfirmPeople
+                        if nc.QAConfirmPeople == None:
+                            dic["QAConfirmPeople_e2"] = ""
                     elif(nc.Type == "50"):
-                        OperationPeople_e5 = nc.OperationPeople
-                        CheckedPeople_e5 = nc.CheckedPeople
+                        dic["OperationPeople_e5"] = nc.OperationPeople
+                        dic["CheckedPeople_e5"] = nc.CheckedPeople
+                        if nc.CheckedPeople == None:
+                            dic["CheckedPeople_e5"] = ""
                     elif (nc.Type == "51"):
-                        OperationPeople_e8 = nc.OperationPeople
-                        CheckedPeople_e8 = nc.CheckedPeople
+                        dic["OperationPeople_e8"] = nc.OperationPeople
+                        dic["CheckedPeople_e8"] = nc.CheckedPeople
+                        if nc.CheckedPeople == None:
+                            dic["CheckedPeople_e8"] = ""
                     elif (nc.Type == "52"):
-                        QAConfirmPeople_e4 = nc.QAConfirmPeople
+                        dic["QAConfirmPeople_e4"] = nc.QAConfirmPeople
         elif (title == "醇沉"):
             re = electronicBatchRecords("醇沉段", oclass.BrandID, oclass.BatchID,ID)
             Pclass = re[0]
             Zclass = re[1]
+            if (re[2] != None):
+                OperationPeople_d4 = re[2].OperationPeople
+                CheckedPeople_d4 = re[2].CheckedPeople
+                if CheckedPeople_d4 == None:
+                    CheckedPeople_d4 = ""
+            Noclas = re[3]
+            for no in Noclas:
+                if (no.name == "（醇沉段）生产前准备（操作人）"):
+                    OperationPeople_d1 = no.oddUser
+                elif (no.name == "（醇沉段）生产前准备（复核人）"):
+                    CheckedPeople_d1 = no.oddUser
+                elif (no.name == "（醇沉段）生产前准备（QA签名）"):
+                    QAConfirmPeople_d1 = no.oddUser
+                elif (no.name == "醇沉开始，操作按SOP执行（操作人）"):
+                    OperationPeople_d2 = no.oddUser
+                elif (no.name == "醇沉开始，操作按SOP执行（复核人）"):
+                    CheckedPeople_d2 = no.oddUser
+                elif (no.name == "醇沉开始，操作按SOP执行（QA签名）"):
+                    QAConfirmPeople_d2 = no.oddUser
+                elif (no.name == "醇沉结束，按SOP清场（操作人）"):
+                    OperationPeople_d3 = no.oddUser
+                elif (no.name == "醇沉结束，按SOP清场（复核人）"):
+                    CheckedPeople_d3 = no.oddUser
+                elif (no.name == "醇沉结束，按SOP清场（QA签名）"):
+                    QAConfirmPeople_d3 = no.oddUser
         elif (title == "单效浓缩"):
             re = electronicBatchRecords("单效浓缩段", oclass.BrandID, oclass.BatchID,ID)
             Pclass = re[0]
@@ -5811,71 +5811,11 @@ def electronicBatchRecord():
     if(oclass.BrandID == 1):
         return render_template('electronicBatchRecord.html',
                                PName=Pclass.PDUnitRouteName,PUID=Pclass.PUID,BatchID=oclass.BatchID,PlanQuantity=oclass.PlanQuantity,
-                               flag=flag,OperationPeople_a1=OperationPeople_a1,CheckedPeople_a1=CheckedPeople_a1,QAConfirmPeople_a1=QAConfirmPeople_a1,
-                               OperationPeople_a2=OperationPeople_a2,CheckedPeople_a2=CheckedPeople_a2,OperationPeople_a3=OperationPeople_a3,CheckedPeople_a3=CheckedPeople_a3,
-                               QAConfirmPeople_a3=QAConfirmPeople_a3,OperationPeople_a4=OperationPeople_a4,CheckedPeople_a4=CheckedPeople_a4,QAConfirmPeople_a4=QAConfirmPeople_a4,
-                               OperationPeople_a5=OperationPeople_a5,CheckedPeople_a5=CheckedPeople_a5,OperationPeople_b1 = OperationPeople_b1,CheckedPeople_b1 = CheckedPeople_b1,
-                               QAConfirmPeople_b1 = QAConfirmPeople_b1,OperationPeople_b2 = OperationPeople_b2,CheckedPeople_b2 = CheckedPeople_b2,QAConfirmPeople_b2 = QAConfirmPeople_b2,
-                               OperationPeople_b3 = OperationPeople_b3,CheckedPeople_b3 = CheckedPeople_b3,QAConfirmPeople_b3 = QAConfirmPeople_b3,OperationPeople_b4 = OperationPeople_b4,
-                               CheckedPeople_b4 = CheckedPeople_b4,QAConfirmPeople_b4 = QAConfirmPeople_b4,OperationPeople_b5 = OperationPeople_b5,CheckedPeople_b5 = CheckedPeople_b5,
-                               QAConfirmPeople_b5 = QAConfirmPeople_b5,OperationPeople_b6 = OperationPeople_b6,CheckedPeople_b6 = CheckedPeople_b6,
-                               OperationPeople_c1=OperationPeople_c1,CheckedPeople_c1 = CheckedPeople_c1,QAConfirmPeople_c1 = QAConfirmPeople_c1,OperationPeople_c2 = OperationPeople_c2,
-                               CheckedPeople_c2 = CheckedPeople_c2,QAConfirmPeople_c2 = QAConfirmPeople_c2,OperationPeople_c3 = OperationPeople_c3,CheckedPeople_c3 = CheckedPeople_c3,
-                               QAConfirmPeople_c3 = QAConfirmPeople_c3,OperationPeople_c4 = OperationPeople_c4,CheckedPeople_c4 = CheckedPeople_c4,QAConfirmPeople_c4 = QAConfirmPeople_c4,
-                               OperationPeople_c5 = OperationPeople_c5,CheckedPeople_c5 = CheckedPeople_c5,QAConfirmPeople_c5 = QAConfirmPeople_c5,OperationPeople_c6 = OperationPeople_c6,
-                               CheckedPeople_c6 = CheckedPeople_c6,QAConfirmPeople_c6 = QAConfirmPeople_c6,OperationPeople_c7 = OperationPeople_c7,CheckedPeople_c7 = CheckedPeople_c7,
-                               OperationPeople_d1=OperationPeople_d1,CheckedPeople_d1 = CheckedPeople_d1,QAConfirmPeople_d1 = QAConfirmPeople_d1,OperationPeople_d2 = OperationPeople_d2,
-                               CheckedPeople_d2 = CheckedPeople_d2,OperationPeople_d3 = OperationPeople_d3,CheckedPeople_d3 = CheckedPeople_d3,QAConfirmPeople_d3 = QAConfirmPeople_d3,
-                               OperationPeople_d4 = OperationPeople_d4,CheckedPeople_d4 = CheckedPeople_d4,
-                               OperationPeople_e1 = OperationPeople_e1,CheckedPeople_e1 = CheckedPeople_e1,QAConfirmPeople_e1 = QAConfirmPeople_e1,OperationPeople_e2 = OperationPeople_e2,
-                               CheckedPeople_e2 = CheckedPeople_e2,QAConfirmPeople_e2 = QAConfirmPeople_e2,OperationPeople_e3 = OperationPeople_e3,CheckedPeople_e3 = CheckedPeople_e3,
-                               QAConfirmPeople_e3 = QAConfirmPeople_e3,QAConfirmPeople_e4 = QAConfirmPeople_e4,OperationPeople_e5 = OperationPeople_e5,CheckedPeople_e5 = CheckedPeople_e5,
-                               OperationPeople_e6 = OperationPeople_e6,CheckedPeople_e6 = CheckedPeople_e6,QAConfirmPeople_e6 = QAConfirmPeople_e6,OperationPeople_e7 = OperationPeople_e7,
-                               CheckedPeople_e7 = CheckedPeople_e7,OperationPeople_e8 = OperationPeople_e8,CheckedPeople_e8 = CheckedPeople_e8)
+                               flag=flag,dir=dir)
     elif(oclass.BrandID == 2):
         return render_template('electronicBatchRecordcaoshanhu.html',
                                PName=Pclass.PDUnitRouteName, PUID=Pclass.PUID, BatchID=oclass.BatchID,
-                               PlanQuantity=oclass.PlanQuantity, flag=flag, OperationPeople_a1=OperationPeople_a1,
-                               CheckedPeople_a1=CheckedPeople_a1, QAConfirmPeople_a1=QAConfirmPeople_a1,
-                               OperationPeople_a2=OperationPeople_a2, CheckedPeople_a2=CheckedPeople_a2,
-                               OperationPeople_a3=OperationPeople_a3, CheckedPeople_a3=CheckedPeople_a3,
-                               QAConfirmPeople_a3=QAConfirmPeople_a3, OperationPeople_a4=OperationPeople_a4,
-                               CheckedPeople_a4=CheckedPeople_a4, QAConfirmPeople_a4=QAConfirmPeople_a4,
-                               OperationPeople_a5=OperationPeople_a5, CheckedPeople_a5=CheckedPeople_a5,
-                               OperationPeople_b1=OperationPeople_b1, CheckedPeople_b1=CheckedPeople_b1,
-                               QAConfirmPeople_b1=QAConfirmPeople_b1, OperationPeople_b2=OperationPeople_b2,
-                               CheckedPeople_b2=CheckedPeople_b2, QAConfirmPeople_b2=QAConfirmPeople_b2,
-                               OperationPeople_b3=OperationPeople_b3, CheckedPeople_b3=CheckedPeople_b3,
-                               QAConfirmPeople_b3=QAConfirmPeople_b3, OperationPeople_b4=OperationPeople_b4,
-                               CheckedPeople_b4=CheckedPeople_b4, QAConfirmPeople_b4=QAConfirmPeople_b4,
-                               OperationPeople_b5=OperationPeople_b5, CheckedPeople_b5=CheckedPeople_b5,
-                               QAConfirmPeople_b5=QAConfirmPeople_b5, OperationPeople_b6=OperationPeople_b6,
-                               CheckedPeople_b6=CheckedPeople_b6,
-                               OperationPeople_c1=OperationPeople_c1, CheckedPeople_c1=CheckedPeople_c1,
-                               QAConfirmPeople_c1=QAConfirmPeople_c1, OperationPeople_c2=OperationPeople_c2,
-                               CheckedPeople_c2=CheckedPeople_c2, QAConfirmPeople_c2=QAConfirmPeople_c2,
-                               OperationPeople_c3=OperationPeople_c3, CheckedPeople_c3=CheckedPeople_c3,
-                               QAConfirmPeople_c3=QAConfirmPeople_c3, OperationPeople_c4=OperationPeople_c4,
-                               CheckedPeople_c4=CheckedPeople_c4, QAConfirmPeople_c4=QAConfirmPeople_c4,
-                               OperationPeople_c5=OperationPeople_c5, CheckedPeople_c5=CheckedPeople_c5,
-                               QAConfirmPeople_c5=QAConfirmPeople_c5, OperationPeople_c6=OperationPeople_c6,
-                               CheckedPeople_c6=CheckedPeople_c6, QAConfirmPeople_c6=QAConfirmPeople_c6,
-                               OperationPeople_c7=OperationPeople_c7, CheckedPeople_c7=CheckedPeople_c7,
-                               OperationPeople_d1=OperationPeople_d1, CheckedPeople_d1=CheckedPeople_d1,
-                               QAConfirmPeople_d1=QAConfirmPeople_d1, OperationPeople_d2=OperationPeople_d2,
-                               CheckedPeople_d2=CheckedPeople_d2, OperationPeople_d3=OperationPeople_d3,
-                               CheckedPeople_d3=CheckedPeople_d3, QAConfirmPeople_d3=QAConfirmPeople_d3,
-                               OperationPeople_d4=OperationPeople_d4, CheckedPeople_d4=CheckedPeople_d4,
-                               OperationPeople_e1=OperationPeople_e1, CheckedPeople_e1=CheckedPeople_e1,
-                               QAConfirmPeople_e1=QAConfirmPeople_e1, OperationPeople_e2=OperationPeople_e2,
-                               CheckedPeople_e2=CheckedPeople_e2, QAConfirmPeople_e2=QAConfirmPeople_e2,
-                               OperationPeople_e3=OperationPeople_e3, CheckedPeople_e3=CheckedPeople_e3,
-                               QAConfirmPeople_e3=QAConfirmPeople_e3, QAConfirmPeople_e4=QAConfirmPeople_e4,
-                               OperationPeople_e5=OperationPeople_e5, CheckedPeople_e5=CheckedPeople_e5,
-                               OperationPeople_e6=OperationPeople_e6, CheckedPeople_e6=CheckedPeople_e6,
-                               QAConfirmPeople_e6=QAConfirmPeople_e6, OperationPeople_e7=OperationPeople_e7,
-                               CheckedPeople_e7=CheckedPeople_e7, OperationPeople_e8=OperationPeople_e8,
-                               CheckedPeople_e8=CheckedPeople_e8)
+                               PlanQuantity=oclass.PlanQuantity, flag=flag, dir=dir)
 def electronicBatchRecords(name,BrandID,BatchID,ID):
     Pclass = db_session.query(ProductUnitRoute).filter(ProductUnitRoute.PDUnitRouteName == name,
                                                        ProductUnitRoute.ProductRuleID == BrandID).first()
@@ -5937,7 +5877,7 @@ def addNewReadyWork():
             if len(json_str) > 2:
                 PUID = data['PUID']
                 BatchID = data['BatchID']
-                Type = data['Type']
+                Type = data['type']
                 confirm = data['confirm']
                 if (confirm == "1"):
                     db_session.add(
@@ -5954,10 +5894,22 @@ def addNewReadyWork():
                     oclass.CheckedPeople = current_user.Name
                     oclass.OperationDate = datetime.datetime.now()
                 elif confirm == "3":
-                    oclass = db_session.query(NewReadyWork).filter(NewReadyWork.PUID == PUID,
-                                                                                   NewReadyWork.BatchID == BatchID,NewReadyWork.Type == Type).first()
-                    oclass.QAConfirmPeople = current_user.Name
-                    oclass.OperationDate = datetime.datetime.now()
+                    if Type == "52":
+                        db_session.add(
+                            NewReadyWork(
+                                BatchID=BatchID,
+                                PUID=PUID,
+                                Type=Type,
+                                QAConfirmPeople=current_user.Name,
+                                OperationDate=datetime.datetime.now()
+                            ))
+                    else:
+                        oclass = db_session.query(NewReadyWork).filter(NewReadyWork.PUID == PUID,
+                                                                       NewReadyWork.BatchID == BatchID,
+                                                                       NewReadyWork.Type == Type).first()
+
+                        oclass.QAConfirmPeople = current_user.Name
+                        oclass.OperationDate = datetime.datetime.now()
                 db_session.commit()
                 return 'OK'
         except Exception as e:
@@ -6505,6 +6457,16 @@ def CreateOperationManual():
 @app.route('/processMonitorLineCollect')
 def processMonitorLineCollect():
     return render_template('processMonitorLineCollect.html')
+
+# 收粉监控画面
+@app.route('/electronicBatchRecordNav1')
+def electronicBatchRecordNav1():
+    return render_template('electronicBatchRecordNav1.html')
+
+# 收粉监控画面
+@app.route('/electronicBatchRecordNav2')
+def electronicBatchRecordNav2():
+    return render_template('electronicBatchRecordNav2.html')
 
 def getExcel(file, method='r'):
     '''
