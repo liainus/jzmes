@@ -5827,7 +5827,7 @@ def electronicBatchRecord():
                         dic["CheckedPeople_e2"] = nc.CheckedPeople
                         if nc.CheckedPeople == None:
                             dic["CheckedPeople_e2"] = ""
-                            dic["QAConfirmPeople_e2"] = nc.QAConfirmPeople
+                        dic["QAConfirmPeople_e2"] = nc.QAConfirmPeople
                         if nc.QAConfirmPeople == None:
                             dic["QAConfirmPeople_e2"] = ""
                     elif(nc.Type == "50"):
@@ -6054,11 +6054,6 @@ def electronicBatchRecords(name,BrandID,BatchID,ID):
     Eoclas = db_session.query(EquipmentWork).filter(EquipmentWork.PUID == Pclass.PUID, EquipmentWork.BatchID == BatchID).first()
     Noclas = db_session.query(Model.node.NodeCollection).filter(Model.node.NodeCollection.oddNum == ID,Model.node.NodeCollection.status == "10").all()
     return Pclass,Zclass,Eoclas,Noclas
-def jdpankong(name):
-    if name == None:
-        return ""
-    else:
-        return name
 
 #设备工作情况确认
 @app.route('/addEquipmentWork', methods=['POST', 'GET'])
