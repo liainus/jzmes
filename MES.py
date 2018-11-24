@@ -5115,7 +5115,16 @@ def checkedConfirm():
                     elif (PUName == "单效浓缩开始"):
                         statusName = '单效浓缩开始，操作按SOP执行（操作人）'
                         name = '单效浓缩开始，操作按SOP执行（复核人）'
-                        return checkflow(ID, statusName, name)
+                        re = checkflow(ID, statusName, name)
+                        if re == 'OK':
+                            node = db_session.query(Model.node.NodeCollection).filter(
+                                Model.node.NodeCollection.oddNum == ID,
+                                Model.node.NodeCollection.name == '浓缩开始，操作按SOP执行（QA签名）').first()
+                            node.status = Model.node.NodeStatus.PASSED.value
+                            node.opertionTime = datetime.datetime.now()
+                            node.oddUser = current_user.Name
+                            db_session.commit()
+                        return 'OK'
                     elif (PUName == "单效浓缩结束清场"):
                         statusName = '单效浓缩结束，按SOP清场（操作人）'
                         name = '单效浓缩结束，按SOP清场（复核人）'
