@@ -497,16 +497,16 @@
                                     <a href="#" onClick="addTab('物料信息','Material')">物料信息</a>
                                 </li>
                             {% endif %}
-                            {% if '62' in session.get('menus') %}
-                                <li>
-                                    <a href="#">物料投料管理</a>
-                                </li>
-                            {% endif %}
-                            {% if '63' in session.get('menus') %}
-                                <li>
-                                    <a href="#">在制品管理</a>
-                                </li>
-                            {% endif %}
+{#                            {% if '62' in session.get('menus') %}#}
+{#                                <li>#}
+{#                                    <a href="#">物料投料管理</a>#}
+{#                                </li>#}
+{#                            {% endif %}#}
+{#                            {% if '63' in session.get('menus') %}#}
+{#                                <li>#}
+{#                                    <a href="#">在制品管理</a>#}
+{#                                </li>#}
+{#                            {% endif %}#}
                             {% if '64' in session.get('menus') %}
                                 <li>
                                     <a href="#">物料追踪</a>
@@ -541,32 +541,32 @@
                         </ul>
                     </li>
                 {% endif %}
-                {% if isIn(['70', '71', '72'], session.get('menus')) %}
-                    <li>
-                        <a href="javascript:;">
-                            <span class="iconfont sider-nav-icon">&#xe6ec;</span>
-                            <span class="sider-nav-title">文档管理</span>
-                            <i class="iconfont">&#xe642;</i>
-                        </a>
-                        <ul class="sider-nav-s">
-                            {% if '70' in session.get('menus') %}
-                                <li>
-                                    <a href="#" onclick="addTab('文档分类维护','/document_classManager')">文档分类维护</a>
-                                </li>
-                            {% endif %}
-                            {% if '71' in session.get('menus') %}
-                                <li>
-                                    <a href="#" onclick="addTab('文档管理','/document_Manager')">文档管理</a>
-                                </li>
-                            {% endif %}
-                            {% if '72' in session.get('menus') %}
-                                <li>
-                                    <a href="#" onclick="addTab('文档查询','/document_query')">文档查询</a>
-                                </li>
-                            {% endif %}
-                        </ul>
-                    </li>
-                {% endif %}
+{#                {% if isIn(['70', '71', '72'], session.get('menus')) %}#}
+{#                    <li>#}
+{#                        <a href="javascript:;">#}
+{#                            <span class="iconfont sider-nav-icon">&#xe6ec;</span>#}
+{#                            <span class="sider-nav-title">文档管理</span>#}
+{#                            <i class="iconfont">&#xe642;</i>#}
+{#                        </a>#}
+{#                        <ul class="sider-nav-s">#}
+{#                            {% if '70' in session.get('menus') %}#}
+{#                                <li>#}
+{#                                    <a href="#" onclick="addTab('文档分类维护','/document_classManager')">文档分类维护</a>#}
+{#                                </li>#}
+{#                            {% endif %}#}
+{#                            {% if '71' in session.get('menus') %}#}
+{#                                <li>#}
+{#                                    <a href="#" onclick="addTab('文档管理','/document_Manager')">文档管理</a>#}
+{#                                </li>#}
+{#                            {% endif %}#}
+{#                            {% if '72' in session.get('menus') %}#}
+{#                                <li>#}
+{#                                    <a href="#" onclick="addTab('文档查询','/document_query')">文档查询</a>#}
+{#                                </li>#}
+{#                            {% endif %}#}
+{#                        </ul>#}
+{#                    </li>#}
+{#                {% endif %}#}
                 {% if isIn(['74', '75', '76', '77', '78', '79', '80', '81'], session.get('menus')) %}
                     <li>
                         <a href="javascript:;">

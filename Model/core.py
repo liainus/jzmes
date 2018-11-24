@@ -3763,6 +3763,33 @@ class NewZYPlanMaterial(Base):
 	# 录入时间:
 	EnterTime = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
 
+class DeviceInfo(Base):
+    __tablename__ = "DeviceInfo"
+    # ID:
+    ID = Column(BigInteger, primary_key=True, autoincrement=True, nullable=False)
+    DeviceCode = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    StartTime = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    EndTime = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    Quantity = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    Unit = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    BatchCode = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+class MaterialInfo(Base):
+    __tablename__ = "MaterialInfo"
+    # ID:
+    ID = Column(BigInteger, primary_key=True, autoincrement=True, nullable=False)
+    MaterialTypeCode = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    MaterialTypeName = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    MaterialCode = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    MaterialName = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    Quantity = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    Unit = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    DeviceCode = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    BatchCode = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+all = session.query(MaterialInfo).all()
+print(all)
+
 # 生成表单的执行语句
 Base.metadata.create_all(engine)
 
