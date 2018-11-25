@@ -6987,6 +6987,10 @@ def TagAnalysis():
                 print(e)
                 insertSyslog("error", "过程连续数据获取从%s到%s时间段内变量%s值报错Error：" %(object.beginTime, object.endTime, tag) + str(e),current_user.Name)
                 return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            insertSyslog("error", "路由/ProcessContinuousData/TagAnalysis报错Error：" + str(e),current_user.Name)
+            return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 # 过程连续数据——Data
 @app.route('/ProcessContinuousData/DataPart')
