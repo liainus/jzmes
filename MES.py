@@ -6955,7 +6955,6 @@ def QualityControlGetBatch():
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 # 过程连续数据某个变量图像变化
-# SELECT [t|PV_R1101_6_AddTime] FROM [MES].[dbo].[DataHistory] WHERE SampleTime BETWEEN 2018-11-20 AND 2018-11-19
 @app.route('/ProcessContinuousData/TagAnalysis', methods=['POST', 'GET'])
 def TagAnalysis():
     if request.method == 'POST':
