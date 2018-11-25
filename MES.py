@@ -9,6 +9,7 @@ import time
 from collections import Counter
 import datetime
 
+import pymssql
 import redis
 import xlwt
 from flask import Flask, jsonify, redirect, url_for, flash
@@ -26,7 +27,8 @@ from Model.core import Enterprise, Area, Factory, ProductLine, ProcessUnit, Equi
     ProductUnit, ProductRule, ZYTask, ZYPlanMaterial, ZYPlan, Unit, PlanManager, SchedulePlan, ProductControlTask, \
     OpcServer, Pequipment, WorkFlowStatus, WorkFlowEventZYPlan, WorkFlowEventPlan, \
     OpcTag, CollectParamsTemplate, CollectParams, Collectionstrategy, CollectTask, \
-    CollectTaskCollection, ReadyWork, NodeIdNote, ProductUnitRoute, ProductionMonitor, NewZYPlanMaterial
+    CollectTaskCollection, ReadyWork, NodeIdNote, ProductUnitRoute, ProductionMonitor, NewZYPlanMaterial, \
+    QualityControlTree
 from Model.system import Role, Organization, User, Menu, Role_Menu, BatchMaterielBalance, OperationManual, NewReadyWork, \
     EquipmentWork, EletronicBatchDataStore
 from tools.MESLogger import MESLogger
@@ -6908,6 +6910,86 @@ def NodeIdNoteSearch():
 @app.route('/ProcessContinuousData')
 def processContinuousData():
     return render_template('BatchData_Process.html')
+
+def ContinuousDataTree(ParentNode=None):
+    sz = []
+    try:
+        Datas = db_session.query(QualityControlTree).filter_by(ParentNode=ParentNode).all()
+        for obj in Datas:
+            if obj.ParentNode == ParentNode:
+                sz.append({"id": obj.ID,
+                           "Tag": obj.Name,
+                           "Note":obj.Note,
+                           "children": ContinuousDataTree(obj.ID)})
+        return sz
+    except Exception as e:
+        print(e)
+        insertSyslog("error", "查询过程连续数据树形结构报错Error：" + str(e), current_user.Name)
+        return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
+@app.route('/ProcessContinuousData/DataTree', methods=['POST', 'GET'])
+def DataTree():
+    if request.method == 'GET':
+        try:
+            data_tree = ContinuousDataTree(ParentNode=0)
+            return json.dumps(data_tree, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            insertSyslog("error", "查询过程连续数据树形结构报错Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+# # 根据变量和时间段查询批次
+@app.route('/QualityControl/getBatch', methods=['POST', 'GET'])
+def QualityControlGetBatch():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            beginTime = data['beginTime']
+            endTime = data['endTime']
+            if beginTime is None or endTime is None:
+                return
+            batchs = set(db_session.query(ZYPlan.BatchID).filter(ZYPlan.PlanDate.between(beginTime,endTime)).all())
+            return json.dumps(list(batchs), cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            insertSyslog("error", "程连续数据获取从%s到%s时间段内的批次号报错Error："%(beginTime,endTime) + str(e), current_user.Name)
+            return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
+# 过程连续数据某个变量图像变化
+@app.route('/ProcessContinuousData/TagAnalysis', methods=['POST', 'GET'])
+def TagAnalysis():
+    if request.method == 'POST':
+        try:
+            data = request.values
+            batch = data['batch']
+            tag = 't|' + str(data['tag'])
+            if batch is None or tag is None:
+                return
+            object = db_session.query(ZYPlan).filter_by(BatchID=batch).first()
+            try:
+                conn = pymssql.connect(host= constant.MES_DATABASE_HOST,
+                                       user= constant.MES_DATABASE_USER,
+                                       password= constant.MES_DATABASE_PASSWD,
+                                       database= constant.MES_DATABASE_NAME,
+                                       charset= constant.MES_DATABASE_CHARSET)
+            except Exception as e:
+                print(e)
+                insertSyslog("error", "过程连续数据连接数据库报错Error：" + str(e),current_user.Name)
+                return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+            try:
+                cursor = conn.cursor()
+                sql = 'SELECT [DataHistory].[%s] FROM [MES].[dbo].[DataHistory] WHERE [DataHistory].[SampleTime] BETWEEN %s AND %s'%(tag, object.ActBeginTime, object.ActEndTime)
+                cursor.execute(sql)
+                # 用一个rs变量获取数据
+                tag_data = cursor.fetchall()
+                return json.dumps(tag_data, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+            except Exception as e:
+                print(e)
+                insertSyslog("error", "过程连续数据获取从%s到%s时间段内变量%s值报错Error：" %(object.beginTime, object.endTime, tag) + str(e),current_user.Name)
+                return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            insertSyslog("error", "路由/ProcessContinuousData/TagAnalysis报错Error：" + str(e),current_user.Name)
+            return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 # 过程连续数据——Data
 @app.route('/ProcessContinuousData/DataPart')

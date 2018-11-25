@@ -10,3 +10,9 @@ REDIS_TABLENAME = config['data_realtime_server']['tablename']
 REDIS_PORT = int(config['data_realtime_server']['port']) if config['data_realtime_server'][
     'port'].isdigit() else 6379
 REDIS_PASSWORD = config['data_realtime_server']['password']
+
+MES_DATABASE_HOST = config['MES_DataBase']['host']
+MES_DATABASE_USER = config['MES_DataBase']['user']
+MES_DATABASE_PASSWD = config['MES_DataBase']['password']
+MES_DATABASE_NAME = config['MES_DataBase']['database']
+MES_DATABASE_CHARSET = config['MES_DataBase']['charset']
