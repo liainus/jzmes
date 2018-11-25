@@ -67,6 +67,7 @@
                 equipmentCheckbox = $("#equipmentCheckbox").val()  //所有设备 判断操作人是否有值
             if(readycheckbox != ""){
                 $("input[name=readycheckbox]").prop("checked",true).attr("disabled",true);
+                $("#allreadycheckbox").prop("checked",true).attr("disabled",true);
             }
             if(QAreadycheckbox != ""){
                 $("input[name=QAreadycheckbox]").prop("checked",true).attr("disabled",true);
@@ -76,12 +77,14 @@
             }
             if(overcheckbox != ""){
                 $("input[name=overcheckbox]").prop("checked",true).attr("disabled",true);
+                $("#allovercheckbox").prop("checked",true).attr("disabled",true);
             }
             if(QAovercheckbox != ""){
                 $("input[name=QAovercheckbox]").prop("checked",true).attr("disabled",true);
             }
             if(stewingOvercheckbox != ""){
                 $("input[name=stewingOvercheckbox]").prop("checked",true).attr("disabled",true);
+                $("#allstewingovercheckbox").prop("checked",true).attr("disabled",true);
             }
             if(QAstewingOvercheckbox != ""){
                 $("input[name=QAstewingOvercheckbox]").prop("checked",true).attr("disabled",true);
@@ -89,6 +92,51 @@
             if(equipmentCheckbox != ""){
                 $("input[name=equipmentCheckbox]").prop("checked",true).attr("disabled",true);
             }
+
+            //复选框的全选和反选
+            $("#allreadycheckbox").on("click",function(){
+                if (this.checked) {
+                    $("input[name='readycheckbox']:checkbox").prop("checked", true);
+                }else{
+                    $("input[name='readycheckbox']:checkbox").prop("checked", false);
+                }
+            })
+            $("input[name='readycheckbox']:checkbox").on("click",function(){
+                if($("input[name='readycheckbox']:checkbox").length == $("input[name='readycheckbox']:checkbox:checked").length){
+                    $("#allreadycheckbox").prop("checked",true)
+                }else{
+                    $("#allreadycheckbox").prop("checked",false)
+                }
+            })
+            $("#allovercheckbox").on("click",function(){
+                if (this.checked) {
+                    $("input[name='overcheckbox']:checkbox").prop("checked", true);
+                }else{
+                    $("input[name='overcheckbox']:checkbox").prop("checked", false);
+                }
+            })
+            $("input[name='overcheckbox']:checkbox").on("click",function(){
+                if($("input[name='overcheckbox']:checkbox").length == $("input[name='overcheckbox']:checkbox:checked").length){
+                    $("#allovercheckbox").prop("checked",true)
+                }else{
+                    $("#allovercheckbox").prop("checked",false)
+                }
+            })
+            //静置清场的全选和反选
+            $("#allstewingovercheckbox").on("click",function(){
+                if (this.checked) {
+                    $("input[name='stewingOvercheckbox']:checkbox").prop("checked", true);
+                }else{
+                    $("input[name='stewingOvercheckbox']:checkbox").prop("checked", false);
+                }
+            })
+            $("input[name='stewingOvercheckbox']:checkbox").on("click",function(){
+                if($("input[name='stewingOvercheckbox']:checkbox").length == $("input[name='stewingOvercheckbox']:checkbox:checked").length){
+                    $("#allstewingovercheckbox").prop("checked",true)
+                }else{
+                    $("#allstewingovercheckbox").prop("checked",false)
+                }
+            })
         })
     </script>
 </head>
@@ -129,7 +177,7 @@
                     <tr>
                         <th class="tdWidth100">时间</th>
                         <th>准备工作要求及内容</th>
-                        <th>打√选择</th>
+                        <th><label class="checkbox-inline"><input type="checkbox" name="allreadycheckbox" id="allreadycheckbox"> 打√全选</label></th>
                         <th>操作人</th>
                         <th>复核人</th>
                     </tr>
@@ -437,7 +485,7 @@
                     <tr>
                         <th class="tdWidth100">时间</th>
                         <th>清场要求及内容</th>
-                        <th>打√选择</th>
+                        <th><label class="checkbox-inline"><input type="checkbox" name="allovercheckbox" id="allovercheckbox"> 打√全选</label></th>
                         <th>操作人</th>
                         <th>复核人</th>
                     </tr>
@@ -623,7 +671,7 @@
                     <tr>
                         <th class="tdWidth100">时间</th>
                         <th>准备工作要求及内容</th>
-                        <th>打√选择</th>
+                        <th><label class="checkbox-inline"><input type="checkbox" name="allreadycheckbox" id="allreadycheckbox"> 打√全选</label></th>
                         <th>操作人</th>
                         <th>复核人</th>
                     </tr>
@@ -1123,7 +1171,7 @@
                     <td colspan="6" class="middle-center">
                         {% if '82' == flag %}
                             {% if None == dir[0]["OperationPeople_b3"] or "" == dir[0]["OperationPeople_b3"] %}
-                                <a href="javascript:;" class="btn btn-primary OperationConfirm" name="煎煮开始">确认</a>
+                                <a href="javascript:;" class="btn btn-primary OperationConfirm" name="静置开始">确认</a>
                             {% else %}
                                 {{ dir[0]["OperationPeople_b3"] }}
                             {% endif %}
@@ -1146,7 +1194,7 @@
                             {% if None == dir[0]["OperationPeople_b3"] or "" == dir[0]["OperationPeople_b3"] %}
                             {% else %}
                                 {% if None == dir[0]["CheckedPeople_b3"] or "" == dir[0]["CheckedPeople_b3"] %}
-                                    <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="煎煮开始">确认</a>
+                                    <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="静置开始">确认</a>
                                 {% else %}
                                     {{ dir[0]["CheckedPeople_b3"] }}
                                 {% endif %}
@@ -1170,7 +1218,7 @@
                             {% if None == dir[0]["OperationPeople_b3"] or None == dir[0]["CheckedPeople_b3"] or "" == dir[0]["OperationPeople_b3"] or "" == dir[0]["CheckedPeople_b3"] %}
                             {% else %}
                                 {% if None == dir[0]["QAConfirmPeople_b3"] or "" == dir[0]["QAConfirmPeople_b3"] %}
-                                    <a href="javascript:;" class="btn btn-primary QAConfirm" name="煎煮开始">确认</a>
+                                    <a href="javascript:;" class="btn btn-primary QAConfirm" name="静置开始">确认</a>
                                 {% else %}
                                     {{ dir[0]["QAConfirmPeople_b3"] }}
                                 {% endif %}
@@ -1186,7 +1234,7 @@
                     <tr>
                         <th class="tdWidth100">时间</th>
                         <th>煎煮清场要求及内容</th>
-                        <th>打√选择</th>
+                        <th><label class="checkbox-inline"><input type="checkbox" name="allovercheckbox" id="allovercheckbox"> 打√全选</label></th>
                         <th>操作人</th>
                         <th>复核人</th>
                     </tr>
@@ -1285,7 +1333,7 @@
                     <tr>
                         <th class="tdWidth100">时间</th>
                         <th>静置罐清场要求及内容</th>
-                        <th>打√选择</th>
+                        <th><label class="checkbox-inline"><input type="checkbox" name="allstewingovercheckbox" id="allstewingovercheckbox"> 打√全选</label></th>
                         <th>操作人</th>
                         <th>复核人</th>
                     </tr>
@@ -1298,37 +1346,37 @@
                             <label class="checkbox-inline"><input type="checkbox" name="stewingOvercheckbox"> 是 / 否</label>
                         </td>
                         <td rowspan="4" class="middle-center">
-                            <input type="hidden" id="stewingOvercheckbox" value={{ OperationPeople_b5 }}>
+                            <input type="hidden" id="stewingOvercheckbox" value={{ dir[0]["OperationPeople_b5"] }}>
                             {% if '82' == flag %}
-                                {% if None == OperationPeople_b5 or "" == OperationPeople_b5 %}
-                                    <a href="javascript:;" class="btn btn-primary OperationConfirm" name="42">确认</a>
+                                {% if None == dir[0]["OperationPeople_b5"] or "" == dir[0]["OperationPeople_b5"] %}
+                                    <a href="javascript:;" class="btn btn-primary OperationConfirm" name="42" rel="1">确认</a>
                                 {% else %}
-                                    {{ OperationPeople_b5 }}
+                                    {{ dir[0]["OperationPeople_b5"] }}
                                 {% endif %}
                             {% endif %}
                             {% if '83' == flag %}
-                                {{ OperationPeople_b5 }}
+                                {{ dir[0]["OperationPeople_b5"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ OperationPeople_b5 }}
+                                {{ dir[0]["OperationPeople_b5"] }}
                             {% endif %}
                         </td>
                         <td rowspan="4" class="middle-center">
                             {% if '82' == flag %}
-                                {{ CheckedPeople_b5 }}
+                                {{ dir[0]["CheckedPeople_b5"] }}
                             {% endif %}
                             {% if '83' == flag %}
-                                {% if None == OperationPeople_b5 or "" == OperationPeople_b5 %}
+                                {% if None == dir[0]["OperationPeople_b5"] or "" == dir[0]["OperationPeople_b5"] %}
                                 {% else %}
-                                    {% if None == CheckedPeople_b5 or "" == CheckedPeople_b5 %}
-                                        <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="42">确认</a>
+                                    {% if None == dir[0]["CheckedPeople_b5"] or "" == dir[0]["CheckedPeople_b5"] %}
+                                        <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="42" rel="2">确认</a>
                                     {% else %}
-                                        {{ CheckedPeople_b5 }}
+                                        {{ dir[0]["CheckedPeople_b5"] }}
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ CheckedPeople_b5 }}
+                                {{ dir[0]["CheckedPeople_b5"] }}
                             {% endif %}
                         </td>
                     </tr>
@@ -1358,20 +1406,20 @@
                         </td>
                         <td>QA确认人</td>
                         <td class="middle-center">
-                            <input type="hidden" id="QAstewingOvercheckbox" value={{ QAConfirmPeople_b5 }}>
+                            <input type="hidden" id="QAstewingOvercheckbox" value={{ dir[0]["QAConfirmPeople_b5"] }}>
                             {% if '82' == flag %}
-                                {{ QAConfirmPeople_b5 }}
+                                {{ dir[0]["QAConfirmPeople_b5"] }}
                             {% endif %}
                             {% if '83' == flag %}
-                                {{ QAConfirmPeople_b5 }}
+                                {{ dir[0]["QAConfirmPeople_b5"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {% if None == OperationPeople_b5 or None == CheckedPeople_b5 or "" == OperationPeople_b5 or "" == CheckedPeople_b5 %}
+                                {% if None == dir[0]["OperationPeople_b5"] or None == dir[0]["CheckedPeople_b5"] or "" == dir[0]["OperationPeople_b5"] or "" == dir[0]["CheckedPeople_b5"] %}
                                 {% else %}
-                                    {% if None == QAConfirmPeople_b5 or "" == QAConfirmPeople_b5 %}
-                                        <a href="javascript:;" class="btn btn-primary QAConfirm" name="42">确认</a>
+                                    {% if None == dir[0]["QAConfirmPeople_b5"] or "" == dir[0]["QAConfirmPeople_b5"] %}
+                                        <a href="javascript:;" class="btn btn-primary QAConfirm" name="42" rel="3">确认</a>
                                     {% else %}
-                                        {{ QAConfirmPeople_b5 }}
+                                        {{ dir[0]["QAConfirmPeople_b5"] }}
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
@@ -1401,7 +1449,7 @@
                             <input type="hidden" id="equipmentCheckbox" value={{ dir[0]["OperationPeople_b6"] }}>
                             {% if '82' == flag %}
                                 {% if None == dir[0]["OperationPeople_b6"] or "" == dir[0]["OperationPeople_b6"] %}
-                                    <a href="javascript:;" class="btn btn-primary OperationConfirm" name="操作人">确认</a>
+                                    <a href="javascript:;" class="btn btn-primary equipmentConfirm" name="操作人">确认</a>
                                 {% else %}
                                     {{ dir[0]["OperationPeople_b6"] }}
                                 {% endif %}
@@ -1421,7 +1469,7 @@
                                 {% if None == dir[0]["OperationPeople_b6"] or "" == dir[0]["OperationPeople_b6"] %}
                                 {% else %}
                                     {% if None == dir[0]["CheckedPeople_b6"] or "" == dir[0]["CheckedPeople_b6"] %}
-                                        <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="复核人">确认</a>
+                                        <a href="javascript:;" class="btn btn-primary equipmentConfirm" name="复核人">确认</a>
                                     {% else %}
                                         {{ dir[0]["CheckedPeople_b6"] }}
                                     {% endif %}
@@ -1471,7 +1519,7 @@
                     <tr>
                         <th class="tdWidth100">时间</th>
                         <th>准备工作要求及内容</th>
-                        <th>打√选择</th>
+                        <th><label class="checkbox-inline"><input type="checkbox" name="allreadycheckbox" id="allreadycheckbox"> 打√全选</label></th>
                         <th>操作人</th>
                         <th>复核人</th>
                     </tr>
@@ -1650,7 +1698,7 @@
                         <td rowspan="19" class="middle-center">
                             {% if '82' == flag %}
                                 {% if None == dir[0]["OperationPeople_c3"] or "" == dir[0]["OperationPeople_c3"] %}
-                                    <a href="javascript:;" class="btn btn-primary OperationConfirm" name="45">确认</a>
+                                    <a href="javascript:;" class="btn btn-primary OperationConfirm" name="45" rel="1">确认</a>
                                 {% else %}
                                     {{ dir[0]["OperationPeople_c3"] }}
                                 {% endif %}
@@ -1670,7 +1718,7 @@
                                 {% if None == dir[0]["OperationPeople_c3"] or "" == dir[0]["OperationPeople_c3"] %}
                                 {% else %}
                                     {% if None == dir[0]["CheckedPeople_c3"] or "" == dir[0]["CheckedPeople_c3"] %}
-                                        <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="45">确认</a>
+                                        <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="45" rel="2">确认</a>
                                     {% else %}
                                         {{ dir[0]["CheckedPeople_c3"] }}
                                     {% endif %}
@@ -1806,7 +1854,7 @@
                                 {% if None == dir[0]["OperationPeople_c3"] or None == dir[0]["CheckedPeople_c3"] or "" == dir[0]["OperationPeople_c3"] or "" == dir[0]["CheckedPeople_c3"] %}
                                 {% else %}
                                     {% if None == dir[0]["QAConfirmPeople_c3"] or "" == dir[0]["QAConfirmPeople_c3"] %}
-                                        <a href="javascript:;" class="btn btn-primary QAConfirm" name="45">确认</a>
+                                        <a href="javascript:;" class="btn btn-primary QAConfirm" name="45" rel="3">确认</a>
                                     {% else %}
                                         {{ dir[0]["QAConfirmPeople_c3"] }}
                                     {% endif %}
@@ -1836,7 +1884,7 @@
                         <td rowspan="21" class="middle-center">
                             {% if '82' == flag %}
                                 {% if None == dir[0]["OperationPeople_c4"] or "" == dir[0]["OperationPeople_c4"] %}
-                                    <a href="javascript:;" class="btn btn-primary OperationConfirm" name="46">确认</a>
+                                    <a href="javascript:;" class="btn btn-primary OperationConfirm" name="46" rel="1">确认</a>
                                 {% else %}
                                     {{ dir[0]["OperationPeople_c4"] }}
                                 {% endif %}
@@ -1856,7 +1904,7 @@
                                 {% if None == dir[0]["OperationPeople_c4"] or "" == dir[0]["OperationPeople_c4"] %}
                                 {% else %}
                                     {% if None == dir[0]["CheckedPeople_c4"] or "" == dir[0]["CheckedPeople_c4"] %}
-                                        <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="46">确认</a>
+                                        <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="46" rel="2">确认</a>
                                     {% else %}
                                         {{ dir[0]["CheckedPeople_c4"] }}
                                     {% endif %}
@@ -2001,7 +2049,7 @@
                                 {% if None == dir[0]["OperationPeople_c4"] or None == dir[0]["CheckedPeople_c4"] or "" == dir[0]["OperationPeople_c4"] or "" == dir[0]["CheckedPeople_c4"] %}
                                 {% else %}
                                     {% if None == dir[0]["QAConfirmPeople_c4"] or "" == dir[0]["QAConfirmPeople_c4"] %}
-                                        <a href="javascript:;" class="btn btn-primary QAConfirm" name="46">确认</a>
+                                        <a href="javascript:;" class="btn btn-primary QAConfirm" name="46" rel="3">确认</a>
                                     {% else %}
                                         {{ dir[0]["QAConfirmPeople_c4"] }}
                                     {% endif %}
@@ -2033,7 +2081,7 @@
                                 {% if None == dir[0]["OperationPeople_c5"] or None == dir[0]["CheckedPeople_c5"] or "" == dir[0]["OperationPeople_c5"] or "" == dir[0]["CheckedPeople_c5"] %}
                                 {% else %}
                                     {% if None == dir[0]["QAConfirmPeople_c5"] or "" == dir[0]["QAConfirmPeople_c5"] %}
-                                        <a href="javascript:;" class="btn btn-primary QAConfirm" name="质量控制">确认</a>
+                                        <a href="javascript:;" class="btn btn-primary QAConfirm" name="54" rel="3">确认</a>
                                     {% else %}
                                         {{ dir[0]["QAConfirmPeople_c5"] }}
                                     {% endif %}
@@ -2056,7 +2104,7 @@
                     <tr>
                         <th class="tdWidth100">时间</th>
                         <th>清场要求及内容</th>
-                        <th>打√选择</th>
+                        <th><label class="checkbox-inline"><input type="checkbox" name="allovercheckbox" id="allovercheckbox"> 打√全选</label></th>
                         <th>操作人</th>
                         <th>复核人</th>
                     </tr>
@@ -2178,7 +2226,7 @@
                             <input type="hidden" id="equipmentCheckbox" value={{ dir[0]["OperationPeople_c7"] }}>
                             {% if '82' == flag %}
                                 {% if None == dir[0]["OperationPeople_c7"] or "" == dir[0]["OperationPeople_c7"] %}
-                                    <a href="javascript:;" class="btn btn-primary OperationConfirm" name="操作人">确认</a>
+                                    <a href="javascript:;" class="btn btn-primary equipmentConfirm" name="操作人">确认</a>
                                 {% else %}
                                     {{ dir[0]["OperationPeople_c7"] }}
                                 {% endif %}
@@ -2198,7 +2246,7 @@
                                 {% if None == dir[0]["OperationPeople_c7"] or "" == dir[0]["OperationPeople_c7"] %}
                                 {% else %}
                                     {% if None == dir[0]["CheckedPeople_c7"] or "" == dir[0]["CheckedPeople_c7"] %}
-                                        <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="复核人">确认</a>
+                                        <a href="javascript:;" class="btn btn-primary equipmentConfirm" name="复核人">确认</a>
                                     {% else %}
                                         {{ dir[0]["CheckedPeople_c7"] }}
                                     {% endif %}
@@ -2248,7 +2296,7 @@
                     <tr>
                         <th class="tdWidth100">时间</th>
                         <th>准备工作要求及内容</th>
-                        <th>打√选择</th>
+                        <th><label class="checkbox-inline"><input type="checkbox" name="allreadycheckbox" id="allreadycheckbox"> 打√全选</label></th>
                         <th>操作人</th>
                         <th>复核人</th>
                     </tr>
@@ -2363,12 +2411,12 @@
                     </tr>
                     <tr>
                         <td colspan="4">领取本批生产的物料并复核品名、批号、检验单号、数量是否无误</td>
-                        <td><label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox"> 是 / 否</label></td>
+                        <td><label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="CCFilterCheckbox1"> 是 / 否</label></td>
                         <td rowspan="4" class="middle-center">
                             <input type="hidden" id="readycheckbox" value={{ dir[0]["OperationPeople_d2"] }}>
                             {% if '82' == flag %}
                                 {% if None == dir[0]["OperationPeople_d2"] or "" == dir[0]["OperationPeople_d2"] %}
-                                    <a href="javascript:;" class="btn btn-primary OperationConfirm" name="">确认</a>
+                                    <a href="javascript:;" class="btn btn-primary OperationConfirm" name="55" rel="1">确认</a>
                                 {% else %}
                                     {{ dir[0]["OperationPeople_d2"] }}
                                 {% endif %}
@@ -2388,7 +2436,7 @@
                                 {% if None == dir[0]["OperationPeople_d2"] or "" == dir[0]["OperationPeople_d2"] %}
                                 {% else %}
                                     {% if None == dir[0]["CheckedPeople_d2"] or "" == dir[0]["CheckedPeople_d2"] %}
-                                        <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="">确认</a>
+                                        <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="55" rel="2">确认</a>
                                     {% else %}
                                         {{ dir[0]["CheckedPeople_d2"] }}
                                     {% endif %}
@@ -2527,7 +2575,7 @@
                     <tr>
                         <th class="tdWidth100">时间</th>
                         <th>清场要求及内容</th>
-                        <th>打√选择</th>
+                        <th><label class="checkbox-inline"><input type="checkbox" name="allovercheckbox" id="allovercheckbox"> 打√全选</label></th>
                         <th>操作人</th>
                         <th>复核人</th>
                     </tr>
@@ -2643,7 +2691,7 @@
                             <input type="hidden" id="equipmentCheckbox" value={{ dir[0]["OperationPeople_d5"] }}>
                             {% if '82' == flag %}
                                 {% if None == dir[0]["OperationPeople_d5"] or "" == dir[0]["OperationPeople_d5"] %}
-                                    <a href="javascript:;" class="btn btn-primary OperationConfirm" name="操作人">确认</a>
+                                    <a href="javascript:;" class="btn btn-primary equipmentConfirm" name="操作人">确认</a>
                                 {% else %}
                                     {{ dir[0]["OperationPeople_d5"] }}
                                 {% endif %}
@@ -2663,7 +2711,7 @@
                                 {% if None == dir[0]["OperationPeople_d5"] or "" == dir[0]["OperationPeople_d5"] %}
                                 {% else %}
                                     {% if None == dir[0]["CheckedPeople_d5"] or "" == dir[0]["CheckedPeople_d5"] %}
-                                        <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="复核人">确认</a>
+                                        <a href="javascript:;" class="btn btn-primary equipmentConfirm" name="复核人">确认</a>
                                     {% else %}
                                         {{ dir[0]["CheckedPeople_d5"] }}
                                     {% endif %}
@@ -2731,7 +2779,7 @@
                     <tr>
                         <th class="tdWidth100">时间</th>
                         <th>准备工作要求及内容</th>
-                        <th>打√选择</th>
+                        <th><label class="checkbox-inline"><input type="checkbox" name="allreadycheckbox" id="allreadycheckbox"> 打√全选</label></th>
                         <th>操作人</th>
                         <th>复核人</th>
                     </tr>
@@ -2904,7 +2952,7 @@
                         <td rowspan="13" class="middle-center">
                             {% if '82' == flag %}
                                 {% if None == dir[0]["OperationPeople_e3"] or "" == dir[0]["OperationPeople_e3"] %}
-                                    <a href="javascript:;" class="btn btn-primary OperationConfirm" name="45">确认</a>
+                                    <a href="javascript:;" class="btn btn-primary OperationConfirm" name="56" rel="1">确认</a>
                                 {% else %}
                                     {{ dir[0]["OperationPeople_e3"] }}
                                 {% endif %}
@@ -2924,7 +2972,7 @@
                                 {% if None == dir[0]["OperationPeople_e3"] or "" == dir[0]["OperationPeople_e3"] %}
                                 {% else %}
                                     {% if None == dir[0]["CheckedPeople_e3"] or "" == dir[0]["CheckedPeople_e3"] %}
-                                        <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="45">确认</a>
+                                        <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="56" rel="2">确认</a>
                                     {% else %}
                                         {{ dir[0]["CheckedPeople_e3"] }}
                                     {% endif %}
@@ -2999,7 +3047,7 @@
                         <td rowspan="5" class="middle-center">
                             {% if '82' == flag %}
                                 {% if None == dir[0]["OperationPeople_e4"] or "" == dir[0]["OperationPeople_e4"] %}
-                                    <a href="javascript:;" class="btn btn-primary OperationConfirm" name="46">确认</a>
+                                    <a href="javascript:;" class="btn btn-primary OperationConfirm" name="57" rel="1">确认</a>
                                 {% else %}
                                     {{ dir[0]["OperationPeople_e4"] }}
                                 {% endif %}
@@ -3019,7 +3067,7 @@
                                 {% if None == dir[0]["OperationPeople_e4"] or "" == dir[0]["OperationPeople_e4"] %}
                                 {% else %}
                                     {% if None == dir[0]["CheckedPeople_e4"] or "" == dir[0]["CheckedPeople_e4"] %}
-                                        <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="46">确认</a>
+                                        <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="57" rel="2">确认</a>
                                     {% else %}
                                         {{ dir[0]["CheckedPeople_e4"] }}
                                     {% endif %}
@@ -3061,7 +3109,7 @@
                                 {% if None == dir[0]["OperationPeople_e4"] or None == dir[0]["CheckedPeople_e4"] or "" == dir[0]["OperationPeople_e4"] or "" == dir[0]["CheckedPeople_e4"] %}
                                 {% else %}
                                     {% if None == dir[0]["QAConfirmPeople_e4"] or "" == dir[0]["QAConfirmPeople_e4"] %}
-                                        <a href="javascript:;" class="btn btn-primary QAConfirm" name="46">确认</a>
+                                        <a href="javascript:;" class="btn btn-primary QAConfirm" name="57" rel="3">确认</a>
                                     {% else %}
                                         {{ dir[0]["QAConfirmPeople_e4"] }}
                                     {% endif %}
@@ -3090,7 +3138,7 @@
                                 {% if None == dir[0]["OperationPeople_e5"] or None == dir[0]["CheckedPeople_e5"] or "" == dir[0]["OperationPeople_e5"] or "" == dir[0]["CheckedPeople_e5"] %}
                                 {% else %}
                                     {% if None == dir[0]["QAConfirmPeople_e5"] or "" == dir[0]["QAConfirmPeople_e5"] %}
-                                        <a href="javascript:;" class="btn btn-primary QAConfirm" name="质量控制">确认</a>
+                                        <a href="javascript:;" class="btn btn-primary QAConfirm" name="58" rel="3">确认</a>
                                     {% else %}
                                         {{ dir[0]["QAConfirmPeople_e5"] }}
                                     {% endif %}
@@ -3111,7 +3159,7 @@
                     <tr>
                         <th class="tdWidth100">时间</th>
                         <th>清场要求及内容</th>
-                        <th>打√选择</th>
+                        <th><label class="checkbox-inline"><input type="checkbox" name="allovercheckbox" id="allovercheckbox"> 打√全选</label></th>
                         <th>操作人</th>
                         <th>复核人</th>
                     </tr>
@@ -3227,7 +3275,7 @@
                             <input type="hidden" id="equipmentCheckbox" value={{ dir[0]["OperationPeople_e7"] }}>
                             {% if '82' == flag %}
                                 {% if None == dir[0]["OperationPeople_e7"] or "" == dir[0]["OperationPeople_e7"] %}
-                                    <a href="javascript:;" class="btn btn-primary OperationConfirm" name="操作人">确认</a>
+                                    <a href="javascript:;" class="btn btn-primary equipmentConfirm" name="操作人">确认</a>
                                 {% else %}
                                     {{ dir[0]["OperationPeople_e7"] }}
                                 {% endif %}
@@ -3247,7 +3295,7 @@
                                 {% if None == dir[0]["OperationPeople_e7"] or "" == dir[0]["OperationPeople_e7"] %}
                                 {% else %}
                                     {% if None == dir[0]["CheckedPeople_e7"] or "" == dir[0]["CheckedPeople_e7"] %}
-                                        <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="复核人">确认</a>
+                                        <a href="javascript:;" class="btn btn-primary equipmentConfirm" name="复核人">确认</a>
                                     {% else %}
                                         {{ dir[0]["CheckedPeople_e7"] }}
                                     {% endif %}
@@ -3318,7 +3366,7 @@
                     <tr>
                         <th class="tdWidth100">时间</th>
                         <th>准备工作要求及内容</th>
-                        <th>打√选择</th>
+                        <th><label class="checkbox-inline"><input type="checkbox" name="allreadycheckbox" id="allreadycheckbox"> 打√全选</label></th>
                         <th>操作人</th>
                         <th>复核人</th>
                     </tr>
@@ -3444,7 +3492,7 @@
                         <td class="middle-center" rowspan="2">
                             {% if '82' == flag %}
                                 {% if None == dir[0]["OperationPeople_f2"] or "" == dir[0]["OperationPeople_f2"] %}
-                                    <a href="javascript:;" class="btn btn-primary OperationConfirm" name="48">确认</a>
+                                    <a href="javascript:;" class="btn btn-primary OperationConfirm" name="59" rel="1">确认</a>
                                 {% else %}
                                     {{ dir[0]["OperationPeople_f2"] }}
                                 {% endif %}
@@ -3464,7 +3512,7 @@
                                 {% if None == dir[0]["OperationPeople_f2"] or "" == dir[0]["OperationPeople_f2"] %}
                                 {% else %}
                                     {% if None == dir[0]["CheckedPeople_f2"] or "" == dir[0]["CheckedPeople_f2"] %}
-                                        <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="48">确认</a>
+                                        <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="59" rel="2">确认</a>
                                     {% else %}
                                         {{ dir[0]["CheckedPeople_f2"] }}
                                     {% endif %}
@@ -3513,19 +3561,21 @@
                             {% endif %}
                         </td>
                         <td rowspan="5" class="middle-center">
-                            <input type="hidden" id="overcheckbox" value={{ dir[0]["OperationPeople_f3"] }}>
                             {% if '82' == flag %}
-                                {% if None == dir[0]["OperationPeople_f3"] or "" == dir[0]["OperationPeople_f3"] %}
-                                    <a href="javascript:;" class="btn btn-primary OperationConfirm" name="收膏开始">确认</a>
-                                {% else %}
-                                    {{ dir[0]["OperationPeople_f3"] }}
-                                {% endif %}
+                                {{ dir[0]["CheckedPeople_f3"] }}
                             {% endif %}
                             {% if '83' == flag %}
-                                {{ dir[0]["OperationPeople_f3"] }}
+                                {% if None == dir[0]["OperationPeople_f3"] or "" == dir[0]["OperationPeople_f3"] %}
+                                {% else %}
+                                    {% if None == dir[0]["CheckedPeople_f3"] or "" == dir[0]["CheckedPeople_f3"] %}
+                                        <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="收膏开始">确认</a>
+                                    {% else %}
+                                        {{ dir[0]["CheckedPeople_f3"] }}
+                                    {% endif %}
+                                {% endif %}
                             {% endif %}
                             {% if '84' == flag %}
-                                {{ dir[0]["OperationPeople_f3"] }}
+                                {{ dir[0]["CheckedPeople_f3"] }}
                             {% endif %}
                         </td>
                     </tr>
@@ -3611,7 +3661,7 @@
                         <td rowspan="2" class="middle-center">
                             {% if '82' == flag %}
                                 {% if None == dir[0]["OperationPeople_f4"] or "" == dir[0]["OperationPeople_f4"] %}
-                                    <a href="javascript:;" class="btn btn-primary OperationConfirm" name="50">确认</a>
+                                    <a href="javascript:;" class="btn btn-primary OperationConfirm" name="60" rel="1">确认</a>
                                 {% else %}
                                     {{ dir[0]["OperationPeople_f4"] }}
                                 {% endif %}
@@ -3631,7 +3681,7 @@
                                 {% if None == dir[0]["OperationPeople_f4"] or "" == dir[0]["OperationPeople_f4"] %}
                                 {% else %}
                                     {% if None == dir[0]["CheckedPeople_f4"] or "" == dir[0]["CheckedPeople_f4"] %}
-                                        <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="50">确认</a>
+                                        <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="60" rel="2">确认</a>
                                     {% else %}
                                         {{ dir[0]["CheckedPeople_f4"] }}
                                     {% endif %}
@@ -3663,7 +3713,7 @@
                     <tr>
                         <th class="tdWidth100">时间</th>
                         <th>清场要求及内容</th>
-                        <th>打√选择</th>
+                        <th><label class="checkbox-inline"><input type="checkbox" name="allovercheckbox" id="allovercheckbox"> 打√全选</label></th>
                         <th>操作人</th>
                         <th>复核人</th>
                     </tr>
@@ -3794,7 +3844,7 @@
                         <td rowspan="2" class="middle-center">
                             {% if '82' == flag %}
                                 {% if None == dir[0]["OperationPeople_f6"] or "" == dir[0]["OperationPeople_f6"] %}
-                                    <a href="javascript:;" class="btn btn-primary OperationConfirm" name="51">确认</a>
+                                    <a href="javascript:;" class="btn btn-primary OperationConfirm" name="61" rel="1">确认</a>
                                 {% else %}
                                     {{ dir[0]["OperationPeople_f6"] }}
                                 {% endif %}
@@ -3814,7 +3864,7 @@
                                 {% if None == dir[0]["OperationPeople_f6"] or "" == dir[0]["OperationPeople_f6"] %}
                                 {% else %}
                                     {% if None == dir[0]["CheckedPeople_f6"] or "" == dir[0]["CheckedPeople_f6"] %}
-                                        <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="51">确认</a>
+                                        <a href="javascript:;" class="btn btn-primary CheckedConfirm" name="61" rel="2">确认</a>
                                     {% else %}
                                         {{ dir[0]["CheckedPeople_f6"] }}
                                     {% endif %}
@@ -3844,6 +3894,61 @@
     <script type="text/javascript" src="../static/js/jsPdf.debug.js"></script>
     <script>
         $(function(){
+{#            $("#loadingModal").modal('show');#}
+            //数据采集
+{#            $.ajax({#}
+{#                url: '/electionBatchSearch',#}
+{#                method: 'GET',#}
+{#                data: {#}
+{#                    batchID: $("#batchID").html(),#}
+{#                    PName: getUrlParam('title') + "段"#}
+{#                },#}
+{#                success: function (response) {#}
+{#                    $("#loadingModal").modal('hide');#}
+{#                    response = JSON.parse(response)#}
+{#                    for(var key in response){#}
+{#                        adddata(key,response[key])#}
+{#                    }#}
+{#                },#}
+{#                error: function () {#}
+{#                    alert("请求数据失败，请稍后重试！")#}
+{#                }#}
+{#            });#}
+            //表单数据插入
+{#            $.ajax({#}
+{#                url: 'allUnitDataMutual',#}
+{#                method: 'GET',#}
+{#                data: {#}
+{#                    PUID: $("#PUID").val(),#}
+{#                    BatchID: $("#batchID").html()#}
+{#                },#}
+{#                beforeSend:function(){#}
+{#                    $("#loadingModal").modal("show");#}
+{#                },#}
+{#                success: function (response) {#}
+{#                    response = JSON.parse(response)#}
+{#                    for(var key in response){#}
+{#                        addInputData(key,response[key])#}
+{#                    }#}
+{#                },#}
+{#                error: function () {#}
+{#                    alert("请求失败，请稍后重试！")#}
+{#                }#}
+{#            });#}
+            //根据key匹配id  加入数据
+            function adddata(ids,res){
+                $("#" + ids).html(res)
+            }
+            function addInputData(ids,res){
+                $("#" + ids).val(res)
+                $("input[name=FilterCheckbox]").each(function(){
+                    if($(this).val() == 'false'){
+                        $(this).prop("checked",false)
+                    }else if($(this).val() == 'true'){
+                        $(this).prop("checked",true)
+                    }
+                })
+            }
             //操作人确认请求方法，制药计划管理页面里已有的确认，包括生产前的准备，开始，结束清场
             function OperationConfirmFun(ID,title,name){
                 $.ajax({
@@ -3996,7 +4101,21 @@
                             }
                         }
                     })
-                }else if(name == "备料结束清场" || name == "煎煮结束清场" || name == "浓缩结束清场" || name == "浓缩结束清场" || name == "喷雾干燥结束清场" || name == "收粉结束清场"){
+                }else if(name == "备料结束清场" || name == "煎煮结束清场"  || name == "醇沉结束清场" || name == "单效浓缩结束清场" || name == "收膏结束清场"){
+                    $.messager.confirm('确定操作', '是否要进行确认？确认后您无法撤回和修改时间，请认真检查。', function (flag) {
+                        if(flag) {
+                            var number = ""
+                            $("input:checkbox[name=overcheckbox]:checked").each(function(k){
+                                number = k
+                            })
+                            if(number == 3){
+                                OperationConfirmFun(ID,title,name)
+                            }else{
+                                $.messager.alert('提示', "完成当前所有的清场工作才可以做确认操作", 'info');
+                            }
+                        }
+                    })
+                }else if(name == "浓缩结束清场"){
                     $.messager.confirm('确定操作', '是否要进行确认？确认后您无法撤回和修改时间，请认真检查。', function (flag) {
                         if(flag) {
                             var number = ""
@@ -4010,10 +4129,20 @@
                             }
                         }
                     })
-                }else if(name == "32"){ //领取物料操作人确认
+                }else if(name == "32"){ //备料领取物料操作人确认
                     $.messager.confirm('确定操作', '是否要进行确认？确认后您无法撤回，请认真检查。', function (flag) {
                         if(flag) {
                             if($("#BLFilterCheckbox1").prop("checked") == true){
+                                elseConfirmFun(PUID,BatchID,type,confirm)
+                            }else{
+                                $.messager.alert('提示', "物料复核无误才可以做确认操作", 'info');
+                            }
+                        }
+                    })
+                }else if(name == "55"){ //醇沉领取物料操作人确认
+                    $.messager.confirm('确定操作', '是否要进行确认？确认后您无法撤回，请认真检查。', function (flag) {
+                        if(flag) {
+                            if($("#CCFilterCheckbox1").prop("checked") == true){
                                 elseConfirmFun(PUID,BatchID,type,confirm)
                             }else{
                                 $.messager.alert('提示', "物料复核无误才可以做确认操作", 'info');
@@ -4027,14 +4156,14 @@
                             $("input:checkbox[name=stewingOvercheckbox]:checked").each(function(k){
                                 number = k
                             })
-                            if(number == 4){
+                            if(number == 3){
                                 elseConfirmFun(PUID,BatchID,type,confirm)
                             }else{
                                 $.messager.alert('提示', "完成当前所有的清场工作才可以做确认操作", 'info');
                             }
                         }
                     })
-                }else if(name == "45" || name == "46" || name == "54" || name == "48" || name == "52" || name == "50" || name == "51"){
+                }else if(name == "45" || name == "46" || name == "54" || name == "56" || name == "57" || name == "58" || name == "59" || name == "60" || name == "61"){
                     $.messager.confirm('确定操作', '是否要进行确认？确认后您无法撤回，请认真检查。', function (flag) {
                         if(flag) {
                             elseConfirmFun(PUID,BatchID,type,confirm)
@@ -4057,7 +4186,7 @@
                     BatchID = $("#batchID").html(),
                     type = $(this).attr("name"),
                     confirm = $(this).attr("rel")
-                if(name == "32" || name == "42" || name == "45" || name == "46" || name == "48" || name == "50" || name == "51") {
+                if(name == "32" || name == "55" || name == "42" || name == "45" || name == "46" || name == "54" || name == "56" || name == "57" || name == "58" || name == "59" || name == "60" || name == "61") {
                     $.messager.confirm('确定操作', '是否要进行确认？确认后您无法撤回，请认真检查。', function (flag) {
                         if(flag) {
                             elseConfirmFun(PUID,BatchID,type,confirm)
@@ -4104,7 +4233,7 @@
                             }
                         }
                     })
-                }else if(name == "45" || name == "46" || name == "54" || name == "52"){
+                }else if(name == "45" || name == "46" || name == "54" || name == "57" || name == "58"){
                     $.messager.confirm('确定操作', '是否要进行确认？确认后不允许撤回。', function (flag) {
                         if (flag) {
                             elseConfirmFun(PUID,BatchID,type,confirm)
@@ -4117,6 +4246,322 @@
                         }
                     })
                 }
+            })
+
+            //设备确认请求方法
+            function equipmentConfirmFun(PUID,BatchID,confirm){
+                $.ajax({
+                    url: '/addEquipmentWork',
+                    method: 'POST',
+                    data: {
+                        PUID: PUID,
+                        BatchID: BatchID,
+                        confirm: confirm
+                    },
+                    success: function (data) {
+                        if (data == "OK") {
+                            $.messager.show({
+                                title: '提示',
+                                timeout: 1000,
+                                msg: '确认成功！',
+                                style: {
+                                    right: '',
+                                    top: document.body.scrollTop + document.documentElement.scrollTop,
+                                    bottom: ''
+                                }
+                            });
+                            window.location.reload();
+                        } else {
+                            $.messager.alert('提示', data, 'info');
+                        }
+                    },
+                    error: function () {
+                        alert("请求失败，请稍后重试！")
+                    }
+                });
+            }
+            //设备确认
+            $(".equipmentConfirm").on('click',function(){
+                var PUID = $("#PUID").val(),
+                    BatchID = $("#batchID").html(),
+                    confirm = $(this).attr("name")
+                var checkboxChecked = $("input[name=equipmentCheckbox]").length //复选框数量
+                $.messager.confirm('确定操作', '是否要进行确认？确认后不允许撤回。', function (flag) {
+                    if (flag) {
+                        if(confirm == "操作人"){
+                            var number = ""
+                            $("input:checkbox[name=equipmentCheckbox]:checked").each(function(k){
+                                number = k
+                            })
+                            if(number == checkboxChecked - 1){ //判断是否全部选中设备
+                                equipmentConfirmFun(PUID,BatchID,confirm)
+                            }else{
+                                $.messager.alert('提示', "当前所有的设备正常才可以做确认操作", 'info');
+                            }
+                        }else{
+                            equipmentConfirmFun(PUID,BatchID,confirm)
+                        }
+                    }
+                })
+            })
+            //导出PDF
+            $("#renderPdf").on('click',function(){
+                var pdfMain = $("#pdfMain")
+                html2canvas(pdfMain, {
+                  onrendered:function(canvas) {
+                      var contentWidth = canvas.width;
+                      var contentHeight = canvas.height;
+                      //一页pdf显示html页面生成的canvas高度;
+                      var pageHeight = contentWidth / 595.28 * 841.89;
+                      //未生成pdf的html页面高度
+                      var leftHeight = contentHeight;
+                      //pdf页面偏移
+                      var position = 0;
+                      //a4纸的尺寸[595.28,841.89]，html页面生成的canvas在pdf中图片的宽高
+                      var imgWidth = 555.28;
+                      var imgHeight = 555.28/contentWidth * contentHeight;
+                      var pageData = canvas.toDataURL('image/jpeg', 1.0);
+                      var pdf = new jsPDF('', 'pt', 'a4');
+                      //有两个高度需要区分，一个是html页面的实际高度，和生成pdf的页面高度(841.89)
+                      //当内容未超过pdf一页显示的范围，无需分页
+                      if (leftHeight < pageHeight) {
+                          pdf.addImage(pageData, 'JPEG', 20, 0, imgWidth, imgHeight );
+                      } else {
+                          while(leftHeight > 0) {
+                              pdf.addImage(pageData, 'JPEG', 20, position, imgWidth, imgHeight)
+                              leftHeight -= pageHeight;
+                              position -= 841.89;
+                              //避免添加空白页
+                              if(leftHeight > 0) {
+                                  pdf.addPage();
+                              }
+                          }
+                      }
+                      pdf.save('电子批记录html to pdf.pdf');
+                  }
+              })
+            })
+            //保存输入的表单信息
+            $("#save").on('click',function(){
+                var PUID = $("#PUID").val(),
+                    batchID = $("#batchID").html()
+                $.ajax({
+                    url: 'allUnitDataMutual',
+                    method: 'POST',
+                    data: {
+                        PUID: PUID,
+                        BatchID: batchID,
+                        PNameProDate:$("#PNameProDate").val(),
+                        startReadyDate:$("#startReadyDate").val(),
+                        endReadyDate:$("#endReadyDate").val(),
+                        startOverDate:$("#startOverDate").val(),
+                        endOverDate:$("#endOverDate").val(),
+                        startStewingDate:$("#startStewingDate").val(),
+                        endStewingDate:$("#endStewingDate").val(),
+
+                        TZSBatch1:$("#TZSBatch1").val(),
+                        TZSBatch2:$("#TZSBatch2").val(),
+                        TZSBatch3:$("#TZSBatch3").val(),
+                        TZSTestNumber1:$("#TZSTestNumber1").val(),
+                        TZSTestNumber2:$("#TZSTestNumber2").val(),
+                        TZSTestNumber3:$("#TZSTestNumber3").val(),
+                        TZSNumber1:$("#TZSNumber1").val(),
+                        TZSNumber2:$("#TZSNumber2").val(),
+                        TZSNumber3:$("#TZSNumber3").val(),
+
+                        JSZBatch1:$("#JSZBatch1").val(),
+                        JSZBatch2:$("#JSZBatch2").val(),
+                        JSZBatch3:$("#JSZBatch3").val(),
+                        JSZTestNumber1:$("#JSZTestNumber1").val(),
+                        JSZTestNumber2:$("#JSZTestNumber2").val(),
+                        JSZTestNumber3:$("#JSZTestNumber3").val(),
+                        JSZNumber1:$("#JSZNumber1").val(),
+                        JSZNumber2:$("#JSZNumber2").val(),
+                        JSZNumber3:$("#JSZNumber3").val(),
+
+                        CMYBatch1:$("#CMYBatch1").val(),
+                        CMYBatch2:$("#CMYBatch2").val(),
+                        CMYBatch3:$("#CMYBatch3").val(),
+                        CMYTestNumber1:$("#CMYTestNumber1").val(),
+                        CMYTestNumber2:$("#CMYTestNumber2").val(),
+                        CMYTestNumber3:$("#CMYTestNumber3").val(),
+                        CMYNumber1:$("#CMYNumber1").val(),
+                        CMYNumber2:$("#CMYNumber2").val(),
+                        CMYNumber3:$("#CMYNumber3").val(),
+
+                        CPBatch1:$("#CPBatch1").val(),
+                        CPBatch2:$("#CPBatch2").val(),
+                        CPBatch3:$("#CPBatch3").val(),
+                        CPTestNumber1:$("#CPTestNumber1").val(),
+                        CPTestNumber2:$("#CPTestNumber2").val(),
+                        CPTestNumber3:$("#CPTestNumber3").val(),
+                        CPNumber1:$("#CPNumber1").val(),
+                        CPNumber2:$("#CPNumber2").val(),
+                        CPNumber3:$("#CPNumber3").val(),
+
+                        TZSWeight1:$("#TZSWeight1").val(),
+                        TZSWeight2:$("#TZSWeight2").val(),
+                        TZSWeight3:$("#TZSWeight3").val(),
+                        TZSWeight4:$("#TZSWeight4").val(),
+                        TZSWeight5:$("#TZSWeight5").val(),
+                        TZSWeight6:$("#TZSWeight6").val(),
+
+                        JSZWeight1:$("#JSZWeight1").val(),
+                        JSZWeight2:$("#JSZWeight2").val(),
+                        JSZWeight3:$("#JSZWeight3").val(),
+                        JSZWeight4:$("#JSZWeight4").val(),
+                        JSZWeight5:$("#JSZWeight5").val(),
+                        JSZWeight6:$("#JSZWeight6").val(),
+
+                        CMYWeight1:$("#CMYWeight1").val(),
+                        CMYWeight2:$("#CMYWeight2").val(),
+                        CMYWeight3:$("#CMYWeight3").val(),
+                        CMYWeight4:$("#CMYWeight4").val(),
+                        CMYWeight5:$("#CMYWeight5").val(),
+                        CMYWeight6:$("#CMYWeight6").val(),
+
+                        CPWeight1:$("#CPWeight1").val(),
+                        CPWeight2:$("#CPWeight2").val(),
+                        CPWeight3:$("#CPWeight3").val(),
+                        CPWeight4:$("#CPWeight4").val(),
+                        CPWeight5:$("#CPWeight5").val(),
+                        CPWeight6:$("#CPWeight6").val(),
+
+                        startDate1:$("#startDate1").val(),
+                        startDate2:$("#startDate2").val(),
+                        startDate3:$("#startDate3").val(),
+                        startDate4:$("#startDate4").val(),
+                        startDate5:$("#startDate5").val(),
+                        startDate6:$("#startDate6").val(),
+
+                        endDate1:$("#endDate1").val(),
+                        endDate2:$("#endDate2").val(),
+                        endDate3:$("#endDate3").val(),
+                        endDate4:$("#endDate4").val(),
+                        endDate5:$("#endDate5").val(),
+                        endDate6:$("#endDate6").val(),
+
+                        drugInNumber1:$("#drugInNumber1").val(),
+                        drugInNumber2:$("#drugInNumber2").val(),
+                        drugInNumber3:$("#drugInNumber3").val(),
+                        drugInNumber4:$("#drugInNumber4").val(),
+                        drugInNumber5:$("#drugInNumber5").val(),
+                        drugInNumber6:$("#drugInNumber6").val(),
+
+                        oneFilterCheckbox1:$("#oneFilterCheckbox1").prop("checked"),
+                        oneFilterCheckbox2:$("#oneFilterCheckbox2").prop("checked"),
+                        oneFilterCheckbox3:$("#oneFilterCheckbox3").prop("checked"),
+                        oneFilterCheckbox4:$("#oneFilterCheckbox4").prop("checked"),
+                        oneFilterCheckbox5:$("#oneFilterCheckbox5").prop("checked"),
+                        oneFilterCheckbox6:$("#oneFilterCheckbox6").prop("checked"),
+
+                        twoFilterCheckbox1:$("#twoFilterCheckbox1").prop("checked"),
+                        twoFilterCheckbox2:$("#twoFilterCheckbox2").prop("checked"),
+                        twoFilterCheckbox3:$("#twoFilterCheckbox3").prop("checked"),
+                        twoFilterCheckbox4:$("#twoFilterCheckbox4").prop("checked"),
+                        twoFilterCheckbox5:$("#twoFilterCheckbox5").prop("checked"),
+                        twoFilterCheckbox6:$("#twoFilterCheckbox6").prop("checked"),
+
+                        NCFilterCheckbox1:$("#NCFilterCheckbox1").prop("checked"),
+                        NCFilterCheckbox2:$("#NCFilterCheckbox2").prop("checked"),
+
+                        NCProp1:$("#NCProp1").val(),
+                        NCProp2:$("#NCProp2").val(),
+                        NCProp3:$("#NCProp3").val(),
+                        NCTemp1:$("#NCTemp1").val(),
+                        NCTemp2:$("#NCTemp2").val(),
+                        NCTemp3:$("#NCTemp3").val(),
+
+                        PWGZFilterCheckbox1:$("#PWGZFilterCheckbox1").prop("checked"),
+                        PWGZFilterCheckbox2:$("#PWGZFilterCheckbox2").prop("checked"),
+                        PWGZFilterCheckbox3:$("#PWGZFilterCheckbox3").prop("checked"),
+                        PWGZFilterCheckbox4:$("#PWGZFilterCheckbox4").prop("checked"),
+
+                        plasticBatch1:$("#plasticBatch1").val(),
+                        plasticBatch2:$("#plasticBatch2").val(),
+                        plasticTestNumber1:$("#plasticTestNumber1").val(),
+                        plasticTestNumber2:$("#plasticTestNumber2").val(),
+                        plasticNumber1:$("#plasticNumber1").val(),
+                        plasticNumber2:$("#plasticNumber2").val(),
+
+                        kraftBatch1:$("#kraftBatch1").val(),
+                        kraftBatch2:$("#kraftBatch2").val(),
+                        kraftTestNumber1:$("#kraftTestNumber1").val(),
+                        kraftTestNumber2:$("#kraftTestNumber2").val(),
+                        kraftNumber1:$("#kraftNumber1").val(),
+                        kraftNumber2:$("#kraftNumber2").val(),
+
+                        SFStartTime1:$("#SFStartTime1").val(),
+                        SFStartTime2:$("#SFStartTime2").val(),
+                        SFNO1:$("#SFNO1").val(),
+                        SFNO2:$("#SFNO2").val(),
+                        baggingOff1:$("#baggingOff1").val(),
+                        baggingOff2:$("#baggingOff2").val(),
+                        isCollectCheckbox1:$("#isCollectCheckbox1").prop("checked"),
+                        isCollectCheckbox2:$("#isCollectCheckbox2").prop("checked"),
+                        SFEndTime1:$("#SFEndTime1").val(),
+                        SFEndTime2:$("#SFEndTime2").val(),
+
+                        count1:$("#count1").val(),
+                        count2:$("#count2").val(),
+                        count3:$("#count3").val(),
+                        count4:$("#count4").val(),
+                        count5:$("#count5").val(),
+                        count6:$("#count6").val(),
+                        count7:$("#count7").val(),
+                        count8:$("#count8").val(),
+                        count9:$("#count9").val(),
+                        count10:$("#count10").val(),
+
+                        isNormalCheckbox1:$("#isNormalCheckbox1").prop("checked"),
+                        isNormalCheckbox2:$("#isNormalCheckbox2").prop("checked"),
+                        isNormalCheckbox3:$("#isNormalCheckbox3").prop("checked"),
+
+                        plastic_1_1:$("#plastic_1_1").val(),
+                        plastic_1_2:$("#plastic_1_2").val(),
+                        plastic_1_3:$("#plastic_1_3").val(),
+                        plastic_1_4:$("#plastic_1_4").val(),
+                        plastic_1_5:$("#plastic_1_5").val(),
+                        plastic_1_6:$("#plastic_1_6").val(),
+                        plastic_1_7:$("#plastic_1_7").val(),
+                        plastic_2_1:$("#plastic_2_1").val(),
+                        plastic_2_2:$("#plastic_2_2").val(),
+                        plastic_2_3:$("#plastic_2_3").val(),
+                        plastic_2_4:$("#plastic_2_4").val(),
+                        plastic_2_5:$("#plastic_2_5").val(),
+                        plastic_2_6:$("#plastic_2_6").val(),
+                        plastic_2_7:$("#plastic_2_7").val(),
+
+                        kraft_1_1:$("#kraft_1_1").val(),
+                        kraft_1_2:$("#kraft_1_2").val(),
+                        kraft_1_3:$("#kraft_1_3").val(),
+                        kraft_1_4:$("#kraft_1_4").val(),
+                        kraft_1_5:$("#kraft_1_5").val(),
+                        kraft_1_6:$("#kraft_1_6").val(),
+                        kraft_1_7:$("#kraft_1_7").val(),
+                        kraft_2_1:$("#kraft_2_1").val(),
+                        kraft_2_2:$("#kraft_2_2").val(),
+                        kraft_2_3:$("#kraft_2_3").val(),
+                        kraft_2_4:$("#kraft_2_4").val(),
+                        kraft_2_5:$("#kraft_2_5").val(),
+                        kraft_2_6:$("#kraft_2_6").val(),
+                        kraft_2_7:$("#kraft_2_7").val(),
+                    },
+                    beforeSend:function(){
+                        $("#loadingModal").modal('show');
+                    },
+                    success: function (data) {
+                        $("#loadingModal").modal('hide');
+                        if (data == "OK") {
+                            window.location.reload();
+                        } else {
+                            $.messager.alert('提示', data, 'info');
+                        }
+                    },
+                    error: function () {
+                        alert("请求失败，请稍后重试！")
+                    }
+                });
             })
         })
         //获取页面传参
