@@ -21,7 +21,7 @@ from collections import Counter
 from imp import reload
 
 from flask_login import current_user
-from sqlalchemy import Column, DateTime, Float, Integer, String, Unicode, BigInteger,Boolean
+from sqlalchemy import Column, DateTime, Float, Integer, String, Unicode, BigInteger,Boolean,and_
 from sqlalchemy import create_engine, Column, ForeignKey, Table, DateTime, Integer, String, desc
 from sqlalchemy import func
 from sqlalchemy.dialects.mssql.base import BIT
@@ -3786,6 +3786,21 @@ class MaterialInfo(Base):
     Unit = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
     DeviceCode = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
     BatchCode = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+class QualityControlTree(Base):
+	__tablename__ = "QualityControlTree"
+
+	# ID:
+	ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+	# 生产线
+	Name = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+	# 工序
+	Note = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+	# 父节点
+	ParentNode = Column(Integer, primary_key = False, autoincrement = False, nullable = True)
 
 
 # 生成表单的执行语句
