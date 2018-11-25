@@ -3,7 +3,7 @@
 <head> 
     <meta charset="utf-8"> 
     <meta name="viewport" content="width=device-width, initial-scale=1"> 
-    <title>过程数据</title> 
+    <title>过程连续数据</title>
     <link href="../static/css/base.css" rel="stylesheet">
     <link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
 	<link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
@@ -42,12 +42,10 @@
         });
         //按钮点击后添加选项卡
         function addTab(title,url){
-            if($('#tt').tabs('exists',title))
-            {
+            if($('#tt').tabs('exists',title)){
                 $('#tt').tabs('select',title);
             }
-            else
-            {
+            else{
                 var content='<iframe class="page-iframe" src="'+ url +'" frameborder="no" border="no" height="100%"    width="100%" scrolling="auto"></iframe>';
                 $('#tt').tabs('add',{
                     title:title,
@@ -60,31 +58,24 @@
 </head> 
 <body>
 	<div class="container">
-		<div class="left-tree" >
-			<ul id="LeftTree" class="easyui-tree" data-options="url:'../static/data/tree_ProcessItem.json',method:'get',animate:true,checkbox:false"></ul>
+		<div class="left-tree" style="margin:0 10px;">
+			<ul id="LeftTree" class="easyui-tree" data-options="url:'/ProcessContinuousData/DataTree',method:'get',animate:true,checkbox:false"></ul>
 		</div>
-		
-            <div id="pf-page">
-			    <div id="tb" style="padding:0 10px;">
-				<div style="margin:10px;"></div>	
-				<a>  起止日期:  </a>
-                  <input class="easyui-datebox"   style="width:166px;height:35px;line-height:35px;">
-                  <input class="easyui-datebox"  style="width:166px;height:35px;line-height:35px;">
-				  <a id="btn" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'">查询批次号</a>
-			  
-				  <a> ----> 批次号:  </a>
-				   <input class="easyui-combobox" id="rwlb" name="rwlb" style="width:250px" data-options="valueField:'id', textField:'text', panelHeight:'auto'" >  
-				   
-				 </div>			 
-				 
-			
-			    <div style="margin:10px;"></div>
-                <div id="tt" class="easyui-tabs" style="width:100%;height:380px; scrolling="false"">
-                    
-                </div>
-            </div>		
+        <div id="pf-page" style="margin-left: 20px;margin-right: 10px;">
+            <div id="tb" style="padding:0 10px;">
+            <div style="margin:10px;"></div>
+            <a>  起止日期:  </a>
+                <input class="easyui-datebox" style="width:166px;height:35px;line-height:35px;">
+                <input class="easyui-datebox" style="width:166px;height:35px;line-height:35px;">
+                <a id="btn" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'">查询批次号</a>
+
+                <a> ----> 批次号:  </a>
+                <input class="easyui-combobox" id="rwlb" name="rwlb" style="width:250px" data-options="valueField:'id', textField:'text', panelHeight:'auto'" >
+             </div>
+
+            <div id="tt" class="easyui-tabs" style="width:100%;height:400px;margin-top:10px; scrolling:'false'"></div>
+        </div>
 	</div>
-	
 </body> 
 </html>
 

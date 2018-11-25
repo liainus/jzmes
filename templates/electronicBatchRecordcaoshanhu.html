@@ -292,7 +292,7 @@
                             <label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="BLFilterCheckbox1"> 是 / 否</label>
                         </td>
                         <td>操作人</td>
-                        <td class="middle-center">
+                        <td class="middle-center tdMinWidth100">
                             <input type="hidden" id="CollectMaterialCheckbox" value={{ dir[0]["OperationPeople_a2"] }}>
                             {% if '82' == flag %}
                                 {% if None == dir[0]["OperationPeople_a2"] or "" == dir[0]["OperationPeople_a2"] %}
@@ -309,7 +309,7 @@
                             {% endif %}
                         </td>
                         <td>复核人</td>
-                        <td class="middle-center">
+                        <td class="middle-center tdMinWidth100">
                             {% if '82' == flag %}
                                 {{ dir[0]["CheckedPeople_a2"] }}
                             {% endif %}
@@ -345,20 +345,20 @@
                     <tr>
                         <td rowspan="3" class="middle-center">净肿节风</td>
                         <td rowspan="3" class="middle-center">2118</td>
-                        <td><input type="text" class="form-control batchInput" id="TZSBatch1"></td>
-                        <td><input type="text" class="form-control batchInput" id="TZSTestNumber1"></td>
-                        <td><input type="text" class="form-control batchInput" id="TZSNumber1"></td>
-                        <td rowspan="3"></td>
+                        <td><input type="text" class="form-control batchInput" id="JZJFBatch1"></td>
+                        <td><input type="text" class="form-control batchInput" id="JZJFTestNumber1"></td>
+                        <td><input type="text" class="form-control batchInput" id="JZJFNumber1"></td>
+                        <td rowspan="3" class="middle-center"><input type="text" class="form-control batchInput" id="JZJFTotal"></td>
                     </tr>
                     <tr>
-                        <td><input type="text" class="form-control batchInput" id="TZSBatch2"></td>
-                        <td><input type="text" class="form-control batchInput" id="TZSTestNumber2"></td>
-                        <td><input type="text" class="form-control batchInput" id="TZSNumber2"></td>
+                        <td><input type="text" class="form-control batchInput" id="JZJFBatch2"></td>
+                        <td><input type="text" class="form-control batchInput" id="JZJFTestNumber2"></td>
+                        <td><input type="text" class="form-control batchInput" id="JZJFNumber2"></td>
                     </tr>
                     <tr>
-                        <td><input type="text" class="form-control batchInput" id="TZSBatch3"></td>
-                        <td><input type="text" class="form-control batchInput" id="TZSTestNumber3"></td>
-                        <td><input type="text" class="form-control batchInput" id="TZSNumber3"></td>
+                        <td><input type="text" class="form-control batchInput" id="JZJFBatch3"></td>
+                        <td><input type="text" class="form-control batchInput" id="JZJFTestNumber3"></td>
+                        <td><input type="text" class="form-control batchInput" id="JZJFNumber3"></td>
                     </tr>
                 </tbody>
             </table>
@@ -385,14 +385,14 @@
                 <tbody>
                     <tr>
                         <td>净肿节风</td>
-                        <td><input type="text" class="form-control batchInput" id="TZSWeight1"></td>
-                        <td><input type="text" class="form-control batchInput" id="TZSWeight2"></td>
-                        <td><input type="text" class="form-control batchInput" id="TZSWeight3"></td>
-                        <td><input type="text" class="form-control batchInput" id="TZSWeight4"></td>
-                        <td><input type="text" class="form-control batchInput" id="TZSWeight5"></td>
-                        <td><input type="text" class="form-control batchInput" id="TZSWeight6"></td>
-                        <td><input type="text" class="form-control batchInput" id="TZSWeight7"></td>
-                        <td><input type="text" class="form-control batchInput" id="TZSWeight8"></td>
+                        <td><input type="text" class="form-control batchInput" id="JZJFWeight1"></td>
+                        <td><input type="text" class="form-control batchInput" id="JZJFWeight2"></td>
+                        <td><input type="text" class="form-control batchInput" id="JZJFWeight3"></td>
+                        <td><input type="text" class="form-control batchInput" id="JZJFWeight4"></td>
+                        <td><input type="text" class="form-control batchInput" id="JZJFWeight5"></td>
+                        <td><input type="text" class="form-control batchInput" id="JZJFWeight6"></td>
+                        <td><input type="text" class="form-control batchInput" id="JZJFWeight7"></td>
+                        <td><input type="text" class="form-control batchInput" id="JZJFWeight8"></td>
                     </tr>
                     <tr>
                         <td>开始时间</td>
@@ -790,10 +790,10 @@
                     </tr>
                     <tr>
                         <td>锅数编号</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td><input type="text" class="form-control batchInput" id="pot1"></td>
+                        <td><input type="text" class="form-control batchInput" id="pot2"></td>
+                        <td><input type="text" class="form-control batchInput" id="pot3"></td>
+                        <td><input type="text" class="form-control batchInput" id="pot4"></td>
                     </tr>
                     <tr>
                         <td>开始时间</td>
@@ -1004,17 +1004,17 @@
                 <tbody>
                     <tr>
                         <td class="tdWidth300">提取罐编号</td>
-                        <td id="EQPName0" class="tdMinWidth100"></td>
-                        <td id="EQPName1" class="tdMinWidth100"></td>
-                        <td id="EQPName2" class="tdMinWidth100"></td>
-                        <td id="EQPName3" class="tdMinWidth100"></td>
+                        <td class="tdMinWidth100"></td>
+                        <td class="tdMinWidth100"></td>
+                        <td class="tdMinWidth100"></td>
+                        <td class="tdMinWidth100"></td>
                     </tr>
                     <tr>
                         <td>锅数编号</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td><input type="text" class="form-control batchInput" id="pot5"></td>
+                        <td><input type="text" class="form-control batchInput" id="pot6"></td>
+                        <td><input type="text" class="form-control batchInput" id="pot7"></td>
+                        <td><input type="text" class="form-control batchInput" id="pot8"></td>
                     </tr>
                     <tr>
                         <td>开始时间</td>
@@ -1025,10 +1025,10 @@
                     </tr>
                     <tr>
                         <td>药材投料量</td>
-                        <td><input type="text" class="form-control batchInput"></td>
-                        <td><input type="text" class="form-control batchInput"></td>
-                        <td><input type="text" class="form-control batchInput"></td>
-                        <td><input type="text" class="form-control batchInput"></td>
+                        <td><input type="text" class="form-control batchInput" id="drugInNumber5"></td>
+                        <td><input type="text" class="form-control batchInput" id="drugInNumber6"></td>
+                        <td><input type="text" class="form-control batchInput" id="drugInNumber7"></td>
+                        <td><input type="text" class="form-control batchInput" id="drugInNumber8"></td>
                     </tr>
                     <tr>
                         <td>第一次加入药材量17倍水</td>
@@ -1140,17 +1140,17 @@
             <table class="table table-bordered">
                 <tr>
                     <td class="tdWidth300">一煎药液经120目滤过至贮罐</td>
-                    <td class="tdMinWidth100"><label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="oneFilterCheckbox1"> 是 / 否</label></td>
-                    <td class="tdMinWidth100"><label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="oneFilterCheckbox2"> 是 / 否</label></td>
-                    <td class="tdMinWidth100"><label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="oneFilterCheckbox3"> 是 / 否</label></td>
-                    <td class="tdMinWidth100"><label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="oneFilterCheckbox4"> 是 / 否</label></td>
+                    <td class="tdMinWidth100"><label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="oneFilterCheckbox5"> 是 / 否</label></td>
+                    <td class="tdMinWidth100"><label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="oneFilterCheckbox6"> 是 / 否</label></td>
+                    <td class="tdMinWidth100"><label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="oneFilterCheckbox7"> 是 / 否</label></td>
+                    <td class="tdMinWidth100"><label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="oneFilterCheckbox8"> 是 / 否</label></td>
                 </tr>
                 <tr>
                     <td>二煎药液经120目滤过至贮罐</td>
-                    <td><label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox"> 是 / 否</label></td>
-                    <td><label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox"> 是 / 否</label></td>
-                    <td><label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox"> 是 / 否</label></td>
-                    <td><label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox"> 是 / 否</label></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="twoFilterCheckbox5"> 是 / 否</label></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="twoFilterCheckbox6"> 是 / 否</label></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="twoFilterCheckbox7"> 是 / 否</label></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="twoFilterCheckbox8"> 是 / 否</label></td>
                 </tr>
                 <tr>
                     <td>结束时间</td>
@@ -1161,10 +1161,10 @@
                 </tr>
                 <tr>
                     <td>提取罐清场时间</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <td><input type="text" class="form-control batchInput" id="EqclearDete1"></td>
+                    <td><input type="text" class="form-control batchInput" id="EqclearDete2"></td>
+                    <td><input type="text" class="form-control batchInput" id="EqclearDete3"></td>
+                    <td><input type="text" class="form-control batchInput" id="EqclearDete4"></td>
                 </tr>
                 <tr>
                     <td>操作人</td>
@@ -1790,58 +1790,58 @@
                         <td id="zkd_1_10"></td>
                     </tr>
                     <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td id="zkdTime_0_11"></td>
+                        <td id="zkd_0_11"></td>
+                        <td id="zkdTime_1_11"></td>
+                        <td id="zkd_1_11"></td>
                     </tr>
                     <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td id="zkdTime_0_12"></td>
+                        <td id="zkd_0_12"></td>
+                        <td id="zkdTime_1_12"></td>
+                        <td id="zkd_1_12"></td>
                     </tr>
                     <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td id="zkdTime_0_13"></td>
+                        <td id="zkd_0_13"></td>
+                        <td id="zkdTime_1_13"></td>
+                        <td id="zkd_1_13"></td>
                     </tr>
                     <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td id="zkdTime_0_14"></td>
+                        <td id="zkd_0_14"></td>
+                        <td id="zkdTime_1_14"></td>
+                        <td id="zkd_1_14"></td>
                     </tr>
                     <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td id="zkdTime_0_15"></td>
+                        <td id="zkd_0_15"></td>
+                        <td id="zkdTime_1_15"></td>
+                        <td id="zkd_1_15"></td>
                     </tr>
                     <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td id="zkdTime_0_16"></td>
+                        <td id="zkd_0_16"></td>
+                        <td id="zkdTime_1_16"></td>
+                        <td id="zkd_1_16"></td>
                     </tr>
                     <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td id="zkdTime_0_17"></td>
+                        <td id="zkd_0_17"></td>
+                        <td id="zkdTime_1_17"></td>
+                        <td id="zkd_1_17"></td>
                     </tr>
                     <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td id="zkdTime_0_18"></td>
+                        <td id="zkd_0_18"></td>
+                        <td id="zkdTime_1_18"></td>
+                        <td id="zkd_1_18"></td>
                     </tr>
                     <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td id="zkdTime_0_19"></td>
+                        <td id="zkd_0_19"></td>
+                        <td id="zkdTime_1_19"></td>
+                        <td id="zkd_1_19"></td>
                         <td>QA确认人</td>
                         <td class="middle-center">
                             {% if '82' == flag %}
@@ -1982,52 +1982,52 @@
                         <td id="wd_1_11"></td>
                     </tr>
                     <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td id="wdTime_0_12"></td>
+                        <td id="wd_0_12"></td>
+                        <td id="wdTime_1_12"></td>
+                        <td id="wd_1_12"></td>
                     </tr>
                     <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td id="wdTime_0_13"></td>
+                        <td id="wd_0_13"></td>
+                        <td id="wdTime_1_13"></td>
+                        <td id="wd_1_13"></td>
                     </tr>
                     <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td id="wdTime_0_14"></td>
+                        <td id="wd_0_14"></td>
+                        <td id="wdTime_1_14"></td>
+                        <td id="wd_1_14"></td>
                     </tr>
                     <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td id="wdTime_0_15"></td>
+                        <td id="wd_0_15"></td>
+                        <td id="wdTime_1_15"></td>
+                        <td id="wd_1_15"></td>
                     </tr>
                     <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td id="wdTime_0_16"></td>
+                        <td id="wd_0_16"></td>
+                        <td id="wdTime_1_16"></td>
+                        <td id="wd_1_16"></td>
                     </tr>
                     <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td id="wdTime_0_17"></td>
+                        <td id="wd_0_17"></td>
+                        <td id="wdTime_1_17"></td>
+                        <td id="wd_1_17"></td>
                     </tr>
                     <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td id="wdTime_0_18"></td>
+                        <td id="wd_0_18"></td>
+                        <td id="wdTime_1_18"></td>
+                        <td id="wd_1_18"></td>
                     </tr>
                     <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td id="wdTime_0_19"></td>
+                        <td id="wd_0_19"></td>
+                        <td id="wdTime_1_19"></td>
+                        <td id="wd_1_19"></td>
                     </tr>
                     <tr>
                         <td colspan="2">结束时间</td>
@@ -2457,16 +2457,16 @@
                     <tr>
                         <td>95%乙醇</td>
                         <td>100042</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td><input type="text" class="form-control batchInput" id="aYCBatch"></td>
+                        <td><input type="text" class="form-control batchInput" id="aYCTestNumber"></td>
+                        <td><input type="text" class="form-control batchInput" id="aYCNumber"></td>
                     </tr>
                     <tr>
                         <td>回收乙醇</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td><input type="text" class="form-control batchInput" id="bYCMaterNumber"></td>
+                        <td><input type="text" class="form-control batchInput" id="bYCBatch"></td>
+                        <td><input type="text" class="form-control batchInput" id="bYCTestNumber"></td>
+                        <td><input type="text" class="form-control batchInput" id="bYCNumber"></td>
                     </tr>
                 </tbody>
             </table>
@@ -2476,13 +2476,13 @@
                 <tbody>
                     <tr>
                         <td class="tdWidth300" colspan="2">醇沉罐编号</td>
-                        <td></td>
+                        <td id="CCEQPName0"></td>
                         <td>操作人</td>
                         <td>复核人</td>
                     </tr>
                     <tr>
                         <td colspan="2">浓缩液体积</td>
-                        <td></td>
+                        <td id="nsy_0_0"></td>
                         <td rowspan="7" class="middle-center">
                             {% if '82' == flag %}
                                 {% if None == dir[0]["OperationPeople_d3"] or "" == dir[0]["OperationPeople_d3"] %}
@@ -2519,32 +2519,32 @@
                     </tr>
                     <tr>
                         <td colspan="2">95%乙醇用量</td>
-                        <td></td>
+                        <td id="yc_0_0"></td>
                     </tr>
                     <tr>
                         <td colspan="2">回收乙醇用量、浓度</td>
-                        <td></td>
+                        <td id="hs_0_0"></td>
                     </tr>
                     <tr>
                         <td colspan="2">生产开始时间</td>
-                        <td></td>
+                        <td id="scStartTime0"></td>
                     </tr>
                     <tr>
                         <td colspan="2">浓缩液冷却至40℃以下</td>
-                        <td><label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox"> 是 / 否</label></td>
+                        <td><label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="CCFilterCheckbox2"> 是 / 否</label></td>
                     </tr>
                     <tr>
                         <td colspan="2">边搅拌边加入乙醇使含醇量达65%</td>
-                        <td><label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox"> 是 / 否</label></td>
+                        <td><label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="CCFilterCheckbox3"> 是 / 否</label></td>
                     </tr>
                     <tr>
                         <td rowspan="2">静置24h</td>
                         <td>开始时间</td>
-                        <td></td>
+                        <td id="jzStartTime0"></td>
                     </tr>
                     <tr>
                         <td>结束时间</td>
-                        <td></td>
+                        <td id="jzEndTime0"></td>
                         <td>QA签名</td>
                         <td class="middle-center">
                             <input type="hidden" id="QAreadycheckbox" value={{ dir[0]["QAConfirmPeople_d3"] }}>
@@ -2891,15 +2891,15 @@
                 <tbody>
                     <tr>
                         <td>开始时间</td>
-                        <td></td>
+                        <td id="dxStartTime_0_0"></td>
                         <td>结束时间</td>
-                        <td></td>
+                        <td id="dxEndTime_0_0"></td>
                         <td>操作人</td>
                         <td>复核人</td>
                     </tr>
                     <tr>
                         <td colspan="3">抽取醇沉上清液至单效浓缩器中</td>
-                        <td><label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox"> 是 / 否</label></td>
+                        <td><label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="DXNSFilterCheckbox1"> 是 / 否</label></td>
                         <td class="middle-center">
                             {% if '82' == flag %}
                                 {% if None == dir[0]["OperationPeople_e2"] or "" == dir[0]["OperationPeople_e2"] %}
@@ -2947,8 +2947,8 @@
                     </tr>
                     <tr>
                         <td colspan="2" rowspan="6" class="middle-center">浓缩蒸汽压力≤0.09Mpa每60分钟至少记录1次实时参数值</td>
-                        <td></td>
-                        <td></td>
+                        <td id="zqylTime_0_0"></td>
+                        <td id="zqyl_0_0"></td>
                         <td rowspan="13" class="middle-center">
                             {% if '82' == flag %}
                                 {% if None == dir[0]["OperationPeople_e3"] or "" == dir[0]["OperationPeople_e3"] %}
@@ -2984,24 +2984,24 @@
                         </td>
                     </tr>
                     <tr>
-                        <td></td>
-                        <td></td>
+                        <td id="zqylTime_0_1"></td>
+                        <td id="zqyl_0_1"></td>
                     </tr>
                     <tr>
-                        <td></td>
-                        <td></td>
+                        <td id="zqylTime_0_2"></td>
+                        <td id="zqyl_0_2"></td>
                     </tr>
                     <tr>
-                        <td></td>
-                        <td></td>
+                        <td id="zqylTime_0_3"></td>
+                        <td id="zqyl_0_3"></td>
                     </tr>
                     <tr>
-                        <td></td>
-                        <td></td>
+                        <td id="zqylTime_0_4"></td>
+                        <td id="zqyl_0_4"></td>
                     </tr>
                     <tr>
-                        <td></td>
-                        <td></td>
+                        <td id="zqylTime_0_5"></td>
+                        <td id="zqyl_0_5"></td>
                     </tr>
                     <tr>
                         <td rowspan="7" class="middle-center tdWidth50">真空度</td>
@@ -3010,24 +3010,28 @@
                         <td>参数值</td>
                     </tr>
                     <tr>
-                        <td></td>
-                        <td></td>
+                        <td id="dzkdTime_0_0"></td>
+                        <td id="dzkd_0_0"></td>
                     </tr>
                     <tr>
-                        <td></td>
-                        <td></td>
+                        <td id="dzkdTime_0_1"></td>
+                        <td id="dzkd_0_1"></td>
                     </tr>
                     <tr>
-                        <td></td>
-                        <td></td>
+                        <td id="dzkdTime_0_2"></td>
+                        <td id="dzkd_0_2"></td>
                     </tr>
                     <tr>
-                        <td></td>
-                        <td></td>
+                        <td id="dzkdTime_0_3"></td>
+                        <td id="dzkd_0_3"></td>
                     </tr>
                     <tr>
-                        <td></td>
-                        <td></td>
+                        <td id="dzkdTime_0_4"></td>
+                        <td id="dzkd_0_4"></td>
+                    </tr>
+                    <tr>
+                        <td id="dzkdTime_0_5"></td>
+                        <td id="dzkd_0_5"></td>
                     </tr>
                 </tbody>
             </table>
@@ -3042,8 +3046,8 @@
                         <td>复核人</td>
                     </tr>
                     <tr>
-                        <td></td>
-                        <td></td>
+                        <td id="dwdTime_0_0"></td>
+                        <td id="dwd_0_0"></td>
                         <td rowspan="5" class="middle-center">
                             {% if '82' == flag %}
                                 {% if None == dir[0]["OperationPeople_e4"] or "" == dir[0]["OperationPeople_e4"] %}
@@ -3079,24 +3083,24 @@
                         </td>
                     </tr>
                     <tr>
-                        <td></td>
-                        <td></td>
+                        <td id="dwdTime_0_1"></td>
+                        <td id="dwd_0_1"></td>
                     </tr>
                     <tr>
-                        <td></td>
-                        <td></td>
+                        <td id="dwdTime_0_2"></td>
+                        <td id="dwd_0_2"></td>
                     </tr>
                     <tr>
-                        <td></td>
-                        <td></td>
+                        <td id="dwdTime_0_3"></td>
+                        <td id="dwd_0_3"></td>
                     </tr>
                     <tr>
-                        <td></td>
-                        <td></td>
+                        <td id="dwdTime_0_4"></td>
+                        <td id="dwd_0_4"></td>
                     </tr>
                     <tr>
-                        <td></td>
-                        <td></td>
+                        <td id="dwdTime_0_5"></td>
+                        <td id="dwd_0_5"></td>
                         <td>QA签名</td>
                         <td class="middle-center">
                             {% if '82' == flag %}
@@ -3125,7 +3129,7 @@
                 <tbody>
                     <tr>
                         <td class="tdWidth300">比重1.15（80℃）</td>
-                        <td><label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox"> 是 / 否</label></td>
+                        <td><label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="DXNSFilterCheckbox2"> 是 / 否</label></td>
                         <td rowspan="2">QA确认人</td>
                         <td rowspan="2" class="middle-center tdWidth100">
                             {% if '82' == flag %}
@@ -3148,7 +3152,7 @@
                     </tr>
                     <tr>
                         <td>比重：1.24~1.26</td>
-                        <td></td>
+                        <td><input type="text" class="form-control batchInput" id="DXNSprop"></td>
                     </tr>
                 </tbody>
             </table>
@@ -3536,9 +3540,9 @@
                 <tbody>
                     <tr>
                         <td colspan="2">生产开始时间</td>
-                        <td colspan="2"></td>
+                        <td colspan="2"><input type="text" class="form-control batchInput" id="SGManuStartDate"></td>
                         <td colspan="2">生产结束时间</td>
-                        <td colspan="2"></td>
+                        <td colspan="2"><input type="text" class="form-control batchInput" id="SGManuEndDate"></td>
                         <td>操作人</td>
                         <td>复核人</td>
                     </tr>
@@ -3581,11 +3585,11 @@
                     </tr>
                     <tr>
                         <td colspan="4">浸膏装桶前过120目筛网</td>
-                        <td colspan="4"><label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox"> 是 / 否</label></td>
+                        <td colspan="4"><label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="SGFilterCheckbox1"> 是 / 否</label></td>
                     </tr>
                     <tr>
                         <td colspan="4">将浸膏装入塑料袋放入塑料桶中</td>
-                        <td colspan="4"><label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox"> 是 / 否</label></td>
+                        <td colspan="4"><label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="SGFilterCheckbox2"> 是 / 否</label></td>
                     </tr>
                     <tr>
                         <td>桶号</td>
@@ -3599,13 +3603,13 @@
                     </tr>
                     <tr>
                         <td>重量</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td><input type="text" class="form-control batchInput" id="SGWeight1"></td>
+                        <td><input type="text" class="form-control batchInput" id="SGWeight2"></td>
+                        <td><input type="text" class="form-control batchInput" id="SGWeight3"></td>
+                        <td><input type="text" class="form-control batchInput" id="SGWeight4"></td>
+                        <td><input type="text" class="form-control batchInput" id="SGWeight5"></td>
+                        <td><input type="text" class="form-control batchInput" id="SGWeight6"></td>
+                        <td><input type="text" class="form-control batchInput" id="SGWeight7"></td>
                     </tr>
                     <tr>
                         <td colspan="8">合计：kg</td>
@@ -3651,13 +3655,13 @@
                     <tr>
                         <td rowspan="2" class="middle-center">复合塑料袋</td>
                         <td rowspan="2" class="middle-center">100090</td>
-                        <td><input type="text" class="form-control batchInput" id=""></td>
-                        <td><input type="text" class="form-control batchInput" id=""></td>
-                        <td><input type="text" class="form-control batchInput" id=""></td>
-                        <td><input type="text" class="form-control batchInput" id=""></td>
-                        <td><input type="text" class="form-control batchInput" id=""></td>
-                        <td><input type="text" class="form-control batchInput" id=""></td>
-                        <td><input type="text" class="form-control batchInput" id=""></td>
+                        <td><input type="text" class="form-control batchInput" id="plastic_1_1"></td>
+                        <td><input type="text" class="form-control batchInput" id="plastic_1_2"></td>
+                        <td><input type="text" class="form-control batchInput" id="plastic_1_3"></td>
+                        <td><input type="text" class="form-control batchInput" id="plastic_1_4"></td>
+                        <td><input type="text" class="form-control batchInput" id="plastic_1_5"></td>
+                        <td><input type="text" class="form-control batchInput" id="plastic_1_6"></td>
+                        <td><input type="text" class="form-control batchInput" id="plastic_1_7"></td>
                         <td rowspan="2" class="middle-center">
                             {% if '82' == flag %}
                                 {% if None == dir[0]["OperationPeople_f4"] or "" == dir[0]["OperationPeople_f4"] %}
@@ -3693,13 +3697,13 @@
                         </td>
                     </tr>
                     <tr>
-                        <td><input type="text" class="form-control batchInput" id=""></td>
-                        <td><input type="text" class="form-control batchInput" id=""></td>
-                        <td><input type="text" class="form-control batchInput" id=""></td>
-                        <td><input type="text" class="form-control batchInput" id=""></td>
-                        <td><input type="text" class="form-control batchInput" id=""></td>
-                        <td><input type="text" class="form-control batchInput" id=""></td>
-                        <td><input type="text" class="form-control batchInput" id=""></td>
+                        <td><input type="text" class="form-control batchInput" id="plastic_2_1"></td>
+                        <td><input type="text" class="form-control batchInput" id="plastic_2_2"></td>
+                        <td><input type="text" class="form-control batchInput" id="plastic_2_3"></td>
+                        <td><input type="text" class="form-control batchInput" id="plastic_2_4"></td>
+                        <td><input type="text" class="form-control batchInput" id="plastic_2_5"></td>
+                        <td><input type="text" class="form-control batchInput" id="plastic_2_6"></td>
+                        <td><input type="text" class="form-control batchInput" id="plastic_2_7"></td>
                     </tr>
                     <tr>
                         <td colspan="11">备注：准备量=不合格数+使用量+损耗量+余量，退库量=不合格数+损耗量，如有不符须进行偏差说明</td>
@@ -3823,21 +3827,21 @@
                         <td>
                             <div class="input-group">
                                 <div class="input-group-addon">净药材总投料量A=</div>
-                                <input type="text" class="form-control batchInput" id="count7">
+                                <input type="text" class="form-control batchInput" id="count1">
                                 <div class="input-group-addon">kg</div>
                             </div>
                         </td>
                         <td>
                             <div class="input-group">
                                 <div class="input-group-addon">浸膏总重量B=</div>
-                                <input type="text" class="form-control batchInput" id="count8">
+                                <input type="text" class="form-control batchInput" id="count2">
                                 <div class="input-group-addon">kg</div>
                             </div>
                         </td>
                         <td>
                             <div class="input-group">
                                 <div class="input-group-addon">取样量C=</div>
-                                <input type="text" class="form-control batchInput" id="count9">
+                                <input type="text" class="form-control batchInput" id="count3">
                                 <div class="input-group-addon">kg</div>
                             </div>
                         </td>
@@ -3879,7 +3883,7 @@
                         <td colspan="3">
                             <div class="input-group">
                                 <div class="input-group-addon">得率=（B+C）/A=</div>
-                                <input type="text" class="form-control batchInput" id="count10">
+                                <input type="text" class="form-control batchInput" id="count4">
                                 <div class="input-group-addon">%（8~13%）</div>
                             </div>
                         </td>
@@ -3894,47 +3898,47 @@
     <script type="text/javascript" src="../static/js/jsPdf.debug.js"></script>
     <script>
         $(function(){
-{#            $("#loadingModal").modal('show');#}
+            $("#loadingModal").modal('show');
             //数据采集
-{#            $.ajax({#}
-{#                url: '/electionBatchSearch',#}
-{#                method: 'GET',#}
-{#                data: {#}
-{#                    batchID: $("#batchID").html(),#}
-{#                    PName: getUrlParam('title') + "段"#}
-{#                },#}
-{#                success: function (response) {#}
-{#                    $("#loadingModal").modal('hide');#}
-{#                    response = JSON.parse(response)#}
-{#                    for(var key in response){#}
-{#                        adddata(key,response[key])#}
-{#                    }#}
-{#                },#}
-{#                error: function () {#}
-{#                    alert("请求数据失败，请稍后重试！")#}
-{#                }#}
-{#            });#}
+            $.ajax({
+                url: '/electionBatchSearch',
+                method: 'GET',
+                data: {
+                    batchID: $("#batchID").html(),
+                    PName: getUrlParam('title') + "段"
+                },
+                success: function (response) {
+                    $("#loadingModal").modal('hide');
+                    response = JSON.parse(response)
+                    for(var key in response){
+                        adddata(key,response[key])
+                    }
+                },
+                error: function () {
+                    alert("请求数据失败，请稍后重试！")
+                }
+            });
             //表单数据插入
-{#            $.ajax({#}
-{#                url: 'allUnitDataMutual',#}
-{#                method: 'GET',#}
-{#                data: {#}
-{#                    PUID: $("#PUID").val(),#}
-{#                    BatchID: $("#batchID").html()#}
-{#                },#}
-{#                beforeSend:function(){#}
-{#                    $("#loadingModal").modal("show");#}
-{#                },#}
-{#                success: function (response) {#}
-{#                    response = JSON.parse(response)#}
-{#                    for(var key in response){#}
-{#                        addInputData(key,response[key])#}
-{#                    }#}
-{#                },#}
-{#                error: function () {#}
-{#                    alert("请求失败，请稍后重试！")#}
-{#                }#}
-{#            });#}
+            $.ajax({
+                url: 'allUnitDataMutual',
+                method: 'GET',
+                data: {
+                    PUID: $("#PUID").val(),
+                    BatchID: $("#batchID").html()
+                },
+                beforeSend:function(){
+                    $("#loadingModal").modal("show");
+                },
+                success: function (response) {
+                    response = JSON.parse(response)
+                    for(var key in response){
+                        addInputData(key,response[key])
+                    }
+                },
+                error: function () {
+                    alert("请求失败，请稍后重试！")
+                }
+            });
             //根据key匹配id  加入数据
             function adddata(ids,res){
                 $("#" + ids).html(res)
@@ -4358,74 +4362,26 @@
                         endOverDate:$("#endOverDate").val(),
                         startStewingDate:$("#startStewingDate").val(),
                         endStewingDate:$("#endStewingDate").val(),
+                        //备料表单
+                        JZJFBatch1:$("#JZJFBatch1").val(),
+                        JZJFBatch2:$("#JZJFBatch2").val(),
+                        JZJFBatch3:$("#JZJFBatch3").val(),
+                        JZJFTestNumber1:$("#JZJFTestNumber1").val(),
+                        JZJFTestNumber2:$("#JZJFTestNumber2").val(),
+                        JZJFTestNumber3:$("#JZJFTestNumber3").val(),
+                        JZJFNumber1:$("#JZJFNumber1").val(),
+                        JZJFNumber2:$("#JZJFNumber2").val(),
+                        JZJFNumber3:$("#JZJFNumber3").val(),
+                        JZJFTotal:$("#JZJFTotal").val(),
 
-                        TZSBatch1:$("#TZSBatch1").val(),
-                        TZSBatch2:$("#TZSBatch2").val(),
-                        TZSBatch3:$("#TZSBatch3").val(),
-                        TZSTestNumber1:$("#TZSTestNumber1").val(),
-                        TZSTestNumber2:$("#TZSTestNumber2").val(),
-                        TZSTestNumber3:$("#TZSTestNumber3").val(),
-                        TZSNumber1:$("#TZSNumber1").val(),
-                        TZSNumber2:$("#TZSNumber2").val(),
-                        TZSNumber3:$("#TZSNumber3").val(),
-
-                        JSZBatch1:$("#JSZBatch1").val(),
-                        JSZBatch2:$("#JSZBatch2").val(),
-                        JSZBatch3:$("#JSZBatch3").val(),
-                        JSZTestNumber1:$("#JSZTestNumber1").val(),
-                        JSZTestNumber2:$("#JSZTestNumber2").val(),
-                        JSZTestNumber3:$("#JSZTestNumber3").val(),
-                        JSZNumber1:$("#JSZNumber1").val(),
-                        JSZNumber2:$("#JSZNumber2").val(),
-                        JSZNumber3:$("#JSZNumber3").val(),
-
-                        CMYBatch1:$("#CMYBatch1").val(),
-                        CMYBatch2:$("#CMYBatch2").val(),
-                        CMYBatch3:$("#CMYBatch3").val(),
-                        CMYTestNumber1:$("#CMYTestNumber1").val(),
-                        CMYTestNumber2:$("#CMYTestNumber2").val(),
-                        CMYTestNumber3:$("#CMYTestNumber3").val(),
-                        CMYNumber1:$("#CMYNumber1").val(),
-                        CMYNumber2:$("#CMYNumber2").val(),
-                        CMYNumber3:$("#CMYNumber3").val(),
-
-                        CPBatch1:$("#CPBatch1").val(),
-                        CPBatch2:$("#CPBatch2").val(),
-                        CPBatch3:$("#CPBatch3").val(),
-                        CPTestNumber1:$("#CPTestNumber1").val(),
-                        CPTestNumber2:$("#CPTestNumber2").val(),
-                        CPTestNumber3:$("#CPTestNumber3").val(),
-                        CPNumber1:$("#CPNumber1").val(),
-                        CPNumber2:$("#CPNumber2").val(),
-                        CPNumber3:$("#CPNumber3").val(),
-
-                        TZSWeight1:$("#TZSWeight1").val(),
-                        TZSWeight2:$("#TZSWeight2").val(),
-                        TZSWeight3:$("#TZSWeight3").val(),
-                        TZSWeight4:$("#TZSWeight4").val(),
-                        TZSWeight5:$("#TZSWeight5").val(),
-                        TZSWeight6:$("#TZSWeight6").val(),
-
-                        JSZWeight1:$("#JSZWeight1").val(),
-                        JSZWeight2:$("#JSZWeight2").val(),
-                        JSZWeight3:$("#JSZWeight3").val(),
-                        JSZWeight4:$("#JSZWeight4").val(),
-                        JSZWeight5:$("#JSZWeight5").val(),
-                        JSZWeight6:$("#JSZWeight6").val(),
-
-                        CMYWeight1:$("#CMYWeight1").val(),
-                        CMYWeight2:$("#CMYWeight2").val(),
-                        CMYWeight3:$("#CMYWeight3").val(),
-                        CMYWeight4:$("#CMYWeight4").val(),
-                        CMYWeight5:$("#CMYWeight5").val(),
-                        CMYWeight6:$("#CMYWeight6").val(),
-
-                        CPWeight1:$("#CPWeight1").val(),
-                        CPWeight2:$("#CPWeight2").val(),
-                        CPWeight3:$("#CPWeight3").val(),
-                        CPWeight4:$("#CPWeight4").val(),
-                        CPWeight5:$("#CPWeight5").val(),
-                        CPWeight6:$("#CPWeight6").val(),
+                        JZJFWeight1:$("#JZJFWeight1").val(),
+                        JZJFWeight2:$("#JZJFWeight2").val(),
+                        JZJFWeight3:$("#JZJFWeight3").val(),
+                        JZJFWeight4:$("#JZJFWeight4").val(),
+                        JZJFWeight5:$("#JZJFWeight5").val(),
+                        JZJFWeight6:$("#JZJFWeight6").val(),
+                        JZJFWeight7:$("#JZJFWeight7").val(),
+                        JZJFWeight8:$("#JZJFWeight8").val(),
 
                         startDate1:$("#startDate1").val(),
                         startDate2:$("#startDate2").val(),
@@ -4433,6 +4389,8 @@
                         startDate4:$("#startDate4").val(),
                         startDate5:$("#startDate5").val(),
                         startDate6:$("#startDate6").val(),
+                        startDate7:$("#startDate6").val(),
+                        startDate8:$("#startDate6").val(),
 
                         endDate1:$("#endDate1").val(),
                         endDate2:$("#endDate2").val(),
@@ -4440,6 +4398,17 @@
                         endDate4:$("#endDate4").val(),
                         endDate5:$("#endDate5").val(),
                         endDate6:$("#endDate6").val(),
+                        endDate7:$("#endDate6").val(),
+                        endDate8:$("#endDate6").val(),
+                        //煎煮表单
+                        pot1:$("#drugInNumber1").val(),
+                        pot2:$("#drugInNumber2").val(),
+                        pot3:$("#drugInNumber3").val(),
+                        pot4:$("#drugInNumber4").val(),
+                        pot5:$("#drugInNumber5").val(),
+                        pot6:$("#drugInNumber6").val(),
+                        pot7:$("#drugInNumber7").val(),
+                        pot8:$("#drugInNumber8").val(),
 
                         drugInNumber1:$("#drugInNumber1").val(),
                         drugInNumber2:$("#drugInNumber2").val(),
@@ -4447,6 +4416,8 @@
                         drugInNumber4:$("#drugInNumber4").val(),
                         drugInNumber5:$("#drugInNumber5").val(),
                         drugInNumber6:$("#drugInNumber6").val(),
+                        drugInNumber7:$("#drugInNumber7").val(),
+                        drugInNumber8:$("#drugInNumber8").val(),
 
                         oneFilterCheckbox1:$("#oneFilterCheckbox1").prop("checked"),
                         oneFilterCheckbox2:$("#oneFilterCheckbox2").prop("checked"),
@@ -4454,6 +4425,8 @@
                         oneFilterCheckbox4:$("#oneFilterCheckbox4").prop("checked"),
                         oneFilterCheckbox5:$("#oneFilterCheckbox5").prop("checked"),
                         oneFilterCheckbox6:$("#oneFilterCheckbox6").prop("checked"),
+                        oneFilterCheckbox7:$("#oneFilterCheckbox7").prop("checked"),
+                        oneFilterCheckbox8:$("#oneFilterCheckbox8").prop("checked"),
 
                         twoFilterCheckbox1:$("#twoFilterCheckbox1").prop("checked"),
                         twoFilterCheckbox2:$("#twoFilterCheckbox2").prop("checked"),
@@ -4461,61 +4434,58 @@
                         twoFilterCheckbox4:$("#twoFilterCheckbox4").prop("checked"),
                         twoFilterCheckbox5:$("#twoFilterCheckbox5").prop("checked"),
                         twoFilterCheckbox6:$("#twoFilterCheckbox6").prop("checked"),
+                        twoFilterCheckbox7:$("#twoFilterCheckbox7").prop("checked"),
+                        twoFilterCheckbox8:$("#twoFilterCheckbox8").prop("checked"),
+
+                        EqclearDete1:$("#EqclearDete1").val(),
+                        EqclearDete2:$("#EqclearDete2").val(),
+                        EqclearDete3:$("#EqclearDete3").val(),
+                        EqclearDete4:$("#EqclearDete4").val(),
 
                         NCFilterCheckbox1:$("#NCFilterCheckbox1").prop("checked"),
                         NCFilterCheckbox2:$("#NCFilterCheckbox2").prop("checked"),
 
                         NCProp1:$("#NCProp1").val(),
                         NCProp2:$("#NCProp2").val(),
-                        NCProp3:$("#NCProp3").val(),
                         NCTemp1:$("#NCTemp1").val(),
                         NCTemp2:$("#NCTemp2").val(),
-                        NCTemp3:$("#NCTemp3").val(),
+                        //醇沉表单
+                        aYCBatch:$("#aYCBatch").val(),
+                        aYCTestNumber:$("#aYCTestNumber").val(),
+                        aYCNumber:$("#aYCNumber").val(),
+                        bYCMaterNumber:$("#bYCMaterNumber").val(),
+                        bYCBatch:$("#bYCBatch").val(),
+                        bYCTestNumber:$("#bYCTestNumber").val(),
+                        bYCNumber:$("#bYCNumber").val(),
 
-                        PWGZFilterCheckbox1:$("#PWGZFilterCheckbox1").prop("checked"),
-                        PWGZFilterCheckbox2:$("#PWGZFilterCheckbox2").prop("checked"),
-                        PWGZFilterCheckbox3:$("#PWGZFilterCheckbox3").prop("checked"),
-                        PWGZFilterCheckbox4:$("#PWGZFilterCheckbox4").prop("checked"),
+                        CCFilterCheckbox2:$("#CCFilterCheckbox2").prop("checked"),
+                        CCFilterCheckbox3:$("#CCFilterCheckbox3").prop("checked"),
+                        //单效浓缩表单
+                        DXNSFilterCheckbox1:$("#DXNSFilterCheckbox1").prop("checked"),
+                        DXNSFilterCheckbox2:$("#DXNSFilterCheckbox2").prop("checked"),
 
+                        DXNSprop:$("#DXNSprop").val(),
+                        //收膏表单
                         plasticBatch1:$("#plasticBatch1").val(),
-                        plasticBatch2:$("#plasticBatch2").val(),
                         plasticTestNumber1:$("#plasticTestNumber1").val(),
-                        plasticTestNumber2:$("#plasticTestNumber2").val(),
                         plasticNumber1:$("#plasticNumber1").val(),
+                        plasticBatch2:$("#plasticBatch2").val(),
+                        plasticTestNumber2:$("#plasticTestNumber2").val(),
                         plasticNumber2:$("#plasticNumber2").val(),
 
-                        kraftBatch1:$("#kraftBatch1").val(),
-                        kraftBatch2:$("#kraftBatch2").val(),
-                        kraftTestNumber1:$("#kraftTestNumber1").val(),
-                        kraftTestNumber2:$("#kraftTestNumber2").val(),
-                        kraftNumber1:$("#kraftNumber1").val(),
-                        kraftNumber2:$("#kraftNumber2").val(),
+                        SGManuStartDate:$("#SGManuStartDate").val(),
+                        SGManuEndDate:$("#SGManuEndDate").val(),
 
-                        SFStartTime1:$("#SFStartTime1").val(),
-                        SFStartTime2:$("#SFStartTime2").val(),
-                        SFNO1:$("#SFNO1").val(),
-                        SFNO2:$("#SFNO2").val(),
-                        baggingOff1:$("#baggingOff1").val(),
-                        baggingOff2:$("#baggingOff2").val(),
-                        isCollectCheckbox1:$("#isCollectCheckbox1").prop("checked"),
-                        isCollectCheckbox2:$("#isCollectCheckbox2").prop("checked"),
-                        SFEndTime1:$("#SFEndTime1").val(),
-                        SFEndTime2:$("#SFEndTime2").val(),
+                        SGFilterCheckbox1:$("#SGFilterCheckbox1").prop("checked"),
+                        SGFilterCheckbox2:$("#SGFilterCheckbox2").prop("checked"),
 
-                        count1:$("#count1").val(),
-                        count2:$("#count2").val(),
-                        count3:$("#count3").val(),
-                        count4:$("#count4").val(),
-                        count5:$("#count5").val(),
-                        count6:$("#count6").val(),
-                        count7:$("#count7").val(),
-                        count8:$("#count8").val(),
-                        count9:$("#count9").val(),
-                        count10:$("#count10").val(),
-
-                        isNormalCheckbox1:$("#isNormalCheckbox1").prop("checked"),
-                        isNormalCheckbox2:$("#isNormalCheckbox2").prop("checked"),
-                        isNormalCheckbox3:$("#isNormalCheckbox3").prop("checked"),
+                        SGWeight1:$("#SGWeight1").val(),
+                        SGWeight2:$("#SGWeight2").val(),
+                        SGWeight3:$("#SGWeight3").val(),
+                        SGWeight4:$("#SGWeight4").val(),
+                        SGWeight5:$("#SGWeight5").val(),
+                        SGWeight6:$("#SGWeight6").val(),
+                        SGWeight7:$("#SGWeight7").val(),
 
                         plastic_1_1:$("#plastic_1_1").val(),
                         plastic_1_2:$("#plastic_1_2").val(),
@@ -4532,20 +4502,10 @@
                         plastic_2_6:$("#plastic_2_6").val(),
                         plastic_2_7:$("#plastic_2_7").val(),
 
-                        kraft_1_1:$("#kraft_1_1").val(),
-                        kraft_1_2:$("#kraft_1_2").val(),
-                        kraft_1_3:$("#kraft_1_3").val(),
-                        kraft_1_4:$("#kraft_1_4").val(),
-                        kraft_1_5:$("#kraft_1_5").val(),
-                        kraft_1_6:$("#kraft_1_6").val(),
-                        kraft_1_7:$("#kraft_1_7").val(),
-                        kraft_2_1:$("#kraft_2_1").val(),
-                        kraft_2_2:$("#kraft_2_2").val(),
-                        kraft_2_3:$("#kraft_2_3").val(),
-                        kraft_2_4:$("#kraft_2_4").val(),
-                        kraft_2_5:$("#kraft_2_5").val(),
-                        kraft_2_6:$("#kraft_2_6").val(),
-                        kraft_2_7:$("#kraft_2_7").val(),
+                        count1:$("#count1").val(),
+                        count2:$("#count2").val(),
+                        count3:$("#count3").val(),
+                        count4:$("#count4").val(),
                     },
                     beforeSend:function(){
                         $("#loadingModal").modal('show');
