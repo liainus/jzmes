@@ -3811,7 +3811,7 @@
                     </tr>
                     <tr>
                         <td colspan="3">生产过程是否符合安全管理规定</td>
-                        <td colspan="2"><label class="checkbox-inline"><input type="checkbox" name="overcheckbox"> 是 / 否</label></td>
+                        <td colspan="2"><label class="checkbox-inline"><input type="checkbox" name="QAovercheckbox"> 是 / 否</label></td>
                     </tr>
                 </tbody>
             </table>
@@ -4241,6 +4241,20 @@
                     $.messager.confirm('确定操作', '是否要进行确认？确认后不允许撤回。', function (flag) {
                         if (flag) {
                             elseConfirmFun(PUID,BatchID,type,confirm)
+                        }
+                    })
+                }else if(name == "收膏结束清场"){
+                    $.messager.confirm('确定操作', '是否要进行确认？确认后不允许撤回。', function (flag) {
+                        if (flag) {
+                            var number = ""
+                            $("input:checkbox[name=QAovercheckbox]:checked").each(function(k){
+                                number = k
+                            })
+                            if(number == 1){
+                                QAConfirmFun(ID, title, name)
+                            }else{
+                                $.messager.alert('提示', "当前的准备工作检查合格才可以做确认操作", 'info');
+                            }
                         }
                     })
                 }else{
