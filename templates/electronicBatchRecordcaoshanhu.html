@@ -59,7 +59,8 @@
             //判断hidden是否有值，有值就选中复选框
             var readycheckbox = $("#readycheckbox").val(),  //所有生产前的准备 判断操作人是否有值
                 QAreadycheckbox = $("#QAreadycheckbox").val(), //所有生产前的准备 判断QA确认是否有值
-                CollectMaterialCheckbox = $("#CollectMaterialCheckbox").val(), //领取物料判断操作人是否有值
+                CollectMaterialCheckbox = $("#CollectMaterialCheckbox").val(), //备料领取物料判断操作人是否有值
+                CCCollectMaterialCheckbox = $("#CCCollectMaterialCheckbox").val(), //醇沉领取物料判断操作人是否有值
                 overcheckbox = $("#overcheckbox").val(), //生产结束清场 判断操作人是否有值
                 QAovercheckbox = $("#QAovercheckbox").val(), //生产结束清场 判断QA确认是否有值
                 stewingOvercheckbox = $("#stewingOvercheckbox").val(), //静置结束清场 判断操作人是否有值
@@ -73,7 +74,10 @@
                 $("input[name=QAreadycheckbox]").prop("checked",true).attr("disabled",true);
             }
             if(CollectMaterialCheckbox != ""){
-                $("input[name=CollectMaterialCheckbox]").prop("checked",true).attr("disabled",true);
+                $("#BLFilterCheckbox1").prop("checked",true).attr("disabled",true);
+            }
+            if(CCCollectMaterialCheckbox != ""){
+                $("#CCFilterCheckbox1").prop("checked",true).attr("disabled",true);
             }
             if(overcheckbox != ""){
                 $("input[name=overcheckbox]").prop("checked",true).attr("disabled",true);
@@ -2078,13 +2082,10 @@
                                 {{ dir[0]["QAConfirmPeople_c5"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {% if None == dir[0]["OperationPeople_c5"] or None == dir[0]["CheckedPeople_c5"] or "" == dir[0]["OperationPeople_c5"] or "" == dir[0]["CheckedPeople_c5"] %}
+                                {% if None == dir[0]["QAConfirmPeople_c5"] or "" == dir[0]["QAConfirmPeople_c5"] %}
+                                    <a href="javascript:;" class="btn btn-primary QAConfirm" name="54" rel="3">确认</a>
                                 {% else %}
-                                    {% if None == dir[0]["QAConfirmPeople_c5"] or "" == dir[0]["QAConfirmPeople_c5"] %}
-                                        <a href="javascript:;" class="btn btn-primary QAConfirm" name="54" rel="3">确认</a>
-                                    {% else %}
-                                        {{ dir[0]["QAConfirmPeople_c5"] }}
-                                    {% endif %}
+                                    {{ dir[0]["QAConfirmPeople_c5"] }}
                                 {% endif %}
                             {% endif %}
                         </td>
@@ -2413,7 +2414,7 @@
                         <td colspan="4">领取本批生产的物料并复核品名、批号、检验单号、数量是否无误</td>
                         <td><label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="CCFilterCheckbox1"> 是 / 否</label></td>
                         <td rowspan="4" class="middle-center">
-                            <input type="hidden" id="readycheckbox" value={{ dir[0]["OperationPeople_d2"] }}>
+                            <input type="hidden" id="CCCollectMaterialCheckbox" value={{ dir[0]["OperationPeople_d2"] }}>
                             {% if '82' == flag %}
                                 {% if None == dir[0]["OperationPeople_d2"] or "" == dir[0]["OperationPeople_d2"] %}
                                     <a href="javascript:;" class="btn btn-primary OperationConfirm" name="55" rel="1">确认</a>
@@ -4216,11 +4217,7 @@
                 if(name == "生产前的准备") {
                     $.messager.confirm('确定操作', '是否要进行确认？确认后不允许撤回。', function (flag) {
                         if (flag) {
-                            var number = ""
-                            $("input:checkbox[name=QAreadycheckbox]:checked").each(function(k){
-                                number = k
-                            })
-                            if(number == 0){
+                            if($("input:checkbox[name=QAreadycheckbox]").prop("checked") == true){
                                 QAConfirmFun(ID, title, name)
                             }else{
                                 $.messager.alert('提示', "当前的准备工作检查合格才可以做确认操作", 'info');
@@ -4230,7 +4227,7 @@
                 }else if(name == "42"){
                     $.messager.confirm('确定操作', '是否要进行确认？确认后不允许撤回。', function (flag) {
                         if (flag) {
-                            if($("#QAstewingOvercheckbox").prop("checked") == true){
+                            if($("input:checkbox[name=QAstewingOvercheckbox]").prop("checked") == true){
                                 elseConfirmFun(PUID,BatchID,type,confirm)
                             }else{
                                 $.messager.alert('提示', "当前的清场工作检查合格才可以做确认操作", 'info');
@@ -4243,6 +4240,16 @@
                             elseConfirmFun(PUID,BatchID,type,confirm)
                         }
                     })
+                }else if(name == "备料结束清场" || name == "煎煮结束清场" || name == "浓缩结束清场" || name == "醇沉结束清场" || name == "单效浓缩结束清场" || name == "收膏结束清场"){
+                    $.messager.confirm('确定操作', '是否要进行确认？确认后不允许撤回。', function (flag) {
+                        if (flag) {
+                            if($("input:checkbox[name=QAovercheckbox]").prop("checked") == true){
+                                QAConfirmFun(ID, title, name)
+                            }else{
+                                $.messager.alert('提示', "当前的清场工作检查合格才可以做确认操作", 'info');
+                            }
+                        }
+                    })
                 }else if(name == "收膏结束清场"){
                     $.messager.confirm('确定操作', '是否要进行确认？确认后不允许撤回。', function (flag) {
                         if (flag) {
@@ -4250,6 +4257,7 @@
                             $("input:checkbox[name=QAovercheckbox]:checked").each(function(k){
                                 number = k
                             })
+                            console.log(number)
                             if(number == 1){
                                 QAConfirmFun(ID, title, name)
                             }else{
