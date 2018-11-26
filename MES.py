@@ -7082,7 +7082,7 @@ def BatchDataCompare():
     '''
     purpose：通过前台传入的批次查询响应的批次的突入量、产出量、得率并返回
     url:/QualityControl/BatchDataCompare
-    :return: data_list,一个包含突入量、产出量、得率、批次的数据列表
+    return: data_list,一个包含突入量、产出量、得率、批次的数据列表
     '''
     if request.method == 'POST':
         try:
