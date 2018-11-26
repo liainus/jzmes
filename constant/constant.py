@@ -16,3 +16,7 @@ MES_DATABASE_USER = config['MES_DataBase']['user']
 MES_DATABASE_PASSWD = config['MES_DataBase']['password']
 MES_DATABASE_NAME = config['MES_DataBase']['database']
 MES_DATABASE_CHARSET = config['MES_DataBase']['charset']
+
+OUTPUT_COMPARE_INPUT = config['output_compare']['input']
+OUTPUT_COMPARE_OUTPUT = config['output_compare']['output']
+OUTPUT_COMPARE_SAMPLE = config['output_compare']['sampling_quantity']
