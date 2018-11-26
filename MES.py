@@ -5921,6 +5921,7 @@ def electronicBatchRecord():
             dic["QAConfirmPeople_e4"] = ""
             dic["OperationPeople_e5"] = ""
             dic["CheckedPeople_e5"] = ""
+            dic["QAConfirmPeople_e5"] = ""
             dic["OperationPeople_e6"] = ""
             dic["CheckedPeople_e6"] = ""
             dic["QAConfirmPeople_e6"] = ""
