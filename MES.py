@@ -5679,6 +5679,7 @@ def electronicBatchRecord():
             dic["QAConfirmPeople_c4"] = ""
             dic["OperationPeople_c5"] = ""
             dic["CheckedPeople_c5"] = ""
+            dic["QAConfirmPeople_c5"] = ""
             dic["OperationPeople_c6"] = ""
             dic["CheckedPeople_c6"] = ""
             dic["QAConfirmPeople_c6"] = ""
@@ -5991,6 +5992,7 @@ def electronicBatchRecord():
             dic["QAConfirmPeople_f4"] = ""
             dic["OperationPeople_f5"] = ""
             dic["CheckedPeople_f5"] = ""
+            dic["QAConfirmPeople_f5"] = ""
             dic["OperationPeople_f6"] = ""
             dic["CheckedPeople_f6"] = ""
             dic["QAConfirmPeople_f6"] = ""
@@ -6370,13 +6372,15 @@ def electionBatchSearch():
                             ycs = searY(BatchID,CCEQPCodes[i],name,yc)
                             for y in range(len(ycs)):
                                 dic["yc_"+str(i)+"_"+str(y)] = floatcut(ycs[y].SampleValue) + ycs[y].Unit
-                            jz = "过程值_" + str(i+1) + "#沉静时间"
+                            jz = "过程值_" + str(i+1) + "#沉静时间H"
                             jzs = searY(BatchID, CCEQPCodes[i], name, jz)
+                            dic["jzEndTime" + str(i)] = getmax(jzs) + "00"
+                            dic["jzStartTime" + str(i)] = getmin(jzs) + "00"
                             for z in range(len(jzs)):
                                 if (z == 0):
-                                    dic["jzEndTime" + str(i)] = strchange(jzs[z].SampleDate)[0:-7]
+                                     strchange(jzs[z].SampleDate)[0:-7]
                                 if (z == len(jzs) - 1):
-                                    dic["jzStartTime" + str(i)] = strchange(jzs[z].SampleDate)[0:-7]
+                                     strchange(jzs[z].SampleDate)[0:-7]
                             scs = searO(BatchID,CCEQPCodes[i],name)
                             for a in range(len(scs)):
                                 if (a == len(scs) - 1):
@@ -6443,6 +6447,14 @@ def getmax(args):
         if x == 0:
             unit = args[x].Unit
     return floatcut(max(num1))+ unit
+def getmin(args):
+    num1 = []
+    for x in range(len(args)):
+        temp = float(args[x].SampleValue)
+        num1.append(temp)
+        if x == 0:
+            unit = args[x].Unit
+    return floatcut(min(num1))+ unit
 def searH(BatchID,EQPCode,PDUnitRouteCode,OpcTagID,RepeatCount):
     return db_session.query(ElectronicBatch).filter(ElectronicBatch.BatchID == BatchID,
                                                     ElectronicBatch.EQPCode == EQPCode,
