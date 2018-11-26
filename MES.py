@@ -6138,7 +6138,7 @@ def addNewReadyWork():
                     oclass.CheckedPeople = current_user.Name
                     oclass.OperationDate = datetime.datetime.now()
                 elif confirm == "3":
-                    if Type == "52":
+                    if Type == "52" or Type == "54":
                         db_session.add(
                             NewReadyWork(
                                 BatchID=BatchID,
