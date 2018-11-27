@@ -4275,6 +4275,33 @@ def Preprocessing():
 def Transport():
     return render_template('TransportMonitor.html')
 
+def getMonitorData(tags):
+    if tags:
+        try:
+            data_dict = dict()
+            redis_conn = redis.Redis(connection_pool=pool)
+            for tag in tags:
+                data_dict[tags[tag]] = redis_conn.hget(constant.REDIS_TABLENAME, tags[tag]).decode('utf-8')
+            return data_dict
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "运输段监控数据获取报错Error：" + str(e), current_user.Name)
+            return
+# 运输段监控数据获取
+@app.route('/TransportMonitor/TransportData')
+def TransportUnitData():
+    if request.method == 'GET':
+        try:
+            tags = constant.MONITOR_TRANSPORT_TAG
+            data_dict = getMonitorData(tags)
+            data_dict = json.dumps(data_dict, cls=AlchemyEncoder, ensure_ascii=False)
+            return data_dict
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "运输段监控数据获取报错Error：" + str(e), current_user.Name)
+
 # 投料段监控
 @app.route('/FeedingSectionMonitor')
 def FeedingSection():
@@ -4290,7 +4317,7 @@ def get_data_from_realtime_Decocting(batch,brand,tankOver,status):
         redis_conn = redis.Redis(connection_pool=pool)
         Batch = redis_conn.hget(constant.REDIS_TABLENAME, batch).decode('utf-8')
         Brand = redis_conn.hget(constant.REDIS_TABLENAME,brand).decode('utf-8')
-        TankOver = redis_conn.hget(constant.REDIS_TABLENAME,tankOver) if redis_conn.hget(constant.REDIS_TABLENAME,str(tankOver)) is not None else False
+        TankOver = redis_conn.hget(constant.REDIS_TABLENAME,tankOver).decode('utf-8') if redis_conn.hget(constant.REDIS_TABLENAME,tankOver) is not None else False
         Status = redis_conn.hget(constant.REDIS_TABLENAME,status).decode('utf-8')
         return Batch, Brand, TankOver, Status
     except Exception as e:
@@ -4304,73 +4331,126 @@ def extract():
     if request.method == 'GET':
         try:
             Equips_data = {}
-            equip1 = db_session.query(ProductionMonitor).filter_by(EQPName='提取设备一').first()
-            Batch, Brand, TankOver, Status = get_data_from_realtime_Decocting(batch='t|BhNR1101-1',brand='t|PdtNR1101-1',tankOver='t|R1101_1_TQKGG_SB_Pat_CloseSwith',status='t|SB_R1101_1_StartProduction')
-            equip1_data = {'a1': Batch,'a2': Brand,'a3':equip1.EQPCode,'a5':TankOver,'a6':Status}
+            Batch, Brand, TankOver, Status = get_data_from_realtime_Decocting(batch='t|BhNR1101-1',
+                                                                              brand='t|PdtNR1101-1',
+                                                                              tankOver='t|R1101_1_TQKGG_SB_Pat_CloseSwith',
+                                                                              status='t|SB_R1101_1_StartProduction')
+            equip1_data = {'a1': Batch,'a2': Brand,'a3':'提取罐1','a5':TankOver,'a6':Status}
             Equips_data.update(equip1_data)
 
-            equip2 = db_session.query(ProductionMonitor).filter_by(EQPName='提取设备二').first()
-            Batch, Brand, TankOver, Status = get_data_from_realtime_Decocting(batch='t|BhNR1101-2', brand='t|PdtNR1101-2',
-                                                                    tankOver='t|R1101_2_TQKGG_SB_Pat_CloseSwith',
-                                                                    status='t|SB_R1101_2_StartProduction')
-            equip2_data = {'b1': Batch, 'b2': Brand, 'b3': equip2.EQPCode, 'b5': TankOver, 'b6': Status}
+            Batch, Brand, TankOver, Status = get_data_from_realtime_Decocting(batch='t|BhNR1101-2',
+                                                                              brand='t|PdtNR1101-2',
+                                                                              tankOver='t|R1101_2_TQKGG_SB_Pat_CloseSwith',
+                                                                              status='t|SB_R1101_2_StartProduction')
+            equip2_data = {'b1': Batch, 'b2': Brand, 'b3': '提取罐2', 'b5': TankOver, 'b6': Status}
             Equips_data.update(equip2_data)
 
-            equip3 = db_session.query(ProductionMonitor).filter_by(EQPName='提取设备三').first()
-            Batch, Brand, TankOver, Status = get_data_from_realtime_Decocting(batch='t|BhNR1101-3', brand='t|PdtNR1101-3',
-                                                                    tankOver='t|R1101_3_TQKGG_SB_Pat_CloseSwith',
-                                                                    status='t|SB_R1101_3_StartProduction')
-            equip3_data = {'c1': Batch, 'c2': Brand, 'c3': equip3.EQPCode, 'c5': TankOver, 'c6': Status}
+            Batch, Brand, TankOver, Status = get_data_from_realtime_Decocting(batch='t|BhNR1101-3',
+                                                                              brand='t|PdtNR1101-3',
+                                                                              tankOver='t|R1101_3_TQKGG_SB_Pat_CloseSwith',
+                                                                              status='t|SB_R1101_3_StartProduction')
+            equip3_data = {'c1': Batch, 'c2': Brand, 'c3': '提取罐3', 'c5': TankOver, 'c6': Status}
             Equips_data.update(equip3_data)
 
-            equip4 = db_session.query(ProductionMonitor).filter_by(EQPName='提取设备四').first()
-            Batch, Brand, TankOver, Status = get_data_from_realtime_Decocting(batch='t|BhNR1101-4', brand='t|PdtNR1101-4',
-                                                                    tankOver='t|R1101_4_TQKGG_SB_Pat_CloseSwith',
-                                                                    status='t|SB_R1101_4_StartProduction')
-            equip4_data = {'d1': Batch, 'd2': Brand, 'd3': equip4.EQPCode, 'd5': TankOver, 'd6': Status}
+            Batch, Brand, TankOver, Status = get_data_from_realtime_Decocting(batch='t|BhNR1101-4',
+                                                                              brand='t|PdtNR1101-4',
+                                                                              tankOver='t|R1101_4_TQKGG_SB_Pat_CloseSwith',
+                                                                              status='t|SB_R1101_4_StartProduction')
+            equip4_data = {'d1': Batch, 'd2': Brand, 'd3': '提取罐4', 'd5': TankOver, 'd6': Status}
             Equips_data.update(equip4_data)
 
-            equip5 = db_session.query(ProductionMonitor).filter_by(EQPName='提取设备五').first()
-            Batch, Brand, TankOver, Status = get_data_from_realtime_Decocting(batch='t|BhNR1101-5', brand='t|PdtNR1101-5',
-                                                                    tankOver='t|R1101_5_TQKGG_SB_Pat_CloseSwith',
-                                                                    status='t|SB_R1101_5_StartProduction')
-            equip5_data = {'e1': Batch, 'e2': Brand, 'e3': equip5.EQPCode, 'e5': TankOver, 'e6': Status}
+            Batch, Brand, TankOver, Status = get_data_from_realtime_Decocting(batch='t|BhNR1101-5',
+                                                                              brand='t|PdtNR1101-5',
+                                                                              tankOver='t|R1101_5_TQKGG_SB_Pat_CloseSwith',
+                                                                              status='t|SB_R1101_5_StartProduction')
+            equip5_data = {'e1': Batch, 'e2': Brand, 'e3': '提取罐5', 'e5': TankOver, 'e6': Status}
             Equips_data.update(equip5_data)
 
-            equip6 = db_session.query(ProductionMonitor).filter_by(EQPName='提取设备六').first()
-            Batch, Brand, TankOver, Status = get_data_from_realtime_Decocting(batch='t|BhNR1101-6', brand='t|PdtNR1101-6',
-                                                                    tankOver='t|R1101_6_TQKGG_SB_Pat_CloseSwith',
-                                                                    status='t|SB_R1101_6_StartProduction')
-            equip6_data = {'f1': Batch, 'f2': Brand, 'f3': equip6.EQPCode, 'f5': TankOver, 'f6': Status}
+            Batch, Brand, TankOver, Status = get_data_from_realtime_Decocting(batch='t|BhNR1101-6',
+                                                                              brand='t|PdtNR1101-6',
+                                                                              tankOver='t|R1101_6_TQKGG_SB_Pat_CloseSwith',
+                                                                              status='t|SB_R1101_6_StartProduction')
+
+            equip6_data = {'f1': Batch, 'f2': Brand, 'f3': '提取罐6', 'f5': TankOver, 'f6': Status}
             Equips_data.update(equip6_data)
             jsonsz = json.dumps(Equips_data, cls=AlchemyEncoder, ensure_ascii=False)
             return jsonsz
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "生长线监控提取段数据获取报错Error：" + str(e), current_user.Name)
+            insertSyslog("error", "健胃消食片生产线监控提取段数据获取报错Error：" + str(e), current_user.Name)
+
+# 肿节风清膏提取段监控
+app.route('/processMonitorLine/HerbaGlabraDecocting')
+def HerbaGlabraDecocting():
+        try:
+            Equips_data = {}
+            Batch, Brand, TankOver, Status = get_data_from_realtime_Decocting(batch='t|BhNR1101-7',
+                                                                              brand='t|PdtNR1101-7',
+                                                                              tankOver='t|R1101_7_TQKGG_SB_Pat_CloseSwith',
+                                                                              status='t|SB_R1101_7_StartProduction')
+            equip1_data = {'a1': Batch, 'a2': Brand, 'a3': '提取罐7', 'a5': TankOver, 'a6': Status}
+            Equips_data.update(equip1_data)
+
+            Batch, Brand, TankOver, Status = get_data_from_realtime_Decocting(batch='t|BhNR1101-8',
+                                                                              brand='t|PdtNR1101-8',
+                                                                              tankOver='t|R1101_8_TQKGG_SB_Pat_CloseSwith',
+                                                                              status='t|SB_R1101_8_StartProduction')
+            equip2_data = {'b1': Batch, 'b2': Brand, 'b3': '提取罐8', 'b5': TankOver, 'b6': Status}
+            Equips_data.update(equip2_data)
+
+            Batch, Brand, TankOver, Status = get_data_from_realtime_Decocting(batch='t|BhNR1101-9',
+                                                                              brand='t|PdtNR1101-9',
+                                                                              tankOver='t|R1101_9_TQKGG_SB_Pat_CloseSwith',
+                                                                              status='t|SB_R1101_9_StartProduction')
+            equip3_data = {'c1': Batch, 'c2': Brand, 'c3': '提取罐9', 'c5': TankOver, 'c6': Status}
+            Equips_data.update(equip3_data)
+
+            Batch, Brand, TankOver, Status = get_data_from_realtime_Decocting(batch='t|BhNR1101-10',
+                                                                              brand='t|PdtNR1101-10',
+                                                                              tankOver='t|R1101_10_TQKGG_SB_Pat_CloseSwith',
+                                                                              status='t|SB_R1101_10_StartProduction')
+            equip4_data = {'d1': Batch, 'd2': Brand, 'd3': '提取罐0', 'd5': TankOver, 'd6': Status}
+            Equips_data.update(equip4_data)
+            jsonsz = json.dumps(Equips_data, cls=AlchemyEncoder, ensure_ascii=False)
+            return jsonsz
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "肿节风清膏上产线监控提取段数据获取报错Error：" + str(e), current_user.Name)
 
 def get_data_from_realtime_Standing(name,Unit=None):
     try:
-        # 新建一个客户端,并在初始化的时候进行连接实时数据服务
         redis_conn = redis.Redis(connection_pool=pool)
         if Unit == 'Concentrate':
             batch_tag = 't|MVRPC_' + name[-1]
             brand_tag = 't|MVRPM_' + name[-1]
-            Batch = redis_conn.hget(constant.REDIS_TABLENAME, str(batch_tag)).decode('utf-8') if redis_conn.hget(constant.REDIS_TABLENAME, str(batch_tag)) else 'init'
-            Brand = redis_conn.hget(constant.REDIS_TABLENAME, str(brand_tag)).decode('utf-8') if redis_conn.hget(constant.REDIS_TABLENAME, str(brand_tag)) else 'init'
+            Batch = redis_conn.hget(constant.REDIS_TABLENAME, str(batch_tag)).decode('utf-8')
+            Brand = redis_conn.hget(constant.REDIS_TABLENAME, str(brand_tag)).decode('utf-8')
             return Batch,Brand
+        if Unit == 'Decocting':
+            batch_tag = 't|BhNR1101-' + name[-1]
+            brand_tag = 't|PdtNR1101-' + name[-1]
+            tankOver_tag = 't|R1101_' + name[-1] + '_TQKGG_SB_Pat_CloseSwith'
+            status_tag = 't|SB_R1101_' + name[-1] + '_StartProduction'
+
+            Batch = redis_conn.hget(constant.REDIS_TABLENAME, str(batch_tag)).decode('utf-8')
+            Brand = redis_conn.hget(constant.REDIS_TABLENAME, str(brand_tag)).decode('utf-8')
+            tankOver = redis_conn.hget(constant.REDIS_TABLENAME, str(tankOver_tag)).decode('utf-8') if redis_conn.hget(constant.REDIS_TABLENAME, str(tankOver_tag)) is not None else False
+            status = redis_conn.hget(constant.REDIS_TABLENAME, str(status_tag)).decode('utf-8')
+            return Batch, Brand, tankOver, status
+
         batch_tag = 't|PC' + name[4:]
         brand_tag = 't|PM' + name[4:]
         height_tag = 't|' + name[4:] + 'LT'
         volume_tag = 't|' + name[4:] + 'JZ'
         feed_time_tag = 't|' + name[4:] + 'MIN'
 
-        Batch = redis_conn.hget(constant.REDIS_TABLENAME, str(batch_tag)) if redis_conn.hget(constant.REDIS_TABLENAME, str(batch_tag)) else 'init'
-        Brand = redis_conn.hget(constant.REDIS_TABLENAME, str(brand_tag)) if redis_conn.hget(constant.REDIS_TABLENAME, str(brand_tag)) else 'init'
-        Height = redis_conn.hget(constant.REDIS_TABLENAME, str(height_tag)) if redis_conn.hget(constant.REDIS_TABLENAME, str(height_tag)) is not 'init' else '0.0'
-        Feed_time = redis_conn.hget(constant.REDIS_TABLENAME, str(feed_time_tag)) if redis_conn.hget(constant.REDIS_TABLENAME, str(feed_time_tag)) is not 'init' else '0.0'
-        Volume = redis_conn.hget(constant.REDIS_TABLENAME, str(volume_tag)) if redis_conn.hget(constant.REDIS_TABLENAME, str(volume_tag)) is not 'init' else '0.0'
+        Batch = redis_conn.hget(constant.REDIS_TABLENAME, str(batch_tag)).decode('utf-8')
+        Brand = redis_conn.hget(constant.REDIS_TABLENAME, str(brand_tag)).decode('utf-8')
+        Height = redis_conn.hget(constant.REDIS_TABLENAME, str(height_tag)).decode('utf-8')
+        Feed_time = redis_conn.hget(constant.REDIS_TABLENAME, str(feed_time_tag)).decode('utf-8')
+        Volume = redis_conn.hget(constant.REDIS_TABLENAME, str(volume_tag)).decode('utf-8')
         return Batch, Brand, Height, Feed_time, Volume
     except Exception as e:
         print('连接实时数据服务器失败!')
@@ -4378,59 +4458,46 @@ def get_data_from_realtime_Standing(name,Unit=None):
         return
 
 def get_integer(object,count=None):
-    if object is None:
+    if object is None or object == 'init':
         return object
     return round(float(object),count)
 
 def standing_consentrate_collect(a,b,c,d,e,f,g,h,j):
     Equips_data = {}
-    equip1 = db_session.query(ProductionMonitor).filter_by(EQPName=a).first()
-    Batch, Brand, TankOver, Status = get_data_from_realtime_Decocting(batch='t|BhNR1101-1', brand='t|PdtNR1101-1',
-                                                                      tankOver='t|R1101_1_TQKGG_SB_Pat_CloseSwith',
-                                                                      status='t|SB_R1101_1_StartProduction')
-    equip1_data = {'a1': Batch, 'a2': Brand, 'a3': equip1.EQPCode, 'a5': TankOver, 'a6': Status}
+    Batch, Brand, TankOver, Status = get_data_from_realtime_Standing(name=a, Unit='Decocting')
+    equip1_data = {'a1': Batch, 'a2': Brand, 'a3': '提取罐%s'%a[-1], 'a5': TankOver, 'a6': Status}
     Equips_data.update(equip1_data)
 
-    equip2 = db_session.query(ProductionMonitor).filter_by(EQPName=b).first()
     Batch, Brand, Status, Feed_time, Volume = get_data_from_realtime_Standing(name=b)
-    equip2_data = {'b1': Batch, 'b2': get_integer(Feed_time),'b5': equip2.EQPCode, 'b6':Status, 'b7': get_integer(Volume,1)}
+    equip2_data = {'b1': Batch, 'b2': get_integer(Feed_time),'b5': '静置罐%s'%b[4:], 'b6':Status, 'b7': get_integer(Volume,1)}
     Equips_data.update(equip2_data)
 
-    equip3 = db_session.query(ProductionMonitor).filter_by(EQPName=c).first()
     Batch, Brand, Status, Feed_time, Volume = get_data_from_realtime_Standing(name=c)
-    equip3_data = {'c1': Batch, 'c2': get_integer(Feed_time), 'c5': equip3.EQPCode, 'c6': Status,'c7': get_integer(Volume,1)}
+    equip3_data = {'c1': Batch, 'c2': get_integer(Feed_time), 'c5': '静置罐%s'%c[4:], 'c6': Status,'c7': get_integer(Volume,1)}
     Equips_data.update(equip3_data)
 
-    equip4 = db_session.query(ProductionMonitor).filter_by(EQPName=d).first()
     Batch, Brand, Status, Feed_time, Volume = get_data_from_realtime_Standing(name=d)
-    equip4_data = {'d1': Batch, 'd2': get_integer(Feed_time), 'd5': equip4.EQPCode, 'd6': Status,'d7': get_integer(Volume,1)}
+    equip4_data = {'d1': Batch, 'd2': get_integer(Feed_time), 'd5': '静置罐%s'%d[4:], 'd6': Status,'d7': get_integer(Volume,1)}
     Equips_data.update(equip4_data)
 
-    equip5 = db_session.query(ProductionMonitor).filter_by(EQPName=e).first()
-    Batch, Brand, TankOver, Status = get_data_from_realtime_Decocting(batch='t|BhNR1101-1', brand='t|PdtNR1101-1',
-                                                            tankOver='t|R1101_1_TQKGG_SB_Pat_CloseSwith',
-                                                            status='t|SB_R1101_1_StartProduction')
-    equip5_data = {'e1': Batch, 'e2': Brand, 'e3': equip5.EQPCode, 'e5': TankOver, 'e6': Status}
+    Batch, Brand, TankOver, Status = get_data_from_realtime_Standing(name=e, Unit='Decocting')
+    equip5_data = {'e1': Batch, 'e2': Brand, 'e3': '提取罐%s'%a[-1], 'e5': TankOver, 'e6': Status}
     Equips_data.update(equip5_data)
 
-    equip6 = db_session.query(ProductionMonitor).filter_by(EQPName=f).first()
     Batch, Brand, Status, Feed_time, Volume = get_data_from_realtime_Standing(name=f)
-    equip6_data = {'f1': Batch, 'f2': get_integer(Feed_time), 'f5': equip6.EQPCode, 'f6': Status,'f7': get_integer(Volume,1)}
+    equip6_data = {'f1': Batch, 'f2': get_integer(Feed_time), 'f5': '静置罐%s'%f[4:], 'f6': Status,'f7': get_integer(Volume,1)}
     Equips_data.update(equip6_data)
 
-    equip7 = db_session.query(ProductionMonitor).filter_by(EQPName=g).first()
     Batch, Brand, Status, Feed_time, Volume = get_data_from_realtime_Standing(name=g)
-    equip7_data = {'g1': Batch, 'g2': get_integer(Feed_time), 'g5': equip7.EQPCode, 'g6': Status,'g7': get_integer(Volume,1)}
+    equip7_data = {'g1': Batch, 'g2': get_integer(Feed_time), 'g5': '静置罐%s'%g[4:], 'g6': Status,'g7': get_integer(Volume,1)}
     Equips_data.update(equip7_data)
 
-    equip8 = db_session.query(ProductionMonitor).filter_by(EQPName=h).first()
     Batch, Brand, Status, Feed_time, Volume = get_data_from_realtime_Standing(name=h)
-    equip8_data = {'h1': Batch, 'h2': get_integer(Feed_time), 'h5': equip8.EQPCode, 'h6': Status,'h7': get_integer(Volume,1)}
+    equip8_data = {'h1': Batch, 'h2': get_integer(Feed_time), 'h5': '静置罐%s'%h[4:], 'h6': Status,'h7': get_integer(Volume,1)}
     Equips_data.update(equip8_data)
 
-    equip9 = db_session.query(ProductionMonitor).filter_by(EQPName=j).first()
     Batch, Brand = get_data_from_realtime_Standing(j,Unit='Concentrate')
-    equip9_data = {'i1': Batch, 'i2': Brand, 'i3': equip9.EQPCode}
+    equip9_data = {'i1': Batch, 'i2': Brand, 'i3': 'j'}
     Equips_data.update(equip9_data)
     return Equips_data
 
@@ -4444,20 +4511,20 @@ def StandingAndConsentrate():
             if group is None:
                 return
             if group == 'A':
-                equipments_data = standing_consentrate_collect(a='提取设备一', b='静置设备1_1', c='静置设备1_2', d='静置设备1_3',
-                                                               e='提取设备二', f='静置设备2_1', g='静置设备2_2', h='静置设备2_3',
+                equipments_data = standing_consentrate_collect(a='提取设备1', b='静置设备1_1', c='静置设备1_2', d='静置设备1_3',
+                                                               e='提取设备2', f='静置设备2_1', g='静置设备2_2', h='静置设备2_3',
                                                                j='浓缩设备1')
                 jsonsz = json.dumps(equipments_data, cls=AlchemyEncoder, ensure_ascii=False)
                 return jsonsz
             if group == 'B':
-                equipments_data = standing_consentrate_collect(a='提取设备三', b='静置设备3_1', c='静置设备3_2', d='静置设备3_3',
-                                                               e='提取设备四', f='静置设备4_1', g='静置设备4_2', h='静置设备4_3',
+                equipments_data = standing_consentrate_collect(a='提取设备3', b='静置设备3_1', c='静置设备3_2', d='静置设备3_3',
+                                                               e='提取设备4', f='静置设备4_1', g='静置设备4_2', h='静置设备4_3',
                                                                j='浓缩设备2')
                 jsonsz = json.dumps(equipments_data, cls=AlchemyEncoder, ensure_ascii=False)
                 return jsonsz
             if group == 'C':
-                equipments_data = standing_consentrate_collect(a='提取设备五', b='静置设备5_1', c='静置设备5_2', d='静置设备5_3',
-                                                               e='提取设备六', f='静置设备6_1', g='静置设备6_2', h='静置设备6_3',
+                equipments_data = standing_consentrate_collect(a='提取设备5', b='静置设备5_1', c='静置设备5_2', d='静置设备5_3',
+                                                               e='提取设备6', f='静置设备6_1', g='静置设备6_2', h='静置设备6_3',
                                                                j='浓缩设备3')
                 jsonsz = json.dumps(equipments_data, cls=AlchemyEncoder, ensure_ascii=False)
                 return jsonsz
@@ -4466,9 +4533,13 @@ def StandingAndConsentrate():
             logger.error(e)
             insertSyslog("error", "生长线监控静止浓缩段数据获取报错Error：" + str(e), current_user.Name)
 
+# 肿节风清膏静置段和单效浓缩段监控
+@app.route('/processMonitorLine/HerbaGlabra/StandingAndConcentrate')
+def HerbaGlabraStanding():
+    pass
+
 def get_data_Total_MixtureAndDry(num,Unit=None):
     try:
-        pool = redis.ConnectionPool(host=constant.REDIS_HOST, password=constant.REDIS_PASSWORD)  # 实现一个连接池
         share_data = redis.Redis(connection_pool=pool)
 
         if Unit == 'Total_Mixture':
@@ -4481,17 +4552,18 @@ def get_data_Total_MixtureAndDry(num,Unit=None):
 
             Batch = share_data.hget(constant.REDIS_TABLENAME, batch_tag).decode('utf-8')
             Brand = share_data.hget(constant.REDIS_TABLENAME, brand_tag).decode('utf-8')
-            Height = share_data.hget(constant.REDIS_TABLENAME, height_tag).decode('utf-8') if share_data.hget(constant.REDIS_TABLENAME, str(height_tag)) is not 'init' else '0.0'
-            Volume = share_data.hget(constant.REDIS_TABLENAME, volume_tag).decode('utf-8') if share_data.hget(constant.REDIS_TABLENAME, str(volume_tag)) is not 'init' else '0.0'
-            Temperature = share_data.hget(constant.REDIS_TABLENAME, temp_tag).decode('utf-8') if share_data.hget(constant.REDIS_TABLENAME, str(temp_tag)) is not 'init' else '0.0'
-            Flow = share_data.hget(constant.REDIS_TABLENAME, flow_tag).decode('utf-8') if share_data.hget(constant.REDIS_TABLENAME, str(flow_tag)) is not 'init' else '0.0'
+            Height = share_data.hget(constant.REDIS_TABLENAME, height_tag).decode('utf-8')
+            Volume = share_data.hget(constant.REDIS_TABLENAME, volume_tag).decode('utf-8')
+            Temperature = share_data.hget(constant.REDIS_TABLENAME, temp_tag).decode('utf-8')
+            Flow = share_data.hget(constant.REDIS_TABLENAME, flow_tag).decode('utf-8')
+
             return Batch, Brand, Height, Volume,Temperature,Flow
         if Unit == 'Dry':
             batch_tag = 't|PGPC_' + num
             brand_tag = 't|PGPM_' + num
 
-            Batch = share_data.get(batch_tag).decode('utf-8')
-            Brand = share_data.get(brand_tag).decode('utf-8')
+            Batch = share_data.hget(constant.REDIS_TABLENAME, batch_tag).decode('utf-8')
+            Brand = share_data.hget(constant.REDIS_TABLENAME, brand_tag).decode('utf-8')
             return Batch, Brand
     except Exception as e:
         print(e)
@@ -4528,6 +4600,10 @@ def Total_MixtureAndDry():
             logger.error(e)
             insertSyslog("error", "生产监控总混干燥段返回数据报错Error：" + str(e), current_user.Name)
 
+# 肿节风清膏醇沉段和收膏段监控
+@app.route('/processMonitorLine/HerbaGlabra/AlcoholPrecipitation')
+def AlcoholPrecipitation():
+    pass
 
 
 
@@ -7080,7 +7156,7 @@ def YieldCompare():
 @app.route('/QualityControl/BatchDataCompare', methods=['POST', 'GET'])
 def BatchDataCompare():
     '''
-    purpose：通过前台传入的批次查询响应的批次的突入量、产出量、得率并返回
+    purpose：通过前台传入的批次查询响应的批次的突入量、产出量、得率
     url:/QualityControl/BatchDataCompare
     return: data_list,一个包含突入量、产出量、得率、批次的数据列表
     '''
