@@ -6984,6 +6984,10 @@ def processContinuousData():
     return render_template('BatchData_Process.html')
 
 def ContinuousDataTree(ParentNode=None):
+    '''
+    :param ParentNode: 父节点
+    :return: the tree structure of QualityControlTree
+    '''
     sz = []
     try:
         Datas = db_session.query(QualityControlTree).filter_by(ParentNode=ParentNode).all()
@@ -7001,6 +7005,11 @@ def ContinuousDataTree(ParentNode=None):
 
 @app.route('/ProcessContinuousData/DataTree', methods=['POST', 'GET'])
 def DataTree():
+    '''
+    purpose: 查询数据库获取data_tree
+    url: /ProcessContinuousData/DataTree
+    return: data_tree
+    '''
     if request.method == 'GET':
         try:
             data_tree = ContinuousDataTree(ParentNode=0)
@@ -7009,9 +7018,14 @@ def DataTree():
             print(e)
             insertSyslog("error", "查询过程连续数据树形结构报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
-# # 根据变量和时间段查询批次
+
 @app.route('/QualityControl/getBatch', methods=['POST', 'GET'])
 def QualityControlGetBatch():
+    '''
+    purpose: 通过前台传入的开始时间和结束时间查询时间段内的批次
+    url: /QualityControl/getBatch
+    return: batchs
+    '''
     if request.method == 'GET':
         data = request.values
         try:
@@ -7029,6 +7043,11 @@ def QualityControlGetBatch():
 # 过程连续数据某个变量图像变化
 @app.route('/ProcessContinuousData/TagAnalysis', methods=['POST', 'GET'])
 def TagAnalysis():
+    '''
+    purpose: 由前台传入的批次查询计划开始和结束时间，通过前台传入的tag查询tag计划开始和结束时间段内相应的value并返回
+    url：/ProcessContinuousData/TagAnalysis
+    return: tag_data
+    '''
     if request.method == 'POST':
         try:
             data = request.values
@@ -7061,6 +7080,52 @@ def TagAnalysis():
         except Exception as e:
             print(e)
             insertSyslog("error", "路由/ProcessContinuousData/TagAnalysis报错Error：" + str(e),current_user.Name)
+            return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
+# 产量对比
+@app.route('/QualityControl/YieldCompare.html')
+def YieldCompare():
+    return render_template('QualityControlYieldCompare.html')
+
+@app.route('/QualityControl/BatchDataCompare', methods=['POST', 'GET'])
+def BatchDataCompare():
+    '''
+    purpose：通过前台传入的批次查询响应的批次的突入量、产出量、得率并返回
+    url:/QualityControl/BatchDataCompare
+    return: data_list,一个包含突入量、产出量、得率、批次的数据列表
+    '''
+    if request.method == 'POST':
+        try:
+            data = request.values
+            if not data:
+                return
+            data_list = list()
+            for batch in data:
+                _data = dict()
+
+                input = db_session.query(EletronicBatchDataStore.OperationpValue).filter(
+                    and_(EletronicBatchDataStore.BatchID==batch,
+                         EletronicBatchDataStore.Content==constant.OUTPUT_COMPARE_INPUT)).first()[0]
+                output = db_session.query(EletronicBatchDataStore.OperationpValue).filter(
+                    and_(EletronicBatchDataStore.BatchID==batch,
+                         EletronicBatchDataStore.Content==constant.OUTPUT_COMPARE_OUTPUT)).first()[0]
+                sampling_quantity = db_session.query(EletronicBatchDataStore.OperationpValue).filter(
+                    and_(EletronicBatchDataStore.BatchID==batch,
+                         EletronicBatchDataStore.Content==constant.OUTPUT_COMPARE_SAMPLE)).first()[0]
+
+                if len(input)>0 and len(output)>0 and len(sampling_quantity)>0:
+                    _data['input'] = input
+                    _data['output'] = output
+                    _data['yield'] = (float(output)+float(sampling_quantity))/float(input)
+                    _data['batch'] = batch
+                    data_list.append(_data)
+                return
+
+            data_list = json.dumps(data_list,cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+            return data_list
+        except Exception as e:
+            print(e)
+            insertSyslog("error", "产量对比报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 # 过程连续数据——Data

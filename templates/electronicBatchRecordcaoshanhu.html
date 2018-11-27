@@ -3494,7 +3494,7 @@
                         <td><input type="text" class="form-control batchInput" id="plasticBatch1"></td>
                         <td><input type="text" class="form-control batchInput" id="plasticTestNumber1"></td>
                         <td><input type="text" class="form-control batchInput" id="plasticNumber1"></td>
-                        <td class="middle-center" rowspan="2">
+                        <td class="middle-center tdMinWidth100" rowspan="2">
                             {% if '82' == flag %}
                                 {% if None == dir[0]["OperationPeople_f2"] or "" == dir[0]["OperationPeople_f2"] %}
                                     <a href="javascript:;" class="btn btn-primary OperationConfirm" name="59" rel="1">确认</a>
@@ -3509,7 +3509,7 @@
                                 {{ dir[0]["OperationPeople_f2"] }}
                             {% endif %}
                         </td>
-                        <td class="middle-center" rowspan="2">
+                        <td class="middle-center tdMinWidth100" rowspan="2">
                             {% if '82' == flag %}
                                 {{ dir[0]["CheckedPeople_f2"] }}
                             {% endif %}
@@ -3549,8 +3549,7 @@
                     </tr>
                     <tr>
                         <td colspan="8" class="middle-center">参数控制</td>
-                        <td rowspan="5" class="middle-center">
-                            <input type="hidden" id="overcheckbox" value={{ dir[0]["OperationPeople_f3"] }}>
+                        <td rowspan="5" class="middle-center tdMinWidth100">
                             {% if '82' == flag %}
                                 {% if None == dir[0]["OperationPeople_f3"] or "" == dir[0]["OperationPeople_f3"] %}
                                     <a href="javascript:;" class="btn btn-primary OperationConfirm" name="收膏开始">确认</a>
@@ -3565,7 +3564,7 @@
                                 {{ dir[0]["OperationPeople_f3"] }}
                             {% endif %}
                         </td>
-                        <td rowspan="5" class="middle-center">
+                        <td rowspan="5" class="middle-center tdMinWidth100">
                             {% if '82' == flag %}
                                 {{ dir[0]["CheckedPeople_f3"] }}
                             {% endif %}
@@ -3663,7 +3662,7 @@
                         <td><input type="text" class="form-control batchInput" id="plastic_1_5"></td>
                         <td><input type="text" class="form-control batchInput" id="plastic_1_6"></td>
                         <td><input type="text" class="form-control batchInput" id="plastic_1_7"></td>
-                        <td rowspan="2" class="middle-center">
+                        <td rowspan="2" class="middle-center tdMinWidth100">
                             {% if '82' == flag %}
                                 {% if None == dir[0]["OperationPeople_f4"] or "" == dir[0]["OperationPeople_f4"] %}
                                     <a href="javascript:;" class="btn btn-primary OperationConfirm" name="60" rel="1">确认</a>
@@ -3678,7 +3677,7 @@
                                 {{ dir[0]["OperationPeople_f4"] }}
                             {% endif %}
                         </td>
-                        <td rowspan="2" class="middle-center">
+                        <td rowspan="2" class="middle-center tdMinWidth100">
                             {% if '82' == flag %}
                                 {{ dir[0]["CheckedPeople_f4"] }}
                             {% endif %}
@@ -4240,7 +4239,7 @@
                             elseConfirmFun(PUID,BatchID,type,confirm)
                         }
                     })
-                }else if(name == "备料结束清场" || name == "煎煮结束清场" || name == "浓缩结束清场" || name == "醇沉结束清场" || name == "单效浓缩结束清场" || name == "收膏结束清场"){
+                }else if(name == "备料结束清场" || name == "煎煮结束清场" || name == "浓缩结束清场" || name == "醇沉结束清场" || name == "单效浓缩结束清场"){
                     $.messager.confirm('确定操作', '是否要进行确认？确认后不允许撤回。', function (flag) {
                         if (flag) {
                             if($("input:checkbox[name=QAovercheckbox]").prop("checked") == true){
@@ -4257,7 +4256,6 @@
                             $("input:checkbox[name=QAovercheckbox]:checked").each(function(k){
                                 number = k
                             })
-                            console.log(number)
                             if(number == 1){
                                 QAConfirmFun(ID, title, name)
                             }else{
