@@ -6772,6 +6772,16 @@ def electronicBatchRecordNav1():
 def electronicBatchRecordNav2():
     return render_template('electronicBatchRecordNav2.html')
 
+# 备件管理
+@app.route('/equipmentspare')
+def equipmentbeij():
+    return render_template('equipmentspare.html')
+
+# 故障管理
+@app.route('/equipmenttrouble')
+def equipmenttrouble():
+    return render_template('equipmenttrouble.html')
+
 def getExcel(file, method='r'):
     '''
     改变数据结构 -- 方便前端显示
