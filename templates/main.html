@@ -433,7 +433,7 @@
                         </ul>
                     </li>
                 {% endif %}
-                {% if isIn(['52', '53', '54', '55', '56', '57', '58'], session.get('menus')) %}
+                {% if isIn(['52', '53', '54', '55', '56', '57', '58','90','91'], session.get('menus')) %}
                     <li>
                         <a href="javascript:;">
                             <span class="iconfont sider-nav-icon">&#xe69e;</span>
@@ -446,19 +446,19 @@
                                     <a href="#" onclick="addTab('设备信息','Equipment')">设备信息</a>
                                 </li>
                             {% endif %}
+                            {% if '91' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onclick="addTab('设备备件管理','/equipmentspare')">设备备件管理</a>
+                                </li>
+                            {% endif %}
+                            {% if '90' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onclick="addTab('设备故障管理','/equipmenttrouble')">设备故障管理</a>
+                                </li>
+                            {% endif %}
                             {% if '53' in session.get('menus') %}
                                 <li>
                                     <a href="#" onclick="addTab('设备档案管理','product_device.html')">设备档案管理</a>
-                                </li>
-                            {% endif %}
-                            {% if '54' in session.get('menus') %}
-                                <li>
-                                    <a href="#">设备备件查询</a>
-                                </li>
-                            {% endif %}
-                            {% if '55' in session.get('menus') %}
-                                <li>
-                                    <a href="#">设备故障管理</a>
                                 </li>
                             {% endif %}
                             {% if '56' in session.get('menus') %}
