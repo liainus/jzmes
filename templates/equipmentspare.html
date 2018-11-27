@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>备品备件管理</title>
+    <link href="../static/css/base.css" rel="stylesheet">
+	<link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
+	<link href="../static/css/basic_info.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
+	<link href="../static/js/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
+    <link href="../static/css/datagridpanel_customer.css" rel="stylesheet">
+    <link href="../static/css/dialogpanel.css" type="text/css" rel="stylesheet">
+    <link href="../static/css/datagrid_customer.css" type="text/css" rel="stylesheet">
+    <script type="text/javascript" src="../static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
+</head>
+<body>
+    <div class="content">
+        <div id="Toolbar" style="padding:0 10px;">
+            备件名称:
+            <input type="text" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
+                placeholder="">
+        </div>
+        <table class="easyui-datagrid" id="tab" title="" style="width:100%;" data-options="
+            queryParams: {
+                BatchID: ''
+            },
+            rownumbers:true,
+            singleSelect:false,
+            autoRowHeight:false,
+            pagination:true,
+            pageSize:10,
+            toolbar:'#Toolbar',
+            url:'',
+            method:'get'">
+            <thead>
+                <tr>
+                    <th field="ck" checkbox="true"></th>
+
+                </tr>
+            </thead>
+        </table>
+        <!-- 右键菜单 -->
+        <div id="contextmenu" class="easyui-menu" style="width:120px;">
+{#            <div data-options="iconCls:'icon-ok'" onclick="CollectToolbar.pass();">通过审核</div>#}
+        </div>
+    </div>
+</body>
+</html>
