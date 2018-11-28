@@ -13,12 +13,34 @@
     <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
     <script type="text/javascript">
         $(function(){
-            $('#btn').bind('click', function(){
-                var data,json;
-                data = [];
-                data.push({ "text": "20170206_Brand1_1", "id": 101 });
-                data.push({ "text": "20170206_Brand2_1", "id": 102 });
-                $("#rwlb").combobox("loadData", data);
+            $("#beginTime").datebox("setValue", myformatter(new Date()))
+            $("#endTime").datebox("setValue", myformatter(new Date()))
+            $('#searchBatchBtn').on('click', function(){
+                $.ajax({
+                    url: '/QualityControl/getBatch',
+                    method: 'get',
+                    data: {
+                        beginTime:$('#beginTime').datebox('getValue'),
+                        endTime:$('#endTime').datebox('getValue')
+                    },
+                    success: function (data) {
+                        if (data) {
+                            $.messager.show({
+                                title: '提示',
+                                timeout: 1000,
+                                msg: '查询成功',
+                                style: {
+                                    right: '',
+                                    top: document.body.scrollTop + document.documentElement.scrollTop,
+                                    bottom: ''
+                                }
+                            });
+                            $('#rwlb').combobox({
+                                url:data
+                            });
+                        }
+                    }
+                })
             });
             $('#LeftTree').tree({
                 url:'/ProcessContinuousData/DataTree',
@@ -67,6 +89,12 @@
                 });
             }
         }
+        function myformatter(date){
+            var y = date.getFullYear();
+            var m = date.getMonth()+1;
+            var d = date.getDate();
+            return y+'-'+(m<10?('0'+m):m)+'-'+( d<10?('0'+d):d);
+        }
     </script>
 </head> 
 <body>
@@ -78,9 +106,9 @@
             <div id="tb" style="padding:0 10px;">
             <div style="margin:10px;"></div>
             <a>  起止日期:  </a>
-                <input class="easyui-datebox" style="width:166px;height:35px;line-height:35px;">
-                <input class="easyui-datebox" style="width:166px;height:35px;line-height:35px;">
-                <a id="btn" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'">查询批次号</a>
+                <input class="easyui-datebox" id="beginTime" data-options="required:true,showSeconds:false,editable:false" style="width:166px;height:35px;line-height:35px;">
+                <input class="easyui-datebox" id="endTime" data-options="required:true,showSeconds:false,editable:false" style="width:166px;height:35px;line-height:35px;">
+                <a id="searchBatchBtn" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'">查询批次号</a>
 
                 <a> ----> 批次号:  </a>
                 <input class="easyui-combobox" id="rwlb" name="rwlb" style="width:250px" data-options="valueField:'id', textField:'text', panelHeight:'auto'" >
