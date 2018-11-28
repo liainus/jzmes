@@ -20,3 +20,12 @@ MES_DATABASE_CHARSET = config['MES_DataBase']['charset']
 OUTPUT_COMPARE_INPUT = config['output_compare']['input']
 OUTPUT_COMPARE_OUTPUT = config['output_compare']['output']
 OUTPUT_COMPARE_SAMPLE = config['output_compare']['sampling_quantity']
+
+def transform_dict(position):
+    if position:
+        dict_ = dict()
+        for key in eval(position).keys():
+            dict_[key] = eval(position)[key]
+        return dict_
+
+MONITOR_TRANSPORT_TAG = transform_dict("config['transport_section']")

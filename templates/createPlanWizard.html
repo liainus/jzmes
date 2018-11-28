@@ -226,7 +226,10 @@
                     }
                     $.ajax({
                         url:"/ZYPlanGuid/isBatchNumber",
-                        data:{ABatchID:$("#ABatchID").val()},
+                        data:{
+                            ABatchID:$("#ABatchID").val(),
+                            BrandName:$('#ABrandName').find("option:selected").val()
+                        },
                         type:"get",
                         async:false,
                         success:function(res){
@@ -270,9 +273,9 @@
                         $("#PlanTab").datagrid('load',{
                             ABatchID :$('#ABatchID').val()
                         })
-                        $("#TasksTab").datagrid('load',{
-                            ABatchID :$('#ABatchID').val()
-                        })
+{#                        $("#TasksTab").datagrid('load',{#}
+{#                            ABatchID :$('#ABatchID').val()#}
+{#                        })#}
                     },200);
                 }
             })
@@ -375,6 +378,9 @@
                 <div id="tab" class="easyui-tabs" style="width:100%;height:520px;">
                     <div title="批次计划" data-options="closable:false"  style="padding:0px;">
                         <table id="PlanTab" class="easyui-datagrid" style="width:100%;"  data-options="
+                            queryParams: {
+                                ABatchID: ''
+                            },
                              url:'/ZYPlanGuid/searchPlanmanager',
                              method: 'get',
                              rownumbers:true,
@@ -402,46 +408,49 @@
                             </thead>
                         </table>
                     </div>
-                    <div title="批次物料明细" data-options="closable:false" style="overflow:auto;padding:0px;">
-                        <table id="TasksTab" class="easyui-datagrid" style="width:100%;" data-options="
+{#                    <div title="批次物料明细" data-options="closable:false" style="overflow:auto;padding:0px;">#}
+{#                        <table id="TasksTab" class="easyui-datagrid" style="width:100%;" data-options="#}
+{#                            queryParams: {#}
+{#                                ABatchID: ''#}
+{#                            },#}
 {#                             url:'/ZYPlanGuid/CriticalMaterials',#}
-                             method: 'get',
-                             rownumbers:true,
-                             singleSelect:false,
-                             autoRowHeight:false,
-                             pagination:true,
-                             striped:true,
-                             checkOnSelect:false,
-                             selectOnCheck:false,
-                             collapsible:true,
-                             toolbar: '#tb',
-                             pageSize:10 " >
-                            <thead>
-                                <tr>
-                                    <th data-options="field: 'PlanDate',align: 'center' ">计划日期</th>
-                                    <th data-options="field: 'TaskID',align: 'center' ">制药计划单号</th>
-                                    <th data-options="field: 'BatchID',align: 'center' ">批次号</th>
-                                    <th data-options="field: 'PlanSeq',align: 'center' ">顺序号</th>
-                                    <th data-options="field: 'PUID',align: 'center' ">工艺段</th>
-                                    <th data-options="field: 'PDUnitRouteName',align: 'center' ">工艺路线名称</th>
-                                    <th data-options="field: 'PlanType',align: 'center' ">计划类型</th>
-                                    <th data-options="field: 'BrandID',align: 'center' ">牌号编码</th>
-                                    <th data-options="field: 'BrandName',align: 'center' ">牌号名称</th>
-                                    <th data-options="field: 'PlanQuantity',align: 'center' ">计划重量</th>
-                                    <th data-options="field: 'ActQuantity',align: 'center' ">实际重量</th>
-                                    <th data-options="field: 'Unit',align: 'center' ">单位</th>
-                                    <th data-options="field: 'EnterTime',align: 'center' ">录入时间</th>
-                                    <th data-options="field: 'ActBeginTime',align: 'center' ">实际开始时间</th>
-                                    <th data-options="field: 'ActEndTime',align: 'center' ">实际完成时间</th>
-                                    <th data-options="field: 'SetRepeatCount',align: 'center' ">设定重复次数</th>
-                                    <th data-options="field: 'CurretnRepeatCount',align: 'center' ">当前重复次数</th>
-                                    <th data-options="field: 'ActTank',align: 'center' ">实际罐号</th>
-                                    <th data-options="field: 'TaskStatus',align: 'center' ">任务状态</th>
-                                    <th data-options="field: 'LockStatus',align: 'center' ">任务锁定状态</th>
-                                </tr>
-                            </thead>
-                        </table>
-                    </div>
+{#                             method: 'get',#}
+{#                             rownumbers:true,#}
+{#                             singleSelect:false,#}
+{#                             autoRowHeight:false,#}
+{#                             pagination:true,#}
+{#                             striped:true,#}
+{#                             checkOnSelect:false,#}
+{#                             selectOnCheck:false,#}
+{#                             collapsible:true,#}
+{#                             toolbar: '#tb',#}
+{#                             pageSize:10 " >#}
+{#                            <thead>#}
+{#                                <tr>#}
+{#                                    <th data-options="field: 'PlanDate',align: 'center' ">计划日期</th>#}
+{#                                    <th data-options="field: 'TaskID',align: 'center' ">制药计划单号</th>#}
+{#                                    <th data-options="field: 'BatchID',align: 'center' ">批次号</th>#}
+{#                                    <th data-options="field: 'PlanSeq',align: 'center' ">顺序号</th>#}
+{#                                    <th data-options="field: 'PUID',align: 'center' ">工艺段</th>#}
+{#                                    <th data-options="field: 'PDUnitRouteName',align: 'center' ">工艺路线名称</th>#}
+{#                                    <th data-options="field: 'PlanType',align: 'center' ">计划类型</th>#}
+{#                                    <th data-options="field: 'BrandID',align: 'center' ">牌号编码</th>#}
+{#                                    <th data-options="field: 'BrandName',align: 'center' ">牌号名称</th>#}
+{#                                    <th data-options="field: 'PlanQuantity',align: 'center' ">计划重量</th>#}
+{#                                    <th data-options="field: 'ActQuantity',align: 'center' ">实际重量</th>#}
+{#                                    <th data-options="field: 'Unit',align: 'center' ">单位</th>#}
+{#                                    <th data-options="field: 'EnterTime',align: 'center' ">录入时间</th>#}
+{#                                    <th data-options="field: 'ActBeginTime',align: 'center' ">实际开始时间</th>#}
+{#                                    <th data-options="field: 'ActEndTime',align: 'center' ">实际完成时间</th>#}
+{#                                    <th data-options="field: 'SetRepeatCount',align: 'center' ">设定重复次数</th>#}
+{#                                    <th data-options="field: 'CurretnRepeatCount',align: 'center' ">当前重复次数</th>#}
+{#                                    <th data-options="field: 'ActTank',align: 'center' ">实际罐号</th>#}
+{#                                    <th data-options="field: 'TaskStatus',align: 'center' ">任务状态</th>#}
+{#                                    <th data-options="field: 'LockStatus',align: 'center' ">任务锁定状态</th>#}
+{#                                </tr>#}
+{#                            </thead>#}
+{#                        </table>#}
+{#                    </div>#}
                 </div>
             </div>
             <div id="step-3">
