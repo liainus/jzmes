@@ -604,6 +604,236 @@ class EletronicBatchDataStore(Base):
     # 描述:
     Description = Column(String(100), primary_key=False, autoincrement=False, nullable=True)
 
+#  维护周期
+class MaintenanceCycle(Base):
+    __tablename__ = 'MaintenanceCycle'
+    # id:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+    # 维护类型（设备润滑，仪表调校） :
+    MaintenanceType = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 维护周期范围低限 :
+    MaintenanceLower = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 维护周期范围高限:
+    MaintenanceHeigh = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 单位描述:
+    DescriptionUnit = Column(Unicode(60), primary_key=False, autoincrement=False, nullable=True)
+
+#   维护状态表
+class MaintenanceStatus(Base):
+    __tablename__ = 'MaintenanceStatus'
+    # id:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+    # 开始使用日期 :
+    StartDateTime = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+
+    # 效验周期 :
+    ValidationCycle = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 下一个效验时间 :
+    NextValidationDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+
+    # 是否开始使用 :
+    IsNotUse = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 描述:
+    Description = Column(String(100), primary_key=False, autoincrement=False, nullable=True)
+
+#   设备包含仪表
+class Instruments(Base):
+    __tablename__ = 'Instruments'
+    # id:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+    # 设备ID（设备表 里设备类型生 产设备）:
+    EquipmentID = Column(Integer, primary_key=False, autoincrement=True, nullable=False)
+
+    # 设备ID（设备表 里设备类型为 仪表） :
+    InstrumentsID = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+
+# 区域
+class Area(Base):
+    __tablename__ = 'Area'
+    # id:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+    # 区域编码 :
+    AreaCode = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 区域名称 ：
+    AreaName = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 区域编号 :
+    AreaNum = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 描述:
+    Description = Column(Unicode(65), primary_key=False, autoincrement=False, nullable=True)
+
+    # 类型 ：
+    AreaType = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 上级工厂 ：
+    PeFactory = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 顺序:
+    seq = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
+
+# 备件库存
+class SparePartStock(Base):
+    __tablename__ = 'SparePartStock'
+    # id:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+    # 区域（江中罗亭）  :
+    AreaName = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 库存数量（入库+1，出库-1） ：
+    StockNum = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
+
+    # 库存预警数量  :
+    StockWarnningNum = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
+
+    # 库存预警提醒标识 :
+    StockWarnningFlag = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 描述 ：
+    Description = Column(Unicode(65), primary_key=False, autoincrement=False, nullable=True)
+
+# 备件出入库管理
+class SparePartInStockManagement(Base):
+    __tablename__ = 'SparePartInStockManagement'
+    # id:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+    # 区域（江中罗亭）  :
+    AreaName = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 操作（出库，入库）：
+    Operation = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 备件使用状况（全新，旧备件）  :
+    StockUseStatus = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 操作时间  :
+    OperationDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+
+    # 描述 ：
+    Description = Column(Unicode(65), primary_key=False, autoincrement=False, nullable=True)
+
+#  调度日期
+class SchedulePlan(Base):
+    __tablename__ = 'SchedulePlan'
+    # id:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+    # 调度编码 :
+    SchedulePlanCode = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 调度描述：
+    Desc = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 调度开始时间:
+    PlanBeginTime = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 调度结束时间  :
+    PlanEndTime = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+
+    # 类型 ：
+    Type = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+#  设备维护
+class EquipmentMaintain(Base):
+    __tablename__ = 'EquipmentMaintain'
+    # id:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+    # 设备维护计划单号 :
+    MaintainPlanNum = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 类型（润滑，巡检，维修） ：
+    MaintainType = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 设备（可以多选）  :
+    EquipmentID = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
+
+    # 计划开始时间 :
+    PlanBeginDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+
+    # 计划结束时间  ：
+    PlanEndDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+
+    # 维护要求  ：
+    MaintainDemand = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 完成时间 :
+    FinishedDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+
+    # 状态 ：
+    MaintainStatus = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 描述 ：
+    Description = Column(Unicode(65), primary_key=False, autoincrement=False, nullable=True)
+
+#  设备故障报修
+class EquipmentFailureReporting(Base):
+    __tablename__ = 'EquipmentFailureReporting'
+    # id:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+    # 设备故障报修计划单号  :
+    FailureReportingNum = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 类型（故障报修）  ：
+    FailureReportingType = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 设备名称（可以多选）  :
+    EQPName = Column(Unicode(62), primary_key=False, autoincrement=False, nullable=True)
+
+    # 报修开始时间  :
+    ReportingBeginDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+
+    # 故障开始时间  ：
+    ReportingEndDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+
+    # 故障描述   ：
+    FailureReportingDesc = Column(Unicode(120), primary_key=False, autoincrement=False, nullable=True)
+
+    # 实际处理开始时间  :
+    ActualBeginDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+
+    # 实际处理完成时间  ：
+    ActualEndDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+
+    # 故障处理  ：
+    FailureReportingHandle = Column(Unicode(65), primary_key=False, autoincrement=False, nullable=True)
+
+    # 状态  ：
+    ReportingStatus = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 描述  ：
+    Description = Column(Unicode(65), primary_key=False, autoincrement=False, nullable=True)
+
+#  设备维护知识库
+class EquipmentMaintenanceKnowledge(Base):
+    __tablename__ = 'EquipmentMaintenanceKnowledge'
+    # id:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+    # 故障类型（机械，电气）  :
+    FailureReportingType = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 故障描述   ：
+    FailureReportingDesc = Column(Unicode(120), primary_key=False, autoincrement=False, nullable=True)
+
+    # 故障处理  ：
+    FailureReportingHandle = Column(Unicode(65), primary_key=False, autoincrement=False, nullable=True)
+
+    # 描述  ：
+    Description = Column(Unicode(65), primary_key=False, autoincrement=False, nullable=True)
 
 # 生成表单的执行语句
 Base.metadata.create_all(engine)
