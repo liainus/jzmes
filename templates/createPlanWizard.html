@@ -226,7 +226,10 @@
                     }
                     $.ajax({
                         url:"/ZYPlanGuid/isBatchNumber",
-                        data:{ABatchID:$("#ABatchID").val()},
+                        data:{
+                            ABatchID:$("#ABatchID").val(),
+                            BrandName:$('#ABrandName').find("option:selected").val()
+                        },
                         type:"get",
                         async:false,
                         success:function(res){
