@@ -7059,6 +7059,9 @@ def NodeIdNoteSearch():
 def processContinuousData():
     return render_template('BatchData_Process.html')
 
+def get_son(ParentNode):
+    childs = db_session.query(QualityControlTree).filter_by(ParentNode=ParentNode).all()
+    return childs
 def ContinuousDataTree(depth, ParentNode=None):
     '''
     :param ParentNode: 父节点
@@ -7070,13 +7073,13 @@ def ContinuousDataTree(depth, ParentNode=None):
         if depth <= 2:
             for obj in Datas:
                 if obj.ParentNode == ParentNode:
-                    if len(get_childs(ParentNode)) > 0:
+                    if len(get_son(ParentNode)) > 0:
                         sz.append({"id": obj.ID,
                                    "Tag": obj.Name,
                                    "text":obj.Note,
                                    "state": 'closed',
                                    "children": ContinuousDataTree(depth+1, obj.ID)})
-                    if len(get_childs(ParentNode)) == 0:
+                    if len(get_son(ParentNode)) == 0:
                         sz.append({"id": obj.ID,
                                    "Tag": obj.Name,
                                    "text": obj.Note,
@@ -7091,22 +7094,25 @@ def ContinuousDataTree(depth, ParentNode=None):
 @app.route('/ProcessContinuousData/DataTree', methods=['POST', 'GET'])
 def DataTree():
     '''
-    purpose: 查询数据库获取data_tree
+    purpose: 查询数据库获取data_tree,默认加载三层，再次点击加载
     url: /ProcessContinuousData/DataTree
     return: data_tree
     '''
-    if request.method == 'POST':
+    if request.method == 'GET':
         try:
-            data_tree = ContinuousDataTree(0, ParentNode=0)
+            data_tree = ContinuousDataTree(1, ParentNode=0)
             return json.dumps(data_tree, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
             insertSyslog("error", "查询过程连续数据树形结构报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
-    if request.method == 'GET':
+
+@app.route('/ProcessContinuousData/DataTree/LoadMore', methods=['POST', 'GET'])
+def DataTree():
+    if request.method == 'POST':
         try:
             parentNode = request.values['parentNode']
-            data_tree = ContinuousDataTree(0, ParentNode=parentNode)
+            data_tree = ContinuousDataTree(1, ParentNode=parentNode)
             return json.dumps(data_tree, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
