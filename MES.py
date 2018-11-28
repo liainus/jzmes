@@ -7059,7 +7059,7 @@ def NodeIdNoteSearch():
 def processContinuousData():
     return render_template('BatchData_Process.html')
 
-def ContinuousDataTree(ParentNode=None):
+def ContinuousDataTree(depth, ParentNode=None):
     '''
     :param ParentNode: 父节点
     :return: the tree structure of QualityControlTree
@@ -7067,12 +7067,21 @@ def ContinuousDataTree(ParentNode=None):
     sz = []
     try:
         Datas = db_session.query(QualityControlTree).filter_by(ParentNode=ParentNode).all()
-        for obj in Datas:
-            if obj.ParentNode == ParentNode:
-                sz.append({"id": obj.ID,
-                           "Tag": obj.Name,
-                           "Note":obj.Note,
-                           "children": ContinuousDataTree(obj.ID)})
+        if depth <= 2:
+            for obj in Datas:
+                if obj.ParentNode == ParentNode:
+                    if len(get_childs(ParentNode)) > 0:
+                        sz.append({"id": obj.ID,
+                                   "Tag": obj.Name,
+                                   "text":obj.Note,
+                                   "state": 'closed',
+                                   "children": ContinuousDataTree(depth+1, obj.ID)})
+                    if len(get_childs(ParentNode)) == 0:
+                        sz.append({"id": obj.ID,
+                                   "Tag": obj.Name,
+                                   "text": obj.Note,
+                                   "state": 'open',
+                                   "children": ContinuousDataTree(depth+1, obj.ID)})
         return sz
     except Exception as e:
         print(e)
@@ -7088,7 +7097,7 @@ def DataTree():
     '''
     if request.method == 'GET':
         try:
-            data_tree = ContinuousDataTree(ParentNode=0)
+            data_tree = ContinuousDataTree(0, ParentNode=0)
             return json.dumps(data_tree, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
