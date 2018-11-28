@@ -7069,10 +7069,10 @@ def ContinuousDataTree(depth, ParentNode=None):
     '''
     sz = []
     try:
-        Datas = db_session.query(QualityControlTree).filter_by(ParentNode=ParentNode).all()
-        if depth <= 2:
+        Datas = db_session.query(QualityControlTree).filter_by(ParentNode=int(ParentNode)).all()
+        if depth <= 1:
             for obj in Datas:
-                if obj.ParentNode == ParentNode:
+                if obj.ParentNode == int(ParentNode):
                     if len(get_son(ParentNode)) > 0:
                         sz.append({"id": obj.ID,
                                    "Tag": obj.Name,
@@ -7094,7 +7094,7 @@ def ContinuousDataTree(depth, ParentNode=None):
 @app.route('/ProcessContinuousData/DataTree', methods=['POST', 'GET'])
 def DataTree():
     '''
-    purpose: 查询数据库获取data_tree,默认加载三层，再次点击加载
+    purpose: 查询数据库获取data_tree
     url: /ProcessContinuousData/DataTree
     return: data_tree
     '''
@@ -7108,10 +7108,10 @@ def DataTree():
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 @app.route('/ProcessContinuousData/DataTree/LoadMore', methods=['POST', 'GET'])
-def DataTree():
-    if request.method == 'POST':
+def DataTreeLoadMore():
+    if request.method == 'GET':
         try:
-            parentNode = request.values['parentNode']
+            parentNode = int(request.values['parentNode'])
             data_tree = ContinuousDataTree(1, ParentNode=parentNode)
             return json.dumps(data_tree, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
@@ -7134,7 +7134,14 @@ def QualityControlGetBatch():
             if beginTime is None or endTime is None:
                 return
             batchs = set(db_session.query(ZYPlan.BatchID).filter(ZYPlan.PlanDate.between(beginTime,endTime)).all())
-            return json.dumps(list(batchs), cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+            if batchs:
+                batch_data = dict()
+                count = 0
+                for batch in batchs:
+                    batch_data['id'] = count
+                    batch_data['text'] = batch
+                    count += 1
+                return json.dumps(batch_data, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
             insertSyslog("error", "程连续数据获取从%s到%s时间段内的批次号报错Error："%(beginTime,endTime) + str(e), current_user.Name)
