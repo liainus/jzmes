@@ -22,14 +22,14 @@
             });
             $('#LeftTree').tree({
                 url:'/ProcessContinuousData/DataTree',
-                method: 'post',
+                method: 'get',
                 animate:true,
                 loadFilter:function(data){
                     return data
                 },
                 onBeforeExpand:function(row){
                     console.log(row)
-                    var url = '/ProcessContinuousData/DataTree?parentNode=' + row.id
+                    var url = '/ProcessContinuousData/DataTree/LoadMore?parentNode=' + row.id
                     $("#LeftTree").tree("options").url = url;
                     return true;
                 },
