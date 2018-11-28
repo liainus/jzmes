@@ -3798,6 +3798,9 @@ class QualityControlTree(Base):
 	# 工序
 	Note = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
+	# PUID
+	PUID = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
+
 	# 父节点
 	ParentNode = Column(Integer, primary_key = False, autoincrement = False, nullable = True)
 

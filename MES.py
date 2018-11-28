@@ -4879,10 +4879,15 @@ def cshflowtu():
 def jwxspflowtu():
     return render_template('jwxspflowtu.html')
 
-#生产监控详情页面
+#生产监控详情页面-#健胃消食片
 @app.route('/ZYPlanGuid/processMonitorLineDetails')
 def processMonitorLineDetails():
     return render_template('processMonitorLineDetails.html')
+
+#生产监控详情页面-#肿节风清膏
+@app.route('/ZYPlanGuid/processMonitorLineDetails_2')
+def processMonitorLineDetails_2():
+    return render_template('processMonitorLineDetails2.html')
 
 def GetEquipmentData():
     # productUnit = db_session.query(ProductUnit.ID).filter_by(PDUnitName='前处理段')
@@ -7118,8 +7123,8 @@ def QualityControlGetBatch():
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 # 过程连续数据某个变量图像变化
-@app.route('/ProcessContinuousData/TagAnalysis', methods=['POST', 'GET'])
-def TagAnalysis():
+@app.route('/ProcessContinuousData/TagDataShow', methods=['POST', 'GET'])
+def TagDataShow():
     '''
     purpose: 由前台传入的批次查询计划开始和结束时间，通过前台传入的tag查询tag计划开始和结束时间段内相应的value并返回
     url：/ProcessContinuousData/TagAnalysis
@@ -7130,34 +7135,58 @@ def TagAnalysis():
             data = request.values
             batch = data['batch']
             tag = 't|' + str(data['tag'])
+            Note = data['Note']
             if batch is None or tag is None:
                 return
-            object = db_session.query(ZYPlan).filter_by(BatchID=batch).first()
-            try:
-                conn = pymssql.connect(host= constant.MES_DATABASE_HOST,
-                                       user= constant.MES_DATABASE_USER,
-                                       password= constant.MES_DATABASE_PASSWD,
-                                       database= constant.MES_DATABASE_NAME,
-                                       charset= constant.MES_DATABASE_CHARSET)
-            except Exception as e:
-                print(e)
-                insertSyslog("error", "过程连续数据连接数据库报错Error：" + str(e),current_user.Name)
-                return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
-            try:
-                cursor = conn.cursor()
-                sql = 'SELECT [DataHistory].[%s] FROM [MES].[dbo].[DataHistory] WHERE [DataHistory].[SampleTime] BETWEEN %s AND %s'%(tag, object.ActBeginTime, object.ActEndTime)
-                cursor.execute(sql)
-                # 用一个rs变量获取数据
-                tag_data = cursor.fetchall()
-                return json.dumps(tag_data, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
-            except Exception as e:
-                print(e)
-                insertSyslog("error", "过程连续数据获取从%s到%s时间段内变量%s值报错Error：" %(object.beginTime, object.endTime, tag) + str(e),current_user.Name)
-                return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                pages = int(data['page'])
+                rowsnumber = int(data['rows'])
+                inipage = (pages - 1) * rowsnumber + 0
+                endpage = (pages - 1) * rowsnumber + rowsnumber
+                try:
+                    conn = pymssql.connect(host= constant.MES_DATABASE_HOST,
+                                           user= constant.MES_DATABASE_USER,
+                                           password= constant.MES_DATABASE_PASSWD,
+                                           database= constant.MES_DATABASE_NAME,
+                                           charset= constant.MES_DATABASE_CHARSET)
+                except Exception as e:
+                    print(e)
+                    insertSyslog("error", "过程连续数据连接数据库报错Error：" + str(e),current_user.Name)
+                    return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
+                try:
+                    object = db_session.query(ZYTask).filter_by(BatchID=batch).first()
+                    cursor = conn.cursor()
+                    sql = 'select * from [MES].[dbo].[DataHistory] where [DataHistory].[SampleTime] between %s and %s'%(object.ActBeginTime, object.ActEndTime)
+                    cursor.execute(sql)
+                    tags_data = cursor.fetchall()
+                    cursor.close()
+                    conn.close()
+                    if tags_data:
+                        tag_data_list = list()
+                        for tag_data in tags_data:
+                            tag_ = dict()
+                            tag_['batch'] = batch
+                            tag_['brand'] = object.BrandName
+                            tag_['tag'] = Note
+                            tag_['tag_value'] = tag_data.tag
+                            tag_['collect_time'] = tag_data.SampleTime
+                            tag_data_list.append(tag_)
+                        tag_data_list = tag_data_list[inipage:endpage]
+                        total = len(tag_data_list)
+                        json_data = json.dumps(tag_data_list, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+                        jsonData = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + json_data + "}"
+                        return jsonData
+                except Exception as e:
+                    print(e)
+                    insertSyslog("error", "过程连续数据获取从%s到%s时间段内变量%s值报错Error：" %(object.beginTime, object.endTime, tag) + str(e),current_user.Name)
+                    return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
             insertSyslog("error", "路由/ProcessContinuousData/TagAnalysis报错Error：" + str(e),current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
 
 # 产量对比
 @app.route('/QualityControl/YieldCompare.html')
