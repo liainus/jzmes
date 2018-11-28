@@ -7126,7 +7126,7 @@ def QualityControlGetBatch():
     url: /QualityControl/getBatch
     return: batchs
     '''
-    if request.method == 'GET':
+    if request.method == 'POST':
         data = request.values
         try:
             beginTime = data['beginTime']
@@ -7135,13 +7135,15 @@ def QualityControlGetBatch():
                 return
             batchs = set(db_session.query(ZYPlan.BatchID).filter(ZYPlan.PlanDate.between(beginTime,endTime)).all())
             if batchs:
-                batch_data = dict()
                 count = 0
+                batch_list = []
                 for batch in batchs:
+                    batch_data = dict()
                     batch_data['id'] = count
-                    batch_data['text'] = batch
+                    batch_data['text'] = batch[0]
                     count += 1
-                return json.dumps(batch_data, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+                    batch_list.append(batch_data)
+                return json.dumps(batch_list, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
             insertSyslog("error", "程连续数据获取从%s到%s时间段内的批次号报错Error："%(beginTime,endTime) + str(e), current_user.Name)
