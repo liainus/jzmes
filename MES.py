@@ -7095,9 +7095,18 @@ def DataTree():
     url: /ProcessContinuousData/DataTree
     return: data_tree
     '''
-    if request.method == 'GET':
+    if request.method == 'POST':
         try:
             data_tree = ContinuousDataTree(0, ParentNode=0)
+            return json.dumps(data_tree, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            insertSyslog("error", "查询过程连续数据树形结构报错Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+    if request.method == 'GET':
+        try:
+            parentNode = request.values['parentNode']
+            data_tree = ContinuousDataTree(0, ParentNode=parentNode)
             return json.dumps(data_tree, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
