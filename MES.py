@@ -7062,6 +7062,7 @@ def processContinuousData():
 def get_son(ParentNode):
     childs = db_session.query(QualityControlTree).filter_by(ParentNode=ParentNode).all()
     return childs
+
 def ContinuousDataTree(depth, ParentNode=None):
     '''
     :param ParentNode: 父节点
@@ -7073,18 +7074,17 @@ def ContinuousDataTree(depth, ParentNode=None):
         if depth <= 1:
             for obj in Datas:
                 if obj.ParentNode == int(ParentNode):
-                    if len(get_son(ParentNode)) > 0:
+                    if len(get_son(obj.ID)) > 0:
                         sz.append({"id": obj.ID,
                                    "Tag": obj.Name,
                                    "text":obj.Note,
                                    "state": 'closed',
                                    "children": ContinuousDataTree(depth+1, obj.ID)})
-                    if len(get_son(ParentNode)) == 0:
+                    if len(get_son(obj.ID)) == 0:
                         sz.append({"id": obj.ID,
                                    "Tag": obj.Name,
                                    "text": obj.Note,
-                                   "state": 'open',
-                                   "children": ContinuousDataTree(depth+1, obj.ID)})
+                                   "state": 'open'})
         return sz
     except Exception as e:
         print(e)
