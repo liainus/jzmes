@@ -7059,6 +7059,9 @@ def NodeIdNoteSearch():
 def processContinuousData():
     return render_template('BatchData_Process.html')
 
+def get_son(ParentNode):
+    childs = db_session.query(QualityControlTree).filter_by(ParentNode=ParentNode).all()
+    return childs
 def ContinuousDataTree(depth, ParentNode=None):
     '''
     :param ParentNode: 父节点
@@ -7066,17 +7069,17 @@ def ContinuousDataTree(depth, ParentNode=None):
     '''
     sz = []
     try:
-        Datas = db_session.query(QualityControlTree).filter_by(ParentNode=ParentNode).all()
-        if depth <= 2:
+        Datas = db_session.query(QualityControlTree).filter_by(ParentNode=int(ParentNode)).all()
+        if depth <= 1:
             for obj in Datas:
-                if obj.ParentNode == ParentNode:
-                    if len(get_childs(ParentNode)) > 0:
+                if obj.ParentNode == int(ParentNode):
+                    if len(get_son(ParentNode)) > 0:
                         sz.append({"id": obj.ID,
                                    "Tag": obj.Name,
                                    "text":obj.Note,
                                    "state": 'closed',
                                    "children": ContinuousDataTree(depth+1, obj.ID)})
-                    if len(get_childs(ParentNode)) == 0:
+                    if len(get_son(ParentNode)) == 0:
                         sz.append({"id": obj.ID,
                                    "Tag": obj.Name,
                                    "text": obj.Note,
@@ -7095,18 +7098,21 @@ def DataTree():
     url: /ProcessContinuousData/DataTree
     return: data_tree
     '''
-    if request.method == 'POST':
+    if request.method == 'GET':
         try:
-            data_tree = ContinuousDataTree(0, ParentNode=0)
+            data_tree = ContinuousDataTree(1, ParentNode=0)
             return json.dumps(data_tree, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
             insertSyslog("error", "查询过程连续数据树形结构报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
+@app.route('/ProcessContinuousData/DataTree/LoadMore', methods=['POST', 'GET'])
+def DataTreeLoadMore():
     if request.method == 'GET':
         try:
-            parentNode = request.values['parentNode']
-            data_tree = ContinuousDataTree(0, ParentNode=parentNode)
+            parentNode = int(request.values['parentNode'])
+            data_tree = ContinuousDataTree(1, ParentNode=parentNode)
             return json.dumps(data_tree, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
@@ -7128,7 +7134,14 @@ def QualityControlGetBatch():
             if beginTime is None or endTime is None:
                 return
             batchs = set(db_session.query(ZYPlan.BatchID).filter(ZYPlan.PlanDate.between(beginTime,endTime)).all())
-            return json.dumps(list(batchs), cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+            if batchs:
+                batch_data = dict()
+                count = 0
+                for batch in batchs:
+                    batch_data['id'] = count
+                    batch_data['text'] = batch
+                    count += 1
+                return json.dumps(batch_data, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
             insertSyslog("error", "程连续数据获取从%s到%s时间段内的批次号报错Error："%(beginTime,endTime) + str(e), current_user.Name)
