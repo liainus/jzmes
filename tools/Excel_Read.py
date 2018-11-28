@@ -27,6 +27,7 @@ def read_Excel(file_dir):
                 db_session.add(QualityControlTree(
                     Name=row_value[0],
                     Note=row_value[1],
+                    PUID=int(row_value[3]),
                     ParentNode= int(row_value[2])))
                 db_session.commit()
 
