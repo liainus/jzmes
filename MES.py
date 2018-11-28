@@ -4211,7 +4211,8 @@ def isBatchNumber():
             if len(json_str) > 10:
                 isExist = ''#前台判断标识：OK为批次号可用，NO为此批次号已存在
                 ABatchID = data['ABatchID']
-                BatchID = db_session.query(PlanManager.BatchID).filter(PlanManager.BatchID == ABatchID).first()
+                BrandName = data['BrandName']
+                BatchID = db_session.query(PlanManager.BatchID).filter(PlanManager.BatchID == ABatchID, PlanManager.BrandName == BrandName).first()
                 if(BatchID == None):
                     isExist = 'OK'
                 else:
@@ -4624,8 +4625,8 @@ def taskConfirmSearch():
                 BrandID = planM.BrandID
                 BatchID = planM.BatchID
                 PUID = db_session.query(ProductUnitRoute.PUID).filter(ProductUnitRoute.PDUnitRouteName == name, ProductUnitRoute.ProductRuleID == BrandID).first()
-                total = db_session.query(ZYTask.ID).filter(ZYTask.PUID == PUID[0], ZYTask.BatchID == BatchID).count()
-                tasks = db_session.query(ZYTask).filter(ZYTask.PUID == PUID[0], ZYTask.BatchID == BatchID).all()[inipage:endpage]
+                total = db_session.query(ZYTask.ID).filter(ZYTask.PUID == PUID[0], ZYTask.BatchID == BatchID, ZYTask.BrandID == BrandID).count()
+                tasks = db_session.query(ZYTask).filter(ZYTask.PUID == PUID[0], ZYTask.BatchID == BatchID, ZYTask.BrandID == BrandID).all()[inipage:endpage]
                 jsonZYTasks = json.dumps(tasks, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonZYTasks = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonZYTasks + "}"
                 return jsonZYTasks
@@ -4671,7 +4672,7 @@ def saveEQPCode():
                 oclass = db_session.query(ZYTask).filter(ZYTask.ID == ID).first()
                 PUID = oclass.PUID
                 oclasstasks = db_session.query(ZYTask).filter(ZYTask.PUID == PUID,
-                                                              ZYTask.BatchID == oclass.BatchID).all()
+                                                              ZYTask.BatchID == oclass.BatchID, ZYTask.BrandID == oclass.BrandID).all()
                 if confirm == "1":
                     if PUID == 2:
                         for i in range(len(oclasstasks)):
@@ -4686,7 +4687,7 @@ def saveEQPCode():
                     oclass.EquipmentID = EQPCode
                     oclass.TaskStatus = Model.Global.TASKSTATUS.COMFIRM.value
                 db_session.commit()
-                IDm = db_session.query(PlanManager.ID).filter(PlanManager.BatchID == oclass.BatchID).first()
+                IDm = db_session.query(PlanManager.ID).filter(PlanManager.BatchID == oclass.BatchID,PlanManager.BrandID == oclass.BrandID).first()
                 IDm = IDm[0]
                 flag = "TRUE"
                 for task in oclasstasks:
@@ -4791,45 +4792,6 @@ def searchcheckplanmanager():
             print(e)
             logger.error(e)
             insertSyslog("error", "计划向导生成的计划查询报错Error：" + str(e), current_user.Name)
-
-# 准备工作查询
-@app.route('/ZYPlanGuid/ConfirmSearchInfo', methods=['POST', 'GET'])
-def ConfirmSearchInfo():
-    if request.method == 'GET':
-        data = request.values
-        try:
-            oclass = db_session.query(ReadyWork).filter().all()
-            return json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
-        except Exception as e:
-            db_session.rollback()
-            print(e)
-            logger.error(e)
-            insertSyslog("error", "准备工作查询报错Error：" + str(e), current_user.Name)
-
-# 中控确认保存信息
-@app.route('/ZYPlanGuid/controlConfirmSaveInfo', methods=['POST', 'GET'])
-def controlConfirmSaveInfo():
-    if request.method == 'POST':
-        data = request.values
-        try:
-            jsonstr = json.dumps(data.to_dict())
-            if len(jsonstr) > 10:
-                jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
-                ZYPlanID = int(data["ZYPlanID"])
-                oclassR = db_session.query(ReadyWork).filter(ReadyWork.ZYPlanID == ZYPlanID, ReadyWork.ProductionFlag == "0").all()
-                for oc in oclassR:
-                    oc.IsCheck = "0"
-                for i in range(len(jsonnumber)-1):
-                    ID = int(jsonnumber[i])
-                    oclass = db_session.query(ReadyWork).filter(ReadyWork.ID == ID).first()
-                    oclass.IsCheck = "1"
-                db_session.commit()
-                return 'OK'
-        except Exception as e:
-            db_session.rollback()
-            print(e)
-            logger.error(e)
-            insertSyslog("error", "中控确认保存信息报错Error：" + str(e), current_user.Name)
 
 #草珊瑚含片
 @app.route('/ZYPlanGuid/cshflowtu')
@@ -5430,9 +5392,10 @@ def planmanagerProgressTuSearch():
                 dic = {}
                 planM = db_session.query(PlanManager).filter(PlanManager.ID == ID).first()
                 BrandName = planM.BrandName
+                PlanStatus = planM.PlanStatus
                 if(BrandName == "健胃消食片浸膏粉"):
                     aa = '（备料段）任务确认'
-                    dic['aa'] = 'OK'#queryFlow(ID, aa)
+                    dic['aa'] = queryPlanMStatus(PlanStatus)
                     a1 = '（备料段）生产前准备（QA签名）'
                     dic['a1'] = queryFlow(ID, a1)
                     a2 = '备料操作按SOP执行（QA签名）'
@@ -5466,7 +5429,7 @@ def planmanagerProgressTuSearch():
                     d3 = '喷雾干燥结束，按SOP清场（QA签名）'
                     dic['d3'] = queryFlow(ID, d3)
                     ee = '（收粉段）任务确认'
-                    dic['ee'] = 'OK'#queryFlow(ID, ee)
+                    dic['ee'] = queryPlanMStatus(PlanStatus)
                     e1 = '（收粉段）生产前准备（QA签名）'
                     dic['e1'] = queryFlow(ID, e1)
                     e2 = '收粉开始，操作按SOP执行（QA签名）'
@@ -5475,7 +5438,7 @@ def planmanagerProgressTuSearch():
                     dic['e3'] = queryFlow(ID, e3)
                 elif(BrandName == "肿节风浸膏"):
                     aa = '（备料段）任务确认'
-                    dic['aa'] = 'OK'#queryFlow(ID, aa)
+                    dic['aa'] = queryPlanMStatus(PlanStatus)
                     a1 = '（备料段）生产前准备（QA签名）'
                     dic['a1'] = queryFlow(ID, a1)
                     a2 = '备料操作按SOP执行（QA签名）'
@@ -5517,7 +5480,7 @@ def planmanagerProgressTuSearch():
                     g3 = '单效浓缩结束，按SOP清场（QA签名）'
                     dic['g3'] = queryFlow(ID, g3)
                     hh = '（收膏段）任务确认'
-                    dic['hh'] = 'OK'#queryFlow(ID, hh)
+                    dic['hh'] = queryPlanMStatus(PlanStatus)
                     h1 = '（收膏段）生产前准备（QA签名）'
                     dic['h1'] = queryFlow(ID, h1)
                     h2 = '收膏开始，操作按SOP执行（QA签名）'
@@ -5530,6 +5493,11 @@ def planmanagerProgressTuSearch():
             logger.error(e)
             insertSyslog("error", "计划执行进度查询流程图查询报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+def queryPlanMStatus(PlanStatus):
+    if(PlanStatus not in('10','11','40')):
+        return 'OK'
+    else:
+        return 'NO'
 def queryFlow(ID, name):
     status = db_session.query(Model.node.NodeCollection.status).filter(Model.node.NodeCollection.oddNum == ID,
                                                                        Model.node.NodeCollection.name == name).first()
