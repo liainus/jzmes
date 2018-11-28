@@ -7051,6 +7051,7 @@ def ContinuousDataTree(depth, ParentNode=None):
                         sz.append({"id": obj.ID,
                                    "Tag": obj.Name,
                                    "text":obj.Note,
+                                   "EQCode":obj.EquipmentCode,
                                    "state": 'closed',
                                    "children": ContinuousDataTree(depth+1, obj.ID)})
                     if len(get_son(obj.ID)) == 0:
@@ -7136,6 +7137,7 @@ def TagDataShow():
             batch = data['batch']
             tag = 't|' + str(data['tag'])
             Note = data['Note']
+            equip_code = data['EQCode']
             if batch is None or tag is None:
                 return
             json_str = json.dumps(data.to_dict())
@@ -7156,28 +7158,29 @@ def TagDataShow():
                     return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
                 try:
-                    object = db_session.query(ZYTask).filter_by(BatchID=batch).first()
-                    cursor = conn.cursor()
-                    sql = 'select * from [MES].[dbo].[DataHistory] where [DataHistory].[SampleTime] between %s and %s'%(object.ActBeginTime, object.ActEndTime)
-                    cursor.execute(sql)
-                    tags_data = cursor.fetchall()
-                    cursor.close()
-                    conn.close()
-                    if tags_data:
-                        tag_data_list = list()
-                        for tag_data in tags_data:
-                            tag_ = dict()
-                            tag_['batch'] = batch
-                            tag_['brand'] = object.BrandName
-                            tag_['tag'] = Note
-                            tag_['tag_value'] = tag_data.tag
-                            tag_['collect_time'] = tag_data.SampleTime
-                            tag_data_list.append(tag_)
-                        tag_data_list = tag_data_list[inipage:endpage]
-                        total = len(tag_data_list)
-                        json_data = json.dumps(tag_data_list, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
-                        jsonData = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + json_data + "}"
-                        return jsonData
+                    object = db_session.query(ZYTask).filter(and_(ZYTask.BatchID==batch,ZYTask.EquipmentID==equip_code)).first()
+                    if object:
+                        cursor = conn.cursor()
+                        sql = 'select [DataHistory].[%s] from [MES].[dbo].[DataHistory] where [DataHistory].[SampleTime] BETWEEN %s AND %s'%(tag, object.ActBeginTime, object.ActEndTime)
+                        cursor.execute(sql)
+                        tags_data = cursor.fetchall()
+                        cursor.close()
+                        conn.close()
+                        if tags_data:
+                            tag_data_list = list()
+                            for tag_data in tags_data:
+                                tag_ = dict()
+                                tag_['batch'] = batch
+                                tag_['brand'] = object.BrandName
+                                tag_['tag'] = Note
+                                tag_['tag_value'] = tag_data.tag
+                                tag_['collect_time'] = tag_data.SampleTime
+                                tag_data_list.append(tag_)
+                            tag_data_list = tag_data_list[inipage:endpage]
+                            total = len(tag_data_list)
+                            json_data = json.dumps(tag_data_list, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+                            jsonData = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + json_data + "}"
+                            return jsonData
                 except Exception as e:
                     print(e)
                     insertSyslog("error", "过程连续数据获取从%s到%s时间段内变量%s值报错Error：" %(object.beginTime, object.endTime, tag) + str(e),current_user.Name)

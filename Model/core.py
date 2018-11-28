@@ -3796,10 +3796,16 @@ class QualityControlTree(Base):
 	Name = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
 	# 工序
-	Note = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+	Note = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True	)
+
+	# 设备号
+	EquipmentCode = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
 	# PUID
-	PUID = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
+	BatchTag = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
+
+	# 品名
+	Brand = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
 	# 父节点
 	ParentNode = Column(Integer, primary_key = False, autoincrement = False, nullable = True)
