@@ -7248,7 +7248,7 @@ def RainbowChartData():
                 return
             except Exception as e:
                 print(e)
-                insertSyslog("error", "过程连续数据获取从%s到%s时间段内变量%s值报错Error：" %(object.beginTime, object.endTime, tag) + str(e),current_user.Name)
+                insertSyslog("error", "过程连续数据获取报错Error："+ str(e),current_user.Name)
                 return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
