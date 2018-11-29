@@ -7241,7 +7241,7 @@ def RainbowChartData():
                         for tag_data in tags_data:
                             if tag_data[0] == 'init':
                                 continue
-                            tag_data_list.append(tag_data[0])
+                            tag_data_list.append(round(float(tag_data[0]),3))
                             # tag_ = dict()
                             # tag_['batch'] = batch
                             # tag_['brand'] = object.BrandName
