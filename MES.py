@@ -7142,9 +7142,10 @@ def TagDataShow():
             tag = 't|' + str(data['tag'])
             Note = data['Note']
             equip_code = data['EQCode']
-            if batch is None or tag is None:
+            if len(data)+len(batch)+len(tag)+len(Note)+len(equip_code)<5:
                 return
             json_str = json.dumps(data.to_dict())
+
             if len(json_str) > 10:
                 pages = int(data['page'])
                 rowsnumber = int(data['rows'])
@@ -7162,29 +7163,36 @@ def TagDataShow():
                     return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
                 try:
-                    object = db_session.query(ZYTask).filter(and_(ZYTask.BatchID==batch, ZYTask.EquipmentID==equip_code)).first()
-                    if object:
+                    equip_ID = db_session.query(Equipment.ID).filter_by(EQPCode=equip_code).first()[0]
+                    object = db_session.query(ZYTask).filter(and_(ZYTask.BatchID==batch, ZYTask.EquipmentID==equip_ID)).first()
+                    if object.ActBeginTime is not None:
                         cursor = conn.cursor()
-                        sql = 'select [DataHistory].[%s] from [MES].[dbo].[DataHistory] where [DataHistory].[SampleTime] BETWEEN %s AND %s'%(tag, object.ActBeginTime, object.ActEndTime)
+                        sql = "select [DataHistory].[%s],[DataHistory].[SampleTime] from [MES].[dbo].[DataHistory] where [DataHistory].[SampleTime] BETWEEN %s AND %s"%(tag, "'%s'"%object.ActBeginTime.strftime('%Y-%m-%d %H:%M:%S'), "'%s'"%object.ActEndTime.strftime('%Y-%m-%d %H:%M:%S'))
                         cursor.execute(sql)
                         tags_data = cursor.fetchall()
                         cursor.close()
                         conn.close()
+
                         if tags_data:
                             tag_data_list = list()
                             for tag_data in tags_data:
+                                if tag_data[0] == 'init':
+                                    continue
                                 tag_ = dict()
                                 tag_['batch'] = batch
                                 tag_['brand'] = object.BrandName
                                 tag_['tag'] = Note
-                                tag_['tag_value'] = tag_data.tag
-                                tag_['collect_time'] = tag_data.SampleTime
+                                tag_['tag_value'] = round(float(tag_data[0]),2)
+                                tag_['collect_time'] = tag_data[1].strftime('%Y-%m-%d %H:%M:%S')
+                                tag_['collect_worker'] = 'Automatic acquisition'
                                 tag_data_list.append(tag_)
+
                             tag_data_list = tag_data_list[inipage:endpage]
                             total = len(tag_data_list)
                             json_data = json.dumps(tag_data_list, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
                             jsonData = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + json_data + "}"
                             return jsonData
+                    return
                 except Exception as e:
                     print(e)
                     insertSyslog("error", "过程连续数据获取从%s到%s时间段内变量%s值报错Error：" %(object.beginTime, object.endTime, tag) + str(e),current_user.Name)
