@@ -6351,7 +6351,7 @@ def electionBatchSearch():
                             wd = "TT002_" + Num
                             occs = searY(BatchID,EQPCodes[i],name,zk)
                             for t in range(len(occs)):
-                                dic["zkd" + "_" + str(i) + "_" + str(t)] = floatcut(occs[t].SampleValue) + occs.Unit
+                                dic["zkd" + "_" + str(i) + "_" + str(t)] = floatcut(occs[t].SampleValue) + occs[t].Unit
                                 dic["zkdTime" + "_" + str(i) + "_" + str(t)] = strchange(occs[t].SampleDate)[10:-10]
                             esss = searY(BatchID, EQPCodes[i], name, wd)
                             for y in range(len(esss)):
@@ -6390,7 +6390,7 @@ def electionBatchSearch():
                             pf = "排风温度显示_" + str(i+1)
                             occs = searY(BatchID,PWEQPCodes[i],name,hf)
                             for t in range(len(occs)):
-                                dic["hfTemp" + "_" + str(i) + "_" + str(t)] = floatcut(occs[t].SampleValue) + occs.Unit
+                                dic["hfTemp" + "_" + str(i) + "_" + str(t)] = floatcut(occs[t].SampleValue) + occs[t].Unit
                                 dic["hfTime" + "_" + str(i) + "_" + str(t)] = strchange(occs[t].SampleDate)[10:-10]
                             esss = searY(BatchID,PWEQPCodes[i],name,zjf)
                             for y in range(len(esss)):
