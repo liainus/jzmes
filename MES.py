@@ -8,7 +8,7 @@ from io import StringIO
 import time
 from collections import Counter
 import datetime
-
+import random
 import pymssql
 import redis
 import xlwt
@@ -7237,19 +7237,12 @@ def RainbowChartData():
                     conn.close()
 
                     if tags_data:
-                        tag_data_list = list()
-                        for tag_data in tags_data:
-                            if tag_data[0] == 'init':
-                                continue
-                            tag_data_list.append(round(float(tag_data[0]),3))
-                            # tag_ = dict()
-                            # tag_['batch'] = batch
-                            # tag_['brand'] = object.BrandName
-                            # tag_['tag'] = Note
-                            # tag_['tag_value'] = round(float(tag_data[0]),2)
-                            # tag_['collect_time'] = tag_data[1].strftime('%Y-%m-%d %H:%M:%S')
-                            # tag_['collect_worker'] = 'Automatic acquisition'
-                            # tag_data_list.append(tag_)
+                        if tags_data.count() <= 100:
+                            tags_data = tags_data
+                        else:
+                            tags_data = random.sample(tags_data, 100)
+                        tag_data_list =[{'data':[tag_data[0] for tag_data in tags_data]},
+                                        {'time': [tag_data[1] for tag_data in tags_data]}]
                         json_data = json.dumps(tag_data_list, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
                         return json_data
                 return
