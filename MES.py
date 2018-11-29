@@ -7052,12 +7052,15 @@ def ContinuousDataTree(depth, ParentNode=None):
                                    "Tag": obj.Name,
                                    "text":obj.Note,
                                    "EQCode":obj.EquipmentCode,
+                                   "Brand": obj.Brand,
                                    "state": 'closed',
                                    "children": ContinuousDataTree(depth+1, obj.ID)})
                     if len(get_son(obj.ID)) == 0:
                         sz.append({"id": obj.ID,
                                    "Tag": obj.Name,
                                    "text": obj.Note,
+                                   "EQCode": obj.EquipmentCode,
+                                   "Brand": obj.Brand,
                                    "state": 'open'})
         return sz
     except Exception as e:
@@ -7118,6 +7121,7 @@ def QualityControlGetBatch():
                     count += 1
                     batch_list.append(batch_data)
                 return json.dumps(batch_list, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+            return
         except Exception as e:
             print(e)
             insertSyslog("error", "程连续数据获取从%s到%s时间段内的批次号报错Error："%(beginTime,endTime) + str(e), current_user.Name)
@@ -7158,7 +7162,7 @@ def TagDataShow():
                     return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
                 try:
-                    object = db_session.query(ZYTask).filter(and_(ZYTask.BatchID==batch,ZYTask.EquipmentID==equip_code)).first()
+                    object = db_session.query(ZYTask).filter(and_(ZYTask.BatchID==batch, ZYTask.EquipmentID==equip_code)).first()
                     if object:
                         cursor = conn.cursor()
                         sql = 'select [DataHistory].[%s] from [MES].[dbo].[DataHistory] where [DataHistory].[SampleTime] BETWEEN %s AND %s'%(tag, object.ActBeginTime, object.ActEndTime)

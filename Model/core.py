@@ -3801,8 +3801,8 @@ class QualityControlTree(Base):
 	# 设备号
 	EquipmentCode = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
-	# PUID
-	BatchTag = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
+	# 批次
+	BatchTag = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
 	# 品名
 	Brand = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
