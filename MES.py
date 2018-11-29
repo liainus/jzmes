@@ -7237,10 +7237,15 @@ def RainbowChartData():
                     conn.close()
 
                     if tags_data:
-                        if len(tags_data) <= 100:
-                            tags_data = tags_data
+                        tag_ = list()
+                        for tag_data in tags_data:
+                            if tag_data[0] == 'init':
+                                continue
+                            tag_.append(tag_data)
+                        if len(tag_) <= 100:
+                            tags_data = tag_
                         else:
-                            tags_data = random.sample(tags_data, 100)
+                            tags_data = random.sample(tag_, 100)
                         tag_data_list =[{'data':[tag_data[0] for tag_data in tags_data]},
                                         {'time': [tag_data[1].strftime('%Y-%m-%d %H:%M:%S') for tag_data in tags_data]}]
                         json_data = json.dumps(tag_data_list, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
