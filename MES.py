@@ -7241,14 +7241,15 @@ def RainbowChartData():
                         for tag_data in tags_data:
                             if tag_data[0] == 'init':
                                 continue
-                            tag_ = dict()
-                            tag_['batch'] = batch
-                            tag_['brand'] = object.BrandName
-                            tag_['tag'] = Note
-                            tag_['tag_value'] = round(float(tag_data[0]),2)
-                            tag_['collect_time'] = tag_data[1].strftime('%Y-%m-%d %H:%M:%S')
-                            tag_['collect_worker'] = 'Automatic acquisition'
-                            tag_data_list.append(tag_)
+                            tag_data_list.append(tag_data[0])
+                            # tag_ = dict()
+                            # tag_['batch'] = batch
+                            # tag_['brand'] = object.BrandName
+                            # tag_['tag'] = Note
+                            # tag_['tag_value'] = round(float(tag_data[0]),2)
+                            # tag_['collect_time'] = tag_data[1].strftime('%Y-%m-%d %H:%M:%S')
+                            # tag_['collect_worker'] = 'Automatic acquisition'
+                            # tag_data_list.append(tag_)
                         json_data = json.dumps(tag_data_list, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
                         return json_data
                 return
