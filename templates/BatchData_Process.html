@@ -62,10 +62,10 @@
                     closeAll()
                     if($('#LeftTree').tree('isLeaf',node.target)){
                         if(comboxtext != ""){
-                            addTab(comboxtext + "  " + node.text + "  数据", "/ProcessContinuousData/DataPart?batch=" + comboxtext + "&tag=" + node.Tag+ "&Note=" + node.text+ "&EQCode=" + node.EQCode);
-                            addTab(comboxtext + "  " + node.text + "  彩虹图", "/ProcessContinuousData/Rainbow?batch=" + comboxtext + "&tag=" + node.Tag);
-                            addTab(comboxtext + "  " + node.text + "  CPK", "/ProcessContinuousData/CPK?batch=" + comboxtext + "&tag=" + node.Tag);
-                            addTab(comboxtext + "  " + node.text + "  直方图", "/ProcessContinuousData/Histogram?batch=" + comboxtext + "&tag=" + node.Tag);
+                            addTab(comboxtext + "  " + node.text + "  数据", "/ProcessContinuousData/DataPart?batch=" + comboxtext + "&tag=" + node.Tag + "&Note=" + node.text + "&EQCode=" + node.EQCode);
+                            addTab(comboxtext + "  " + node.text + "  彩虹图", "/ProcessContinuousData/Rainbow?batch=" + comboxtext + "&tag=" + node.Tag + "&Note=" + node.text + "&EQCode=" + node.EQCode);
+                            addTab(comboxtext + "  " + node.text + "  CPK", "/ProcessContinuousData/CPK?batch=" + comboxtext + "&tag=" + node.Tag + "&Note=" + node.text + "&EQCode=" + node.EQCode);
+                            addTab(comboxtext + "  " + node.text + "  直方图", "/ProcessContinuousData/Histogram?batch=" + comboxtext + "&tag=" + node.Tag + "&Note=" + node.text + "&EQCode=" + node.EQCode);
                         }else{
                             $.messager.alert('提示', '请选择批次号！', 'info');
                         }
