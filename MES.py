@@ -4879,10 +4879,15 @@ def cshflowtu():
 def jwxspflowtu():
     return render_template('jwxspflowtu.html')
 
-#生产监控详情页面
+#生产监控详情页面-#健胃消食片
 @app.route('/ZYPlanGuid/processMonitorLineDetails')
 def processMonitorLineDetails():
     return render_template('processMonitorLineDetails.html')
+
+#生产监控详情页面-#肿节风清膏
+@app.route('/ZYPlanGuid/processMonitorLineDetails_2')
+def processMonitorLineDetails_2():
+    return render_template('processMonitorLineDetails2.html')
 
 def GetEquipmentData():
     # productUnit = db_session.query(ProductUnit.ID).filter_by(PDUnitName='前处理段')
@@ -7046,12 +7051,16 @@ def ContinuousDataTree(depth, ParentNode=None):
                         sz.append({"id": obj.ID,
                                    "Tag": obj.Name,
                                    "text":obj.Note,
+                                   "EQCode":obj.EquipmentCode,
+                                   "Brand": obj.Brand,
                                    "state": 'closed',
                                    "children": ContinuousDataTree(depth+1, obj.ID)})
                     if len(get_son(obj.ID)) == 0:
                         sz.append({"id": obj.ID,
                                    "Tag": obj.Name,
                                    "text": obj.Note,
+                                   "EQCode": obj.EquipmentCode,
+                                   "Brand": obj.Brand,
                                    "state": 'open'})
         return sz
     except Exception as e:
@@ -7112,6 +7121,7 @@ def QualityControlGetBatch():
                     count += 1
                     batch_list.append(batch_data)
                 return json.dumps(batch_list, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+            return
         except Exception as e:
             print(e)
             insertSyslog("error", "程连续数据获取从%s到%s时间段内的批次号报错Error："%(beginTime,endTime) + str(e), current_user.Name)
@@ -7131,6 +7141,7 @@ def TagDataShow():
             batch = data['batch']
             tag = 't|' + str(data['tag'])
             Note = data['Note']
+            equip_code = data['EQCode']
             if batch is None or tag is None:
                 return
             json_str = json.dumps(data.to_dict())
@@ -7139,25 +7150,26 @@ def TagDataShow():
                 rowsnumber = int(data['rows'])
                 inipage = (pages - 1) * rowsnumber + 0
                 endpage = (pages - 1) * rowsnumber + rowsnumber
-                total = db_session.query(NodeIdNote.ID).count()
-                if total > 0:
-                    try:
-                        conn = pymssql.connect(host= constant.MES_DATABASE_HOST,
-                                               user= constant.MES_DATABASE_USER,
-                                               password= constant.MES_DATABASE_PASSWD,
-                                               database= constant.MES_DATABASE_NAME,
-                                               charset= constant.MES_DATABASE_CHARSET)
-                    except Exception as e:
-                        print(e)
-                        insertSyslog("error", "过程连续数据连接数据库报错Error：" + str(e),current_user.Name)
-                        return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+                try:
+                    conn = pymssql.connect(host= constant.MES_DATABASE_HOST,
+                                           user= constant.MES_DATABASE_USER,
+                                           password= constant.MES_DATABASE_PASSWD,
+                                           database= constant.MES_DATABASE_NAME,
+                                           charset= constant.MES_DATABASE_CHARSET)
+                except Exception as e:
+                    print(e)
+                    insertSyslog("error", "过程连续数据连接数据库报错Error：" + str(e),current_user.Name)
+                    return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
-                    try:
-                        object = db_session.query(ZYPlan).filter_by(BatchID=batch).first()
+                try:
+                    object = db_session.query(ZYTask).filter(and_(ZYTask.BatchID==batch, ZYTask.EquipmentID==equip_code)).first()
+                    if object:
                         cursor = conn.cursor()
-                        sql = 'SELECT * FROM [MES].[dbo].[DataHistory] WHERE [DataHistory].[SampleTime] BETWEEN %s AND %s'%(object.ActBeginTime, object.ActEndTime)
+                        sql = 'select [DataHistory].[%s] from [MES].[dbo].[DataHistory] where [DataHistory].[SampleTime] BETWEEN %s AND %s'%(tag, object.ActBeginTime, object.ActEndTime)
                         cursor.execute(sql)
                         tags_data = cursor.fetchall()
+                        cursor.close()
+                        conn.close()
                         if tags_data:
                             tag_data_list = list()
                             for tag_data in tags_data:
@@ -7169,17 +7181,19 @@ def TagDataShow():
                                 tag_['collect_time'] = tag_data.SampleTime
                                 tag_data_list.append(tag_)
                             tag_data_list = tag_data_list[inipage:endpage]
+                            total = len(tag_data_list)
                             json_data = json.dumps(tag_data_list, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
                             jsonData = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + json_data + "}"
                             return jsonData
-                    except Exception as e:
-                        print(e)
-                        insertSyslog("error", "过程连续数据获取从%s到%s时间段内变量%s值报错Error：" %(object.beginTime, object.endTime, tag) + str(e),current_user.Name)
-                        return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+                except Exception as e:
+                    print(e)
+                    insertSyslog("error", "过程连续数据获取从%s到%s时间段内变量%s值报错Error：" %(object.beginTime, object.endTime, tag) + str(e),current_user.Name)
+                    return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
             insertSyslog("error", "路由/ProcessContinuousData/TagAnalysis报错Error：" + str(e),current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
 
 # 产量对比
 @app.route('/QualityControl/YieldCompare.html')
