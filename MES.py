@@ -7150,16 +7150,18 @@ def GetQualityControlData(data):
             equip_ID = db_session.query(Equipment.ID).filter_by(EQPCode=equip_code).first()[0]
             object = db_session.query(ZYTask).filter(
                 and_(ZYTask.BatchID == batch, ZYTask.EquipmentID == equip_ID)).first()
-            if object.ActBeginTime is not None:
-                cursor = conn.cursor()
-                sql = "select [DataHistory].[%s],[DataHistory].[SampleTime] from [MES].[dbo].[DataHistory] where [DataHistory].[SampleTime] BETWEEN %s AND %s" % (
-                tag, "'%s'" % object.ActBeginTime.strftime('%Y-%m-%d %H:%M:%S'),
-                "'%s'" % object.ActEndTime.strftime('%Y-%m-%d %H:%M:%S'))
-                cursor.execute(sql)
-                tags_data = cursor.fetchall()
-                cursor.close()
-                conn.close()
-                return tags_data, object
+            print(object.ActEndTime)
+            if object.ActBeginTime is None and object.ActEndTime is None:
+                return None, None
+            cursor = conn.cursor()
+            sql = "select [DataHistory].[%s],[DataHistory].[SampleTime] from [MES].[dbo].[DataHistory] where [DataHistory].[SampleTime] BETWEEN %s AND %s" % (
+            tag, "'%s'" % object.ActBeginTime.strftime('%Y-%m-%d %H:%M:%S'),
+            "'%s'" % object.ActEndTime.strftime('%Y-%m-%d %H:%M:%S'))
+            cursor.execute(sql)
+            tags_data = cursor.fetchall()
+            cursor.close()
+            conn.close()
+            return tags_data, object
         except Exception as e:
             print(e)
             insertSyslog("error", "路由/ProcessContinuousData/TagAnalysis报错Error：" + str(e), current_user.Name)
@@ -7222,7 +7224,7 @@ def RainbowChartData():
             data = request.values
             tags_data, object = GetQualityControlData(data)
             if len(data['batch']) < 0:
-                return
+                return 'NO'
             try:
                 if tags_data:
                     tag_ = list()
@@ -7238,7 +7240,7 @@ def RainbowChartData():
                                     {'time': [tag_data[1].strftime('%Y-%m-%d %H:%M:%S') for tag_data in tags_data]}]
                     json_data = json.dumps(tag_data_list, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
                     return json_data
-                return
+                return 'NO'
             except Exception as e:
                 print(e)
                 insertSyslog("error", "过程连续数据获取值报错Error：" + str(e),current_user.Name)
