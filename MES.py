@@ -6706,13 +6706,13 @@ def spareStockSearch():
                 inipage = (pages - 1) * rowsnumber + 0
                 endpage = (pages - 1) * rowsnumber + rowsnumber
                 SpareName = "%" + data["SpareName"] + "%"
-                if SpareName == "":
+                if data["SpareName"] == "":
                     RoleNames = db_session.query(User.RoleName).filter(User.Name == current_user.Name).all()
                     rolename = ""
                     for name in RoleNames:
                         if name == "备件审核人":
                             rolename = "备件审核人"
-                    if rolename == "备件审核人":
+                    if rolename == "备件审核人" and rolename != "系统管理员":
                         spareCount = db_session.query(SpareStock).filter(
                             SpareStock.SpareStatus.in_(Model.Global.SpareStatus.InStockChecked.value,Model.Global.SpareStatus.OutStockChecked.value)).count()
                         spareClass = db_session.query(SpareStock).filter(
