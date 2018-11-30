@@ -27,10 +27,83 @@
             <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="toolbar.update()">编辑</a>
             <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="toolbar.delete()">删除</a>
             <a href="#" class="easyui-linkbutton" iconCls="icon-reload" onclick="toolbar.refresh()">刷新</a>
-            <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="toolbar.putIn()">入库</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-redo" onclick="toolbar.putIn()">入库</a>
             <a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="toolbar.putInCheck()">入库审核</a>
-            <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="toolbar.OutStock()">出库</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-undo" onclick="toolbar.OutStock()">出库</a>
             <a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="toolbar.OutStockCheck()">出库审核</a>
+        </div>
+        <div id="equimentsClassDialog" class="easyui-dialog" style="width:400px;height:560px;padding:10px;"
+             data-options="closed:'true',buttons:'#equimentsClassDialogButtons',modal:true">
+            <form id="equimentsClassDialogForm" method="post" class="dialog-form">
+                <table class="kv-table">
+                    <tbody>
+                        <tr>
+                            <td class="kv-label">id</td>
+                            <td class="kv-content">
+                                <input name="ID" id="ID" type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="" disabled="disabled">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">备件名称</td>
+                            <td class="kv-content">
+                                <input name="SpareName" id="SpareName" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">备件编码</td>
+                            <td class="kv-content">
+                                <input name="SpareCode" id="SpareCode" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">备件型号</td>
+                            <td class="kv-content">
+                                <input name="SpareModel" id="SpareModel" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">生产厂家</td>
+                            <td class="kv-content">
+                                <input name="SpareFactory" id="SpareFactory" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">备件类型</td>
+                            <td class="kv-content">
+                                <input name="SpareType" id="SpareType" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">备件功率</td>
+                            <td class="kv-content">
+                                <input name="SparePower" id="SparePower" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">备件使用状况</td>
+                            <td class="kv-content">
+                                <input name="StockUseStatus" id="StockUseStatus" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">描述</td>
+                            <td class="kv-content">
+                                <input name="Description" id="Description" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">生产日期</td>
+                            <td class="kv-content">
+                                <input name="ProductionDate" id="ProductionDate" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div id="equimentsClassDialogButtons">
+                    <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" id="saveAdd" onclick="toolbar.save()" >保存</a>
+                    <a href="#" class="easyui-linkbutton" onclick="$('#userClassDialog').dialog('close')">关闭</a>
+                </div>
+            </form>
         </div>
         <table class="easyui-datagrid" id="tab" title="" style="width:100%;" data-options="
             queryParams: {
@@ -54,7 +127,7 @@
                     <th data-options="field:'SpareFactory',width:150,align:'center'">生产厂家</th>
                     <th data-options="field:'SpareType',width:150,align:'center'">备件类型</th>
                     <th data-options="field:'SparePower',width:100,align:'center'">备件功率</th>
-                    <th data-options="field:'StockUseStatus',width:200,align:'center'">备件使用状况（全新，旧备件）</th>
+                    <th data-options="field:'StockUseStatus',width:200,align:'center'">备件使用状况</th>
                     <th data-options="field:'Description',width:200,align:'center'">描述</th>
                     <th data-options="field:'ProductionDate',width:150,align:'center'">生产日期</th>
                     <th data-options="field:'CreateDate',width:150,align:'center'">录入时间</th>
@@ -67,7 +140,8 @@
         </table>
         <!-- 右键菜单 -->
         <div id="contextmenu" class="easyui-menu" style="width:120px;">
-{#            <div data-options="iconCls:'icon-ok'" onclick="CollectToolbar.pass();">通过审核</div>#}
+            <div data-options="iconCls:'icon-edit'" onclick="toolbar.update();">编辑</div>
+            <div data-options="iconCls:'icon-remove'" onclick="toolbar.delete();">删除</div>
         </div>
     </div>
     <script>
@@ -84,13 +158,126 @@
                     });
                 },
                 create:function(){
-
+                    $("#equimentsClassDialog").dialog('open').dialog('setTitle','新增备件');
+                    $('#ID').val();
+                    $('#SpareName').val();
+                    $('#SpareCode').val();
+                    $('#SpareModel').val();
+                    $('#SpareFactory').val();
+                    $('#SpareType').val();
+                    $('#SparePower').val();
+                    $('#StockUseStatus').val();
+                    $('#Description').val();
+                    $('#ProductionDate').val();
                 },
                 update:function(){
-
+                    var rows = $('#tab').datagrid('getSelections');
+                    if (rows.length > 1) {
+                        $.messager.alert('警告操作！', '编辑记录只能选定一条数据！', 'warning');
+                    } else if (rows.length == 1) {
+                        var row = $('#tab').datagrid('getSelected');
+                        if (row) {
+                            $("#equimentsClassDialog").dialog('open').dialog('setTitle','修改备件');
+                            $('#ID').val(row.ID);
+                            $('#SpareName').val(row.SpareName);
+                            $('#SpareCode').val(row.SpareCode);
+                            $('#SpareModel').val(row.SpareModel);
+                            $('#SpareFactory').val(row.SpareFactory);
+                            $('#SpareType').val(row.SpareType);
+                            $('#SparePower').val(row.SparePower);
+                            $('#StockUseStatus').val(row.StockUseStatus);
+                            $('#Description').val(row.Description);
+                            $('#ProductionDate').val(row.ProductionDate);
+                        };
+                    } else if (rows.length == 0) {
+                        $.messager.alert('警告操作！', '请至少选定一条数据进行编辑！', 'warning');
+                    }
+                },
+                save:function(){
+                    var strID = $('#ID').val();
+                    var urlAddr = ''
+                    var hintinfo = ''
+                    if(Bee.StringUtils.isEmpty($('#SpareName').val())) {
+                        $.messager.alert('提示', '备件名称不能为空！', 'info');
+                        return false;
+                    }else if(Bee.StringUtils.isEmpty($('#SpareCode').val())){
+                        $.messager.alert('提示', '备件编码不能为空！', 'info');
+                     return false;
+                    }
+                    if (strID.length >= 1){
+                        urlAddr = '/spareStockCreate'
+                        hintinfo = "新增备件"
+                    }
+                    else {
+                        urlAddr = '/spareStockUpdate'
+                        hintinfo = "修改备件"
+                    }
+                    $.ajax({
+                        url:urlAddr,
+                        type:"post",
+                        data:{
+                            SpareName:$('#SpareName').val(),
+                            SpareCode:$('#SpareCode').val(),
+                            SpareModel:$('#SpareModel').val(),
+                            SpareFactory:$('#SpareFactory').val(),
+                            SpareType:$('#SpareType').val(),
+                            SparePower:$('#SparePower').val(),
+                            StockUseStatus:$('#StockUseStatus').val(),
+                            Description:$('#Description').val(),
+                            ProductionDate:$('#ProductionDate').val()
+                        },
+                        success:function(data){
+                            $.messager.progress('close');
+                            if(data == "OK"){
+                                $.messager.show({
+                                    title: '提示',
+                                    msg: message + hintinfo  + '成功',
+                                    timeout:1000,
+                                    style: {
+                                        right: '',
+                                        top: document.body.scrollTop + document.documentElement.scrollTop,
+                                        bottom: ''
+                                    }
+                                });
+                                $("#equimentsClassDialog").dialog('close');
+                                $('#tab').datagrid('reload');
+                            } else {
+                                $.messager.alert('请求失败！', '未知错误导致失败，请重试！', 'warning');
+                            }
+                        },
+                        error: function(data){
+                           console.log(data.responseText)
+                           alert(hintinfo+ "异常，请刷新后重试...");
+                        },
+                    })
                 },
                 delete:function(){
-
+                    var rows = $("#tab").datagrid('getSelections');
+                    if (rows.length > 0) {
+                        var jsonarray=[];
+                        $.messager.confirm('确定操作', '您正在删除所选的记录吗？', function (flag) {
+                            if (flag) {
+                                for (var i = 0; i < rows.length; i++) {
+                                    var obj=createKeyIDObj(parseInt(rows[i].ID));
+                                    jsonarray.push(obj);
+                                }
+                                var a = JSON.stringify(jsonarray);
+                                $.ajax({
+                                    url: '/spareStockDelete',
+                                    method: 'POST',
+                                    data: a,
+                                    success: function (data) {
+                                        if(data == "OK"){
+                                            $.messager.progress('close');
+                                            $("#tab").datagrid('reload');
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                    } else {
+                        $.messager.alert('提示', '请选择要删除的记录！', 'info');
+                    }
                 },
                 refresh:function(){
                     $('#tab').datagrid('reload');
@@ -108,6 +295,21 @@
 
                 }
             }
+            //datagrid表格右键操作
+            $("#tab").datagrid({
+                onRowContextMenu: function (e, rowIndex, rowData) { //右键时触发事件
+                    //三个参数：e里面的内容很多，真心不明白，rowIndex就是当前点击时所在行的索引，rowData当前行的数据
+                    e.preventDefault(); //阻止浏览器捕获右键事件
+                    $(this).datagrid("clearSelections"); //取消所有选中项
+                    $(this).datagrid("selectRow", rowIndex); //根据索引选中该行
+                    $('#contextmenu').menu('show', {
+                        //显示右键菜单
+                        left: e.pageX,//在鼠标点击处显示菜单
+                        top: e.pageY
+                    });
+                    e.preventDefault();  //阻止浏览器自带的右键菜单弹出
+                }
+            });
         })
     </script>
 </body>
