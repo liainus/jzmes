@@ -7109,7 +7109,7 @@ def QualityControlGetBatch():
             beginTime = data['beginTime']
             endTime = data['endTime']
             if beginTime is None or endTime is None:
-                return
+                return 'NO'
             batchs = set(db_session.query(ZYPlan.BatchID).filter(ZYPlan.PlanDate.between(beginTime,endTime)).all())
             if batchs:
                 count = 0
@@ -7131,7 +7131,7 @@ def GetQualityControlData(data):
     try:
         batch = data['batch']
         tag = 't|' + str(data['tag'])
-        Note = data['Note']
+        Note = data['Note'].replace('*', '#') if '*' in data['Note'] else data['Note']
         equip_code = data['EQCode']
         if len(data) + len(batch) + len(tag) + len(Note) + len(equip_code) < 5:
             return
