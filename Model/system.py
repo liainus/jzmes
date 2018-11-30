@@ -703,27 +703,6 @@ class SparePartStock(Base):
     # 描述 ：
     Description = Column(Unicode(65), primary_key=False, autoincrement=False, nullable=True)
 
-# 备件出入库管理
-class SparePartInStockManagement(Base):
-    __tablename__ = 'SparePartInStockManagement'
-    # id:
-    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
-
-    # 区域（江中罗亭）  :
-    AreaName = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
-
-    # 操作（出库，入库）：
-    Operation = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
-
-    # 备件使用状况（全新，旧备件）  :
-    StockUseStatus = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
-
-    # 操作时间  :
-    OperationDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
-
-    # 描述 ：
-    Description = Column(Unicode(65), primary_key=False, autoincrement=False, nullable=True)
-
 #  调度日期
 class SchedulePlan(Base):
     __tablename__ = 'SchedulePlan'
@@ -834,6 +813,91 @@ class EquipmentMaintenanceKnowledge(Base):
 
     # 描述  ：
     Description = Column(Unicode(65), primary_key=False, autoincrement=False, nullable=True)
+
+# 备件出入库管理
+class SparePartInStockManagement(Base):
+    __tablename__ = 'SparePartInStockManagement'
+    # id:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+    # 备件编码:
+    SpareCode = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 区域（江中罗亭）  :
+    AreaName = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 操作（出库，入库）：
+    Operation = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 备件使用状况（全新，旧备件）  :
+    StockUseStatus = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 录入人:
+    InStockPeople = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 审核人:
+    CheckedPeople = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 录入时间  :
+    InStockDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+
+    # 审核时间  :
+    CheckedDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+
+    # 描述 ：
+    Description = Column(Unicode(65), primary_key=False, autoincrement=False, nullable=True)
+
+#  备件库
+class SpareStock(Base):
+    __tablename__ = 'SpareStock'
+    # id:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+    # 备件编码:
+    SpareCode = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 备件名称：
+    SpareName = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 备件状态:
+    SpareStatus = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 备件型号:
+    SpareModel = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 生产厂家:
+    SpareFactory = Column(Unicode(62), primary_key=False, autoincrement=False, nullable=True)
+
+    # 备件类型：
+    SpareType = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 备件功率：
+    SparePower = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
+
+    # 描述：
+    Description = Column(Unicode(65), primary_key=False, autoincrement=False, nullable=True)
+
+    # 备件使用状况（全新，旧备件）  :
+    StockUseStatus = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 生产日期:
+    ProductionDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+
+    # 录入时间:
+    CreateDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+
+    # 录入人:
+    InStockPeople = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 审核人:
+    CheckedPeople = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 审核时间:
+    CheckedDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+
+    # 入库时间:
+    InStockDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+
 
 # 生成表单的执行语句
 Base.metadata.create_all(engine)
