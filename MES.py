@@ -8,7 +8,7 @@ from io import StringIO
 import time
 from collections import Counter
 import datetime
-
+import random
 import pymssql
 import redis
 import xlwt
@@ -7207,7 +7207,7 @@ def QualityControlGetBatch():
             beginTime = data['beginTime']
             endTime = data['endTime']
             if beginTime is None or endTime is None:
-                return
+                return 'NO'
             batchs = set(db_session.query(ZYPlan.BatchID).filter(ZYPlan.PlanDate.between(beginTime,endTime)).all())
             if batchs:
                 count = 0
@@ -7219,11 +7219,55 @@ def QualityControlGetBatch():
                     count += 1
                     batch_list.append(batch_data)
                 return json.dumps(batch_list, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
-            return
+            return 'NO'
         except Exception as e:
             print(e)
             insertSyslog("error", "程连续数据获取从%s到%s时间段内的批次号报错Error："%(beginTime,endTime) + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
+def GetQualityControlData(data):
+    try:
+        batch = data['batch']
+        tag = 't|' + str(data['tag'])
+        Note = data['Note'].replace('*', '#') if '*' in data['Note'] else data['Note']
+        equip_code = data['EQCode']
+        if len(data) + len(batch) + len(tag) + len(Note) + len(equip_code) < 5:
+            return
+        try:
+            conn = pymssql.connect(host=constant.MES_DATABASE_HOST,
+                                   user=constant.MES_DATABASE_USER,
+                                   password=constant.MES_DATABASE_PASSWD,
+                                   database=constant.MES_DATABASE_NAME,
+                                   charset=constant.MES_DATABASE_CHARSET)
+        except Exception as e:
+            print(e)
+            insertSyslog("error", "过程连续数据连接数据库报错Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
+        try:
+            equip_ID = db_session.query(Equipment.ID).filter_by(EQPCode=equip_code).first()[0]
+            object = db_session.query(ZYTask).filter(
+                and_(ZYTask.BatchID == batch, ZYTask.EquipmentID == equip_ID)).first()
+            if object.ActBeginTime is None and object.ActEndTime is None:
+                return None, None
+            cursor = conn.cursor()
+            sql = "select [DataHistory].[%s],[DataHistory].[SampleTime] from [MES].[dbo].[DataHistory] where [DataHistory].[SampleTime] BETWEEN %s AND %s" % (
+            tag, "'%s'" % object.ActBeginTime.strftime('%Y-%m-%d %H:%M:%S'),
+            "'%s'" % object.ActEndTime.strftime('%Y-%m-%d %H:%M:%S'))
+            cursor.execute(sql)
+            tags_data = cursor.fetchall()
+            cursor.close()
+            conn.close()
+            return tags_data, object
+        except Exception as e:
+            print(e)
+            insertSyslog("error", "路由/ProcessContinuousData/TagAnalysis报错Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+    except Exception as e:
+        print(e)
+        insertSyslog("error", "路由/ProcessContinuousData/TagAnalysis报错Error：" + str(e),current_user.Name)
+        return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
 
 # 过程连续数据某个变量图像变化
 @app.route('/ProcessContinuousData/TagDataShow', methods=['POST', 'GET'])
@@ -7236,65 +7280,68 @@ def TagDataShow():
     if request.method == 'POST':
         try:
             data = request.values
-            batch = data['batch']
-            tag = 't|' + str(data['tag'])
-            Note = data['Note']
-            equip_code = data['EQCode']
-            if len(data)+len(batch)+len(tag)+len(Note)+len(equip_code)<5:
-                return
+            tags_data, object = GetQualityControlData(data)
             json_str = json.dumps(data.to_dict())
-
             if len(json_str) > 10:
                 pages = int(data['page'])
                 rowsnumber = int(data['rows'])
                 inipage = (pages - 1) * rowsnumber + 0
                 endpage = (pages - 1) * rowsnumber + rowsnumber
-                try:
-                    conn = pymssql.connect(host= constant.MES_DATABASE_HOST,
-                                           user= constant.MES_DATABASE_USER,
-                                           password= constant.MES_DATABASE_PASSWD,
-                                           database= constant.MES_DATABASE_NAME,
-                                           charset= constant.MES_DATABASE_CHARSET)
-                except Exception as e:
-                    print(e)
-                    insertSyslog("error", "过程连续数据连接数据库报错Error：" + str(e),current_user.Name)
-                    return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
-                try:
-                    equip_ID = db_session.query(Equipment.ID).filter_by(EQPCode=equip_code).first()[0]
-                    object = db_session.query(ZYTask).filter(and_(ZYTask.BatchID==batch, ZYTask.EquipmentID==equip_ID)).first()
-                    if object.ActBeginTime is not None:
-                        cursor = conn.cursor()
-                        sql = "select [DataHistory].[%s],[DataHistory].[SampleTime] from [MES].[dbo].[DataHistory] where [DataHistory].[SampleTime] BETWEEN %s AND %s"%(tag, "'%s'"%object.ActBeginTime.strftime('%Y-%m-%d %H:%M:%S'), "'%s'"%object.ActEndTime.strftime('%Y-%m-%d %H:%M:%S'))
-                        cursor.execute(sql)
-                        tags_data = cursor.fetchall()
-                        cursor.close()
-                        conn.close()
+            if tags_data:
+                tag_data_list = list()
+                for tag_data in tags_data:
+                    if tag_data[0] == 'init':
+                        continue
+                    tag_ = dict()
+                    tag_['batch'] = data['batch']
+                    tag_['brand'] = object.BrandName
+                    tag_['tag'] = data['Note']
+                    tag_['tag_value'] = round(float(tag_data[0]),2)
+                    tag_['collect_time'] = tag_data[1].strftime('%Y-%m-%d %H:%M:%S')
+                    tag_['collect_worker'] = 'Automatic acquisition'
+                    tag_data_list.append(tag_)
 
-                        if tags_data:
-                            tag_data_list = list()
-                            for tag_data in tags_data:
-                                if tag_data[0] == 'init':
-                                    continue
-                                tag_ = dict()
-                                tag_['batch'] = batch
-                                tag_['brand'] = object.BrandName
-                                tag_['tag'] = Note
-                                tag_['tag_value'] = round(float(tag_data[0]),2)
-                                tag_['collect_time'] = tag_data[1].strftime('%Y-%m-%d %H:%M:%S')
-                                tag_['collect_worker'] = 'Automatic acquisition'
-                                tag_data_list.append(tag_)
+                tag_data_list = tag_data_list[inipage:endpage]
+                total = len(tag_data_list)
+                json_data = json.dumps(tag_data_list, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+                jsonData = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + json_data + "}"
+                return jsonData
+            return 'NO'
+        except Exception as e:
+            print(e)
+            insertSyslog("error", "路由/ProcessContinuousData/TagAnalysis报错Error：" + str(e),current_user.Name)
+            return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
-                            tag_data_list = tag_data_list[inipage:endpage]
-                            total = len(tag_data_list)
-                            json_data = json.dumps(tag_data_list, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
-                            jsonData = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + json_data + "}"
-                            return jsonData
-                    return
-                except Exception as e:
-                    print(e)
-                    insertSyslog("error", "过程连续数据获取从%s到%s时间段内变量%s值报错Error：" %(object.beginTime, object.endTime, tag) + str(e),current_user.Name)
-                    return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+# 彩虹图数据
+@app.route('/ProcessContinuousData/RainbowChartData', methods=['POST', 'GET'])
+def RainbowChartData():
+    if request.method == 'GET':
+        try:
+            data = request.values
+            tags_data, object = GetQualityControlData(data)
+            if len(data['batch']) < 0:
+                return 'NO'
+            try:
+                if tags_data:
+                    tag_ = list()
+                    for tag_data in tags_data:
+                        if tag_data[0] == 'init':
+                            continue
+                        tag_.append(tag_data)
+                    if len(tag_) <= 100:
+                        tags_data = tag_
+                    else:
+                        tags_data = random.sample(tag_, 100)
+                    tag_data_list =[{'data':[tag_data[0] for tag_data in tags_data]},
+                                    {'time': [tag_data[1].strftime('%Y-%m-%d %H:%M:%S') for tag_data in tags_data]}]
+                    json_data = json.dumps(tag_data_list, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+                    return json_data
+                return 'NO'
+            except Exception as e:
+                print(e)
+                insertSyslog("error", "过程连续数据获取值报错Error：" + str(e),current_user.Name)
+                return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
             insertSyslog("error", "路由/ProcessContinuousData/TagAnalysis报错Error：" + str(e),current_user.Name)

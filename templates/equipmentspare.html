@@ -22,23 +22,46 @@
             备件名称:
             <input type="text" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
                 placeholder="">
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="toolbar.search()">查询</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="toolbar.create()">添加</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="toolbar.update()">编辑</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="toolbar.delete()">删除</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-reload" onclick="toolbar.refresh()">刷新</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="toolbar.putIn()">入库</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="toolbar.putInCheck()">入库审核</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="toolbar.OutStock()">出库</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="toolbar.OutStockCheck()">出库审核</a>
         </div>
         <table class="easyui-datagrid" id="tab" title="" style="width:100%;" data-options="
             queryParams: {
-                BatchID: ''
+                SpareName: ''
             },
+            url:'/spareStockSearch',
             rownumbers:true,
             singleSelect:false,
             autoRowHeight:false,
             pagination:true,
             pageSize:10,
             toolbar:'#Toolbar',
-            url:'',
             method:'get'">
             <thead>
                 <tr>
                     <th field="ck" checkbox="true"></th>
-
+                    <th data-options="field:'SpareName',width:150,align:'center'">备件名称</th>
+                    <th data-options="field:'SpareCode',width:150,align:'center'">备件编码</th>
+                    <th data-options="field:'SpareStatus',width:100,align:'center'">备件状态</th>
+                    <th data-options="field:'SpareModel',width:150,align:'center'">备件型号</th>
+                    <th data-options="field:'SpareFactory',width:150,align:'center'">生产厂家</th>
+                    <th data-options="field:'SpareType',width:150,align:'center'">备件类型</th>
+                    <th data-options="field:'SparePower',width:100,align:'center'">备件功率</th>
+                    <th data-options="field:'StockUseStatus',width:200,align:'center'">备件使用状况（全新，旧备件）</th>
+                    <th data-options="field:'Description',width:200,align:'center'">描述</th>
+                    <th data-options="field:'ProductionDate',width:150,align:'center'">生产日期</th>
+                    <th data-options="field:'CreateDate',width:150,align:'center'">录入时间</th>
+                    <th data-options="field:'InStockPeople',width:120,align:'center'">录入人</th>
+                    <th data-options="field:'CheckedPeople',width:120,align:'center'">审核人</th>
+                    <th data-options="field:'CheckedDate',width:150,align:'center'">审核时间</th>
+                    <th data-options="field:'InStockDate',width:150,align:'center'">入库时间</th>
                 </tr>
             </thead>
         </table>
@@ -47,5 +70,45 @@
 {#            <div data-options="iconCls:'icon-ok'" onclick="CollectToolbar.pass();">通过审核</div>#}
         </div>
     </div>
+    <script>
+        $(function(){
+            function createKeyIDObj(keyID){
+                return {
+                    ID:keyID
+                }
+            }
+            toolbar = {
+                search:function(){
+                    $('#tab').datagrid('load',{
+                        SpareName: $("input[name=search]").val()
+                    });
+                },
+                create:function(){
+
+                },
+                update:function(){
+
+                },
+                delete:function(){
+
+                },
+                refresh:function(){
+                    $('#tab').datagrid('reload');
+                },
+                putIn:function () {
+
+                },
+                putInCheck:function(){
+
+                },
+                OutStock:function(){
+
+                },
+                OutStockCheck:function () {
+
+                }
+            }
+        })
+    </script>
 </body>
 </html>

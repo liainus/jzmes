@@ -24,7 +24,7 @@
                         endTime:$('#endTime').datebox('getValue')
                     },
                     success: function (data) {
-                        if (data) {
+                        if (data != "NO") {
                             $.messager.show({
                                 title: '提示',
                                 timeout: 500,
@@ -60,12 +60,13 @@
                 onClick: function (node) {
                     var comboxtext = $('#rwlb').combobox('getText');
                     closeAll()
+                    var Note = node.text.replace("#","*")
                     if($('#LeftTree').tree('isLeaf',node.target)){
                         if(comboxtext != ""){
-                            addTab(comboxtext + "  " + node.text + "  数据", "/ProcessContinuousData/DataPart?batch=" + comboxtext + "&tag=" + node.Tag+ "&Note=" + node.text+ "&EQCode=" + node.EQCode);
-                            addTab(comboxtext + "  " + node.text + "  彩虹图", "/ProcessContinuousData/Rainbow?batch=" + comboxtext + "&tag=" + node.Tag);
-                            addTab(comboxtext + "  " + node.text + "  CPK", "/ProcessContinuousData/CPK?batch=" + comboxtext + "&tag=" + node.Tag);
-                            addTab(comboxtext + "  " + node.text + "  直方图", "/ProcessContinuousData/Histogram?batch=" + comboxtext + "&tag=" + node.Tag);
+                            addTab(comboxtext + "  " + node.text + "  数据", "/ProcessContinuousData/DataPart?batch=" + comboxtext + "&tag=" + node.Tag + "&Note=" + Note + "&EQCode=" + node.EQCode);
+                            addTab(comboxtext + "  " + node.text + "  彩虹图", "/ProcessContinuousData/Rainbow?batch=" + comboxtext + "&tag=" + node.Tag + "&Note=" + Note + "&EQCode=" + node.EQCode);
+                            addTab(comboxtext + "  " + node.text + "  CPK", "/ProcessContinuousData/CPK?batch=" + comboxtext + "&tag=" + node.Tag + "&Note=" + Note + "&EQCode=" + node.EQCode);
+                            addTab(comboxtext + "  " + node.text + "  直方图", "/ProcessContinuousData/Histogram?batch=" + comboxtext + "&tag=" + node.Tag + "&Note=" + Note + "&EQCode=" + node.EQCode);
                         }else{
                             $.messager.alert('提示', '请选择批次号！', 'info');
                         }
@@ -118,7 +119,7 @@
 			<ul id="LeftTree" class="easyui-tree"></ul>
 		</div>
         <div id="container" style="width: 80%;float: left;vertical-align: top;">
-            <div id="tt" class="easyui-tabs" style="width:100%;height:400px;margin-top:10px; scrolling:'false'"></div>
+            <div id="tt" class="easyui-tabs" style="width:100%;height:580px;margin-top:10px; scrolling:'false'"></div>
         </div>
 	</div>
 </body> 
