@@ -205,12 +205,12 @@
                      return false;
                     }
                     if (strID.length >= 1){
-                        urlAddr = '/spareStockCreate'
-                        hintinfo = "新增备件"
-                    }
-                    else {
                         urlAddr = '/spareStockUpdate'
                         hintinfo = "修改备件"
+                    }
+                    else {
+                        urlAddr = '/spareStockCreate'
+                        hintinfo = "新增备件"
                     }
                     $.ajax({
                         url:urlAddr,
