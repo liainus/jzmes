@@ -30,7 +30,8 @@ from Model.core import Enterprise, Area, Factory, ProductLine, ProcessUnit, Equi
     CollectTaskCollection, ReadyWork, NodeIdNote, ProductUnitRoute, ProductionMonitor, NewZYPlanMaterial, \
     QualityControlTree
 from Model.system import Role, Organization, User, Menu, Role_Menu, BatchMaterielBalance, OperationManual, NewReadyWork, \
-    EquipmentWork, EletronicBatchDataStore
+    EquipmentWork, EletronicBatchDataStore, SpareStock, EquipmentMaintenanceKnowledge, EquipmentFailureReporting, EquipmentMaintain, \
+    SchedulePlan, SparePartInStockManagement, SparePartStock, Area, Instruments, MaintenanceStatus, MaintenanceCycle
 from tools.MESLogger import MESLogger
 from Model.core import SysLog
 from sqlalchemy import func
@@ -6691,64 +6692,161 @@ def souyesearch():
             insertSyslog("error", "首页查询报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
-# 批记录查询
-@app.route('/batchjiluSearch')
-def batchjiluSearch():
+# 备件出入库管理
+@app.route('/sparePartInStockManagement')
+def sparePartInStockManagement():
+    return render_template('sparePartInStockManagement.html')
+
+# 备件库查询
+@app.route('/spareStockSearch')
+def spareStockSearch():
     if request.method == 'GET':
         data = request.values
         try:
-            PUID = data["PUID"]
-            BatchID = data["BatchID"]
-            oclasss = db_session.query(NewReadyWork).filter(NewReadyWork.PUID == PUID, NewReadyWork.BatchID == BatchID).all()
-            dic = {}
-            for oclass in oclasss:
-                if(oclass.Type=="1"):
-                    dic["s1"] = oclass.ISConfirm
-                    dic["StartTime1"] = str(oclass.StartTime)
-                    dic["EndTime1"] = str(oclass.EndTime)
-                elif (oclass.Type == "2"):
-                    dic["s2"] = oclass.ISConfirm
-                elif (oclass.Type == "3"):
-                    dic["s3"] = oclass.ISConfirm
-                elif (oclass.Type == "4"):
-                    dic["s4"] = oclass.ISConfirm
-                elif (oclass.Type == "5"):
-                    dic["s5"] = oclass.ISConfirm
-                elif (oclass.Type == "6"):
-                    dic["s6"] = oclass.ISConfirm
-                elif (oclass.Type == "7"):
-                    dic["s7"] = oclass.ISConfirm
-                elif (oclass.Type == "8"):
-                    dic["s8"] = oclass.ISConfirm
-                    dic["StartTime2"] = str(oclass.StartTime)
-                    dic["EndTime2"] = str(oclass.EndTime)
-                    dic["OperationPeople2"] = oclass.OperationPeople
-                    dic["CheckedPeople2"] = oclass.CheckedPeople
-                    dic["QAConfirmPeople2"] = oclass.QAConfirmPeople
-                elif (oclass.Type == "9"):
-                    dic["s9"] = oclass.ISConfirm
-                elif (oclass.Type == "10"):
-                    dic["s10"] = oclass.ISConfirm
-                elif (oclass.Type == "11"):
-                    dic["s11"] = oclass.ISConfirm
-                elif (oclass.Type == "12"):
-                    dic["s12"] = oclass.ISConfirm
-                elif (oclass.Type == "13"):
-                    dic["s13"] = oclass.ISConfirm
-                elif (oclass.Type == "14"):
-                    dic["s14"] = oclass.ISConfirm
-            print(dic)
-            return json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False)
-            A = db_session.query(OperationProcedure.OperationpValue).filter(OperationProcedure.EQPCode == "10").count()
-            B = db_session.query(ElectronicBatch.SampleValue).filter(PlanManager.PlanStatus == "11").count()
-            C = db_session.query(QualityControl.Temperature).filter(PlanManager.PlanStatus == "60").count()
-            return '{"A"' + ":" + str(A) + ',"B"' + ":" + str(B) + ',"C"' + ":" + str(C) + ',"D"' + ":" + str(C) + "}"
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                pages = int(data['page'])
+                rowsnumber = int(data['rows'])
+                inipage = (pages - 1) * rowsnumber + 0
+                endpage = (pages - 1) * rowsnumber + rowsnumber
+                SpareName = "%" + data["SpareName"] + "%"
+                if SpareName == "":
+                    RoleNames = db_session.query(User.RoleName).filter(User.Name == current_user.Name).all()
+                    rolename = ""
+                    for name in RoleNames:
+                        if name == "备件审核人":
+                            rolename = "备件审核人"
+                    if rolename == "备件审核人":
+                        spareCount = db_session.query(SpareStock).filter(
+                            SpareStock.SpareStatus.in_(Model.Global.SpareStatus.InStockChecked.value,Model.Global.SpareStatus.OutStockChecked.value)).count()
+                        spareClass = db_session.query(SpareStock).filter(
+                            SpareStock.SpareStatus.in_(Model.Global.SpareStatus.InStockChecked.value,Model.Global.SpareStatus.OutStockChecked.value)).order_by(
+                            desc("InStockDate"))[inipage,endpage]
+                    else:
+                        spareCount = db_session.query(SpareStock).filter().count()
+                        spareClass = db_session.query(SpareStock).filter().order_by(desc("InStockDate"))[inipage,endpage]
+                else:
+                    spareCount = db_session.query(SpareStock).filter(SpareStock.SpareStatus == Model.Global.SpareStatus.Available.value, SpareStock.SpareName.like(SpareName)).count()
+                    spareClass = db_session.query(SpareStock).filter(SpareStock.SpareStatus == Model.Global.SpareStatus.Available.value, SpareStock.SpareName.like(SpareName)).all().order_by(desc("InStockDate"))[inipage,endpage]
+                jsonoclass = json.dumps(spareClass, cls=AlchemyEncoder, ensure_ascii=False)
+                return '{"total"' + ":" + str(spareCount) + ',"rows"' + ":\n" + jsonoclass + "}"
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "首页查询报错Error：" + str(e), current_user.Name)
-            return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
-                              ensure_ascii=False)
+            insertSyslog("error", "备件库查询报错Error：" + str(e), current_user.Name)
+            return json.dumps("备件库查询报错", cls=Model.BSFramwork.AlchemyEncoder,ensure_ascii=False)
+
+# 备件新增
+@app.route('/spareStockCreate')
+def spareStockCreate():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                spareStock = SpareStock()
+                SpareCode = data["SpareCode"]
+                SpareStockclass = db_session.query(SpareStock).filter(SpareStock.SpareCode == SpareStock).first()
+                if SpareStockclass != None:
+                    return "备件编码重复！"
+                spareStock.SpareCode = SpareCode
+                spareStock.SpareName = data["SpareName"]
+                spareStock.SpareStatus = Model.Global.SpareStatus.InStock.value
+                spareStock.SpareModel = data["SpareModel"]
+                spareStock.SpareFactory = data["SpareFactory"]
+                spareStock.SpareType = data["SpareType"]
+                spareStock.SparePower = data["SparePower"]
+                spareStock.Description = data["Description"]
+                spareStock.ProductionDate = data["ProductionDate"]
+                db_session.add(spareStock)
+                db_session.commit()
+                return 'OK'
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "备件新增报错Error：" + str(e), current_user.Name)
+            return json.dumps("备件新增报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+#备件编辑
+@app.route('/spareStockUpdate', methods=['POST', 'GET'])
+def spareStockUpdate():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                ID = int(data['ID'])
+                oclass = db_session.query(SpareStock).filter_by(ID=ID).first()
+                oclass.SpareCode = data["SpareCode"]
+                oclass.SpareName = data["SpareName"]
+                oclass.SpareModel = data["SpareModel"]
+                oclass.SpareFactory = data["SpareFactory"]
+                oclass.SpareType = data["SpareType"]
+                oclass.SparePower = data["SparePower"]
+                oclass.Description = data["Description"]
+                oclass.ProductionDate = data["ProductionDate"]
+                db_session.add(oclass)
+                db_session.commit()
+                return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
+                                  ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "备件编辑报错Error：" + str(e), current_user.Name)
+            return json.dumps("备件编辑报错", cls=Model.BSFramwork.AlchemyEncoder,ensure_ascii=False)
+
+#备件删除
+@app.route('/spareStockDelete', methods=['POST', 'GET'])
+def spareStockDelete():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
+                for key in jsonnumber:
+                    ID = int(key)
+                    try:
+                        oclass = db_session.query(SpareStock).filter_by(ID=ID).first()
+                        db_session.delete(oclass)
+                        db_session.commit()
+                    except Exception as ee:
+                        print(ee)
+                        logger.error(ee)
+                        return json.dumps("备件删除报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+                return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
+                                  ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "备件删除报错Error：" + str(e), current_user.Name)
+            return json.dumps("备件删除报错", cls=Model.BSFramwork.AlchemyEncoder,ensure_ascii=False)
+# 备件出入库审核查询
+@app.route('/spareInStockCheckSearch', methods=['POST', 'GET'])
+def spareInStockCheckSearch():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                pages = int(data['page'])
+                rowsnumber = int(data['rows'])
+                inipage = (pages - 1) * rowsnumber + 0
+                endpage = (pages - 1) * rowsnumber + rowsnumber
+                SpareName = "%" + data["SpareName"] + "%"
+                if SpareName == "":
+                    spareCount = db_session.query(SpareStock).filter(SpareStock.SpareStatus == Model.Global.SpareStatus.InStockCheck.value).count()
+                    spareClass = db_session.query(SpareStock).filter(SpareStock.SpareStatus == Model.Global.SpareStatus.InStockCheck.value).order_by(desc("InStockDate"))[inipage,endpage]
+                else:
+                    spareCount = db_session.query(SpareStock).filter(SpareStock.SpareStatus == Model.Global.SpareStatus.InStockCheck.value, SpareStock.SpareName.like(SpareName)).count()
+                    spareClass = db_session.query(SpareStock).filter(SpareStock.SpareStatus == Model.Global.SpareStatus.InStockCheck.value, SpareStock.SpareName.like(SpareName)).all().order_by(desc("InStockDate"))[inipage,endpage]
+                jsonoclass = json.dumps(spareClass, cls=AlchemyEncoder, ensure_ascii=False)
+                return '{"total"' + ":" + str(spareCount) + ',"rows"' + ":\n" + jsonoclass + "}"
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "备件库查询报错Error：" + str(e), current_user.Name)
+            return json.dumps("备件库查询报错", cls=Model.BSFramwork.AlchemyEncoder,ensure_ascii=False)
 
 
 # 操作手册
