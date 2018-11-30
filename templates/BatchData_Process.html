@@ -24,7 +24,7 @@
                         endTime:$('#endTime').datebox('getValue')
                     },
                     success: function (data) {
-                        if (data) {
+                        if (data != "NO") {
                             $.messager.show({
                                 title: '提示',
                                 timeout: 500,
