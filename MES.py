@@ -7150,7 +7150,6 @@ def GetQualityControlData(data):
             equip_ID = db_session.query(Equipment.ID).filter_by(EQPCode=equip_code).first()[0]
             object = db_session.query(ZYTask).filter(
                 and_(ZYTask.BatchID == batch, ZYTask.EquipmentID == equip_ID)).first()
-            print(object.ActEndTime)
             if object.ActBeginTime is None and object.ActEndTime is None:
                 return None, None
             cursor = conn.cursor()
