@@ -41,8 +41,7 @@ from collections import Counter
 from Model.system import User, OperationProcedure, ElectronicBatch, QualityControl, PackMaterial, TypeCollection
 from Model.Global import WeightUnit
 from Model.control import ctrlPlan
-from flask_login import LoginManager, current_user
-from flask.ext.login import login_required, logout_user, login_user
+from flask_login import login_required, logout_user, login_user,current_user,LoginManager
 import socket
 from opcua import Client
 from Model.dynamic_model import make_dynamic_classes
