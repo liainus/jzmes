@@ -6712,6 +6712,8 @@ def spareStockSearch():
                     for name in RoleNames:
                         if name == "备件审核人":
                             rolename = "备件审核人"
+                        if name == "系统管理员":
+                            rolename = "系统管理员"
                     if rolename == "备件审核人" and rolename != "系统管理员":
                         spareCount = db_session.query(SpareStock).filter(
                             SpareStock.SpareStatus.in_(Model.Global.SpareStatus.InStockChecked.value,Model.Global.SpareStatus.OutStockChecked.value)).count()
