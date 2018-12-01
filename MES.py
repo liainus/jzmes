@@ -7405,11 +7405,11 @@ def CPKData():
                     # plt.hist(time, bins=10, rwidth=0.9, normed=True)
                     # plt.show()
 
-                    data_list = [{'USL':tag_range[1],'LSL':tag_range[0],
+                    data_list = {'USL':tag_range[1],'LSL':tag_range[0],
                                   'average':round(average,2),'min':round(min(tag_value),2),
                                   'max':round(max(tag_value),2),'T':T,'total':len(tag_value),
                                   'standard':standard_deviation,'C':C,
-                                  'Ca':Ca,'Cp':Cp,'CPK':CPK}]
+                                  'Ca':Ca,'Cp':Cp,'CPK':CPK}
                     json_data = json.dumps(data_list, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
                     return json_data
             return 'NO'
@@ -7442,7 +7442,7 @@ def CPKCapture():
 
                     x = numpy.arange(int(tag_range[0]), int(tag_range[1]) + 1, 1)
                     y = normfun(x, average, standard_deviation)
-                    normal_distribution = {'x':x.tolist(), 'y':y.tolist()}
+                    normal_distribution = [{'x':x.tolist(), 'y':y.tolist()}]
                     json_data = json.dumps(normal_distribution, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
                     return json_data
                 return 'NO'
