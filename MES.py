@@ -7446,6 +7446,7 @@ def CPKCapture():
                     json_data = json.dumps(normal_distribution, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
                     return json_data
                 return 'NO'
+            return 'NO'
         except Exception as e:
             print(e)
             insertSyslog("error", "路由/ProcessContinuousData/TagAnalysis报错Error：" + str(e), current_user.Name)
