@@ -7213,7 +7213,7 @@ def QualityControlGetBatch():
             endTime = data['endTime']
             if beginTime is None or endTime is None:
                 return 'NO'
-            batchs = set(db_session.query(ZYPlan.BatchID).filter(ZYPlan.PlanDate.between(beginTime,endTime)).all())
+            batchs = set(db_session.query(ZYTask.BatchID).filter(ZYTask.PlanDate.between(beginTime,endTime)).all())
             if batchs:
                 count = 0
                 batch_list = []
@@ -7405,6 +7405,7 @@ def CPKData():
                                   'Ca':Ca,'Cp':Cp,'CPK':CPK}]
                     json_data = json.dumps(data_list, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
                     return json_data
+            return 'NO'
         except Exception as e:
             print(e)
             insertSyslog("error", "路由/ProcessContinuousData/TagAnalysis报错Error：" + str(e), current_user.Name)
