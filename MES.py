@@ -7482,7 +7482,8 @@ def BatchDataCompare():
     '''
     if request.method == 'POST':
         try:
-            batchs = request.values['batch']
+            data = request.values
+            batchs = data.to_dict().values()
             if not batchs:
                 return
             input_data = list()
@@ -7493,16 +7494,16 @@ def BatchDataCompare():
 
                 input = db_session.query(EletronicBatchDataStore.OperationpValue).filter(
                     and_(EletronicBatchDataStore.BatchID==batch,
-                         EletronicBatchDataStore.Content==constant.OUTPUT_COMPARE_INPUT)).first()[0]
+                         EletronicBatchDataStore.Content==constant.OUTPUT_COMPARE_INPUT)).first()
                 output = db_session.query(EletronicBatchDataStore.OperationpValue).filter(
                     and_(EletronicBatchDataStore.BatchID==batch,
-                         EletronicBatchDataStore.Content==constant.OUTPUT_COMPARE_OUTPUT)).first()[0]
+                         EletronicBatchDataStore.Content==constant.OUTPUT_COMPARE_OUTPUT)).first()
                 sampling_quantity = db_session.query(EletronicBatchDataStore.OperationpValue).filter(
                     and_(EletronicBatchDataStore.BatchID==batch,
-                         EletronicBatchDataStore.Content==constant.OUTPUT_COMPARE_SAMPLE)).first()[0]
+                         EletronicBatchDataStore.Content==constant.OUTPUT_COMPARE_SAMPLE)).first()
 
                 if input is None or output is None or sampling_quantity is None:
-                    continue
+                    return "NO", batch
                 input_data.append(int(input))
                 output_data.append(int(output))
                 batch_data.append(batch)
