@@ -7399,8 +7399,8 @@ def CPKData():
                     plt.show()
 
                     data_list = [{'USL':tag_range[1],'LSL':tag_range[0],
-                                  'average':average,'min':min(tag_value),
-                                  'max':max(tag_value),'T':T,'total':len(tag_value),
+                                  'average':round(average,2),'min':round(min(tag_value),2),
+                                  'max':round(max(tag_value),2),'T':T,'total':len(tag_value),
                                   'standard':standard_deviation,'C':C,
                                   'Ca':Ca,'Cp':Cp,'CPK':CPK}]
                     json_data = json.dumps(data_list, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
@@ -7435,7 +7435,7 @@ def CPKCapture():
 
                     x = numpy.arange(int(tag_range[0]), int(tag_range[1]) + 1, 1)
                     y = normfun(x, average, standard_deviation)
-                    normal_distribution = [{'x':x, 'y':y}]
+                    normal_distribution = [{'x':x.tolist(), 'y':y.tolist()}]
                     json_data = json.dumps(normal_distribution, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
                     return json_data
         except Exception as e:
