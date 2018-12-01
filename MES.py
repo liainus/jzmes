@@ -7394,9 +7394,9 @@ def CPKData():
 
                     y = normfun(x, average, standard_deviation)
 
-                    plt.plot(x,y)
+                    # plt.plot(x,y)
                     # plt.hist(time, bins=10, rwidth=0.9, normed=True)
-                    plt.show()
+                    # plt.show()
 
                     data_list = [{'USL':tag_range[1],'LSL':tag_range[0],
                                   'average':round(average,2),'min':round(min(tag_value),2),
