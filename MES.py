@@ -50,7 +50,7 @@ import Model.node
 from threading import Timer
 from constant import constant
 import numpy
-import matplotlib.pyplot as plt
+
 
 #flask_login的初始化
 login_manager = LoginManager()
@@ -7244,7 +7244,7 @@ def GetQualityControlData(data):
         Note = data['Note'].replace('*', '#') if '*' in data['Note'] else data['Note']
         equip_code = data['EQCode']
         if len(data) + len(batch) + len(tag) + len(Note) + len(equip_code) < 5:
-            return
+            return 'NO'
         try:
             conn = pymssql.connect(host=constant.MES_DATABASE_HOST,
                                    user=constant.MES_DATABASE_USER,
@@ -7442,9 +7442,10 @@ def CPKCapture():
 
                     x = numpy.arange(int(tag_range[0]), int(tag_range[1]) + 1, 1)
                     y = normfun(x, average, standard_deviation)
-                    normal_distribution = [{'x':x.tolist(), 'y':y.tolist()}]
+                    normal_distribution = {'x':x.tolist(), 'y':y.tolist()}
                     json_data = json.dumps(normal_distribution, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
                     return json_data
+                return 'NO'
         except Exception as e:
             print(e)
             insertSyslog("error", "路由/ProcessContinuousData/TagAnalysis报错Error：" + str(e), current_user.Name)
