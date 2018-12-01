@@ -7445,7 +7445,7 @@ def CPKCapture():
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 # 产量对比
-@app.route('/QualityControl/YieldCompare.html')
+@app.route('/QualityControl/YieldCompare.html', methods=['POST', 'GET'])
 def YieldCompare():
     return render_template('QualityControlYieldCompare.html')
 
