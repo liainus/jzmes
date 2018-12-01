@@ -7486,7 +7486,7 @@ def BatchDataCompare():
                 if len(input)>0 and len(output)>0 and len(sampling_quantity)>0:
                     _data['input'] = input
                     _data['output'] = output
-                    _data['yield'] = (float(output)+float(sampling_quantity))/float(input)*100%
+                    _data['yield'] = (float(output)+float(sampling_quantity))/float(input)
                     _data['batch'] = batch
                     data_list.append(_data)
                 return
