@@ -7397,14 +7397,6 @@ def CPKData():
 
                     CPK = round(float(Cp*(1 - abs(Ca))),2)
 
-                    x = numpy.arange(int(tag_range[0]), int(tag_range[1])+1, 1)
-
-                    y = normfun(x, average, standard_deviation)
-
-                    # plt.plot(x,y)
-                    # plt.hist(time, bins=10, rwidth=0.9, normed=True)
-                    # plt.show()
-
                     data_list = {'USL':tag_range[1],'LSL':tag_range[0],
                                   'average':round(average,2),'min':round(min(tag_value),2),
                                   'max':round(max(tag_value),2),'T':T,'total':len(tag_value),
@@ -7457,11 +7449,36 @@ def CPKCapture():
 def YieldCompare():
     return render_template('QualityControlYieldCompare.html')
 
+@app.route('/QualityControl/YieldCompare/getBatch')
+def YieldCompareGetBatch():
+    if request.method == 'POST':
+        try:
+            data = request.values
+            beginTime = data['beginTime']
+            endTime = data['endTime']
+            if beginTime is None or endTime is None:
+                return 'NO'
+            batchs = set(db_session.query(ZYTask.BatchID).filter(ZYTask.PlanDate.between(beginTime, endTime)).all())
+            if batchs:
+                count = 0
+                batch_data = list()
+                for batch in batchs:
+                    batch_data.append({"id": count,"text":batch})
+                    count += 1
+                json_data = json.dumps(batch_data, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+                return json_data
+            return 'NO'
+        except Exception as e:
+            print(e)
+            insertSyslog("error", "路由: /QualityControl/YieldCompare/getBatch报错Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
 @app.route('/QualityControl/BatchDataCompare', methods=['POST', 'GET'])
 def BatchDataCompare():
     '''
-    purpose：通过前台传入的批次查询响应的批次的突入量、产出量、得率
+    purpose：通过前台传入的批次查询响应的批次的投入量、产出量、得率
     url:/QualityControl/BatchDataCompare
+    
     return: data_list,一个包含突入量、产出量、得率、批次的数据列表
     '''
     if request.method == 'POST':

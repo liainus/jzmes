@@ -387,7 +387,7 @@
                         </ul>
                     </li>
                 {% endif %}
-                {% if isIn(['44', '45', '46', '47', '48', '49', '50'], session.get('menus')) %}
+                {% if isIn(['44', '45', '46', '47', '48', '49', '50', '96'], session.get('menus')) %}
                     <li>
                         <a href="javascript:;">
                             <span class="iconfont sider-nav-icon">&#xe64c;</span>
@@ -398,6 +398,11 @@
                             {% if '44' in session.get('menus') %}
                                 <li>
                                     <a href="#" onClick="addTab('过程连续数据','/ProcessContinuousData')">过程连续数据</a>
+                                </li>
+                            {% endif %}
+                            {% if '96' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onClick="addTab('投入产出数据','/QualityControl/YieldCompare.html')">投入产出数据</a>
                                 </li>
                             {% endif %}
 {#                            {% if '45' in session.get('menus') %}#}
