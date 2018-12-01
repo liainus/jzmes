@@ -7440,9 +7440,9 @@ def CPKCapture():
                     average = sum(tag_value)/len(tags_data) # 平均值
                     standard_deviation = round(float(numpy.std(numpy.array(tag_value), ddof=1)),2) # 标准差
 
-                    x = numpy.arange(int(tag_range[0]), int(tag_range[1]) + 1, 1)
+                    x = numpy.arange(int(tag_range[0]), int(tag_range[1]) + 1, 0.1)
                     y = normfun(x, average, standard_deviation)
-                    normal_distribution = [{'x':x.tolist(), 'y':y.tolist()}]
+                    normal_distribution = [{'x':[round(i, 2) for i in x.tolist()], 'y':y.tolist()}]
                     json_data = json.dumps(normal_distribution, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
                     return json_data
                 return 'NO'
