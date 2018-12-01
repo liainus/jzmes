@@ -7490,7 +7490,6 @@ def BatchDataCompare():
             batch_data = list()
             sampling_data = list()
             for batch in batchs:
-                _data = dict()
 
                 input = db_session.query(EletronicBatchDataStore.OperationpValue).filter(
                     and_(EletronicBatchDataStore.BatchID==batch,
@@ -7502,11 +7501,12 @@ def BatchDataCompare():
                     and_(EletronicBatchDataStore.BatchID==batch,
                          EletronicBatchDataStore.Content==constant.OUTPUT_COMPARE_SAMPLE)).first()[0]
 
-                if len(input)>0 and len(output)>0 and len(sampling_quantity)>0:
-                    input_data.append(int(input))
-                    output_data.append(int(output))
-                    batch_data.append(batch)
-                    sampling_data.append(str(round(float(sampling_quantity),2)*100) + '%')
+                if input is None or output is None or sampling_quantity is None:
+                    continue
+                input_data.append(int(input))
+                output_data.append(int(output))
+                batch_data.append(batch)
+                sampling_data.append(str(round(float(sampling_quantity),2)*100) + '%')
             data_list = {'input':input_data, 'output':output_data, 'sampling_quantity':sampling_data}
             json_data = json.dumps(data_list,cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
             return json_data
