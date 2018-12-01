@@ -7462,7 +7462,7 @@ def YieldCompareGetBatch():
                 count = 0
                 batch_data = list()
                 for batch in batchs:
-                    batch_data.append({"id": count,"text":batch})
+                    batch_data.append({"id": count,"text":batch[0]})
                     count += 1
                 json_data = json.dumps(batch_data, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
                 return json_data
