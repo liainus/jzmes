@@ -7445,11 +7445,11 @@ def CPKCapture():
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 # 产量对比
-@app.route('/QualityControl/YieldCompare.html', methods=['POST', 'GET'])
+@app.route('/QualityControl/YieldCompare.html')
 def YieldCompare():
     return render_template('QualityControlYieldCompare.html')
 
-@app.route('/QualityControl/YieldCompare/getBatch')
+@app.route('/QualityControl/YieldCompare/getBatch', methods=['POST', 'GET'])
 def YieldCompareGetBatch():
     if request.method == 'POST':
         try:
