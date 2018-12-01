@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>投入产出数据</title>
+    <link href="../static/css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
+    <link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
+    <link rel="stylesheet" href="../static/css/providers.css">
+    <script type="text/javascript" src="../static/js/echarts.common.min.js"></script>
+    <script type="text/javascript" src="../static/js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
+    <script>
+        $(function(){
+            $("#beginTime").datebox("setValue", myformatter(new Date()))
+            $("#endTime").datebox("setValue", myformatter(new Date()))
+            var result = ""
+            $('#searchBatchBtn').on('click', function(){
+                $.ajax({
+                    url: '/Permission/SelectRoles',
+                    type: 'post',
+                    data: {
+                        beginTime:$('#beginTime').datebox('getValue'),
+                        endTime:$('#endTime').datebox('getValue')
+                    },
+                    success: function (data) {
+                        if (data != "NO") {
+                            $.messager.show({
+                                title: '提示',
+                                timeout: 500,
+                                msg: '查询成功',
+                                style: {
+                                    right: '',
+                                    top: document.body.scrollTop + document.documentElement.scrollTop,
+                                    bottom: ''
+                                }
+                            });
+                            result = JSON.parse(data)
+                            console.log(result)
+                        }
+                    }
+                })
+            });
+            $("#tree").tree({
+                method: 'get',
+                checkbox:true,
+                animate:true,
+                data:result,
+                loadFilter:function(data){
+                    return data;
+                },
+                onSelect:function(node){
+                    var ckNodes = $('#tree').tree("getChecked");
+                    for (var i = 0; i < ckNodes.length; i++) {
+                        if (ckNodes[i].id != node.id) {
+                            $('#tree').tree("uncheck", ckNodes[i].target);
+                        }
+                    }
+                    $('#tree').tree('check', node.target);
+                },
+                onLoadSuccess: function (node, data) {
+                    $(this).find('span.tree-checkbox').unbind().click(function () {
+                        $('#tree').tree('select', $(this).parent());
+                        return false;
+                    });
+                }
+            })
+        })
+        function myformatter(date){
+            var y = date.getFullYear();
+            var m = date.getMonth()+1;
+            var d = date.getDate();
+            return y+'-'+(m<10?('0'+m):m)+'-'+( d<10?('0'+d):d);
+        }
+    </script>
+</head>
+<body>
+    <div style="padding:10px 0px 5px 10px;">
+	    <a>  起止日期:  </a>
+        <input class="easyui-datebox" id="beginTime" data-options="required:true,showSeconds:false,editable:false" style="width:166px;height:35px;line-height:35px;">
+        <input class="easyui-datebox" id="endTime" data-options="required:true,showSeconds:false,editable:false" style="width:166px;height:35px;line-height:35px;">
+        <a id="searchBatchBtn" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'">查询批次号</a>
+	</div>
+    <div class="left-tree" style="width: 15%;float: left;vertical-align: top;border: 1px solid #ccc;margin: 1%;padding: 1%;">
+        <ul id="LeftTree" class="easyui-tree"></ul>
+    </div>
+    <div id="container" style="width: 80%;float: left;vertical-align: top;">
+        <div id="tt" class="easyui-tabs" style="width:100%;height:580px;margin-top:10px; scrolling:'false'">
+            <div id="main" style="width: 1000px; height: 500px; margin: 0 auto"></div>
+        </div>
+    </div>
+</body>
+</html>
