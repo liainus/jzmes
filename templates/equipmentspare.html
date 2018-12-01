@@ -82,7 +82,11 @@
                         <tr>
                             <td class="kv-label">备件使用状况</td>
                             <td class="kv-content">
-                                <input name="StockUseStatus" id="StockUseStatus" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                                <select name="StockUseStatus" id="StockUseStatus" type="text" style="width:157px;" autocomplete="off" placeholder="">
+                                    <option value="">请选择</option>
+                                        <option value="全新">全新</option>
+                                        <option value="旧备件">旧备件</option>
+                                </select>
                             </td>
                         </tr>
                         <tr>
@@ -94,14 +98,14 @@
                         <tr>
                             <td class="kv-label">生产日期</td>
                             <td class="kv-content">
-                                <input name="ProductionDate" id="ProductionDate" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                                <input name="ProductionDate" id="ProductionDate" type="text" class="easyui-datebox" data-options="editable:false" autocomplete="off" placeholder=""  >
                             </td>
                         </tr>
                     </tbody>
                 </table>
                 <div id="equimentsClassDialogButtons">
                     <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" id="saveAdd" onclick="toolbar.save()" >保存</a>
-                    <a href="#" class="easyui-linkbutton" onclick="$('#userClassDialog').dialog('close')">关闭</a>
+                    <a href="#" class="easyui-linkbutton" onclick="$('#equimentsClassDialog').dialog('close')">关闭</a>
                 </div>
             </form>
         </div>
@@ -166,9 +170,9 @@
                     $('#SpareFactory').val();
                     $('#SpareType').val();
                     $('#SparePower').val();
-                    $('#StockUseStatus').val();
+                    $('#StockUseStatus option[value="0"]').prop("selected", 'selected');
                     $('#Description').val();
-                    $('#ProductionDate').val();
+                    $('#ProductionDate').datebox('setValue','');
                 },
                 update:function(){
                     var rows = $('#tab').datagrid('getSelections');
@@ -185,9 +189,9 @@
                             $('#SpareFactory').val(row.SpareFactory);
                             $('#SpareType').val(row.SpareType);
                             $('#SparePower').val(row.SparePower);
-                            $('#StockUseStatus').val(row.StockUseStatus);
+                            $('#StockUseStatus option:contains('+row.StockUseStatus+')').prop("selected", 'selected');
                             $('#Description').val(row.Description);
-                            $('#ProductionDate').val(row.ProductionDate);
+                            $('#ProductionDate').datebox('setValue', row.ProductionDate);
                         };
                     } else if (rows.length == 0) {
                         $.messager.alert('警告操作！', '请至少选定一条数据进行编辑！', 'warning');
@@ -216,22 +220,23 @@
                         url:urlAddr,
                         type:"post",
                         data:{
+                            ID:$('#ID').val(),
                             SpareName:$('#SpareName').val(),
                             SpareCode:$('#SpareCode').val(),
                             SpareModel:$('#SpareModel').val(),
                             SpareFactory:$('#SpareFactory').val(),
                             SpareType:$('#SpareType').val(),
                             SparePower:$('#SparePower').val(),
-                            StockUseStatus:$('#StockUseStatus').val(),
+                            StockUseStatus:$('#StockUseStatus').find("option:selected").html(),
                             Description:$('#Description').val(),
-                            ProductionDate:$('#ProductionDate').val()
+                            ProductionDate:$('#ProductionDate').datebox('getValue'),
                         },
                         success:function(data){
                             $.messager.progress('close');
                             if(data == "OK"){
                                 $.messager.show({
                                     title: '提示',
-                                    msg: message + hintinfo  + '成功',
+                                    msg: hintinfo  + '成功',
                                     timeout:1000,
                                     style: {
                                         right: '',
