@@ -6617,7 +6617,7 @@ def PUIDChargeBatchMaterielBalance():
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 #查询批物料平衡
-@app.route('/MaterielBalanceSearch')
+@app.route('/MaterielBalanceSearch', methods=['POST', 'GET'])
 def MaterielBalanceSearch():
     if request.method == 'GET':
         data = request.values
@@ -6649,7 +6649,7 @@ def MaterielBalanceSearch():
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 # 查询待办
-@app.route('/maindaiban')
+@app.route('/maindaiban', methods=['POST', 'GET'])
 def maindaiban():
     if request.method == 'GET':
         data = request.values
@@ -6675,7 +6675,7 @@ def maindaiban():
                               ensure_ascii=False)
 
 #首页查询
-@app.route('/souyesearch')
+@app.route('/souyesearch', methods=['POST', 'GET'])
 def souyesearch():
     if request.method == 'GET':
         data = request.values
@@ -6692,12 +6692,12 @@ def souyesearch():
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 # 备件出入库管理
-@app.route('/sparePartInStockManagement')
+@app.route('/sparePartInStockManagement', methods=['POST', 'GET'])
 def sparePartInStockManagement():
     return render_template('sparePartInStockManagement.html')
 
 # 备件库查询
-@app.route('/spareStockSearch')
+@app.route('/spareStockSearch', methods=['POST', 'GET'])
 def spareStockSearch():
     if request.method == 'GET':
         data = request.values
@@ -6722,13 +6722,13 @@ def spareStockSearch():
                             SpareStock.SpareStatus.in_(Model.Global.SpareStatus.InStockChecked.value,Model.Global.SpareStatus.OutStockChecked.value)).count()
                         spareClass = db_session.query(SpareStock).filter(
                             SpareStock.SpareStatus.in_(Model.Global.SpareStatus.InStockChecked.value,Model.Global.SpareStatus.OutStockChecked.value)).order_by(
-                            desc("InStockDate"))[inipage,endpage]
+                            desc("InStockDate"))[inipage:endpage]
                     else:
-                        spareCount = db_session.query(SpareStock).filter().count()
-                        spareClass = db_session.query(SpareStock).filter().order_by(desc("InStockDate"))[inipage,endpage]
+                        spareCount = db_session.query(SpareStock).count()
+                        spareClass = db_session.query(SpareStock).order_by(desc("InStockDate"))[inipage:endpage]
                 else:
                     spareCount = db_session.query(SpareStock).filter(SpareStock.SpareStatus == Model.Global.SpareStatus.Available.value, SpareStock.SpareName.like(SpareName)).count()
-                    spareClass = db_session.query(SpareStock).filter(SpareStock.SpareStatus == Model.Global.SpareStatus.Available.value, SpareStock.SpareName.like(SpareName)).all().order_by(desc("InStockDate"))[inipage,endpage]
+                    spareClass = db_session.query(SpareStock).filter(SpareStock.SpareStatus == Model.Global.SpareStatus.Available.value, SpareStock.SpareName.like(SpareName)).all().order_by(desc("InStockDate"))[inipage:endpage]
                 jsonoclass = json.dumps(spareClass, cls=AlchemyEncoder, ensure_ascii=False)
                 return '{"total"' + ":" + str(spareCount) + ',"rows"' + ":\n" + jsonoclass + "}"
         except Exception as e:
@@ -6738,18 +6738,18 @@ def spareStockSearch():
             return json.dumps("备件库查询报错", cls=Model.BSFramwork.AlchemyEncoder,ensure_ascii=False)
 
 # 备件新增
-@app.route('/spareStockCreate')
+@app.route('/spareStockCreate', methods=['POST', 'GET'])
 def spareStockCreate():
     if request.method == 'POST':
         data = request.values
         try:
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 10:
-                spareStock = SpareStock()
                 SpareCode = data["SpareCode"]
-                SpareStockclass = db_session.query(SpareStock).filter(SpareStock.SpareCode == SpareStock).first()
+                SpareStockclass = db_session.query(SpareStock).filter(SpareStock.SpareCode == SpareCode).first()
                 if SpareStockclass != None:
                     return "备件编码重复！"
+                spareStock = SpareStock()
                 spareStock.SpareCode = SpareCode
                 spareStock.SpareName = data["SpareName"]
                 spareStock.SpareStatus = Model.Global.SpareStatus.InStock.value
@@ -6759,9 +6759,14 @@ def spareStockCreate():
                 spareStock.SparePower = data["SparePower"]
                 spareStock.Description = data["Description"]
                 spareStock.ProductionDate = data["ProductionDate"]
+                spareStock.StockUseStatus = data["StockUseStatus"]
+                spareStock.ProductionDate = data["ProductionDate"]
+                spareStock.CreateDate = datetime.datetime.now()
+                spareStock.InStockPeople = current_user.Name
                 db_session.add(spareStock)
                 db_session.commit()
-                return 'OK'
+                return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
+                                  ensure_ascii=False)
         except Exception as e:
             print(e)
             logger.error(e)
@@ -6785,6 +6790,8 @@ def spareStockUpdate():
                 oclass.SpareType = data["SpareType"]
                 oclass.SparePower = data["SparePower"]
                 oclass.Description = data["Description"]
+                oclass.ProductionDate = data["ProductionDate"]
+                oclass.StockUseStatus = data["StockUseStatus"]
                 oclass.ProductionDate = data["ProductionDate"]
                 db_session.add(oclass)
                 db_session.commit()
@@ -6837,10 +6844,10 @@ def spareInStockCheckSearch():
                 SpareName = "%" + data["SpareName"] + "%"
                 if SpareName == "":
                     spareCount = db_session.query(SpareStock).filter(SpareStock.SpareStatus == Model.Global.SpareStatus.InStockCheck.value).count()
-                    spareClass = db_session.query(SpareStock).filter(SpareStock.SpareStatus == Model.Global.SpareStatus.InStockCheck.value).order_by(desc("InStockDate"))[inipage,endpage]
+                    spareClass = db_session.query(SpareStock).filter(SpareStock.SpareStatus == Model.Global.SpareStatus.InStockCheck.value).order_by(desc("InStockDate"))[inipage:endpage]
                 else:
                     spareCount = db_session.query(SpareStock).filter(SpareStock.SpareStatus == Model.Global.SpareStatus.InStockCheck.value, SpareStock.SpareName.like(SpareName)).count()
-                    spareClass = db_session.query(SpareStock).filter(SpareStock.SpareStatus == Model.Global.SpareStatus.InStockCheck.value, SpareStock.SpareName.like(SpareName)).all().order_by(desc("InStockDate"))[inipage,endpage]
+                    spareClass = db_session.query(SpareStock).filter(SpareStock.SpareStatus == Model.Global.SpareStatus.InStockCheck.value, SpareStock.SpareName.like(SpareName)).all().order_by(desc("InStockDate"))[inipage:endpage]
                 jsonoclass = json.dumps(spareClass, cls=AlchemyEncoder, ensure_ascii=False)
                 return '{"total"' + ":" + str(spareCount) + ',"rows"' + ":\n" + jsonoclass + "}"
         except Exception as e:
