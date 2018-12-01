@@ -49,7 +49,6 @@ from Model.dynamic_model import make_dynamic_classes
 import Model.node
 from threading import Timer
 from constant import constant
-import pandas
 import numpy
 import matplotlib.pyplot as plt
 
@@ -7362,7 +7361,7 @@ def CPKData():
     if request.method == 'POST':
         try:
             data = request.values
-            if data['tag'] in constant.CPK_TAG_LIST:
+            if data['tag'] in constant.CPK_TAG_LIST.keys():
                 tags_data, object = GetQualityControlData(data)
                 if tags_data:
                     tag_ = list()
@@ -7374,24 +7373,36 @@ def CPKData():
                         return "当前变量的数据量不足以绘制CPK，请查看其他变量的CPK情况..."
                     else:
                         tags_data = random.sample(tag_, 125)
-                    tag_range = constant.CPK_TAG_LIST.get(data['tag']).split(';')
+                    tag_range = constant.CPK_TAG_LIST[data['tag']].split(';')
 
                     C = (int(tag_range[0]) + int(tag_range[1]))/2   #规格中心
                     tag_value = [float(i[0]) for i in tags_data]
                     average = sum(tag_value)/len(tags_data) # 平均值
+                    T = int(tag_range[1]) - int(tag_range[0]) # 规格公差
 
-                    standard = numpy.std(numpy.array(tag_value), ddof=1) # 标准值
+                    standard_deviation = round(float(numpy.std(numpy.array(tag_value), ddof=1)),2) # 标准差
 
-                    x = numpy.arange(tag_range[0], tag_range[1], 1)
+                    Ca = round(float((average - C)/(T/2)),2) # 准确度
 
-                    y = normfun(x, average, standard)
+                    Cp = round(float(T/(6*standard_deviation)),2)
+
+                    CPK = round(float(Cp*(1 - abs(Ca))),2)
+
+                    x = numpy.arange(int(tag_range[0]), int(tag_range[1])+1, 1)
+
+                    y = normfun(x, average, standard_deviation)
 
                     plt.plot(x,y)
-                    plt.hist(time, bins=10, rwidth=0.9, normed=True)
+                    # plt.hist(time, bins=10, rwidth=0.9, normed=True)
                     plt.show()
 
-                    # data_list = [{'USL':tag_range[1],'LSL':tag_range[0]}]
-
+                    data_list = [{'USL':tag_range[1],'LSL':tag_range[0],
+                                  'average':average,'min':min(tag_value),
+                                  'max':max(tag_value),'T':T,'total':len(tag_value),
+                                  'standard':standard_deviation,
+                                  'Ca':Ca,'Cp':Cp,'CPK':CPK}]
+                    json_data = json.dumps(data_list, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+                    return json_data
         except Exception as e:
             print(e)
             insertSyslog("error", "路由/ProcessContinuousData/TagAnalysis报错Error：" + str(e), current_user.Name)
