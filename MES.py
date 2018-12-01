@@ -41,8 +41,7 @@ from collections import Counter
 from Model.system import User, OperationProcedure, ElectronicBatch, QualityControl, PackMaterial, TypeCollection
 from Model.Global import WeightUnit
 from Model.control import ctrlPlan
-from flask_login import LoginManager, current_user
-from flask.ext.login import login_required, logout_user, login_user
+from flask_login import login_required, logout_user, login_user,current_user,LoginManager
 import socket
 from opcua import Client
 from Model.dynamic_model import make_dynamic_classes
@@ -50,7 +49,7 @@ import Model.node
 from threading import Timer
 from constant import constant
 import numpy
-import matplotlib.pyplot as plt
+
 
 #flask_login的初始化
 login_manager = LoginManager()
@@ -7304,7 +7303,7 @@ def GetQualityControlData(data):
         Note = data['Note'].replace('*', '#') if '*' in data['Note'] else data['Note']
         equip_code = data['EQCode']
         if len(data) + len(batch) + len(tag) + len(Note) + len(equip_code) < 5:
-            return
+            return 'NO'
         try:
             conn = pymssql.connect(host=constant.MES_DATABASE_HOST,
                                    user=constant.MES_DATABASE_USER,
@@ -7457,19 +7456,11 @@ def CPKData():
 
                     CPK = round(float(Cp*(1 - abs(Ca))),2)
 
-                    x = numpy.arange(int(tag_range[0]), int(tag_range[1])+1, 1)
-
-                    y = normfun(x, average, standard_deviation)
-
-                    plt.plot(x,y)
-                    # plt.hist(time, bins=10, rwidth=0.9, normed=True)
-                    plt.show()
-
-                    data_list = [{'USL':tag_range[1],'LSL':tag_range[0],
+                    data_list = {'USL':tag_range[1],'LSL':tag_range[0],
                                   'average':round(average,2),'min':round(min(tag_value),2),
                                   'max':round(max(tag_value),2),'T':T,'total':len(tag_value),
                                   'standard':standard_deviation,'C':C,
-                                  'Ca':Ca,'Cp':Cp,'CPK':CPK}]
+                                  'Ca':Ca,'Cp':Cp,'CPK':CPK}
                     json_data = json.dumps(data_list, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
                     return json_data
             return 'NO'
@@ -7494,17 +7485,19 @@ def CPKCapture():
                     if len(tag_) <= 125:
                         return "NO"
                     else:
-                        tags_data = random.sample(tag_, 125)
+                        tags_data = random.sample(tag_, 300 if len(tag_)>300 else 125)
                     tag_range = constant.CPK_TAG_LIST[data['tag']].split(';')
                     tag_value = [float(i[0]) for i in tags_data]
                     average = sum(tag_value)/len(tags_data) # 平均值
                     standard_deviation = round(float(numpy.std(numpy.array(tag_value), ddof=1)),2) # 标准差
 
-                    x = numpy.arange(int(tag_range[0]), int(tag_range[1]) + 1, 1)
+                    x = numpy.arange(int(tag_range[0]), int(tag_range[1]) + 1, 0.1)
                     y = normfun(x, average, standard_deviation)
-                    normal_distribution = [{'x':x.tolist(), 'y':y.tolist()}]
+                    normal_distribution = [{'x':[round(i, 2) for i in x.tolist()], 'y':y.tolist()}]
                     json_data = json.dumps(normal_distribution, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
                     return json_data
+                return 'NO'
+            return 'NO'
         except Exception as e:
             print(e)
             insertSyslog("error", "路由/ProcessContinuousData/TagAnalysis报错Error：" + str(e), current_user.Name)
@@ -7515,42 +7508,69 @@ def CPKCapture():
 def YieldCompare():
     return render_template('QualityControlYieldCompare.html')
 
+@app.route('/QualityControl/YieldCompare/getBatch', methods=['POST', 'GET'])
+def YieldCompareGetBatch():
+    if request.method == 'POST':
+        try:
+            data = request.values
+            beginTime = data['beginTime']
+            endTime = data['endTime']
+            if beginTime is None or endTime is None:
+                return 'NO'
+            batchs = set(db_session.query(ZYTask.BatchID).filter(ZYTask.PlanDate.between(beginTime, endTime)).all())
+            if batchs:
+                count = 0
+                batch_data = list()
+                for batch in batchs:
+                    batch_data.append({"id": count,"text":batch[0]})
+                    count += 1
+                json_data = json.dumps(batch_data, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+                return json_data
+            return 'NO'
+        except Exception as e:
+            print(e)
+            insertSyslog("error", "路由: /QualityControl/YieldCompare/getBatch报错Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
 @app.route('/QualityControl/BatchDataCompare', methods=['POST', 'GET'])
 def BatchDataCompare():
     '''
-    purpose：通过前台传入的批次查询响应的批次的突入量、产出量、得率
+    purpose：通过前台传入的批次查询响应的批次的投入量、产出量、得率
     url:/QualityControl/BatchDataCompare
+    
     return: data_list,一个包含突入量、产出量、得率、批次的数据列表
     '''
     if request.method == 'POST':
         try:
             data = request.values
-            if not data:
+            batchs = data.to_dict().values()
+            if not batchs:
                 return
-            data_list = list()
-            for batch in data:
-                _data = dict()
+            input_data = list()
+            output_data = list()
+            batch_data = list()
+            sampling_data = list()
+            for batch in batchs:
 
                 input = db_session.query(EletronicBatchDataStore.OperationpValue).filter(
                     and_(EletronicBatchDataStore.BatchID==batch,
-                         EletronicBatchDataStore.Content==constant.OUTPUT_COMPARE_INPUT)).first()[0]
+                         EletronicBatchDataStore.Content==constant.OUTPUT_COMPARE_INPUT)).first()
                 output = db_session.query(EletronicBatchDataStore.OperationpValue).filter(
                     and_(EletronicBatchDataStore.BatchID==batch,
-                         EletronicBatchDataStore.Content==constant.OUTPUT_COMPARE_OUTPUT)).first()[0]
+                         EletronicBatchDataStore.Content==constant.OUTPUT_COMPARE_OUTPUT)).first()
                 sampling_quantity = db_session.query(EletronicBatchDataStore.OperationpValue).filter(
                     and_(EletronicBatchDataStore.BatchID==batch,
-                         EletronicBatchDataStore.Content==constant.OUTPUT_COMPARE_SAMPLE)).first()[0]
+                         EletronicBatchDataStore.Content==constant.OUTPUT_COMPARE_SAMPLE)).first()
 
-                if len(input)>0 and len(output)>0 and len(sampling_quantity)>0:
-                    _data['input'] = input
-                    _data['output'] = output
-                    _data['yield'] = (float(output)+float(sampling_quantity))/float(input)
-                    _data['batch'] = batch
-                    data_list.append(_data)
-                return
-
-            data_list = json.dumps(data_list,cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
-            return data_list
+                if input is None or output is None or sampling_quantity is None:
+                    return "NO", batch
+                input_data.append(int(input))
+                output_data.append(int(output))
+                batch_data.append(batch)
+                sampling_data.append(str(round(float(sampling_quantity),2)*100) + '%')
+            data_list = {'input':input_data, 'output':output_data, 'sampling_quantity':sampling_data}
+            json_data = json.dumps(data_list,cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+            return json_data
         except Exception as e:
             print(e)
             insertSyslog("error", "产量对比报错Error：" + str(e), current_user.Name)
