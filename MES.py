@@ -49,6 +49,9 @@ from Model.dynamic_model import make_dynamic_classes
 import Model.node
 from threading import Timer
 from constant import constant
+import numpy
+import matplotlib.pyplot as plt
+
 #flask_login的初始化
 login_manager = LoginManager()
 login_manager.db_session_protection = 'strong'
@@ -7217,7 +7220,7 @@ def QualityControlGetBatch():
             endTime = data['endTime']
             if beginTime is None or endTime is None:
                 return 'NO'
-            batchs = set(db_session.query(ZYPlan.BatchID).filter(ZYPlan.PlanDate.between(beginTime,endTime)).all())
+            batchs = set(db_session.query(ZYTask.BatchID).filter(ZYTask.PlanDate.between(beginTime,endTime)).all())
             if batchs:
                 count = 0
                 batch_list = []
@@ -7356,6 +7359,96 @@ def RainbowChartData():
             insertSyslog("error", "路由/ProcessContinuousData/TagAnalysis报错Error：" + str(e),current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
+#正态分布的概率密度函数。可以理解成 x 是 mu（均值）和 sigma（标准差）的函数
+def normfun(x,mu,sigma):
+    pdf = numpy.exp(-((x - mu)**2)/(2*sigma**2)) / (sigma * numpy.sqrt(2*numpy.pi))
+    return pdf
+
+
+@app.route('/ProcessContinuousData/CPKData', methods=['POST', 'GET'])
+def CPKData():
+    if request.method == 'POST':
+        try:
+            data = request.values
+            if data['tag'] in constant.CPK_TAG_LIST.keys():
+                tags_data, object = GetQualityControlData(data)
+                if tags_data:
+                    tag_ = list()
+                    for tag_data in tags_data:
+                        if tag_data[0] == 'init':
+                            continue
+                        tag_.append(tag_data)
+                    if len(tag_) <= 125:
+                        return "NO"
+                    else:
+                        tags_data = random.sample(tag_, 125)
+                    tag_range = constant.CPK_TAG_LIST[data['tag']].split(';')
+
+                    C = (int(tag_range[0]) + int(tag_range[1]))/2   #规格中心
+                    tag_value = [float(i[0]) for i in tags_data]
+                    average = sum(tag_value)/len(tags_data) # 平均值
+                    T = int(tag_range[1]) - int(tag_range[0]) # 规格公差
+
+                    standard_deviation = round(float(numpy.std(numpy.array(tag_value), ddof=1)),2) # 标准差
+
+                    Ca = round(float((average - C)/(T/2)),2) # 准确度
+
+                    Cp = round(float(T/(6*standard_deviation)),2)
+
+                    CPK = round(float(Cp*(1 - abs(Ca))),2)
+
+                    x = numpy.arange(int(tag_range[0]), int(tag_range[1])+1, 1)
+
+                    y = normfun(x, average, standard_deviation)
+
+                    plt.plot(x,y)
+                    # plt.hist(time, bins=10, rwidth=0.9, normed=True)
+                    plt.show()
+
+                    data_list = [{'USL':tag_range[1],'LSL':tag_range[0],
+                                  'average':round(average,2),'min':round(min(tag_value),2),
+                                  'max':round(max(tag_value),2),'T':T,'total':len(tag_value),
+                                  'standard':standard_deviation,'C':C,
+                                  'Ca':Ca,'Cp':Cp,'CPK':CPK}]
+                    json_data = json.dumps(data_list, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+                    return json_data
+            return 'NO'
+        except Exception as e:
+            print(e)
+            insertSyslog("error", "路由/ProcessContinuousData/TagAnalysis报错Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
+@app.route('/ProcessContinuousData/CPKCapture', methods=['POST', 'GET'])
+def CPKCapture():
+    if request.method == 'POST':
+        try:
+            data = request.values
+            if data['tag'] in constant.CPK_TAG_LIST.keys():
+                tags_data, object = GetQualityControlData(data)
+                if tags_data:
+                    tag_ = list()
+                    for tag_data in tags_data:
+                        if tag_data[0] == 'init':
+                            continue
+                        tag_.append(tag_data)
+                    if len(tag_) <= 125:
+                        return "NO"
+                    else:
+                        tags_data = random.sample(tag_, 125)
+                    tag_range = constant.CPK_TAG_LIST[data['tag']].split(';')
+                    tag_value = [float(i[0]) for i in tags_data]
+                    average = sum(tag_value)/len(tags_data) # 平均值
+                    standard_deviation = round(float(numpy.std(numpy.array(tag_value), ddof=1)),2) # 标准差
+
+                    x = numpy.arange(int(tag_range[0]), int(tag_range[1]) + 1, 1)
+                    y = normfun(x, average, standard_deviation)
+                    normal_distribution = [{'x':x.tolist(), 'y':y.tolist()}]
+                    json_data = json.dumps(normal_distribution, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+                    return json_data
+        except Exception as e:
+            print(e)
+            insertSyslog("error", "路由/ProcessContinuousData/TagAnalysis报错Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 # 产量对比
 @app.route('/QualityControl/YieldCompare.html')

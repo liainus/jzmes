@@ -29,3 +29,5 @@ def transform_dict(position):
         return dict_
 
 MONITOR_TRANSPORT_TAG = transform_dict("config['transport_section']")
+
+CPK_TAG_LIST = config['CPK_Tag'].keys()
