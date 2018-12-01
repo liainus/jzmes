@@ -15,10 +15,10 @@
         $(function(){
             $("#beginTime").datebox("setValue", myformatter(new Date()))
             $("#endTime").datebox("setValue", myformatter(new Date()))
-            var result = ""
             $('#searchBatchBtn').on('click', function(){
+                var result = ''
                 $.ajax({
-                    url: '/Permission/SelectRoles',
+                    url: '/QualityControl/YieldCompare/getBatch',
                     type: 'post',
                     data: {
                         beginTime:$('#beginTime').datebox('getValue'),
@@ -37,36 +37,116 @@
                                 }
                             });
                             result = JSON.parse(data)
-                            console.log(result)
+                            $("#LeftTree").tree({
+                                data:result
+                            })
+
+                        }else{
+                            $.messager.alert('提示', '当前时间段暂无批次！', 'info');
                         }
                     }
                 })
             });
-            $("#tree").tree({
-                method: 'get',
+            $("#LeftTree").tree({
                 checkbox:true,
                 animate:true,
-                data:result,
                 loadFilter:function(data){
                     return data;
                 },
-                onSelect:function(node){
-                    var ckNodes = $('#tree').tree("getChecked");
+                onCheck:function(node,checked){
+                    var jsonarray = []
+                    var ckNodes = $('#LeftTree').tree("getChecked");
                     for (var i = 0; i < ckNodes.length; i++) {
-                        if (ckNodes[i].id != node.id) {
-                            $('#tree').tree("uncheck", ckNodes[i].target);
-                        }
+                        jsonarray.push(ckNodes[i].text);
                     }
-                    $('#tree').tree('check', node.target);
+                    toJson(jsonarray)
                 },
-                onLoadSuccess: function (node, data) {
-                    $(this).find('span.tree-checkbox').unbind().click(function () {
-                        $('#tree').tree('select', $(this).parent());
-                        return false;
-                    });
+                onSelect:function(node){
+                    if(node.checkState == "checked"){
+                        $('#LeftTree').tree('uncheck', node.target);
+                    }else if(node.checkState == "unchecked"){
+                        $('#LeftTree').tree('check', node.target);
+                    }
+                    var jsonarray = []
+                    var ckNodes = $('#LeftTree').tree("getChecked");
+                    for (var i = 0; i < ckNodes.length; i++) {
+                        jsonarray.push(ckNodes[i].text);
+                    }
+                    toJson(jsonarray)
                 }
             })
         })
+        function toJson(batch){
+    	    var myChart = echarts.init(document.getElementById("main"))
+    	    myChart.showLoading();
+            $.ajax({
+                url:"/QualityControl/BatchDataCompare",
+                type:"post",
+                data:{
+                    batch: batch
+                },
+                success:function(data){
+                    data = JSON.parse(data)
+                    console.log(data)
+                    myChart.hideLoading();
+                    myChart.setOption(option = {
+                        tooltip: {
+                            trigger: 'axis',
+                            axisPointer: {
+                                type: 'cross',
+                                crossStyle: {
+                                    color: '#999'
+                                }
+                            }
+                        },
+                        toolbox: {
+                            feature : {
+                                dataView: {show: true, readOnly: false},
+                                magicType: {show: true, type: ['line', 'bar']},
+                                restore: {show: true},
+                                saveAsImage: {show: true}
+                            }
+                        },
+                        xAxis:  {
+                            name: "批次号",
+                            type: 'category',
+                            boundaryGap : false,
+                            data:batch
+                        },
+                        yAxis: [
+                            {
+                                type : 'value',
+                                name: '重量',
+                                min: 0,
+                                interval: 500,
+                                axisLabel: {
+                                    formatter: '{value} kg'
+                                }
+                            },{
+                                type: 'value',
+                                name: '百分比',
+                                min: 0,
+                                interval: 10
+                            }
+                        ],
+                        series: [{
+                            name: "投入量",
+                            type: 'bar',
+                            data: data[0].input
+                        },{
+                            name: "产出量",
+                            type: 'bar',
+                            data: data[1].output
+                        },{
+                            name: "得率",
+                            type: 'bar',
+                            data: data[2].sampling_quantity
+                        }]
+                    });
+                    myChart.setOption(option);
+                }
+            })
+        }
         function myformatter(date){
             var y = date.getFullYear();
             var m = date.getMonth()+1;
@@ -86,7 +166,7 @@
         <ul id="LeftTree" class="easyui-tree"></ul>
     </div>
     <div id="container" style="width: 80%;float: left;vertical-align: top;">
-        <div id="tt" class="easyui-tabs" style="width:100%;height:580px;margin-top:10px; scrolling:'false'">
+        <div id="tt" class="easyui-tabs" title="投入产出数据-统计图" style="width:100%;height:580px;margin-top:10px; scrolling:'false'">
             <div id="main" style="width: 1000px; height: 500px; margin: 0 auto"></div>
         </div>
     </div>
