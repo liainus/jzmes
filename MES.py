@@ -7541,8 +7541,8 @@ def BatchDataCompare():
     '''
     if request.method == 'POST':
         try:
-            data = request.values.to_dict()
-            batchs = data.values()
+            data = request.values
+            batchs = eval(data['batch'])
             if not batchs:
                 return 'NO'
             input_data = list()

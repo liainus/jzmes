@@ -128,7 +128,7 @@
                     <th field="ck" checkbox="true"></th>
                     <th data-options="field:'SpareName',width:150,align:'center'">备件名称</th>
                     <th data-options="field:'SpareCode',width:150,align:'center'">备件编码</th>
-                    <th data-options="field:'SpareStatus',width:100,align:'center'">备件状态</th>
+                    <th data-options="field:'SpareStatus',width:100,align:'center'" formatter="formatterStatus">备件状态</th>
                     <th data-options="field:'SpareModel',width:150,align:'center'">备件型号</th>
                     <th data-options="field:'SpareFactory',width:150,align:'center'">生产厂家</th>
                     <th data-options="field:'SpareType',width:150,align:'center'">备件类型</th>
@@ -474,6 +474,19 @@
                 }
             });
         })
+        function formatterStatus(value, row, index){
+            if (value == 10){
+                return '新增'
+            }else if(value == 20){
+                return '入库'
+            }else if(value == 30){
+                return '入库已审核'
+            }else if(value == 40){
+                return '出库'
+            }else if(value == 50){
+                return '出库已审核'
+            }
+        }
     </script>
 </body>
 </html>
