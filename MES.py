@@ -7565,11 +7565,10 @@ def BatchDataCompare():
                 if input is None or output is None or sampling_quantity is None:
                     data_list = {'input': 'NO', 'output': 'NO', 'sampling_quantity': 'NO', 'batch': batch}
                     return json.dumps(data_list,cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
-                input_data.append(int(input))
-                output_data.append(int(output))
-                batch_data.append(batch)
-                sampling_data.append(str(sampling_quantity) + '%')
-            data_list = {'input':input_data[0], 'output':output_data[0], 'sampling_quantity':sampling_data[0]}
+                input_data.append(int(input[0]))
+                output_data.append(int(output[0]))
+                sampling_data.append(str(sampling_quantity[0]) + '%')
+            data_list = {'input':input_data, 'output':output_data, 'sampling_quantity':sampling_data}
             json_data = json.dumps(data_list,cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
             return json_data
         except Exception as e:
