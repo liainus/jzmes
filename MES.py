@@ -7542,14 +7542,15 @@ def BatchDataCompare():
     '''
     if request.method == 'POST':
         try:
-            data = request.values
-            batchs = data.to_dict().values()
+            data = request.values.to_dict()
+            batchs = data.values()
             if not batchs:
-                return
+                return 'NO'
             input_data = list()
             output_data = list()
-            batch_data = list()
             sampling_data = list()
+            data_list = list()
+            data_error_list = list()
             for batch in batchs:
 
                 input = db_session.query(EletronicBatchDataStore.OperationpValue).filter(
@@ -7562,13 +7563,15 @@ def BatchDataCompare():
                     and_(EletronicBatchDataStore.BatchID==batch,
                          EletronicBatchDataStore.Content==constant.OUTPUT_COMPARE_SAMPLE)).first()
 
-                if input is None or output is None or sampling_quantity is None:
-                    return "NO", batch
-                input_data.append(int(input))
-                output_data.append(int(output))
-                batch_data.append(batch)
-                sampling_data.append(str(round(float(sampling_quantity),2)*100) + '%')
-            data_list = {'input':input_data, 'output':output_data, 'sampling_quantity':sampling_data}
+                if input == output == sampling_quantity == None:
+                    data_error_list.append({'input': 'NO', 'output': 'NO', 'sampling_quantity': 'NO', 'batch': batch})
+                    continue
+                input_data.append(int(input[0]))
+                output_data.append(int(output[0]))
+                sampling_data.append(float(sampling_quantity[0]))
+                data_list.append({'input':input_data, 'output':output_data, 'sampling_quantity':sampling_data})
+            if len(data_error_list) >= 1:
+                return json.dumps(data_error_list,cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
             json_data = json.dumps(data_list,cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
             return json_data
         except Exception as e:
