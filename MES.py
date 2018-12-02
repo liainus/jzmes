@@ -7548,7 +7548,6 @@ def BatchDataCompare():
                 return 'NO'
             input_data = list()
             output_data = list()
-            batch_data = list()
             sampling_data = list()
             for batch in batchs:
 
