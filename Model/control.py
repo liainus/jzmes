@@ -434,7 +434,7 @@ class ctrlPlan:
             if bReturn == False:
                 return False
 
-            PlanManageID = session.query(Model.core.PlanManager.ID).filter_by(BatchID=ABatchID).first()
+            PlanManageID = session.query(Model.core.PlanManager.ID).filter_by(BatchID=ABatchID, BrandID=ABrandID).first()
             PlanManageID = PlanManageID[0]
             if (ABrandName == "健胃消食片浸膏粉"):
                 bReturn = self.createOdd(PlanManageID)
