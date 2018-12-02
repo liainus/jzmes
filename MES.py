@@ -7494,20 +7494,20 @@ def BatchDataCompare():
 
                 input = db_session.query(EletronicBatchDataStore.OperationpValue).filter(
                     and_(EletronicBatchDataStore.BatchID==batch,
-                         EletronicBatchDataStore.Content==constant.OUTPUT_COMPARE_INPUT)).first()
+                         EletronicBatchDataStore.Content==constant.OUTPUT_COMPARE_INPUT)).first()[0]
                 output = db_session.query(EletronicBatchDataStore.OperationpValue).filter(
                     and_(EletronicBatchDataStore.BatchID==batch,
-                         EletronicBatchDataStore.Content==constant.OUTPUT_COMPARE_OUTPUT)).first()
+                         EletronicBatchDataStore.Content==constant.OUTPUT_COMPARE_OUTPUT)).first()[0]
                 sampling_quantity = db_session.query(EletronicBatchDataStore.OperationpValue).filter(
                     and_(EletronicBatchDataStore.BatchID==batch,
-                         EletronicBatchDataStore.Content==constant.OUTPUT_COMPARE_SAMPLE)).first()
+                         EletronicBatchDataStore.Content==constant.OUTPUT_COMPARE_SAMPLE)).first()[0]
 
                 if input is None or output is None or sampling_quantity is None:
-                    return "NO", batch
+                    return "NO"
                 input_data.append(int(input))
                 output_data.append(int(output))
                 batch_data.append(batch)
-                sampling_data.append(str(round(float(sampling_quantity),2)*100) + '%')
+                sampling_data.append(str(sampling_quantity) + '%')
             data_list = {'input':input_data, 'output':output_data, 'sampling_quantity':sampling_data}
             json_data = json.dumps(data_list,cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
             return json_data
