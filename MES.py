@@ -7564,6 +7564,7 @@ def BatchDataCompare():
 
                 if input == output == sampling_quantity == None:
                     data_error_list.append({'input': 'NO', 'output': 'NO', 'sampling_quantity': 'NO', 'batch': batch})
+                    continue
                 input_data.append(int(input[0]))
                 output_data.append(int(output[0]))
                 sampling_data.append(float(sampling_quantity[0]))
