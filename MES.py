@@ -7545,7 +7545,7 @@ def BatchDataCompare():
             data = request.values
             batchs = data.to_dict().values()
             if not batchs:
-                return
+                return 'NO'
             input_data = list()
             output_data = list()
             batch_data = list()
@@ -7554,21 +7554,22 @@ def BatchDataCompare():
 
                 input = db_session.query(EletronicBatchDataStore.OperationpValue).filter(
                     and_(EletronicBatchDataStore.BatchID==batch,
-                         EletronicBatchDataStore.Content==constant.OUTPUT_COMPARE_INPUT)).first()[0]
+                         EletronicBatchDataStore.Content==constant.OUTPUT_COMPARE_INPUT)).first()
                 output = db_session.query(EletronicBatchDataStore.OperationpValue).filter(
                     and_(EletronicBatchDataStore.BatchID==batch,
-                         EletronicBatchDataStore.Content==constant.OUTPUT_COMPARE_OUTPUT)).first()[0]
+                         EletronicBatchDataStore.Content==constant.OUTPUT_COMPARE_OUTPUT)).first()
                 sampling_quantity = db_session.query(EletronicBatchDataStore.OperationpValue).filter(
                     and_(EletronicBatchDataStore.BatchID==batch,
-                         EletronicBatchDataStore.Content==constant.OUTPUT_COMPARE_SAMPLE)).first()[0]
+                         EletronicBatchDataStore.Content==constant.OUTPUT_COMPARE_SAMPLE)).first()
 
                 if input is None or output is None or sampling_quantity is None:
-                    return "NO"
+                    data_list = {'input': 'NO', 'output': 'NO', 'sampling_quantity': 'NO', 'batch': batch}
+                    return json.dumps(data_list,cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
                 input_data.append(int(input))
                 output_data.append(int(output))
                 batch_data.append(batch)
                 sampling_data.append(str(sampling_quantity) + '%')
-            data_list = {'input':input_data, 'output':output_data, 'sampling_quantity':sampling_data}
+            data_list = {'input':input_data[0], 'output':output_data[0], 'sampling_quantity':sampling_data[0]}
             json_data = json.dumps(data_list,cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
             return json_data
         except Exception as e:
