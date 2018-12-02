@@ -6712,15 +6712,15 @@ def spareStockSearch():
                     RoleNames = db_session.query(User.RoleName).filter(User.Name == current_user.Name).all()
                     rolename = ""
                     for name in RoleNames:
-                        if name == "备件审核人":
+                        if name[0] == "备件审核人":
                             rolename = "备件审核人"
-                        if name == "系统管理员":
+                        if name[0] == "系统管理员":
                             rolename = "系统管理员"
                     if rolename == "备件审核人":
                         spareCount = db_session.query(SpareStock).filter(
-                            SpareStock.SpareStatus.in_((Model.Global.SpareStatus.InStockChecked.value,Model.Global.SpareStatus.InStock.value))).count()
+                            SpareStock.SpareStatus.in_((Model.Global.SpareStatus.OutStock.value,Model.Global.SpareStatus.InStock.value))).count()
                         spareClass = db_session.query(SpareStock).filter(
-                            SpareStock.SpareStatus.in_((Model.Global.SpareStatus.InStockChecked.value,Model.Global.SpareStatus.OutStock.value))).order_by(
+                            SpareStock.SpareStatus.in_((Model.Global.SpareStatus.OutStock.value,Model.Global.SpareStatus.InStock.value))).order_by(
                             desc("InStockDate"))[inipage:endpage]
                     else:
                         spareCount = db_session.query(SpareStock).filter(SpareStock.SpareStatus.in_((Model.Global.SpareStatus.New.value, Model.Global.SpareStatus.InStockChecked.value))).count()
@@ -6833,7 +6833,6 @@ def spareStockInOut():
         data = request.values
         try:
             jsonstr = json.dumps(data.to_dict())
-            print(jsonstr)
             if len(jsonstr) > 10:
                 jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
                 for key in jsonnumber:
@@ -6871,7 +6870,7 @@ def spareStockChecked():
                         oclass = db_session.query(SpareStock).filter_by(ID=ID).first()
                         if oclass.SpareStatus == Model.Global.SpareStatus.InStock.value:
                             oclass.SpareStatus = Model.Global.SpareStatus.InStockChecked.value
-                        elif oclass.SpareStatus == Model.Global.SpareStatus.InStock.value:
+                        elif oclass.SpareStatus == Model.Global.SpareStatus.OutStock.value:
                             oclass.SpareStatus = Model.Global.SpareStatus.OutStockChecked.value
                         db_session.commit()
                     except Exception as ee:
