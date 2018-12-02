@@ -62,7 +62,7 @@
                     for (var i = 0; i < ckNodes.length; i++) {
                         jsonarray.push(ckNodes[i].text);
                     }
-                    jsonarray = JOSN.stringify(jsonarray)
+                    jsonarray = JSON.stringify(jsonarray)
                     toJson(jsonarray)
                 },
                 onSelect:function(node){
@@ -76,8 +76,10 @@
             })
         })
         function toJson(batch){
+            var batch = batch
+            var objBatch = JSON.parse(batch)
             var myChart = echarts.init(document.getElementById("main"))
-            if(batch.length == 0){
+            if(objBatch.length == 0){
                 myChart.hideLoading();
             }else {
                 myChart.showLoading();
@@ -90,18 +92,21 @@
                     dataType: "json",
                     traditional:true,
                     success: function (data) {
-                        data = JSON.parse(data)
-                        console.log(data)
                         if (data[0].input != "NO" || data[0].output != "NO" || data[0].sampling_quantity != "NO") {
+                            var input = ''
+                            var output = ''
+                            var sampling_quantity = ''
+                            for(var i = 0;i < data.length;i++){
+                                input = data[i].input
+                                output = data[i].output
+                                sampling_quantity = data[i].sampling_quantity
+                            }
                             myChart.hideLoading();
                             myChart.setOption(option = {
                                 tooltip: {
                                     trigger: 'axis',
                                     axisPointer: {
-                                        type: 'cross',
-                                        crossStyle: {
-                                            color: '#999'
-                                        }
+                                        type: 'shadow'
                                     }
                                 },
                                 legend: {
@@ -118,8 +123,7 @@
                                 xAxis: {
                                     name: "批次号",
                                     type: 'category',
-                                    boundaryGap: false,
-                                    data: batch
+                                    data: objBatch
                                 },
                                 yAxis: [
                                     {
@@ -144,15 +148,16 @@
                                 series: [{
                                     name: "投入量",
                                     type: 'bar',
-                                    data: data.input
+                                    data: input
                                 }, {
                                     name: "产出量",
                                     type: 'bar',
-                                    data: data.output
+                                    data: output
                                 }, {
                                     name: "得率",
                                     type: 'bar',
-                                    data: data.sampling_quantity
+                                    yAxisIndex: 1,
+                                    data: sampling_quantity
                                 }]
                             });
                             myChart.setOption(option);
