@@ -6718,13 +6718,13 @@ def spareStockSearch():
                             rolename = "系统管理员"
                     if rolename == "备件审核人" and rolename != "系统管理员":
                         spareCount = db_session.query(SpareStock).filter(
-                            SpareStock.SpareStatus.in_(Model.Global.SpareStatus.InStockChecked.value,Model.Global.SpareStatus.OutStockChecked.value)).count()
+                            SpareStock.SpareStatus.in_(Model.Global.SpareStatus.InStockChecked.value,Model.Global.SpareStatus.InStock.value)).count()
                         spareClass = db_session.query(SpareStock).filter(
-                            SpareStock.SpareStatus.in_(Model.Global.SpareStatus.InStockChecked.value,Model.Global.SpareStatus.OutStockChecked.value)).order_by(
+                            SpareStock.SpareStatus.in_(Model.Global.SpareStatus.InStockChecked.value,Model.Global.SpareStatus.OutStock.value)).order_by(
                             desc("InStockDate"))[inipage:endpage]
                     else:
-                        spareCount = db_session.query(SpareStock).count()
-                        spareClass = db_session.query(SpareStock).order_by(desc("InStockDate"))[inipage:endpage]
+                        spareCount = db_session.query(SpareStock).filter(Model.Global.SpareStatus.in_(Model.Global.SpareStatus.New.value, Model.Global.SpareStatus.InStockChecked.value)).count()
+                        spareClass = db_session.query(SpareStock).filter(Model.Global.SpareStatus.in_(Model.Global.SpareStatus.New.value, Model.Global.SpareStatus.InStockChecked.value)).order_by(desc("InStockDate"))[inipage:endpage]
                 else:
                     spareCount = db_session.query(SpareStock).filter(SpareStock.SpareStatus == Model.Global.SpareStatus.Available.value, SpareStock.SpareName.like(SpareName)).count()
                     spareClass = db_session.query(SpareStock).filter(SpareStock.SpareStatus == Model.Global.SpareStatus.Available.value, SpareStock.SpareName.like(SpareName)).all().order_by(desc("InStockDate"))[inipage:endpage]
@@ -6764,8 +6764,7 @@ def spareStockCreate():
                 spareStock.InStockPeople = current_user.Name
                 db_session.add(spareStock)
                 db_session.commit()
-                return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
-                                  ensure_ascii=False)
+                return 'OK'
         except Exception as e:
             print(e)
             logger.error(e)
@@ -6794,8 +6793,7 @@ def spareStockUpdate():
                 oclass.ProductionDate = data["ProductionDate"]
                 db_session.add(oclass)
                 db_session.commit()
-                return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
-                                  ensure_ascii=False)
+                return 'OK'
         except Exception as e:
             print(e)
             logger.error(e)
@@ -6821,40 +6819,100 @@ def spareStockDelete():
                         print(ee)
                         logger.error(ee)
                         return json.dumps("备件删除报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
-                return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
-                                  ensure_ascii=False)
+                return 'OK'
         except Exception as e:
             print(e)
             logger.error(e)
             insertSyslog("error", "备件删除报错Error：" + str(e), current_user.Name)
             return json.dumps("备件删除报错", cls=Model.BSFramwork.AlchemyEncoder,ensure_ascii=False)
-# 备件出入库审核查询
-@app.route('/spareInStockCheckSearch', methods=['POST', 'GET'])
-def spareInStockCheckSearch():
-    if request.method == 'GET':
+
+# 备件入库出库
+@app.route('/spareStockInOut', methods=['POST', 'GET'])
+def spareStockInOut():
+    if request.method == 'POST':
         data = request.values
         try:
-            json_str = json.dumps(data.to_dict())
-            if len(json_str) > 10:
-                pages = int(data['page'])
-                rowsnumber = int(data['rows'])
-                inipage = (pages - 1) * rowsnumber + 0
-                endpage = (pages - 1) * rowsnumber + rowsnumber
-                SpareName = "%" + data["SpareName"] + "%"
-                if SpareName == "":
-                    spareCount = db_session.query(SpareStock).filter(SpareStock.SpareStatus == Model.Global.SpareStatus.InStockCheck.value).count()
-                    spareClass = db_session.query(SpareStock).filter(SpareStock.SpareStatus == Model.Global.SpareStatus.InStockCheck.value).order_by(desc("InStockDate"))[inipage:endpage]
-                else:
-                    spareCount = db_session.query(SpareStock).filter(SpareStock.SpareStatus == Model.Global.SpareStatus.InStockCheck.value, SpareStock.SpareName.like(SpareName)).count()
-                    spareClass = db_session.query(SpareStock).filter(SpareStock.SpareStatus == Model.Global.SpareStatus.InStockCheck.value, SpareStock.SpareName.like(SpareName)).all().order_by(desc("InStockDate"))[inipage:endpage]
-                jsonoclass = json.dumps(spareClass, cls=AlchemyEncoder, ensure_ascii=False)
-                return '{"total"' + ":" + str(spareCount) + ',"rows"' + ":\n" + jsonoclass + "}"
+            jsonstr = json.dumps(data.to_dict())
+            print(jsonstr)
+            if len(jsonstr) > 10:
+                jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
+                for key in jsonnumber:
+                    ID = int(key)
+                    try:
+                        oclass = db_session.query(SpareStock).filter_by(ID=ID).first()
+                        if oclass.SpareStatus == Model.Global.SpareStatus.New.value:
+                            oclass.SpareStatus = Model.Global.SpareStatus.InStock.value
+                        elif oclass.SpareStatus == Model.Global.SpareStatus.InStockChecked.value:
+                            oclass.SpareStatus = Model.Global.SpareStatus.OutStock.value
+                        db_session.commit()
+                    except Exception as ee:
+                        print(ee)
+                        logger.error(ee)
+                        return json.dumps("备件入库出库报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+                return 'OK'
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "备件库查询报错Error：" + str(e), current_user.Name)
-            return json.dumps("备件库查询报错", cls=Model.BSFramwork.AlchemyEncoder,ensure_ascii=False)
+            insertSyslog("error", "备件入库出库报错Error：" + str(e), current_user.Name)
+            return json.dumps("备件入库出库报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
+# 备件入库出库审核
+@app.route('/spareStockChecked', methods=['POST', 'GET'])
+def spareStockChecked():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
+                for key in jsonnumber:
+                    ID = int(key)
+                    try:
+                        oclass = db_session.query(SpareStock).filter_by(ID=ID).first()
+                        if oclass.SpareStatus == Model.Global.SpareStatus.InStock.value:
+                            oclass.SpareStatus = Model.Global.SpareStatus.InStockChecked.value
+                        elif oclass.SpareStatus == Model.Global.SpareStatus.InStock.value:
+                            oclass.SpareStatus = Model.Global.SpareStatus.OutStockChecked.value
+                        db_session.commit()
+                    except Exception as ee:
+                        print(ee)
+                        logger.error(ee)
+                        return json.dumps("备件入库出库审核报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+                return 'OK'
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "备件入库出库审核报错Error：" + str(e), current_user.Name)
+            return json.dumps("备件入库出库审核报错", cls=Model.BSFramwork.AlchemyEncoder,ensure_ascii=False)
+
+# 备件入库出库审核撤回
+@app.route('/spareStockCheckRecall', methods=['POST', 'GET'])
+def spareStockCheckRecall():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
+                for key in jsonnumber:
+                    ID = int(key)
+                    try:
+                        oclass = db_session.query(SpareStock).filter_by(ID=ID).first()
+                        if oclass.SpareStatus == Model.Global.SpareStatus.InStock.value:
+                            oclass.SpareStatus = Model.Global.SpareStatus.New.value
+                        elif oclass.SpareStatus == Model.Global.SpareStatus.OutStock.value:
+                            oclass.SpareStatus = Model.Global.SpareStatus.InStockChecked.value
+                        db_session.commit()
+                    except Exception as ee:
+                        print(ee)
+                        logger.error(ee)
+                        return json.dumps("备件入库出库审核撤回报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+                return 'OK'
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "备件入库出库审核撤回报错Error：" + str(e), current_user.Name)
+            return json.dumps("备件入库出库审核撤回报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 # 操作手册
 @app.route('/CreateOperationManual', methods=['POST', 'GET'])
@@ -6933,7 +6991,9 @@ def electronicBatchRecordNav2():
 # 备件管理
 @app.route('/equipmentspare')
 def equipmentbeij():
-    return render_template('equipmentspare.html')
+    print(current_user.WorkNumber)
+    RoleName = db_session.query(User.RoleName).filter(User.WorkNumber == current_user.WorkNumber).first()
+    return render_template('equipmentspare.html',RoleName = RoleName[0])
 
 # 故障管理
 @app.route('/equipmenttrouble')
