@@ -7562,7 +7562,7 @@ def BatchDataCompare():
                     and_(EletronicBatchDataStore.BatchID==batch,
                          EletronicBatchDataStore.Content==constant.OUTPUT_COMPARE_SAMPLE)).first()
 
-                if input is None or output is None or sampling_quantity is None:
+                if input == output == sampling_quantity == None:
                     data_error_list.append({'input': 'NO', 'output': 'NO', 'sampling_quantity': 'NO', 'batch': batch})
                 input_data.append(int(input[0]))
                 output_data.append(int(output[0]))
