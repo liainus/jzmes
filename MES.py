@@ -6716,18 +6716,18 @@ def spareStockSearch():
                             rolename = "备件审核人"
                         if name == "系统管理员":
                             rolename = "系统管理员"
-                    if rolename == "备件审核人" and rolename != "系统管理员":
+                    if rolename == "备件审核人":
                         spareCount = db_session.query(SpareStock).filter(
-                            SpareStock.SpareStatus.in_(Model.Global.SpareStatus.InStockChecked.value,Model.Global.SpareStatus.InStock.value)).count()
+                            SpareStock.SpareStatus.in_((Model.Global.SpareStatus.InStockChecked.value,Model.Global.SpareStatus.InStock.value))).count()
                         spareClass = db_session.query(SpareStock).filter(
-                            SpareStock.SpareStatus.in_(Model.Global.SpareStatus.InStockChecked.value,Model.Global.SpareStatus.OutStock.value)).order_by(
+                            SpareStock.SpareStatus.in_((Model.Global.SpareStatus.InStockChecked.value,Model.Global.SpareStatus.OutStock.value))).order_by(
                             desc("InStockDate"))[inipage:endpage]
                     else:
-                        spareCount = db_session.query(SpareStock).filter(Model.Global.SpareStatus.in_(Model.Global.SpareStatus.New.value, Model.Global.SpareStatus.InStockChecked.value)).count()
-                        spareClass = db_session.query(SpareStock).filter(Model.Global.SpareStatus.in_(Model.Global.SpareStatus.New.value, Model.Global.SpareStatus.InStockChecked.value)).order_by(desc("InStockDate"))[inipage:endpage]
+                        spareCount = db_session.query(SpareStock).filter(SpareStock.SpareStatus.in_((Model.Global.SpareStatus.New.value, Model.Global.SpareStatus.InStockChecked.value))).count()
+                        spareClass = db_session.query(SpareStock).filter(SpareStock.SpareStatus.in_((Model.Global.SpareStatus.New.value, Model.Global.SpareStatus.InStockChecked.value))).order_by(desc("InStockDate"))[inipage:endpage]
                 else:
-                    spareCount = db_session.query(SpareStock).filter(SpareStock.SpareStatus == Model.Global.SpareStatus.Available.value, SpareStock.SpareName.like(SpareName)).count()
-                    spareClass = db_session.query(SpareStock).filter(SpareStock.SpareStatus == Model.Global.SpareStatus.Available.value, SpareStock.SpareName.like(SpareName)).all().order_by(desc("InStockDate"))[inipage:endpage]
+                    spareCount = db_session.query(SpareStock).filter(SpareStock.SpareName.like(SpareName)).count()
+                    spareClass = db_session.query(SpareStock).filter(SpareStock.SpareName.like(SpareName)).all().order_by(desc("InStockDate"))[inipage:endpage]
                 jsonoclass = json.dumps(spareClass, cls=AlchemyEncoder, ensure_ascii=False)
                 return '{"total"' + ":" + str(spareCount) + ',"rows"' + ":\n" + jsonoclass + "}"
         except Exception as e:
@@ -7542,8 +7542,8 @@ def BatchDataCompare():
     '''
     if request.method == 'POST':
         try:
-            data = request.values.to_dict()
-            batchs = data.values()
+            data = request.values
+            batchs = eval(data['batch'])
             if not batchs:
                 return 'NO'
             input_data = list()
