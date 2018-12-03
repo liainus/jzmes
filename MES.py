@@ -4286,31 +4286,43 @@ def getMonitorData(tags):
             data_dict = dict()
             redis_conn = redis.Redis(connection_pool=pool)
             for tag in tags:
-                data_dict[tags[tag]] = redis_conn.hget(constant.REDIS_TABLENAME, tags[tag]).decode('utf-8')
+                data_dict[tags[tag]] = redis_conn.hget(constant.REDIS_TABLENAME, 't|'+str(tags[tag])).decode('utf-8')
             return data_dict
         except Exception as e:
             print(e)
             logger.error(e)
             insertSyslog("error", "运输段监控数据获取报错Error：" + str(e), current_user.Name)
             return
-# 运输段监控数据获取
-@app.route('/TransportMonitor/TransportData')
-def TransportUnitData():
-    if request.method == 'GET':
-        try:
-            tags = constant.MONITOR_TRANSPORT_TAG
-            data_dict = getMonitorData(tags)
-            data_dict = json.dumps(data_dict, cls=AlchemyEncoder, ensure_ascii=False)
-            return data_dict
-        except Exception as e:
-            print(e)
-            logger.error(e)
-            insertSyslog("error", "运输段监控数据获取报错Error：" + str(e), current_user.Name)
+
 
 # 投料段监控
 @app.route('/FeedingSectionMonitor')
 def FeedingSection():
-    return render_template('FeedingSectionMonitor.html')
+    if request.method == 'GET':
+        try:
+            blue_tags = constant.MONITOR_TRANSPORT_BLUE_TAG
+            red_tags = constant.MONITOR_TRANSPORT_RED_TAG
+            blue_data = list(getMonitorData(blue_tags).values())
+            red_data = list(getMonitorData(red_tags).values())
+            if len(blue_data) == len(red_data):
+                TransportMonitorData = list()
+                for index in range(0,len(blue_data)):
+                    ConveyorBeltColor = dict()
+                    key = 'ConveyorBeltColor_' + str(index)
+                    if blue_data[index] == 'True':
+                        ConveyorBeltColor[key] = 'blue'
+                    if red_data[index] == 'True':
+                        ConveyorBeltColor[key] = 'red'
+                    if blue_data[index] == red_data[index] == 'False':
+                        ConveyorBeltColor[key] = 'white'
+                    else:
+                        ConveyorBeltColor[key] = 'white'
+                    TransportMonitorData.append(ConveyorBeltColor)
+                return render_template('FeedingSectionMonitor.html', TransportMonitorData=TransportMonitorData)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "投料段监控报错Error：" + str(e), current_user.Name)
 
 #生产线监控
 @app.route('/processMonitorLine')

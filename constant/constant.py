@@ -28,6 +28,7 @@ def transform_dict(position):
             dict_[key] = eval(position)[key]
         return dict_
 
-MONITOR_TRANSPORT_TAG = transform_dict("config['transport_section']")
+MONITOR_TRANSPORT_BLUE_TAG = transform_dict("config['transport_section_blue']")
+MONITOR_TRANSPORT_RED_TAG = transform_dict("config['transport_section_red']")
 
 CPK_TAG_LIST = config['CPK_Tag']
