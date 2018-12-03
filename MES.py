@@ -4310,13 +4310,21 @@ def FeedingSection():
                     ConveyorBeltColor = dict()
                     key = 'ConveyorBeltColor_' + str(index)
                     if blue_data[index] == 'True':
-                        ConveyorBeltColor[key] = 'blue'
+                        if index == 48:
+                            ConveyorBeltColor[key] = 'y_belt_run'
+                        if index == 49 or index == 6:
+                            ConveyorBeltColor[key] = 'y_belt_run'
+                        ConveyorBeltColor[key] = 'small_belt_run'
                     if red_data[index] == 'True':
-                        ConveyorBeltColor[key] = 'red'
+                        if index == 48:
+                            ConveyorBeltColor[key] = 'x_belt_run'
+                        if index == 49 or index == 6:
+                            ConveyorBeltColor[key] = 'x_belt_run'
+                        ConveyorBeltColor[key] = 'small_belt_danger'
                     if blue_data[index] == red_data[index] == 'False':
-                        ConveyorBeltColor[key] = 'white'
+                        ConveyorBeltColor[key] = 'small_belt.png'
                     else:
-                        ConveyorBeltColor[key] = 'white'
+                        ConveyorBeltColor[key] = 'small_belt.png'
                     TransportMonitorData.append(ConveyorBeltColor)
                 return render_template('FeedingSectionMonitor.html', TransportMonitorData=TransportMonitorData)
         except Exception as e:
