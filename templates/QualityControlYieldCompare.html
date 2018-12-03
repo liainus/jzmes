@@ -121,7 +121,6 @@
                                     }
                                 },
                                 xAxis: {
-                                    name: "批次号",
                                     type: 'category',
                                     data: objBatch
                                 },
@@ -148,15 +147,48 @@
                                 series: [{
                                     name: "投入量",
                                     type: 'bar',
+                                    label: {
+                                        normal: {
+                                            show: true,
+                                            position: 'top'
+                                        }
+                                    },
+                                    itemStyle:{
+                                        normal:{
+                                            color:'#90ed7d'
+                                        }
+                                    },
                                     data: input
                                 }, {
                                     name: "产出量",
                                     type: 'bar',
+                                    label: {
+                                        normal: {
+                                            show: true,
+                                            position: 'top'
+                                        }
+                                    },
+                                    itemStyle:{
+                                        normal:{
+                                            color:'#f7a35c'
+                                        }
+                                    },
                                     data: output
                                 }, {
                                     name: "得率",
                                     type: 'bar',
                                     yAxisIndex: 1,
+                                    label: {
+                                        normal: {
+                                            show: true,
+                                            position: 'top'
+                                        }
+                                    },
+                                    itemStyle:{
+                                        normal:{
+                                            color:'#7cb5ec'
+                                        }
+                                    },
                                     data: sampling_quantity
                                 }]
                             });
