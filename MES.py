@@ -6914,6 +6914,41 @@ def spareStockCheckRecall():
             insertSyslog("error", "备件入库出库审核撤回报错Error：" + str(e), current_user.Name)
             return json.dumps("备件入库出库审核撤回报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
+# 制定检修计划
+@app.route('/EquipmentMaintainCreate', methods=['POST', 'GET'])
+def EquipmentMaintainCreate():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                SpareCode = data["SpareCode"]
+                SpareStockclass = db_session.query(SpareStock).filter(SpareStock.SpareCode == SpareCode).first()
+                if SpareStockclass != None:
+                    return "备件编码重复！"
+                spareStock = SpareStock()
+                spareStock.SpareCode = SpareCode
+                spareStock.SpareName = data["SpareName"]
+                spareStock.SpareStatus = Model.Global.SpareStatus.InStock.value
+                spareStock.SpareModel = data["SpareModel"]
+                spareStock.SpareFactory = data["SpareFactory"]
+                spareStock.SpareType = data["SpareType"]
+                spareStock.SparePower = data["SparePower"]
+                spareStock.Description = data["Description"]
+                spareStock.ProductionDate = data["ProductionDate"]
+                spareStock.StockUseStatus = data["StockUseStatus"]
+                spareStock.ProductionDate = data["ProductionDate"]
+                spareStock.CreateDate = datetime.datetime.now()
+                spareStock.InStockPeople = current_user.Name
+                db_session.add(spareStock)
+                db_session.commit()
+                return 'OK'
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "制定检修计划报错Error：" + str(e), current_user.Name)
+            return json.dumps("制定检修计划报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
 # 操作手册
 @app.route('/CreateOperationManual', methods=['POST', 'GET'])
 def CreateOperationManual():
@@ -6988,10 +7023,14 @@ def electronicBatchRecordNav1():
 def electronicBatchRecordNav2():
     return render_template('electronicBatchRecordNav2.html')
 
+# 设备运行记录
+@app.route('/equipmentOperateRecord')
+def equipmentOperateRecord():
+    return render_template('equipmentOperateRecord.html')
+
 # 备件管理
 @app.route('/equipmentspare')
 def equipmentbeij():
-    print(current_user.WorkNumber)
     RoleName = db_session.query(User.RoleName).filter(User.WorkNumber == current_user.WorkNumber).first()
     return render_template('equipmentspare.html',RoleName = RoleName[0])
 
