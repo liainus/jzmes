@@ -49,6 +49,7 @@ import Model.node
 from threading import Timer
 from constant import constant
 import numpy
+from sqlalchemy.exc import InvalidRequestError
 
 
 #flask_login的初始化
@@ -116,8 +117,9 @@ def login():
             # 认证失败返回登录页面
             error = '用户名或密码错误'
             return render_template('login.html', error=error)
-    except Exception as e:
+    except InvalidRequestError:
         db_session.rollback()
+    except Exception as e:
         print(e)
         logger.error(e)
         return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
@@ -374,7 +376,6 @@ def SelectRoles():
     if request.method == 'GET':
         try:
             data = getRoleList(id=0)
-            # organizations = db_session.query(Organization).filter().all()
             jsondata = json.dumps(data, cls=AlchemyEncoder, ensure_ascii=False)
             return jsondata.encode("utf8")
         except Exception as e:
