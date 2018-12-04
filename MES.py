@@ -4417,28 +4417,28 @@ def HerbaGlabraDecocting():
                                                                               brand='t|PdtNR1101-7',
                                                                               tankOver='t|R1101_7_TQKGG_SB_Pat_CloseSwith',
                                                                               status='t|SB_R1101_7_StartProduction')
-            equip1_data = {'a1': Batch, 'a2': Brand, 'a3': '提取罐7', 'a5': TankOver, 'a6': Status}
+            equip1_data = {'g1': Batch, 'g2': Brand, 'g3': '提取罐7', 'g5': TankOver, 'g6': Status}
             Equips_data.update(equip1_data)
 
             Batch, Brand, TankOver, Status = get_data_from_realtime_Decocting(batch='t|BhNR1101-8',
                                                                               brand='t|PdtNR1101-8',
                                                                               tankOver='t|R1101_8_TQKGG_SB_Pat_CloseSwith',
                                                                               status='t|SB_R1101_8_StartProduction')
-            equip2_data = {'b1': Batch, 'b2': Brand, 'b3': '提取罐8', 'b5': TankOver, 'b6': Status}
+            equip2_data = {'h1': Batch, 'h2': Brand, 'h3': '提取罐8', 'h5': TankOver, 'h6': Status}
             Equips_data.update(equip2_data)
 
             Batch, Brand, TankOver, Status = get_data_from_realtime_Decocting(batch='t|BhNR1101-9',
                                                                               brand='t|PdtNR1101-9',
                                                                               tankOver='t|R1101_9_TQKGG_SB_Pat_CloseSwith',
                                                                               status='t|SB_R1101_9_StartProduction')
-            equip3_data = {'c1': Batch, 'c2': Brand, 'c3': '提取罐9', 'c5': TankOver, 'c6': Status}
+            equip3_data = {'i1': Batch, 'i2': Brand, 'i3': '提取罐9', 'i5': TankOver, 'i6': Status}
             Equips_data.update(equip3_data)
 
             Batch, Brand, TankOver, Status = get_data_from_realtime_Decocting(batch='t|BhNR1101-10',
                                                                               brand='t|PdtNR1101-10',
                                                                               tankOver='t|R1101_10_TQKGG_SB_Pat_CloseSwith',
                                                                               status='t|SB_R1101_10_StartProduction')
-            equip4_data = {'d1': Batch, 'd2': Brand, 'd3': '提取罐0', 'd5': TankOver, 'd6': Status}
+            equip4_data = {'j1': Batch, 'j2': Brand, 'j3': '提取罐0', 'j5': TankOver, 'j6': Status}
             Equips_data.update(equip4_data)
             jsonsz = json.dumps(Equips_data, cls=AlchemyEncoder, ensure_ascii=False)
             return jsonsz
@@ -4564,7 +4564,28 @@ def StandingAndConsentrate():
 # 肿节风清膏静置段和单效浓缩段监控
 @app.route('/processMonitorLine/HerbaGlabra/StandingAndConcentrate')
 def HerbaGlabraStanding():
-    pass
+    if request.method == 'GET':
+        try:
+            data = request.values
+            group = data['group']
+            if group is None:
+                return
+            if group == 'D':
+                equipments_data = standing_consentrate_collect(a='提取设备7', b='静置设备7_1', c='静置设备7_2', d='静置设备7_3',
+                                                               e='提取设备8', f='静置设备8_1', g='静置设备8_2', h='静置设备8_3',
+                                                               j='浓缩设备4')
+                jsonsz = json.dumps(equipments_data, cls=AlchemyEncoder, ensure_ascii=False)
+                return jsonsz
+            if group == 'E':
+                equipments_data = standing_consentrate_collect(a='提取设备9', b='静置设备9_1', c='静置设备9_2', d='静置设备9_3',
+                                                               e='提取设备10', f='静置设备0_1', g='静置设备0_2', h='静置设备0_3',
+                                                               j='浓缩设备5')
+                jsonsz = json.dumps(equipments_data, cls=AlchemyEncoder, ensure_ascii=False)
+                return jsonsz
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "生长线监控静止浓缩段数据获取报错Error：" + str(e), current_user.Name)
 
 def get_data_Total_MixtureAndDry(num,Unit=None):
     try:
