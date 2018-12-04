@@ -97,55 +97,55 @@
             //10秒请求一次
             var timer = ""
             function getdata(){
-{#                $.ajax({#}
-{#                    type:'GET',#}
-{#                    url:'/processMonitorLine/StandingAndConsentrate',#}
-{#                    data:{#}
-{#                        group:getUrlParam('group')#}
-{#                    },#}
-{#                    success:function(response,status,xhr){#}
-{#                        $("#loadingModal").modal('hide');#}
-{#                        response = JSON.parse(response)#}
-{#                        console.log(response)#}
-{#                        for(var key in response){#}
-{#                            adddata(key,response[key])#}
-{#                            //判断罐盖状态显示#}
-{#                            if(key == "a5"){#}
-{#                                if(response[key] == true){#}
-{#                                    $("#a5Img").attr("src","../static/images/isopen.JPG").css({"top":"19px","left":"200px"})#}
-{#                                }else if(response[key] == false){#}
-{#                                    $("#a5Img").attr("src","../static/images/isclosed.JPG").css({"top":"114px","left":"200px"})#}
-{#                                }#}
-{#                            }#}
-{#                            if(key == "e5"){#}
-{#                                if(response[key] == true){#}
-{#                                    $("#e5Img").attr("src","../static/images/isopen.JPG").css({"top":"356px","left":"200px"})#}
-{#                                }else if(response[key] == false){#}
-{#                                    $("#e5Img").attr("src","../static/images/isclosed.JPG").css({"top":"451px","left":"200px"})#}
-{#                                }#}
-{#                            }#}
-{#                            //判断罐子运行状态显示#}
-{#                            if(key == "a6"){#}
-{#                                if(response[key] == true){#}
-{#                                    $("#a6Img").attr("src","../static/images/isrun.JPG")#}
-{#                                }else if(response[key] == false){#}
-{#                                    $("#a6Img").attr("src","../static/images/isstop.JPG")#}
-{#                                }#}
-{#                            }#}
-{#                            if(key == "e6"){#}
-{#                                if(response[key] == true){#}
-{#                                    $("#e6Img").attr("src","../static/images/isrun.JPG")#}
-{#                                }else if(response[key] == false){#}
-{#                                    $("#e6Img").attr("src","../static/images/isstop.JPG")#}
-{#                                }#}
-{#                            }#}
-{#                        }#}
-{#                    },#}
-{#                    error:function(){#}
-{#                        $("#loadingModal").modal('hide');#}
-{#                        alert("获取数据失败，请稍后再试！")#}
-{#                    }#}
-{#                })#}
+                $.ajax({
+                    type:'GET',
+                    url:'/processMonitorLine/HerbaGlabra/StandingAndConcentrate',
+                    data:{
+                        group:getUrlParam('group')
+                    },
+                    success:function(response,status,xhr){
+                        $("#loadingModal").modal('hide');
+                        response = JSON.parse(response)
+                        console.log(response)
+                        for(var key in response){
+                            adddata(key,response[key])
+                            //判断罐盖状态显示
+                            if(key == "a5"){
+                                if(response[key] == true){
+                                    $("#a5Img").attr("src","../static/images/isopen.JPG").css({"top":"19px","left":"200px"})
+                                }else if(response[key] == false){
+                                    $("#a5Img").attr("src","../static/images/isclosed.JPG").css({"top":"114px","left":"200px"})
+                                }
+                            }
+                            if(key == "e5"){
+                                if(response[key] == true){
+                                    $("#e5Img").attr("src","../static/images/isopen.JPG").css({"top":"356px","left":"200px"})
+                                }else if(response[key] == false){
+                                    $("#e5Img").attr("src","../static/images/isclosed.JPG").css({"top":"451px","left":"200px"})
+                                }
+                            }
+                            //判断罐子运行状态显示
+                            if(key == "a6"){
+                                if(response[key] == true){
+                                    $("#a6Img").attr("src","../static/images/isrun.JPG")
+                                }else if(response[key] == false){
+                                    $("#a6Img").attr("src","../static/images/isstop.JPG")
+                                }
+                            }
+                            if(key == "e6"){
+                                if(response[key] == true){
+                                    $("#e6Img").attr("src","../static/images/isrun.JPG")
+                                }else if(response[key] == false){
+                                    $("#e6Img").attr("src","../static/images/isstop.JPG")
+                                }
+                            }
+                        }
+                    },
+                    error:function(){
+                        $("#loadingModal").modal('hide');
+                        alert("获取数据失败，请稍后再试！")
+                    }
+                })
             }
             getdata()
 {#            timer = window.setInterval(function(){#}
@@ -192,60 +192,60 @@
     <div style='width:1280px;height:720px;position: relative;margin:0 auto;background-image:url("../static/images/processMonitorLineDetails_bg2.JPG");background-size:1280px 720px;'>
         <h3 class="title">肿 节 风 浸 膏 _ 生 产 监 控 画 面</h3>
 
-        <img src="../static/images/isclosed.JPG" class="jar-bg" id="a5Img" style="top: 114px;left: 200px;" alt="">
-        <div class="item" style="top: 180px;left: 205px;">
-            <p class="brandName" id="a3">TQCG-1</p>
-            <p id="a2"></p>
-            <p class="batch" id="a1">xxx</p>
-            <img src="../static/images/isrun.JPG" class="useState" id="a6Img" alt="">
-        </div>
-
-        <img src="../static/images/isclosed.JPG" class="jar-bg" id="e5Img" style="top: 451px;left: 200px;" alt="">
-        <div class="item" style="top: 520px;left: 205px;">
-            <p class="brandName" id="e3">TQCG-2</p>
-            <p id="e2"></p>
-            <p class="batch" id="e1">xxx</p>
-            <img src="../static/images/isrun.JPG" class="useState" id="e6Img" alt="">
-        </div>
-
-        <!--1号三个罐子-->
-        <div class="item" style="top: 200px;left: 384px;">
-            <p class="brandName" id="b5">TQCG-1</p>
-            <p>入料时长：<span id="b2"></span>分</p>
-            <p class="batch" id="b1">xxx</p>
-            <p class="vol"><span id="b7">500</span>L</p>
-        </div>
-        <div class="item" style="top: 200px;left: 489px;">
-            <p class="brandName" id="c5">TQCG-1</p>
-            <p>入料时长：<span id="c2"></span>分</p>
-            <p class="batch" id="c1">xxx</p>
-            <p class="vol"><span id="c7">500</span>L</p>
-        </div>
-        <div class="item" style="top: 200px;left: 594px;">
-            <p class="brandName" id="d5">TQCG-1</p>
-            <p>入料时长：<span id="d2"></span>分</p>
-            <p class="batch" id="d1">xxx</p>
-            <p class="vol"><span id="d7">500</span>L</p>
-        </div>
-        <!--2号三个罐子-->
-        <div class="item" style="top: 535px;left: 384px;">
-            <p class="brandName" id="f5">TQCG-1</p>
-            <p>入料时长：<span id="f2"></span>分</p>
-            <p class="batch">xxx</p>
-            <p class="vol"><span id="f7">500</span>L</p>
-        </div>
-        <div class="item" style="top: 535px;left: 489px;">
-            <p class="brandName" id="g5">TQCG-1</p>
-            <p>入料时长：<span id="g2"></span>分</p>
-            <p class="batch">xxx</p>
-            <p class="vol"><span id="g7">500</span>L</p>
-        </div>
-        <div class="item" style="top: 535px;left: 594px;">
-            <p class="brandName" id="h5">TQCG-1</p>
-            <p>入料时长：<span id="h2"></span>分</p>
-            <p class="batch">xxx</p>
-            <p class="vol"><span id="h7">500</span>L</p>
-        </div>
+{#        <img src="../static/images/isclosed.JPG" class="jar-bg" id="a5Img" style="top: 114px;left: 200px;" alt="">#}
+{#        <div class="item" style="top: 180px;left: 205px;">#}
+{#            <p class="brandName" id="a3">TQCG-7</p>#}
+{#            <p id="a2"></p>#}
+{#            <p class="batch" id="a1">xxx</p>#}
+{#            <img src="../static/images/isrun.JPG" class="useState" id="a6Img" alt="">#}
+{#        </div>#}
+{##}
+{#        <img src="../static/images/isclosed.JPG" class="jar-bg" id="e5Img" style="top: 451px;left: 200px;" alt="">#}
+{#        <div class="item" style="top: 520px;left: 205px;">#}
+{#            <p class="brandName" id="e3">TQCG-8</p>#}
+{#            <p id="e2"></p>#}
+{#            <p class="batch" id="e1">xxx</p>#}
+{#            <img src="../static/images/isrun.JPG" class="useState" id="e6Img" alt="">#}
+{#        </div>#}
+{##}
+{#        <!--1号三个罐子-->#}
+{#        <div class="item" style="top: 200px;left: 384px;">#}
+{#            <p class="brandName" id="b5">TQCG-1</p>#}
+{#            <p>入料时长：<span id="b2"></span>分</p>#}
+{#            <p class="batch" id="b1">xxx</p>#}
+{#            <p class="vol"><span id="b7">500</span>L</p>#}
+{#        </div>#}
+{#        <div class="item" style="top: 200px;left: 489px;">#}
+{#            <p class="brandName" id="c5">TQCG-1</p>#}
+{#            <p>入料时长：<span id="c2"></span>分</p>#}
+{#            <p class="batch" id="c1">xxx</p>#}
+{#            <p class="vol"><span id="c7">500</span>L</p>#}
+{#        </div>#}
+{#        <div class="item" style="top: 200px;left: 594px;">#}
+{#            <p class="brandName" id="d5">TQCG-1</p>#}
+{#            <p>入料时长：<span id="d2"></span>分</p>#}
+{#            <p class="batch" id="d1">xxx</p>#}
+{#            <p class="vol"><span id="d7">500</span>L</p>#}
+{#        </div>#}
+{#        <!--2号三个罐子-->#}
+{#        <div class="item" style="top: 535px;left: 384px;">#}
+{#            <p class="brandName" id="f5">TQCG-1</p>#}
+{#            <p>入料时长：<span id="f2"></span>分</p>#}
+{#            <p class="batch">xxx</p>#}
+{#            <p class="vol"><span id="f7">500</span>L</p>#}
+{#        </div>#}
+{#        <div class="item" style="top: 535px;left: 489px;">#}
+{#            <p class="brandName" id="g5">TQCG-1</p>#}
+{#            <p>入料时长：<span id="g2"></span>分</p>#}
+{#            <p class="batch">xxx</p>#}
+{#            <p class="vol"><span id="g7">500</span>L</p>#}
+{#        </div>#}
+{#        <div class="item" style="top: 535px;left: 594px;">#}
+{#            <p class="brandName" id="h5">TQCG-1</p>#}
+{#            <p>入料时长：<span id="h2"></span>分</p>#}
+{#            <p class="batch">xxx</p>#}
+{#            <p class="vol"><span id="h7">500</span>L</p>#}
+{#        </div>#}
     </div>
 </body>
 </html>
