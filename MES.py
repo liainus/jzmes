@@ -4326,6 +4326,7 @@ def FeedingSection():
                     else:
                         ConveyorBeltColor[key] = 'small_belt.png'
                     TransportMonitorData.append(ConveyorBeltColor)
+
                 return render_template('FeedingSectionMonitor.html', TransportMonitorData=TransportMonitorData)
         except Exception as e:
             print(e)
