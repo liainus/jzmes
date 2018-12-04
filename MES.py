@@ -4278,26 +4278,6 @@ def Preprocessing():
 # 运输段监控
 @app.route('/TransportMonitor')
 def Transport():
-    return render_template('TransportMonitor.html')
-
-def getMonitorData(tags):
-    if tags:
-        try:
-            data_dict = dict()
-            redis_conn = redis.Redis(connection_pool=pool)
-            for tag in tags:
-                data_dict[tags[tag]] = redis_conn.hget(constant.REDIS_TABLENAME, 't|'+str(tags[tag])).decode('utf-8')
-            return data_dict
-        except Exception as e:
-            print(e)
-            logger.error(e)
-            insertSyslog("error", "运输段监控数据获取报错Error：" + str(e), current_user.Name)
-            return
-
-
-# 投料段监控
-@app.route('/FeedingSectionMonitor')
-def FeedingSection():
     if request.method == 'GET':
         try:
             blue_tags = constant.MONITOR_TRANSPORT_BLUE_TAG
@@ -4322,15 +4302,36 @@ def FeedingSection():
                             ConveyorBeltColor[key] = 'x_belt_run'
                         ConveyorBeltColor[key] = 'small_belt_danger'
                     if blue_data[index] == red_data[index] == 'False':
-                        ConveyorBeltColor[key] = 'small_belt.png'
+                        ConveyorBeltColor[key] = 'small_belt'
                     else:
-                        ConveyorBeltColor[key] = 'small_belt.png'
+                        ConveyorBeltColor[key] = 'small_belt'
                     TransportMonitorData.append(ConveyorBeltColor)
-                return render_template('FeedingSectionMonitor.html', TransportMonitorData=TransportMonitorData)
+                return render_template('TransportMonitor.html', TransportMonitorData=TransportMonitorData)
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "投料段监控报错Error：" + str(e), current_user.Name)
+            insertSyslog("error", "运输段监控报错Error：" + str(e), current_user.Name)
+
+def getMonitorData(tags):
+    if tags:
+        try:
+            data_dict = dict()
+            redis_conn = redis.Redis(connection_pool=pool)
+            for tag in tags:
+                data_dict[tags[tag]] = redis_conn.hget(constant.REDIS_TABLENAME, 't|'+str(tags[tag])).decode('utf-8')
+            return data_dict
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "运输段监控数据获取报错Error：" + str(e), current_user.Name)
+            return
+
+
+# 投料段监控
+@app.route('/FeedingSectionMonitor')
+def FeedingSection():
+    return render_template('FeedingSectionMonitor.html')
+
 
 #生产线监控
 @app.route('/processMonitorLine')
