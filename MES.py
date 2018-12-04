@@ -4306,7 +4306,8 @@ def Transport():
                     else:
                         ConveyorBeltColor[key] = 'small_belt'
                     TransportMonitorData.append(ConveyorBeltColor)
-                return render_template('TransportMonitor.html', TransportMonitorData=TransportMonitorData)
+
+                return render_template('FeedingSectionMonitor.html', TransportMonitorData=TransportMonitorData)
         except Exception as e:
             print(e)
             logger.error(e)
