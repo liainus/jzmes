@@ -4290,21 +4290,22 @@ def Transport():
                     ConveyorBeltColor = dict()
                     key = 'ConveyorBeltColor_' + str(index)
                     if blue_data[index] == 'True':
-                        if index == 48:
+                        if index == 45 or index == 36:
                             ConveyorBeltColor[key] = 'y_belt_run'
-                        if index == 49 or index == 6:
-                            ConveyorBeltColor[key] = 'y_belt_run'
-                        ConveyorBeltColor[key] = 'small_belt_run'
-                    if red_data[index] == 'True':
-                        if index == 48:
+                        else:
+                            ConveyorBeltColor[key] = 'small_belt_run'
+                    elif red_data[index] == 'True':
+                        if index == 46 or index == 3:
                             ConveyorBeltColor[key] = 'x_belt_run'
-                        if index == 49 or index == 6:
-                            ConveyorBeltColor[key] = 'x_belt_run'
-                        ConveyorBeltColor[key] = 'small_belt_danger'
-                    if blue_data[index] == red_data[index] == 'False':
-                        ConveyorBeltColor[key] = 'small_belt'
+                        else:
+                            ConveyorBeltColor[key] = 'small_belt_danger'
                     else:
-                        ConveyorBeltColor[key] = 'small_belt'
+                        if index == 45 or index == 36:
+                            ConveyorBeltColor[key] = 'y_belt'
+                        elif index == 46 or index == 3:
+                            ConveyorBeltColor[key] = 'x_belt'
+                        else:
+                            ConveyorBeltColor[key] = 'small_belt'
                     TransportMonitorData.append(ConveyorBeltColor)
 
                 return render_template('TransportMonitor.html', TransportMonitorData=TransportMonitorData)
