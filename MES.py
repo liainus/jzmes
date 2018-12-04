@@ -4409,8 +4409,9 @@ def extract():
             insertSyslog("error", "健胃消食片生产线监控提取段数据获取报错Error：" + str(e), current_user.Name)
 
 # 肿节风清膏提取段监控
-app.route('/processMonitorLine/HerbaGlabraDecocting')
+@app.route('/processMonitorLine/HerbaGlabraDecocting')
 def HerbaGlabraDecocting():
+    if request.method == 'GET':
         try:
             Equips_data = {}
             Batch, Brand, TankOver, Status = get_data_from_realtime_Decocting(batch='t|BhNR1101-7',
