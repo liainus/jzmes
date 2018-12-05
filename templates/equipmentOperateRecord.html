@@ -2,9 +2,325 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>$Title$</title>
+    <title>设备运行记录</title>
+    <link href="../static/css/base.css" rel="stylesheet">
+	<link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
+	<link href="../static/css/basic_info.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
+	<link href="../static/js/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
+    <link href="../static/css/datagridpanel_customer.css" rel="stylesheet">
+    <link href="../static/css/dialogpanel.css" type="text/css" rel="stylesheet">
+    <link href="../static/css/datagrid_customer.css" type="text/css" rel="stylesheet">
+    <script type="text/javascript" src="../static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
+    <script>
+        $(function(){
+            function createKeyIDObj(keyID){
+                return {
+                    ID:keyID
+                }
+            }
+            toolbar = {
+                search:function(){
+                    $('#tab').datagrid('load',{
+                        EQPName: $("input[name=search]").val()
+                    });
+                },
+                create:function(){
+                    $("#equimentsClassDialog").dialog('open').dialog('setTitle','新增运行记录');
+                    $('#ID').val();
+                    $('#OrganizationName option[value=""]').prop("selected", 'selected');
+                    $('#Note').val();
+                    $('#EQPName').val();
+                    $('#EQPCode').val();
+                    $('#CreateDate').datebox('setValue','');
+                    $('#RunTotalDate').val();
+                    $('#FailureTotalDate').val();
+                    $('#CalculatePeople').val();
+                },
+                update:function(){
+                    var rows = $('#tab').datagrid('getSelections');
+                    if (rows.length > 1) {
+                        $.messager.alert('警告操作！', '编辑记录只能选定一条数据！', 'warning');
+                    } else if (rows.length == 1) {
+                        var row = $('#tab').datagrid('getSelected');
+                        if (row) {
+                            $("#equimentsClassDialog").dialog('open').dialog('setTitle','修改记录');
+                            $('#ID').val(row.ID);
+                            $('#OrganizationName option:contains('+row.OrganizationName+')').prop("selected", 'selected');
+                            $('#Note').val(row.Note);
+                            $('#EQPName').val(row.EQPName);
+                            $('#EQPCode').val(row.EQPCode);
+                            $('#CreateDate').datebox('setValue', row.CreateDate);
+                            $('#RunTotalDate').val(row.RunTotalDate);
+                            $('#FailureTotalDate').val(row.FailureTotalDate);
+                            $('#CalculatePeople').val(row.CalculatePeople);
+                        };
+                    } else if (rows.length == 0) {
+                        $.messager.alert('警告操作！', '请至少选定一条数据进行编辑！', 'warning');
+                    }
+                },
+                save:function(){
+                    var strID = $('#ID').val();
+                    var urlAddr = ''
+                    var hintinfo = ''
+                    if(Bee.StringUtils.isEmpty($('#OrganizationName').val())) {
+                        $.messager.alert('提示', '所属部门不能为空！', 'info');
+                        return false;
+                    }else if(Bee.StringUtils.isEmpty($('#Note').val())){
+                        $.messager.alert('提示', '工序不能为空！', 'info');
+                        return false;
+                    }else if(Bee.StringUtils.isEmpty($('#EQPName').val())){
+                        $.messager.alert('提示', '设备名称不能为空！', 'info');
+                        return false;
+                    }else if(Bee.StringUtils.isEmpty($('#EQPCode').val())){
+                        $.messager.alert('提示', '设备编码不能为空！', 'info');
+                        return false;
+                    }
+                    if (strID.length >= 1){
+                        urlAddr = '/equipmentRunCountRecordUpdate'
+                        hintinfo = "修改记录"
+                    }
+                    else {
+                        urlAddr = '/equipmentRunCountRecordCreate'
+                        hintinfo = "新增记录"
+                    }
+                    $.ajax({
+                        url:urlAddr,
+                        type:"post",
+                        data:{
+                            ID:$('#ID').val(),
+                            OrganizationName:$('#OrganizationName').find("option:selected").html(),
+                            Note:$('#Note').val(),
+                            EQPName:$('#EQPName').val(),
+                            EQPCode:$('#EQPCode').val(),
+                            CreateDate:$('#CreateDate').datebox('getValue'),
+                            RunTotalDate:$('#RunTotalDate').val(),
+                            FailureTotalDate:$('#FailureTotalDate').val(),
+                            CalculatePeople:$('#CalculatePeople').val()
+                        },
+                        success:function(data){
+                            $.messager.progress('close');
+                            if(data == "OK"){
+                                $.messager.show({
+                                    title: '提示',
+                                    msg: hintinfo  + '成功',
+                                    timeout:1000,
+                                    style: {
+                                        right: '',
+                                        top: document.body.scrollTop + document.documentElement.scrollTop,
+                                        bottom: ''
+                                    }
+                                });
+                                $("#equimentsClassDialog").dialog('close');
+                                $('#tab').datagrid('reload');
+                            } else {
+                                $.messager.alert('请求失败！', '未知错误导致失败，请重试！', 'warning');
+                            }
+                        },
+                        error: function(data){
+                           console.log(data.responseText)
+                           alert(hintinfo+ "异常，请刷新后重试...");
+                        },
+                    })
+                },
+                delete:function(){
+                    var rows = $("#tab").datagrid('getSelections');
+                    if (rows.length > 0) {
+                        var jsonarray=[];
+                        $.messager.confirm('确定操作', '您正在删除所选的记录吗？删除后对应的运行记录也将会删除。', function (flag) {
+                            if (flag) {
+                                for (var i = 0; i < rows.length; i++) {
+                                    var obj=createKeyIDObj(parseInt(rows[i].ID));
+                                    jsonarray.push(obj);
+                                }
+                                var a = JSON.stringify(jsonarray);
+                                $.ajax({
+                                    url: '/equipmentRunCountRecordDelete',
+                                    method: 'POST',
+                                    data: a,
+                                    success: function (data) {
+                                        if(data == "OK"){
+                                            $.messager.progress('close');
+                                            $("#tab").datagrid('reload');
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                    } else {
+                        $.messager.alert('提示', '请选择要删除的记录！', 'info');
+                    }
+                },
+                refresh:function(){
+                    $('#tab').datagrid('reload');
+                },
+                more:function(){
+                    var rows = $('#tab').datagrid('getSelections');
+                    if (rows.length > 1) {
+                        $.messager.alert('警告操作！', '查看记录只能选定一条数据！', 'warning');
+                    } else if (rows.length == 1) {
+                        var row = $('#tab').datagrid('getSelected');
+                        if (row) {
+                            var text = row.EQPName
+                            var jumpUrl = encodeURI("/equipmentOperateRecord?ID=" + row.ID);
+                            addTab("设备运行记录（" + text +"）",jumpUrl)
+                        };
+                    } else if (rows.length == 0) {
+                        $.messager.alert('警告操作！', '请选择一条数据进行查看！', 'warning');
+                    }
+                }
+            }
+            //datagrid表格右键操作
+            $("#tab").datagrid({
+                onRowContextMenu: function (e, rowIndex, rowData) { //右键时触发事件
+                    //三个参数：e里面的内容很多，真心不明白，rowIndex就是当前点击时所在行的索引，rowData当前行的数据
+                    e.preventDefault(); //阻止浏览器捕获右键事件
+                    $(this).datagrid("clearSelections"); //取消所有选中项
+                    $(this).datagrid("selectRow", rowIndex); //根据索引选中该行
+                    $('#contextmenu').menu('show', {
+                        //显示右键菜单
+                        left: e.pageX,//在鼠标点击处显示菜单
+                        top: e.pageY
+                    });
+                    e.preventDefault();  //阻止浏览器自带的右键菜单弹出
+                }
+            });
+        })
+        //按钮点击后添加选项卡
+        function addTab(title, url) {
+            if (parent.$('.easyui-tabs1').tabs('exists', title)) {
+                parent.$('.easyui-tabs1').tabs('select', title);
+            }
+            else {
+                var content = '<iframe class="page-iframe" src="' + url + '" frameborder="no" border="no" height="100%" width="100%" scrolling="auto"></iframe>';
+                parent.$('.easyui-tabs1').tabs('add', {
+                    title: title,
+                    content: content,
+                    closable: true
+                });
+            }
+        }
+    </script>
 </head>
 <body>
-$END$
+    <div class="content">
+        <div id="Toolbar" style="padding:0 10px;">
+            设备名称:
+            <input type="text" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
+                placeholder="">
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="toolbar.search()">查询</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="toolbar.create()">添加</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="toolbar.update()">编辑</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="toolbar.delete()">删除</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-reload" onclick="toolbar.refresh()">刷新</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-more" onclick="toolbar.more()">记录详情</a>
+        </div>
+        <div id="equimentsClassDialog" class="easyui-dialog" style="width:400px;height:560px;padding:10px;"
+             data-options="closed:'true',buttons:'#equimentsClassDialogButtons',modal:true">
+            <form id="equimentsClassDialogForm" method="post" class="dialog-form">
+                <table class="kv-table">
+                    <tbody>
+                        <tr>
+                            <td class="kv-label">id</td>
+                            <td class="kv-content">
+                                <input name="ID" id="ID" type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="" disabled="disabled">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">所属部门</td>
+                            <td class="kv-content">
+                                 <select name="OrganizationName" id="OrganizationName" type="text" style="width:157px;" autocomplete="off" placeholder="">
+                                    <option value="">请选择</option>
+                                    {% for department in departments %}
+                                        <option value="{{ department['OrganizationID'] }}">{{ department['OrganizationName'] }}</option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">工序</td>
+                            <td class="kv-content">
+                                <input name="Note" id="Note" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">设备名称</td>
+                            <td class="kv-content">
+                                <input name="EQPName" id="EQPName" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">设备编码</td>
+                            <td class="kv-content">
+                                <input name="EQPCode" id="EQPCode" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">记录时间</td>
+                            <td class="kv-content">
+                                <input class="easyui-datebox" id="CreateDate" data-options="required:true,showSeconds:false,editable:false" style="width:166px;height:35px;line-height:35px;">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">累计运行时间（h）</td>
+                            <td class="kv-content">
+                                <input name="RunTotalDate" id="RunTotalDate" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">累计故障时间（h）</td>
+                            <td class="kv-content">
+                                <input name="FailureTotalDate" id="FailureTotalDate" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">计算人</td>
+                            <td class="kv-content">
+                                <input name="CalculatePeople" id="CalculatePeople" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div id="equimentsClassDialogButtons">
+                    <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" id="saveAdd" onclick="toolbar.save()" >保存</a>
+                    <a href="#" class="easyui-linkbutton" onclick="$('#equimentsClassDialog').dialog('close')">关闭</a>
+                </div>
+            </form>
+        </div>
+        <table class="easyui-datagrid" id="tab" title="" style="width:100%;" data-options="
+            queryParams: {
+                EQPName: ''
+            },
+            url:'/equipmentRunCountSearch',
+            rownumbers:true,
+            singleSelect:false,
+            autoRowHeight:false,
+            pagination:true,
+            pageSize:10,
+            toolbar:'#Toolbar',
+            method:'get'">
+            <thead>
+                <tr>
+                    <th field="ck" checkbox="true"></th>
+                    <th data-options="field:'OrganizationName',width:150,align:'center'">所属部门</th>
+                    <th data-options="field:'Note',width:150,align:'center'">工序</th>
+                    <th data-options="field:'EQPName',width:150,align:'center'">设备名称</th>
+                    <th data-options="field:'EQPCode',width:150,align:'center'">设备编码</th>
+                    <th data-options="field:'RunTotalDate',width:150,align:'center'">累计运行时间</th>
+                    <th data-options="field:'FailureTotalDate',width:150,align:'center'">累计故障时间</th>
+                    <th data-options="field:'CalculatePeople',width:150,align:'center'">计算人</th>
+                    <th data-options="field:'CreateDate',width:150,align:'center'">记录时间</th>
+                </tr>
+            </thead>
+        </table>
+        <!-- 右键菜单 -->
+        <div id="contextmenu" class="easyui-menu" style="width:120px;">
+            <div data-options="iconCls:'icon-edit'" onclick="toolbar.update();">编辑</div>
+            <div data-options="iconCls:'icon-remove'" onclick="toolbar.delete();">删除</div>
+        </div>
+    </div>
 </body>
 </html>
