@@ -7243,8 +7243,8 @@ def equipmentRunRecordCreate():
             return json.dumps("设备运行记录添加报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 # 设备运行记录修改
-@app.route('/equipmentRun=RecordUpdate', methods=['POST', 'GET'])
-def equipmentRunCountRecordUpdate():
+@app.route('/equipmentRunRecordUpdate', methods=['POST', 'GET'])
+def equipmentRunRecordUpdate():
     if request.method == 'POST':
         data = request.values
         try:
