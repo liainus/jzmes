@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>生产监控详细图</title>
+    <title>收膏监控画面</title>
     <link href="../static/css/base.css" rel="stylesheet">
     <link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
     <link rel="stylesheet" href="../static/css/bootstrap.min.css" crossorigin="anonymous">
@@ -76,69 +76,23 @@
             width:52px;
             height:24px;
         }
-        .btn-seeDetails{
-            position: absolute;
-            display: block;
-            width:205px;
-            height:50px;
-            background-color: #fff;
-            border-radius: 25px;
-            color: #666;
-            font-size: 12px;
-            line-height: 50px;
-            text-align: center;
-        }
     </style>
     <script type="text/javascript" src="../static/js/jquery.min.js"></script>
     <script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
     <script type="text/javascript">
         $(function(){
-            //$("#loadingModal").modal('show');
+            $("#loadingModal").modal('show');
             //10秒请求一次
             var timer = ""
             function getdata(){
                 $.ajax({
                     type:'GET',
-                    url:'/processMonitorLine/HerbaGlabra/StandingAndConcentrate',
-                    data:{
-                        group:getUrlParam('group')
-                    },
+                    url:'/processMonitorLine/StandingAndConsentrate',
                     success:function(response,status,xhr){
                         $("#loadingModal").modal('hide');
                         response = JSON.parse(response)
-                        console.log(response)
                         for(var key in response){
                             adddata(key,response[key])
-                            //判断罐盖状态显示
-                            if(key == "a5"){
-                                if(response[key] == true){
-                                    $("#a5Img").attr("src","../static/images/isopen.JPG").css({"top":"19px","left":"200px"})
-                                }else if(response[key] == false){
-                                    $("#a5Img").attr("src","../static/images/isclosed.JPG").css({"top":"114px","left":"200px"})
-                                }
-                            }
-                            if(key == "e5"){
-                                if(response[key] == true){
-                                    $("#e5Img").attr("src","../static/images/isopen.JPG").css({"top":"356px","left":"200px"})
-                                }else if(response[key] == false){
-                                    $("#e5Img").attr("src","../static/images/isclosed.JPG").css({"top":"451px","left":"200px"})
-                                }
-                            }
-                            //判断罐子运行状态显示
-                            if(key == "a6"){
-                                if(response[key] == true){
-                                    $("#a6Img").attr("src","../static/images/isrun.JPG")
-                                }else if(response[key] == false){
-                                    $("#a6Img").attr("src","../static/images/isstop.JPG")
-                                }
-                            }
-                            if(key == "e6"){
-                                if(response[key] == true){
-                                    $("#e6Img").attr("src","../static/images/isrun.JPG")
-                                }else if(response[key] == false){
-                                    $("#e6Img").attr("src","../static/images/isstop.JPG")
-                                }
-                            }
                         }
                     },
                     error:function(){
@@ -148,31 +102,17 @@
                 })
             }
             getdata()
-{#            timer = window.setInterval(function(){#}
-{#                getdata()#}
-{#            },10000)#}
+            timer = window.setInterval(function(){
+                getdata()
+            },10000)
+
             //选项卡样式
             $(".nav-tabs li").on("click",function(){
                 $(this).addClass("active").siblings().removeClass("active")
             })
             //根据key匹配id  加入数据
             function adddata(ids,res){
-                if(ids == "a2" || "a3" || "a4"){
-                    $("#" + ids).html(Appendzero(res))
-                }else{
-                    $("#" + ids).html(res)
-                }
-            }
-            //时间数字，不足两位则补0
-            function Appendzero (obj) {
-                if (obj < 10) return "0" + obj; else return obj;
-            }
-
-            //获取页面传参
-            function getUrlParam(name) {
-                var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
-                var r = decodeURI(window.location.search).substr(1).match(reg); //匹配目标参数
-                if (r != null) return unescape(r[2]); return null; //返回参数值
+                $("#" + ids).html(res)
             }
         })
     </script>
@@ -189,63 +129,38 @@
     <ul class="backMenu">
         <li><a href="/processMonitorLine">返回</a></li>
     </ul>
-    <div style='width:1280px;height:720px;position: relative;margin:0 auto;background-image:url("../static/images/processMonitorLineDetails_bg2.JPG");background-size:1280px 720px;'>
-        <h3 class="title">肿 节 风 浸 膏 _ 生 产 监 控 画 面</h3>
+    <div style='width:1280px;height:720px;position: relative;margin:0 auto;background-image:url("../static/images/CollectPowder.JPG");background-size:1280px 720px;'>
+        <h3 class="title">健 胃 消 食 片 _ 生 产 监 控 画 面</h3>
 
-{#        <img src="../static/images/isclosed.JPG" class="jar-bg" id="a5Img" style="top: 114px;left: 200px;" alt="">#}
-{#        <div class="item" style="top: 180px;left: 205px;">#}
-{#            <p class="brandName" id="a3">TQCG-7</p>#}
-{#            <p id="a2"></p>#}
-{#            <p class="batch" id="a1">xxx</p>#}
-{#            <img src="../static/images/isrun.JPG" class="useState" id="a6Img" alt="">#}
-{#        </div>#}
-{##}
-{#        <img src="../static/images/isclosed.JPG" class="jar-bg" id="e5Img" style="top: 451px;left: 200px;" alt="">#}
-{#        <div class="item" style="top: 520px;left: 205px;">#}
-{#            <p class="brandName" id="e3">TQCG-8</p>#}
-{#            <p id="e2"></p>#}
-{#            <p class="batch" id="e1">xxx</p>#}
-{#            <img src="../static/images/isrun.JPG" class="useState" id="e6Img" alt="">#}
-{#        </div>#}
-{##}
-{#        <!--1号三个罐子-->#}
-{#        <div class="item" style="top: 200px;left: 384px;">#}
-{#            <p class="brandName" id="b5">TQCG-1</p>#}
-{#            <p>入料时长：<span id="b2"></span>分</p>#}
-{#            <p class="batch" id="b1">xxx</p>#}
-{#            <p class="vol"><span id="b7">500</span>L</p>#}
-{#        </div>#}
-{#        <div class="item" style="top: 200px;left: 489px;">#}
-{#            <p class="brandName" id="c5">TQCG-1</p>#}
-{#            <p>入料时长：<span id="c2"></span>分</p>#}
-{#            <p class="batch" id="c1">xxx</p>#}
-{#            <p class="vol"><span id="c7">500</span>L</p>#}
-{#        </div>#}
-{#        <div class="item" style="top: 200px;left: 594px;">#}
-{#            <p class="brandName" id="d5">TQCG-1</p>#}
-{#            <p>入料时长：<span id="d2"></span>分</p>#}
-{#            <p class="batch" id="d1">xxx</p>#}
-{#            <p class="vol"><span id="d7">500</span>L</p>#}
-{#        </div>#}
-{#        <!--2号三个罐子-->#}
-{#        <div class="item" style="top: 535px;left: 384px;">#}
-{#            <p class="brandName" id="f5">TQCG-1</p>#}
-{#            <p>入料时长：<span id="f2"></span>分</p>#}
-{#            <p class="batch">xxx</p>#}
-{#            <p class="vol"><span id="f7">500</span>L</p>#}
-{#        </div>#}
-{#        <div class="item" style="top: 535px;left: 489px;">#}
-{#            <p class="brandName" id="g5">TQCG-1</p>#}
-{#            <p>入料时长：<span id="g2"></span>分</p>#}
-{#            <p class="batch">xxx</p>#}
-{#            <p class="vol"><span id="g7">500</span>L</p>#}
-{#        </div>#}
-{#        <div class="item" style="top: 535px;left: 594px;">#}
-{#            <p class="brandName" id="h5">TQCG-1</p>#}
-{#            <p>入料时长：<span id="h2"></span>分</p>#}
-{#            <p class="batch">xxx</p>#}
-{#            <p class="vol"><span id="h7">500</span>L</p>#}
-{#        </div>#}
+        <div class="item" style="top: 385px;left: 165px;">
+            <p class="brandName">R1101_1_NS</p>
+            <p id="a2"></p>
+            <p class="batch" id="a1">xxx</p>
+            <p>高度：<span id="a3"></span>m</p>
+            <p>体积：<span id="a4"></span>L</p>
+            <p>流量：<span id="a5"></span>L</p>
+            <p>温度：<span id="a6"></span>℃</p>
+        </div>
+        <div class="item" style="top: 315px;left: 345px;">
+            <p class="brandName" style="margin-bottom: 10px">R1101_1_ZH</p>
+            <p id="b2"></p>
+            <p class="batch" id="b1">xxx</p>
+        </div>
+
+        <div class="item" style="top: 385px;left: 868px;">
+            <p class="brandName">R1101_2_NS</p>
+            <p id="c2"></p>
+            <p class="batch" id="c1">xxx</p>
+            <p>高度：<span id="c3"></span>m</p>
+            <p>体积：<span id="c4"></span>L</p>
+            <p>流量：<span id="c5"></span>L</p>
+            <p>温度：<span id="c6"></span>℃</p>
+        </div>
+        <div class="item" style="top: 315px;left: 1048px;">
+            <p class="brandName" style="margin-bottom: 10px">R1101_2_ZH</p>
+            <p id="d2"></p>
+            <p class="batch" id="d1">xxx</p>
+        </div>
     </div>
 </body>
 </html>
