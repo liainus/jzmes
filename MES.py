@@ -38,7 +38,7 @@ from sqlalchemy import func
 import string
 import re
 from collections import Counter
-from Model.system import User, OperationProcedure, ElectronicBatch, QualityControl, PackMaterial, TypeCollection
+from Model.system import User, OperationProcedure, ElectronicBatch, EquipmentRunCountRecord, EquipmentRunRecord, QualityControl, PackMaterial, TypeCollection
 from Model.Global import WeightUnit
 from Model.control import ctrlPlan
 from flask_login import login_required, logout_user, login_user,current_user,LoginManager
@@ -7006,6 +7006,223 @@ def CreateOperationManual():
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
                               ensure_ascii=False)
 
+# 设备运行总记录查询
+@app.route('/equipmentRunCountSearch', methods=['POST', 'GET'])
+def equipmentRunCountSearch():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                pages = int(data['page'])
+                rowsnumber = int(data['rows'])
+                inipage = (pages - 1) * rowsnumber + 0
+                endpage = (pages - 1) * rowsnumber + rowsnumber
+                EQPName = "%" + data["EQPName"] + "%"
+                if data["EQPName"] == "":
+                    equipmentRunCount = db_session.query(EquipmentRunCountRecord).count()
+                    equipmentRunClass = db_session.query(EquipmentRunCountRecord).order_by(desc("CreateDate")).all()[inipage:endpage]
+                else:
+                    equipmentRunCount = db_session.query(EquipmentRunCountRecord).filter(
+                        EquipmentRunCountRecord.EQPName.like(EQPName)).count()
+                    equipmentRunClass = db_session.query(EquipmentRunCountRecord).filter(
+                        EquipmentRunCountRecord.EQPName.like(EQPName)).order_by(desc("CreateDate")).all()[inipage:endpage]
+                jsonoclass = json.dumps(equipmentRunClass, cls=AlchemyEncoder, ensure_ascii=False)
+                return '{"total"' + ":" + str(equipmentRunCount) + ',"rows"' + ":\n" + jsonoclass + "}"
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "设备运行总记录查询报错Error：" + str(e), current_user.Name)
+            return json.dumps("设备运行总记录查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+# 设备运行总记录添加
+@app.route('/equipmentRunCountRecordCreate', methods=['POST', 'GET'])
+def equipmentRunCountRecordCreate():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                equipmentRunCountRecord = EquipmentRunCountRecord()
+                equipmentRunCountRecord.OrganizationName = data["OrganizationName"]
+                equipmentRunCountRecord.Note = data["Note"]
+                equipmentRunCountRecord.EQPName = data["EQPName"]
+                equipmentRunCountRecord.EQPCode = data["EQPCode"]
+                equipmentRunCountRecord.RunTotalDate = data["RunTotalDate"]
+                equipmentRunCountRecord.FailureTotalDate = data["FailureTotalDate"]
+                equipmentRunCountRecord.CalculatePeople = data["CalculatePeople"]
+                equipmentRunCountRecord.CreateDate = data["CreateDate"]
+                db_session.add(equipmentRunCountRecord)
+                db_session.commit()
+                return 'OK'
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "设备运行总记录添加报错Error：" + str(e), current_user.Name)
+            return json.dumps("设备运行总记录添加报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+# 设备运行总记录修改
+@app.route('/equipmentRunCountRecordUpdate', methods=['POST', 'GET'])
+def equipmentRunCountRecordUpdate():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                ID = data["ID"]
+                oclass = db_session.query(EquipmentRunCountRecord).filter(EquipmentRunCountRecord.ID == ID).first()
+                oclass.OrganizationName = data["OrganizationName"]
+                oclass.Note = data["Note"]
+                oclass.EQPName = data["EQPName"]
+                oclass.EQPCode = data["EQPCode"]
+                oclass.RunTotalDate = data["RunTotalDate"]
+                oclass.FailureTotalDate = data["FailureTotalDate"]
+                oclass.CalculatePeople = data["CalculatePeople"]
+                oclass.CreateDate = data["CreateDate"]
+                db_session.commit()
+                return 'OK'
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "设备运行总记录修改报错Error：" + str(e), current_user.Name)
+            return json.dumps("设备运行总记录修改报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+# 设备运行总记录删除
+@app.route('/equipmentRunCountRecordDelete', methods=['POST', 'GET'])
+def equipmentRunCountRecordDelete():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
+                for key in jsonnumber:
+                    ID = int(key)
+                    try:
+                        oclass = db_session.query(EquipmentRunCountRecord).filter_by(ID=ID).first()
+                        oclasss = db_session.query(EquipmentRunRecord).filter_by(EquipmentRunCountRecordID=ID).all()
+                        for oc in oclasss:
+                            db_session.delete(oc)
+                        db_session.delete(oclass)
+                        db_session.commit()
+                    except Exception as ee:
+                        print(ee)
+                        logger.error(ee)
+                        return json.dumps("设备运行总记录删除报错", cls=Model.BSFramwork.AlchemyEncoder,
+                                          ensure_ascii=False)
+                return 'OK'
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "设备运行总记录删除报错Error：" + str(e), current_user.Name)
+            return json.dumps("设备运行总记录删除报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+# 设备运行记录查询
+@app.route('/equipmentRunSearch', methods=['POST', 'GET'])
+def equipmentRunSearch():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                pages = int(data['page'])
+                rowsnumber = int(data['rows'])
+                inipage = (pages - 1) * rowsnumber + 0
+                endpage = (pages - 1) * rowsnumber + rowsnumber
+                ID = data["ID"]
+                equipmentRunCount = db_session.query(EquipmentRunRecord).filter(EquipmentRunRecord.EquipmentRunCountRecordID == ID).count()
+                equipmentRunClass = db_session.query(EquipmentRunRecord).filter(EquipmentRunRecord.EquipmentRunCountRecordID == ID).all()[inipage:endpage]
+                jsonoclass = json.dumps(equipmentRunClass, cls=AlchemyEncoder, ensure_ascii=False)
+                return '{"total"' + ":" + str(equipmentRunCount) + ',"rows"' + ":\n" + jsonoclass + "}"
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "设备运行记录查询报错Error：" + str(e), current_user.Name)
+            return json.dumps("设备运行记录查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+# 设备运行记录添加
+@app.route('/equipmentRunRecordCreate', methods=['POST', 'GET'])
+def equipmentRunRecordCreate():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                equipmentRunCountRecord = EquipmentRunRecord()
+                equipmentRunCountRecord.EquipmentRunCountRecordID = data["EquipmentRunCountRecordID"]
+                equipmentRunCountRecord.InputDate = data["InputDate"]
+                equipmentRunCountRecord.Classes = data["Classes"]
+                equipmentRunCountRecord.RunDate = data["RunDate"]
+                equipmentRunCountRecord.ClearDate = data["ClearDate"]
+                equipmentRunCountRecord.FailureDate = data["FailureDate"]
+                equipmentRunCountRecord.OperatePeople = data["OperatePeople"]
+                equipmentRunCountRecord.BrandName1 = data["BrandName1"]
+                equipmentRunCountRecord.BatchID1 = data["BatchID1"]
+                equipmentRunCountRecord.BrandName2 = data["BrandName2"]
+                equipmentRunCountRecord.BatchID2 = data["BatchID2"]
+                db_session.add(equipmentRunCountRecord)
+                db_session.commit()
+                return 'OK'
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "设备运行记录添加报错Error：" + str(e), current_user.Name)
+            return json.dumps("设备运行记录添加报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+# 设备运行记录修改
+@app.route('/equipmentRun=RecordUpdate', methods=['POST', 'GET'])
+def equipmentRunCountRecordUpdate():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                ID = data["ID"]
+                oclass = db_session.query(EquipmentRunCountRecord).filter(
+                    EquipmentRunCountRecord.ID == ID).first()
+                oclass.OrganizationName = data["OrganizationName"]
+                oclass.Note = data["Note"]
+                oclass.EQPName = data["EQPName"]
+                oclass.EQPCode = data["EQPCode"]
+                oclass.RunTotalDate = data["RunTotalDate"]
+                oclass.FailureTotalDate = data["FailureTotalDate"]
+                oclass.CalculatePeople = data["CalculatePeople"]
+                oclass.CreateDate = data["CreateDate"]
+                db_session.commit()
+                return 'OK'
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "设备运行总记录修改报错Error：" + str(e), current_user.Name)
+            return json.dumps("设备运行总记录修改报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+# 设备运行记录删除
+@app.route('/equipmentRunRecordDelete', methods=['POST', 'GET'])
+def equipmentRunRecordDelete():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
+                for key in jsonnumber:
+                    ID = int(key)
+                    try:
+                        oclass = db_session.query(EquipmentRunRecord).filter_by(ID=ID).first()
+                        db_session.delete(oclass)
+                        db_session.commit()
+                    except Exception as ee:
+                        print(ee)
+                        logger.error(ee)
+                        return json.dumps("设备运行记录删除报错", cls=Model.BSFramwork.AlchemyEncoder,
+                                          ensure_ascii=False)
+                return 'OK'
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "设备运行记录删除报错Error：" + str(e), current_user.Name)
+            return json.dumps("设备运行记录删除报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
 
 # 收粉监控画面
 @app.route('/processMonitorLineCollect')
@@ -7022,10 +7239,28 @@ def electronicBatchRecordNav1():
 def electronicBatchRecordNav2():
     return render_template('electronicBatchRecordNav2.html')
 
+# 设备运行总记录
+@app.route('/equipmentOperateCountRecord')
+def equipmentOperateCountRecord():
+    departments = db_session.query(Organization.ID, Organization.OrganizationName).all()
+    data = []
+    for tu in departments:
+        li = list(tu)
+        id = li[0]
+        name = li[1]
+        department = {'OrganizationID': id, 'OrganizationName': name}
+        data.append(department)
+    return render_template('equipmentOperateRecord.html',departments=data)
+
 # 设备运行记录
 @app.route('/equipmentOperateRecord')
 def equipmentOperateRecord():
-    return render_template('equipmentOperateRecord.html')
+    data = request.values
+    ID = data["id"]
+    oclass = db_session.query(EquipmentRunCountRecord).filter(EquipmentRunCountRecord.ID == ID).all()
+    return render_template('equipmentRunRecord.html',OrganizationName=oclass.OrganizationName,Note=oclass.Note,
+                           EQPName=oclass.EQPName,EQPCode=oclass.EQPCode,RunTotalDate=oclass.RunTotalDate,FailureTotalDate=oclass.FailureTotalDate,
+                           CalculatePeople=oclass.CalculatePeople,CreateDate=oclass.CreateDate)
 
 # 备件管理
 @app.route('/equipmentspare')

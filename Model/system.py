@@ -898,6 +898,74 @@ class SpareStock(Base):
     # 入库时间:
     InStockDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
 
+#  设备运行总记录
+class EquipmentRunCountRecord(Base):
+    __tablename__ = 'EquipmentRunCountRecord'
+    # id:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+    # 所属部门
+    OrganizationName = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 工序
+    Note = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 设备名称:
+    EQPName = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+
+    # 设备编码
+    EQPCode = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 累计运行时间:
+    RunTotalDate = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 累计故障时间:
+    FailureTotalDate = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 计算人:
+    CalculatePeople = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 填写时间:
+    CreateDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+
+#  设备运行记录
+class EquipmentRunRecord(Base):
+    __tablename__ = 'EquipmentRunRecord'
+    # id:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+    # 设备运行总记录ID
+    EquipmentRunCountRecordID = Column(Integer, primary_key=False, autoincrement=False, nullable=False)
+
+    # 日期:
+    InputDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+
+    # 班次:
+    Classes = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 运行时间:
+    RunDate = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 清场时间:
+    ClearDate = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 故障时间:
+    FailureDate = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 操作人:
+    OperatePeople = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 产品名称:
+    BrandName1 = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 产品批号:
+    BatchID1 = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 产品名称:
+    BrandName2 = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 产品批号:
+    BatchID2 = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
 # 生成表单的执行语句
 Base.metadata.create_all(engine)
