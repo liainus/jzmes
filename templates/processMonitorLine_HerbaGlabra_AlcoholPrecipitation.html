@@ -87,7 +87,7 @@
             function getdata(){
                 $.ajax({
                     type:'GET',
-                    url:'/processMonitorLine/StandingAndConsentrate',
+                    url:'/HerbaGlabra/AlcoholPrecipitationData',
                     success:function(response,status,xhr){
                         $("#loadingModal").modal('hide');
                         response = JSON.parse(response)

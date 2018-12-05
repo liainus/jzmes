@@ -4536,7 +4536,7 @@ def standing_consentrate_collect(a,b,c,d,e,f,g,h,j):
         Equips_data.update(equip8_data)
 
         Batch, Brand = get_data_from_realtime_Standing(j,Unit='Concentrate')
-        equip9_data = {'i1': Batch, 'i2': Brand, 'i3': 'j'}
+        equip9_data = {'i1': Batch, 'i2': Brand, 'i3': '浓缩罐%s'%j[:-1]}
         Equips_data.update(equip9_data)
         return Equips_data
 
