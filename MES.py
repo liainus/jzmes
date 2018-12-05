@@ -49,6 +49,7 @@ import Model.node
 from threading import Timer
 from constant import constant
 import numpy
+from sqlalchemy.exc import InvalidRequestError
 
 
 #flask_login的初始化
@@ -116,8 +117,9 @@ def login():
             # 认证失败返回登录页面
             error = '用户名或密码错误'
             return render_template('login.html', error=error)
-    except Exception as e:
+    except InvalidRequestError:
         db_session.rollback()
+    except Exception as e:
         print(e)
         logger.error(e)
         return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
@@ -374,7 +376,6 @@ def SelectRoles():
     if request.method == 'GET':
         try:
             data = getRoleList(id=0)
-            # organizations = db_session.query(Organization).filter().all()
             jsondata = json.dumps(data, cls=AlchemyEncoder, ensure_ascii=False)
             return jsondata.encode("utf8")
         except Exception as e:
@@ -3964,6 +3965,7 @@ def menuRedirect():
             logger.error(e)
             insertSyslog("error", "计划向导生成计划报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
 # 计划向导生成计划
 @app.route('/ZYPlanGuid/makePlan', methods=['POST', 'GET'])
 def makePlan():
@@ -4179,6 +4181,15 @@ def RecallPlan():
             insertSyslog("error", "撤回批次计划报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
+# 草珊瑚含片
+@app.route('/ZYPlanGuid/cshflowtu')
+def cshflowtu():
+    return render_template('cshflowtu.html')
+
+# 健胃消食片
+@app.route('/ZYPlanGuid/jwxspflowtu')
+def jwxspflowtu():
+    return render_template('jwxspflowtu.html')
 
 # 计划向导获取批次物料明细
 @app.route('/ZYPlanGuid/CriticalMaterials', methods=['POST', 'GET'])
@@ -4277,7 +4288,41 @@ def Preprocessing():
 # 运输段监控
 @app.route('/TransportMonitor')
 def Transport():
-    return render_template('TransportMonitor.html')
+    if request.method == 'GET':
+        try:
+            blue_tags = constant.MONITOR_TRANSPORT_BLUE_TAG
+            red_tags = constant.MONITOR_TRANSPORT_RED_TAG
+            blue_data = list(getMonitorData(blue_tags).values())
+            red_data = list(getMonitorData(red_tags).values())
+            if len(blue_data) == len(red_data):
+                TransportMonitorData = list()
+                for index in range(0,len(blue_data)):
+                    ConveyorBeltColor = dict()
+                    key = 'ConveyorBeltColor_' + str(index)
+                    if blue_data[index] == 'True':
+                        if index == 45 or index == 36:
+                            ConveyorBeltColor[key] = 'y_belt_run'
+                        else:
+                            ConveyorBeltColor[key] = 'small_belt_run'
+                    elif red_data[index] == 'True':
+                        if index == 46 or index == 3:
+                            ConveyorBeltColor[key] = 'x_belt_run'
+                        else:
+                            ConveyorBeltColor[key] = 'small_belt_danger'
+                    else:
+                        if index == 45 or index == 36:
+                            ConveyorBeltColor[key] = 'y_belt'
+                        elif index == 46 or index == 3:
+                            ConveyorBeltColor[key] = 'x_belt'
+                        else:
+                            ConveyorBeltColor[key] = 'small_belt'
+                    TransportMonitorData.append(ConveyorBeltColor)
+
+                return render_template('TransportMonitor.html', TransportMonitorData=TransportMonitorData)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "运输段监控报错Error：" + str(e), current_user.Name)
 
 def getMonitorData(tags):
     if tags:
@@ -4285,31 +4330,20 @@ def getMonitorData(tags):
             data_dict = dict()
             redis_conn = redis.Redis(connection_pool=pool)
             for tag in tags:
-                data_dict[tags[tag]] = redis_conn.hget(constant.REDIS_TABLENAME, tags[tag]).decode('utf-8')
+                data_dict[tags[tag]] = redis_conn.hget(constant.REDIS_TABLENAME, 't|'+str(tags[tag])).decode('utf-8')
             return data_dict
         except Exception as e:
             print(e)
             logger.error(e)
             insertSyslog("error", "运输段监控数据获取报错Error：" + str(e), current_user.Name)
             return
-# 运输段监控数据获取
-@app.route('/TransportMonitor/TransportData')
-def TransportUnitData():
-    if request.method == 'GET':
-        try:
-            tags = constant.MONITOR_TRANSPORT_TAG
-            data_dict = getMonitorData(tags)
-            data_dict = json.dumps(data_dict, cls=AlchemyEncoder, ensure_ascii=False)
-            return data_dict
-        except Exception as e:
-            print(e)
-            logger.error(e)
-            insertSyslog("error", "运输段监控数据获取报错Error：" + str(e), current_user.Name)
+
 
 # 投料段监控
 @app.route('/FeedingSectionMonitor')
 def FeedingSection():
     return render_template('FeedingSectionMonitor.html')
+
 
 #生产线监控
 @app.route('/processMonitorLine')
@@ -4385,36 +4419,37 @@ def extract():
             insertSyslog("error", "健胃消食片生产线监控提取段数据获取报错Error：" + str(e), current_user.Name)
 
 # 肿节风清膏提取段监控
-app.route('/processMonitorLine/HerbaGlabraDecocting')
+@app.route('/processMonitorLine/HerbaGlabraDecocting')
 def HerbaGlabraDecocting():
+    if request.method == 'GET':
         try:
             Equips_data = {}
             Batch, Brand, TankOver, Status = get_data_from_realtime_Decocting(batch='t|BhNR1101-7',
                                                                               brand='t|PdtNR1101-7',
                                                                               tankOver='t|R1101_7_TQKGG_SB_Pat_CloseSwith',
                                                                               status='t|SB_R1101_7_StartProduction')
-            equip1_data = {'a1': Batch, 'a2': Brand, 'a3': '提取罐7', 'a5': TankOver, 'a6': Status}
+            equip1_data = {'g1': Batch, 'g2': Brand, 'g3': '提取罐7', 'g5': TankOver, 'g6': Status}
             Equips_data.update(equip1_data)
 
             Batch, Brand, TankOver, Status = get_data_from_realtime_Decocting(batch='t|BhNR1101-8',
                                                                               brand='t|PdtNR1101-8',
                                                                               tankOver='t|R1101_8_TQKGG_SB_Pat_CloseSwith',
                                                                               status='t|SB_R1101_8_StartProduction')
-            equip2_data = {'b1': Batch, 'b2': Brand, 'b3': '提取罐8', 'b5': TankOver, 'b6': Status}
+            equip2_data = {'h1': Batch, 'h2': Brand, 'h3': '提取罐8', 'h5': TankOver, 'h6': Status}
             Equips_data.update(equip2_data)
 
             Batch, Brand, TankOver, Status = get_data_from_realtime_Decocting(batch='t|BhNR1101-9',
                                                                               brand='t|PdtNR1101-9',
                                                                               tankOver='t|R1101_9_TQKGG_SB_Pat_CloseSwith',
                                                                               status='t|SB_R1101_9_StartProduction')
-            equip3_data = {'c1': Batch, 'c2': Brand, 'c3': '提取罐9', 'c5': TankOver, 'c6': Status}
+            equip3_data = {'i1': Batch, 'i2': Brand, 'i3': '提取罐9', 'i5': TankOver, 'i6': Status}
             Equips_data.update(equip3_data)
 
             Batch, Brand, TankOver, Status = get_data_from_realtime_Decocting(batch='t|BhNR1101-10',
                                                                               brand='t|PdtNR1101-10',
                                                                               tankOver='t|R1101_10_TQKGG_SB_Pat_CloseSwith',
                                                                               status='t|SB_R1101_10_StartProduction')
-            equip4_data = {'d1': Batch, 'd2': Brand, 'd3': '提取罐0', 'd5': TankOver, 'd6': Status}
+            equip4_data = {'j1': Batch, 'j2': Brand, 'j3': '提取罐0', 'j5': TankOver, 'j6': Status}
             Equips_data.update(equip4_data)
             jsonsz = json.dumps(Equips_data, cls=AlchemyEncoder, ensure_ascii=False)
             return jsonsz
@@ -4467,45 +4502,45 @@ def get_integer(object,count=None):
     return round(float(object),count)
 
 def standing_consentrate_collect(a,b,c,d,e,f,g,h,j):
-    Equips_data = {}
-    Batch, Brand, TankOver, Status = get_data_from_realtime_Standing(name=a, Unit='Decocting')
-    equip1_data = {'a1': Batch, 'a2': Brand, 'a3': '提取罐%s'%a[-1], 'a5': TankOver, 'a6': Status}
-    Equips_data.update(equip1_data)
+        Equips_data = {}
+        Batch, Brand, TankOver, Status = get_data_from_realtime_Standing(name=a, Unit='Decocting')
+        equip1_data = {'a1': Batch, 'a2': Brand, 'a3': '提取罐%s'%a[-1], 'a5': TankOver, 'a6': Status}
+        Equips_data.update(equip1_data)
 
-    Batch, Brand, Status, Feed_time, Volume = get_data_from_realtime_Standing(name=b)
-    equip2_data = {'b1': Batch, 'b2': get_integer(Feed_time),'b5': '静置罐%s'%b[4:], 'b6':Status, 'b7': get_integer(Volume,1)}
-    Equips_data.update(equip2_data)
+        Batch, Brand, Status, Feed_time, Volume = get_data_from_realtime_Standing(name=b)
+        equip2_data = {'b1': Batch, 'b2': get_integer(Feed_time),'b5': '静置罐%s'%b[4:], 'b6':Status, 'b7': get_integer(Volume,1)}
+        Equips_data.update(equip2_data)
 
-    Batch, Brand, Status, Feed_time, Volume = get_data_from_realtime_Standing(name=c)
-    equip3_data = {'c1': Batch, 'c2': get_integer(Feed_time), 'c5': '静置罐%s'%c[4:], 'c6': Status,'c7': get_integer(Volume,1)}
-    Equips_data.update(equip3_data)
+        Batch, Brand, Status, Feed_time, Volume = get_data_from_realtime_Standing(name=c)
+        equip3_data = {'c1': Batch, 'c2': get_integer(Feed_time), 'c5': '静置罐%s'%c[4:], 'c6': Status,'c7': get_integer(Volume,1)}
+        Equips_data.update(equip3_data)
 
-    Batch, Brand, Status, Feed_time, Volume = get_data_from_realtime_Standing(name=d)
-    equip4_data = {'d1': Batch, 'd2': get_integer(Feed_time), 'd5': '静置罐%s'%d[4:], 'd6': Status,'d7': get_integer(Volume,1)}
-    Equips_data.update(equip4_data)
+        Batch, Brand, Status, Feed_time, Volume = get_data_from_realtime_Standing(name=d)
+        equip4_data = {'d1': Batch, 'd2': get_integer(Feed_time), 'd5': '静置罐%s'%d[4:], 'd6': Status,'d7': get_integer(Volume,1)}
+        Equips_data.update(equip4_data)
 
-    Batch, Brand, TankOver, Status = get_data_from_realtime_Standing(name=e, Unit='Decocting')
-    equip5_data = {'e1': Batch, 'e2': Brand, 'e3': '提取罐%s'%a[-1], 'e5': TankOver, 'e6': Status}
-    Equips_data.update(equip5_data)
+        Batch, Brand, TankOver, Status = get_data_from_realtime_Standing(name=e, Unit='Decocting')
+        equip5_data = {'e1': Batch, 'e2': Brand, 'e3': '提取罐%s'%a[-1], 'e5': TankOver, 'e6': Status}
+        Equips_data.update(equip5_data)
 
-    Batch, Brand, Status, Feed_time, Volume = get_data_from_realtime_Standing(name=f)
-    equip6_data = {'f1': Batch, 'f2': get_integer(Feed_time), 'f5': '静置罐%s'%f[4:], 'f6': Status,'f7': get_integer(Volume,1)}
-    Equips_data.update(equip6_data)
+        Batch, Brand, Status, Feed_time, Volume = get_data_from_realtime_Standing(name=f)
+        equip6_data = {'f1': Batch, 'f2': get_integer(Feed_time), 'f5': '静置罐%s'%f[4:], 'f6': Status,'f7': get_integer(Volume,1)}
+        Equips_data.update(equip6_data)
 
-    Batch, Brand, Status, Feed_time, Volume = get_data_from_realtime_Standing(name=g)
-    equip7_data = {'g1': Batch, 'g2': get_integer(Feed_time), 'g5': '静置罐%s'%g[4:], 'g6': Status,'g7': get_integer(Volume,1)}
-    Equips_data.update(equip7_data)
+        Batch, Brand, Status, Feed_time, Volume = get_data_from_realtime_Standing(name=g)
+        equip7_data = {'g1': Batch, 'g2': get_integer(Feed_time), 'g5': '静置罐%s'%g[4:], 'g6': Status,'g7': get_integer(Volume,1)}
+        Equips_data.update(equip7_data)
 
-    Batch, Brand, Status, Feed_time, Volume = get_data_from_realtime_Standing(name=h)
-    equip8_data = {'h1': Batch, 'h2': get_integer(Feed_time), 'h5': '静置罐%s'%h[4:], 'h6': Status,'h7': get_integer(Volume,1)}
-    Equips_data.update(equip8_data)
+        Batch, Brand, Status, Feed_time, Volume = get_data_from_realtime_Standing(name=h)
+        equip8_data = {'h1': Batch, 'h2': get_integer(Feed_time), 'h5': '静置罐%s'%h[4:], 'h6': Status,'h7': get_integer(Volume,1)}
+        Equips_data.update(equip8_data)
 
-    Batch, Brand = get_data_from_realtime_Standing(j,Unit='Concentrate')
-    equip9_data = {'i1': Batch, 'i2': Brand, 'i3': 'j'}
-    Equips_data.update(equip9_data)
-    return Equips_data
+        Batch, Brand = get_data_from_realtime_Standing(j,Unit='Concentrate')
+        equip9_data = {'i1': Batch, 'i2': Brand, 'i3': 'j'}
+        Equips_data.update(equip9_data)
+        return Equips_data
 
-# 生产监控静止浓缩段-健胃消食片
+# 生产监控静止浓缩段
 @app.route('/processMonitorLine/StandingAndConsentrate')
 def StandingAndConsentrate():
     if request.method == 'GET':
@@ -4532,15 +4567,23 @@ def StandingAndConsentrate():
                                                                j='浓缩设备3')
                 jsonsz = json.dumps(equipments_data, cls=AlchemyEncoder, ensure_ascii=False)
                 return jsonsz
+            if group == 'D':
+                equipments_data = standing_consentrate_collect(a='提取设备7', b='静置设备7_1', c='静置设备7_2', d='静置设备7_3',
+                                                               e='提取设备8', f='静置设备8_1', g='静置设备8_2', h='静置设备8_3',
+                                                               j='浓缩设备4')
+                jsonsz = json.dumps(equipments_data, cls=AlchemyEncoder, ensure_ascii=False)
+                return jsonsz
+            if group == 'E':
+                equipments_data = standing_consentrate_collect(a='提取设备9', b='静置设备9_1', c='静置设备9_2', d='静置设备9_3',
+                                                               e='提取设备10', f='静置设备0_1', g='静置设备0_2', h='静置设备0_3',
+                                                               j='浓缩设备5')
+                jsonsz = json.dumps(equipments_data, cls=AlchemyEncoder, ensure_ascii=False)
+                return jsonsz
         except Exception as e:
             print(e)
             logger.error(e)
             insertSyslog("error", "生长线监控静止浓缩段数据获取报错Error：" + str(e), current_user.Name)
 
-# 肿节风清膏静置段和单效浓缩段监控
-@app.route('/processMonitorLine/HerbaGlabra/StandingAndConcentrate')
-def HerbaGlabraStanding():
-    pass
 
 def get_data_Total_MixtureAndDry(num,Unit=None):
     try:
@@ -4604,12 +4647,61 @@ def Total_MixtureAndDry():
             logger.error(e)
             insertSyslog("error", "生产监控总混干燥段返回数据报错Error：" + str(e), current_user.Name)
 
-# 肿节风清膏醇沉段和收膏段监控
+#健胃消食片静置浓缩段页面
+@app.route('/processMonitorLine/IndigestionTablet/StaticConcentration')
+def StaticConcentration():
+    return render_template('processMonitorLine_IndigestionTablet_StaticConcentration.html')
+
+#肿节风清膏醇沉收膏段页面
 @app.route('/processMonitorLine/HerbaGlabra/AlcoholPrecipitation')
-def AlcoholPrecipitation():
-    pass
+def HerbaGlabraMonitor():
+    return render_template('processMonitorLine_HerbaGlabra_AlcoholPrecipitation.html')
 
+#肿节风数据刷新
+@app.route('/HerbaGlabra/AlcoholPrecipitationData')
+def AlcoholPrecipitationData():
+    if request.method == 'GET':
+        try:
+            Equips_data = dict()
+            data = getMonitorData(constant.SINGLE_CONCENTRATION_TAG)
+            equip1_data = {'a1': data['名称_batch5'], 'a2': data['名称_nam5'],
+                           'a3': get_integer(data['模拟量_浓缩蒸汽压力计'], 3),
+                           'a4': get_integer(data['模拟量_浓缩分离室真空计'], 3),
+                           'a5': get_integer(data['模拟量_浓缩分离室温度计'], 3),
+                           'a6': get_integer(data['模拟量_浓缩药液密度计'], 3), 'a7': '单效浓缩1'}
+            Equips_data.update(equip1_data)
 
+            data = getMonitorData(constant.ALCOHOLPRECIPITATION_TAG)
+
+            equip2_data = {'b1': data['名称_batch1'], 'b2': data['名称_nam1'],
+                           'b3': get_integer(data['模拟量_进醇沉物料流量计'], 3),
+                           'b4': get_integer(data['过程值_1#浸膏累计值'], 3),
+                           'b5': get_integer(data['过程值_1#酒精累计值'], 3), 'b6': '醇沉罐1'}
+            Equips_data.update(equip2_data)
+
+            equip3_data = {'c1': data['名称_batch2'], 'c2': data['名称_nam2'],
+                           'c3': get_integer(data['模拟量_进醇沉物料流量计'], 3),
+                           'c4': get_integer(data['过程值_2#浸膏累计值'], 3),
+                           'c5': get_integer(data['过程值_2#酒精累计值'], 3), 'c6': '醇沉罐2'}
+            Equips_data.update(equip3_data)
+
+            equip4_data = {'d1': data['名称_batch3'], 'd2': data['名称_nam3'],
+                           'd3': get_integer(data['模拟量_进醇沉物料流量计'], 3),
+                           'd4': get_integer(data['过程值_3#浸膏累计值'], 3),
+                           'd5': get_integer(data['过程值_3#酒精累计值'], 3), 'd6': '醇沉罐3'}
+            Equips_data.update(equip4_data)
+
+            equip4_data = {'e1': data['名称_batch4'], 'e2': data['名称_nam4'],
+                           'e3': get_integer(data['模拟量_进醇沉物料流量计'], 3),
+                           'e4': get_integer(data['过程值_4#浸膏累计值'], 3),
+                           'e5': get_integer(data['过程值_4#酒精累计值'], 3), 'e6': '醇沉罐4'}
+            Equips_data.update(equip4_data)
+            jsonsz = json.dumps(Equips_data, cls=AlchemyEncoder, ensure_ascii=False)
+            return jsonsz
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "生产监控醇沉收膏段返回数据报错Error：" + str(e), current_user.Name)
 
 #任务确认
 @app.route('/taskConfirm')
@@ -4872,25 +4964,6 @@ def searchcheckplanmanager():
             logger.error(e)
             insertSyslog("error", "计划向导生成的计划查询报错Error：" + str(e), current_user.Name)
 
-#草珊瑚含片
-@app.route('/ZYPlanGuid/cshflowtu')
-def cshflowtu():
-    return render_template('cshflowtu.html')
-
-#健胃消食片
-@app.route('/ZYPlanGuid/jwxspflowtu')
-def jwxspflowtu():
-    return render_template('jwxspflowtu.html')
-
-#生产监控详情页面-#健胃消食片
-@app.route('/ZYPlanGuid/processMonitorLineDetails')
-def processMonitorLineDetails():
-    return render_template('processMonitorLineDetails.html')
-
-#生产监控详情页面-#肿节风清膏
-@app.route('/ZYPlanGuid/processMonitorLineDetails_2')
-def processMonitorLineDetails_2():
-    return render_template('processMonitorLineDetails2.html')
 
 def GetEquipmentData():
     # productUnit = db_session.query(ProductUnit.ID).filter_by(PDUnitName='前处理段')
