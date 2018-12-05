@@ -461,14 +461,14 @@
                                     <a href="#" onclick="addTab('设备故障管理','/equipmenttrouble')">设备故障管理</a>
                                 </li>
                             {% endif %}
+                            {% if '56' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onclick="addTab('设备运行记录','/equipmentOperateCountRecord')">设备运行记录</a>
+                                </li>
+                            {% endif %}
                             {% if '53' in session.get('menus') %}
                                 <li>
                                     <a href="#" onclick="addTab('设备档案管理','product_device.html')">设备档案管理</a>
-                                </li>
-                            {% endif %}
-                            {% if '56' in session.get('menus') %}
-                                <li>
-                                    <a href="#" onclick="addTab('设备运行记录','/equipmentOperateRecord')">设备运行记录</a>
                                 </li>
                             {% endif %}
                             {% if '57' in session.get('menus') %}
