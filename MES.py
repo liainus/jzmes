@@ -4657,7 +4657,51 @@ def StaticConcentration():
 def HerbaGlabraMonitor():
     return render_template('processMonitorLine_HerbaGlabra_AlcoholPrecipitation.html')
 
+#肿节风数据刷新
+@app.route('/HerbaGlabra/AlcoholPrecipitationData')
+def AlcoholPrecipitationData():
+    if request.method == 'GET':
+        try:
+            Equips_data = dict()
+            data = getMonitorData(constant.SINGLE_CONCENTRATION_TAG)
+            equip1_data = {'a1': data['名称_batch5'], 'a2': data['名称_nam5'],
+                           'a3': get_integer(data['模拟量_浓缩蒸汽压力计'], 3),
+                           'a4': get_integer(data['模拟量_浓缩分离室真空计'], 3),
+                           'a5': get_integer(data['模拟量_浓缩分离室温度计'], 3),
+                           'a6': get_integer(data['模拟量_浓缩药液密度计'], 3), 'a7': '单效浓缩1'}
+            Equips_data.update(equip1_data)
 
+            data = getMonitorData(constant.ALCOHOLPRECIPITATION_TAG)
+
+            equip2_data = {'b1': data['名称_batch1'], 'b2': data['名称_nam1'],
+                           'b3': get_integer(data['模拟量_进醇沉物料流量计'], 3),
+                           'b4': get_integer(data['过程值_1#浸膏累计值'], 3),
+                           'b5': get_integer(data['过程值_1#酒精累计值'], 3), 'b6': '醇沉罐1'}
+            Equips_data.update(equip2_data)
+
+            equip3_data = {'c1': data['名称_batch2'], 'c2': data['名称_nam2'],
+                           'c3': get_integer(data['模拟量_进醇沉物料流量计'], 3),
+                           'c4': get_integer(data['过程值_2#浸膏累计值'], 3),
+                           'c5': get_integer(data['过程值_2#酒精累计值'], 3), 'c6': '醇沉罐2'}
+            Equips_data.update(equip3_data)
+
+            equip4_data = {'d1': data['名称_batch3'], 'd2': data['名称_nam3'],
+                           'd3': get_integer(data['模拟量_进醇沉物料流量计'], 3),
+                           'd4': get_integer(data['过程值_3#浸膏累计值'], 3),
+                           'd5': get_integer(data['过程值_3#酒精累计值'], 3), 'd6': '醇沉罐3'}
+            Equips_data.update(equip4_data)
+
+            equip4_data = {'e1': data['名称_batch4'], 'e2': data['名称_nam4'],
+                           'e3': get_integer(data['模拟量_进醇沉物料流量计'], 3),
+                           'e4': get_integer(data['过程值_4#浸膏累计值'], 3),
+                           'e5': get_integer(data['过程值_4#酒精累计值'], 3), 'e6': '醇沉罐4'}
+            Equips_data.update(equip4_data)
+            jsonsz = json.dumps(Equips_data, cls=AlchemyEncoder, ensure_ascii=False)
+            return jsonsz
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "生产监控醇沉收膏段返回数据报错Error：" + str(e), current_user.Name)
 
 #任务确认
 @app.route('/taskConfirm')
