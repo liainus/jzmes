@@ -7329,8 +7329,8 @@ def equipmentOperateCountRecord():
 @app.route('/equipmentOperateRecord')
 def equipmentOperateRecord():
     data = request.values
-    ID = data["id"]
-    oclass = db_session.query(EquipmentRunCountRecord).filter(EquipmentRunCountRecord.ID == ID).all()
+    ID = data["ID"]
+    oclass = db_session.query(EquipmentRunCountRecord).filter(EquipmentRunCountRecord.ID == ID).first()
     return render_template('equipmentRunRecord.html',OrganizationName=oclass.OrganizationName,Note=oclass.Note,
                            EQPName=oclass.EQPName,EQPCode=oclass.EQPCode,RunTotalDate=oclass.RunTotalDate,FailureTotalDate=oclass.FailureTotalDate,
                            CalculatePeople=oclass.CalculatePeople,CreateDate=oclass.CreateDate)
