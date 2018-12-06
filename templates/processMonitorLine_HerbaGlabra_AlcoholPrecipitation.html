@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>收膏监控画面</title>
-    <link href="../static/css/base.css" rel="stylesheet">
-    <link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
-    <link rel="stylesheet" href="../static/css/bootstrap.min.css" crossorigin="anonymous">
+    <link href="/static/css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/custom/uimaker/easyui.css">
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css" crossorigin="anonymous">
     <style>
         body{
             background-color: #3b96e9;
@@ -77,8 +77,8 @@
             height:24px;
         }
     </style>
-    <script type="text/javascript" src="../static/js/jquery.min.js"></script>
-    <script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
     <script type="text/javascript">
         $(function(){
             $("#loadingModal").modal('show');
@@ -87,7 +87,7 @@
             function getdata(){
                 $.ajax({
                     type:'GET',
-                    url:'/processMonitorLine/StandingAndConsentrate',
+                    url:'/HerbaGlabra/AlcoholPrecipitationData',
                     success:function(response,status,xhr){
                         $("#loadingModal").modal('hide');
                         response = JSON.parse(response)
@@ -110,6 +110,9 @@
             $(".nav-tabs li").on("click",function(){
                 $(this).addClass("active").siblings().removeClass("active")
             })
+            $("#return").on("click",function(){
+                window.location.href = "/processMonitorLine?name=肿节风浸膏"
+            })
             //根据key匹配id  加入数据
             function adddata(ids,res){
                 $("#" + ids).html(res)
@@ -127,24 +130,55 @@
         </div>
     </div>
     <ul class="backMenu">
-        <li><a href="/processMonitorLine">返回</a></li>
+        <li><a href="javascript:;" id="return">返回</a></li>
     </ul>
-    <div style='width:1280px;height:720px;position: relative;margin:0 auto;background-image:url("../static/images/HerbaGlabra_AlcoholPrecipitation.JPG");background-size:1280px 720px;'>
+    <div style='width:1280px;height:720px;position: relative;margin:0 auto;background-image:url("/static/images/HerbaGlabra_AlcoholPrecipitation.JPG");background-size:1280px 720px;'>
         <h3 class="title">肿 节 风 浸 膏 _ 生 产 监 控 画 面</h3>
 
-        <div class="item" style="top: 385px;left: 165px;">
-            <p class="brandName">R1101_1_NS</p>
+        <div class="item" style="top: 340px;left: 120px;">
+            <p class="brandName" id="a7">R1101_1_NS</p>
             <p id="a2"></p>
             <p class="batch" id="a1">xxx</p>
-            <p>蒸汽压力：<span id="a3"></span>m</p>
-            <p>真空度：<span id="a4"></span>L</p>
-            <p>温度：<span id="a5"></span>L</p>
-            <p>药业密度：<span id="a6"></span>℃</p>
+            <p>蒸汽压力：<span id="a3"></span>Mpa</p>
+            <p>真空度：<span id="a4"></span>Mpa</p>
+            <p>温度：<span id="a5"></span>℃</p>
+            <p>药业密度：<span id="a6"></span>g/cm</p>
         </div>
-        <div class="item" style="top: 315px;left: 345px;">
-            <p class="brandName" style="margin-bottom: 10px">R1101_1_ZH</p>
+
+        <div class="item" style="top: 380px;left: 301px;">
+            <p class="brandName" id="b6">R1101_1_NS</p>
             <p id="b2"></p>
             <p class="batch" id="b1">xxx</p>
+            <p>物料流量：<span id="b3"></span>L/h</p>
+            <p>浸膏累计：<span id="b4"></span>L</p>
+            <p>酒精累计：<span id="b5"></span>L</p>
+        </div>
+        <div class="item" style="top: 380px;left: 470px;">
+            <p class="brandName" id="c6">R1101_1_NS</p>
+            <p id="c2"></p>
+            <p class="batch" id="c1">xxx</p>
+            <p>物料流量：<span id="c3"></span>L/h</p>
+            <p>浸膏累计：<span id="c4"></span>L</p>
+            <p>酒精累计：<span id="c5"></span>L</p>
+        </div>
+        <div class="item" style="top: 380px;left: 636px;">
+            <p class="brandName" id="d6">R1101_1_NS</p>
+            <p id="d2"></p>
+            <p class="batch" id="d1">xxx</p>
+            <p>物料流量：<span id="d3"></span>L/h</p>
+            <p>浸膏累计：<span id="d4"></span>L</p>
+            <p>酒精累计：<span id="d5"></span>L</p>
+        </div>
+        <div class="item" style="top: 380px;left: 804px;">
+            <p class="brandName" id="e6">R1101_1_NS</p>
+            <p id="e2"></p>
+            <p class="batch" id="e1">xxx</p>
+            <p>物料流量：<span id="e3"></span>L/h</p>
+            <p>浸膏累计：<span id="e4"></span>L</p>
+            <p>酒精累计：<span id="e5"></span>L</p>
+        </div>
+        <div class="item" style="top: 430px;left: 1111px;">
+            <p>肿节风浸膏</p>
         </div>
     </div>
 </body>
