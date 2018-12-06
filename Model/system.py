@@ -757,45 +757,6 @@ class EquipmentMaintain(Base):
     # 描述 ：
     Description = Column(Unicode(65), primary_key=False, autoincrement=False, nullable=True)
 
-#  设备故障报修
-class EquipmentFailureReporting(Base):
-    __tablename__ = 'EquipmentFailureReporting'
-    # id:
-    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
-
-    # 设备故障报修计划单号  :
-    FailureReportingNum = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
-
-    # 类型（故障报修）  ：
-    FailureReportingType = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
-
-    # 设备名称（可以多选）  :
-    EQPName = Column(Unicode(62), primary_key=False, autoincrement=False, nullable=True)
-
-    # 报修开始时间  :
-    ReportingBeginDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
-
-    # 故障开始时间  ：
-    ReportingEndDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
-
-    # 故障描述   ：
-    FailureReportingDesc = Column(Unicode(120), primary_key=False, autoincrement=False, nullable=True)
-
-    # 实际处理开始时间  :
-    ActualBeginDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
-
-    # 实际处理完成时间  ：
-    ActualEndDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
-
-    # 故障处理  ：
-    FailureReportingHandle = Column(Unicode(65), primary_key=False, autoincrement=False, nullable=True)
-
-    # 状态  ：
-    ReportingStatus = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
-
-    # 描述  ：
-    Description = Column(Unicode(65), primary_key=False, autoincrement=False, nullable=True)
-
 #  设备维护知识库
 class EquipmentMaintenanceKnowledge(Base):
     __tablename__ = 'EquipmentMaintenanceKnowledge'
@@ -966,6 +927,45 @@ class EquipmentRunRecord(Base):
 
     # 产品批号:
     BatchID2 = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+#  设备故障报修
+class EquipmentFailureReporting(Base):
+    __tablename__ = 'EquipmentFailureReporting'
+    # id:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+    # 设备故障报修计划单号  :
+    FailureReportingNum = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 类型（故障报修）  ：
+    FailureReportingType = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 设备名称（可以多选）  :
+    EQPName = Column(Unicode(62), primary_key=False, autoincrement=False, nullable=True)
+
+    # 报修开始时间  :
+    ReportingBeginDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+
+    # 故障开始时间  ：
+    FailureBeginDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+
+    # 故障描述   ：
+    FailureReportingDesc = Column(Unicode(120), primary_key=False, autoincrement=False, nullable=True)
+
+    # 实际处理开始时间  :
+    ActualBeginDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+
+    # 实际处理完成时间  ：
+    ActualEndDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+
+    # 故障处理  ：
+    FailureReportingHandle = Column(Unicode(65), primary_key=False, autoincrement=False, nullable=True)
+
+    # 状态  ：
+    ReportingStatus = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 描述  ：
+    Description = Column(Unicode(65), primary_key=False, autoincrement=False, nullable=True)
 
 # 生成表单的执行语句
 Base.metadata.create_all(engine)
