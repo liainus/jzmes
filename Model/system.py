@@ -899,19 +899,19 @@ class EquipmentRunRecord(Base):
     EquipmentRunCountRecordID = Column(Integer, primary_key=False, autoincrement=False, nullable=False)
 
     # 日期:
-    InputDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+    InputDate = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
     # 班次:
     Classes = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
     # 运行时间:
-    RunDate = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    RunDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
 
     # 清场时间:
-    ClearDate = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    ClearDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
 
     # 故障时间:
-    FailureDate = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    FailureDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
 
     # 操作人:
     OperatePeople = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)

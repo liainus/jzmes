@@ -7222,7 +7222,7 @@ def equipmentRunRecordCreate():
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 10:
                 equipmentRunCountRecord = EquipmentRunRecord()
-                equipmentRunCountRecord.EquipmentRunCountRecordID = data["EquipmentRunCountRecordID"]
+                equipmentRunCountRecord.EquipmentRunCountRecordID = int(data["EquipmentRunCountRecordID"])
                 equipmentRunCountRecord.InputDate = data["InputDate"]
                 equipmentRunCountRecord.Classes = data["Classes"]
                 equipmentRunCountRecord.RunDate = data["RunDate"]
@@ -7251,16 +7251,17 @@ def equipmentRunRecordUpdate():
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 10:
                 ID = data["ID"]
-                oclass = db_session.query(EquipmentRunCountRecord).filter(
-                    EquipmentRunCountRecord.ID == ID).first()
-                oclass.OrganizationName = data["OrganizationName"]
-                oclass.Note = data["Note"]
-                oclass.EQPName = data["EQPName"]
-                oclass.EQPCode = data["EQPCode"]
-                oclass.RunTotalDate = data["RunTotalDate"]
-                oclass.FailureTotalDate = data["FailureTotalDate"]
-                oclass.CalculatePeople = data["CalculatePeople"]
-                oclass.CreateDate = data["CreateDate"]
+                oclass = db_session.query(EquipmentRunRecord).filter(EquipmentRunRecord.ID == ID).first()
+                oclass.InputDate = data["InputDate"]
+                oclass.Classes = data["Classes"]
+                oclass.RunDate = data["RunDate"]
+                oclass.ClearDate = data["ClearDate"]
+                oclass.FailureDate = data["FailureDate"]
+                oclass.OperatePeople = data["OperatePeople"]
+                oclass.BrandName1 = data["BrandName1"]
+                oclass.BatchID1 = data["BatchID1"]
+                oclass.BrandName2 = data["BrandName2"]
+                oclass.BatchID2 = data["BatchID2"]
                 db_session.commit()
                 return 'OK'
         except Exception as e:
