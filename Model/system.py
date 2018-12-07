@@ -859,44 +859,23 @@ class SpareStock(Base):
     # 入库时间:
     InStockDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
 
-#  设备运行总记录
-class EquipmentRunCountRecord(Base):
-    __tablename__ = 'EquipmentRunCountRecord'
-    # id:
-    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
-
-    # 所属部门
-    OrganizationName = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
-
-    # 工序
-    Note = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
-
-    # 设备名称:
-    EQPName = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
-
-    # 设备编码
-    EQPCode = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
-
-    # 累计运行时间:
-    RunTotalDate = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
-
-    # 累计故障时间:
-    FailureTotalDate = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
-
-    # 计算人:
-    CalculatePeople = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
-
-    # 填写时间:
-    CreateDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
-
 #  设备运行记录
 class EquipmentRunRecord(Base):
     __tablename__ = 'EquipmentRunRecord'
     # id:
     ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
 
-    # 设备运行总记录ID
-    EquipmentRunCountRecordID = Column(Integer, primary_key=False, autoincrement=False, nullable=False)
+    # 车间
+    Workshop = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 工序
+    PUIDName = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 设备名称:
+    EQPName = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+
+    # 设备编码
+    EQPCode = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
     # 日期:
     InputDate = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
@@ -905,13 +884,13 @@ class EquipmentRunRecord(Base):
     Classes = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
     # 运行时间:
-    RunDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+    RunDate = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
 
     # 清场时间:
-    ClearDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+    ClearDate = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
 
     # 故障时间:
-    FailureDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+    FailureDate = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
 
     # 操作人:
     OperatePeople = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
@@ -966,6 +945,23 @@ class EquipmentFailureReporting(Base):
 
     # 描述  ：
     Description = Column(Unicode(65), primary_key=False, autoincrement=False, nullable=True)
+
+class EquipmentRunPUID(Base):
+    __tablename__ = 'EquipmentRunPUID'
+    # id:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+    # 工序
+    PUIDName = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 设备名称:
+    EQPName = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+
+    # 设备编码
+    EQPCode = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 父节点
+    ParentNode = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
 
 # 生成表单的执行语句
 Base.metadata.create_all(engine)
