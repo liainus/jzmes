@@ -7362,7 +7362,6 @@ def quipmentRunPUIDParent():
         data = request.values
         try:
             id = data["parentNode"]
-            sz = []
             data = getMyEquipmentRunPUIDChildren(id,"")
             return json.dumps(data, cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
@@ -7387,18 +7386,16 @@ def getMyEquipmentRunPUIDChildren(id,flag):
             flag = "TRUE"
             orgs = db_session.query(EquipmentRunPUID).filter(EquipmentRunPUID.ParentNode == 1).all()
             for obj in orgs:
-                if obj.ParentNode == id:
-                    sz.append({"id": obj.ID, "text": obj.EQPName, "state": "close",
-                               "children": getMyEquipmentRunPUIDChildren(obj.ID)})
+                sz.append({"id": obj.ID, "text": obj.EQPName, "state": "close",
+                           "children": getMyEquipmentRunPUIDChildren(obj.ID,flag)})
         else :
-            if flag == "TRUE":
+            if flag == "TRUE" or flag == "FALSE":
                 return sz
-            orgs = db_session.query(EquipmentRunPUID).filter(EquipmentRunPUID.ParentNode == 1).all()
+            flag = "flag"
+            orgs = db_session.query(EquipmentRunPUID).filter(EquipmentRunPUID.ParentNode == id).all()
             for obj in orgs:
-                if obj.ParentNode == id:
-                    sz.append({"id": obj.ID, "text": obj.EQPName, "state": "close",
-                               "children": getMyEquipmentRunPUIDChildren(obj.ID)})
-
+                sz.append({"id": obj.ID, "text": obj.EQPName, "state": "close",
+                           "children": []})
         print(sz)
         return sz
     except Exception as e:
