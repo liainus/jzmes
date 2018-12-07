@@ -49,19 +49,19 @@
 
             var EQPName = ""
             $('#LeftTree').tree({
-                url:"/quipmentRunPUIDParent?parentNode=",
+                url:"/quipmentRunPUIDParent",
                 method: 'get',
                 animate:true,
                 loadFilter:function(data){
                     return data
                 },
-                onBeforeExpand:function(row){
-                    var url = '/quipmentRunPUIDParent?parentNode=' + row.id
-                    $("#LeftTree").tree("options").url = url;
-                    return true;
-                },
                 onClick: function (node) {
                     EQPName = node.text
+                    var beginTime = $('#beginTime').datebox('getValue')
+                    $("#tab").datagrid('load',{
+                    InputDate:beginTime,
+                    EQPName:EQPName
+                })
                 }
             })
             toolbar = {
@@ -203,9 +203,6 @@
                     EQPName:EQPName
                 })
             })
-            $('#tab').datagrid('appendRow', {
-
-            });
             //datagrid表格右键操作
             $("#tab").datagrid({
                 queryParams: {
