@@ -7363,25 +7363,42 @@ def quipmentRunPUIDParent():
         try:
             id = data["parentNode"]
             sz = []
-            data = getMyEquipmentRunPUIDChildren(id)
+            data = getMyEquipmentRunPUIDChildren(id,"")
             return json.dumps(data, cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
             logger.error(e)
             insertSyslog("error", "设备运行总记录删除报错Error：" + str(e), current_user.Name)
             return json.dumps("设备运行总记录删除报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
-def getMyEquipmentRunPUIDChildren(id):
+def getMyEquipmentRunPUIDChildren(id,flag):
     sz = []
     try:
         if id == "":
+            id = 0
+            flag = "FALSE"
             orgs = db_session.query(EquipmentRunPUID).filter().all()
-        else:
-            orgs = db_session.query(EquipmentRunPUID).filter(EquipmentRunPUID.ParentNode == id).all()
-        for obj in orgs:
-            if obj.ParentNode == 0:
-                sz.append({"id": obj.ID, "text": obj.EQPName, "state": "close", "children": getMyEquipmentRunPUIDChildren(obj.ID)})
-            else:
-                sz.append({"id": obj.ID, "text": obj.EQPName, "state": "close", "children": getMyEquipmentRunPUIDChildren(obj.ID)})
+            for obj in orgs:
+                if obj.ParentNode == id:
+                    sz.append({"id": obj.ID, "text": obj.EQPName, "state": "close",
+                               "children": getMyEquipmentRunPUIDChildren(obj.ID,flag)})
+        elif id == 0:
+            if flag == "FALSE":
+                return sz
+            flag = "TRUE"
+            orgs = db_session.query(EquipmentRunPUID).filter(EquipmentRunPUID.ParentNode == 1).all()
+            for obj in orgs:
+                if obj.ParentNode == id:
+                    sz.append({"id": obj.ID, "text": obj.EQPName, "state": "close",
+                               "children": getMyEquipmentRunPUIDChildren(obj.ID)})
+        else :
+            if flag == "TRUE":
+                return sz
+            orgs = db_session.query(EquipmentRunPUID).filter(EquipmentRunPUID.ParentNode == 1).all()
+            for obj in orgs:
+                if obj.ParentNode == id:
+                    sz.append({"id": obj.ID, "text": obj.EQPName, "state": "close",
+                               "children": getMyEquipmentRunPUIDChildren(obj.ID)})
+
         print(sz)
         return sz
     except Exception as e:
