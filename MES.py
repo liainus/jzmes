@@ -7094,7 +7094,7 @@ def equipmentRunCountSearch():
                 rowsnumber = int(data['rows'])
                 inipage = (pages - 1) * rowsnumber + 0
                 endpage = (pages - 1) * rowsnumber + rowsnumber
-                PUIDName = data["PUIDName"]
+                EQPName = data["EQPName"]
                 data = request.values
                 InputDate = data["InputDate"]
                 strat = InputDate + "-01 00:00"
@@ -7104,9 +7104,9 @@ def equipmentRunCountSearch():
                     equipmentRunClass = db_session.query(EquipmentRunRecord).filter(and_(EquipmentRunRecord.CreateDate < end, EquipmentRunRecord.CreateDate >= strat)).order_by(desc("CreateDate")).all()[inipage:endpage]
                 else:
                     equipmentRunCount = db_session.query(EquipmentRunRecord).filter(
-                        EquipmentRunRecord.PUIDName == PUIDName, and_(EquipmentRunRecord.CreateDate < end, EquipmentRunRecord.CreateDate >= strat)).count()
+                        EquipmentRunRecord.PUIDName == EQPName, and_(EquipmentRunRecord.CreateDate < end, EquipmentRunRecord.CreateDate >= strat)).count()
                     equipmentRunClass = db_session.query(EquipmentRunRecord).filter(
-                        EquipmentRunRecord.PUIDName == PUIDName,
+                        EquipmentRunRecord.PUIDName == EQPName,
                         and_(EquipmentRunRecord.CreateDate < end, EquipmentRunRecord.CreateDate >= strat)).order_by(desc("CreateDate")).all()[inipage:endpage]
                 jsonoclass = json.dumps(equipmentRunClass, cls=AlchemyEncoder, ensure_ascii=False)
                 return '{"total"' + ":" + str(equipmentRunCount) + ',"rows"' + ":\n" + jsonoclass + "}"
