@@ -56,12 +56,15 @@
                     return data
                 },
                 onClick: function (node) {
-                    EQPName = node.text
-                    var beginTime = $('#beginTime').datebox('getValue')
-                    $("#tab").datagrid('load',{
-                    InputDate:beginTime,
-                    EQPName:EQPName
-                })
+                    if($('#LeftTree').tree('isLeaf',node.target)){
+                        EQPName = node.text
+                        var beginTime = $('#beginTime').datebox('getValue')
+                        $("#tab").datagrid('load',{
+                            InputDate:beginTime,
+                            EQPName:EQPName
+                        })
+                    }
+
                 }
             })
             toolbar = {
