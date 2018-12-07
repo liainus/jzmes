@@ -907,6 +907,9 @@ class EquipmentRunRecord(Base):
     # 产品批号:
     BatchID2 = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
+    # 添加时间:
+    CreateDate = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
+
 #  设备故障报修
 class EquipmentFailureReporting(Base):
     __tablename__ = 'EquipmentFailureReporting'
