@@ -70,9 +70,9 @@
                     $('#ID').val();
                     $('#InputDate').val();
                     $('#Classes').val();
-                    $('#RunDate').datebox('setValue','');
-                    $('#ClearDate').datebox('setValue','');
-                    $('#FailureDate').datebox('setValue','');
+                    $('#RunDate').val();
+                    $('#ClearDate').val();
+                    $('#FailureDate').val();
                     $('#OperatePeople').val();
                     $('#BrandName1').val();
                     $('#BatchID1').val();
@@ -90,9 +90,9 @@
                             $('#ID').val(row.ID);
                             $('#InputDate').val(row.InputDate);
                             $('#Classes').val(row.Classes);
-                            $('#RunDate').datebox('setValue', row.RunDate);
-                            $('#ClearDate').datebox('setValue', row.ClearDate);
-                            $('#FailureDate').datebox('setValue', row.FailureDate);
+                            $('#RunDate').val(row.RunDate);
+                            $('#ClearDate').val(row.ClearDate);
+                            $('#FailureDate').val(row.FailureDate);
                             $('#OperatePeople').val(row.OperatePeople);
                             $('#BrandName1').val(row.BrandName1);
                             $('#BatchID1').val(row.BatchID1);
@@ -130,9 +130,9 @@
                             EquipmentRunCountRecordID:getUrlParam('ID'),
                             InputDate:$('#InputDate').val(),
                             Classes:$('#Classes').val(),
-                            RunDate:$('#RunDate').datebox('getValue'),
-                            ClearDate:$('#ClearDate').datebox('getValue'),
-                            FailureDate:$('#FailureDate').datebox('getValue'),
+                            RunDate:$('#RunDate').val(),
+                            ClearDate:$('#ClearDate').val(),
+                            FailureDate:$('#FailureDate').val(),
                             OperatePeople:$('#OperatePeople').val(),
                             BrandName1:$('#BrandName1').val(),
                             BatchID1:$('#BatchID1').val(),
@@ -276,21 +276,21 @@
                             </td>
                         </tr>
                         <tr>
-                            <td class="kv-label">运行时间</td>
+                            <td class="kv-label">运行时间（h）</td>
                             <td class="kv-content">
-                                <input class="easyui-datebox" id="RunDate" data-options="required:true,showSeconds:false,editable:false" style="width:166px;height:35px;line-height:35px;" >
+                                <input name="RunDate" id="RunDate" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
                             </td>
                         </tr>
                         <tr>
-                            <td class="kv-label">清场时间</td>
+                            <td class="kv-label">清场时间（h）</td>
                             <td class="kv-content">
-                                <input class="easyui-datebox" id="ClearDate" data-options="required:true,showSeconds:false,editable:false" style="width:166px;height:35px;line-height:35px;">
+                                <input name="ClearDate" id="ClearDate" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
                             </td>
                         </tr>
                         <tr>
-                            <td class="kv-label">故障时间</td>
+                            <td class="kv-label">故障时间（h）</td>
                             <td class="kv-content">
-                                <input class="easyui-datebox" id="FailureDate" data-options="required:true,showSeconds:false,editable:false" style="width:166px;height:35px;line-height:35px;">
+                                <input name="FailureDate" id="FailureDate" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
                             </td>
                         </tr>
                         <tr>
