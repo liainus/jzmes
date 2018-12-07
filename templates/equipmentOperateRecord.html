@@ -56,9 +56,9 @@
                     return data
                 },
                 onBeforeExpand:function(row){
-{#                    var url = '/ProcessContinuousData/DataTree/LoadMore?parentNode=' + row.id#}
-{#                    $("#LeftTree").tree("options").url = url;#}
-{#                    return true;#}
+                    var url = '/quipmentRunPUIDParent?parentNode=' + row.id
+                    $("#LeftTree").tree("options").url = url;
+                    return true;
                 },
                 onClick: function (node) {
                     EQPName = node.text
