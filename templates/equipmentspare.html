@@ -15,9 +15,150 @@
     <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
     <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
     <script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
+    <style>
+        /*横向时间轴*/
+        .progress-head{
+            position: relative;
+            min-width: 1190px;
+            padding:20px;
+            clear: both;
+            overflow: hidden;
+        }
+        .host-progress{
+            position: relative;
+            float: left;
+        }
+        .host-ball{
+            float: left;
+            width: 150px;
+            height: 30px;
+            line-height: 30px;
+            border-radius: 3px;
+            background-color: #9f9f9f;
+            color: #fff;
+            text-align: center;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+        .host-line{
+            position: relative;
+            float: left;
+            width: 50px;
+            height: 2px;
+            margin-top: 15px;
+            background-color: #9F9F9F;
+            z-index: 3;
+        }
+        .host-arrow{
+            position: relative;
+        }
+        .host-arrow:after,.host-arrow:before{
+            width: 0;
+            height: 0;
+            border: 10px solid transparent;
+            border-left-color: #9f9f9f;
+            position: absolute;
+            content: "";
+            top: 6px;
+            left:191px;
+        }
+        .host-arrow:before{
+            top: 6px;
+            left: 188px;
+            border-left-color: white;
+            z-index: 2;
+        }
+        /*纵向时间轴*/
+        .childBox{
+            position: absolute;
+            width:200px;
+        }
+        .childNode{
+            margin-left: 45px;
+        }
+        .ball{
+            display: block;
+            width: 20px;
+            height: 20px;
+            border-radius: 10px;
+            margin-left: 20px;
+            background-color: #9f9f9f;
+            cursor: pointer;
+        }
+        .progress-line{
+            width: 0px;
+            height: 50px;
+            margin-left: 30px;
+            border-left: 1px dashed #9f9f9f;
+        }
+        .progress-line.progress-line-active{
+            border-left: 1px dashed #5cb85c;
+        }
+        .detail{
+            margin-left: 40px;
+            float:left;
+            font-size: 12px;
+            color: #666;
+            line-height:20px;
+            position: relative;
+            top: -20px;
+            left: 5px;
+        }
+        .flow-detail{
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
 <body>
-    <div class="content">
+    <div class="" style="padding: 10px;">
+        <div class="progress-head">
+            <div class="host-progress inPlan1">
+                <div class="host-ball batchRecord">入库</div>
+                <div class="host-line"></div>
+                <div class="host-arrow"></div>
+            </div>
+            <div class="host-progress inPlan2">
+                <div class="host-ball batchRecord">入库审核</div>
+                <div class="host-line"></div>
+                <div class="host-arrow"></div>
+                <div class="childBox">
+                    <div class="childNode">
+                        <div class="progress-line"></div>
+                        <a class="ball" name=""></a>
+                        <div class="detail">
+                            <div class="flow-detail">入库撤回</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="host-progress inPlan3">
+                <div class="host-ball batchRecord">库存</div>
+            </div>
+        </div>
+        <div class="progress-head">
+            <div class="host-progress outPlan1">
+                <div class="host-ball batchRecord">出库</div>
+                <div class="host-line"></div>
+                <div class="host-arrow"></div>
+            </div>
+            <div class="host-progress outPlan2">
+                <div class="host-ball batchRecord">出库审核</div>
+                <div class="host-line"></div>
+                <div class="host-arrow"></div>
+                <div class="childBox">
+                    <div class="childNode">
+                        <div class="progress-line"></div>
+                        <a class="ball" name=""></a>
+                        <div class="detail">
+                            <div class="flow-detail">出库撤回</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="host-progress outPlan3">
+                <div class="host-ball batchRecord">库存</div>
+            </div>
+        </div>
         <div id="Toolbar" style="padding:0 10px;">
             备件名称:
             <input type="text" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
