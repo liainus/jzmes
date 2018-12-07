@@ -7361,46 +7361,63 @@ def quipmentRunPUIDParent():
     if request.method == 'GET':
         data = request.values
         try:
-            id = int(data["parentNode"])
+            id = data["parentNode"]
+            if id == "":
+                id = ""
+            else:
+                int(id)
             data = getMyEquipmentRunPUIDChildren(id,"")
-            return json.dumps(data, cls=AlchemyEncoder, ensure_ascii=False)
+            return json.dumps(data)
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "设备运行总记录删除报错Error：" + str(e), current_user.Name)
-            return json.dumps("设备运行总记录删除报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+            insertSyslog("error", "设备运行记录获取树形列表报错Error：" + str(e), current_user.Name)
+            return json.dumps("设备运行记录获取树形列表报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 def getMyEquipmentRunPUIDChildren(id,flag):
     sz = []
     try:
         if id == "":
-            id = 0
-            flag = "FALSE"
-            orgs = db_session.query(EquipmentRunPUID).filter().all()
+            orgs = db_session.query(EquipmentRunPUID).filter(EquipmentRunPUID.ParentNode == 0).all()
             for obj in orgs:
-                if obj.ParentNode == id:
-                    sz.append({"id": obj.ID, "text": obj.EQPName, "state": "close",
-                               "children": getMyEquipmentRunPUIDChildren(obj.ID,flag)})
+                sz.append({"id": obj.ID, "text": obj.EQPName, "state": "close",
+                           "children": []})
         elif id == 0:
-            if flag == "FALSE":
-                return sz
             flag = "TRUE"
-            orgs = db_session.query(EquipmentRunPUID).filter(EquipmentRunPUID.ParentNode == 1).all()
+            orgs = db_session.query(EquipmentRunPUID).filter(EquipmentRunPUID.ParentNode == 0).all()
             for obj in orgs:
                 sz.append({"id": obj.ID, "text": obj.EQPName, "state": "close",
                            "children": getMyEquipmentRunPUIDChildren(obj.ID,flag)})
-        else :
-            if flag == "TRUE" or flag == "FALSE":
-                return sz
-            flag = "flag"
+        elif flag == "TRUE":
             orgs = db_session.query(EquipmentRunPUID).filter(EquipmentRunPUID.ParentNode == id).all()
             for obj in orgs:
                 sz.append({"id": obj.ID, "text": obj.EQPName, "state": "close",
                            "children": []})
-        print(sz)
+        elif flag == "2":
+            orgs = db_session.query(EquipmentRunPUID).filter(EquipmentRunPUID.ParentNode == 1).all()
+            for obj in orgs:
+                if str(id) == str(obj.ID):
+                    flag = "3"
+                    sz.append({"id": obj.ID, "text": obj.EQPName, "state": "open",
+                               "children": getMyEquipmentRunPUIDChildren(id, flag)})
+                else:
+                    sz.append({"id": obj.ID, "text": obj.EQPName, "state": "close",
+                               "children": []})
+        elif flag == "3":
+            orgs = db_session.query(EquipmentRunPUID).filter(EquipmentRunPUID.ParentNode == int(id)).all()
+            for obj in orgs:
+                sz.append({"id": obj.ID, "text": obj.EQPName, "state": "close",
+                           "children": []})
+        else :
+            if flag == "TRUE":
+                return sz
+            flag = "2"
+            orgs = db_session.query(EquipmentRunPUID).filter(EquipmentRunPUID.ParentNode == 0).first()
+            sz.append({"id": orgs.ID, "text": orgs.EQPName, "state": "close",
+                       "children": getMyEquipmentRunPUIDChildren(id, flag)})
         return sz
     except Exception as e:
         print(e)
-        return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+        return json.dumps("设备运行记录获取树形列表", cls=AlchemyEncoder, ensure_ascii=False)
 
 # 备件管理
 @app.route('/equipmentspare')
