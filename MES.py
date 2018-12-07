@@ -7361,7 +7361,7 @@ def quipmentRunPUIDParent():
     if request.method == 'GET':
         data = request.values
         try:
-            id = data["id"]
+            id = data["parentNode"]
             sz = []
             data = getMyEquipmentRunPUIDChildren(id)
             return json.dumps(data, cls=AlchemyEncoder, ensure_ascii=False)
