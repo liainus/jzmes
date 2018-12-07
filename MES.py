@@ -7094,19 +7094,20 @@ def equipmentRunCountSearch():
                 rowsnumber = int(data['rows'])
                 inipage = (pages - 1) * rowsnumber + 0
                 endpage = (pages - 1) * rowsnumber + rowsnumber
-                EQPName = "%" + data["EQPName"] + "%"
+                PUIDName = data["PUIDName"]
                 data = request.values
                 InputDate = data["InputDate"]
                 strat = InputDate + "-01 00:00"
                 end = InputDate + "-31 24:59"
-                if data["EQPName"] == "":
-                    equipmentRunCount = db_session.query(EquipmentRunRecord).filter(and_(EquipmentRunRecord.InputDate < end, EquipmentRunRecord.InputDate >= strat)).count()
-                    equipmentRunClass = db_session.query(EquipmentRunRecord).filter(and_(EquipmentRunRecord.InputDate < end, EquipmentRunRecord.InputDate >= strat)).order_by(desc("CreateDate")).all()[inipage:endpage]
+                if data["PUIDName"] == "":
+                    equipmentRunCount = db_session.query(EquipmentRunRecord).filter(and_(EquipmentRunRecord.CreateDate < end, EquipmentRunRecord.CreateDate >= strat)).count()
+                    equipmentRunClass = db_session.query(EquipmentRunRecord).filter(and_(EquipmentRunRecord.CreateDate < end, EquipmentRunRecord.CreateDate >= strat)).order_by(desc("CreateDate")).all()[inipage:endpage]
                 else:
                     equipmentRunCount = db_session.query(EquipmentRunRecord).filter(
-                        EquipmentRunRecord.EQPName.like(EQPName)).count()
+                        EquipmentRunRecord.PUIDName == PUIDName, and_(EquipmentRunRecord.CreateDate < end, EquipmentRunRecord.CreateDate >= strat)).count()
                     equipmentRunClass = db_session.query(EquipmentRunRecord).filter(
-                        EquipmentRunRecord.EQPName.like(EQPName)).order_by(desc("CreateDate")).all()[inipage:endpage]
+                        EquipmentRunRecord.PUIDName == PUIDName,
+                        and_(EquipmentRunRecord.CreateDate < end, EquipmentRunRecord.CreateDate >= strat)).order_by(desc("CreateDate")).all()[inipage:endpage]
                 jsonoclass = json.dumps(equipmentRunClass, cls=AlchemyEncoder, ensure_ascii=False)
                 return '{"total"' + ":" + str(equipmentRunCount) + ',"rows"' + ":\n" + jsonoclass + "}"
         except Exception as e:
@@ -7138,6 +7139,7 @@ def equipmentRunRecordCreate():
                 equipmentRunRecord.BatchID1 = data["BatchID1"]
                 equipmentRunRecord.BrandName2 = data["BrandName2"]
                 equipmentRunRecord.BatchID2 = data["BatchID2"]
+                equipmentRunRecord.CreateDate = datetime.datetime.now()
                 db_session.add(equipmentRunRecord)
                 db_session.commit()
                 return 'OK'
@@ -7157,6 +7159,10 @@ def equipmentRunRecordUpdate():
             if len(json_str) > 10:
                 ID = data["ID"]
                 oclass = db_session.query(EquipmentRunRecord).filter(EquipmentRunRecord.ID == ID).first()
+                oclass.Workshop = data["Workshop"]
+                oclass.PUID = int(data["PUID"])
+                oclass.EQPName = data["EQPName"]
+                oclass.EQPCode = data["EQPCode"]
                 oclass.InputDate = data["InputDate"]
                 oclass.Classes = data["Classes"]
                 oclass.RunDate = int(data["RunDate"])
@@ -7361,59 +7367,23 @@ def quipmentRunPUIDParent():
     if request.method == 'GET':
         data = request.values
         try:
-            id = data["parentNode"]
-            if id == "":
-                id = ""
-            else:
-                int(id)
-            data = getMyEquipmentRunPUIDChildren(id,"")
+            data = getMyEquipmentRunPUIDChildren(id=0)
+            print(data)
             return json.dumps(data)
         except Exception as e:
             print(e)
             logger.error(e)
             insertSyslog("error", "设备运行记录获取树形列表报错Error：" + str(e), current_user.Name)
             return json.dumps("设备运行记录获取树形列表报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
-def getMyEquipmentRunPUIDChildren(id,flag):
+def getMyEquipmentRunPUIDChildren(id):
     sz = []
     try:
-        if id == "":
-            orgs = db_session.query(EquipmentRunPUID).filter(EquipmentRunPUID.ParentNode == 0).all()
-            for obj in orgs:
-                sz.append({"id": obj.ID, "text": obj.EQPName, "state": "close",
-                           "children": []})
-        elif id == 0:
-            flag = "TRUE"
-            orgs = db_session.query(EquipmentRunPUID).filter(EquipmentRunPUID.ParentNode == 0).all()
-            for obj in orgs:
-                sz.append({"id": obj.ID, "text": obj.EQPName, "state": "close",
-                           "children": getMyEquipmentRunPUIDChildren(obj.ID,flag)})
-        elif flag == "TRUE":
-            orgs = db_session.query(EquipmentRunPUID).filter(EquipmentRunPUID.ParentNode == id).all()
-            for obj in orgs:
-                sz.append({"id": obj.ID, "text": obj.EQPName, "state": "close",
-                           "children": []})
-        elif flag == "2":
-            orgs = db_session.query(EquipmentRunPUID).filter(EquipmentRunPUID.ParentNode == 1).all()
-            for obj in orgs:
-                if str(id) == str(obj.ID):
-                    flag = "3"
-                    sz.append({"id": obj.ID, "text": obj.EQPName, "state": "open",
-                               "children": getMyEquipmentRunPUIDChildren(id, flag)})
-                else:
-                    sz.append({"id": obj.ID, "text": obj.EQPName, "state": "close",
-                               "children": []})
-        elif flag == "3":
-            orgs = db_session.query(EquipmentRunPUID).filter(EquipmentRunPUID.ParentNode == int(id)).all()
-            for obj in orgs:
-                sz.append({"id": obj.ID, "text": obj.EQPName, "state": "close",
-                           "children": []})
-        else :
-            if flag == "TRUE":
-                return sz
-            flag = "2"
-            orgs = db_session.query(EquipmentRunPUID).filter(EquipmentRunPUID.ParentNode == 0).first()
-            sz.append({"id": orgs.ID, "text": orgs.EQPName, "state": "close",
-                       "children": getMyEquipmentRunPUIDChildren(id, flag)})
+        orgs = db_session.query(EquipmentRunPUID).filter(EquipmentRunPUID.ParentNode == id).all()
+        for obj in orgs:
+            if obj.ParentNode != 0 and obj.ParentNode != 1:
+                sz.append({"id": obj.ID, "text": obj.EQPName, "state": "open","children": []})
+            else:
+                sz.append({"id": obj.ID, "text": obj.EQPName, "state": "closed","children": getMyEquipmentRunPUIDChildren(obj.ID)})
         return sz
     except Exception as e:
         print(e)
