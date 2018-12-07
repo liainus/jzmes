@@ -4299,25 +4299,28 @@ def Transport():
                 for index in range(0,len(blue_data)):
                     ConveyorBeltColor = dict()
                     key = 'ConveyorBeltColor_' + str(index)
-                    if blue_data[index] == 'True':
-                        if index == 45 or index == 36:
+                    if index == 36 or index == 45:
+                        if red_data[index] == 'True':
+                            ConveyorBeltColor[key] = 'y_belt_danger'
+                        elif blue_data[index] == 'True':
                             ConveyorBeltColor[key] = 'y_belt_run'
                         else:
-                            ConveyorBeltColor[key] = 'small_belt_run'
-                    elif red_data[index] == 'True':
-                        if index == 46 or index == 3:
+                            ConveyorBeltColor[key] = 'y_belt'
+                    elif index == 3 or index == 46:
+                        if red_data[index] == 'True':
+                            ConveyorBeltColor[key] = 'x_belt_danger'
+                        elif blue_data[index] == 'True':
                             ConveyorBeltColor[key] = 'x_belt_run'
                         else:
-                            ConveyorBeltColor[key] = 'small_belt_danger'
-                    else:
-                        if index == 45 or index == 36:
-                            ConveyorBeltColor[key] = 'y_belt'
-                        elif index == 46 or index == 3:
                             ConveyorBeltColor[key] = 'x_belt'
+                    else:
+                        if red_data[index] == 'True':
+                            ConveyorBeltColor[key] = 'small_belt_danger'
+                        elif blue_data[index] == 'True':
+                            ConveyorBeltColor[key] = 'small_belt_run'
                         else:
                             ConveyorBeltColor[key] = 'small_belt'
                     TransportMonitorData.append(ConveyorBeltColor)
-
                 return render_template('TransportMonitor.html', TransportMonitorData=TransportMonitorData)
         except Exception as e:
             print(e)
