@@ -7096,7 +7096,7 @@ def equipmentRunCountSearch():
                 endpage = (pages - 1) * rowsnumber + rowsnumber
                 EQPName = "%" + data["EQPName"] + "%"
                 data = request.values
-                InputDate = data["InputMonth"]
+                InputDate = data["InputDate"]
                 strat = InputDate + "-01 00:00"
                 end = InputDate + "-31 24:59"
                 if data["EQPName"] == "":
@@ -7354,30 +7354,35 @@ def electronicBatchRecordNav2():
 # 设备运行记录
 @app.route('/equipmentOperateRecord')
 def equipmentOperateRecord():
-    return render_template('equipmentRunRecord.html')
+    return render_template('equipmentOperateRecord.html')
 # 设备运行记录获取树形列表
 @app.route('/quipmentRunPUIDParent', methods=['POST', 'GET'])
 def quipmentRunPUIDParent():
     if request.method == 'GET':
         data = request.values
         try:
-            data = getMyEquipmentRunPUIDChildren(id=0)
+            id = data["id"]
+            sz = []
+            data = getMyEquipmentRunPUIDChildren(id)
             return json.dumps(data, cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
             logger.error(e)
             insertSyslog("error", "设备运行总记录删除报错Error：" + str(e), current_user.Name)
             return json.dumps("设备运行总记录删除报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
-def getMyEquipmentRunPUIDChildren(id=0):
+def getMyEquipmentRunPUIDChildren(id):
     sz = []
     try:
-        orgs = db_session.query(EquipmentRunPUID).filter().all()
+        if id == "":
+            orgs = db_session.query(EquipmentRunPUID).filter().all()
+        else:
+            orgs = db_session.query(EquipmentRunPUID).filter(EquipmentRunPUID.ParentNode == id).all()
         for obj in orgs:
-            if obj.ParentNode == id:
-                sz.append({"id": obj.ID, "text": obj.EQPName, "children": getMyEquipmentRunPUIDChildren(obj.ID)})
-        srep = ',' + 'items' + ':' + '[]'
-        # data = string(sz)
-        # data.replace(srep, '')
+            if obj.ParentNode == 0:
+                sz.append({"id": obj.ID, "text": obj.EQPName, "state": "close", "children": getMyEquipmentRunPUIDChildren(obj.ID)})
+            else:
+                sz.append({"id": obj.ID, "text": obj.EQPName, "state": "close", "children": getMyEquipmentRunPUIDChildren(obj.ID)})
+        print(sz)
         return sz
     except Exception as e:
         print(e)
