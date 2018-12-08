@@ -7120,9 +7120,16 @@ def equipmentRunCountSearch():
                     RunDates += ee.RunDate
                     ClearDates += ee.ClearDate
                     FailureDates += ee.FailureDate
-                st =  "[{" + '"RunDates"'+" : " + '"' + str(RunDates) + '"'+','+ '"ClearDates"'+" : " + '"' + str(ClearDates) + '"'+','+ '"FailureDates"'+" : " + '"' + str(FailureDates) + '"' +"}]"
+                sz = []
+                dir = {}
+                dir["RunDates"] = RunDates
+                dir["ClearDates"] = ClearDates
+                dir["FailureDates"] = FailureDates
+                # st =  "{" + '"RunDates"'+" : " + '"' + str(RunDates) + '"'+','+ '"ClearDates"'+" : " + '"' + str(ClearDates) + '"'+','+ '"FailureDates"'+" : " + '"' + str(FailureDates) + '"' +"}"
+                sz.append(dir)
+                sz = json.dumps(sz, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonoclass = json.dumps(equipmentRunClass, cls=AlchemyEncoder, ensure_ascii=False)
-                return '{"total"' + ":" + str(equipmentRunCount) + ',"rows"' + ":\n" + jsonoclass + ',"footer"' + ":\n" + st +"}"
+                return '{"total"' + ":" + str(equipmentRunCount) + ',"rows"' + ":\n" + jsonoclass + ',"footer"' + ":\n" + sz +"}"
         except Exception as e:
             print(e)
             logger.error(e)
