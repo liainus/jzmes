@@ -7120,10 +7120,9 @@ def equipmentRunCountSearch():
                     RunDates += ee.RunDate
                     ClearDates += ee.ClearDate
                     FailureDates += ee.FailureDate
-                st = ","+'"footer"' + ":" + "[{" + '"RunDates"'+" : " + '"' + str(RunDates) + '"'+','+ '"ClearDates"'+" : " + '"' + str(ClearDates) + '"'+','+ '"FailureDates"'+" : " + '"' + str(FailureDates) + '"' +"}]"
+                st =  "[{" + '"RunDates"'+" : " + '"' + str(RunDates) + '"'+','+ '"ClearDates"'+" : " + '"' + str(ClearDates) + '"'+','+ '"FailureDates"'+" : " + '"' + str(FailureDates) + '"' +"}]"
                 jsonoclass = json.dumps(equipmentRunClass, cls=AlchemyEncoder, ensure_ascii=False)
-                st = json.dumps(st, cls=AlchemyEncoder, ensure_ascii=False)
-                return '{"total"' + ":" + str(equipmentRunCount) + ',"rows"' + ":\n" + jsonoclass + st + "}"
+                return '{"total"' + ":" + str(equipmentRunCount) + ',"rows"' + ":\n" + jsonoclass + ',"footer"' + ":\n" + st +"}"
         except Exception as e:
             print(e)
             logger.error(e)
