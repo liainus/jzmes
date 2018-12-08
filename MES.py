@@ -7342,6 +7342,7 @@ def EquipmentFailureReportingDelete():
             insertSyslog("error", "设备运行总记录删除报错Error：" + str(e), current_user.Name)
             return json.dumps("设备运行总记录删除报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
+
 # 设备运行数据
 @app.route('/EquipmentManage/runData')
 def EquipmentManageRunData():
