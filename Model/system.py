@@ -908,7 +908,7 @@ class EquipmentRunRecord(Base):
     BatchID2 = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
     # 添加时间:
-    CreateDate = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
+    CreateDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
 
 #  设备故障报修
 class EquipmentFailureReporting(Base):
