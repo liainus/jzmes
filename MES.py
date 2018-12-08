@@ -7109,9 +7109,9 @@ def equipmentRunCountSearch():
                     equipmentRunCount = db_session.query(EquipmentRunRecord).filter(EquipmentRunRecord.CreateDate.between(re[0],re[1])).count()
                     equipmentRunClass = db_session.query(EquipmentRunRecord).filter(EquipmentRunRecord.CreateDate.between(re[0],re[1])).order_by(desc("CreateDate")).all()[inipage:endpage]
                 else:
-                    equipmentRunCount = db_session.query(EquipmentRunRecord).filter(EquipmentRunRecord.PUIDName == EQPName,EquipmentRunRecord.CreateDate.between(re[0],re[1])).count()
+                    equipmentRunCount = db_session.query(EquipmentRunRecord).filter(EquipmentRunRecord.EQPName == EQPName,EquipmentRunRecord.CreateDate.between(re[0],re[1])).count()
                     equipmentRunClass = db_session.query(EquipmentRunRecord).filter(
-                        EquipmentRunRecord.PUIDName == EQPName,
+                        EquipmentRunRecord.EQPName == EQPName,
                         EquipmentRunRecord.CreateDate.between(re[0], re[1])).order_by(desc("CreateDate")).all()[inipage:endpage]
                 RunDates = 0
                 ClearDates = 0
@@ -7121,7 +7121,6 @@ def equipmentRunCountSearch():
                     ClearDates += ee.ClearDate
                     FailureDates += ee.FailureDate
                 st = '"footer"' + ":" + "[{" + '"RunDates"'+" : " + '"' + str(RunDates) + '"'+','+ '"ClearDates"'+" : " + '"' + str(ClearDates) + '"'+','+ '"FailureDates"'+" : " + '"' + str(FailureDates) + '"' +"}]"
-                print(st)
                 jsonoclass = json.dumps(equipmentRunClass, cls=AlchemyEncoder, ensure_ascii=False)
                 return '{"total"' + ":" + str(equipmentRunCount) + ',"rows"' + ":\n" + jsonoclass + st + "}"
         except Exception as e:
