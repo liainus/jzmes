@@ -71,6 +71,7 @@
                 create:function(){
                     $("#equimentsClassDialog").dialog('open').dialog('setTitle','新增运行记录');
                     $('#ID').val();
+                    $("#EQPName").val(EQPName)
                     $('#InputDate').val();
                     $('#Classes').val();
                     $('#RunDate').val();
@@ -91,6 +92,7 @@
                         if (row) {
                             $("#equimentsClassDialog").dialog('open').dialog('setTitle','修改记录');
                             $('#ID').val(row.ID);
+                            $("#EQPName").val(row.EQPName)
                             $('#InputDate').val(row.InputDate);
                             $('#Classes').val(row.Classes);
                             $('#RunDate').val(row.RunDate);
@@ -130,7 +132,7 @@
                         type:"post",
                         data:{
                             ID:$('#ID').val(),
-                            EquipmentRunCountRecordID:getUrlParam('ID'),
+                            EQPName:$('#EQPName').val(),
                             InputDate:$('#InputDate').val(),
                             Classes:$('#Classes').val(),
                             RunDate:$('#RunDate').val(),
@@ -264,6 +266,12 @@
                             <td class="kv-label">id</td>
                             <td class="kv-content">
                                 <input name="ID" id="ID" type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="" disabled="disabled">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">设备名称</td>
+                            <td class="kv-content">
+                                <input name="EQPName" id="EQPName" type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="" disabled="disabled">
                             </td>
                         </tr>
                         <tr>
