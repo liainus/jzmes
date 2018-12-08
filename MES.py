@@ -7094,25 +7094,23 @@ def equipmentRunCountSearch():
         try:
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 10:
-                pages = int(data['page'])
-                rowsnumber = int(data['rows'])
-                inipage = (pages - 1) * rowsnumber + 0
-                endpage = (pages - 1) * rowsnumber + rowsnumber
+                # pages = int(data['page'])
+                # rowsnumber = int(data['rows'])
+                # inipage = (pages - 1) * rowsnumber + 0
+                # endpage = (pages - 1) * rowsnumber + rowsnumber
                 EQPName = data["EQPName"]
                 data = request.values
                 InputDate = data["InputDate"]
                 InputDate = InputDate.split("-")
-                print(InputDate)
                 re = getMonthFirstDayAndLastDay(InputDate[0],InputDate[1])
-                print(re)
                 if EQPName == "":
                     equipmentRunCount = db_session.query(EquipmentRunRecord).filter(EquipmentRunRecord.CreateDate.between(re[0],re[1])).count()
-                    equipmentRunClass = db_session.query(EquipmentRunRecord).filter(EquipmentRunRecord.CreateDate.between(re[0],re[1])).order_by(desc("CreateDate")).all()[inipage:endpage]
+                    equipmentRunClass = db_session.query(EquipmentRunRecord).filter(EquipmentRunRecord.CreateDate.between(re[0],re[1])).order_by(desc("CreateDate")).all()
                 else:
                     equipmentRunCount = db_session.query(EquipmentRunRecord).filter(EquipmentRunRecord.EQPName == EQPName,EquipmentRunRecord.CreateDate.between(re[0],re[1])).count()
                     equipmentRunClass = db_session.query(EquipmentRunRecord).filter(
                         EquipmentRunRecord.EQPName == EQPName,
-                        EquipmentRunRecord.CreateDate.between(re[0], re[1])).order_by(desc("CreateDate")).all()[inipage:endpage]
+                        EquipmentRunRecord.CreateDate.between(re[0], re[1])).order_by(desc("CreateDate")).all()
                 RunDates = 0
                 ClearDates = 0
                 FailureDates = 0
