@@ -7122,9 +7122,9 @@ def equipmentRunCountSearch():
                     FailureDates += ee.FailureDate
                 sz = []
                 dir = {}
-                dir["RunDates"] = RunDates
-                dir["ClearDates"] = ClearDates
-                dir["FailureDates"] = FailureDates
+                dir["RunDate"] = RunDates
+                dir["ClearDate"] = ClearDates
+                dir["FailureDate"] = FailureDates
                 # st =  "{" + '"RunDates"'+" : " + '"' + str(RunDates) + '"'+','+ '"ClearDates"'+" : " + '"' + str(ClearDates) + '"'+','+ '"FailureDates"'+" : " + '"' + str(FailureDates) + '"' +"}"
                 sz.append(dir)
                 sz = json.dumps(sz, cls=AlchemyEncoder, ensure_ascii=False)
