@@ -8,6 +8,7 @@ from io import StringIO
 import time
 from collections import Counter
 import datetime
+import calendar
 import random
 import pymssql
 import redis
@@ -50,6 +51,9 @@ from threading import Timer
 from constant import constant
 import numpy
 from sqlalchemy.exc import InvalidRequestError
+import pandas as pd
+from pandas import DataFrame
+import numpy as np
 
 
 #flask_login的初始化
@@ -7097,24 +7101,58 @@ def equipmentRunCountSearch():
                 EQPName = data["EQPName"]
                 data = request.values
                 InputDate = data["InputDate"]
-                strat = InputDate + "-01 00:00"
-                end = InputDate + "-31 24:59"
-                if data["PUIDName"] == "":
-                    equipmentRunCount = db_session.query(EquipmentRunRecord).filter(and_(EquipmentRunRecord.CreateDate < end, EquipmentRunRecord.CreateDate >= strat)).count()
-                    equipmentRunClass = db_session.query(EquipmentRunRecord).filter(and_(EquipmentRunRecord.CreateDate < end, EquipmentRunRecord.CreateDate >= strat)).order_by(desc("CreateDate")).all()[inipage:endpage]
+                InputDate = InputDate.split("-")
+                print(InputDate)
+                re = getMonthFirstDayAndLastDay(InputDate[0],InputDate[1])
+                print(re)
+                if EQPName == "":
+                    equipmentRunCount = db_session.query(EquipmentRunRecord).filter(EquipmentRunRecord.CreateDate.between(re[0],re[1])).count()
+                    equipmentRunClass = db_session.query(EquipmentRunRecord).filter(EquipmentRunRecord.CreateDate.between(re[0],re[1])).order_by(desc("CreateDate")).all()[inipage:endpage]
                 else:
-                    equipmentRunCount = db_session.query(EquipmentRunRecord).filter(
-                        EquipmentRunRecord.PUIDName == EQPName, and_(EquipmentRunRecord.CreateDate < end, EquipmentRunRecord.CreateDate >= strat)).count()
+                    equipmentRunCount = db_session.query(EquipmentRunRecord).filter(EquipmentRunRecord.EQPName == EQPName,EquipmentRunRecord.CreateDate.between(re[0],re[1])).count()
                     equipmentRunClass = db_session.query(EquipmentRunRecord).filter(
-                        EquipmentRunRecord.PUIDName == EQPName,
-                        and_(EquipmentRunRecord.CreateDate < end, EquipmentRunRecord.CreateDate >= strat)).order_by(desc("CreateDate")).all()[inipage:endpage]
+                        EquipmentRunRecord.EQPName == EQPName,
+                        EquipmentRunRecord.CreateDate.between(re[0], re[1])).order_by(desc("CreateDate")).all()[inipage:endpage]
+                RunDates = 0
+                ClearDates = 0
+                FailureDates = 0
+                for ee in equipmentRunClass:
+                    RunDates += ee.RunDate
+                    ClearDates += ee.ClearDate
+                    FailureDates += ee.FailureDate
+                st =  "[{" + '"RunDates"'+" : " + '"' + str(RunDates) + '"'+','+ '"ClearDates"'+" : " + '"' + str(ClearDates) + '"'+','+ '"FailureDates"'+" : " + '"' + str(FailureDates) + '"' +"}]"
                 jsonoclass = json.dumps(equipmentRunClass, cls=AlchemyEncoder, ensure_ascii=False)
-                return '{"total"' + ":" + str(equipmentRunCount) + ',"rows"' + ":\n" + jsonoclass + "}"
+                return '{"total"' + ":" + str(equipmentRunCount) + ',"rows"' + ":\n" + jsonoclass + ',"footer"' + ":\n" + st +"}"
         except Exception as e:
             print(e)
             logger.error(e)
             insertSyslog("error", "设备运行记录查询报错Error：" + str(e), current_user.Name)
             return json.dumps("设备运行记录查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+def getMonthFirstDayAndLastDay(year, month):
+    """
+    :param year: 年份，默认是本年，可传int或str类型
+    :param month: 月份，默认是本月，可传int或str类型
+    :return: firstDay: 当月的第一天，datetime.date类型
+              lastDay: 当月的最后一天，datetime.date类型
+    """
+    if year:
+        year = int(year)
+    else:
+        year = datetime.date.today().year
+
+    if month:
+        month = int(month)
+    else:
+        month = datetime.date.today().month
+
+    # 获取当月第一天的星期和当月的总天数
+    firstDayWeekDay, monthRange = calendar.monthrange(year, month)
+
+    # 获取当月的第一天
+    firstDay = datetime.date(year=year, month=month, day=1)
+    lastDay = datetime.date(year=year, month=month, day=monthRange)
+    return firstDay, lastDay
 
 # 设备运行记录添加
 @app.route('/equipmentRunRecordCreate', methods=['POST', 'GET'])
@@ -7124,16 +7162,18 @@ def equipmentRunRecordCreate():
         try:
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 10:
+                EQPName = data["EQPName"]
+                ocal = db_session.query(EquipmentRunPUID).filter(EquipmentRunPUID.EQPName == EQPName).first()
                 equipmentRunRecord = EquipmentRunRecord()
-                equipmentRunRecord.Workshop = data["Workshop"]
-                equipmentRunRecord.PUID = int(data["PUID"])
-                equipmentRunRecord.EQPName = data["EQPName"]
-                equipmentRunRecord.EQPCode = data["EQPCode"]
+                equipmentRunRecord.Workshop = "江中罗亭生产车间"
+                equipmentRunRecord.PUIDName = ocal.PUIDName
+                equipmentRunRecord.EQPName = EQPName
+                equipmentRunRecord.EQPCode = ocal.EQPCode
                 equipmentRunRecord.InputDate = data["InputDate"]
                 equipmentRunRecord.Classes = data["Classes"]
-                equipmentRunRecord.RunDate = int(data["RunDate"])
-                equipmentRunRecord.ClearDate = int(data["ClearDate"])
-                equipmentRunRecord.FailureDate = int(data["FailureDate"])
+                equipmentRunRecord.RunDate = intkong(data["RunDate"])
+                equipmentRunRecord.ClearDate = intkong(data["ClearDate"])
+                equipmentRunRecord.FailureDate = intkong(data["FailureDate"])
                 equipmentRunRecord.OperatePeople = data["OperatePeople"]
                 equipmentRunRecord.BrandName1 = data["BrandName1"]
                 equipmentRunRecord.BatchID1 = data["BatchID1"]
@@ -7148,6 +7188,18 @@ def equipmentRunRecordCreate():
             logger.error(e)
             insertSyslog("error", "设备运行记录添加报错Error：" + str(e), current_user.Name)
             return json.dumps("设备运行记录添加报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+def intkong(args):
+    isFloat = ""
+    try:
+        float(args)
+    except:
+        isFloat = False
+    else:
+        isFloat = True
+    if isFloat == True:
+        return float(args)
+    else:
+        return 0
 
 # 设备运行记录修改
 @app.route('/equipmentRunRecordUpdate', methods=['POST', 'GET'])
@@ -7159,15 +7211,11 @@ def equipmentRunRecordUpdate():
             if len(json_str) > 10:
                 ID = data["ID"]
                 oclass = db_session.query(EquipmentRunRecord).filter(EquipmentRunRecord.ID == ID).first()
-                oclass.Workshop = data["Workshop"]
-                oclass.PUID = int(data["PUID"])
-                oclass.EQPName = data["EQPName"]
-                oclass.EQPCode = data["EQPCode"]
                 oclass.InputDate = data["InputDate"]
                 oclass.Classes = data["Classes"]
-                oclass.RunDate = int(data["RunDate"])
-                oclass.ClearDate = int(data["ClearDate"])
-                oclass.FailureDate = int(data["FailureDate"])
+                oclass.RunDate = intkong(data["RunDate"])
+                oclass.ClearDate = intkong(data["ClearDate"])
+                oclass.FailureDate = intkong(data["FailureDate"])
                 oclass.OperatePeople = data["OperatePeople"]
                 oclass.BrandName1 = data["BrandName1"]
                 oclass.BatchID1 = data["BatchID1"]
