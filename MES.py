@@ -7171,9 +7171,9 @@ def equipmentRunRecordCreate():
                 equipmentRunRecord.EQPCode = ocal.EQPCode
                 equipmentRunRecord.InputDate = data["InputDate"]
                 equipmentRunRecord.Classes = data["Classes"]
-                equipmentRunRecord.RunDate = int(data["RunDate"])
-                equipmentRunRecord.ClearDate = int(data["ClearDate"])
-                equipmentRunRecord.FailureDate = int(data["FailureDate"])
+                equipmentRunRecord.RunDate = intkong(data["RunDate"])
+                equipmentRunRecord.ClearDate = intkong(data["ClearDate"])
+                equipmentRunRecord.FailureDate = intkong(data["FailureDate"])
                 equipmentRunRecord.OperatePeople = data["OperatePeople"]
                 equipmentRunRecord.BrandName1 = data["BrandName1"]
                 equipmentRunRecord.BatchID1 = data["BatchID1"]
@@ -7188,6 +7188,18 @@ def equipmentRunRecordCreate():
             logger.error(e)
             insertSyslog("error", "设备运行记录添加报错Error：" + str(e), current_user.Name)
             return json.dumps("设备运行记录添加报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+def intkong(args):
+    isFloat = ""
+    try:
+        float(args)
+    except:
+        isFloat = False
+    else:
+        isFloat = True
+    if isFloat == True:
+        return float(args)
+    else:
+        return 0
 
 # 设备运行记录修改
 @app.route('/equipmentRunRecordUpdate', methods=['POST', 'GET'])
@@ -7201,9 +7213,9 @@ def equipmentRunRecordUpdate():
                 oclass = db_session.query(EquipmentRunRecord).filter(EquipmentRunRecord.ID == ID).first()
                 oclass.InputDate = data["InputDate"]
                 oclass.Classes = data["Classes"]
-                oclass.RunDate = int(data["RunDate"])
-                oclass.ClearDate = int(data["ClearDate"])
-                oclass.FailureDate = int(data["FailureDate"])
+                oclass.RunDate = intkong(data["RunDate"])
+                oclass.ClearDate = intkong(data["ClearDate"])
+                oclass.FailureDate = intkong(data["FailureDate"])
                 oclass.OperatePeople = data["OperatePeople"]
                 oclass.BrandName1 = data["BrandName1"]
                 oclass.BatchID1 = data["BatchID1"]

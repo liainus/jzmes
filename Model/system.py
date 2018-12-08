@@ -884,13 +884,13 @@ class EquipmentRunRecord(Base):
     Classes = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
     # 运行时间:
-    RunDate = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
+    RunDate = Column(Float, primary_key=False, autoincrement=False, nullable=True)
 
     # 清场时间:
-    ClearDate = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
+    ClearDate = Column(Float, primary_key=False, autoincrement=False, nullable=True)
 
     # 故障时间:
-    FailureDate = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
+    FailureDate = Column(Float, primary_key=False, autoincrement=False, nullable=True)
 
     # 操作人:
     OperatePeople = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
