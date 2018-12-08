@@ -11,7 +11,7 @@
     <link href="../static/css/datagridpanel_customer.css" rel="stylesheet">
     <link href="../static/css/dialogpanel.css" type="text/css" rel="stylesheet">
     <link href="../static/css/datagrid_customer.css" type="text/css" rel="stylesheet">
-    <script type="text/javascript" src="../static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="../static/js/jquery-3.3.1.min.js"></script>
     <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
     <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
     <script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
@@ -204,12 +204,13 @@
             $("#searchRecord").on('click',function(){
                 var beginTime = $('#beginTime').datebox('getValue')
                 $("#tab").datagrid('load',{
-                    InputDate:beginTime,
+                    InputDate:$('#beginTime').datebox('getValue'),
                     EQPName:EQPName
                 })
             })
             //datagrid表格右键操作
             $("#tab").datagrid({
+                url:'/equipmentRunSearch',
                 queryParams: {
                     InputDate:$('#beginTime').datebox('getValue'),
                     EQPName:EQPName
@@ -245,12 +246,12 @@
     <div class="left-tree" style="width: 15%;float: left;vertical-align: top;border: 1px solid #ccc;margin: 1%;padding: 1%;">
         <ul id="LeftTree" class="easyui-tree"></ul>
     </div>
-    <div id="container" style="width: 80%;float: left;vertical-align: top;">
+    <div id="container" style="width: 80%;margin-bottom:20px;float: left;vertical-align: top;">
         <div style="padding:10px 0px 5px 10px;">
-	    <a>  选择时间:  </a>
-        <input class="easyui-datebox" id="beginTime" style="width:166px;height:35px;line-height:35px;">
-        <a id="searchRecord" href="javascript:;" class="easyui-linkbutton" data-options="iconCls:'icon-search'">查询设备运行记录</a>
-	</div>
+            <a>  选择时间:  </a>
+            <input class="easyui-datebox" id="beginTime" style="width:166px;height:35px;line-height:35px;">
+            <a id="searchRecord" href="javascript:;" class="easyui-linkbutton" data-options="iconCls:'icon-search'">查询设备运行记录</a>
+        </div>
         <div id="Toolbar" style="padding:0 10px;">
             <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="toolbar.create()">添加</a>
             <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="toolbar.update()">编辑</a>
@@ -343,12 +344,12 @@
             </form>
         </div>
         <table class="easyui-datagrid" id="tab" title="设备运行记录" style="width:100%;" data-options="
-            url:'/equipmentRunSearch',
             rownumbers:true,
             singleSelect:false,
             autoRowHeight:false,
-            pagination:true,
-            pageSize:10,
+            pagination:false,
+            showFooter: true,
+            fitColumns: true,
             toolbar:'#Toolbar',
             method:'get'">
             <thead>
