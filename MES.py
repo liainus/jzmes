@@ -7105,12 +7105,12 @@ def equipmentRunCountSearch():
                 re = getMonthFirstDayAndLastDay(InputDate[0],InputDate[1])
                 if EQPName == "":
                     equipmentRunCount = db_session.query(EquipmentRunRecord).filter(EquipmentRunRecord.CreateDate.between(re[0],re[1])).count()
-                    equipmentRunClass = db_session.query(EquipmentRunRecord).filter(EquipmentRunRecord.CreateDate.between(re[0],re[1])).order_by(desc("CreateDate")).all()
+                    equipmentRunClass = db_session.query(EquipmentRunRecord).filter(EquipmentRunRecord.CreateDate.between(re[0],re[1])).order_by("InputDate").all()
                 else:
                     equipmentRunCount = db_session.query(EquipmentRunRecord).filter(EquipmentRunRecord.EQPName == EQPName,EquipmentRunRecord.CreateDate.between(re[0],re[1])).count()
                     equipmentRunClass = db_session.query(EquipmentRunRecord).filter(
                         EquipmentRunRecord.EQPName == EQPName,
-                        EquipmentRunRecord.CreateDate.between(re[0], re[1])).order_by(desc("CreateDate")).all()
+                        EquipmentRunRecord.CreateDate.between(re[0], re[1])).order_by("InputDate").all()
                 RunDates = 0
                 ClearDates = 0
                 FailureDates = 0
@@ -7120,10 +7120,10 @@ def equipmentRunCountSearch():
                     FailureDates += ee.FailureDate
                 sz = []
                 dir = {}
+                dir["Classes"] = "合计："
                 dir["RunDate"] = RunDates
                 dir["ClearDate"] = ClearDates
                 dir["FailureDate"] = FailureDates
-                # st =  "{" + '"RunDates"'+" : " + '"' + str(RunDates) + '"'+','+ '"ClearDates"'+" : " + '"' + str(ClearDates) + '"'+','+ '"FailureDates"'+" : " + '"' + str(FailureDates) + '"' +"}"
                 sz.append(dir)
                 sz = json.dumps(sz, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonoclass = json.dumps(equipmentRunClass, cls=AlchemyEncoder, ensure_ascii=False)
