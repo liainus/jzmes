@@ -481,6 +481,11 @@
                                     <a href="#">设备润滑管理</a>
                                 </li>
                             {% endif %}
+                            {% if '95' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onclick="addTab('设备运行数据','/EquipmentManage/runData')">设备运行数据</a>
+                                </li>
+                            {% endif %}
                         </ul>
                     </li>
                 {% endif %}
