@@ -923,7 +923,7 @@ class EquipmentFailureReporting(Base):
     FailureReportingType = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
     # 设备名称（可以多选）  :
-    EQPName = Column(Unicode(62), primary_key=False, autoincrement=False, nullable=True)
+    EQPName = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
     # 报修开始时间  :
     ReportingBeginDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
@@ -940,14 +940,17 @@ class EquipmentFailureReporting(Base):
     # 实际处理完成时间  ：
     ActualEndDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
 
-    # 故障处理  ：
-    FailureReportingHandle = Column(Unicode(65), primary_key=False, autoincrement=False, nullable=True)
-
     # 状态  ：
     ReportingStatus = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
     # 描述  ：
     Description = Column(Unicode(65), primary_key=False, autoincrement=False, nullable=True)
+
+    # 报修人:
+    NewPeople = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 处理人:
+    HandlePeople = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
 class EquipmentRunPUID(Base):
     __tablename__ = 'EquipmentRunPUID'

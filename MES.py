@@ -7320,22 +7320,23 @@ def EquipmentFailureReportingCreate():
                 equipmentFailureReporting.FailureReportingNum = data["FailureReportingNum"]
                 equipmentFailureReporting.FailureReportingType = data["FailureReportingType"]
                 equipmentFailureReporting.EQPName = data["EQPName"]
-                equipmentFailureReporting.ReportingBeginDate = data["ReportingBeginDate"]
+                equipmentFailureReporting.ReportingBeginDate = datetime.datetime.now()
                 equipmentFailureReporting.FailureBeginDate = data["FailureBeginDate"]
                 equipmentFailureReporting.FailureReportingDesc = data["FailureReportingDesc"]
                 equipmentFailureReporting.ActualBeginDate = data["ActualBeginDate"]
                 equipmentFailureReporting.ActualEndDate = data["ActualEndDate"]
                 equipmentFailureReporting.FailureReportingHandle = data["FailureReportingHandle"]
-                equipmentFailureReporting.ReportingStatus = data["ReportingStatus"]
+                equipmentFailureReporting.ReportingStatus = Model.Global.ReportingStatus.New.value
                 equipmentFailureReporting.Description = data["Description"]
+                equipmentFailureReporting.NewPeople = current_user.Name
                 db_session.add(equipmentFailureReporting)
                 db_session.commit()
                 return 'OK'
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "设备运行总记录添加报错Error：" + str(e), current_user.Name)
-            return json.dumps("设备运行总记录添加报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+            insertSyslog("error", "设备故障报修添加报错Error：" + str(e), current_user.Name)
+            return json.dumps("设备故障报修添加加报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 # 设备故障报修修改
 @app.route('/EquipmentFailureReportingUpdate', methods=['POST', 'GET'])
@@ -7348,21 +7349,74 @@ def EquipmentFailureReportingUpdate():
                 ID = data["ID"]
                 oclass = db_session.query(EquipmentFailureReporting).filter(
                     EquipmentFailureReporting.ID == ID).first()
-                oclass.OrganizationName = data["OrganizationName"]
-                oclass.Note = data["Note"]
+                oclass.FailureReportingNum = data["FailureReportingNum"]
+                oclass.FailureReportingType = data["FailureReportingType"]
                 oclass.EQPName = data["EQPName"]
-                oclass.EQPCode = data["EQPCode"]
-                oclass.RunTotalDate = data["RunTotalDate"]
-                oclass.FailureTotalDate = data["FailureTotalDate"]
-                oclass.CalculatePeople = data["CalculatePeople"]
-                oclass.CreateDate = data["CreateDate"]
+                oclass.ReportingBeginDate = data["ReportingBeginDate"]
+                oclass.FailureBeginDate = data["FailureBeginDate"]
+                oclass.FailureReportingDesc = data["FailureReportingDesc"]
+                oclass.ActualBeginDate = data["ActualBeginDate"]
+                oclass.ActualEndDate = data["ActualEndDate"]
+                oclass.FailureReportingHandle = data["FailureReportingHandle"]
+                oclass.OperatePeople = data["Description"]
                 db_session.commit()
                 return 'OK'
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "设备运行总记录修改报错Error：" + str(e), current_user.Name)
-            return json.dumps("设备运行总记录修改报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+            insertSyslog("error", "设备故障报修修报错Error：" + str(e), current_user.Name)
+            return json.dumps("设备故障报修修改报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+# 设备故障报修处理
+@app.route('/EquipmentFailureReportingHandle', methods=['POST', 'GET'])
+def EquipmentFailureReportingHandle():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                ID = data["ID"]
+                oclass = db_session.query(EquipmentFailureReporting).filter(
+                    EquipmentFailureReporting.ID == ID).first()
+                oclass.ReportingStatus = Model.Global.ReportingStatus.Handle.value
+                oclass.HandlePeople = current_user.Name
+                db_session.commit()
+                return 'OK'
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "设备故障报修处理报错Error：" + str(e), current_user.Name)
+            return json.dumps("设备故障报修处理报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+# 设备故障报修确认
+@app.route('/EquipmentFailureReportingConfirm', methods=['POST', 'GET'])
+def EquipmentFailureReportingConfirm():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                ID = data["ID"]
+                oclass = db_session.query(EquipmentFailureReporting).filter(
+                    EquipmentFailureReporting.ID == ID).first()
+                oclass.FailureReportingNum = data["FailureReportingNum"]
+                oclass.FailureReportingType = data["FailureReportingType"]
+                oclass.EQPName = data["EQPName"]
+                oclass.ReportingBeginDate = data["ReportingBeginDate"]
+                oclass.FailureBeginDate = data["FailureBeginDate"]
+                oclass.FailureReportingDesc = data["FailureReportingDesc"]
+                oclass.ActualBeginDate = data["ActualBeginDate"]
+                oclass.ActualEndDate = data["ActualEndDate"]
+                oclass.FailureReportingHandle = data["FailureReportingHandle"]
+                oclass.Description = data["Description"]
+                oclass.ReportingStatus = Model.Global.ReportingStatus.Confirm.value
+                db_session.commit()
+                return 'OK'
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "设备故障报修确认报错Error：" + str(e), current_user.Name)
+            return json.dumps("设备故障报修确认报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 # 设备故障报修删除
 @app.route('/EquipmentFailureReportingDelete', methods=['POST', 'GET'])
@@ -7386,14 +7440,14 @@ def EquipmentFailureReportingDelete():
                     except Exception as ee:
                         print(ee)
                         logger.error(ee)
-                        return json.dumps("设备运行总记录删除报错", cls=Model.BSFramwork.AlchemyEncoder,
+                        return json.dumps("设备故障报修删除报错", cls=Model.BSFramwork.AlchemyEncoder,
                                           ensure_ascii=False)
                 return 'OK'
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "设备运行总记录删除报错Error：" + str(e), current_user.Name)
-            return json.dumps("设备运行总记录删除报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+            insertSyslog("error", "设备故障报修删除报错Error：" + str(e), current_user.Name)
+            return json.dumps("设备故障报修删除报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 
 # 设备运行数据
