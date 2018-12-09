@@ -225,6 +225,10 @@
                             myChart.hideLoading();
                             myChart2.hideLoading();
                         }
+                    },
+                    error:function(data){
+                        myChart.hideLoading();
+                        myChart2.hideLoading();
                     }
 
                 })
