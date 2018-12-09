@@ -7467,29 +7467,29 @@ def runDataChart():
                 objects = db_session.query(EquipmentRunRecord).filter(
                     EquipmentRunRecord.EQPName == equip,
                     EquipmentRunRecord.CreateDate.between(firstDay,lastDay)).order_by("InputDate").all()
+                year_error_time = list()
+                year_run_time = list()
                 if objects:
                     objects = sorted(objects, key=lambda obj: obj.InputDate)
                     time_list = list()
                     run_time = list()
                     error_time = list()
                     clear_time = list()
-                    year_error_time = list()
-                    year_run_time = list()
                     for obj in objects:
                         run_time.append(obj.RunDate)
                         clear_time.append(obj.ClearDate)
                         error_time.append(obj.FailureDate)
                         time_list.append(obj.InputDate)
-                    for month in range(1,13):
-                        month_data = db_session.query(EquipmentRunRecord).filter(and_(
-                            EquipmentRunRecord.EQPName == equip,
-                            extract('year', EquipmentRunRecord.CreateDate) == year_month[0],
-                            extract('month', EquipmentRunRecord.CreateDate) == month)).all()
-                        if len(month_data) > 0:
-                            year_run_time.append(sum([i.RunDate for i in month_data]))
-                            year_error_time.append(sum([i.FailureDate for i in month_data]))
-                        year_run_time.append(0)
-                        year_error_time.append(0)
+                for month in range(1,13):
+                    month_data = db_session.query(EquipmentRunRecord).filter(and_(
+                        EquipmentRunRecord.EQPName == equip,
+                        extract('year', EquipmentRunRecord.CreateDate) == year_month[0],
+                        extract('month', EquipmentRunRecord.CreateDate) == month)).all()
+                    if len(month_data) > 0:
+                        year_run_time.append(sum([i.RunDate for i in month_data]))
+                        year_error_time.append(sum([i.FailureDate for i in month_data]))
+                    year_run_time.append(0)
+                    year_error_time.append(0)
                     data_list = [{"run_time": run_time, "clear_time": clear_time,
                                   "error_time": error_time, 'time': time_list,
                                   "year_run_time":year_run_time, "year_error_time":year_error_time}]
