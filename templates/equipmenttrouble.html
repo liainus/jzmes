@@ -34,7 +34,7 @@
                     $("#FailureReportingNum").val()
                     $("#FailureReportingType").val()
                     $("#EQPName").val()
-                    $("#FailureBeginDate").datebox("setValue", "")
+                    $("#FailureBeginDate").datetimebox("setValue", "")
                     $("#FailureReportingDesc").val()
                 },
                 update:function(){
@@ -49,7 +49,7 @@
                             $("#FailureReportingNum").val(row.FailureReportingNum)
                             $("#FailureReportingType").val(row.FailureReportingType)
                             $("#EQPName").val(row.EQPName)
-                            $("#FailureBeginDate").datebox("setValue", row.FailureBeginDate)
+                            $("#FailureBeginDate").datetimebox("setValue", row.FailureBeginDate)
                             $("#FailureReportingDesc").val(row.FailureReportingDesc)
                         };
                     } else if (rows.length == 0) {
@@ -69,7 +69,7 @@
                     }else if(Bee.StringUtils.isEmpty($('#EQPName').val())){
                         $.messager.alert('提示', '设备名称不能为空！', 'info');
                         return false;
-                    }else if(Bee.StringUtils.isEmpty($('#FailureBeginDate').datebox('getValue'))){
+                    }else if(Bee.StringUtils.isEmpty($('#FailureBeginDate').datetimebox('getValue'))){
                         $.messager.alert('提示', '故障开始时间不能为空！', 'info');
                         return false;
                     }
@@ -88,7 +88,7 @@
                             FailureReportingNum:$('#FailureReportingNum').val(),
                             FailureReportingType:$('#FailureReportingType').val(),
                             EQPName:$('#EQPName').val(),
-                            FailureBeginDate:$('#FailureBeginDate').datebox('getValue'),
+                            FailureBeginDate:$('#FailureBeginDate').datetimebox('getValue'),
                             FailureReportingDesc:$('#FailureReportingDesc').val()
                         },
                         success:function(data){
@@ -180,8 +180,8 @@
                         var row = $('#tab').datagrid('getSelected');
                         if (row) {
                             $("#serviceClassDialog").dialog('open').dialog('setTitle','完成维修');
-                            $("#ActualBeginDate").datebox("setValue", "")
-                            $("#ActualEndDate").datebox("setValue", "")
+                            $("#ActualBeginDate").datetimebox("setValue", "")
+                            $("#ActualEndDate").datetimebox("setValue", "")
                             $("#Description").val()
                         };
                     } else if (rows.length == 0) {
@@ -189,10 +189,10 @@
                     }
                 },
                 service:function(){
-                    if(Bee.StringUtils.isEmpty($('#ActualBeginDate').val())){
+                    if(Bee.StringUtils.isEmpty($('#ActualBeginDate').datetimebox('getValue'))){
                         $.messager.alert('提示', '实际处理开始时间不能为空！', 'info');
                         return false;
-                    }else if(Bee.StringUtils.isEmpty($('#ActualEndDate').val())){
+                    }else if(Bee.StringUtils.isEmpty($('#ActualEndDate').datetimebox('getValue'))){
                         $.messager.alert('提示', '实际处理完成时间不能为空！', 'info');
                         return false;
                     }else if(Bee.StringUtils.isEmpty($('#Description').val())){
@@ -203,8 +203,8 @@
                         url:"/EquipmentFailureReportingConfirm",
                         type:"post",
                         data:{
-                            ActualBeginDate:$('#ActualBeginDate').datebox('getValue'),
-                            ActualEndDate:$('#ActualEndDate').datebox('getValue'),
+                            ActualBeginDate:$('#ActualBeginDate').datetimebox('getValue'),
+                            ActualEndDate:$('#ActualEndDate').datetimebox('getValue'),
                             Description:$('#Description').val()
                         },
                         success:function(data){
@@ -294,7 +294,7 @@
                         <tr>
                             <td class="kv-label">故障开始时间</td>
                             <td class="kv-content">
-                                <input name="FailureBeginDate" id="FailureBeginDate" type="text" class="easyui-datebox" data-options="required:true,editable:false" autocomplete="off" placeholder=""  >
+                                <input name="FailureBeginDate" id="FailureBeginDate" type="text" class="easyui-datetimebox" data-options="required:true,editable:false" autocomplete="off" placeholder=""  >
                             </td>
                         </tr>
                         <tr>
@@ -319,13 +319,13 @@
                         <tr>
                             <td class="kv-label">实际处理开始时间</td>
                             <td class="kv-content">
-                                <input name="ActualBeginDate" id="ActualBeginDate" type="text" class="easyui-datebox" data-options="required:true,editable:false" autocomplete="off" placeholder="">
+                                <input name="ActualBeginDate" id="ActualBeginDate" type="text" class="easyui-datetimebox" data-options="required:true,editable:false" autocomplete="off" placeholder="">
                             </td>
                         </tr>
                         <tr>
                             <td class="kv-label">实际处理完成时间</td>
                             <td class="kv-content">
-                                <input name="ActualEndDate" id="ActualEndDate" type="text" class="easyui-datebox" data-options="required:true,editable:false" autocomplete="off" placeholder="">
+                                <input name="ActualEndDate" id="ActualEndDate" type="text" class="easyui-datetimebox" data-options="required:true,editable:false" autocomplete="off" placeholder="">
                             </td>
                         </tr>
                         <tr>
