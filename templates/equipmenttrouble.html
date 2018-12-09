@@ -15,17 +15,336 @@
     <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
     <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
     <script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
+    <script>
+        $(function(){
+            function createKeyIDObj(keyID){
+                    return {
+                        ID:keyID
+                    }
+                }
+            toolbar = {
+                search:function(){
+                    $('#tab').datagrid('load',{
+                        FailureReportingNum:$("#search").val()
+                    });
+                },
+                create:function(){
+                    $("#equimentsClassDialog").dialog('open').dialog('setTitle','新增故障记录');
+                    $('#ID').val();
+                    $("#FailureReportingNum").val()
+                    $("#FailureReportingType").val()
+                    $("#EQPName").val()
+                    $("#FailureBeginDate").datebox("setValue", "")
+                    $("#FailureReportingDesc").val()
+                },
+                update:function(){
+                    var rows = $('#tab').datagrid('getSelections');
+                    if (rows.length > 1) {
+                        $.messager.alert('警告操作！', '编辑记录只能选定一条数据！', 'warning');
+                    } else if (rows.length == 1) {
+                        var row = $('#tab').datagrid('getSelected');
+                        if (row) {
+                            $("#equimentsClassDialog").dialog('open').dialog('setTitle','修改记录');
+                            $('#ID').val(row.ID);
+                            $("#FailureReportingNum").val(row.FailureReportingNum)
+                            $("#FailureReportingType").val(row.FailureReportingType)
+                            $("#EQPName").val(row.EQPName)
+                            $("#FailureBeginDate").datebox("setValue", row.FailureBeginDate)
+                            $("#FailureReportingDesc").val(row.FailureReportingDesc)
+                        };
+                    } else if (rows.length == 0) {
+                        $.messager.alert('警告操作！', '请至少选定一条数据进行编辑！', 'warning');
+                    }
+                },
+                save:function(){
+                    var strID = $('#ID').val();
+                    var urlAddr = ''
+                    var hintinfo = ''
+                    if(Bee.StringUtils.isEmpty($('#FailureReportingNum').val())){
+                        $.messager.alert('提示', '设备故障报修计划单号不能为空！', 'info');
+                        return false;
+                    }else if(Bee.StringUtils.isEmpty($('#FailureReportingType').val())){
+                        $.messager.alert('提示', '故障类型不能为空！', 'info');
+                        return false;
+                    }else if(Bee.StringUtils.isEmpty($('#EQPName').val())){
+                        $.messager.alert('提示', '设备名称不能为空！', 'info');
+                        return false;
+                    }else if(Bee.StringUtils.isEmpty($('#FailureBeginDate').datebox('getValue'))){
+                        $.messager.alert('提示', '故障开始时间不能为空！', 'info');
+                        return false;
+                    }
+                    if (strID.length >= 1){
+                        urlAddr = '/EquipmentFailureReportingUpdate'
+                        hintinfo = "修改记录"
+                    }
+                    else {
+                        urlAddr = '/EquipmentFailureReportingCreate'
+                        hintinfo = "新增记录"
+                    }
+                    $.ajax({
+                        url:urlAddr,
+                        type:"post",
+                        data:{
+                            FailureReportingNum:$('#FailureReportingNum').val(),
+                            FailureReportingType:$('#FailureReportingType').val(),
+                            EQPName:$('#EQPName').val(),
+                            FailureBeginDate:$('#FailureBeginDate').datebox('getValue'),
+                            FailureReportingDesc:$('#FailureReportingDesc').val()
+                        },
+                        success:function(data){
+                            $.messager.progress('close');
+                            if(data == "OK"){
+                                $.messager.show({
+                                    title: '提示',
+                                    msg: hintinfo  + '成功',
+                                    timeout:1000,
+                                    style: {
+                                        right: '',
+                                        top: document.body.scrollTop + document.documentElement.scrollTop,
+                                        bottom: ''
+                                    }
+                                });
+                                $("#equimentsClassDialog").dialog('close');
+                                $('#tab').datagrid('reload');
+                            } else {
+                                $.messager.alert('请求失败！', '未知错误导致失败，请重试！', 'warning');
+                            }
+                        },
+                        error: function(data){
+                           console.log(data.responseText)
+                           alert(hintinfo+ "异常，请刷新后重试...");
+                        },
+                    })
+                },
+                delete:function(){
+                    var rows = $("#tab").datagrid('getSelections');
+                    if (rows.length > 0) {
+                        var jsonarray=[];
+                        $.messager.confirm('确定操作', '您正在删除所选的记录吗？', function (flag) {
+                            if (flag) {
+                                for (var i = 0; i < rows.length; i++) {
+                                    var obj=createKeyIDObj(parseInt(rows[i].ID));
+                                    jsonarray.push(obj);
+                                }
+                                var a = JSON.stringify(jsonarray);
+                                $.ajax({
+                                    url: '/EquipmentFailureReportingDelete',
+                                    method: 'POST',
+                                    data: a,
+                                    success: function (data) {
+                                        if(data == "OK"){
+                                            $.messager.progress('close');
+                                            $("#tab").datagrid('reload');
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                    } else {
+                        $.messager.alert('提示', '请选择要删除的记录！', 'info');
+                    }
+                },
+                Receipt:function(){
+                    var rows = $("#tab").datagrid('getSelections');
+                    if (rows.length > 0) {
+                        var jsonarray=[];
+                        $.messager.confirm('确定操作', '是否要对此设备进行维修？', function (flag) {
+                            if (flag) {
+                                for (var i = 0; i < rows.length; i++) {
+                                    var obj=createKeyIDObj(parseInt(rows[i].ID));
+                                    jsonarray.push(obj);
+                                }
+                                var a = JSON.stringify(jsonarray);
+                                $.ajax({
+                                    url: '/EquipmentFailureReportingHandle',
+                                    method: 'POST',
+                                    data: a,
+                                    success: function (data) {
+                                        if(data == "OK"){
+                                            $.messager.progress('close');
+                                            $("#tab").datagrid('reload');
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                    } else {
+                        $.messager.alert('提示', '请选择要处理的记录！', 'info');
+                    }
+                },
+                ReceiptOK:function(){
+                    var rows = $('#tab').datagrid('getSelections');
+                    if (rows.length > 1) {
+                        $.messager.alert('警告操作！', '只能选定一条数据！', 'warning');
+                    } else if (rows.length == 1) {
+                        var row = $('#tab').datagrid('getSelected');
+                        if (row) {
+                            $("#serviceClassDialog").dialog('open').dialog('setTitle','完成维修');
+                            $("#ActualBeginDate").datebox("setValue", "")
+                            $("#ActualEndDate").datebox("setValue", "")
+                            $("#Description").val()
+                        };
+                    } else if (rows.length == 0) {
+                        $.messager.alert('警告操作！', '请至少选定一条数据进行完成！', 'warning');
+                    }
+                },
+                service:function(){
+                    if(Bee.StringUtils.isEmpty($('#ActualBeginDate').val())){
+                        $.messager.alert('提示', '实际处理开始时间不能为空！', 'info');
+                        return false;
+                    }else if(Bee.StringUtils.isEmpty($('#ActualEndDate').val())){
+                        $.messager.alert('提示', '实际处理完成时间不能为空！', 'info');
+                        return false;
+                    }else if(Bee.StringUtils.isEmpty($('#Description').val())){
+                        $.messager.alert('提示', '故障详细不能为空！', 'info');
+                        return false;
+                    }
+                    $.ajax({
+                        url:"/EquipmentFailureReportingConfirm",
+                        type:"post",
+                        data:{
+                            ActualBeginDate:$('#ActualBeginDate').datebox('getValue'),
+                            ActualEndDate:$('#ActualEndDate').datebox('getValue'),
+                            Description:$('#Description').val()
+                        },
+                        success:function(data){
+                            $.messager.progress('close');
+                            if(data == "OK"){
+                                $.messager.show({
+                                    title: '提示',
+                                    msg: '维修完成',
+                                    timeout:1000,
+                                    style: {
+                                        right: '',
+                                        top: document.body.scrollTop + document.documentElement.scrollTop,
+                                        bottom: ''
+                                    }
+                                });
+                                $("#serviceClassDialog").dialog('close');
+                                $('#tab').datagrid('reload');
+                            } else {
+                                $.messager.alert('请求失败！', '未知错误导致失败，请重试！', 'warning');
+                            }
+                        },
+                        error: function(data){
+                           console.log(data.responseText)
+                           alert("异常，请刷新后重试...");
+                        },
+                    })
+                },
+                refresh:function(){
+                    $('#tab').datagrid('reload');
+                }
+            }
+        })
+        function formatterStatus(value, row, index){
+            if (value == 10){
+                return '新增'
+            }else if(value == 20){
+                return '处理中'
+            }else if(value == 30){
+                return '维修完成'
+            }
+        }
+    </script>
 </head>
 <body>
     <div class="content">
         <div id="Toolbar" style="padding:0 10px;">
             设备名称:
-            <input type="text" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
+            <input type="text" class="textbox-text validatebox-text textbox-prompt" id="search" name="search" style="height:28px;" autocomplete="off"
                 placeholder="">
+            <a href="#" class="easyui-linkbutton" iconCls="icon-search" onclick="toolbar.search();">查询</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="toolbar.create()">报修</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="toolbar.update()">编辑</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="toolbar.delete()">删除</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-filter" onclick="toolbar.Receipt()">开始维修</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="toolbar.ReceiptOK()">维修完成</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-reload" onclick="toolbar.refresh()">刷新</a>
         </div>
-        <table class="easyui-datagrid" id="tab" title="" style="width:100%;" data-options="
+        <div id="equimentsClassDialog" class="easyui-dialog" style="width:400px;height:360px;padding:10px;"
+             data-options="closed:'true',buttons:'#equimentsClassDialogButtons',modal:true">
+            <form id="equimentsClassDialogForm" method="post" class="dialog-form">
+                <table class="kv-table">
+                    <tbody>
+                        <tr>
+                            <td class="kv-label">id</td>
+                            <td class="kv-content">
+                                <input name="ID" id="ID" type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="" disabled="disabled">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">设备故障报修计划单号</td>
+                            <td class="kv-content">
+                                <input name="FailureReportingNum" id="FailureReportingNum" required="true" type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">故障类型</td>
+                            <td class="kv-content">
+                                <input name="FailureReportingType" id="FailureReportingType" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">设备名称</td>
+                            <td class="kv-content">
+                                <input name="EQPName" id="EQPName" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">故障开始时间</td>
+                            <td class="kv-content">
+                                <input name="FailureBeginDate" id="FailureBeginDate" type="text" class="easyui-datebox" data-options="required:true,editable:false" autocomplete="off" placeholder=""  >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">故障描述</td>
+                            <td class="kv-content">
+                                <input name="FailureReportingDesc" id="FailureReportingDesc" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div id="equimentsClassDialogButtons">
+                    <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" id="saveAdd" onclick="toolbar.save()" >保存</a>
+                    <a href="#" class="easyui-linkbutton" onclick="$('#equimentsClassDialog').dialog('close')">关闭</a>
+                </div>
+            </form>
+        </div>
+        <div id="serviceClassDialog" class="easyui-dialog" style="width:400px;height:300px;padding:10px;"
+             data-options="closed:'true',buttons:'#serviceClassDialogButtons',modal:true">
+            <form id="serviceClassDialogForm" method="post" class="dialog-form">
+                <table class="kv-table">
+                    <tbody>
+                        <tr>
+                            <td class="kv-label">实际处理开始时间</td>
+                            <td class="kv-content">
+                                <input name="ActualBeginDate" id="ActualBeginDate" type="text" class="easyui-datebox" data-options="required:true,editable:false" autocomplete="off" placeholder="">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">实际处理完成时间</td>
+                            <td class="kv-content">
+                                <input name="ActualEndDate" id="ActualEndDate" type="text" class="easyui-datebox" data-options="required:true,editable:false" autocomplete="off" placeholder="">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">故障详细</td>
+                            <td class="kv-content">
+                                <input name="Description" id="Description" required="true" type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div id="serviceClassDialogButtons">
+                    <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" onclick="toolbar.service()">保存</a>
+                    <a href="#" class="easyui-linkbutton" onclick="$('#serviceClassDialog').dialog('close')">关闭</a>
+                </div>
+            </form>
+        </div>
+        <table class="easyui-datagrid" id="tab" title="设备故障记录" style="width:100%;" data-options="
             queryParams: {
-                BatchID: ''
+                FailureReportingNum: ''
             },
             rownumbers:true,
             singleSelect:false,
@@ -33,19 +352,24 @@
             pagination:true,
             pageSize:10,
             toolbar:'#Toolbar',
-            url:'',
+            url:'/EquipmentFailureReportingSearch',
             method:'get'">
             <thead>
                 <tr>
                     <th field="ck" checkbox="true"></th>
-
+                    <th data-options="field:'FailureReportingNum',width:150,align:'center'">设备故障报修计划单号</th>
+                    <th data-options="field:'FailureReportingType',width:150,align:'center'">故障类型</th>
+                    <th data-options="field:'EQPName',width:150,align:'center'">设备名称</th>
+                    <th data-options="field:'ReportingBeginDate',width:150,align:'center'">报修开始时间</th>
+                    <th data-options="field:'FailureBeginDate',width:150,align:'center'">故障开始时间</th>
+                    <th data-options="field:'FailureReportingDesc',width:150,align:'center'">故障描述</th>
+                    <th data-options="field:'ActualBeginDate',width:150,align:'center'">实际处理开始时间</th>
+                    <th data-options="field:'ActualEndDate',width:150,align:'center'">实际处理完成时间</th>
+                    <th data-options="field:'ReportingStatus',width:150,align:'center'" formatter="formatterStatus">状态</th>
+                    <th data-options="field:'Description',width:150,align:'center'">故障详细</th>
                 </tr>
             </thead>
         </table>
-        <!-- 右键菜单 -->
-        <div id="contextmenu" class="easyui-menu" style="width:120px;">
-{#            <div data-options="iconCls:'icon-ok'" onclick="CollectToolbar.pass();">通过审核</div>#}
-        </div>
     </div>
 </body>
 </html>

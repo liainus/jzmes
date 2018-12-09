@@ -405,6 +405,11 @@
                                     <a href="#" onClick="addTab('投入产出数据','/QualityControl/YieldCompare.html')">投入产出数据</a>
                                 </li>
                             {% endif %}
+                            {% if '95' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onclick="addTab('设备运行数据','/EquipmentManage/runData')">设备运行数据</a>
+                                </li>
+                            {% endif %}
 {#                            {% if '45' in session.get('menus') %}#}
 {#                                <li>#}
 {#                                    <a href="#" onClick="addTab('离散数据录入','/DiscreteDataEntry')">离散数据录入</a>#}
@@ -479,11 +484,6 @@
                             {% if '58' in session.get('menus') %}
                                 <li>
                                     <a href="#">设备润滑管理</a>
-                                </li>
-                            {% endif %}
-                            {% if '95' in session.get('menus') %}
-                                <li>
-                                    <a href="#" onclick="addTab('设备运行数据','/EquipmentManage/runData')">设备运行数据</a>
                                 </li>
                             {% endif %}
                         </ul>

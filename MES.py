@@ -7455,7 +7455,36 @@ def EquipmentFailureReportingDelete():
 def EquipmentManageRunData():
     return render_template('EquipmentManageRunData.html')
 
-
+@app.route('/EquipmentManage/runDataChart')
+def runDataChart():
+    if request.method == 'GET':
+        try:
+            data = request.values
+            equip = data['equip']
+            date = data['date']
+            if unit != None and date != None:
+                year_month = date.split('-')
+                objects = db_session.query(EquipmentRunRecord).filter(and_(
+                    EquipmentRunRecord.EQPName == equip,
+                    extract('year', EquipmentRunRecord.InputDate == year_month[0]),
+                    extract('month', EquipmentRunRecord.InputDate == year_month[1]))
+                ).all()
+                objects = sorted(objects, key=lambda obj: obj.InputDate)
+                data_list = time_list = list()
+                for obj in objects:
+                    equip_time = {"run_time": obj.RunDate,
+                                  "clear_tine":obj.ClearDate,
+                                  "error_time":obj.FailureDate}
+                    data_list.append(equip_time)
+                    time_list.append(obj.InputDate)
+                equip_data = [{'data': data_list},{'time': time_list}]
+                return json.dumps(equip_data, cls=AlchemyEncoder, ensure_ascii=False)
+            return "NO"
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "设备运行-图表数据获取报错Error：" + str(e), current_user.Name)
+            return json.dumps("设备运行-图表数据获取报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 
 # 收粉监控画面
@@ -7484,7 +7513,6 @@ def quipmentRunPUIDParent():
         data = request.values
         try:
             data = getMyEquipmentRunPUIDChildren(id=0)
-            print(data)
             return json.dumps(data)
         except Exception as e:
             print(e)
