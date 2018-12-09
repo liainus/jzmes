@@ -53,7 +53,8 @@ import numpy
 from sqlalchemy.exc import InvalidRequestError
 import pandas as pd
 from pandas import DataFrame
-import numpy as np
+import matplotlib.pyplot as plt
+plt.switch_backend('agg')
 
 
 #flask_login的初始化
