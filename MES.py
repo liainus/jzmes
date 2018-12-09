@@ -18,7 +18,7 @@ import xlrd
 from flask import Flask, jsonify, redirect, url_for
 from flask import render_template, request, make_response
 from flask import session
-from sqlalchemy import create_engine, Column, ForeignKey, Table, Integer, String, and_, or_, desc
+from sqlalchemy import create_engine, Column, ForeignKey, Table, Integer, String, and_, or_, desc,extract
 from sqlalchemy import func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session, relationship, sessionmaker
@@ -4372,7 +4372,7 @@ def get_data_from_realtime_Decocting(batch,brand,tankOver,status):
 
 # 生产监控提取段——健胃消食片
 @app.route('/processMonitorLine/extract')
-def extract():
+def Extract():
     if request.method == 'GET':
         try:
             Equips_data = {}
@@ -7469,21 +7469,40 @@ def runDataChart():
             date = data['date']
             if unit != None and date != None:
                 year_month = date.split('-')
-                objects = db_session.query(EquipmentRunRecord).filter(and_(
+                firstDay,lastDay = getMonthFirstDayAndLastDay(year_month[0], year_month[1])
+                objects = db_session.query(EquipmentRunRecord).filter(
                     EquipmentRunRecord.EQPName == equip,
-                    extract('year', EquipmentRunRecord.InputDate == year_month[0]),
-                    extract('month', EquipmentRunRecord.InputDate == year_month[1]))
-                ).all()
-                objects = sorted(objects, key=lambda obj: obj.InputDate)
-                data_list = time_list = list()
-                for obj in objects:
-                    equip_time = {"run_time": obj.RunDate,
-                                  "clear_tine":obj.ClearDate,
-                                  "error_time":obj.FailureDate}
-                    data_list.append(equip_time)
-                    time_list.append(obj.InputDate)
-                equip_data = [{'data': data_list},{'time': time_list}]
-                return json.dumps(equip_data, cls=AlchemyEncoder, ensure_ascii=False)
+                    EquipmentRunRecord.CreateDate.between(firstDay,lastDay)).all()
+                if objects:
+                    objects = sorted(objects, key=lambda obj: obj.InputDate)
+                    time_list = list()
+                    run_time = list()
+                    error_time = list()
+                    clear_time = list()
+                    for obj in objects:
+                        run_time.append(obj.RunDate)
+                        clear_time.append(obj.ClearDate)
+                        error_time.append(obj.FailureDate)
+                        time_list.append(obj.InputDate)
+                else:
+                    return "NO"
+                year_error_time = list()
+                year_run_time = list()
+                for month in range(1,13):
+                    month_data = db_session.query(EquipmentRunRecord).filter(and_(
+                        EquipmentRunRecord.EQPName == equip,
+                        extract('year', EquipmentRunRecord.CreateDate) == year_month[0],
+                        extract('month', EquipmentRunRecord.CreateDate) == month)).all()
+                    if len(month_data) > 0:
+                        year_run_time.append(sum([i.RunDate for i in month_data]))
+                        year_error_time.append(sum([i.FailureDate for i in month_data]))
+                    else:
+                        year_run_time.append(0)
+                        year_error_time.append(0)
+                data_list = [{"run_time": run_time, "clear_time": clear_time,
+                              "error_time": error_time, 'time': time_list,
+                              "year_run_time":year_run_time, "year_error_time":year_error_time}]
+                return json.dumps(data_list, cls=AlchemyEncoder, ensure_ascii=False)
             return "NO"
         except Exception as e:
             print(e)

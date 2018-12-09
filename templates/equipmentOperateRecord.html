@@ -249,7 +249,7 @@
     <div id="container" style="width: 80%;margin-bottom:20px;float: left;vertical-align: top;">
         <div style="padding:10px 0px 5px 10px;">
             <a>  选择时间:  </a>
-            <input class="easyui-datebox" id="beginTime" style="width:166px;height:35px;line-height:35px;">
+            <input class="easyui-datebox" id="beginTime" editable="fasle" style="width:166px;height:35px;line-height:35px;">
             <a id="searchRecord" href="javascript:;" class="easyui-linkbutton" data-options="iconCls:'icon-search'">查询设备运行记录</a>
         </div>
         <div id="Toolbar" style="padding:0 10px;">
@@ -357,9 +357,9 @@
                     <th field="ck" checkbox="true"></th>
                     <th data-options="field:'InputDate',width:150,align:'center'">日期</th>
                     <th data-options="field:'Classes',width:150,align:'center'">班次</th>
-                    <th data-options="field:'RunDate',width:150,align:'center'">运行时间</th>
-                    <th data-options="field:'ClearDate',width:150,align:'center'">清场时间</th>
-                    <th data-options="field:'FailureDate',width:150,align:'center'">故障时间</th>
+                    <th data-options="field:'RunDate',width:150,align:'center'">运行时间(h)</th>
+                    <th data-options="field:'ClearDate',width:150,align:'center'">清场时间(h)</th>
+                    <th data-options="field:'FailureDate',width:150,align:'center'">故障时间(h)</th>
                     <th data-options="field:'OperatePeople',width:150,align:'center'">操作人</th>
                     <th data-options="field:'BrandName1',width:150,align:'center'">产品名称</th>
                     <th data-options="field:'BatchID1',width:150,align:'center'">产品批号</th>
