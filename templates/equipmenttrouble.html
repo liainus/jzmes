@@ -17,6 +17,12 @@
     <script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
     <script>
         $(function(){
+            $("tab").datagrid({
+                url:'/EquipmentFailureReportingSearch',
+                queryParams: {
+                    FailureReportingNum: ''
+                }
+            })
             function createKeyIDObj(keyID){
                     return {
                         ID:keyID
@@ -85,6 +91,7 @@
                         url:urlAddr,
                         type:"post",
                         data:{
+                            ID:$('#ID').val(),
                             FailureReportingNum:$('#FailureReportingNum').val(),
                             FailureReportingType:$('#FailureReportingType').val(),
                             EQPName:$('#EQPName').val(),
@@ -163,6 +170,8 @@
                                         if(data == "OK"){
                                             $.messager.progress('close');
                                             $("#tab").datagrid('reload');
+                                        }else{
+                                            $.messager.alert('提示', data, 'info');
                                         }
                                     }
                                 });
@@ -203,6 +212,7 @@
                         url:"/EquipmentFailureReportingConfirm",
                         type:"post",
                         data:{
+                            ID:$('#ID').val(),
                             ActualBeginDate:$('#ActualBeginDate').datetimebox('getValue'),
                             ActualEndDate:$('#ActualEndDate').datetimebox('getValue'),
                             Description:$('#Description').val()
@@ -223,7 +233,7 @@
                                 $("#serviceClassDialog").dialog('close');
                                 $('#tab').datagrid('reload');
                             } else {
-                                $.messager.alert('请求失败！', '未知错误导致失败，请重试！', 'warning');
+                                $.messager.alert('请求失败！', data, 'warning');
                             }
                         },
                         error: function(data){
@@ -249,9 +259,9 @@
     </script>
 </head>
 <body>
-    <div class="content">
+    <div class="content" style="padding: 10px;">
         <div id="Toolbar" style="padding:0 10px;">
-            设备名称:
+            设备故障报修计划单号:
             <input type="text" class="textbox-text validatebox-text textbox-prompt" id="search" name="search" style="height:28px;" autocomplete="off"
                 placeholder="">
             <a href="#" class="easyui-linkbutton" iconCls="icon-search" onclick="toolbar.search();">查询</a>
@@ -276,7 +286,7 @@
                         <tr>
                             <td class="kv-label">设备故障报修计划单号</td>
                             <td class="kv-content">
-                                <input name="FailureReportingNum" id="FailureReportingNum" required="true" type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="">
+                                <input name="FailureReportingNum" id="FailureReportingNum" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder="">
                             </td>
                         </tr>
                         <tr>
@@ -294,7 +304,7 @@
                         <tr>
                             <td class="kv-label">故障开始时间</td>
                             <td class="kv-content">
-                                <input name="FailureBeginDate" id="FailureBeginDate" type="text" class="easyui-datetimebox" data-options="required:true,editable:false" autocomplete="off" placeholder=""  >
+                                <input name="FailureBeginDate" id="FailureBeginDate" type="text" class="easyui-datetimebox" data-options="required:true,editable:false" autocomplete="off" placeholder="" style="height: 25px;" >
                             </td>
                         </tr>
                         <tr>
@@ -342,17 +352,13 @@
                 </div>
             </form>
         </div>
-        <table class="easyui-datagrid" id="tab" title="设备故障记录" style="width:100%;" data-options="
-            queryParams: {
-                FailureReportingNum: ''
-            },
+        <table class="easyui-datagrid" id="tab" title="" style="width:100%;" data-options="
             rownumbers:true,
             singleSelect:false,
             autoRowHeight:false,
             pagination:true,
             pageSize:10,
             toolbar:'#Toolbar',
-            url:'/EquipmentFailureReportingSearch',
             method:'get'">
             <thead>
                 <tr>

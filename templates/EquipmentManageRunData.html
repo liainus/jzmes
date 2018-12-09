@@ -227,6 +227,14 @@
                         }
                     },
                     error:function(data){
+                        $.messager.alert({
+                            title: '提示',
+                            msg: "暂无数据，请查看其它记录。",
+                            icon: 'info',
+                            width: 300,
+                            top: 200,
+                            left: 500
+                        })
                         myChart.hideLoading();
                         myChart2.hideLoading();
                     }
