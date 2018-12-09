@@ -7329,13 +7329,8 @@ def EquipmentFailureReportingUpdate():
                 oclass.FailureReportingNum = data["FailureReportingNum"]
                 oclass.FailureReportingType = data["FailureReportingType"]
                 oclass.EQPName = data["EQPName"]
-                oclass.ReportingBeginDate = datetime.datetime.strptime(data["ReportingBeginDate"],'%Y-%m-%d %H:%M:%S')
                 oclass.FailureBeginDate = datetime.datetime.strptime(data["FailureBeginDate"],'%Y-%m-%d %H:%M:%S')
                 oclass.FailureReportingDesc = data["FailureReportingDesc"]
-                oclass.ActualBeginDate = datetime.datetime.strptime(data["ActualBeginDate"],'%Y-%m-%d %H:%M:%S')
-                oclass.ActualEndDate = datetime.datetime.strptime(data["ActualEndDate"],'%Y-%m-%d %H:%M:%S')
-                oclass.FailureReportingHandle = data["FailureReportingHandle"]
-                oclass.OperatePeople = data["Description"]
                 db_session.commit()
                 return 'OK'
         except Exception as e:
@@ -7350,16 +7345,25 @@ def EquipmentFailureReportingHandle():
     if request.method == 'POST':
         data = request.values
         try:
-            json_str = json.dumps(data.to_dict())
-            if len(json_str) > 10:
-                ID = data["ID"]
-                oclass = db_session.query(EquipmentFailureReporting).filter(
-                    EquipmentFailureReporting.ID == ID).first()
-                if oclass.ReportingStatus == Model.Global.ReportingStatus.Confirm.value or oclass.ReportingStatus == Model.Global.ReportingStatus.Handle.value:
-                    return "此报修单号已被处理，请选择未处理的维修单！"
-                oclass.ReportingStatus = Model.Global.ReportingStatus.Handle.value
-                oclass.HandlePeople = current_user.Name
-                db_session.commit()
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
+                for key in jsonnumber:
+                    ID = int(key)
+                    try:
+                        oclass = db_session.query(EquipmentFailureReporting).filter(
+                            EquipmentFailureReporting.ID == ID).first()
+                        if oclass.ReportingStatus == Model.Global.ReportingStatus.Confirm.value or oclass.ReportingStatus == Model.Global.ReportingStatus.Handle.value:
+                            return "此报修单号已被处理，请选择未处理的维修单！"
+                        oclass.ReportingStatus = Model.Global.ReportingStatus.Handle.value
+                        oclass.HandlePeople = current_user.Name
+                        db_session.commit()
+                        return 'OK'
+                    except Exception as ee:
+                        print(ee)
+                        logger.error(ee)
+                        return json.dumps("设备故障报修处理报错", cls=Model.BSFramwork.AlchemyEncoder,
+                                          ensure_ascii=False)
                 return 'OK'
         except Exception as e:
             print(e)
