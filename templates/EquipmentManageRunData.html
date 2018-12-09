@@ -47,14 +47,16 @@
             }else {
                 myChart.showLoading();
                 $.ajax({
-                    url: "/QualityControl/BatchDataCompare",
+                    url: "/EquipmentManage/runDataChart",
                     type: "post",
                     data: {
-                        batch: batch
+                        equip: EQPName,
+                        date: $('#beginTime').datebox('getValue')
                     },
                     dataType: "json",
                     traditional:true,
                     success: function (data) {
+                        console.log(data)
                         if (data[0].input != "NO" || data[0].output != "NO" || data[0].sampling_quantity != "NO") {
                             var input = ''
                             var output = ''
