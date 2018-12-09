@@ -7322,12 +7322,11 @@ def EquipmentFailureReportingCreate():
                 equipmentFailureReporting.EQPName = data["EQPName"]
                 equipmentFailureReporting.ReportingBeginDate = datetime.datetime.now()
                 equipmentFailureReporting.FailureBeginDate = data["FailureBeginDate"]
-                equipmentFailureReporting.FailureReportingDesc = data["FailureReportingDesc"]
-                equipmentFailureReporting.ActualBeginDate = data["ActualBeginDate"]
-                equipmentFailureReporting.ActualEndDate = data["ActualEndDate"]
-                equipmentFailureReporting.FailureReportingHandle = data["FailureReportingHandle"]
+                # equipmentFailureReporting.FailureReportingDesc = data["FailureReportingDesc"]
+                # equipmentFailureReporting.ActualBeginDate = data["ActualBeginDate"]
+                # equipmentFailureReporting.ActualEndDate = data["ActualEndDate"]
                 equipmentFailureReporting.ReportingStatus = Model.Global.ReportingStatus.New.value
-                equipmentFailureReporting.Description = data["Description"]
+                equipmentFailureReporting.FailureReportingDesc = data["FailureReportingDesc"]
                 equipmentFailureReporting.NewPeople = current_user.Name
                 db_session.add(equipmentFailureReporting)
                 db_session.commit()
