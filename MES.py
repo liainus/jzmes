@@ -6994,8 +6994,8 @@ def spareStockCheckRecall():
             return json.dumps("备件入库出库审核撤回报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 # 制定检修计划
-@app.route('/EquipmentMaintainCreate', methods=['POST', 'GET'])
-def EquipmentMaintainCreate():
+@app.route('/EqpMaintainCreate', methods=['POST', 'GET'])
+def EqpMaintainCreate():
     if request.method == 'POST':
         data = request.values
         try:
@@ -7105,12 +7105,12 @@ def equipmentRunCountSearch():
                 re = getMonthFirstDayAndLastDay(InputDate[0],InputDate[1])
                 if EQPName == "":
                     equipmentRunCount = db_session.query(EquipmentRunRecord).filter(EquipmentRunRecord.CreateDate.between(re[0],re[1])).count()
-                    equipmentRunClass = db_session.query(EquipmentRunRecord).filter(EquipmentRunRecord.CreateDate.between(re[0],re[1])).order_by("InputDate").all()
+                    equipmentRunClass = db_session.query(EquipmentRunRecord).filter(EquipmentRunRecord.CreateDate.between(re[0],re[1])).order_by(desc("InputDate")).all()
                 else:
                     equipmentRunCount = db_session.query(EquipmentRunRecord).filter(EquipmentRunRecord.EQPName == EQPName,EquipmentRunRecord.CreateDate.between(re[0],re[1])).count()
                     equipmentRunClass = db_session.query(EquipmentRunRecord).filter(
                         EquipmentRunRecord.EQPName == EQPName,
-                        EquipmentRunRecord.CreateDate.between(re[0], re[1])).order_by("InputDate").all()
+                        EquipmentRunRecord.CreateDate.between(re[0], re[1])).order_by(desc("InputDate")).all()
                 RunDates = 0
                 ClearDates = 0
                 FailureDates = 0
@@ -7174,7 +7174,7 @@ def equipmentRunRecordCreate():
                 equipmentRunRecord.PUIDName = ocal.PUIDName
                 equipmentRunRecord.EQPName = EQPName
                 equipmentRunRecord.EQPCode = ocal.EQPCode
-                equipmentRunRecord.InputDate = data["InputDate"]
+                equipmentRunRecord.InputDate = datetime.datetime.strptime(data["InputDate"],'%Y-%m-%d')
                 equipmentRunRecord.Classes = data["Classes"]
                 equipmentRunRecord.RunDate = intkong(data["RunDate"])
                 equipmentRunRecord.ClearDate = intkong(data["ClearDate"])
@@ -7275,29 +7275,10 @@ def EquipmentFailureReportingSearch():
                 endpage = (pages - 1) * rowsnumber + rowsnumber
                 FailureReportingNum = data["FailureReportingNum"]
                 if FailureReportingNum == "":
-                    RoleNames = db_session.query(User.RoleName).filter(User.Name == current_user.Name).all()
-                    rolename = ""
-                    for name in RoleNames:
-                        if name[0] == "设备管理部审核人":
-                            rolename = "设备管理部审核人"
-                        if name[0] == "设备部技术人员":
-                            rolename = "设备部技术人员"
-                        if name[0] == "系统管理员":
-                            rolename = "系统管理员"
-                    if rolename == "设备管理部审核人":
-                        EquipmentFailureReportingCount = db_session.query(EquipmentFailureReporting).filter_by(ReportingStatus = Model.Global.ReportingStatus.Handle.value).count()
-                        EquipmentFailureReportingClass = db_session.query(EquipmentFailureReporting).filter_by(ReportingStatus = Model.Global.ReportingStatus.Handle.value).all()[inipage:endpage]
-                    elif rolename == "设备部技术人员":
-                        EquipmentFailureReportingCount = db_session.query(EquipmentFailureReporting).filter_by(
-                            ReportingStatus=Model.Global.ReportingStatus.New.value).count()
-                        EquipmentFailureReportingClass = db_session.query(EquipmentFailureReporting).filter_by(
-                            ReportingStatus=Model.Global.ReportingStatus.New.value).all()[inipage:endpage]
-                    elif rolename == "系统管理员":
-                        EquipmentFailureReportingCount = db_session.query(EquipmentFailureReporting).count()
-                        EquipmentFailureReportingClass = db_session.query(EquipmentFailureReporting).all()[inipage:endpage]
+                    EquipmentFailureReportingCount = db_session.query(EquipmentFailureReporting).filter_by().count()
+                    EquipmentFailureReportingClass = db_session.query(EquipmentFailureReporting).filter_by().all()[inipage:endpage]
                 else:
-                    EquipmentFailureReportingCount = db_session.query(EquipmentFailureReporting).filter(
-                        EquipmentFailureReporting.FailureReportingNum == FailureReportingNum).count()
+                    EquipmentFailureReportingCount = db_session.query(EquipmentFailureReporting).filter(EquipmentFailureReporting.FailureReportingNum == FailureReportingNum).count()
                     EquipmentFailureReportingClass = db_session.query(EquipmentFailureReporting).filter(
                         EquipmentFailureReporting.FailureReportingNum == FailureReportingNum).all()[inipage:endpage]
                 jsonoclass = json.dumps(EquipmentFailureReportingClass, cls=AlchemyEncoder, ensure_ascii=False)
@@ -7316,19 +7297,16 @@ def EquipmentFailureReportingCreate():
         try:
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 10:
-                equipmentFailureReporting = EquipmentFailureReporting()
-                equipmentFailureReporting.FailureReportingNum = data["FailureReportingNum"]
-                equipmentFailureReporting.FailureReportingType = data["FailureReportingType"]
-                equipmentFailureReporting.EQPName = data["EQPName"]
-                equipmentFailureReporting.ReportingBeginDate = datetime.datetime.now()
-                equipmentFailureReporting.FailureBeginDate = data["FailureBeginDate"]
-                # equipmentFailureReporting.FailureReportingDesc = data["FailureReportingDesc"]
-                # equipmentFailureReporting.ActualBeginDate = data["ActualBeginDate"]
-                # equipmentFailureReporting.ActualEndDate = data["ActualEndDate"]
-                equipmentFailureReporting.ReportingStatus = Model.Global.ReportingStatus.New.value
-                equipmentFailureReporting.FailureReportingDesc = data["FailureReportingDesc"]
-                equipmentFailureReporting.NewPeople = current_user.Name
-                db_session.add(equipmentFailureReporting)
+                failureReporting = EquipmentFailureReporting()
+                failureReporting.FailureReportingNum = data["FailureReportingNum"]
+                failureReporting.FailureReportingType = data["FailureReportingType"]
+                failureReporting.EQPName = data["EQPName"]
+                failureReporting.ReportingBeginDate = datetime.datetime.now()
+                failureReporting.FailureBeginDate = datetime.datetime.strptime(data["FailureBeginDate"],'%Y-%m-%d %H:%M:%S')
+                failureReporting.ReportingStatus = Model.Global.ReportingStatus.New.value
+                failureReporting.FailureReportingDesc = data["FailureReportingDesc"]
+                failureReporting.NewPeople = current_user.Name
+                db_session.add(failureReporting)
                 db_session.commit()
                 return 'OK'
         except Exception as e:
@@ -7351,11 +7329,11 @@ def EquipmentFailureReportingUpdate():
                 oclass.FailureReportingNum = data["FailureReportingNum"]
                 oclass.FailureReportingType = data["FailureReportingType"]
                 oclass.EQPName = data["EQPName"]
-                oclass.ReportingBeginDate = data["ReportingBeginDate"]
-                oclass.FailureBeginDate = data["FailureBeginDate"]
+                oclass.ReportingBeginDate = datetime.datetime.strptime(data["ReportingBeginDate"],'%Y-%m-%d %H:%M:%S')
+                oclass.FailureBeginDate = datetime.datetime.strptime(data["FailureBeginDate"],'%Y-%m-%d %H:%M:%S')
                 oclass.FailureReportingDesc = data["FailureReportingDesc"]
-                oclass.ActualBeginDate = data["ActualBeginDate"]
-                oclass.ActualEndDate = data["ActualEndDate"]
+                oclass.ActualBeginDate = datetime.datetime.strptime(data["ActualBeginDate"],'%Y-%m-%d %H:%M:%S')
+                oclass.ActualEndDate = datetime.datetime.strptime(data["ActualEndDate"],'%Y-%m-%d %H:%M:%S')
                 oclass.FailureReportingHandle = data["FailureReportingHandle"]
                 oclass.OperatePeople = data["Description"]
                 db_session.commit()
@@ -7377,6 +7355,8 @@ def EquipmentFailureReportingHandle():
                 ID = data["ID"]
                 oclass = db_session.query(EquipmentFailureReporting).filter(
                     EquipmentFailureReporting.ID == ID).first()
+                if oclass.ReportingStatus == Model.Global.ReportingStatus.Confirm.value or oclass.ReportingStatus == Model.Global.ReportingStatus.Handle.value:
+                    return "此报修单号已被处理，请选择未处理的维修单！"
                 oclass.ReportingStatus = Model.Global.ReportingStatus.Handle.value
                 oclass.HandlePeople = current_user.Name
                 db_session.commit()
@@ -7398,15 +7378,14 @@ def EquipmentFailureReportingConfirm():
                 ID = data["ID"]
                 oclass = db_session.query(EquipmentFailureReporting).filter(
                     EquipmentFailureReporting.ID == ID).first()
-                oclass.FailureReportingNum = data["FailureReportingNum"]
-                oclass.FailureReportingType = data["FailureReportingType"]
-                oclass.EQPName = data["EQPName"]
-                oclass.ReportingBeginDate = data["ReportingBeginDate"]
-                oclass.FailureBeginDate = data["FailureBeginDate"]
-                oclass.FailureReportingDesc = data["FailureReportingDesc"]
+                # oclass.FailureReportingNum = data["FailureReportingNum"]
+                # oclass.FailureReportingType = data["FailureReportingType"]
+                # oclass.EQPName = data["EQPName"]
+                # oclass.ReportingBeginDate = data["ReportingBeginDate"]
+                # oclass.FailureBeginDate = data["FailureBeginDate"]
+                # oclass.FailureReportingDesc = data["FailureReportingDesc"]
                 oclass.ActualBeginDate = data["ActualBeginDate"]
                 oclass.ActualEndDate = data["ActualEndDate"]
-                oclass.FailureReportingHandle = data["FailureReportingHandle"]
                 oclass.Description = data["Description"]
                 oclass.ReportingStatus = Model.Global.ReportingStatus.Confirm.value
                 db_session.commit()
@@ -7430,10 +7409,6 @@ def EquipmentFailureReportingDelete():
                     ID = int(key)
                     try:
                         oclass = db_session.query(EquipmentFailureReporting).filter_by(ID=ID).first()
-                        oclasss = db_session.query(EquipmentRunRecord).filter_by(
-                            EquipmentRunCountRecordID=ID).all()
-                        for oc in oclasss:
-                            db_session.delete(oc)
                         db_session.delete(oclass)
                         db_session.commit()
                     except Exception as ee:
@@ -7448,6 +7423,37 @@ def EquipmentFailureReportingDelete():
             insertSyslog("error", "设备故障报修删除报错Error：" + str(e), current_user.Name)
             return json.dumps("设备故障报修删除报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
+# 设备维护添加
+@app.route('/EquipmentMaintainCreate', methods=['POST', 'GET'])
+def EquipmentMaintainCreate():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                failureReporting = EquipmentFailureReporting()
+                failureReporting.FailureReportingNum = data["FailureReportingNum"]
+                failureReporting.FailureReportingType = data["FailureReportingType"]
+                failureReporting.EQPName = data["EQPName"]
+                failureReporting.ReportingBeginDate = datetime.datetime.now()
+                failureReporting.FailureBeginDate = datetime.datetime.strptime(data["FailureBeginDate"],
+                                                                               '%Y-%m-%d %H:%M:%S')
+                failureReporting.ReportingStatus = Model.Global.ReportingStatus.New.value
+                failureReporting.FailureReportingDesc = data["FailureReportingDesc"]
+                failureReporting.NewPeople = current_user.Name
+                db_session.add(failureReporting)
+                db_session.commit()
+                return 'OK'
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "设备维护添加报错Error：" + str(e), current_user.Name)
+            return json.dumps("设备维护添加报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+# 设备维护
+@app.route('/equipmentMaintain')
+def equipmentMaintain():
+    return render_template('equipmentMaintain.html')
 
 # 设备运行数据
 @app.route('/EquipmentManage/runData')
