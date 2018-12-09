@@ -7466,9 +7466,7 @@ def runDataChart():
                 firstDay,lastDay = getMonthFirstDayAndLastDay(year_month[0], year_month[1])
                 objects = db_session.query(EquipmentRunRecord).filter(
                     EquipmentRunRecord.EQPName == equip,
-                    EquipmentRunRecord.CreateDate.between(firstDay,lastDay)).order_by("InputDate").all()
-                year_error_time = list()
-                year_run_time = list()
+                    EquipmentRunRecord.CreateDate.between(firstDay,lastDay)).all()
                 if objects:
                     objects = sorted(objects, key=lambda obj: obj.InputDate)
                     time_list = list()
@@ -7480,6 +7478,10 @@ def runDataChart():
                         clear_time.append(obj.ClearDate)
                         error_time.append(obj.FailureDate)
                         time_list.append(obj.InputDate)
+                else:
+                    return "NO"
+                year_error_time = list()
+                year_run_time = list()
                 for month in range(1,13):
                     month_data = db_session.query(EquipmentRunRecord).filter(and_(
                         EquipmentRunRecord.EQPName == equip,
@@ -7488,13 +7490,13 @@ def runDataChart():
                     if len(month_data) > 0:
                         year_run_time.append(sum([i.RunDate for i in month_data]))
                         year_error_time.append(sum([i.FailureDate for i in month_data]))
-                    year_run_time.append(0)
-                    year_error_time.append(0)
-                    data_list = [{"run_time": run_time, "clear_time": clear_time,
-                                  "error_time": error_time, 'time': time_list,
-                                  "year_run_time":year_run_time, "year_error_time":year_error_time}]
-                    return json.dumps(data_list, cls=AlchemyEncoder, ensure_ascii=False)
-                return "NO"
+                    else:
+                        year_run_time.append(0)
+                        year_error_time.append(0)
+                data_list = [{"run_time": run_time, "clear_time": clear_time,
+                              "error_time": error_time, 'time': time_list,
+                              "year_run_time":year_run_time, "year_error_time":year_error_time}]
+                return json.dumps(data_list, cls=AlchemyEncoder, ensure_ascii=False)
             return "NO"
         except Exception as e:
             print(e)
