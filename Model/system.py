@@ -757,8 +757,11 @@ class EquipmentMaintain(Base):
     # 制定计划人:
     MakePlanPeople = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
-    # 检修人:
+    # 审核人:
     CheckPeople = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 检修人:
+    FinishedPeople = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
 #  设备维护知识库
 class EquipmentMaintenanceKnowledge(Base):
