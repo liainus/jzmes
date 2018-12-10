@@ -8371,17 +8371,37 @@ def BatchMaterielBalanceStatistic():
 def BatchMaterialTracing():
     return render_template('ProductDataManageBatchMaterialTracing.html')
 
+def time_trans_format(time_string, from_format, to_format='%Y-%m-%d'):
+    time_struct = time.strptime(time_string,from_format)
+    times = time.strftime(to_format, time_struct)
+    return times
+
 @app.route('/BatchMaterialTracing/GetData')
 def BatchMaterialTracingGetBatch():
     if request.method == 'GET':
         try:
             data = request.values
             beginTime = data['beginTime']
+            beginTime = time_trans_format(beginTime,'%a %b %d %Y %H:%M:%S GMT+0800 (中国标准时间)')
             endTime = data['endTime']
+            endTime = time_trans_format(endTime, '%a %b %d %Y %H:%M:%S GMT+0800 (中国标准时间)')
+
             if beginTime is None or endTime is None:
                 return "NO"
             batchs = set(db_session.query(ElectronicBatch.BatchID).filter(ElectronicBatch.SampleDate.between(beginTime, endTime)).all())
             return json.dumps({"batchs":[batch[0] for batch in batchs]},cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            insertSyslog("error", "批物料追溯批次获取报错Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
+# 物料追溯数据
+@app.route('/BatchMaterialTracing/BatchData')
+def BatchMaterialTracingBatchBatch():
+    if request.method == 'GET':
+        try:
+            data = request.values
+            batch = data['batch']
         except Exception as e:
             print(e)
             insertSyslog("error", "批物料追溯数据获取报错Error：" + str(e), current_user.Name)
