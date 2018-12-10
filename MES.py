@@ -8406,7 +8406,10 @@ def BatchMaterialTracingBatchBatch():
         try:
             data = request.values
             batch = data['batch']
-            # brand =
+            brand = data['brand']
+            if batch is None or brand is None:
+                return "NO"
+            Dosage_medicinal_materials = db_session.query()
         except Exception as e:
             print(e)
             insertSyslog("error", "批物料追溯数据获取报错Error：" + str(e), current_user.Name)
