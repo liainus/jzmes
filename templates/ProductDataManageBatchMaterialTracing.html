@@ -5,46 +5,122 @@
     <title>物料追溯</title>
     <link rel="stylesheet" href="../static/css/bootstrap.min.css" crossorigin="anonymous">
     <link rel="stylesheet" href="../static/css/bootstrap-datetimepicker.min.css" crossorigin="anonymous">
-    <link rel="stylesheet" href="../static/css/bootstrap-select.min.css">
     <script type="text/javascript" src="../static/js/jquery.min.js"></script>
     <script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="../static/js/bootstrap-datetimepicker.min.js"></script>
-    <script type="text/javascript" src="../static/js/bootstrap-select.min.js"></script>
     <style>
         /*横向时间轴*/
-        .progress-head{
+        .floatLeft{
+            float: left;
+        }
+        .progress-left{
             position: relative;
-            min-width: 1190px;
-            padding:170px 20px 140px;
+            width: 590px;
+            padding:20px 0 20px 240px;
             clear: both;
             overflow: hidden;
         }
-        .host-progress{
+        .progress-center{
             position: relative;
             float: left;
+            width: 310px;
+            margin-top: 40px;
+            height:140px;
+            padding:20px;
+            clear: both;
+            overflow: hidden;
+        }
+        .progress-right{
+            position: relative;
+            float: left;
+            width: 310px;
+            margin-top: 135px;
+            height:46px;
+            padding:20px;
+            clear: both;
+        }
+        .progress-right-cc{
+            position: relative;
+            float: left;
+            width: 310px;
+            height:90px;
+            padding:20px;
+            clear: both;
+        }
+        .host-progress{
+            position: relative;
         }
         .host-ball{
             float: left;
-            width: 150px;
-            height: 30px;
-            line-height: 30px;
-            border-radius: 3px;
-            background-color: #9f9f9f;
+            width: 50px;
+            height: 50px;
+            line-height: 50px;
+            border-radius: 50%;
+            background-color: #2e8cbc;
             color: #fff;
             text-align: center;
             white-space: nowrap;
-            cursor: pointer;
+        }
+        .host-pane{
+            float: left;
+            width: 150px;
+            height: 50px;
+            line-height: 50px;
+            border-radius: 3px;
+            background-color: #e58532;
+            color: #fff;
+            text-align: center;
+            white-space: nowrap;
+        }
+        .host-pane-gz{
+            float: left;
+            width: 150px;
+            height: 50px;
+            line-height: 50px;
+            border-radius: 3px;
+            background-color: #49d3ca;
+            color: #fff;
+            text-align: center;
+            white-space: nowrap;
+        }
+        .host-pane-cc{
+            float: left;
+            width: 150px;
+            height: 50px;
+            line-height: 50px;
+            border-radius: 3px;
+            background-color: #7e62a9;
+            color: #fff;
+            text-align: center;
+            white-space: nowrap;
+        }
+        .ball-right{
+            margin-right: 10px;
+            background-color: #64c9ed;
         }
         .host-line{
             position: relative;
             float: left;
-            width: 50px;
+            width: 120px;
             height: 2px;
-            margin-top: 15px;
+            margin-top: 25px;
             background-color: #9F9F9F;
             z-index: 3;
         }
-        .host-arrow{
+        .host-line-merge{
+            position: relative;
+            float: left;
+            width: 120px;
+            height: 2px;
+            margin-top: 25px;
+            background-color: #9F9F9F;
+            z-index: 3;
+        }
+        .host-dashed{
+            border-top:1px dashed #eee;
+            height:1px;
+        }
+        .host-arrow,.host-arrow-merge{
             position: relative;
         }
         .host-arrow:after,.host-arrow:before{
@@ -54,51 +130,55 @@
             border-left-color: #9f9f9f;
             position: absolute;
             content: "";
-            top: 6px;
-            left:191px;
+            top: 16px;
+            left:160px;
+        }
+        .host-arrow-merge:after,.host-arrow-merge:before{
+            width: 0;
+            height: 0;
+            border: 10px solid transparent;
+            border-left-color: #9f9f9f;
+            position: absolute;
+            content: "";
+            top: 16px;
+            left:110px;
         }
         .host-arrow:before{
-            top: 6px;
-            left: 188px;
+            top: 16px;
+            left: 157px;
             border-left-color: white;
             z-index: 2;
         }
-        /*纵向时间轴*/
-        .childBox{
+        .host-arrow-merge:before{
+            top: 16px;
+            left: 107px;
+            border-left-color: white;
+            z-index: 2;
+        }
+        .host-message{
             position: absolute;
+            top:-15px;
+            left:-220px;
+            border:1px solid #ddd;
+            height:80px;
             width:200px;
+            padding:10px;
         }
-        .childNode{
-            margin-left: 45px;
+        .host-message-cc{
+            position: absolute;
+            top:-15px;
+            right:-220px;
+            border:1px solid #ddd;
+            height:80px;
+            width:200px;
+            padding:10px;
         }
-        .ball{
-            display: block;
-            width: 20px;
-            height: 20px;
-            border-radius: 10px;
-            margin-left: 20px;
-            background-color: #9f9f9f;
-            cursor: pointer;
+        .host-message p{
+            margin:0;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
-        .progress-line{
-            width: 0px;
-            height: 50px;
-            margin-left: 30px;
-            border-left: 1px dashed #9f9f9f;
-        }
-        .detail{
-            margin-left: 40px;
-            float:left;
-            font-size: 12px;
-            color: #666;
-            line-height:20px;
-            position: relative;
-            top: -20px;
-            left: 5px;
-        }
-        .flow-detail{
-            margin-bottom: 10px;
-        }
+
     </style>
     <script>
         $(function(){
@@ -109,16 +189,38 @@
                 autoclose: true
             });
             $("#beginTimeDate,#endTimehDate").datetimepicker("setDate", new Date());
-            $("#selectpicker").selectpicker({
-                noneSelectedText : '请选择' //默认显示内容
-            });
+
+            var brand = ""
             $("#seachBatch").on('click',function(){
+                if($("#BatchName").find("option:selected").html() == "健胃消食片"){
+                    brand = "A"
+                }else if($("#BatchName").find("option:selected").html() == "肿节风浸膏"){
+                    brand = "B"
+                }
                 $.ajax({
                     url:'/BatchMaterialTracing/GetData',
                     type:'get',
                     data:{
                         beginTime:$('#beginTimeDate').data("datetimepicker").getDate(),
-                        endTime:$('#endTimehDate').data("datetimepicker").getDate()
+                        endTime:$('#endTimehDate').data("datetimepicker").getDate(),
+                        brand:$("#BatchName").find("option:selected").html()
+                    },
+                    success:function(data){
+                        data = JSON.parse(data)
+                        $("#batch").html("<option>请选择</option>")
+                        for (var i = 0; i < data.batchs.length; i++) {
+                            $("#batch").append("<option>"+ data.batchs[i] + "</option>")
+                        }
+                    }
+                })
+            })
+            $("#batch").on('change',function(){
+                $.ajax({
+                    url:'/BatchMaterialTracing/BatchData',
+                    type:'get',
+                    data:{
+                        batch:$(this).find("option:selected").html(),
+                        brand:brand
                     },
                     success:function(data){
                         console.log(data)
@@ -131,41 +233,315 @@
 <body>
     <div class="container">
         <div class="page-header">
-            <div class="form-group clearfix">
-                <label for="" class="col-md-1 control-label">开始时间</label>
-                <div class="col-md-2">
+            <div class="form-inline">
+                <div class="form-group clearfix">
+                    <label for="" class="control-label">选择品名：</label>
+                    <select id="BatchName" class="form-control">
+                        {% for brand in brands %}
+                            <option>{{ brand[0] }}</option>
+                        {% endfor %}
+                    </select>
+                    <label for="" class="control-label"> 开始时间：</label>
                     <input type="text" class="form-control" id="beginTimeDate">
-                </div>
-                <label for="" class="col-md-1 control-label">结束时间</label>
-                <div class="col-md-2">
+                    <label for="" class="control-label"> 结束时间：</label>
                     <input type="text" class="form-control" id="endTimehDate">
-                </div>
-                <div class="col-md-2">
-                    <button class="btn btn-primary" id="seachBatch">查询批次号</button>
-                </div>
-                <div class="col-md-3">
-                    <select id="selectpicker" class="selectpicker"></select>
+                    <button class="btn btn-primary" id="seachBatch"> 查询批次号</button>
+                    <select id="batch" class="form-control">
+                        <option value="">请选择</option>
+                    </select>
                 </div>
             </div>
         </div>
     </div>
     <div style="padding: 0 20px;">
-        <!--健胃消食片-->
-        <div class="progress-head">
-            <div class="host-progress">
-                <div class="host-ball"></div>
-                <div class="host-line"></div>
-                <div class="host-arrow"></div>
+        <div class="floatLeft">
+            <!--健胃消食片-->
+            <div class="progress-left">
+                <div class="host-progress">
+                    <div class="host-ball">TQ01</div>
+                    <div class="host-line"></div>
+                    <div class="host-arrow"></div>
+                    <div class="host-message">
+                        <p>投料量：2000kg</p>
+                        <p>第一次加入6倍水：2000L</p>
+                        <p>第二次加入5倍水：1000L</p>
+                    </div>
+                </div>
+                <div class="host-progress">
+                    <div class="host-ball ball-right">JZ0101</div>
+                    <div class="host-ball ball-right">JZ0102</div>
+                    <div class="host-ball ball-right">JZ0103</div>
+                </div>
             </div>
-            <div class="host-progress">
-                <div class="host-ball"></div>
-                <div class="host-line"></div>
-                <div class="host-arrow"></div>
+            <div class="progress-left">
+                <div class="host-progress">
+                    <div class="host-ball">TQ02</div>
+                    <div class="host-line"></div>
+                    <div class="host-arrow"></div>
+                    <div class="host-message">
+                        <p>投料量：2000kg</p>
+                        <p>第一次加入6倍水：2000L</p>
+                        <p>第二次加入5倍水：1000L</p>
+                    </div>
+                </div>
+                <div class="host-progress">
+                    <div class="host-ball ball-right">JZ0201</div>
+                    <div class="host-ball ball-right">JZ0202</div>
+                    <div class="host-ball ball-right">JZ0203</div>
+                </div>
+            </div>
+            <div class="progress-left">
+                <div class="host-progress">
+                    <div class="host-ball">TQ03</div>
+                    <div class="host-line"></div>
+                    <div class="host-arrow"></div>
+                    <div class="host-message">
+                        <p>投料量：2000kg</p>
+                        <p>第一次加入6倍水：2000L</p>
+                        <p>第二次加入5倍水：1000L</p>
+                    </div>
+                </div>
+                <div class="host-progress">
+                    <div class="host-ball ball-right">JZ0301</div>
+                    <div class="host-ball ball-right">JZ0302</div>
+                    <div class="host-ball ball-right">JZ0303</div>
+                </div>
+            </div>
+            <div class="progress-left">
+                <div class="host-progress">
+                    <div class="host-ball">TQ04</div>
+                    <div class="host-line"></div>
+                    <div class="host-arrow"></div>
+                    <div class="host-message">
+                        <p>投料量：2000kg</p>
+                        <p>第一次加入6倍水：2000L</p>
+                        <p>第二次加入5倍水：1000L</p>
+                    </div>
+                </div>
+                <div class="host-progress">
+                    <div class="host-ball ball-right">JZ0401</div>
+                    <div class="host-ball ball-right">JZ0402</div>
+                    <div class="host-ball ball-right">JZ0403</div>
+                </div>
+            </div>
+            <div class="progress-left">
+                <div class="host-progress">
+                    <div class="host-ball">TQ05</div>
+                    <div class="host-line"></div>
+                    <div class="host-arrow"></div>
+                    <div class="host-message">
+                        <p>投料量：2000kg</p>
+                        <p>第一次加入6倍水：2000L</p>
+                        <p>第二次加入5倍水：1000L</p>
+                    </div>
+                </div>
+                <div class="host-progress">
+                    <div class="host-ball ball-right">JZ0501</div>
+                    <div class="host-ball ball-right">JZ0502</div>
+                    <div class="host-ball ball-right">JZ0503</div>
+                </div>
+            </div>
+            <div class="progress-left">
+                <div class="host-progress">
+                    <div class="host-ball">TQ06</div>
+                    <div class="host-line"></div>
+                    <div class="host-arrow"></div>
+                    <div class="host-message">
+                        <p>投料量：2000kg</p>
+                        <p>第一次加入6倍水：2000L</p>
+                        <p>第二次加入5倍水：1000L</p>
+                    </div>
+                </div>
+                <div class="host-progress">
+                    <div class="host-ball ball-right">JZ0601</div>
+                    <div class="host-ball ball-right">JZ0602</div>
+                    <div class="host-ball ball-right">JZ0603</div>
+                </div>
+            </div>
+            <!--间隔线-->
+            <div class="progress-left">
+                <div class="host-dashed"></div>
+            </div>
+            <!--草珊瑚含片-->
+            <div class="progress-left">
+                <div class="host-progress">
+                    <div class="host-ball">TQ07</div>
+                    <div class="host-line"></div>
+                    <div class="host-arrow"></div>
+                    <div class="host-message">
+                        <p>投料量：2000kg</p>
+                        <p>第一次加入17倍水：2000L</p>
+                        <p>第二次加入6倍水：1000L</p>
+                    </div>
+                </div>
+                <div class="host-progress">
+                    <div class="host-ball ball-right">JZ0701</div>
+                    <div class="host-ball ball-right">JZ0702</div>
+                    <div class="host-ball ball-right">JZ0703</div>
+                </div>
+            </div>
+            <div class="progress-left">
+                <div class="host-progress">
+                    <div class="host-ball">TQ08</div>
+                    <div class="host-line"></div>
+                    <div class="host-arrow"></div>
+                    <div class="host-message">
+                        <p>投料量：2000kg</p>
+                        <p>第一次加入17倍水：2000L</p>
+                        <p>第二次加入6倍水：1000L</p>
+                    </div>
+                </div>
+                <div class="host-progress">
+                    <div class="host-ball ball-right">JZ0801</div>
+                    <div class="host-ball ball-right">JZ0802</div>
+                    <div class="host-ball ball-right">JZ0803</div>
+                </div>
+            </div>
+            <div class="progress-left">
+                <div class="host-progress">
+                    <div class="host-ball">TQ09</div>
+                    <div class="host-line"></div>
+                    <div class="host-arrow"></div>
+                    <div class="host-message">
+                        <p>投料量：2000kg</p>
+                        <p>第一次加入17倍水：2000L</p>
+                        <p>第二次加入6倍水：1000L</p>
+                    </div>
+                </div>
+                <div class="host-progress">
+                    <div class="host-ball ball-right">JZ0901</div>
+                    <div class="host-ball ball-right">JZ0902</div>
+                    <div class="host-ball ball-right">JZ0903</div>
+                </div>
+            </div>
+            <div class="progress-left">
+                <div class="host-progress">
+                    <div class="host-ball">TQ10</div>
+                    <div class="host-line"></div>
+                    <div class="host-arrow"></div>
+                    <div class="host-message">
+                        <p>投料量：2000kg</p>
+                        <p>第一次加入17倍水：2000L</p>
+                        <p>第二次加入6倍水：1000L</p>
+                    </div>
+                </div>
+                <div class="host-progress">
+                    <div class="host-ball ball-right">JZ1001</div>
+                    <div class="host-ball ball-right">JZ1002</div>
+                    <div class="host-ball ball-right">JZ1003</div>
+                </div>
             </div>
         </div>
+    </div>
+    <!--浓缩罐-->
+    <div class="floatLeft">
+        <!--健胃消食片-->
+        <div class="progress-center">
+            <div class="host-progress">
+                <div class="host-line-merge"></div>
+                <div class="host-arrow-merge"></div>
+                <div class="host-pane">NS01</div>
+            </div>
+        </div>
+        <div class="progress-center">
+            <div class="host-progress">
+                <div class="host-line-merge"></div>
+                <div class="host-arrow-merge"></div>
+                <div class="host-pane">NS02</div>
+            </div>
+        </div>
+        <div class="progress-center">
+            <div class="host-progress">
+                <div class="host-line-merge"></div>
+                <div class="host-arrow-merge"></div>
+                <div class="host-pane">NS02</div>
+            </div>
+        </div>
+        <!--间隔线-->
+        <div class="progress-left" style="width: 100%;padding: 20px 0;">
+            <div class="host-dashed"></div>
+        </div>
         <!--草珊瑚含片-->
-        <div>
-
+        <div class="progress-center">
+            <div class="host-progress">
+                <div class="host-line-merge"></div>
+                <div class="host-arrow-merge"></div>
+                <div class="host-pane">NS04</div>
+            </div>
+        </div>
+        <div class="progress-center">
+            <div class="host-progress">
+                <div class="host-line-merge"></div>
+                <div class="host-arrow-merge"></div>
+                <div class="host-pane">NS05</div>
+            </div>
+        </div>
+    </div>
+    <!--干燥/醇沉-->
+    <div class="floatLeft">
+        <!--健胃消食片-->
+        <div class="progress-right">
+            <div class="host-progress">
+                <div class="host-line-merge"></div>
+                <div class="host-arrow-merge"></div>
+                <div class="host-pane-gz">GZ01</div>
+            </div>
+        </div>
+        <div class="progress-right">
+            <div class="host-progress">
+                <div class="host-line-merge"></div>
+                <div class="host-arrow-merge"></div>
+                <div class="host-pane-gz">GZ02</div>
+            </div>
+        </div>
+        <!--间隔线-->
+        <div class="progress-right" style="width: 100%;padding-top: 62px;">
+            <div class="host-dashed"></div>
+        </div>
+        <!--草珊瑚含片-->
+        <div class="progress-right-cc">
+            <div class="host-progress">
+                <div class="host-line-merge"></div>
+                <div class="host-arrow-merge"></div>
+                <div class="host-pane-cc">CC01</div>
+                <div class="host-message-cc">
+                    <p>浓缩液体积：200kg</p>
+                    <p>95%乙醇用量：200L</p>
+                </div>
+            </div>
+        </div>
+        <div class="progress-right-cc">
+            <div class="host-progress">
+                <div class="host-line-merge"></div>
+                <div class="host-arrow-merge"></div>
+                <div class="host-pane-cc">CC02</div>
+                <div class="host-message-cc">
+                    <p>浓缩液体积：200kg</p>
+                    <p>95%乙醇用量：200L</p>
+                </div>
+            </div>
+        </div>
+        <div class="progress-right-cc">
+            <div class="host-progress">
+                <div class="host-line-merge"></div>
+                <div class="host-arrow-merge"></div>
+                <div class="host-pane-cc">CC03</div>
+                <div class="host-message-cc">
+                    <p>浓缩液体积：200kg</p>
+                    <p>95%乙醇用量：200L</p>
+                </div>
+            </div>
+        </div>
+        <div class="progress-right-cc">
+            <div class="host-progress">
+                <div class="host-line-merge"></div>
+                <div class="host-arrow-merge"></div>
+                <div class="host-pane-cc">CC04</div>
+                <div class="host-message-cc">
+                    <p>浓缩液体积：200kg</p>
+                    <p>95%乙醇用量：200L</p>
+                </div>
+            </div>
         </div>
     </div>
 </body>
