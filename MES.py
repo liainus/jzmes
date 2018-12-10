@@ -8371,5 +8371,21 @@ def BatchMaterielBalanceStatistic():
 def BatchMaterialTracing():
     return render_template('ProductDataManageBatchMaterialTracing.html')
 
+@app.route('/BatchMaterialTracing/GetData')
+def BatchMaterialTracingGetBatch():
+    if request.method == 'GET':
+        try:
+            data = request.values
+            beginTime = data['beginTime']
+            endTime = data['endTime']
+            if beginTime is None or endTime is None:
+                return "NO"
+            batchs = set(db_session.query(ElectronicBatch.BatchID).filter(ElectronicBatch.SampleDate.between(beginTime, endTime)).all())
+            return json.dumps({"batchs":[batch[0] for batch in batchs]},cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            insertSyslog("error", "批物料追溯数据获取报错Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
 if __name__ == '__main__':
     app.run(debug=True)
