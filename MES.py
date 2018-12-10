@@ -7483,7 +7483,7 @@ def EquipmentMaintainCreate():
 
 # 制定检修计划修改
 @app.route('/EquipmentMaintainUpdate', methods=['POST', 'GET'])
-def EquipmentFailureReportingUpdate():
+def EquipmentMaintainUpdate():
     if request.method == 'POST':
         data = request.values
         try:
@@ -7570,21 +7570,30 @@ def EquipmentMaintainFinished():
     if request.method == 'POST':
         data = request.values
         try:
-            json_str = json.dumps(data.to_dict())
-            if len(json_str) > 10:
-                ID = data["ID"]
-                oclass = db_session.query(EquipmentMaintain).filter(
-                    EquipmentMaintain.ID == ID).first()
-                oclass.ReportingStatus = Model.Global.ReportingStatus.Confirm.value
-                oclass.FinishedPeople = current_user.Name
-                oclass.PlanEndDate = datetime.datetime.now()
-                db_session.commit()
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
+                for key in jsonnumber:
+                    ID = int(key)
+                    try:
+                        oclass = db_session.query(EquipmentMaintain).filter(
+                            EquipmentMaintain.ID == ID).first()
+                        oclass.MaintainStatus = Model.Global.MaintainStatus.Finished.value
+                        oclass.FinishedPeople = current_user.Name
+                        oclass.PlanEndDate = datetime.datetime.now()
+                        db_session.commit()
+                    except Exception as ee:
+                        print(ee)
+                        logger.error(ee)
+                        return json.dumps("检修计划确认报错", cls=Model.BSFramwork.AlchemyEncoder,
+                                          ensure_ascii=False)
                 return 'OK'
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "设备故障报修确认报错Error：" + str(e), current_user.Name)
-            return json.dumps("设备故障报修确认报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+            insertSyslog("error", "检修计划确认报错Error：" + str(e), current_user.Name)
+            return json.dumps("检修计划确认报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
 
 # 设备维护
 @app.route('/equipmentMaintain')
