@@ -13,10 +13,9 @@
     <script>
         $(function(){
             $('#beginTimeDate,#endTimehDate').datetimepicker({
-                format: 'yy-mm-dd',
+                format: 'yyyy-mm-dd',
                 startView: 2,
 		        minView: 2,
-                language: 'zh-CN',
                 autoclose: true
             });
             $("#beginTimeDate,#endTimehDate").datetimepicker("setDate", new Date());
