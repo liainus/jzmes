@@ -8382,6 +8382,7 @@ def BatchMaterialTracingGetBatch():
     if request.method == 'GET':
         try:
             data = request.values
+            brand = data['brand']
             beginTime = data['beginTime']
             beginTime = time_trans_format(beginTime,'%a %b %d %Y %H:%M:%S GMT+0800 (中国标准时间)')
             endTime = data['endTime']
@@ -8389,7 +8390,9 @@ def BatchMaterialTracingGetBatch():
 
             if beginTime is None or endTime is None:
                 return "NO"
-            batchs = set(db_session.query(ElectronicBatch.BatchID).filter(ElectronicBatch.SampleDate.between(beginTime, endTime)).all())
+            batchs = set(db_session.query(ZYPlan.BatchID).filter(and_(
+                ZYPlan.BrandName == brand,
+                ZYPlan.PlanDate.between(beginTime, endTime))).all())
             return json.dumps({"batchs":[batch[0] for batch in batchs]},cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
