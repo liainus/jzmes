@@ -737,7 +737,7 @@ class EquipmentMaintain(Base):
     MaintainType = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
     # 设备（可以多选）  :
-    EquipmentID = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
+    EquipmentName = Column(Unicode(65), primary_key=False, autoincrement=False, nullable=True)
 
     # 计划开始时间 :
     PlanBeginDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
@@ -748,14 +748,20 @@ class EquipmentMaintain(Base):
     # 维护要求  ：
     MaintainDemand = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
-    # 完成时间 :
-    FinishedDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
-
     # 状态 ：
     MaintainStatus = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
     # 描述 ：
     Description = Column(Unicode(65), primary_key=False, autoincrement=False, nullable=True)
+
+    # 制定计划人:
+    MakePlanPeople = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 审核人:
+    CheckPeople = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 检修人:
+    FinishedPeople = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
 #  设备维护知识库
 class EquipmentMaintenanceKnowledge(Base):

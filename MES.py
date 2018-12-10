@@ -7383,14 +7383,8 @@ def EquipmentFailureReportingConfirm():
                 ID = data["ID"]
                 oclass = db_session.query(EquipmentFailureReporting).filter(
                     EquipmentFailureReporting.ID == ID).first()
-                # oclass.FailureReportingNum = data["FailureReportingNum"]
-                # oclass.FailureReportingType = data["FailureReportingType"]
-                # oclass.EQPName = data["EQPName"]
-                # oclass.ReportingBeginDate = data["ReportingBeginDate"]
-                # oclass.FailureBeginDate = data["FailureBeginDate"]
-                # oclass.FailureReportingDesc = data["FailureReportingDesc"]
-                oclass.ActualBeginDate = data["ActualBeginDate"]
-                oclass.ActualEndDate = data["ActualEndDate"]
+                oclass.ActualBeginDate = datetime.datetime.strptime(data["ActualBeginDate"],'%Y-%m-%d %H:%M:%S')
+                oclass.ActualEndDate = datetime.datetime.strptime(data["ActualEndDate"],'%Y-%m-%d %H:%M:%S')
                 oclass.Description = data["Description"]
                 oclass.ReportingStatus = Model.Global.ReportingStatus.Confirm.value
                 db_session.commit()
@@ -7428,7 +7422,40 @@ def EquipmentFailureReportingDelete():
             insertSyslog("error", "设备故障报修删除报错Error：" + str(e), current_user.Name)
             return json.dumps("设备故障报修删除报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
-# 设备维护添加
+# 设备检修计划查询
+@app.route('/EquipmentMaintainSearch', methods=['POST', 'GET'])
+def EquipmentMaintainSearch():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                pages = int(data['page'])
+                rowsnumber = int(data['rows'])
+                inipage = (pages - 1) * rowsnumber + 0
+                endpage = (pages - 1) * rowsnumber + rowsnumber
+                MaintainPlanNum = data["MaintainPlanNum"]
+                if MaintainPlanNum == "":
+                    EquipmentFailureReportingCount = db_session.query(
+                        EquipmentMaintain).filter_by().count()
+                    EquipmentFailureReportingClass = db_session.query(
+                        EquipmentMaintain).filter_by().all()[inipage:endpage]
+                else:
+                    EquipmentFailureReportingCount = db_session.query(EquipmentMaintain).filter(
+                        EquipmentMaintain.MaintainPlanNum == MaintainPlanNum).count()
+                    EquipmentFailureReportingClass = db_session.query(EquipmentMaintain).filter(
+                        EquipmentMaintain.MaintainPlanNum == MaintainPlanNum).all()[
+                                                     inipage:endpage]
+                jsonoclass = json.dumps(EquipmentFailureReportingClass, cls=AlchemyEncoder, ensure_ascii=False)
+                return '{"total"' + ":" + str(
+                    EquipmentFailureReportingCount) + ',"rows"' + ":\n" + jsonoclass + "}"
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "设备故障报修查询报错Error：" + str(e), current_user.Name)
+            return json.dumps("设备故障报修查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+# 制定检修计划
 @app.route('/EquipmentMaintainCreate', methods=['POST', 'GET'])
 def EquipmentMaintainCreate():
     if request.method == 'POST':
@@ -7436,24 +7463,137 @@ def EquipmentMaintainCreate():
         try:
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 10:
-                failureReporting = EquipmentFailureReporting()
-                failureReporting.FailureReportingNum = data["FailureReportingNum"]
-                failureReporting.FailureReportingType = data["FailureReportingType"]
-                failureReporting.EQPName = data["EQPName"]
-                failureReporting.ReportingBeginDate = datetime.datetime.now()
-                failureReporting.FailureBeginDate = datetime.datetime.strptime(data["FailureBeginDate"],
-                                                                               '%Y-%m-%d %H:%M:%S')
-                failureReporting.ReportingStatus = Model.Global.ReportingStatus.New.value
-                failureReporting.FailureReportingDesc = data["FailureReportingDesc"]
-                failureReporting.NewPeople = current_user.Name
-                db_session.add(failureReporting)
+                maintain = EquipmentMaintain()
+                maintain.MaintainPlanNum = data["MaintainPlanNum"]
+                maintain.MaintainType = data["MaintainType"]
+                maintain.EquipmentName = data["EquipmentName"]
+                maintain.PlanBeginDate = datetime.datetime.now()
+                maintain.MaintainDemand = data["MaintainDemand"]
+                maintain.MaintainStatus = Model.Global.MaintainStatus.New.value
+                maintain.Description = data["Description"]
+                maintain.MakePlanPeople = current_user.Name
+                db_session.add(maintain)
                 db_session.commit()
                 return 'OK'
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "设备维护添加报错Error：" + str(e), current_user.Name)
-            return json.dumps("设备维护添加报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+            insertSyslog("error", "制定检修计划报错Error：" + str(e), current_user.Name)
+            return json.dumps("制定检修计划报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+# 制定检修计划修改
+@app.route('/EquipmentMaintainUpdate', methods=['POST', 'GET'])
+def EquipmentMaintainUpdate():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                ID = data["ID"]
+                oclass = db_session.query(EquipmentMaintain).filter(
+                    EquipmentMaintain.ID == ID).first()
+                oclass.MaintainPlanNum = data["MaintainPlanNum"]
+                oclass.MaintainType = data["MaintainType"]
+                oclass.EquipmentName = data["EquipmentName"]
+                oclass.MaintainDemand = data["MaintainDemand"]
+                oclass.Description = data["Description"]
+                db_session.commit()
+                return 'OK'
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "制定检修计划修改报错Error：" + str(e), current_user.Name)
+            return json.dumps("制定检修计划修改报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+# 制定检修计划删除
+@app.route('/EquipmentMaintainDelete', methods=['POST', 'GET'])
+def EquipmentMaintainDelete():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
+                for key in jsonnumber:
+                    ID = int(key)
+                    try:
+                        oclass = db_session.query(EquipmentMaintain).filter_by(ID=ID).first()
+                        db_session.delete(oclass)
+                        db_session.commit()
+                    except Exception as ee:
+                        print(ee)
+                        logger.error(ee)
+                        return json.dumps("制定检修计划删除报错", cls=Model.BSFramwork.AlchemyEncoder,
+                                          ensure_ascii=False)
+                return 'OK'
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "制定检修计划删除报错Error：" + str(e), current_user.Name)
+            return json.dumps("制定检修计划删除报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+# 检修计划审核
+@app.route('/EquipmentMaintainCheck', methods=['POST', 'GET'])
+def EquipmentMaintainCheck():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
+                for key in jsonnumber:
+                    ID = int(key)
+                    try:
+                        oclass = db_session.query(EquipmentMaintain).filter(
+                            EquipmentMaintain.ID == ID).first()
+                        if oclass.MaintainStatus != Model.Global.MaintainStatus.New.value:
+                            return "此计划单号已审核，请选择未审核的检修单！"
+                        oclass.MaintainStatus = Model.Global.MaintainStatus.Checked.value
+                        oclass.CheckPeople = current_user.Name
+                        db_session.commit()
+                        return 'OK'
+                    except Exception as ee:
+                        print(ee)
+                        logger.error(ee)
+                        return json.dumps("制定检修计划审核报错", cls=Model.BSFramwork.AlchemyEncoder,
+                                          ensure_ascii=False)
+                return 'OK'
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "制定检修计划审核报错Error：" + str(e), current_user.Name)
+            return json.dumps("制定检修计划审核报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+# 检修计划确认
+@app.route('/EquipmentMaintainFinished', methods=['POST', 'GET'])
+def EquipmentMaintainFinished():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
+                for key in jsonnumber:
+                    ID = int(key)
+                    try:
+                        oclass = db_session.query(EquipmentMaintain).filter(
+                            EquipmentMaintain.ID == ID).first()
+                        oclass.MaintainStatus = Model.Global.MaintainStatus.Finished.value
+                        oclass.FinishedPeople = current_user.Name
+                        oclass.PlanEndDate = datetime.datetime.now()
+                        db_session.commit()
+                    except Exception as ee:
+                        print(ee)
+                        logger.error(ee)
+                        return json.dumps("检修计划确认报错", cls=Model.BSFramwork.AlchemyEncoder,
+                                          ensure_ascii=False)
+                return 'OK'
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "检修计划确认报错Error：" + str(e), current_user.Name)
+            return json.dumps("检修计划确认报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
 
 # 设备维护
 @app.route('/equipmentMaintain')
@@ -7571,8 +7711,16 @@ def equipmentbeij():
 # 故障管理
 @app.route('/equipmenttrouble')
 def equipmenttrouble():
-
-    return render_template('equipmenttrouble.html')
+    RoleNames = db_session.query(User.RoleName).filter(User.Name == current_user.Name).all()
+    rolename = ""
+    for name in RoleNames:
+        if name[0] == "操作人":
+            rolename = "操作人"
+        if name[0] == "设备部技术人员":
+            rolename = "设备部技术人员"
+        if name[0] == "系统管理员":
+            rolename = "系统管理员"
+    return render_template('equipmenttrouble.html',rolename=rolename)
 
 def getExcel(file, method='r'):
     '''

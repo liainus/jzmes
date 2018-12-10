@@ -265,11 +265,15 @@
             <input type="text" class="textbox-text validatebox-text textbox-prompt" id="search" name="search" style="height:28px;" autocomplete="off"
                 placeholder="">
             <a href="#" class="easyui-linkbutton" iconCls="icon-search" onclick="toolbar.search();">查询</a>
-            <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="toolbar.create()">报修</a>
+            {% if rolename == "操作人" or rolename == "系统管理员"%}
+                <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="toolbar.create()">报修</a>
+            {% endif %}
             <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="toolbar.update()">编辑</a>
             <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="toolbar.delete()">删除</a>
-            <a href="#" class="easyui-linkbutton" iconCls="icon-filter" onclick="toolbar.Receipt()">开始维修</a>
-            <a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="toolbar.ReceiptOK()">维修完成</a>
+            {% if rolename == "设备部技术人员" or rolename == "系统管理员" %}
+                <a href="#" class="easyui-linkbutton" iconCls="icon-filter" onclick="toolbar.Receipt()">开始维修</a>
+                <a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="toolbar.ReceiptOK()">维修完成</a>
+            {% endif %}
             <a href="#" class="easyui-linkbutton" iconCls="icon-reload" onclick="toolbar.refresh()">刷新</a>
         </div>
         <div id="equimentsClassDialog" class="easyui-dialog" style="width:400px;height:360px;padding:10px;"
