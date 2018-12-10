@@ -8218,5 +8218,10 @@ def ElectronicBatchRecord():
 def BatchMaterielBalanceStatistic():
     return render_template('BatchMaterielBalanceStatistic.html')
 
+# 生产数据管理-批物料追溯
+@app.route('/ProductDataManage/BatchMaterialTracing')
+def BatchMaterialTracing():
+    return render_template('ProductDataManageBatchMaterialTracing.html')
+
 if __name__ == '__main__':
     app.run(debug=True)
