@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>物料追溯</title>
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="../static/css/bootstrap-datetimepicker.min.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="../static/css/bootstrap-select.min.css">
+    <script type="text/javascript" src="../static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootstrap-datetimepicker.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootstrap-select.min.js"></script>
+    <script>
+        $(function(){
+            $('#beginTimeDate,#endTimehDate').datetimepicker({
+                format: 'yyyy-mm-dd',
+                startView: 2,
+		        minView: 2,
+                autoclose: true
+            });
+            $("#beginTimeDate,#endTimehDate").datetimepicker("setDate", new Date());
+            $("#selectpicker").selectpicker({
+                noneSelectedText : '请选择' //默认显示内容
+            });
+            $("#seachBatch").on('click',function(){
+                $.ajax({
+                    url:'/BatchMaterialTracing/GetData',
+                    type:'get',
+                    data:{
+                        beginTime:$('#beginTimeDate').data("datetimepicker").getDate(),
+                        endTime:$('#endTimehDate').data("datetimepicker").getDate()
+                    },
+                    success:function(data){
+                        console.log(data)
+                    }
+                })
+            })
+        })
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="page-header">
+            <div class="form-group clearfix">
+                <label for="" class="col-md-1 control-label">开始时间</label>
+                <div class="col-md-2">
+                    <input type="text" class="form-control" id="beginTimeDate">
+                </div>
+                <label for="" class="col-md-1 control-label">结束时间</label>
+                <div class="col-md-2">
+                    <input type="text" class="form-control" id="endTimehDate">
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-primary" id="seachBatch">查询批次号</button>
+                </div>
+                <div class="col-md-3">
+                    <select id="selectpicker" class="selectpicker"></select>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

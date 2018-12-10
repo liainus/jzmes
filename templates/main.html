@@ -364,6 +364,11 @@
                                     <a href="#" onClick="addTab('批物料平衡统计','/BatchMaterielBalanceStatistic')">批物料平衡统计</a>
                                 </li>
                             {% endif %}
+                            {% if '96' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onClick="addTab('批物料追溯','/ProductDataManage/BatchMaterialTracing')">批物料追溯</a>
+                                </li>
+                            {% endif %}
 {#                            {% if '41' in session.get('menus') %}#}
 {#                                <li>#}
 {#                                    <a href="#">作业数据管理</a>#}
