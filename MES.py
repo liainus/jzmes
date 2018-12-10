@@ -8369,7 +8369,8 @@ def BatchMaterielBalanceStatistic():
 # 生产数据管理-批物料追溯
 @app.route('/ProductDataManage/BatchMaterialTracing')
 def BatchMaterialTracing():
-    return render_template('ProductDataManageBatchMaterialTracing.html')
+    brands = set(db_session.query(ProductRule.PRName).all())
+    return render_template('ProductDataManageBatchMaterialTracing.html', brands=brands)
 
 def time_trans_format(time_string, from_format, to_format='%Y-%m-%d'):
     time_struct = time.strptime(time_string,from_format)
@@ -8402,6 +8403,7 @@ def BatchMaterialTracingBatchBatch():
         try:
             data = request.values
             batch = data['batch']
+            # brand =
         except Exception as e:
             print(e)
             insertSyslog("error", "批物料追溯数据获取报错Error：" + str(e), current_user.Name)
