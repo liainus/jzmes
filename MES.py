@@ -7428,7 +7428,40 @@ def EquipmentFailureReportingDelete():
             insertSyslog("error", "设备故障报修删除报错Error：" + str(e), current_user.Name)
             return json.dumps("设备故障报修删除报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
-# 设备维护添加
+# 设备检修计划查询
+@app.route('/EquipmentMaintainSearch', methods=['POST', 'GET'])
+def EquipmentMaintainSearch():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                pages = int(data['page'])
+                rowsnumber = int(data['rows'])
+                inipage = (pages - 1) * rowsnumber + 0
+                endpage = (pages - 1) * rowsnumber + rowsnumber
+                MaintainPlanNum = data["MaintainPlanNum"]
+                if MaintainPlanNum == "":
+                    EquipmentFailureReportingCount = db_session.query(
+                        EquipmentMaintain).filter_by().count()
+                    EquipmentFailureReportingClass = db_session.query(
+                        EquipmentMaintain).filter_by().all()[inipage:endpage]
+                else:
+                    EquipmentFailureReportingCount = db_session.query(EquipmentMaintain).filter(
+                        EquipmentMaintain.MaintainPlanNum == MaintainPlanNum).count()
+                    EquipmentFailureReportingClass = db_session.query(EquipmentMaintain).filter(
+                        EquipmentMaintain.MaintainPlanNum == MaintainPlanNum).all()[
+                                                     inipage:endpage]
+                jsonoclass = json.dumps(EquipmentFailureReportingClass, cls=AlchemyEncoder, ensure_ascii=False)
+                return '{"total"' + ":" + str(
+                    EquipmentFailureReportingCount) + ',"rows"' + ":\n" + jsonoclass + "}"
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "设备故障报修查询报错Error：" + str(e), current_user.Name)
+            return json.dumps("设备故障报修查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+# 制定检修计划
 @app.route('/EquipmentMaintainCreate', methods=['POST', 'GET'])
 def EquipmentMaintainCreate():
     if request.method == 'POST':
@@ -7436,24 +7469,23 @@ def EquipmentMaintainCreate():
         try:
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 10:
-                failureReporting = EquipmentFailureReporting()
-                failureReporting.FailureReportingNum = data["FailureReportingNum"]
-                failureReporting.FailureReportingType = data["FailureReportingType"]
-                failureReporting.EQPName = data["EQPName"]
-                failureReporting.ReportingBeginDate = datetime.datetime.now()
-                failureReporting.FailureBeginDate = datetime.datetime.strptime(data["FailureBeginDate"],
-                                                                               '%Y-%m-%d %H:%M:%S')
-                failureReporting.ReportingStatus = Model.Global.ReportingStatus.New.value
-                failureReporting.FailureReportingDesc = data["FailureReportingDesc"]
-                failureReporting.NewPeople = current_user.Name
-                db_session.add(failureReporting)
+                maintain = EquipmentMaintain()
+                maintain.MaintainPlanNum = data["MaintainPlanNum"]
+                maintain.MaintainType = data["MaintainType"]
+                maintain.EquipmentName = data["EquipmentName"]
+                maintain.PlanBeginDate = datetime.datetime.now()
+                maintain.MaintainDemand = data["MaintainDemand"]
+                maintain.MaintainStatus = Model.Global.ReportingStatus.New.value
+                maintain.Description = data["Description"]
+                maintain.MakePlanPeople = current_user.Name
+                db_session.add(maintain)
                 db_session.commit()
                 return 'OK'
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "设备维护添加报错Error：" + str(e), current_user.Name)
-            return json.dumps("设备维护添加报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+            insertSyslog("error", "制定检修计划报错Error：" + str(e), current_user.Name)
+            return json.dumps("制定检修计划报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 # 设备维护
 @app.route('/equipmentMaintain')
@@ -7571,8 +7603,16 @@ def equipmentbeij():
 # 故障管理
 @app.route('/equipmenttrouble')
 def equipmenttrouble():
-
-    return render_template('equipmenttrouble.html')
+    RoleNames = db_session.query(User.RoleName).filter(User.Name == current_user.Name).all()
+    rolename = ""
+    for name in RoleNames:
+        if name[0] == "操作人":
+            rolename = "操作人"
+        if name[0] == "设备部技术人员":
+            rolename = "设备部技术人员"
+        if name[0] == "系统管理员":
+            rolename = "系统管理员"
+    return render_template('equipmenttrouble.html',rolename=rolename)
 
 def getExcel(file, method='r'):
     '''
