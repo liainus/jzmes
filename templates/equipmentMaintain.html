@@ -163,7 +163,7 @@
                                 }
                                 var a = JSON.stringify(jsonarray);
                                 $.ajax({
-                                    url: '/EquipmentMaintainFinished',
+                                    url: '/EquipmentMaintainCheck',
                                     method: 'POST',
                                     data: a,
                                     success: function (data) {
@@ -185,7 +185,7 @@
                     var rows = $("#tab").datagrid('getSelections');
                     if (rows.length > 0) {
                         var jsonarray=[];
-                        $.messager.confirm('确定操作', '是否要通过此计划的审核？', function (flag) {
+                        $.messager.confirm('确定操作', '是否要完成此计划的检修工作？', function (flag) {
                             if (flag) {
                                 for (var i = 0; i < rows.length; i++) {
                                     var obj=createKeyIDObj(parseInt(rows[i].ID));
@@ -208,7 +208,7 @@
                             }
                         });
                     } else {
-                        $.messager.alert('提示', '请选择要审核的计划！', 'info');
+                        $.messager.alert('提示', '请选择要完成的计划！', 'info');
                     }
                 },
                 refresh:function(){
