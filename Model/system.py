@@ -342,38 +342,45 @@ class OperationProcedure(Base):
     # 描述:
     Description = Column(String(800), primary_key=False, autoincrement=False, nullable=True)
 
+
 # 电子批记录
 class ElectronicBatch(Base):
     __tablename__ = 'ElectronicBatch'
     # id:
     ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
 
+    # id:
+    TaskID = Column(Integer, primary_key=False, autoincrement=True, nullable=False)
+
     # 批次号:
     BatchID = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
-    # 工艺路线编码：
-    PDUnitRouteCode = Column(Unicode(32), nullable=False, primary_key=False)
+    # 工艺段编码:
+    PDUnitRouteCode = Column(Unicode(64), nullable=False, primary_key=False)
 
     # 设备编码
-    EQPCode = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    EQPCode = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
 
     # 类型:
     OpcTagID = Column(Unicode(100), primary_key=False, autoincrement=False, nullable=True)
 
     # 采样值:
-    SampleValue = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    SampleValue = Column(Unicode(64), primary_key=False, autoincrement=False, nullable=True)
 
     # 采样时间:
     SampleDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
 
-    # 单位:
-    Unit = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
-
     # 重复次数：
-    RepeatCount = Column(Integer, primary_key=False, autoincrement=False, nullable=True,default=0)
+    RepeatCount = Column(Integer, primary_key=False, autoincrement=False, nullable=True, default=0)
 
     # 描述:
-    Description = Column(Unicode(100), primary_key=False, autoincrement=False, nullable=True)
+    Description = Column(Unicode(200), primary_key=False, autoincrement=False, nullable=True)
+
+    # 描述:
+    Type = Column(Unicode(200), primary_key=False, autoincrement=False, nullable=True)
+
+    # 单位:
+    Unit = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
 # 质量控制
 class QualityControl(Base):

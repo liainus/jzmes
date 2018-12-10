@@ -7598,7 +7598,16 @@ def EquipmentMaintainFinished():
 # 设备维护
 @app.route('/equipmentMaintain')
 def equipmentMaintain():
-    return render_template('equipmentMaintain.html')
+    RoleNames = db_session.query(User.RoleName).filter(User.Name == current_user.Name).all()
+    rolename = ""
+    for name in RoleNames:
+        if name[0] == "设备管理部审核人":
+            rolename = "设备管理部审核人"
+        if name[0] == "设备部技术人员":
+            rolename = "设备部技术人员"
+        if name[0] == "系统管理员":
+            rolename = "系统管理员"
+    return render_template('equipmentMaintain.html', rolename=rolename)
 
 # 设备运行数据
 @app.route('/EquipmentManage/runData')
@@ -8406,7 +8415,10 @@ def BatchMaterialTracingBatchBatch():
         try:
             data = request.values
             batch = data['batch']
-            # brand =
+            brand = data['brand']
+            if batch is None or brand is None:
+                return "NO"
+            Dosage_medicinal_materials = db_session.query()
         except Exception as e:
             print(e)
             insertSyslog("error", "批物料追溯数据获取报错Error：" + str(e), current_user.Name)
