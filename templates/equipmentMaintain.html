@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>设备检修计划管理</title>
+    <link href="../static/css/base.css" rel="stylesheet">
+	<link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
+	<link href="../static/css/basic_info.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
+	<link href="../static/js/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
+    <link href="../static/css/datagridpanel_customer.css" rel="stylesheet">
+    <link href="../static/css/dialogpanel.css" type="text/css" rel="stylesheet">
+    <link href="../static/css/datagrid_customer.css" type="text/css" rel="stylesheet">
+    <script type="text/javascript" src="../static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
+    <script>
+        $(function(){
+            $("#tab").datagrid({
+                url:'/EquipmentMaintainSearch',
+                queryParams: {
+                    MaintainPlanNum: ''
+                }
+            })
+            function createKeyIDObj(keyID){
+                    return {
+                        ID:keyID
+                    }
+                }
+            toolbar = {
+                search:function(){
+                    $('#tab').datagrid('load',{
+                        MaintainPlanNum:$("#search").val()
+                    });
+                },
+                create:function(){
+                    $("#equimentsClassDialog").dialog('open').dialog('setTitle','新增检修计划');
+                    $('#ID').val();
+                    $("#MaintainPlanNum").val()
+                    $('#MaintainType option[value=""]').prop("selected", 'selected');
+                    $("#EquipmentName").val()
+                    $("#MaintainDemand").val()
+                    $("#Description").val()
+                },
+                update:function(){
+                    var rows = $('#tab').datagrid('getSelections');
+                    if (rows.length > 1) {
+                        $.messager.alert('警告操作！', '编辑记录只能选定一条数据！', 'warning');
+                    } else if (rows.length == 1) {
+                        var row = $('#tab').datagrid('getSelected');
+                        if (row) {
+                            $("#equimentsClassDialog").dialog('open').dialog('setTitle','修改计划');
+                            $('#ID').val(row.ID);
+                            $("#MaintainPlanNum").val(row.MaintainPlanNum)
+                            $('#MaintainType option:contains('+row.MaintainType+')').prop("selected", 'selected');
+                            $("#EquipmentName").val(row.EquipmentName)
+                            $("#MaintainDemand").val(row.MaintainDemand)
+                            $("#Description").val(row.Description)
+                        };
+                    } else if (rows.length == 0) {
+                        $.messager.alert('警告操作！', '请至少选定一条数据进行编辑！', 'warning');
+                    }
+                },
+                save:function(){
+                    var strID = $('#ID').val();
+                    var urlAddr = ''
+                    var hintinfo = ''
+                    if(Bee.StringUtils.isEmpty($('#MaintainPlanNum').val())){
+                        $.messager.alert('提示', '设备检修计划单号不能为空！', 'info');
+                        return false;
+                    }else if(Bee.StringUtils.isEmpty($('#MaintainType').find("option:selected").val())){
+                        $.messager.alert('提示', '检修类型不能为空！', 'info');
+                        return false;
+                    }else if(Bee.StringUtils.isEmpty($('#EquipmentName').val())){
+                        $.messager.alert('提示', '设备名称不能为空！', 'info');
+                        return false;
+                    }else if(Bee.StringUtils.isEmpty($('#MaintainDemand').val())){
+                        $.messager.alert('提示', '检修要求不能为空！', 'info');
+                        return false;
+                    }
+                    if (strID.length >= 1){
+                        urlAddr = '/EquipmentMaintainUpdate'
+                        hintinfo = "修改计划"
+                    }
+                    else {
+                        urlAddr = '/EquipmentMaintainCreate'
+                        hintinfo = "新增计划"
+                    }
+                    $.ajax({
+                        url:urlAddr,
+                        type:"post",
+                        data:{
+                            ID:$('#ID').val(),
+                            MaintainPlanNum:$('#MaintainPlanNum').val(),
+                            MaintainType:$('#MaintainType').find("option:selected").val(),
+                            EquipmentName:$('#EquipmentName').val(),
+                            MaintainDemand:$('#MaintainDemand').val(),
+                            Description:$('#Description').val()
+                        },
+                        success:function(data){
+                            $.messager.progress('close');
+                            if(data == "OK"){
+                                $.messager.show({
+                                    title: '提示',
+                                    msg: hintinfo  + '成功',
+                                    timeout:1000,
+                                    style: {
+                                        right: '',
+                                        top: document.body.scrollTop + document.documentElement.scrollTop,
+                                        bottom: ''
+                                    }
+                                });
+                                $("#equimentsClassDialog").dialog('close');
+                                $('#tab').datagrid('reload');
+                            } else {
+                                $.messager.alert('请求失败！', '未知错误导致失败，请重试！', 'warning');
+                            }
+                        },
+                        error: function(data){
+                           console.log(data.responseText)
+                           alert(hintinfo+ "异常，请刷新后重试...");
+                        },
+                    })
+                },
+                delete:function(){
+                    var rows = $("#tab").datagrid('getSelections');
+                    if (rows.length > 0) {
+                        var jsonarray=[];
+                        $.messager.confirm('确定操作', '您正在删除所选的记录吗？', function (flag) {
+                            if (flag) {
+                                for (var i = 0; i < rows.length; i++) {
+                                    var obj=createKeyIDObj(parseInt(rows[i].ID));
+                                    jsonarray.push(obj);
+                                }
+                                var a = JSON.stringify(jsonarray);
+                                $.ajax({
+                                    url: '/EquipmentMaintainDelete',
+                                    method: 'POST',
+                                    data: a,
+                                    success: function (data) {
+                                        if(data == "OK"){
+                                            $.messager.progress('close');
+                                            $("#tab").datagrid('reload');
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                    } else {
+                        $.messager.alert('提示', '请选择要删除的记录！', 'info');
+                    }
+                },
+                Receipt:function(){
+                    var rows = $("#tab").datagrid('getSelections');
+                    if (rows.length > 0) {
+                        var jsonarray=[];
+                        $.messager.confirm('确定操作', '是否要通过此计划的审核？', function (flag) {
+                            if (flag) {
+                                for (var i = 0; i < rows.length; i++) {
+                                    var obj=createKeyIDObj(parseInt(rows[i].ID));
+                                    jsonarray.push(obj);
+                                }
+                                var a = JSON.stringify(jsonarray);
+                                $.ajax({
+                                    url: '/EquipmentMaintainFinished',
+                                    method: 'POST',
+                                    data: a,
+                                    success: function (data) {
+                                        if(data == "OK"){
+                                            $.messager.progress('close');
+                                            $("#tab").datagrid('reload');
+                                        }else{
+                                            $.messager.alert('提示', data, 'info');
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                    } else {
+                        $.messager.alert('提示', '请选择要审核的计划！', 'info');
+                    }
+                },
+                service:function(){
+                    var rows = $("#tab").datagrid('getSelections');
+                    if (rows.length > 0) {
+                        var jsonarray=[];
+                        $.messager.confirm('确定操作', '是否要通过此计划的审核？', function (flag) {
+                            if (flag) {
+                                for (var i = 0; i < rows.length; i++) {
+                                    var obj=createKeyIDObj(parseInt(rows[i].ID));
+                                    jsonarray.push(obj);
+                                }
+                                var a = JSON.stringify(jsonarray);
+                                $.ajax({
+                                    url: '/EquipmentMaintainFinished',
+                                    method: 'POST',
+                                    data: a,
+                                    success: function (data) {
+                                        if(data == "OK"){
+                                            $.messager.progress('close');
+                                            $("#tab").datagrid('reload');
+                                        }else{
+                                            $.messager.alert('提示', data, 'info');
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                    } else {
+                        $.messager.alert('提示', '请选择要审核的计划！', 'info');
+                    }
+                },
+                refresh:function(){
+                    $('#tab').datagrid('reload');
+                }
+            }
+        })
+        function formatterStatus(value, row, index){
+            if (value == 10){
+                return '新增计划'
+            }else if(value == 20){
+                return '审核计划'
+            }else if(value == 30){
+                return '完成计划'
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="content" style="padding: 10px;">
+        <div id="Toolbar" style="padding:0 10px;">
+            设备检修计划单号:
+            <input type="text" class="textbox-text validatebox-text textbox-prompt" id="search" name="search" style="height:28px;" autocomplete="off"
+                placeholder="">
+            <a href="#" class="easyui-linkbutton" iconCls="icon-search" onclick="toolbar.search();">查询</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="toolbar.create()">制定检修计划</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="toolbar.update()">编辑</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="toolbar.delete()">删除</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-filter" onclick="toolbar.Receipt()">通过审核</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="toolbar.service()">完成检修</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-reload" onclick="toolbar.refresh()">刷新</a>
+        </div>
+        <div id="equimentsClassDialog" class="easyui-dialog" style="width:400px;height:360px;padding:10px;"
+             data-options="closed:'true',buttons:'#equimentsClassDialogButtons',modal:true">
+            <form id="equimentsClassDialogForm" method="post" class="dialog-form">
+                <table class="kv-table">
+                    <tbody>
+                        <tr>
+                            <td class="kv-label">id</td>
+                            <td class="kv-content">
+                                <input name="ID" id="ID" type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="" disabled="disabled">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">设备检修计划单号</td>
+                            <td class="kv-content">
+                                <input name="MaintainPlanNum" id="MaintainPlanNum" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder="">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">检修类型</td>
+                            <td class="kv-content">
+                                <select name="MaintainType" id="MaintainType" type="text" style="width:157px;" autocomplete="off" placeholder="">
+                                    <option value="">请选择</option>
+                                    <option value="润滑">润滑</option>
+                                    <option value="巡检">巡检</option>
+                                    <option value="维修">维修</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">设备名称</td>
+                            <td class="kv-content">
+                                <input name="EquipmentName" id="EquipmentName" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">检修要求</td>
+                            <td class="kv-content">
+                                <input name="MaintainDemand" id="MaintainDemand" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">描述</td>
+                            <td class="kv-content">
+                                <input name="Description" id="Description" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div id="equimentsClassDialogButtons">
+                    <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" id="saveAdd" onclick="toolbar.save()" >保存</a>
+                    <a href="#" class="easyui-linkbutton" onclick="$('#equimentsClassDialog').dialog('close')">关闭</a>
+                </div>
+            </form>
+        </div>
+        <table class="easyui-datagrid" id="tab" title="" style="width:100%;" data-options="
+            rownumbers:true,
+            singleSelect:false,
+            autoRowHeight:false,
+            pagination:true,
+            pageSize:10,
+            toolbar:'#Toolbar',
+            method:'get'">
+            <thead>
+                <tr>
+                    <th field="ck" checkbox="true"></th>
+                    <th data-options="field:'MaintainPlanNum',width:150,align:'center'">设备检修计划单号</th>
+                    <th data-options="field:'MaintainType',width:150,align:'center'">检修类型</th>
+                    <th data-options="field:'EquipmentName',width:150,align:'center'">设备名称</th>
+                    <th data-options="field:'PlanBeginDate',width:150,align:'center'">计划开始时间 </th>
+                    <th data-options="field:'PlanEndDate',width:150,align:'center'">计划结束时间</th>
+                    <th data-options="field:'MaintainDemand',width:150,align:'center'">检修要求</th>
+                    <th data-options="field:'MaintainStatus',width:150,align:'center'" formatter="formatterStatus">检修状态</th>
+                    <th data-options="field:'Description',width:150,align:'center'">描述</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</body>
+</html>
