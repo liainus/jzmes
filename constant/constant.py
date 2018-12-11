@@ -34,3 +34,9 @@ MONITOR_TRANSPORT_RED_TAG = transform_dict("config['transport_section_red']")
 CPK_TAG_LIST = config['CPK_Tag']
 SINGLE_CONCENTRATION_TAG =transform_dict("config['Single_effect_concentration']")
 ALCOHOLPRECIPITATION_TAG = transform_dict("config['AlcoholPrecipitation']")
+
+materia_tracing_A_drug = transform_dict("config['materia_tracing_A_drug']")
+materia_tracing__B_drug = transform_dict("config['materia_tracing__B_drug']")
+
+DecoctingEquipID = eval(config['EquipID']['Decocting'])
+AlcoholEquipID = eval(config['EquipID']['Alcohol'])
