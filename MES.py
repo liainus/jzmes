@@ -6367,14 +6367,15 @@ def electionBatchSearch():
         try:
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 2:
+                BrandID = data['BrandID']
                 PName = data['PName']
                 BatchID = data['batchID']
                 Pclass = db_session.query(ProductUnitRoute).filter(ProductUnitRoute.PDUnitRouteName == PName).first()
                 dic = {}
                 if(Pclass.PDUnitRouteName == "煎煮段"):
                     name = '提取'
-                    EQPCodesLen = db_session.query(ElectronicBatch.EQPCode).distinct().filter(
-                        ElectronicBatch.BatchID == BatchID, ElectronicBatch.PDUnitRouteCode == name).count()
+                    EQPCodesLen = db_session.query(ElectronicBatch.EQPID).filter(
+                        ElectronicBatch.BatchID == BatchID, ElectronicBatch.BrandID == BrandID, ElectronicBatch.PDUnitRouteID == 2).count()
                     if EQPCodesLen != 0:
                         EQPCodes = db_session.query(ElectronicBatch.EQPCode).distinct().filter(
                             ElectronicBatch.BatchID == BatchID, ElectronicBatch.PDUnitRouteCode == name).all()
@@ -7664,6 +7665,10 @@ def runDataChart():
             insertSyslog("error", "设备运行-图表数据获取报错Error：" + str(e), current_user.Name)
             return json.dumps("设备运行-图表数据获取报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
+# 设备日常保养记录
+@app.route('/EMaintainEveryDay')
+def EMaintainEveryDay():
+    return render_template('EMaintainEveryDay.html')
 
 # 收粉监控画面
 @app.route('/processMonitorLineCollect')

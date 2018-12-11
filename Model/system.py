@@ -982,6 +982,17 @@ class EquipmentRunPUID(Base):
     # 父节点
     ParentNode = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
 
+class BatchNameTypeName(Base):
+    __tablename__ = 'BatchNameTypeName'
+    # id:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+    # 批记录对应的Name：
+    BatchName = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 采集对应的TypeName:
+    TypeName = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
 # 生成表单的执行语句
 Base.metadata.create_all(engine)
 
