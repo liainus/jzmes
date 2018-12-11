@@ -6374,11 +6374,11 @@ def electionBatchSearch():
                 dic = {}
                 if(Pclass.PDUnitRouteName == "煎煮段"):
                     name = '提取'
-                    EQPCodesLen = db_session.query(ElectronicBatch.EQPID).filter(
+                    EQPCodesLen = db_session.query(ElectronicBatch).filter(
                         ElectronicBatch.BatchID == BatchID, ElectronicBatch.BrandID == BrandID, ElectronicBatch.PDUnitRouteID == 2).count()
                     if EQPCodesLen != 0:
                         EQPCodes = db_session.query(ElectronicBatch.EQPCode).distinct().filter(
-                            ElectronicBatch.BatchID == BatchID, ElectronicBatch.PDUnitRouteCode == name).all()
+                            ElectronicBatch.BatchID == BatchID, ElectronicBatch.PDUnitRouteID == 2).all()
                         for i in range(0,len(EQPCodes)):
                             EQPName = db_session.query(Equipment.EQPName).filter(Equipment.EQPCode == EQPCodes[i]).first()
                             dic["EQPName"+str(i)] = EQPName[0]
