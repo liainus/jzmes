@@ -356,13 +356,19 @@ class ElectronicBatch(Base):
     BatchID = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
     # 工艺段编码:
-    PDUnitRouteCode = Column(Unicode(64), nullable=False, primary_key=False)
+    PDUnitRouteID = Column(Integer, nullable=False, primary_key=False)
 
     # 设备编码
-    EQPCode = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+    EQPID = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
 
     # 类型:
     OpcTagID = Column(Unicode(100), primary_key=False, autoincrement=False, nullable=True)
+
+    # 类型:
+    BrandID = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
+
+    # 类型:
+    BrandName = Column(Unicode(100), primary_key=False, autoincrement=False, nullable=True)
 
     # 采样值:
     SampleValue = Column(Unicode(64), primary_key=False, autoincrement=False, nullable=True)
