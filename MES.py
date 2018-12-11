@@ -8338,7 +8338,7 @@ def BatchMaterialTracingGetBatch():
 
 # 物料追溯数据
 @app.route('/BatchMaterialTracing/BatchData')
-def BatchMaterialTracingBatchBatch():
+def BatchMaterialTracingBatch():
     if request.method == 'GET':
         try:
             data = request.values
@@ -8346,72 +8346,78 @@ def BatchMaterialTracingBatchBatch():
             brand = data['brand']
             if batch is None or brand is None:
                 return "NO"
+            nothing = "暂无数据"
             material_data = dict()
             tank_tags = list()
 
             if brand == 'A':
-                Equip_ID = constant.DecoctingEquipID
+                Equip_ID = constant.Decocting_A_EquipID
                 for i in ['a', 'b', 'c', 'd', 'e', 'f']:
                     tag = list()
                     for j in ['1', '2', '3']:
                         tag.append(i + j)
                     tank_tags.append(tag)
-                drug = constant.materia_tracing_A_drug.values()
+                drug = constant.A_drug
 
             if brand == "B":
-                Equip_ID = constant.AlcoholEquipID
-                for i in ['g', 'h', 'i', 'j','k','l','m','n']:
+                Equip_ID = constant.Decocting_B_EquipID
+                for i in ['g', 'h', 'i', 'j']:
                     tag = list()
                     for j in ['1', '2', '3']:
                         tag.append(i + j)
                     tank_tags.append(tag)
-                drug = constant.materia_tracing__B_drug.values()
-                Alcohol = constant.Alcohol_precipitation_B.values()
-            nothing = "暂无数据"
-            for tag in tank_tags:
-                drug_input = db_session.query(EletronicBatchDataStore.OperationpValue).filter(and_(
-                    EletronicBatchDataStore.BatchID == batch,
-                    EletronicBatchDataStore.Content == drug[tank_tags.index(tag)])).first()[0]
-                if drug_input:
-                    material_data[tag[0]] = drug_input
-                else:
-                    material_data[tag[0]] = nothing
-                firstwater = material_data[tag[1]] = db_session.query(ElectronicBatch.SampleValue).filter(and_(
-                    ElectronicBatch.BatchID == batch,
-                    ElectronicBatch.EQPID == Equip_ID[tank_tags.index(tag)],
-                    ElectronicBatch.Type == "提取第一次加水量设定值")).first()
-                if firstwater:
-                    material_data[tag[1]] = firstwater
-                else:
-                    material_data[tag[1]] = nothing
-
-                secondwater = db_session.query(ElectronicBatch.SampleValue).filter(and_(
-                    ElectronicBatch.BatchID == batch,
-                    ElectronicBatch.EQPID == Equip_ID[tank_tags.index(tag)],
-                    ElectronicBatch.Type == "提取第二次加水量设定值")).first()
-                if secondwater:
-                    material_data[tag[2]] = secondwater
-                else:
-                    material_data[tag[2]] = nothing
-            if brand == "B":
-                for tag in tank_tags[-4:]:
-                    ns_v = db_session.query(ElectronicBatch.SampleValue).filter(and_(
+                drug = constant.B_drug
+                alcho_tags = list()
+                for x in ['k', 'l', 'm', 'n']:
+                    tag = list()
+                    for y in ['1', '2']:
+                        tag.append(x + y)
+                    alcho_tags.append(tag)
+                for tag in alcho_tags:
+                    ns_y = db_session.query(ElectronicBatch.SampleValue).filter(and_(
                         ElectronicBatch.BatchID == batch,
-                        ElectronicBatch.EQPID == Equip_ID[-4:][tank_tags[-4:].index(tag)],
+                        ElectronicBatch.EQPID == constant.AlcoholEquipID[alcho_tags.index(tag)],
                         ElectronicBatch.Type == "醇沉浓缩液体积")).first()
-                    if ns_v:
-                        material_data[tag[0]] = ns_v
+                    if ns_y:
+                        material_data[tag[0]] = ns_y[0] + "L"
                     else:
                         material_data[tag[0]] = nothing
 
-                    al_y = db_session.query(ElectronicBatch.SampleValue).filter(and_(
+                    ns_a = db_session.query(ElectronicBatch.SampleValue).filter(and_(
                         ElectronicBatch.BatchID == batch,
-                        ElectronicBatch.EQPID == Equip_ID[-4:][tank_tags[-4:].index(tag)],
+                        ElectronicBatch.EQPID == constant.AlcoholEquipID[alcho_tags.index(tag)],
                         ElectronicBatch.Type == "醇沉乙醇用量")).first()
-                    if al_y:
-                        material_data[tag[1]] = al_y
+                    if ns_a:
+                        material_data[tag[1]] = ns_a[0] + "L"
                     else:
                         material_data[tag[1]] = nothing
+
+            for tank in tank_tags:
+                drug_input = db_session.query(EletronicBatchDataStore.OperationpValue).filter(and_(
+                    EletronicBatchDataStore.BatchID == batch,
+                    EletronicBatchDataStore.Content == drug[tank_tags.index(tank)])).first()
+                if drug_input:
+                    material_data[tank[0]] = drug_input[0] + "kg"
+                else:
+                    material_data[tank[0]] = nothing
+
+                water_1 = db_session.query(ElectronicBatch.SampleValue).filter(and_(
+                    ElectronicBatch.BatchID == batch,
+                    ElectronicBatch.EQPID == Equip_ID[tank_tags.index(tank)],
+                    ElectronicBatch.Type == "提取第一次加水量设定值")).first()
+                if water_1:
+                    material_data[tank[1]] = water_1[0] + "L"
+                else:
+                    material_data[tank[1]] = nothing
+
+                water_2 = db_session.query(ElectronicBatch.SampleValue).filter(and_(
+                    ElectronicBatch.BatchID == batch,
+                    ElectronicBatch.EQPID == Equip_ID[tank_tags.index(tank)],
+                    ElectronicBatch.Type == "提取第二次加水量设定值")).first()
+                if water_2:
+                    material_data[tank[2]] = water_2[0] + "L"
+                else:
+                    material_data[tank[2]] = nothing
 
             return json.dumps(material_data,cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
         except Exception as e:

@@ -35,8 +35,11 @@ CPK_TAG_LIST = config['CPK_Tag']
 SINGLE_CONCENTRATION_TAG =transform_dict("config['Single_effect_concentration']")
 ALCOHOLPRECIPITATION_TAG = transform_dict("config['AlcoholPrecipitation']")
 
-materia_tracing_A_drug = transform_dict("config['materia_tracing_A_drug']")
-materia_tracing__B_drug = transform_dict("config['materia_tracing__B_drug']")
+materia_tracing_A_drug = config['materia_tracing_A_drug']
+A_drug = [i for i in materia_tracing_A_drug.keys()]
+materia_tracing_B_drug = config['materia_tracing_B_drug']
+B_drug = [j for j in materia_tracing_B_drug.keys()]
 
-DecoctingEquipID = eval(config['EquipID']['Decocting'])
+Decocting_A_EquipID = eval(config['EquipID']['Decocting_A'])
+Decocting_B_EquipID = eval(config['EquipID']['Decocting_B'])
 AlcoholEquipID = eval(config['EquipID']['Alcohol'])
