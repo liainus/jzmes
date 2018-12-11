@@ -8456,7 +8456,7 @@ def BatchMaterialTracingBatch():
                         ElectronicBatch.EQPID == constant.AlcoholEquipID[alcho_tags.index(tag)],
                         ElectronicBatch.Type == "醇沉浓缩液体积")).first()
                     if ns_y:
-                        material_data[tag[0]] = ns_y[0]
+                        material_data[tag[0]] = ns_y[0] + "L"
                     else:
                         material_data[tag[0]] = nothing
 
@@ -8465,7 +8465,7 @@ def BatchMaterialTracingBatch():
                         ElectronicBatch.EQPID == constant.AlcoholEquipID[alcho_tags.index(tag)],
                         ElectronicBatch.Type == "醇沉乙醇用量")).first()
                     if ns_a:
-                        material_data[tag[1]] = ns_a[0]
+                        material_data[tag[1]] = ns_a[0] + "L"
                     else:
                         material_data[tag[1]] = nothing
 
@@ -8474,7 +8474,7 @@ def BatchMaterialTracingBatch():
                     EletronicBatchDataStore.BatchID == batch,
                     EletronicBatchDataStore.Content == drug[tank_tags.index(tank)])).first()
                 if drug_input:
-                    material_data[tank[0]] = drug_input[0]
+                    material_data[tank[0]] = drug_input[0] + "kg"
                 else:
                     material_data[tank[0]] = nothing
 
@@ -8483,7 +8483,7 @@ def BatchMaterialTracingBatch():
                     ElectronicBatch.EQPID == Equip_ID[tank_tags.index(tank)],
                     ElectronicBatch.Type == "提取第一次加水量设定值")).first()
                 if water_1:
-                    material_data[tank[1]] = water_1[0]
+                    material_data[tank[1]] = water_1[0] + "L"
                 else:
                     material_data[tank[1]] = nothing
 
@@ -8492,7 +8492,7 @@ def BatchMaterialTracingBatch():
                     ElectronicBatch.EQPID == Equip_ID[tank_tags.index(tank)],
                     ElectronicBatch.Type == "提取第二次加水量设定值")).first()
                 if water_2:
-                    material_data[tank[2]] = water_2[0]
+                    material_data[tank[2]] = water_2[0] + "L"
                 else:
                     material_data[tank[2]] = nothing
 
