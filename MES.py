@@ -7673,9 +7673,10 @@ def MaintenanceDataStore():
                 confirm_value = data['confirm']
                 confirm_value = eval(confirm_value)
                 try:
-                    month = datetime.datetime.now().month
+                    date = datetime.datetime.now()
                     history = db_session.query(EquipmentMaintenanceStore).filter(
-                        extract("month", EquipmentMaintenanceStore.OperationDate) == int(month)).all()
+                        extract("year", EquipmentMaintenanceStore.OperationDate) == int(date.year),
+                        extract("month", EquipmentMaintenanceStore.OperationDate) == int(date.month)).all()
                     if history:
                         for obj in history:
                             db_session.delete(obj)
