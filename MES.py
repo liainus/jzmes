@@ -7667,15 +7667,19 @@ def MaintenanceDataStore():
             data = request.values.to_dict()
             if data is not None:
                 clear_value = data['clear']
+                clear_value = eval(clear_value)
                 wipe_value = data['wipe']
+                wipe_value = eval(wipe_value)
                 confirm_value = data['confirm']
+                confirm_value = eval(confirm_value)
                 try:
-                    year = datetime.datetime.now().year
+                    month = datetime.datetime.now().month
                     history = db_session.query(EquipmentMaintenanceStore).filter(
-                        extract("year", EquipmentMaintenanceStore.OperationDate) == int(year)).all()
+                        extract("month", EquipmentMaintenanceStore.OperationDate) == int(month)).all()
                     if history:
-                        db_session.delete(history)
-                        db_session.commit()
+                        for obj in history:
+                            db_session.delete(obj)
+                            db_session.commit()
                 except Exception as e:
                     print(e)
                     logger.error(e)
@@ -7688,51 +7692,59 @@ def MaintenanceDataStore():
                     oclass.EquipmentNumber = data['number']
                     oclass.Content = "电机加油"
                     oclass.OperationValue = data['lubrication']
-                    oclass.Date = data['date']
+                    oclass.Date = datetime.datetime.now()
                     oclass.PersonLiable = data['PersonLiable']
                     oclass.SuperVisor = data['SuperVisor']
                     oclass.OperationDate = datetime.datetime.now()
                     db_session.add(oclass)
                     db_session.commit()
+                date_1 = 1
                 for clear in clear_value:
+                    if clear_value == 'null':
+                        continue
                     oclass = EquipmentMaintenanceStore()
                     oclass.EquipmentType = data['type']
                     oclass.EquipentName = data['name']
                     oclass.EquipmentNumber = data['number']
                     oclass.Content = "周围环境"
                     oclass.OperationValue = clear
-                    oclass.Date = data['date']
+                    oclass.Date = date_1
                     oclass.PersonLiable = data['PersonLiable']
                     oclass.SuperVisor = data['SuperVisor']
                     oclass.OperationDate = datetime.datetime.now()
                     db_session.add(oclass)
                     db_session.commit()
-                for wipe in wipe_value:
+                    date_1 += 1
+                date_2 = 1
+                for wipe in eval(wipe_value):
                     oclass = EquipmentMaintenanceStore()
                     oclass.EquipmentType = data['type']
                     oclass.EquipentName = data['name']
                     oclass.EquipmentNumber = data['number']
                     oclass.Content = "机外表面擦油"
                     oclass.OperationValue = wipe
-                    oclass.Date = data['date']
+                    oclass.Date = date_2
                     oclass.PersonLiable = data['PersonLiable']
                     oclass.SuperVisor = data['SuperVisor']
                     oclass.OperationDate = datetime.datetime.now()
                     db_session.add(oclass)
                     db_session.commit()
-                for confirm in confirm_value:
+                    date_2 += 1
+                date_3 = 1
+                for confirm in eval(confirm_value):
                     oclass = EquipmentMaintenanceStore()
                     oclass.EquipmentType = data['type']
                     oclass.EquipentName = data['name']
                     oclass.EquipmentNumber = data['number']
                     oclass.Content = "保养签章"
                     oclass.OperationValue = confirm
-                    oclass.Date = data['date']
+                    oclass.Date = date_3
                     oclass.PersonLiable = data['PersonLiable']
                     oclass.SuperVisor = data['SuperVisor']
                     oclass.OperationDate = datetime.datetime.now()
                     db_session.add(oclass)
                     db_session.commit()
+                    date_3 += 1
                 return "OK"
             return "NO"
         except Exception as e:
