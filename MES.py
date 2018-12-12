@@ -7841,8 +7841,8 @@ def MaintenanceDataSearch():
                 EquipmentMaintenanceStore.EquipmentType == type,
                 EquipmentMaintenanceStore.Content == "电机加油")).order_by(desc("Date")).first()[0]
 
-            equip_data = {"number":number, "PersonLiable":PersonLiable,
-                          "SuperVisor":SuperVisor, "clear":clear,
+            equip_data = {"EQPNumber":number, "personLiable":PersonLiable,
+                          "supervisor":SuperVisor, "clear":clear,
                           "wipe":wipe, "confirm":confirm, "lubrication":lubrication}
             return json.dumps(equip_data,cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
