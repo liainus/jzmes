@@ -7716,7 +7716,7 @@ def MaintenanceDataStore():
                     db_session.commit()
                     date_1 += 1
                 date_2 = 1
-                for wipe in eval(wipe_value):
+                for wipe in wipe_value:
                     oclass = EquipmentMaintenanceStore()
                     oclass.EquipmentType = data['type']
                     oclass.EquipentName = data['name']
@@ -7731,7 +7731,7 @@ def MaintenanceDataStore():
                     db_session.commit()
                     date_2 += 1
                 date_3 = 1
-                for confirm in eval(confirm_value):
+                for confirm in confirm_value:
                     oclass = EquipmentMaintenanceStore()
                     oclass.EquipmentType = data['type']
                     oclass.EquipentName = data['name']
