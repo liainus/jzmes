@@ -76,15 +76,15 @@
                     url:'/EquipmentMaintenance/DataStore',
                     type:'get',
                     data:{
-                        name:JSON.parse(EQPName),
-                        type:JSON.parse(EQPModel),
-                        date:JSON.parse(selectMonth),
-                        number:JSON.parse(EQPNumber),
-                        PersonLiable:JSON.parse(PersonLiable),
-                        SuperVisor:JSON.parse(SuperVisor),
+                        name:EQPName,
+                        type:EQPModel,
+                        date:selectMonth,
+                        number:EQPNumber,
+                        PersonLiable:PersonLiable,
+                        SuperVisor:SuperVisor,
                         clear:allClear,
                         wipe:allWiper,
-                        lubrication:JSON.parse(lubrication),
+                        lubrication:lubrication,
                         confirm:allConfirm
                     },
                     beforeSend:function(){
@@ -99,7 +99,10 @@
                         }else{
                             alert("未知错误，请稍后重试！")
                         }
-                    },error:function(data){
+                    },
+                    error:function(data){
+                        $("#loadingModal").modal('hide');
+                        alert("请求失败，请稍后重试")
                         console.log(data)
                     }
                 })
@@ -127,7 +130,10 @@
                         for (var i = 0; i < str.length; i++) {
                             //console.log(str[i])
                         }
-                    },error:function(data){
+                    },
+                    error:function(data){
+                        $("#loadingModal").modal('hide');
+                        alert("请求失败，请稍后重试")
                         console.log(data)
                     }
                 })
