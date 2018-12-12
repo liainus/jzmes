@@ -7707,7 +7707,7 @@ def MaintenanceDataStore():
                     oclass.EquipentName = data['name']
                     oclass.EquipmentNumber = data['number']
                     oclass.Content = "周围环境"
-                    oclass.OperationValue = clear
+                    oclass.OperationValue = eval(clear)
                     oclass.Date = date_1
                     oclass.PersonLiable = data['PersonLiable']
                     oclass.SuperVisor = data['SuperVisor']
@@ -7722,7 +7722,7 @@ def MaintenanceDataStore():
                     oclass.EquipentName = data['name']
                     oclass.EquipmentNumber = data['number']
                     oclass.Content = "机外表面擦油"
-                    oclass.OperationValue = wipe
+                    oclass.OperationValue = eval(wipe)
                     oclass.Date = date_2
                     oclass.PersonLiable = data['PersonLiable']
                     oclass.SuperVisor = data['SuperVisor']
@@ -7737,7 +7737,7 @@ def MaintenanceDataStore():
                     oclass.EquipentName = data['name']
                     oclass.EquipmentNumber = data['number']
                     oclass.Content = "保养签章"
-                    oclass.OperationValue = confirm
+                    oclass.OperationValue = eval(confirm)
                     oclass.Date = date_3
                     oclass.PersonLiable = data['PersonLiable']
                     oclass.SuperVisor = data['SuperVisor']
