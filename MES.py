@@ -6389,7 +6389,7 @@ def electionBatchSearch():
                             dic["firstAddWater" + str(i)] = firstAddWater.SampleValue + firstAddWater.Unit
                             secondAddWater = searO(BrandID, BatchID, Pclass.ID, EQPIDs[i], "提取第二次加水量设定值")
                             dic["secondAddWater" + str(i)] = secondAddWater.SampleValue + secondAddWater.Unit
-                            for j in range(0,2):
+                            for j in range(0,3):
                                 temp = searO(BrandID, BatchID, Pclass.ID, EQPIDs[i], "提取第一次煎煮温度采集0"+str(j+1))
                                 dic["firstTemp" + "_" + str(i) + "_" + str(j)] = temp.SampleValue + temp.Unit
                                 dic["firstTempTime" + "_" + str(i) + "_" + str(j)] = strchange(temp.SampleDate)[10:-10]
