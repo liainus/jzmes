@@ -7673,11 +7673,16 @@ def MaintenanceDataStore():
                 confirm_value = data['confirm']
                 confirm_value = eval(confirm_value)
                 date = datetime.datetime.now()
+                name = eval(data['name'])[0]
+                type = eval(data['type'])[0]
+                number = eval(data['number'])[0]
+                PersonLiable = eval(data['PersonLiable'])[0]
+                SuperVisor = eval(data['SuperVisor'])[0]
 
                 if 'lubrication' in data.keys():
                     lub = db_session.query(EquipmentMaintenanceStore).filter(and_(
-                        EquipmentMaintenanceStore.EquipentName == data['name'],
-                        EquipmentMaintenanceStore.EquipmentNumber == data['number'],
+                        EquipmentMaintenanceStore.EquipentName == name,
+                        EquipmentMaintenanceStore.EquipmentNumber == number,
                         EquipmentMaintenanceStore.Content == "电机加油",
                         extract("year", EquipmentMaintenanceStore.OperationDate) == int(date.year),
                         extract("month", EquipmentMaintenanceStore.OperationDate) == int(date.month))).first()
@@ -7686,14 +7691,14 @@ def MaintenanceDataStore():
                         db_session.commit()
                     else:
                         oclass = EquipmentMaintenanceStore()
-                        oclass.EquipmentType = data['type']
-                        oclass.EquipentName = data['name']
-                        oclass.EquipmentNumber = data['number']
+                        oclass.EquipmentType = type
+                        oclass.EquipentName = name
+                        oclass.EquipmentNumber = number
                         oclass.Content = "电机加油"
                         oclass.OperationValue = data['lubrication']
                         oclass.Date = datetime.datetime.now()
-                        oclass.PersonLiable = data['PersonLiable']
-                        oclass.SuperVisor = data['SuperVisor']
+                        oclass.PersonLiable = PersonLiable
+                        oclass.SuperVisor = SuperVisor
                         oclass.OperationDate = datetime.datetime.now()
                         db_session.add(oclass)
                         db_session.commit()
@@ -7702,25 +7707,25 @@ def MaintenanceDataStore():
                     if clear_value == 'null':
                         continue
                     clear_obj = db_session.query(EquipmentMaintenanceStore).filter(and_(
-                        EquipmentMaintenanceStore.EquipentName == data['name'],
-                        EquipmentMaintenanceStore.EquipmentNumber == data['number'],
+                        EquipmentMaintenanceStore.EquipentName == name,
+                        EquipmentMaintenanceStore.EquipmentNumber == number,
                         EquipmentMaintenanceStore.Date == date_1,
                         EquipmentMaintenanceStore.Content == "周围环境",
                         extract("year", EquipmentMaintenanceStore.OperationDate) == int(date.year),
                         extract("month", EquipmentMaintenanceStore.OperationDate) == int(date.month))).first()
                     if clear_obj:
-                        clear_obj.OperationValue = clear
+                        clear_obj.OperationValue = int(clear)
                         db_session.commit()
                     else:
                         oclass = EquipmentMaintenanceStore()
-                        oclass.EquipmentType = data['type']
-                        oclass.EquipentName = data['name']
-                        oclass.EquipmentNumber = data['number']
+                        oclass.EquipmentType = type
+                        oclass.EquipentName = name
+                        oclass.EquipmentNumber = number
                         oclass.Content = "周围环境"
                         oclass.OperationValue = eval(clear)
                         oclass.Date = date_1
-                        oclass.PersonLiable = data['PersonLiable']
-                        oclass.SuperVisor = data['SuperVisor']
+                        oclass.PersonLiable = PersonLiable
+                        oclass.SuperVisor = SuperVisor
                         oclass.OperationDate = datetime.datetime.now()
                         db_session.add(oclass)
                         db_session.commit()
@@ -7728,25 +7733,25 @@ def MaintenanceDataStore():
                 date_2 = 1
                 for wipe in wipe_value:
                     wipe_obj = db_session.query(EquipmentMaintenanceStore).filter(and_(
-                        EquipmentMaintenanceStore.EquipentName == data['name'],
-                        EquipmentMaintenanceStore.EquipmentNumber == data['number'],
+                        EquipmentMaintenanceStore.EquipentName == name,
+                        EquipmentMaintenanceStore.EquipmentNumber == number,
                         EquipmentMaintenanceStore.Date == date_2,
                         EquipmentMaintenanceStore.Content == "机外表面擦油",
                         extract("year", EquipmentMaintenanceStore.OperationDate) == int(date.year),
                         extract("month", EquipmentMaintenanceStore.OperationDate) == int(date.month))).first()
                     if wipe_obj:
-                        wipe_obj.OperationValue = wipe
+                        wipe_obj.OperationValue = int(wipe)
                         db_session.commit()
                     else:
                         oclass = EquipmentMaintenanceStore()
-                        oclass.EquipmentType = data['type']
-                        oclass.EquipentName = data['name']
-                        oclass.EquipmentNumber = data['number']
+                        oclass.EquipmentType = type
+                        oclass.EquipentName = name
+                        oclass.EquipmentNumber = number
                         oclass.Content = "机外表面擦油"
                         oclass.OperationValue = eval(wipe)
                         oclass.Date = date_2
-                        oclass.PersonLiable = data['PersonLiable']
-                        oclass.SuperVisor = data['SuperVisor']
+                        oclass.PersonLiable = PersonLiable
+                        oclass.SuperVisor = SuperVisor
                         oclass.OperationDate = datetime.datetime.now()
                         db_session.add(oclass)
                         db_session.commit()
@@ -7754,25 +7759,25 @@ def MaintenanceDataStore():
                 date_3 = 1
                 for confirm in confirm_value:
                     confirm_obj = db_session.query(EquipmentMaintenanceStore).filter(and_(
-                        EquipmentMaintenanceStore.EquipentName == data['name'],
-                        EquipmentMaintenanceStore.EquipmentNumber == data['number'],
+                        EquipmentMaintenanceStore.EquipentName == name,
+                        EquipmentMaintenanceStore.EquipmentNumber == number,
                         EquipmentMaintenanceStore.Date == date_3,
                         EquipmentMaintenanceStore.Content == "保养签章",
                         extract("year", EquipmentMaintenanceStore.OperationDate) == int(date.year),
                         extract("month", EquipmentMaintenanceStore.OperationDate) == int(date.month))).first()
                     if confirm_obj:
-                        confirm_obj.OperationValue = confirm
+                        confirm_obj.OperationValue = int(confirm)
                         db_session.commit()
                     else:
                         oclass = EquipmentMaintenanceStore()
-                        oclass.EquipmentType = data['type']
-                        oclass.EquipentName = data['name']
-                        oclass.EquipmentNumber = data['number']
+                        oclass.EquipmentType = type
+                        oclass.EquipentName = name
+                        oclass.EquipmentNumber = number
                         oclass.Content = "保养签章"
                         oclass.OperationValue = eval(confirm)
                         oclass.Date = date_3
-                        oclass.PersonLiable = data['PersonLiable']
-                        oclass.SuperVisor = data['SuperVisor']
+                        oclass.PersonLiable = PersonLiable
+                        oclass.SuperVisor = SuperVisor
                         oclass.OperationDate = datetime.datetime.now()
                         db_session.add(oclass)
                         db_session.commit()
