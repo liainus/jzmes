@@ -60,6 +60,8 @@
                         lubrication:$(".lubrication").prop("checked"),
                         confirm:allConfirm
                     },
+                    dataType: "json",
+                    traditional:true,
                     success:function(data){
                         if(data == "OK"){
                             window.location.reload()
@@ -71,7 +73,7 @@
             $("#seachRecord").on('click',function () {
                 var nowDate = new Date()
                 var myDate = myformatter(nowDate);//当前时间 格式2018-12
-                var myDate1 = myDate.replace("-","/").replace("-","/") //当前时间转换为 格式2018/12
+                var myDate1 = myDate.replace("-","/") //当前时间转换为 格式2018/12
                 var selectDate = $("#selectMonth").data("datetimepicker").getDate()
                 selectDate = myformatter(selectDate)//选择的时间转换为 格式2018-12
                 selectDate1 = selectDate.replace("-","/").replace("-","/")//选择的时间转换为 格式2018/12
@@ -113,8 +115,6 @@
                         type:$("#EQPModel").val(),
                         date:selectDate
                     },
-                    dataType: "json",
-                    traditional:true,
                     success:function(data){
                         console.log(data)
                         var str = []
