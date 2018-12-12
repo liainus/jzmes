@@ -28,41 +28,42 @@
             });
             $("#selectMonth").datetimepicker("setDate", new Date());
 
-            var allClear = []
-            var allWiper = []
-            var allConfirm = []
-            $("input[name=clear]").each(function(){
-                var allstate = $(this).prop("checked")
-                if(allstate == true){
-                    allstate =  "1"
-                }else if(allstate == false){
-                    allstate =  "0"
-                }
-                allClear.push(allstate)
-            })
-            allClear = JSON.stringify(allClear)
-            $("input[name=wipe]").each(function(){
-                var allstate = $(this).prop("checked")
-                if(allstate == true){
-                    allstate =  "1"
-                }else if(allstate == false){
-                    allstate =  "0"
-                }
-                allWiper.push(allstate)
-            })
-            allWiper = JSON.stringify(allWiper)
-            $("input[name=confirm]").each(function(){
-                var allstate = $(this).prop("checked")
-                if(allstate == true){
-                    allstate =  "1"
-                }else if(allstate == false){
-                    allstate =  "0"
-                }
-                allConfirm.push(allstate)
-            })
-            allConfirm = JSON.stringify(allConfirm)
+
             //保存保养记录
             $("#save").on('click',function(){
+                var allClear = []
+                var allWiper = []
+                var allConfirm = []
+                $("input[name=clear]").each(function(){
+                    var allstate = $(this).prop("checked")
+                    if(allstate == true){
+                        allstate = "1"
+                    }else{
+                        allstate = "0"
+                    }
+                    allClear.push(allstate)
+                })
+                allClear = JSON.stringify(allClear)
+                $("input[name=wipe]").each(function(){
+                    var allstate = $(this).prop("checked")
+                    if(allstate == true){
+                        allstate =  "1"
+                    }else{
+                        allstate =  "0"
+                    }
+                    allWiper.push(allstate)
+                })
+                allWiper = JSON.stringify(allWiper)
+                $("input[name=confirm]").each(function(){
+                    var allstate = $(this).prop("checked")
+                    if(allstate == true){
+                        allstate =  "1"
+                    }else{
+                        allstate =  "0"
+                    }
+                    allConfirm.push(allstate)
+                })
+                allConfirm = JSON.stringify(allConfirm)
                 dateLimit()
                 $.ajax({
                     url:'/EquipmentMaintenance/DataStore',
@@ -79,11 +80,17 @@
                         lubrication:$(".lubrication").prop("checked"),
                         confirm:allConfirm
                     },
+                    beforeSend:function(){
+                        $("#loadingModal").modal('show');
+                    },
                     dataType: "json",
                     traditional:true,
                     success:function(data){
+                        $("#loadingModal").modal('hide');
                         if(data == "OK"){
                             window.location.reload()
+                        }else{
+                            alert("未知错误，请稍后重试！")
                         }
                     }
                 })
@@ -92,14 +99,18 @@
             $("#seachRecord").on('click',function () {
                 dateLimit()
                 $.ajax({
-                    url:'/EquipmentMaintenance/DataStore',
+                    url:'/EquipmentMaintenance/Search',
                     type:'get',
                     data:{
                         name:$("#EQPName").val(),
                         type:$("#EQPModel").val(),
                         date:$("#selectMonth").data("datetimepicker").getDate()
                     },
+                    beforeSend:function(){
+                        $("#loadingModal").modal('show');
+                    },
                     success:function(data){
+                        $("#loadingModal").modal('hide');
                         console.log(data)
                         var str = []
                         for (var i = 0; i < str.length; i++) {
@@ -156,6 +167,14 @@
     </script>
 </head>
 <body>
+    <div class="modal" id="loadingModal" data-backdrop="static" data-keyboard="false">
+        <div style="width: 200px;height:20px; z-index: 20000; position: absolute; text-align: center; left: 50%; top: 50%;margin-left:-100px;margin-top:-10px">
+            <div class="progress progress-striped active" style="margin-bottom: 0;">
+                <div class="progress-bar" style="width: 100%;"></div>
+            </div>
+            <h5>正在加载...</h5>
+        </div>
+    </div>
     <div class="container">
         <div class="page-header">
             <div class="form-inline">
