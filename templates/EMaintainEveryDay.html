@@ -35,14 +35,17 @@
                 var allstate = $(this).prop("checked")
                 allClear.push(allstate)
             })
+            allClear = JSON.stringify(allClear)
             $(".wipe").each(function(){
                 var allstate = $(this).prop("checked")
                 allWiper.push(allstate)
             })
+            allWiper = JSON.stringify(allWiper)
             $(".confirm").each(function(){
                 var allstate = $(this).prop("checked")
                 allConfirm.push(allstate)
             })
+            allConfirm = JSON.stringify(allConfirm)
             //保存保养记录
             $("#save").on('click',function(){
                  $.ajax({
