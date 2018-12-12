@@ -3912,7 +3912,8 @@
                 method: 'GET',
                 data: {
                     batchID: $("#batchID").html(),
-                    PName: getUrlParam('title') + "段"
+                    PName: getUrlParam('title') + "段",
+                    BrandID:"2"
                 },
                 success: function (response) {
                     $("#loadingModal").modal('hide');
