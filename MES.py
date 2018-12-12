@@ -7672,79 +7672,110 @@ def MaintenanceDataStore():
                 wipe_value = eval(wipe_value)
                 confirm_value = data['confirm']
                 confirm_value = eval(confirm_value)
-                try:
-                    date = datetime.datetime.now()
-                    history = db_session.query(EquipmentMaintenanceStore).filter(
-                        extract("year", EquipmentMaintenanceStore.OperationDate) == int(date.year),
-                        extract("month", EquipmentMaintenanceStore.OperationDate) == int(date.month)).all()
-                    if history:
-                        for obj in history:
-                            db_session.delete(obj)
-                            db_session.commit()
-                except Exception as e:
-                    print(e)
-                    logger.error(e)
-                    insertSyslog("error", "设备保养历史数据清除报错Error：" + str(e), current_user.Name)
-                    return json.dumps("设备保养历史数据清除报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+                date = datetime.datetime.now()
+
                 if 'lubrication' in data.keys():
-                    oclass = EquipmentMaintenanceStore()
-                    oclass.EquipmentType = data['type']
-                    oclass.EquipentName = data['name']
-                    oclass.EquipmentNumber = data['number']
-                    oclass.Content = "电机加油"
-                    oclass.OperationValue = data['lubrication']
-                    oclass.Date = datetime.datetime.now()
-                    oclass.PersonLiable = data['PersonLiable']
-                    oclass.SuperVisor = data['SuperVisor']
-                    oclass.OperationDate = datetime.datetime.now()
-                    db_session.add(oclass)
-                    db_session.commit()
+                    lub = db_session.query(EquipmentMaintenanceStore).filter(and_(
+                        EquipmentMaintenanceStore.EquipentName == data['name'],
+                        EquipmentMaintenanceStore.EquipmentNumber == data['number'],
+                        EquipmentMaintenanceStore.Content == "电机加油",
+                        extract("year", EquipmentMaintenanceStore.OperationDate) == int(date.year),
+                        extract("month", EquipmentMaintenanceStore.OperationDate) == int(date.month))).first()
+                    if lub:
+                        lub.OperationValue = data['lubrication']
+                        db_session.commit()
+                    else:
+                        oclass = EquipmentMaintenanceStore()
+                        oclass.EquipmentType = data['type']
+                        oclass.EquipentName = data['name']
+                        oclass.EquipmentNumber = data['number']
+                        oclass.Content = "电机加油"
+                        oclass.OperationValue = data['lubrication']
+                        oclass.Date = datetime.datetime.now()
+                        oclass.PersonLiable = data['PersonLiable']
+                        oclass.SuperVisor = data['SuperVisor']
+                        oclass.OperationDate = datetime.datetime.now()
+                        db_session.add(oclass)
+                        db_session.commit()
                 date_1 = 1
                 for clear in clear_value:
                     if clear_value == 'null':
                         continue
-                    oclass = EquipmentMaintenanceStore()
-                    oclass.EquipmentType = data['type']
-                    oclass.EquipentName = data['name']
-                    oclass.EquipmentNumber = data['number']
-                    oclass.Content = "周围环境"
-                    oclass.OperationValue = eval(clear)
-                    oclass.Date = date_1
-                    oclass.PersonLiable = data['PersonLiable']
-                    oclass.SuperVisor = data['SuperVisor']
-                    oclass.OperationDate = datetime.datetime.now()
-                    db_session.add(oclass)
-                    db_session.commit()
+                    clear_obj = db_session.query(EquipmentMaintenanceStore).filter(and_(
+                        EquipmentMaintenanceStore.EquipentName == data['name'],
+                        EquipmentMaintenanceStore.EquipmentNumber == data['number'],
+                        EquipmentMaintenanceStore.Date == date_1,
+                        EquipmentMaintenanceStore.Content == "周围环境",
+                        extract("year", EquipmentMaintenanceStore.OperationDate) == int(date.year),
+                        extract("month", EquipmentMaintenanceStore.OperationDate) == int(date.month))).first()
+                    if clear_obj:
+                        clear_obj.OperationValue = clear
+                        db_session.commit()
+                    else:
+                        oclass = EquipmentMaintenanceStore()
+                        oclass.EquipmentType = data['type']
+                        oclass.EquipentName = data['name']
+                        oclass.EquipmentNumber = data['number']
+                        oclass.Content = "周围环境"
+                        oclass.OperationValue = eval(clear)
+                        oclass.Date = date_1
+                        oclass.PersonLiable = data['PersonLiable']
+                        oclass.SuperVisor = data['SuperVisor']
+                        oclass.OperationDate = datetime.datetime.now()
+                        db_session.add(oclass)
+                        db_session.commit()
                     date_1 += 1
                 date_2 = 1
                 for wipe in wipe_value:
-                    oclass = EquipmentMaintenanceStore()
-                    oclass.EquipmentType = data['type']
-                    oclass.EquipentName = data['name']
-                    oclass.EquipmentNumber = data['number']
-                    oclass.Content = "机外表面擦油"
-                    oclass.OperationValue = eval(wipe)
-                    oclass.Date = date_2
-                    oclass.PersonLiable = data['PersonLiable']
-                    oclass.SuperVisor = data['SuperVisor']
-                    oclass.OperationDate = datetime.datetime.now()
-                    db_session.add(oclass)
-                    db_session.commit()
+                    wipe_obj = db_session.query(EquipmentMaintenanceStore).filter(and_(
+                        EquipmentMaintenanceStore.EquipentName == data['name'],
+                        EquipmentMaintenanceStore.EquipmentNumber == data['number'],
+                        EquipmentMaintenanceStore.Date == date_2,
+                        EquipmentMaintenanceStore.Content == "机外表面擦油",
+                        extract("year", EquipmentMaintenanceStore.OperationDate) == int(date.year),
+                        extract("month", EquipmentMaintenanceStore.OperationDate) == int(date.month))).first()
+                    if wipe_obj:
+                        wipe_obj.OperationValue = wipe
+                        db_session.commit()
+                    else:
+                        oclass = EquipmentMaintenanceStore()
+                        oclass.EquipmentType = data['type']
+                        oclass.EquipentName = data['name']
+                        oclass.EquipmentNumber = data['number']
+                        oclass.Content = "机外表面擦油"
+                        oclass.OperationValue = eval(wipe)
+                        oclass.Date = date_2
+                        oclass.PersonLiable = data['PersonLiable']
+                        oclass.SuperVisor = data['SuperVisor']
+                        oclass.OperationDate = datetime.datetime.now()
+                        db_session.add(oclass)
+                        db_session.commit()
                     date_2 += 1
                 date_3 = 1
                 for confirm in confirm_value:
-                    oclass = EquipmentMaintenanceStore()
-                    oclass.EquipmentType = data['type']
-                    oclass.EquipentName = data['name']
-                    oclass.EquipmentNumber = data['number']
-                    oclass.Content = "保养签章"
-                    oclass.OperationValue = eval(confirm)
-                    oclass.Date = date_3
-                    oclass.PersonLiable = data['PersonLiable']
-                    oclass.SuperVisor = data['SuperVisor']
-                    oclass.OperationDate = datetime.datetime.now()
-                    db_session.add(oclass)
-                    db_session.commit()
+                    confirm_obj = db_session.query(EquipmentMaintenanceStore).filter(and_(
+                        EquipmentMaintenanceStore.EquipentName == data['name'],
+                        EquipmentMaintenanceStore.EquipmentNumber == data['number'],
+                        EquipmentMaintenanceStore.Date == date_3,
+                        EquipmentMaintenanceStore.Content == "保养签章",
+                        extract("year", EquipmentMaintenanceStore.OperationDate) == int(date.year),
+                        extract("month", EquipmentMaintenanceStore.OperationDate) == int(date.month))).first()
+                    if confirm_obj:
+                        confirm_obj.OperationValue = confirm
+                        db_session.commit()
+                    else:
+                        oclass = EquipmentMaintenanceStore()
+                        oclass.EquipmentType = data['type']
+                        oclass.EquipentName = data['name']
+                        oclass.EquipmentNumber = data['number']
+                        oclass.Content = "保养签章"
+                        oclass.OperationValue = eval(confirm)
+                        oclass.Date = date_3
+                        oclass.PersonLiable = data['PersonLiable']
+                        oclass.SuperVisor = data['SuperVisor']
+                        oclass.OperationDate = datetime.datetime.now()
+                        db_session.add(oclass)
+                        db_session.commit()
                     date_3 += 1
                 return "OK"
             return "NO"
@@ -7763,10 +7794,11 @@ def MaintenanceDataSearch():
             data = request.values
             name = data['name']
             type = data['type']
-            time = data['time'].strip('-')
+            time = data['date'].strip('-')
             if name is None or type is None or time is None:
                 return "NO"
             oclass = db_session.query(EquipmentMaintenanceStore).filter(and_(
+                EquipmentMaintenanceStore.EquipmentType == type,
                 extract("year",EquipmentMaintenanceStore.OperationDate)== time[0],
                 extract("month", EquipmentMaintenanceStore.OperationDate)== time[1])).first
             number = oclass.EquipmentNumber
