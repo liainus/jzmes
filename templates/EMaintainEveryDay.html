@@ -65,38 +65,52 @@
                 })
                 allConfirm = JSON.stringify(allConfirm)
                 dateLimit()
+                var EQPName = '["' + $("#EQPName").val() + '"]'
+                var EQPModel = '["' + $("#EQPModel").val() + '"]'
+                var selectMonth = '["' + $("#selectMonth").data("datetimepicker").getDate() + '"]'
+                var EQPNumber = '["' + $("#EQPNumber").val() + '"]'
+                var PersonLiable = '["' + $("#personLiable").val() + '"]'
+                var SuperVisor = '["' + $("#supervisor").val() + '"]'
+                var lubrication = '["' + $(".lubrication").prop("checked") + '"]'
                 $.ajax({
                     url:'/EquipmentMaintenance/DataStore',
                     type:'get',
                     data:{
-                        name:$("#EQPName").val(),
-                        type:$("#EQPModel").val(),
-                        date:$("#selectMonth").data("datetimepicker").getDate(),
-                        number:$("#EQPNumber").val(),
-                        PersonLiable:$("#personLiable").val(),
-                        SuperVisor:$("#supervisor").val(),
+                        name:EQPName,
+                        type:EQPModel,
+                        date:selectMonth,
+                        number:EQPNumber,
+                        PersonLiable:PersonLiable,
+                        SuperVisor:SuperVisor,
                         clear:allClear,
                         wipe:allWiper,
-                        lubrication:$(".lubrication").prop("checked"),
+                        lubrication:lubrication,
                         confirm:allConfirm
                     },
                     beforeSend:function(){
                         $("#loadingModal").modal('show');
                     },
-                    dataType: "json",
+                    dataType: "text",
                     traditional:true,
                     success:function(data){
+                        console.log(data)
                         $("#loadingModal").modal('hide');
                         if(data == "OK"){
                             window.location.reload()
                         }else{
                             alert("未知错误，请稍后重试！")
                         }
+                    },
+                    error:function(data,res){
+                        $("#loadingModal").modal('hide');
+                        alert("请求失败，请稍后重试")
                     }
                 })
             })
             //查询保养记录
             $("#seachRecord").on('click',function () {
+                var selectDate = $("#selectMonth").data("datetimepicker").getDate()
+                selectDate = myformatter(selectDate)//选择的时间转换为 格式2018-12
                 dateLimit()
                 $.ajax({
                     url:'/EquipmentMaintenance/Search',
@@ -104,7 +118,7 @@
                     data:{
                         name:$("#EQPName").val(),
                         type:$("#EQPModel").val(),
-                        date:$("#selectMonth").data("datetimepicker").getDate()
+                        date:selectDate
                     },
                     beforeSend:function(){
                         $("#loadingModal").modal('show');
@@ -116,6 +130,11 @@
                         for (var i = 0; i < str.length; i++) {
                             //console.log(str[i])
                         }
+                    },
+                    error:function(data){
+                        $("#loadingModal").modal('hide');
+                        alert("请求失败，请稍后重试")
+                        console.log(data)
                     }
                 })
             })
