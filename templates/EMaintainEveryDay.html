@@ -65,19 +65,26 @@
                 })
                 allConfirm = JSON.stringify(allConfirm)
                 dateLimit()
+                var EQPName = '["' + $("#EQPName").val() + '"]'
+                var EQPModel = '["' + $("#EQPModel").val() + '"]'
+                var selectMonth = '["' + $("#selectMonth").data("datetimepicker").getDate() + '"]'
+                var EQPNumber = '["' + $("#EQPNumber").val() + '"]'
+                var PersonLiable = '["' + $("#PersonLiable").val() + '"]'
+                var SuperVisor = '["' + $("#SuperVisor").val() + '"]'
+                var lubrication = '["' + $(".lubrication").prop("checked") + '"]'
                 $.ajax({
                     url:'/EquipmentMaintenance/DataStore',
                     type:'get',
                     data:{
-                        name:$("#EQPName").val(),
-                        type:$("#EQPModel").val(),
-                        date:$("#selectMonth").data("datetimepicker").getDate(),
-                        number:$("#EQPNumber").val(),
-                        PersonLiable:$("#personLiable").val(),
-                        SuperVisor:$("#supervisor").val(),
+                        name:JSON.parse(EQPName),
+                        type:JSON.parse(EQPModel),
+                        date:JSON.parse(selectMonth),
+                        number:JSON.parse(EQPNumber),
+                        PersonLiable:JSON.parse(PersonLiable),
+                        SuperVisor:JSON.parse(SuperVisor),
                         clear:allClear,
                         wipe:allWiper,
-                        lubrication:$(".lubrication").prop("checked"),
+                        lubrication:JSON.parse(lubrication),
                         confirm:allConfirm
                     },
                     beforeSend:function(){
@@ -92,11 +99,15 @@
                         }else{
                             alert("未知错误，请稍后重试！")
                         }
+                    },error:function(data){
+                        console.log(data)
                     }
                 })
             })
             //查询保养记录
             $("#seachRecord").on('click',function () {
+                var selectDate = $("#selectMonth").data("datetimepicker").getDate()
+                selectDate = myformatter(selectDate)//选择的时间转换为 格式2018-12
                 dateLimit()
                 $.ajax({
                     url:'/EquipmentMaintenance/Search',
@@ -104,7 +115,7 @@
                     data:{
                         name:$("#EQPName").val(),
                         type:$("#EQPModel").val(),
-                        date:$("#selectMonth").data("datetimepicker").getDate()
+                        date:selectDate
                     },
                     beforeSend:function(){
                         $("#loadingModal").modal('show');
@@ -116,6 +127,8 @@
                         for (var i = 0; i < str.length; i++) {
                             //console.log(str[i])
                         }
+                    },error:function(data){
+                        console.log(data)
                     }
                 })
             })
