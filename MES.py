@@ -7687,7 +7687,7 @@ def MaintenanceDataStore():
                         extract("year", EquipmentMaintenanceStore.OperationDate) == int(date.year),
                         extract("month", EquipmentMaintenanceStore.OperationDate) == int(date.month))).first()
                     if lub:
-                        lub.OperationValue = data['lubrication']
+                        lub.OperationValue = int(data['lubrication'])
                         db_session.commit()
                     else:
                         oclass = EquipmentMaintenanceStore()
