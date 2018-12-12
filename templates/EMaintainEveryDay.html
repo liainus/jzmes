@@ -22,31 +22,22 @@
             $('#selectMonth').datetimepicker({
                 format: 'yyyy-mm',
                 startView: 4,
-		        minView: 2,
+		        minView: 3,
                 autoclose: true
             });
             $("#selectMonth").datetimepicker("setDate", new Date());
-            $('.selectDays').datetimepicker({
-                format: 'mm-dd',
-                startView: 2,
-		        minView: 2,
-                autoclose: true
-            });
 
-            for (var i = 0; i < str.length; i++) {
-                console.log(str[i])
-            }
             var allClear = []
+            var allWiper = []
+            var allConfirm = []
             $(".clear").each(function(){
                 var allstate = $(this).prop("checked")
                 allClear.push(allstate)
             })
-            var allWiper = []
             $(".wipe").each(function(){
                 var allstate = $(this).prop("checked")
                 allWiper.push(allstate)
             })
-            var allConfirm = []
             $(".confirm").each(function(){
                 var allstate = $(this).prop("checked")
                 allConfirm.push(allstate)
@@ -77,19 +68,61 @@
             })
             //查询保养记录
             $("#seachRecord").on('click',function () {
+                var myDate = new Date();
+                var selectDate = $("#selectMonth").data("datetimepicker").getDate()
+                $(".clear").each(function(i){
+                    $(this).attr("disabled",false)
+                    if(myDate.toDateString() == selectDate.toDateString()){
+                        if(i + 1 > myDate.getDate()){
+                            $(this).attr("disabled",true)
+                        }
+                    }else if(myDate.toDateString() < selectDate.toDateString()){
+                        $(this).attr("disabled",true)
+                    }
+                })
+                $(".wipe").each(function(i){
+                    $(this).attr("disabled",false)
+                    if(myDate.toDateString() == selectDate.toDateString()){
+                        if(i + 1 > myDate.getDate()){
+                            $(this).attr("disabled",true)
+                        }
+                    }else if(myDate.toDateString() < selectDate.toDateString()){
+                        $(this).attr("disabled",true)
+                    }
+                })
+                $(".confirm").each(function(i){
+                    $(this).attr("disabled",false)
+                    if(myDate.toDateString() == selectDate.toDateString()){
+                        if(i + 1 > myDate.getDate()){
+                            $(this).attr("disabled",true)
+                        }
+                    }else if(myDate.toDateString() < selectDate.toDateString()){
+                        $(this).attr("disabled",true)
+                    }
+                })
                 $.ajax({
                     url:'/EquipmentMaintenance/DataStore',
                     type:'get',
                     data:{
                         name:$("#EQPName").val(),
                         type:$("#EQPModel").val(),
-                        date:$("#selectMonth").data("datetimepicker").getDate(),
+                        date:selectDate
                     },
                     success:function(data){
                         console.log(data)
+                        var str = []
+                        for (var i = 0; i < str.length; i++) {
+                            //console.log(str[i])
+                        }
                     }
                 })
             })
+            function myformatter(date){
+                var y = date.getFullYear();
+                var m = date.getMonth()+1;
+                var d = date.getDate();
+                return y+'-'+(m<10?('0'+m):m);
+            }
         })
     </script>
 </head>
@@ -150,7 +183,7 @@
                 </tr>
                 <tr>
                     <td>2</td>
-                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" checked class="clear"> 保养 / 未保养</label></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="clear"> 保养 / 未保养</label></td>
                     <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="wipe"> 保养 / 未保养</label></td>
                     <td class="forbidden"></td>
                     <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="confirm"> 确认 / 未确认</label></td>
