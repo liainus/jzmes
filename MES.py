@@ -7673,9 +7673,10 @@ def MaintenanceDataStore():
                 confirm_value = data['confirm']
                 confirm_value = eval(confirm_value)
                 try:
-                    month = datetime.datetime.now().month
+                    date = datetime.datetime.now()
                     history = db_session.query(EquipmentMaintenanceStore).filter(
-                        extract("month", EquipmentMaintenanceStore.OperationDate) == int(month)).all()
+                        extract("year", EquipmentMaintenanceStore.OperationDate) == int(date.year),
+                        extract("month", EquipmentMaintenanceStore.OperationDate) == int(date.month)).all()
                     if history:
                         for obj in history:
                             db_session.delete(obj)
@@ -7707,7 +7708,7 @@ def MaintenanceDataStore():
                     oclass.EquipentName = data['name']
                     oclass.EquipmentNumber = data['number']
                     oclass.Content = "周围环境"
-                    oclass.OperationValue = clear
+                    oclass.OperationValue = eval(clear)
                     oclass.Date = date_1
                     oclass.PersonLiable = data['PersonLiable']
                     oclass.SuperVisor = data['SuperVisor']
@@ -7716,13 +7717,13 @@ def MaintenanceDataStore():
                     db_session.commit()
                     date_1 += 1
                 date_2 = 1
-                for wipe in eval(wipe_value):
+                for wipe in wipe_value:
                     oclass = EquipmentMaintenanceStore()
                     oclass.EquipmentType = data['type']
                     oclass.EquipentName = data['name']
                     oclass.EquipmentNumber = data['number']
                     oclass.Content = "机外表面擦油"
-                    oclass.OperationValue = wipe
+                    oclass.OperationValue = eval(wipe)
                     oclass.Date = date_2
                     oclass.PersonLiable = data['PersonLiable']
                     oclass.SuperVisor = data['SuperVisor']
@@ -7731,13 +7732,13 @@ def MaintenanceDataStore():
                     db_session.commit()
                     date_2 += 1
                 date_3 = 1
-                for confirm in eval(confirm_value):
+                for confirm in confirm_value:
                     oclass = EquipmentMaintenanceStore()
                     oclass.EquipmentType = data['type']
                     oclass.EquipentName = data['name']
                     oclass.EquipmentNumber = data['number']
                     oclass.Content = "保养签章"
-                    oclass.OperationValue = confirm
+                    oclass.OperationValue = eval(confirm)
                     oclass.Date = date_3
                     oclass.PersonLiable = data['PersonLiable']
                     oclass.SuperVisor = data['SuperVisor']
