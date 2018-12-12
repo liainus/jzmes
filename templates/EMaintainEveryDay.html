@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>设备保养记录</title>
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="../static/css/bootstrap-datetimepicker.min.css" crossorigin="anonymous">
+    <script type="text/javascript" src="../static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootstrap-datetimepicker.min.js"></script>
+    <style>
+        .table tbody tr td{
+            vertical-align: middle;
+            text-align: center;
+        }
+        .table tbody tr td.forbidden{
+            background: #eee;
+        }
+    </style>
+    <script>
+        $(function(){
+            $('#selectMonth').datetimepicker({
+                format: 'yyyy-mm',
+                startView: 4,
+		        minView: 2,
+                autoclose: true
+            });
+            $("#selectMonth").datetimepicker("setDate", new Date());
+            $('.selectDays').datetimepicker({
+                format: 'mm-dd',
+                startView: 2,
+		        minView: 2,
+                autoclose: true
+            });
+
+            for (var i = 0; i < str.length; i++) {
+                console.log(str[i])
+            }
+            var allClear = []
+            $(".clear").each(function(){
+                var allstate = $(this).prop("checked")
+                allClear.push(allstate)
+            })
+            var allWiper = []
+            $(".wipe").each(function(){
+                var allstate = $(this).prop("checked")
+                allWiper.push(allstate)
+            })
+            var allConfirm = []
+            $(".confirm").each(function(){
+                var allstate = $(this).prop("checked")
+                allConfirm.push(allstate)
+            })
+            //保存保养记录
+            $("#save").on('click',function(){
+                 $.ajax({
+                    url:'/EquipmentMaintenance/DataStore',
+                    type:'get',
+                    data:{
+                        name:$("#EQPName").val(),
+                        type:$("#EQPModel").val(),
+                        date:$("#selectMonth").data("datetimepicker").getDate(),
+                        number:$("#EQPNumber").val(),
+                        PersonLiable:$("#personLiable").val(),
+                        SuperVisor:$("#supervisor").val(),
+                        clear:allClear,
+                        wipe:allWiper,
+                        lubrication:$(".lubrication").prop("checked"),
+                        confirm:allConfirm
+                    },
+                    success:function(data){
+                        if(data == "OK"){
+                            window.location.reload()
+                        }
+                    }
+                })
+            })
+            //查询保养记录
+            $("#seachRecord").on('click',function () {
+                $.ajax({
+                    url:'/EquipmentMaintenance/DataStore',
+                    type:'get',
+                    data:{
+                        name:$("#EQPName").val(),
+                        type:$("#EQPModel").val(),
+                        date:$("#selectMonth").data("datetimepicker").getDate(),
+                    },
+                    success:function(data){
+                        console.log(data)
+                    }
+                })
+            })
+        })
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="page-header">
+            <div class="form-inline">
+                <div class="form-group clearfix">
+                    <label for="" class="control-label">设备名称：</label>
+                    <input type="text" class="form-control" id="EQPName">
+                    <label for="" class="control-label">设备型号：</label>
+                    <input type="text" class="form-control" id="EQPModel">
+                    <label for="" class="control-label">选择时间：</label>
+                    <input type="text" class="form-control" id="selectMonth">
+                    <button id="save" class="btn btn-primary">保存新增/修改的记录</button>
+                    <button class="btn btn-primary" id="seachRecord">查询保养记录</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="well-lg">
+        <table class="table table-bordered">
+            <tbody>
+                <tr>
+                    <td>设备编号</td>
+                    <td>
+                        <input type="text" class="form-control" id="EQPNumber">
+                    </td>
+                    <td>责任车间</td>
+                    <td class="text-center">提取车间</td>
+                    <td>保养责任人</td>
+                    <td><input type="text" class="form-control" id="personLiable"></td>
+                    <td>督导人</td>
+                    <td><input type="text" class="form-control" id="supervisor"></td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="table table-bordered">
+            <tbody>
+                <tr>
+                    <td style="width: 150px;">保养内容</td>
+                    <td colspan="2" class="text-center">清洁</td>
+                    <td>润滑</td>
+                    <td rowspan="2" class="text-center">保养确认</td>
+                </tr>
+                <tr>
+                    <td>日期</td>
+                    <td>周围环境（清洁）</td>
+                    <td>机外表面（擦拭）</td>
+                    <td>电机加油</td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="clear"> 保养 / 未保养</label></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="wipe"> 保养 / 未保养</label></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="lubrication"> 保养 / 未保养</label></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="confirm"> 确认 / 未确认</label></td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" checked class="clear"> 保养 / 未保养</label></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="wipe"> 保养 / 未保养</label></td>
+                    <td class="forbidden"></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="confirm"> 确认 / 未确认</label></td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="clear"> 保养 / 未保养</label></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="wipe"> 保养 / 未保养</label></td>
+                    <td class="forbidden"></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="confirm"> 确认 / 未确认</label></td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="clear"> 保养 / 未保养</label></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="wipe"> 保养 / 未保养</label></td>
+                    <td class="forbidden"></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="confirm"> 确认 / 未确认</label></td>
+                </tr>
+                <tr>
+                    <td>5</td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="clear"> 保养 / 未保养</label></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="wipe"> 保养 / 未保养</label></td>
+                    <td class="forbidden"></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="confirm"> 确认 / 未确认</label></td>
+                </tr>
+                <tr>
+                    <td>6</td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="clear"> 保养 / 未保养</label></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="wipe"> 保养 / 未保养</label></td>
+                    <td class="forbidden"></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="confirm"> 确认 / 未确认</label></td>
+                </tr>
+                <tr>
+                    <td>7</td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="clear"> 保养 / 未保养</label></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="wipe"> 保养 / 未保养</label></td>
+                    <td class="forbidden"></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="confirm"> 确认 / 未确认</label></td>
+                </tr>
+                <tr>
+                    <td>8</td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="clear"> 保养 / 未保养</label></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="wipe"> 保养 / 未保养</label></td>
+                    <td class="forbidden"></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="confirm"> 确认 / 未确认</label></td>
+                </tr>
+                <tr>
+                    <td>9</td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="clear"> 保养 / 未保养</label></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="wipe"> 保养 / 未保养</label></td>
+                    <td class="forbidden"></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="confirm"> 确认 / 未确认</label></td>
+                </tr>
+                <tr>
+                    <td>10</td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="clear"> 保养 / 未保养</label></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="wipe"> 保养 / 未保养</label></td>
+                    <td class="forbidden"></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="confirm"> 确认 / 未确认</label></td>
+                </tr>
+                <tr>
+                    <td>11</td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="clear"> 保养 / 未保养</label></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="wipe"> 保养 / 未保养</label></td>
+                    <td class="forbidden"></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="confirm"> 确认 / 未确认</label></td>
+                </tr>
+                <tr>
+                    <td>12</td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="clear"> 保养 / 未保养</label></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="wipe"> 保养 / 未保养</label></td>
+                    <td class="forbidden"></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="confirm"> 确认 / 未确认</label></td>
+                </tr>
+                <tr>
+                    <td>13</td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="clear"> 保养 / 未保养</label></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="wipe"> 保养 / 未保养</label></td>
+                    <td class="forbidden"></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="confirm"> 确认 / 未确认</label></td>
+                </tr>
+                <tr>
+                    <td>14</td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="clear"> 保养 / 未保养</label></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="wipe"> 保养 / 未保养</label></td>
+                    <td class="forbidden"></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="confirm"> 确认 / 未确认</label></td>
+                </tr>
+                <tr>
+                    <td>15</td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="clear"> 保养 / 未保养</label></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="wipe"> 保养 / 未保养</label></td>
+                    <td class="forbidden"></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="confirm"> 确认 / 未确认</label></td>
+                </tr>
+                <tr>
+                    <td>16</td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="clear"> 保养 / 未保养</label></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="wipe"> 保养 / 未保养</label></td>
+                    <td class="forbidden"></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="confirm"> 确认 / 未确认</label></td>
+                </tr>
+                <tr>
+                    <td>17</td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="clear"> 保养 / 未保养</label></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="wipe"> 保养 / 未保养</label></td>
+                    <td class="forbidden"></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="confirm"> 确认 / 未确认</label></td>
+                </tr>
+                <tr>
+                    <td>18</td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="clear"> 保养 / 未保养</label></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="wipe"> 保养 / 未保养</label></td>
+                    <td class="forbidden"></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="confirm"> 确认 / 未确认</label></td>
+                </tr>
+                <tr>
+                    <td>19</td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="clear"> 保养 / 未保养</label></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="wipe"> 保养 / 未保养</label></td>
+                    <td class="forbidden"></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="confirm"> 确认 / 未确认</label></td>
+                </tr>
+                <tr>
+                    <td>20</td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="clear"> 保养 / 未保养</label></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="wipe"> 保养 / 未保养</label></td>
+                    <td class="forbidden"></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="confirm"> 确认 / 未确认</label></td>
+                </tr>
+                <tr>
+                    <td>21</td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="clear"> 保养 / 未保养</label></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="wipe"> 保养 / 未保养</label></td>
+                    <td class="forbidden"></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="confirm"> 确认 / 未确认</label></td>
+                </tr>
+                <tr>
+                    <td>22</td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="clear"> 保养 / 未保养</label></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="wipe"> 保养 / 未保养</label></td>
+                    <td class="forbidden"></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="confirm"> 确认 / 未确认</label></td>
+                </tr>
+                <tr>
+                    <td>23</td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="clear"> 保养 / 未保养</label></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="wipe"> 保养 / 未保养</label></td>
+                    <td class="forbidden"></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="confirm"> 确认 / 未确认</label></td>
+                </tr>
+                <tr>
+                    <td>24</td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="clear"> 保养 / 未保养</label></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="wipe"> 保养 / 未保养</label></td>
+                    <td class="forbidden"></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="confirm"> 确认 / 未确认</label></td>
+                </tr>
+                <tr>
+                    <td>25</td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="clear"> 保养 / 未保养</label></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="wipe"> 保养 / 未保养</label></td>
+                    <td class="forbidden"></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="confirm"> 确认 / 未确认</label></td>
+                </tr>
+                <tr>
+                    <td>26</td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="clear"> 保养 / 未保养</label></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="wipe"> 保养 / 未保养</label></td>
+                    <td class="forbidden"></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="confirm"> 确认 / 未确认</label></td>
+                </tr>
+                <tr>
+                    <td>27</td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="clear"> 保养 / 未保养</label></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="wipe"> 保养 / 未保养</label></td>
+                    <td class="forbidden"></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="confirm"> 确认 / 未确认</label></td>
+                </tr>
+                <tr>
+                    <td>28</td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="clear"> 保养 / 未保养</label></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="wipe"> 保养 / 未保养</label></td>
+                    <td class="forbidden"></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="confirm"> 确认 / 未确认</label></td>
+                </tr>
+                <tr>
+                    <td>29</td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="clear"> 保养 / 未保养</label></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="wipe"> 保养 / 未保养</label></td>
+                    <td class="forbidden"></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="confirm"> 确认 / 未确认</label></td>
+                </tr>
+                <tr>
+                    <td>30</td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="clear"> 保养 / 未保养</label></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="wipe"> 保养 / 未保养</label></td>
+                    <td class="forbidden"></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="confirm"> 确认 / 未确认</label></td>
+                </tr>
+                <tr>
+                    <td>31</td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="clear"> 保养 / 未保养</label></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="wipe"> 保养 / 未保养</label></td>
+                    <td class="forbidden"></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="maintain" class="confirm"> 确认 / 未确认</label></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
