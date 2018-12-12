@@ -192,7 +192,7 @@
 
             var brand = ""
             $("#seachBatch").on('click',function(){
-                if($("#BatchName").find("option:selected").html() == "健胃消食片"){
+                if($("#BatchName").find("option:selected").html() == "健胃消食片浸膏粉"){
                     brand = "A"
                 }else if($("#BatchName").find("option:selected").html() == "肿节风浸膏"){
                     brand = "B"
@@ -222,15 +222,46 @@
                         batch:$(this).find("option:selected").html(),
                         brand:brand
                     },
+                    beforeSend:function(XMLHttpRequest){
+                        if(brand == "A"){
+                            $("#loadingModal1").modal('show');
+                        }else if(brand == "B"){
+                            $("#loadingModal2").modal('show');
+                        }
+                    },
                     success:function(data){
-                        console.log(data)
+                        $("#loadingModal1").modal('hide');
+                        $("#loadingModal2").modal('hide');
+                        data = JSON.parse(data)
+                        for(var key in data){
+                            adddata(key,data[key])
+                        }
                     }
                 })
             })
+            function adddata(ids,res){
+                $("#" + ids).html(res)
+            }
         })
     </script>
 </head>
 <body>
+    <div class="modal" id="loadingModal1">
+        <div style="width: 200px;height:20px; z-index: 20000; position: absolute; text-align: center; left: 50%; top: 50%;margin-left:-100px;margin-top:-10px">
+            <div class="progress progress-striped active" style="margin-bottom: 0;">
+                <div class="progress-bar" style="width: 100%;"></div>
+            </div>
+            <h5>正在加载健胃消食片的物料信息。。。</h5>
+        </div>
+    </div>
+    <div class="modal" id="loadingModal2">
+        <div style="width: 200px;height:20px; z-index: 20000; position: absolute; text-align: center; left: 50%; top: 50%;margin-left:-100px;margin-top:-10px">
+            <div class="progress progress-striped active" style="margin-bottom: 0;">
+                <div class="progress-bar" style="width: 100%;"></div>
+            </div>
+            <h5>正在加载肿节风浸膏的物料信息。。。</h5>
+        </div>
+    </div>
     <div class="container">
         <div class="page-header">
             <div class="form-inline">
@@ -262,9 +293,9 @@
                     <div class="host-line"></div>
                     <div class="host-arrow"></div>
                     <div class="host-message">
-                        <p>投料量：2000kg</p>
-                        <p>第一次加入6倍水：2000L</p>
-                        <p>第二次加入5倍水：1000L</p>
+                        <p>投料量：<span id="a1"></span></p>
+                        <p>第一次加入6倍水：<span id="a2"></span></p>
+                        <p>第二次加入5倍水：<span id="a3"></span></p>
                     </div>
                 </div>
                 <div class="host-progress">
@@ -279,9 +310,9 @@
                     <div class="host-line"></div>
                     <div class="host-arrow"></div>
                     <div class="host-message">
-                        <p>投料量：2000kg</p>
-                        <p>第一次加入6倍水：2000L</p>
-                        <p>第二次加入5倍水：1000L</p>
+                        <p>投料量：<span id="b1"></span></p>
+                        <p>第一次加入6倍水：<span id="b2"></span></p>
+                        <p>第二次加入5倍水：<span id="b3"></span></p>
                     </div>
                 </div>
                 <div class="host-progress">
@@ -296,9 +327,9 @@
                     <div class="host-line"></div>
                     <div class="host-arrow"></div>
                     <div class="host-message">
-                        <p>投料量：2000kg</p>
-                        <p>第一次加入6倍水：2000L</p>
-                        <p>第二次加入5倍水：1000L</p>
+                        <p>投料量：<span id="c1"></span></p>
+                        <p>第一次加入6倍水：<span id="c2"></span></p>
+                        <p>第二次加入5倍水：<span id="c3"></span></p>
                     </div>
                 </div>
                 <div class="host-progress">
@@ -313,9 +344,9 @@
                     <div class="host-line"></div>
                     <div class="host-arrow"></div>
                     <div class="host-message">
-                        <p>投料量：2000kg</p>
-                        <p>第一次加入6倍水：2000L</p>
-                        <p>第二次加入5倍水：1000L</p>
+                        <p>投料量：<span id="d1"></span></p>
+                        <p>第一次加入6倍水：<span id="d2"></span></p>
+                        <p>第二次加入5倍水：<span id="d3"></span></p>
                     </div>
                 </div>
                 <div class="host-progress">
@@ -330,9 +361,9 @@
                     <div class="host-line"></div>
                     <div class="host-arrow"></div>
                     <div class="host-message">
-                        <p>投料量：2000kg</p>
-                        <p>第一次加入6倍水：2000L</p>
-                        <p>第二次加入5倍水：1000L</p>
+                        <p>投料量：<span id="e1"></span></p>
+                        <p>第一次加入6倍水：<span id="e2"></span></p>
+                        <p>第二次加入5倍水：<span id="e3"></span></p>
                     </div>
                 </div>
                 <div class="host-progress">
@@ -347,9 +378,9 @@
                     <div class="host-line"></div>
                     <div class="host-arrow"></div>
                     <div class="host-message">
-                        <p>投料量：2000kg</p>
-                        <p>第一次加入6倍水：2000L</p>
-                        <p>第二次加入5倍水：1000L</p>
+                        <p>投料量：<span id="f1"></span></p>
+                        <p>第一次加入6倍水：<span id="f2"></span></p>
+                        <p>第二次加入5倍水：<span id="f3"></span></p>
                     </div>
                 </div>
                 <div class="host-progress">
@@ -369,9 +400,9 @@
                     <div class="host-line"></div>
                     <div class="host-arrow"></div>
                     <div class="host-message">
-                        <p>投料量：2000kg</p>
-                        <p>第一次加入17倍水：2000L</p>
-                        <p>第二次加入6倍水：1000L</p>
+                        <p>投料量：<span id="g1"></span></p>
+                        <p>第一次加入17倍水：<span id="g2"></span></p>
+                        <p>第二次加入6倍水：<span id="g3"></span></p>
                     </div>
                 </div>
                 <div class="host-progress">
@@ -386,9 +417,9 @@
                     <div class="host-line"></div>
                     <div class="host-arrow"></div>
                     <div class="host-message">
-                        <p>投料量：2000kg</p>
-                        <p>第一次加入17倍水：2000L</p>
-                        <p>第二次加入6倍水：1000L</p>
+                        <p>投料量：<span id="h1"></span></p>
+                        <p>第一次加入17倍水：<span id="h2"></span></p>
+                        <p>第二次加入6倍水：<span id="h3"></span></p>
                     </div>
                 </div>
                 <div class="host-progress">
@@ -403,9 +434,9 @@
                     <div class="host-line"></div>
                     <div class="host-arrow"></div>
                     <div class="host-message">
-                        <p>投料量：2000kg</p>
-                        <p>第一次加入17倍水：2000L</p>
-                        <p>第二次加入6倍水：1000L</p>
+                        <p>投料量：<span id="i1"></span></p>
+                        <p>第一次加入17倍水：<span id="i2"></span></p>
+                        <p>第二次加入6倍水：<span id="i3"></span></p>
                     </div>
                 </div>
                 <div class="host-progress">
@@ -420,9 +451,9 @@
                     <div class="host-line"></div>
                     <div class="host-arrow"></div>
                     <div class="host-message">
-                        <p>投料量：2000kg</p>
-                        <p>第一次加入17倍水：2000L</p>
-                        <p>第二次加入6倍水：1000L</p>
+                        <p>投料量：<span id="j1"></span></p>
+                        <p>第一次加入17倍水：<span id="j2"></span></p>
+                        <p>第二次加入6倍水：<span id="j3"></span></p>
                     </div>
                 </div>
                 <div class="host-progress">
@@ -505,8 +536,8 @@
                 <div class="host-arrow-merge"></div>
                 <div class="host-pane-cc">CC01</div>
                 <div class="host-message-cc">
-                    <p>浓缩液体积：200kg</p>
-                    <p>95%乙醇用量：200L</p>
+                    <p>浓缩液体积：<span id="k1"></span></p>
+                    <p>95%乙醇用量：<span id="k2"></span></p>
                 </div>
             </div>
         </div>
@@ -516,8 +547,8 @@
                 <div class="host-arrow-merge"></div>
                 <div class="host-pane-cc">CC02</div>
                 <div class="host-message-cc">
-                    <p>浓缩液体积：200kg</p>
-                    <p>95%乙醇用量：200L</p>
+                    <p>浓缩液体积：<span id="l1"></span></p>
+                    <p>95%乙醇用量：<span id="l2"></span></p>
                 </div>
             </div>
         </div>
@@ -527,8 +558,8 @@
                 <div class="host-arrow-merge"></div>
                 <div class="host-pane-cc">CC03</div>
                 <div class="host-message-cc">
-                    <p>浓缩液体积：200kg</p>
-                    <p>95%乙醇用量：200L</p>
+                    <p>浓缩液体积：<span id="m1"></span></p>
+                    <p>95%乙醇用量：<span id="m2"></span></p>
                 </div>
             </div>
         </div>
@@ -538,8 +569,8 @@
                 <div class="host-arrow-merge"></div>
                 <div class="host-pane-cc">CC04</div>
                 <div class="host-message-cc">
-                    <p>浓缩液体积：200kg</p>
-                    <p>95%乙醇用量：200L</p>
+                    <p>浓缩液体积：<span id="n1"></span></p>
+                    <p>95%乙醇用量：<span id="n2"></span></p>
                 </div>
             </div>
         </div>
