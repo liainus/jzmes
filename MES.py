@@ -7799,39 +7799,40 @@ def MaintenanceDataSearch():
             data = request.values
             name = data['name']
             type = data['type']
-            time = data['date'].strip('-')
+            time = data['date'].split('-')
             if name is None or type is None or time is None:
                 return "NO"
             oclass = db_session.query(EquipmentMaintenanceStore).filter(and_(
+                EquipmentMaintenanceStore.EquipentName == name,
                 EquipmentMaintenanceStore.EquipmentType == type,
                 extract("year",EquipmentMaintenanceStore.OperationDate)== time[0],
-                extract("month", EquipmentMaintenanceStore.OperationDate)== time[1])).first
+                extract("month", EquipmentMaintenanceStore.OperationDate)== time[1])).first()
             number = oclass.EquipmentNumber
             PersonLiable = oclass.PersonLiable
             SuperVisor = oclass.SuperVisor
             clear = db_session.query(EquipmentMaintenanceStore.OperationValue).filter(and_(
-                extract("year", EquipmentMaintenanceStore.OperationDate) == time[0],
-                extract("month", EquipmentMaintenanceStore.OperationDate) == time[1],
                 EquipmentMaintenanceStore.EquipentName == name,
                 EquipmentMaintenanceStore.EquipmentType == type,
-                EquipmentMaintenanceStore.Content == "周围环境")).order_by(desc("Date")).all()
-            clear = list(set(clear))
+                EquipmentMaintenanceStore.Content == "周围环境",
+                extract("year", EquipmentMaintenanceStore.OperationDate) == time[0],
+                extract("month", EquipmentMaintenanceStore.OperationDate) == time[1])).all()
+            clear = [cl[0] for cl in clear]
 
             wipe = db_session.query(EquipmentMaintenanceStore.OperationValue).filter(and_(
-                extract("year", EquipmentMaintenanceStore.OperationDate) == time[0],
-                extract("month", EquipmentMaintenanceStore.OperationDate) == time[1],
                 EquipmentMaintenanceStore.EquipentName == name,
                 EquipmentMaintenanceStore.EquipmentType == type,
-                EquipmentMaintenanceStore.Content == "机外表面擦油")).order_by(desc("Date")).all()
-            wipe = list(set(wipe))
+                EquipmentMaintenanceStore.Content == "机外表面擦油",
+                extract("year", EquipmentMaintenanceStore.OperationDate) == time[0],
+                extract("month", EquipmentMaintenanceStore.OperationDate) == time[1])).all()
+            wipe = [wi[0] for wi in wipe]
 
             confirm = db_session.query(EquipmentMaintenanceStore.OperationValue).filter(and_(
-                extract("year", EquipmentMaintenanceStore.OperationDate) == time[0],
-                extract("month", EquipmentMaintenanceStore.OperationDate) == time[1],
                 EquipmentMaintenanceStore.EquipentName == name,
                 EquipmentMaintenanceStore.EquipmentType == type,
-                EquipmentMaintenanceStore.Content == "保养签章")).order_by(desc("Date")).all()
-            confirm = list(set(confirm))
+                EquipmentMaintenanceStore.Content == "保养签章",
+                extract("year", EquipmentMaintenanceStore.OperationDate) == time[0],
+                extract("month", EquipmentMaintenanceStore.OperationDate) == time[1])).all()
+            confirm = [con[0] for con in confirm]
 
             lubrication = db_session.query(EquipmentMaintenanceStore.OperationValue).filter(and_(
                 extract("year", EquipmentMaintenanceStore.OperationDate) == time[0],
