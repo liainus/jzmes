@@ -90,9 +90,10 @@
                     beforeSend:function(){
                         $("#loadingModal").modal('show');
                     },
-                    dataType: "json",
+                    dataType: "text",
                     traditional:true,
                     success:function(data){
+                        console.log(data)
                         $("#loadingModal").modal('hide');
                         if(data == "OK"){
                             window.location.reload()
@@ -100,10 +101,9 @@
                             alert("未知错误，请稍后重试！")
                         }
                     },
-                    error:function(data){
+                    error:function(data,res){
                         $("#loadingModal").modal('hide');
                         alert("请求失败，请稍后重试")
-                        console.log(data)
                     }
                 })
             })
