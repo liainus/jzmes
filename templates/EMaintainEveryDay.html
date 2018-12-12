@@ -23,7 +23,8 @@
                 format: 'yyyy-mm',
                 startView: 4,
 		        minView: 3,
-                autoclose: true
+                autoclose: true,
+                todayHighlight : true   //当天高亮显示
             });
             $("#selectMonth").datetimepicker("setDate", new Date());
 
@@ -68,35 +69,39 @@
             })
             //查询保养记录
             $("#seachRecord").on('click',function () {
-                var myDate = new Date();
+                var nowDate = new Date()
+                var myDate = myformatter(nowDate);//当前时间 格式2018-12
+                var myDate1 = myDate.replace("-","/").replace("-","/") //当前时间转换为 格式2018/12
                 var selectDate = $("#selectMonth").data("datetimepicker").getDate()
+                selectDate = myformatter(selectDate)//选择的时间转换为 格式2018-12
+                selectDate1 = selectDate.replace("-","/").replace("-","/")//选择的时间转换为 格式2018/12
                 $(".clear").each(function(i){
                     $(this).attr("disabled",false)
-                    if(myDate.toDateString() == selectDate.toDateString()){
-                        if(i + 1 > myDate.getDate()){
+                    if(myDate1 == selectDate1){ //判断选择的是否是当月
+                        if(i + 1 > nowDate.getDate()){ //判断当日是否大于复选框的对应的日期,大于就将复选框设为禁用
                             $(this).attr("disabled",true)
                         }
-                    }else if(myDate.toDateString() < selectDate.toDateString()){
+                    }else if(myDate1 < selectDate1){
                         $(this).attr("disabled",true)
                     }
                 })
                 $(".wipe").each(function(i){
                     $(this).attr("disabled",false)
-                    if(myDate.toDateString() == selectDate.toDateString()){
-                        if(i + 1 > myDate.getDate()){
+                    if(myDate1 == selectDate1){
+                        if(i + 1 > nowDate.getDate()){
                             $(this).attr("disabled",true)
                         }
-                    }else if(myDate.toDateString() < selectDate.toDateString()){
+                    }else if(myDate1 < selectDate1){
                         $(this).attr("disabled",true)
                     }
                 })
                 $(".confirm").each(function(i){
                     $(this).attr("disabled",false)
-                    if(myDate.toDateString() == selectDate.toDateString()){
-                        if(i + 1 > myDate.getDate()){
+                    if(myDate1 == selectDate1){
+                        if(i + 1 > nowDate.getDate()){
                             $(this).attr("disabled",true)
                         }
-                    }else if(myDate.toDateString() < selectDate.toDateString()){
+                    }else if(myDate1 < selectDate1){
                         $(this).attr("disabled",true)
                     }
                 })
@@ -108,6 +113,8 @@
                         type:$("#EQPModel").val(),
                         date:selectDate
                     },
+                    dataType: "json",
+                    traditional:true,
                     success:function(data){
                         console.log(data)
                         var str = []
@@ -123,6 +130,13 @@
                 var d = date.getDate();
                 return y+'-'+(m<10?('0'+m):m);
             }
+
+            function Conversiontime(timestamp) {
+                var date = new Date(timestamp);
+                Y = date.getFullYear() + '-';
+                M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1);
+                return Y+M;
+             }
         })
     </script>
 </head>
