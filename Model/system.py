@@ -15,7 +15,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker, backref
 from sqlalchemy import create_engine, \
     Column,ForeignKey, Table, DateTime, Integer, String
-from sqlalchemy import Column, DateTime, Float, Integer, String, Unicode
+from sqlalchemy import Column, DateTime, Float, Integer, String, Unicode, Boolean
 from sqlalchemy.dialects.mssql.base import BIT
 from werkzeug.security import generate_password_hash, check_password_hash
 import Model.Global
@@ -998,6 +998,40 @@ class BatchNameTypeName(Base):
 
     # 采集对应的TypeName:
     TypeName = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+# 设备保养数据
+class EquipmentMaintenanceStore(Base):
+    __tablename__ = 'EquipmentMaintenanceStore'
+    # id:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+    # 设备型号
+    EquipmentType = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 设备名称
+    EquipentName = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 设备编号
+    EquipmentNumber = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 操作内容
+    Content = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 操作值
+    OperationValue = Column(Boolean, primary_key=False, autoincrement=False, nullable=True)
+
+    #日期
+    Date = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    #保养责任人
+    PersonLiable = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 督导人
+    SuperVisor = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 操作时间
+    OperationDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+
 
 # 生成表单的执行语句
 Base.metadata.create_all(engine)

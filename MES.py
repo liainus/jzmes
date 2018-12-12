@@ -39,7 +39,7 @@ from sqlalchemy import func
 import string
 import re
 from collections import Counter
-from Model.system import User, EquipmentRunPUID, ElectronicBatch, EquipmentRunRecord, QualityControl, PackMaterial, TypeCollection, OperationProcedure
+from Model.system import User, EquipmentRunPUID, ElectronicBatch, EquipmentRunRecord, QualityControl, PackMaterial, TypeCollection, OperationProcedure, EquipmentMaintenanceStore
 from Model.Global import WeightUnit
 from Model.control import ctrlPlan
 from flask_login import login_required, logout_user, login_user,current_user,LoginManager
@@ -7735,6 +7735,147 @@ def equipmenttrouble():
         if name[0] == "系统管理员":
             rolename = "系统管理员"
     return render_template('equipmenttrouble.html',rolename=rolename)
+
+# 设备保养记录存储
+@app.route('/EquipmentMaintenance/DataStore')
+def MaintenanceDataStore():
+    if request.method == 'GET':
+        try:
+            data = request.values.to_dict()
+            if data is not None:
+                clear_value = data['clear']
+                wipe_value = data['wipe']
+                confirm_value = data['confirm']
+                try:
+                    year = datetime.datetime.now().year
+                    history = db_session.query(EquipmentMaintenanceStore).filter(
+                        extract("year", EquipmentMaintenanceStore.OperationDate) == int(year)).all()
+                    if history:
+                        db_session.delete(history)
+                        db_session.commit()
+                except Exception as e:
+                    print(e)
+                    logger.error(e)
+                    insertSyslog("error", "设备保养历史数据清除报错Error：" + str(e), current_user.Name)
+                    return json.dumps("设备保养历史数据清除报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+                if 'lubrication' in data.keys():
+                    oclass = EquipmentMaintenanceStore()
+                    oclass.EquipmentType = data['type']
+                    oclass.EquipentName = data['name']
+                    oclass.EquipmentNumber = data['number']
+                    oclass.Content = "电机加油"
+                    oclass.OperationValue = data['lubrication']
+                    oclass.Date = data['date']
+                    oclass.PersonLiable = data['PersonLiable']
+                    oclass.SuperVisor = data['SuperVisor']
+                    oclass.OperationDate = datetime.datetime.now()
+                    db_session.add(oclass)
+                    db_session.commit()
+                for clear in clear_value:
+                    oclass = EquipmentMaintenanceStore()
+                    oclass.EquipmentType = data['type']
+                    oclass.EquipentName = data['name']
+                    oclass.EquipmentNumber = data['number']
+                    oclass.Content = "周围环境"
+                    oclass.OperationValue = clear
+                    oclass.Date = data['date']
+                    oclass.PersonLiable = data['PersonLiable']
+                    oclass.SuperVisor = data['SuperVisor']
+                    oclass.OperationDate = datetime.datetime.now()
+                    db_session.add(oclass)
+                    db_session.commit()
+                for wipe in wipe_value:
+                    oclass = EquipmentMaintenanceStore()
+                    oclass.EquipmentType = data['type']
+                    oclass.EquipentName = data['name']
+                    oclass.EquipmentNumber = data['number']
+                    oclass.Content = "机外表面擦油"
+                    oclass.OperationValue = wipe
+                    oclass.Date = data['date']
+                    oclass.PersonLiable = data['PersonLiable']
+                    oclass.SuperVisor = data['SuperVisor']
+                    oclass.OperationDate = datetime.datetime.now()
+                    db_session.add(oclass)
+                    db_session.commit()
+                for confirm in confirm_value:
+                    oclass = EquipmentMaintenanceStore()
+                    oclass.EquipmentType = data['type']
+                    oclass.EquipentName = data['name']
+                    oclass.EquipmentNumber = data['number']
+                    oclass.Content = "保养签章"
+                    oclass.OperationValue = confirm
+                    oclass.Date = data['date']
+                    oclass.PersonLiable = data['PersonLiable']
+                    oclass.SuperVisor = data['SuperVisor']
+                    oclass.OperationDate = datetime.datetime.now()
+                    db_session.add(oclass)
+                    db_session.commit()
+                return "OK"
+            return "NO"
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "设备保养记录数据存储报错Error：" + str(e), current_user.Name)
+            return json.dumps("设备保养记录数据存储报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+
+# 设备保养记录查询
+@app.route('/EquipmentMaintenance/Search')
+def MaintenanceDataSearch():
+    if request.method == 'GET':
+        try:
+            data = request.values
+            name = data['name']
+            type = data['type']
+            time = data['time'].strip('-')
+            if name is None or type is None or time is None:
+                return "NO"
+            oclass = db_session.query(EquipmentMaintenanceStore).filter(and_(
+                extract("year",EquipmentMaintenanceStore.OperationDate)== time[0],
+                extract("month", EquipmentMaintenanceStore.OperationDate)== time[1])).first
+            number = oclass.EquipmentNumber
+            PersonLiable = oclass.PersonLiable
+            SuperVisor = oclass.SuperVisor
+            clear = db_session.query(EquipmentMaintenanceStore.OperationValue).filter(and_(
+                extract("year", EquipmentMaintenanceStore.OperationDate) == time[0],
+                extract("month", EquipmentMaintenanceStore.OperationDate) == time[1],
+                EquipmentMaintenanceStore.EquipentName == name,
+                EquipmentMaintenanceStore.EquipmentType == type,
+                EquipmentMaintenanceStore.Content == "周围环境")).order_by(desc("Date")).all()
+            clear = list(set(clear))
+
+            wipe = db_session.query(EquipmentMaintenanceStore.OperationValue).filter(and_(
+                extract("year", EquipmentMaintenanceStore.OperationDate) == time[0],
+                extract("month", EquipmentMaintenanceStore.OperationDate) == time[1],
+                EquipmentMaintenanceStore.EquipentName == name,
+                EquipmentMaintenanceStore.EquipmentType == type,
+                EquipmentMaintenanceStore.Content == "机外表面擦油")).order_by(desc("Date")).all()
+            wipe = list(set(wipe))
+
+            confirm = db_session.query(EquipmentMaintenanceStore.OperationValue).filter(and_(
+                extract("year", EquipmentMaintenanceStore.OperationDate) == time[0],
+                extract("month", EquipmentMaintenanceStore.OperationDate) == time[1],
+                EquipmentMaintenanceStore.EquipentName == name,
+                EquipmentMaintenanceStore.EquipmentType == type,
+                EquipmentMaintenanceStore.Content == "保养签章")).order_by(desc("Date")).all()
+            confirm = list(set(confirm))
+
+            lubrication = db_session.query(EquipmentMaintenanceStore.OperationValue).filter(and_(
+                extract("year", EquipmentMaintenanceStore.OperationDate) == time[0],
+                extract("month", EquipmentMaintenanceStore.OperationDate) == time[1],
+                EquipmentMaintenanceStore.EquipentName == name,
+                EquipmentMaintenanceStore.EquipmentType == type,
+                EquipmentMaintenanceStore.Content == "电机加油")).order_by(desc("Date")).first()[0]
+
+            equip_data = {"number":number, "PersonLiable":PersonLiable,
+                          "SuperVisor":SuperVisor, "clear":clear,
+                          "wipe":wipe, "confirm":confirm, "lubrication":lubrication}
+            return json.dumps(equip_data,cls=AlchemyEncoder, ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "设备保养记录数据查询报错Error：" + str(e), current_user.Name)
+            return json.dumps("设备保养记录数据查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 def getExcel(file, method='r'):
     '''
