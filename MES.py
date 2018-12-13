@@ -7699,6 +7699,7 @@ def MaintenanceDataStore():
                 number = eval(data['number'])[0]
                 PersonLiable = eval(data['PersonLiable'])[0]
                 SuperVisor = eval(data['SuperVisor'])[0]
+                lubrication = 1 if data['lubrication'] =="true" else 0
 
                 if 'lubrication' in data.keys():
                     lub = db_session.query(EquipmentMaintenanceStore).filter(and_(
@@ -7708,7 +7709,7 @@ def MaintenanceDataStore():
                         extract("year", EquipmentMaintenanceStore.OperationDate) == int(date.year),
                         extract("month", EquipmentMaintenanceStore.OperationDate) == int(date.month))).first()
                     if lub:
-                        lub.OperationValue = int(data['lubrication'])
+                        lub.OperationValue = lubrication
                         db_session.commit()
                     else:
                         oclass = EquipmentMaintenanceStore()
