@@ -6423,11 +6423,9 @@ def electionBatchSearch():
                             dic["wdTime" + "_" + str(i) + "_" + str(count)] = strchange(wd.SampleDate)
                             count = count + 1
                         dic["nsstartTime" + str(i)] = strch(
-                            searO(BrandID, BatchID, Pclass.ID, EQPID, "提取开始时间").SampleValue)
+                            searO(BrandID, BatchID, Pclass.ID, EQPID, "浓缩开始时间").SampleValue)
                         dic["nsendTime" + str(i)] = strch(
-                            searO(BrandID, BatchID, Pclass.ID, EQPID, "提取结束时间").SampleValue)
-                        firstAddWater = searO(BrandID, BatchID, Pclass.ID, EQPID, "提取第一次加水量设定值")
-                        dic["firstAddWater" + str(i)] = firstAddWater.SampleValue + firstAddWater.Unit
+                            searO(BrandID, BatchID, Pclass.ID, EQPID, "浓缩结束时间").SampleValue)
                 elif (Pclass.PDUnitRouteName == "喷雾干燥段"):
                     HEQPIDs = searchEqpID(BrandID,BatchID,PUID, "总混罐")
                     for i in range(len(HEQPIDs)):
@@ -6549,7 +6547,6 @@ def searO(BrandID, BatchID, PID, EQPID, Type):
         return re
 def searchEqpID(BrandID,BatchID,PID,name):
     EQPIDs = db_session.query(Equipment.ID).filter(Equipment.PUID == PID, Equipment.EQPName.like("%" + name + "%")).all()
-    print(EQPIDs)
     EQPS = db_session.query(ElectronicBatch.EQPID).distinct().filter(ElectronicBatch.PDUnitRouteID == PID, ElectronicBatch.BrandID == BrandID,
                                                           ElectronicBatch.BatchID == BatchID).all()
     tmp = [val for val in EQPIDs if val in EQPS]
