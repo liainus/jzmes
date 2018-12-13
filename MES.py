@@ -7699,7 +7699,7 @@ def MaintenanceDataStore():
                 number = eval(data['number'])[0]
                 PersonLiable = eval(data['PersonLiable'])[0]
                 SuperVisor = eval(data['SuperVisor'])[0]
-                lubrication = 1 if data['lubrication'] =="true" else 0
+                lubrication = 1 if eval(data['lubrication'])[0] == "true" else 0
 
                 if 'lubrication' in data.keys():
                     lub = db_session.query(EquipmentMaintenanceStore).filter(and_(
