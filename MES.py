@@ -6749,8 +6749,8 @@ def spareStockSearch():
                             SpareStock.SpareStatus.in_((Model.Global.SpareStatus.OutStock.value,Model.Global.SpareStatus.InStock.value))).order_by(
                             desc("InStockDate"))[inipage:endpage]
                     else:
-                        spareCount = db_session.query(SpareStock).filter(SpareStock.SpareStatus.in_((Model.Global.SpareStatus.New.value, Model.Global.SpareStatus.InStockChecked.value))).count()
-                        spareClass = db_session.query(SpareStock).filter(SpareStock.SpareStatus.in_((Model.Global.SpareStatus.New.value, Model.Global.SpareStatus.InStockChecked.value))).order_by(desc("InStockDate"))[inipage:endpage]
+                        spareCount = db_session.query(SpareStock).filter().count()
+                        spareClass = db_session.query(SpareStock).filter().order_by(desc("InStockDate"))[inipage:endpage]
                 else:
                     spareCount = db_session.query(SpareStock).filter(SpareStock.SpareName.like(SpareName)).count()
                     spareClass = db_session.query(SpareStock).filter(SpareStock.SpareName.like(SpareName)).all().order_by(desc("InStockDate"))[inipage:endpage]
@@ -6770,6 +6770,9 @@ def spareStockCreate():
         try:
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 10:
+                RoleName = db_session.query(User.RoleName).filter(User.WorkNumber == current_user.WorkNumber).first()[0]
+                if RoleName != "备件录入人" and RoleName != "系统管理员":
+                    return "此用户没有新增备件权限！"
                 SpareCode = data["SpareCode"]
                 SpareStockclass = db_session.query(SpareStock).filter(SpareStock.SpareCode == SpareCode).first()
                 if SpareStockclass != None:
@@ -6805,6 +6808,9 @@ def spareStockUpdate():
         try:
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 10:
+                RoleName = db_session.query(User.RoleName).filter(User.WorkNumber == current_user.WorkNumber).first()[0]
+                if RoleName != "备件录入人" and RoleName != "系统管理员":
+                    return "此用户没有修改备件权限！"
                 ID = int(data['ID'])
                 oclass = db_session.query(SpareStock).filter_by(ID=ID).first()
                 oclass.SpareCode = data["SpareCode"]
@@ -6834,6 +6840,9 @@ def spareStockDelete():
         try:
             jsonstr = json.dumps(data.to_dict())
             if len(jsonstr) > 10:
+                RoleName = db_session.query(User.RoleName).filter(User.WorkNumber == current_user.WorkNumber).first()[0]
+                if RoleName != "备件录入人" and RoleName != "系统管理员":
+                    return "此用户没有删除备件权限！"
                 jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
                 for key in jsonnumber:
                     ID = int(key)
@@ -6860,6 +6869,9 @@ def spareStockInOut():
         try:
             jsonstr = json.dumps(data.to_dict())
             if len(jsonstr) > 10:
+                RoleName = db_session.query(User.RoleName).filter(User.WorkNumber == current_user.WorkNumber).first()[0]
+                if RoleName != "备件录入人" and RoleName != "系统管理员":
+                    return "此用户没有备件入库出库权限！"
                 jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
                 for key in jsonnumber:
                     ID = int(key)
@@ -6889,6 +6901,9 @@ def spareStockChecked():
         try:
             jsonstr = json.dumps(data.to_dict())
             if len(jsonstr) > 10:
+                RoleName = db_session.query(User.RoleName).filter(User.WorkNumber == current_user.WorkNumber).first()[0]
+                if RoleName != "备件审核人" and RoleName != "系统管理员":
+                    return "此用户没有备件入库出库审核权限！"
                 jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
                 for key in jsonnumber:
                     ID = int(key)
@@ -6918,6 +6933,9 @@ def spareStockCheckRecall():
         try:
             jsonstr = json.dumps(data.to_dict())
             if len(jsonstr) > 10:
+                RoleName = db_session.query(User.RoleName).filter(User.WorkNumber == current_user.WorkNumber).first()[0]
+                if RoleName != "备件审核人" and RoleName != "系统管理员":
+                    return "此用户没有备件入库出库审核撤回权限！"
                 jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
                 for key in jsonnumber:
                     ID = int(key)
@@ -7663,8 +7681,7 @@ def getMyEquipmentRunPUIDChildren(id):
 # 备件管理
 @app.route('/equipmentspare')
 def equipmentbeij():
-    RoleName = db_session.query(User.RoleName).filter(User.WorkNumber == current_user.WorkNumber).first()
-    return render_template('equipmentspare.html',RoleName = RoleName[0])
+    return render_template('equipmentspare.html')
 
 # 故障管理
 @app.route('/equipmenttrouble')
