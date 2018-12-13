@@ -8534,6 +8534,26 @@ def ElectronicBatchRecord():
 def BatchMaterielBalanceStatistic():
     return render_template('BatchMaterielBalanceStatistic.html')
 
+@app.route('/BatchMaterielBalanceStatistic/Jwxsp')
+def MaterielBalanceJwxsp():
+    return render_template('BatchMaterielBalanceStatisticJwxsp.html')
+
+@app.route('/BatchMaterielBalanceStatistic/Cshhp')
+def MaterielBalanceCshhp():
+    return render_template('BatchMaterielBalanceStatisticCshhp.html')
+
+# 生产数据管理-批物料平衡统计数据存储
+@app.route('/BatchMaterielBalance/DataStore')
+def BatchMaterielBalanceDataStore():
+    if request.method == 'GET':
+        try:
+            pass
+        except Exception as e:
+            print(e)
+            insertSyslog("error", "批物料平衡数据存储报错Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
+
 # 生产数据管理-批物料追溯
 @app.route('/ProductDataManage/BatchMaterialTracing')
 def BatchMaterialTracing():
