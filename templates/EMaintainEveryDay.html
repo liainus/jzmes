@@ -125,10 +125,17 @@
                     },
                     success:function(data){
                         $("#loadingModal").modal('hide');
-                        console.log(data)
-                        var str = []
-                        for (var i = 0; i < str.length; i++) {
-                            //console.log(str[i])
+                        data = JSON.parse(data)
+                        for(var key in data){
+                            if(key == "clear" || key == "wipe" || key == "confirm"){
+                                for(var i = 0;i < data[key].length;i++){
+                                    $("input[name="+ key +"]").eq(i).prop("checked",data[key][i])
+                                }
+                            }else if(key == "lubrication"){
+                                $(".lubrication").prop("checked",data[key])
+                            }else{
+                                adddata(key,data[key])
+                            }
                         }
                     },
                     error:function(data){
@@ -176,6 +183,16 @@
                     }
                 })
             }
+            //根据key匹配id  加入数据
+            function adddata(ids,res){
+                $("#" + ids).val(res)
+            }
+            function adddataJson(ids,res){
+                for (var i = 0; i < res.length; i++) {
+                    $("." + ids).prop("checked",res[i])
+                }
+            }
+            //时间转换
             function myformatter(date){
                 var y = date.getFullYear();
                 var m = date.getMonth()+1;
