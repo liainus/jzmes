@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>草珊瑚含片物料平衡</title>
     <link href="../static/css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css" crossorigin="anonymous">
 	<link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
 	<link href="../static/css/basic_info.css" rel="stylesheet">
 	<link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
@@ -118,6 +119,9 @@
         }
         .ball-active{
             background-color: #5cb85c;
+        }
+        .table tbody tr td{
+            min-width:60px;
         }
     </style>
     <script>
@@ -301,8 +305,8 @@
                 <table class="table table-bordered">
                     <tbody>
                         <tr>
-                            <td>净山楂</td>
-                            <td>1000 kg</td>
+                            <td>净肿节风</td>
+                            <td></td>
                         </tr>
                     </tbody>
                 </table>
@@ -333,11 +337,11 @@
                     <tbody>
                         <tr>
                             <td>进</td>
-                            <td>5300 kg</td>
+                            <td></td>
                         </tr>
                         <tr>
                             <td>出</td>
-                            <td>4600 kg</td>
+                            <td></td>
                         </tr>
                     </tbody>
                 </table>
@@ -368,11 +372,11 @@
                     <tbody>
                         <tr>
                             <td>进</td>
-                            <td>4800 kg</td>
+                            <td></td>
                         </tr>
                         <tr>
                             <td>出</td>
-                            <td>4600 kg</td>
+                            <td></td>
                         </tr>
                     </tbody>
                 </table>
@@ -403,11 +407,11 @@
                     <tbody>
                         <tr>
                             <td>进</td>
-                            <td>4600 kg</td>
+                            <td></td>
                         </tr>
                         <tr>
                             <td>出</td>
-                            <td>4500 kg</td>
+                            <td></td>
                         </tr>
                     </tbody>
                 </table>
@@ -438,11 +442,11 @@
                     <tbody>
                         <tr>
                             <td>进</td>
-                            <td>4600 kg</td>
+                            <td></td>
                         </tr>
                         <tr>
                             <td>出</td>
-                            <td>4500 kg</td>
+                            <td></td>
                         </tr>
                     </tbody>
                 </table>
@@ -471,11 +475,11 @@
                     <tbody>
                         <tr>
                             <td>进</td>
-                            <td>4500 kg</td>
+                            <td></td>
                         </tr>
                         <tr>
                             <td>出</td>
-                            <td>4500 kg</td>
+                            <td></td>
                         </tr>
                     </tbody>
                 </table>
@@ -561,6 +565,13 @@
                 <a href="#" class="easyui-linkbutton" onclick="$('#checkedClassDialog').dialog('close')">关闭</a>
             </div>
         </form>
+    </div>
+    <div id="Toolbar" style="padding:0 10px;">
+        批次号:
+        <input type="text" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
+            placeholder="">
+        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="CollectToolbar.search();">查询</a>
+        <a href="#" class="easyui-linkbutton" id="reload" data-options="iconCls:'icon-reload'" onclick="CollectToolbar.refresh();">刷新</a>
     </div>
     <table class="easyui-datagrid" id="tab2" title="草珊瑚含片制药计划列表" style="width:100%;" data-options="
         queryParams: {

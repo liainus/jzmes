@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>健胃消食片物料平衡</title>
     <link href="../static/css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css" crossorigin="anonymous">
 	<link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
 	<link href="../static/css/basic_info.css" rel="stylesheet">
 	<link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
@@ -119,9 +120,13 @@
         .ball-active{
             background-color: #5cb85c;
         }
+        .table tbody tr td{
+            min-width:60px;
+        }
     </style>
     <script>
         $(function(){
+
             function createKeyIDObj(keyID){
                 return {
                     ID:keyID
@@ -155,46 +160,104 @@
 
             //审核人确认
             $(".audit").on('click',function(){
-                $("#TemplateClassDialog").dialog('open').dialog('setTitle', '审核人确认');
                 var PName = $(this).attr("name")
-                check = {
-                    checkConfirm:function () {
-                        var rows = $("#tab").datagrid('getSelections');
-                        $.messager.confirm('确定操作', '您确认完成批次审核吗？', function (flag) {
-                            var DeviationDescription = $("#DeviationDescription").val()
-                            var CheckedSuggestion = $("#CheckedSuggestion").val()
-                            if (flag) {
-                                $.ajax({
-                                    url: '/CheckedBatchMaterielBalance',
-                                    method: 'POST',
-                                    data: {
-                                        ID:rows[0].ID,
-                                        PName:PName,
-                                        DeviationDescription:DeviationDescription,
-                                        CheckedSuggestion:CheckedSuggestion
-                                    },
-                                    success: function (data) {
-                                        console.log(data)
-                                        $.messager.progress('close');
-                                        if (data == "OK") {
-                                            $.messager.show({
-                                                title: '提示',
-                                                timeout:1000,
-                                                msg: '审核成功',
-                                                style: {
-                                                    right: '',
-                                                    top: document.body.scrollTop + document.documentElement.scrollTop,
-                                                    bottom: ''
-                                                }
-                                            });
-                                            $("#TemplateClassDialog").dialog('close');
+                if(PName == "备料段"){
+                    $("#BTemplateClassDialog").dialog('open').dialog('setTitle', '审核人确认');
+                    $("#TZS").val("")
+                    $("#CMY").val("")
+                    $("#JSZ").val("")
+                    $("#CP").val("")
+                    $("#BDeviationDescription").val("")
+                    $("#BCheckedSuggestion").val("")
+                    check = {
+                        checkConfirm:function () {
+                            var rows = $("#tab").datagrid('getSelections');
+                            $.messager.confirm('确定操作', '您确认完成批次审核吗？', function (flag) {
+                                if (flag) {
+                                    $.ajax({
+                                        url: '/CheckedBatchMaterielBalance',
+                                        method: 'POST',
+                                        data: {
+                                            ID:rows[0].ID,
+                                            PName:PName,
+                                            TZS:$("#TZS").val(),
+                                            CMY:$("#CMY").val(),
+                                            JSZ:$("#JSZ").val(),
+                                            CP:$("#CP").val(),
+                                            DeviationDescription:$("#BDeviationDescription").val(),
+                                            CheckedSuggestion:$("#BCheckedSuggestion").val()
+                                        },
+                                        success: function (data) {
+                                            $.messager.progress('close');
+                                            if (data == "OK") {
+                                                $.messager.show({
+                                                    title: '提示',
+                                                    timeout:1000,
+                                                    msg: '审核成功',
+                                                    style: {
+                                                        right: '',
+                                                        top: document.body.scrollTop + document.documentElement.scrollTop,
+                                                        bottom: ''
+                                                    }
+                                                });
+                                                $("#BTemplateClassDialog").dialog('close');
+                                            }else{
+                                                $.messager.alert('提示', data, 'info');
+                                            }
+                                        },error:function(){
+                                            alert("请求错误！")
                                         }
-                                    },error:function(){
-                                        alert("请求错误！")
-                                    }
-                                });
-                            }
-                        });
+                                    });
+                                }
+                            });
+                        }
+                    }
+                }else{
+                    $("#TemplateClassDialog").dialog('open').dialog('setTitle', '审核人确认');
+                    $("#InMateriel").val("")
+                    $("#OutMateriel").val("")
+                    $("#DeviationDescription").val("")
+                    $("#CheckedSuggestion").val("")
+                    check = {
+                        checkConfirm:function () {
+                            var rows = $("#tab").datagrid('getSelections');
+                            $.messager.confirm('确定操作', '您确认完成批次审核吗？', function (flag) {
+                                if (flag) {
+                                    $.ajax({
+                                        url: '/CheckedBatchMaterielBalance',
+                                        method: 'POST',
+                                        data: {
+                                            ID:rows[0].ID,
+                                            PName:PName,
+                                            InMateriel:$("#InMateriel").val(),
+                                            OutMateriel:$("#OutMateriel").val(),
+                                            DeviationDescription:$("#DeviationDescription").val(),
+                                            CheckedSuggestion:$("#CheckedSuggestion").val()
+                                        },
+                                        success: function (data) {
+                                            $.messager.progress('close');
+                                            if (data == "OK") {
+                                                $.messager.show({
+                                                    title: '提示',
+                                                    timeout:1000,
+                                                    msg: '审核成功',
+                                                    style: {
+                                                        right: '',
+                                                        top: document.body.scrollTop + document.documentElement.scrollTop,
+                                                        bottom: ''
+                                                    }
+                                                });
+                                                $("#TemplateClassDialog").dialog('close');
+                                            }else{
+                                                $.messager.alert('提示', data, 'info');
+                                            }
+                                        },error:function(){
+                                            alert("请求错误！")
+                                        }
+                                    });
+                                }
+                            });
+                        }
                     }
                 }
             })
@@ -227,10 +290,9 @@
                                     data: {
                                         ID:rows[0].ID,
                                         PName:PName,
-                                        OperationSpaceNum:""
+                                        OperationSpaceNum:$("#aOperationSpaceNum").val()
                                     },
                                     success: function (data) {
-                                        console.log(data)
                                         $.messager.progress('close');
                                         if (data == "OK") {
                                             $.messager.show({
@@ -245,7 +307,7 @@
                                             });
                                             $("#checkedClassDialog").dialog('close');
                                         }else{
-                                            alert("未知错误，请稍后重试！")
+                                            $.messager.alert('提示', data, 'info');
                                         }
                                     },error:function(){
                                         alert("请求错误！")
@@ -302,19 +364,19 @@
                     <tbody>
                         <tr>
                             <td>太子参</td>
-                            <td>1700 kg</td>
+                            <td></td>
                         </tr>
                         <tr>
                             <td>炒麦芽</td>
-                            <td>1800 kg</td>
+                            <td></td>
                         </tr>
                         <tr>
                             <td>净山楂</td>
-                            <td>1000 kg</td>
+                            <td></td>
                         </tr>
                         <tr>
                             <td>陈皮</td>
-                            <td>800 kg</td>
+                            <td></td>
                         </tr>
                     </tbody>
                 </table>
@@ -345,11 +407,11 @@
                     <tbody>
                         <tr>
                             <td>进</td>
-                            <td>5300 kg</td>
+                            <td></td>
                         </tr>
                         <tr>
                             <td>出</td>
-                            <td>4600 kg</td>
+                            <td></td>
                         </tr>
                     </tbody>
                 </table>
@@ -380,11 +442,11 @@
                     <tbody>
                         <tr>
                             <td>进</td>
-                            <td>4800 kg</td>
+                            <td></td>
                         </tr>
                         <tr>
                             <td>出</td>
-                            <td>4600 kg</td>
+                            <td></td>
                         </tr>
                     </tbody>
                 </table>
@@ -415,11 +477,11 @@
                     <tbody>
                         <tr>
                             <td>进</td>
-                            <td>4600 kg</td>
+                            <td></td>
                         </tr>
                         <tr>
                             <td>出</td>
-                            <td>4500 kg</td>
+                            <td></td>
                         </tr>
                     </tbody>
                 </table>
@@ -448,11 +510,11 @@
                     <tbody>
                         <tr>
                             <td>进</td>
-                            <td>4500 kg</td>
+                            <td></td>
                         </tr>
                         <tr>
                             <td>出</td>
-                            <td>4500 kg</td>
+                            <td></td>
                         </tr>
                     </tbody>
                 </table>
@@ -482,6 +544,18 @@
             <table class="kv-table">
                 <tbody>
                     <tr>
+                        <td class="kv-label">进</td>
+                        <td class="kv-content">
+                            <input id="InMateriel" name="InMateriel" type="message" class="easyui-textbox" autocomplete="off" placeholder="" >
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="kv-label">出</td>
+                        <td class="kv-content">
+                            <input id="OutMateriel" name="OutMateriel" type="message" class="easyui-textbox" autocomplete="off" placeholder="" >
+                        </td>
+                    </tr>
+                    <tr>
                         <td class="kv-label" style="width: 150px;">偏差说明及备注</td>
                         <td class="kv-content">
                             <input id="DeviationDescription" name="DeviationDescription" style="height:60px" type="message" class="easyui-textbox" autocomplete="off" placeholder="" >
@@ -498,6 +572,56 @@
             <div id="TemplateClassDialogButtons" >
                 <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" onclick="check.checkConfirm()" >确认</a>
                 <a href="#" class="easyui-linkbutton" onclick="$('#TemplateClassDialog').dialog('close')">关闭</a>
+            </div>
+        </form>
+    </div>
+    <!--备料审核信息确认框-->
+    <div id="BTemplateClassDialog" class="easyui-dialog" style="width:400px;height:300px;padding:10px;"
+         data-options="closed:'true',buttons:'#BTemplateClassDialogButtons',modal:true">
+        <form id="TemplateClassForm" method="post" class="dialog-form">
+            <table class="kv-table">
+                <tbody>
+                    <tr>
+                        <td class="kv-label">太子参</td>
+                        <td class="kv-content">
+                            <input id="TZS" name="TZS" type="message" class="easyui-textbox" autocomplete="off" placeholder="" >
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="kv-label">炒麦芽</td>
+                        <td class="kv-content">
+                            <input id="CMY" name="CMY" type="message" class="easyui-textbox" autocomplete="off" placeholder="" >
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="kv-label">净山楂</td>
+                        <td class="kv-content">
+                            <input id="JSZ" name="JSZ" type="message" class="easyui-textbox" autocomplete="off" placeholder="" >
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="kv-label">陈皮</td>
+                        <td class="kv-content">
+                            <input id="CP" name="CP" type="message" class="easyui-textbox" autocomplete="off" placeholder="" >
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="kv-label" style="width: 150px;">偏差说明及备注</td>
+                        <td class="kv-content">
+                            <input id="BDeviationDescription" name="BDeviationDescription" style="height:60px" type="message" class="easyui-textbox" autocomplete="off" placeholder="" >
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="kv-label">审核意见</td>
+                        <td class="kv-content">
+                            <input id="BCheckedSuggestion" name="BCheckedSuggestion" style="height:60px" type="message" class="easyui-textbox" autocomplete="off" placeholder="" >
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div id="BTemplateClassDialogButtons" >
+                <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" onclick="check.checkConfirm()" >确认</a>
+                <a href="#" class="easyui-linkbutton" onclick="$('#BTemplateClassDialog').dialog('close')">关闭</a>
             </div>
         </form>
     </div>
