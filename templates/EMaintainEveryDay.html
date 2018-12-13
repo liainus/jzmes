@@ -93,11 +93,11 @@
                     dataType: "text",
                     traditional:true,
                     success:function(data){
-                        console.log(data)
                         $("#loadingModal").modal('hide');
                         if(data == "OK"){
                             window.location.reload()
                         }else{
+                            console.log(data)
                             alert("未知错误，请稍后重试！")
                         }
                     },
@@ -109,6 +109,15 @@
             })
             //查询保养记录
             $("#seachRecord").on('click',function () {
+                //清空输入框和复选框
+                $("#EQPNumber").val("")
+                $("#personLiable").val("")
+                $("#supervisor").val("")
+                $("input[name=clear],input[name=wipe],input[name=lubrication],input[name=confirm]").each(function(){
+                    $(this).prop("checked",false)
+                })
+
+                //获取时间
                 var selectDate = $("#selectMonth").data("datetimepicker").getDate()
                 selectDate = myformatter(selectDate)//选择的时间转换为 格式2018-12
                 dateLimit()
@@ -126,6 +135,7 @@
                     success:function(data){
                         $("#loadingModal").modal('hide');
                         data = JSON.parse(data)
+                        console.log(data)
                         for(var key in data){
                             if(key == "clear" || key == "wipe" || key == "confirm"){
                                 for(var i = 0;i < data[key].length;i++){
