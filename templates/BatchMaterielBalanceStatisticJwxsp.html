@@ -126,7 +126,6 @@
     </style>
     <script>
         $(function(){
-
             function createKeyIDObj(keyID){
                 return {
                     ID:keyID
@@ -261,10 +260,9 @@
                     }
                 }
             })
-        })
-        //工序负责人确认
-        $(".principal").on('click',function(){
-            $("#checkedClassDialog").dialog('open').dialog('setTitle', '工序负责人确认');
+            //工序负责人确认
+            $(".principal").on('click',function(){
+                $("#checkedClassDialog").dialog('open').dialog('setTitle', '工序负责人确认');
                 var rows = $("#tab").datagrid('getSelections');
                 var PName = $(this).attr("name")
                 $.ajax({
@@ -317,6 +315,7 @@
                         });
                     }
                 }
+            })
         })
 
         //按钮点击后添加选项卡
