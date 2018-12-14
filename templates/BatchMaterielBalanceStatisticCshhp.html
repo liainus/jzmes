@@ -10,6 +10,7 @@
 	<link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
 	<link href="../static/js/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
     <script type="text/javascript" src="../static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
     <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
     <style>
@@ -152,60 +153,202 @@
             }
             //表格默认选中第一行
             $("#tab").datagrid({
+                url:'/MaterielBalanceSearch',
+                queryParams: {
+                    BatchID: '',
+                    name:'肿节风浸膏'
+                },
                 onLoadSuccess:function(data){
+                    console.log(data.rows)
                     $(this).datagrid("checkRow",0)
+                    //获取每段物料信息
+                    $("#loadingModal").modal('show');
+                    $.ajax({
+                        url: '/MaterielBalanceCheckedInfoSearch',
+                        method: 'get',
+                        data: {
+                            ID:data.rows[0].ID,
+                            PName:""
+                        },
+                        success: function (data) {
+                            console.log(data)
+                            $("#loadingModal").modal('hide');
+                            data = JSON.parse(data)
+                            for(var key in data) {
+                                adddata(key,data[key])
+                            }
+                        },error:function(){
+                            $("#loadingModal").modal('hide');
+                        }
+                    });
+                },
+                onClickRow:function(rowIndex, rowData){
+                    $("#loadingModal").modal('show');
+                    $.ajax({
+                        url: '/MaterielBalanceCheckedInfoSearch',
+                        method: 'get',
+                        data: {
+                            ID:rowData.ID,
+                            PName:""
+                        },
+                        success: function (data) {
+                            $("#loadingModal").modal('hide');
+                            data = JSON.parse(data)
+                            console.log(data)
+                            for(var key in data) {
+                                adddata(key,data[key])
+                            }
+                        },error:function(){
+                            $("#loadingModal").modal('hide');
+                        }
+                    });
                 }
             })
 
             //审核人确认
             $(".audit").on('click',function(){
-                $("#TemplateClassDialog").dialog('open').dialog('setTitle', '审核人确认');
                 var PName = $(this).attr("name")
-                check = {
-                    checkConfirm:function () {
-                        var rows = $("#tab").datagrid('getSelections');
-                        $.messager.confirm('确定操作', '您确认完成批次审核吗？', function (flag) {
-                            var DeviationDescription = $("#DeviationDescription").val()
-                            var CheckedSuggestion = $("#CheckedSuggestion").val()
-                            if (flag) {
-                                $.ajax({
-                                    url: '/CheckedBatchMaterielBalance',
-                                    method: 'POST',
-                                    data: {
-                                        ID:rows[0].ID,
-                                        PName:PName,
-                                        DeviationDescription:DeviationDescription,
-                                        CheckedSuggestion:CheckedSuggestion
-                                    },
-                                    success: function (data) {
-                                        console.log(data)
-                                        $.messager.progress('close');
-                                        if (data == "OK") {
-                                            $.messager.show({
-                                                title: '提示',
-                                                timeout:1000,
-                                                msg: '审核成功',
-                                                style: {
-                                                    right: '',
-                                                    top: document.body.scrollTop + document.documentElement.scrollTop,
-                                                    bottom: ''
-                                                }
-                                            });
-                                            $("#TemplateClassDialog").dialog('close');
+                if(PName == "备料段"){
+                    $("#BTemplateClassDialog").dialog('open').dialog('setTitle', '审核人确认');
+                    $("#JZJF").val("")
+                    $("#BDeviationDescription").val("")
+                    $("#BCheckedSuggestion").val("")
+                    check = {
+                        checkConfirm:function () {
+                            var rows = $("#tab").datagrid('getSelections');
+                            $.messager.confirm('确定操作', '您确认完成批次审核吗？', function (flag) {
+                                if (flag) {
+                                    $.ajax({
+                                        url: '/CheckedBatchMaterielBalance',
+                                        method: 'POST',
+                                        data: {
+                                            ID:rows[0].ID,
+                                            PName:PName,
+                                            taizishen:"",
+                                            chaomaiya:"",
+                                            jingshanzha:"",
+                                            chenpi:"",
+                                            jingzjf:$("#JZJF").val(),
+                                            Input:"",
+                                            Output:"",
+                                            DeviationDescription:$("#BDeviationDescription").val(),
+                                            CheckedSuggestion:$("#BCheckedSuggestion").val()
+                                        },
+                                        success: function (data) {
+                                            $.messager.progress('close');
+                                            if (data == "OK") {
+                                                $.messager.show({
+                                                    title: '提示',
+                                                    timeout:1000,
+                                                    msg: '审核成功',
+                                                    style: {
+                                                        right: '',
+                                                        top: document.body.scrollTop + document.documentElement.scrollTop,
+                                                        bottom: ''
+                                                    }
+                                                });
+                                                $("#BTemplateClassDialog").dialog('close');
+                                                $.ajax({
+                                                    url: '/MaterielBalanceCheckedInfoSearch',
+                                                    method: 'get',
+                                                    data: {
+                                                        ID:rows[0].ID,
+                                                        PName:PName
+                                                    },
+                                                    success: function (data) {
+                                                        data = JSON.parse(data)
+                                                        console.log(data)
+                                                        for(var key in data) {
+                                                            adddata(key,data[key])
+                                                        }
+                                                    },error:function(){
+                                                        alert("获取当前工艺段信息时请求错误！")
+                                                    }
+                                                });
+                                            }else{
+                                                $.messager.alert('提示', data, 'info');
+                                            }
+                                        },error:function(){
+                                            alert("请求错误！")
                                         }
-                                    },error:function(){
-                                        alert("请求错误！")
-                                    }
-                                });
-                            }
-                        });
+                                    });
+                                }
+                            });
+                        }
+                    }
+                }else{
+                    $("#TemplateClassDialog").dialog('open').dialog('setTitle', '审核人确认');
+                    $("#InMateriel").val("")
+                    $("#OutMateriel").val("")
+                    $("#DeviationDescription").val("")
+                    $("#CheckedSuggestion").val("")
+                    check = {
+                        checkConfirm:function () {
+                            var rows = $("#tab").datagrid('getSelections');
+                            $.messager.confirm('确定操作', '您确认完成批次审核吗？', function (flag) {
+                                if (flag) {
+                                    $.ajax({
+                                        url: '/CheckedBatchMaterielBalance',
+                                        method: 'POST',
+                                        data: {
+                                            ID:rows[0].ID,
+                                            PName:PName,
+                                            taizishen:"",
+                                            chaomaiya:"",
+                                            jingshanzha:"",
+                                            chenpi:"",
+                                            jingzjf:"",
+                                            Input:$("#InMateriel").val(),
+                                            Output:$("#OutMateriel").val(),
+                                            DeviationDescription:$("#aDeviationDescription").val(),
+                                            CheckedSuggestion:$("#aCheckedSuggestion").val()
+                                        },
+                                        success: function (data) {
+                                            $.messager.progress('close');
+                                            if (data == "OK") {
+                                                $.messager.show({
+                                                    title: '提示',
+                                                    timeout:1000,
+                                                    msg: '审核成功',
+                                                    style: {
+                                                        right: '',
+                                                        top: document.body.scrollTop + document.documentElement.scrollTop,
+                                                        bottom: ''
+                                                    }
+                                                });
+                                                $("#TemplateClassDialog").dialog('close');
+                                                $.ajax({
+                                                    url: '/MaterielBalanceCheckedInfoSearch',
+                                                    method: 'get',
+                                                    data: {
+                                                        ID:rows[0].ID,
+                                                        PName:PName
+                                                    },
+                                                    success: function (data) {
+                                                        data = JSON.parse(data)
+                                                        for(var key in data) {
+                                                            adddata(key,data[key])
+                                                        }
+                                                    },error:function(){
+                                                        alert("获取当前工艺段信息时请求错误！")
+                                                    }
+                                                });
+                                            }else{
+                                                $.messager.alert('提示', data, 'info');
+                                            }
+                                        },error:function(){
+                                            alert("请求错误！")
+                                        }
+                                    });
+                                }
+                            });
+                        }
                     }
                 }
             })
-        })
-        //工序负责人确认
-        $(".principal").on('click',function(){
-            $("#checkedClassDialog").dialog('open').dialog('setTitle', '工序负责人确认');
+            //工序负责人确认
+            $(".principal").on('click',function(){
+                $("#checkedClassDialog").dialog('open').dialog('setTitle', '工序负责人确认');
                 var rows = $("#tab").datagrid('getSelections');
                 var PName = $(this).attr("name")
                 $.ajax({
@@ -216,9 +359,10 @@
                         PName:PName
                     },
                     success: function (data) {
-                        $("#aDeviationDescription").textbox("setValue", data.DeviationDescription)
-                        $("#aCheckedSuggestion").textbox("setValue", data.CheckedSuggestion)
-                        $("#aCheckedPerson").textbox("setValue", data.CheckedPerson)
+                        data = JSON.parse(data)
+                        $("#DeviationDescription").textbox("setValue", data.DeviationDescription)
+                        $("#CheckedSuggestion").textbox("setValue", data.CheckedSuggestion)
+                        $("#CheckedPerson").textbox("setValue", data.CheckedPerson)
                     }
                 });
                 check = {
@@ -231,10 +375,9 @@
                                     data: {
                                         ID:rows[0].ID,
                                         PName:PName,
-                                        OperationSpaceNum:""
+                                        OperationSpaceNum:$("#OperationSpaceNum").val()
                                     },
                                     success: function (data) {
-                                        console.log(data)
                                         $.messager.progress('close');
                                         if (data == "OK") {
                                             $.messager.show({
@@ -249,16 +392,17 @@
                                             });
                                             $("#checkedClassDialog").dialog('close');
                                         }else{
-                                            alert("未知错误，请稍后重试！")
+                                            $.messager.alert('提示', data, 'info');
                                         }
                                     },error:function(){
                                         alert("请求错误！")
                                     }
                                 });
                             }
-                        });
+                        });''
                     }
                 }
+            })
         })
 
         //按钮点击后添加选项卡
@@ -295,6 +439,14 @@
     </script>
 </head>
 <body>
+    <div class="modal" id="loadingModal" data-backdrop="static" data-keyboard="false">
+        <div style="width: 200px;height:20px; z-index: 20000; position: absolute; text-align: center; left: 50%; top: 50%;margin-left:-100px;margin-top:-10px">
+            <div class="progress progress-striped active" style="margin-bottom: 0;">
+                <div class="progress-bar" style="width: 100%;"></div>
+            </div>
+            <h5>正在加载物料信息...</h5>
+        </div>
+    </div>
     <!--流程图-->
     <div class="progress-head">
         <div class="host-progress bigPlan1">
@@ -306,7 +458,7 @@
                     <tbody>
                         <tr>
                             <td>净肿节风</td>
-                            <td></td>
+                            <td id="jingzjf"></td>
                         </tr>
                     </tbody>
                 </table>
@@ -337,11 +489,11 @@
                     <tbody>
                         <tr>
                             <td>进</td>
-                            <td></td>
+                            <td id="input1"></td>
                         </tr>
                         <tr>
                             <td>出</td>
-                            <td></td>
+                            <td id="output1"></td>
                         </tr>
                     </tbody>
                 </table>
@@ -372,11 +524,11 @@
                     <tbody>
                         <tr>
                             <td>进</td>
-                            <td></td>
+                            <td id="input2"></td>
                         </tr>
                         <tr>
                             <td>出</td>
-                            <td></td>
+                            <td id="output2"></td>
                         </tr>
                     </tbody>
                 </table>
@@ -407,11 +559,11 @@
                     <tbody>
                         <tr>
                             <td>进</td>
-                            <td></td>
+                            <td id="input4"></td>
                         </tr>
                         <tr>
                             <td>出</td>
-                            <td></td>
+                            <td id="output4"></td>
                         </tr>
                     </tbody>
                 </table>
@@ -442,11 +594,11 @@
                     <tbody>
                         <tr>
                             <td>进</td>
-                            <td></td>
+                            <td id="input5"></td>
                         </tr>
                         <tr>
                             <td>出</td>
-                            <td></td>
+                            <td id="output5"></td>
                         </tr>
                     </tbody>
                 </table>
@@ -475,7 +627,7 @@
                     <tbody>
                         <tr>
                             <td>进</td>
-                            <td></td>
+                            <td id="input7"></td>
                         </tr>
                         <tr>
                             <td>出</td>
@@ -509,6 +661,18 @@
             <table class="kv-table">
                 <tbody>
                     <tr>
+                        <td class="kv-label">进</td>
+                        <td class="kv-content">
+                            <input id="InMateriel" name="InMateriel" type="message" class="easyui-textbox" autocomplete="off" placeholder="" >
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="kv-label">出</td>
+                        <td class="kv-content">
+                            <input id="OutMateriel" name="OutMateriel" type="message" class="easyui-textbox" autocomplete="off" placeholder="" >
+                        </td>
+                    </tr>
+                    <tr>
                         <td class="kv-label" style="width: 150px;">偏差说明及备注</td>
                         <td class="kv-content">
                             <input id="DeviationDescription" name="DeviationDescription" style="height:60px" type="message" class="easyui-textbox" autocomplete="off" placeholder="" >
@@ -528,6 +692,38 @@
             </div>
         </form>
     </div>
+    <!--备料审核信息确认框-->
+    <div id="BTemplateClassDialog" class="easyui-dialog" style="width:400px;height:300px;padding:10px;"
+         data-options="closed:'true',buttons:'#BTemplateClassDialogButtons',modal:true">
+        <form id="BTemplateClassForm" method="post" class="dialog-form">
+            <table class="kv-table">
+                <tbody>
+                    <tr>
+                        <td class="kv-label">净肿节风（kg）</td>
+                        <td class="kv-content">
+                            <input id="JZJF" name="JZJF" type="message" class="easyui-textbox" autocomplete="off" placeholder="" >
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="kv-label" style="width: 150px;">偏差说明及备注</td>
+                        <td class="kv-content">
+                            <input id="DeviationDescription" name="DeviationDescription" style="height:60px" type="message" class="easyui-textbox" autocomplete="off" placeholder="" >
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="kv-label">审核意见</td>
+                        <td class="kv-content">
+                            <input id="CheckedSuggestion" name="CheckedSuggestion" style="height:60px" type="message" class="easyui-textbox" autocomplete="off" placeholder="" >
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div id="BTemplateClassDialogButtons" >
+                <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" onclick="check.checkConfirm()" >确认</a>
+                <a href="#" class="easyui-linkbutton" onclick="$('#BTemplateClassDialog').dialog('close')">关闭</a>
+            </div>
+        </form>
+    </div>
     <!--工序负责人确认框-->
     <div id="checkedClassDialog" class="easyui-dialog" style="width:400px;height:320px;padding:10px;"
          data-options="closed:'true',buttons:'#checkedClassDialogButtons',modal:true">
@@ -537,25 +733,25 @@
                     <tr>
                         <td class="kv-label" style="width: 150px;">偏差说明及备注</td>
                         <td class="kv-content">
-                            <input id="aDeviationDescription" name="aDeviationDescription" style="height:60px" type="message" class="easyui-textbox" autocomplete="off" placeholder="" disabled="disabled">
+                            <input id="DeviationDescription" name="aDeviationDescription" style="height:60px" type="message" class="easyui-textbox" autocomplete="off" placeholder="" disabled="disabled">
                         </td>
                     </tr>
                     <tr>
                         <td class="kv-label">审核意见</td>
                         <td class="kv-content">
-                            <input id="aCheckedSuggestion" name="aCheckedSuggestion" style="height:60px" type="message" class="easyui-textbox" autocomplete="off" placeholder="" disabled="disabled" >
+                            <input id="CheckedSuggestion" name="aCheckedSuggestion" style="height:60px" type="message" class="easyui-textbox" autocomplete="off" placeholder="" disabled="disabled" >
                         </td>
                     </tr>
                     <tr>
                         <td class="kv-label" style="width: 150px;">审核人</td>
                         <td class="kv-content">
-                            <input id="aCheckedPerson" name="aCheckedPerson" type="message" class="easyui-textbox" autocomplete="off" placeholder="" disabled="disabled" >
+                            <input id="CheckedPerson" name="aCheckedPerson" type="message" class="easyui-textbox" autocomplete="off" placeholder="" disabled="disabled" >
                         </td>
                     </tr>
                     <tr>
                         <td class="kv-label" style="width: 150px;">操作间编号</td>
                         <td class="kv-content">
-                            <input id="aOperationSpaceNum" name="aOperationSpaceNum" type="message" class="easyui-textbox" autocomplete="off" placeholder="" disabled="disabled" >
+                            <input id="OperationSpaceNum" name="aOperationSpaceNum" type="message" class="easyui-textbox" autocomplete="off" placeholder="" disabled="disabled" >
                         </td>
                     </tr>
                 </tbody>
@@ -574,17 +770,12 @@
         <a href="#" class="easyui-linkbutton" id="reload" data-options="iconCls:'icon-reload'" onclick="CollectToolbar.refresh();">刷新</a>
     </div>
     <table class="easyui-datagrid" id="tab2" title="草珊瑚含片制药计划列表" style="width:100%;" data-options="
-        queryParams: {
-            BatchID: '',
-            name:'肿节风浸膏'
-        },
         rownumbers:true,
         singleSelect:true,
         autoRowHeight:false,
         pagination:true,
         pageSize:10,
-        toolbar:'#Toolbar2',
-        url:'/MaterielBalanceSearch',
+        toolbar:'#Toolbar',
         method:'GET'">
         <thead>
             <tr>
