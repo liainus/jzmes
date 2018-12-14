@@ -6661,7 +6661,31 @@ def MaterielBalanceCheckedInfoSearch():
                     PUID = db_session.query(ProductUnitRoute.PUID).filter(ProductUnitRoute.PDUnitRouteName == PName,
                                                                           ProductUnitRoute.ProductRuleID == PMClass.BrandID).first()
                     oclass = db_session.query(BatchMaterielBalance).filter(BatchMaterielBalance.PlanManagerID == ID, BatchMaterielBalance.PUID == PUID).first()
-                return json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
+                    dic["DeviationDescription"] = oclass.DeviationDescription
+                    dic["CheckedSuggestion"] = oclass.CheckedSuggestion
+                    dic["CheckedPerson"] = oclass.CheckedPerson
+                    if oclass.PUID == "2":
+                        dic["input1"] = oclass.Input
+                        dic["output1"] = oclass.output
+                    elif oclass.PUID == "3":
+                        dic["input2"] = oclass.Input
+                        dic["output2"] = oclass.output
+                    elif oclass.PUID == "4":
+                        dic["input3"] = oclass.Input
+                        dic["output3"] = oclass.output
+                    elif oclass.PUID == "5":
+                        dic["input4"] = oclass.Input
+                        dic["output4"] = oclass.output
+                    elif oclass.PUID == "6":
+                        dic["input5"] = oclass.Input
+                        dic["output5"] = oclass.output
+                    elif oclass.PUID == "7":
+                        dic["input6"] = oclass.Input
+                        dic["output6"] = oclass.output
+                    elif oclass.PUID == "8":
+                        dic["input7"] = oclass.Input
+                        dic["output7"] = oclass.output
+                return json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
             logger.error(e)
