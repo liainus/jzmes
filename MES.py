@@ -6591,16 +6591,16 @@ def CheckedBatchMaterielBalance():
                             Output=Output
                         ))
                 else:
-                    oclass.DeviationDescription = DeviationDescription,
-                    oclass.CheckedSuggestion = CheckedSuggestion,
-                    oclass.CheckedPerson = current_user.Name,
-                    oclass.OperationDate = datetime.datetime.now(),
-                    oclass.taizishen = taizishen,
-                    oclass.chaomaiya = chaomaiya,
-                    oclass.jingshanzha = jingshanzha,
-                    oclass.chenpi = chenpi,
-                    oclass.jingzjf = jingzjf,
-                    oclass.Input = Input,
+                    oclass.DeviationDescription = DeviationDescription
+                    oclass.CheckedSuggestion = CheckedSuggestion
+                    oclass.CheckedPerson = current_user.Name
+                    oclass.OperationDate = datetime.datetime.now()
+                    oclass.taizishen = taizishen
+                    oclass.chaomaiya = chaomaiya
+                    oclass.jingshanzha = jingshanzha
+                    oclass.chenpi = chenpi
+                    oclass.jingzjf = jingzjf
+                    oclass.Input = Input
                     oclass.Output = Output
                 db_session.commit()
                 return 'OK'
@@ -6627,33 +6627,33 @@ def MaterielBalanceCheckedInfoSearch():
                     for i in range(len(oclass)):
                         if oclass[i].taizishen != None:
                             dic["taizishen"] = oclass[i].taizishen
-                        elif oclass[i].jingshanzha != None:
+                        if oclass[i].jingshanzha != None:
                             dic["chaomaiya"] = oclass[i].chaomaiya
-                        elif oclass[i].taizishen != None:
+                        if oclass[i].taizishen != None:
                             dic["jingshanzha"] = oclass[i].jingshanzha
-                        elif oclass[i].chenpi != None:
+                        if oclass[i].chenpi != None:
                             dic["chenpi"] = oclass[i].chenpi
-                        elif oclass[i].jingzjf != None:
+                        if oclass[i].jingzjf != None:
                             dic["jingzjf"] = oclass[i].jingzjf
-                        elif oclass[i].PUID == "2":
+                        if oclass[i].PUID == 2:
                             dic["input1"] = oclass[i].Input
                             dic["output1"] = oclass[i].output
-                        elif oclass[i].PUID == "3":
+                        elif oclass[i].PUID == 3:
                             dic["input2"] = oclass[i].Input
                             dic["output2"] = oclass[i].output
-                        elif oclass[i].PUID == "4":
+                        elif oclass[i].PUID == 4:
                             dic["input3"] = oclass[i].Input
                             dic["output3"] = oclass[i].output
-                        elif oclass[i].PUID == "5":
+                        elif oclass[i].PUID == 5:
                             dic["input4"] = oclass[i].Input
                             dic["output4"] = oclass[i].output
-                        elif oclass[i].PUID == "6":
+                        elif oclass[i].PUID == 6:
                             dic["input5"] = oclass[i].Input
                             dic["output5"] = oclass[i].output
-                        elif oclass[i].PUID == "7":
+                        elif oclass[i].PUID == 7:
                             dic["input6"] = oclass[i].Input
                             dic["output6"] = oclass[i].output
-                        elif oclass[i].PUID == "8":
+                        elif oclass[i].PUID == 8:
                             dic["input7"] = oclass[i].Input
                             dic["output7"] = oclass[i].output
                 else:
@@ -6664,25 +6664,25 @@ def MaterielBalanceCheckedInfoSearch():
                     dic["DeviationDescription"] = oclass.DeviationDescription
                     dic["CheckedSuggestion"] = oclass.CheckedSuggestion
                     dic["CheckedPerson"] = oclass.CheckedPerson
-                    if oclass.PUID == "2":
+                    if oclass.PUID == 2:
                         dic["input1"] = oclass.Input
                         dic["output1"] = oclass.output
-                    elif oclass.PUID == "3":
+                    elif oclass.PUID == 3:
                         dic["input2"] = oclass.Input
                         dic["output2"] = oclass.output
-                    elif oclass.PUID == "4":
+                    elif oclass.PUID == 4:
                         dic["input3"] = oclass.Input
                         dic["output3"] = oclass.output
-                    elif oclass.PUID == "5":
+                    elif oclass.PUID == 5:
                         dic["input4"] = oclass.Input
                         dic["output4"] = oclass.output
-                    elif oclass.PUID == "6":
+                    elif oclass.PUID == 6:
                         dic["input5"] = oclass.Input
                         dic["output5"] = oclass.output
-                    elif oclass.PUID == "7":
+                    elif oclass.PUID == 7:
                         dic["input6"] = oclass.Input
                         dic["output6"] = oclass.output
-                    elif oclass.PUID == "8":
+                    elif oclass.PUID == 8:
                         dic["input7"] = oclass.Input
                         dic["output7"] = oclass.output
                 return json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False)
