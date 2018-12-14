@@ -6625,15 +6625,11 @@ def MaterielBalanceCheckedInfoSearch():
                 if PName == "" or PName == None:
                     oclass = db_session.query(BatchMaterielBalance).filter(BatchMaterielBalance.PlanManagerID == ID).all()
                     for i in range(len(oclass)):
-                        if oclass[i].taizishen != None:
+                        if oclass[i].PUID == 1:
                             dic["taizishen"] = oclass[i].taizishen
-                        if oclass[i].jingshanzha != None:
                             dic["chaomaiya"] = oclass[i].chaomaiya
-                        if oclass[i].taizishen != None:
                             dic["jingshanzha"] = oclass[i].jingshanzha
-                        if oclass[i].chenpi != None:
                             dic["chenpi"] = oclass[i].chenpi
-                        if oclass[i].jingzjf != None:
                             dic["jingzjf"] = oclass[i].jingzjf
                         if oclass[i].PUID == 2:
                             dic["input1"] = oclass[i].input
@@ -6664,6 +6660,12 @@ def MaterielBalanceCheckedInfoSearch():
                     dic["DeviationDescription"] = oclass.DeviationDescription
                     dic["CheckedSuggestion"] = oclass.CheckedSuggestion
                     dic["CheckedPerson"] = oclass.CheckedPerson
+                    if oclass.PUID == 1:
+                        dic["taizishen"] = oclass.taizishen
+                        dic["chaomaiya"] = oclass.chaomaiya
+                        dic["jingshanzha"] = oclass.jingshanzha
+                        dic["chenpi"] = oclass.chenpi
+                        dic["jingzjf"] = oclass.jingzjf
                     if oclass.PUID == 2:
                         dic["input1"] = oclass.input
                         dic["output1"] = oclass.output
