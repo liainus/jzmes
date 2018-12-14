@@ -300,10 +300,10 @@ class BatchMaterielBalance(Base):
     jingzjf = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
     # 进:
-    Input = Column(String(32), primary_key=False, autoincrement=False, nullable=True)
+    input = Column(String(32), primary_key=False, autoincrement=False, nullable=True)
 
     # 出:
-    Output = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    output = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
 
 

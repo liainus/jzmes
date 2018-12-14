@@ -6568,8 +6568,8 @@ def CheckedBatchMaterielBalance():
                 jingshanzha = data['jingshanzha']
                 chenpi = data['chenpi']
                 jingzjf = data['jingzjf']
-                Input = data['Input']
-                Output = data['Output']
+                input = data['input']
+                output = data['output']
                 PMClass = db_session.query(PlanManager).filter(PlanManager.ID == ID).first()
                 PUID = db_session.query(ProductUnitRoute.PUID).filter(ProductUnitRoute.PDUnitRouteName == PName, ProductUnitRoute.ProductRuleID == PMClass.BrandID).first()
                 oclass = db_session.query(BatchMaterielBalance).filter(BatchMaterielBalance.PlanManagerID == PMClass.ID, BatchMaterielBalance.PUID == PUID).first()
@@ -6587,8 +6587,8 @@ def CheckedBatchMaterielBalance():
                             jingshanzha=jingshanzha,
                             chenpi=chenpi,
                             jingzjf=jingzjf,
-                            Input=Input,
-                            Output=Output
+                            input=input,
+                            output=output
                         ))
                 else:
                     oclass.DeviationDescription = DeviationDescription
@@ -6600,8 +6600,8 @@ def CheckedBatchMaterielBalance():
                     oclass.jingshanzha = jingshanzha
                     oclass.chenpi = chenpi
                     oclass.jingzjf = jingzjf
-                    oclass.Input = Input
-                    oclass.Output = Output
+                    oclass.input = input
+                    oclass.output = output
                 db_session.commit()
                 return 'OK'
         except Exception as e:
@@ -6636,25 +6636,25 @@ def MaterielBalanceCheckedInfoSearch():
                         if oclass[i].jingzjf != None:
                             dic["jingzjf"] = oclass[i].jingzjf
                         if oclass[i].PUID == 2:
-                            dic["input1"] = oclass[i].Input
+                            dic["input1"] = oclass[i].input
                             dic["output1"] = oclass[i].output
                         elif oclass[i].PUID == 3:
-                            dic["input2"] = oclass[i].Input
+                            dic["input2"] = oclass[i].input
                             dic["output2"] = oclass[i].output
                         elif oclass[i].PUID == 4:
-                            dic["input3"] = oclass[i].Input
+                            dic["input3"] = oclass[i].input
                             dic["output3"] = oclass[i].output
                         elif oclass[i].PUID == 5:
-                            dic["input4"] = oclass[i].Input
+                            dic["input4"] = oclass[i].input
                             dic["output4"] = oclass[i].output
                         elif oclass[i].PUID == 6:
-                            dic["input5"] = oclass[i].Input
+                            dic["input5"] = oclass[i].input
                             dic["output5"] = oclass[i].output
                         elif oclass[i].PUID == 7:
-                            dic["input6"] = oclass[i].Input
+                            dic["input6"] = oclass[i].input
                             dic["output6"] = oclass[i].output
                         elif oclass[i].PUID == 8:
-                            dic["input7"] = oclass[i].Input
+                            dic["input7"] = oclass[i].input
                             dic["output7"] = oclass[i].output
                 else:
                     PMClass = db_session.query(PlanManager).filter(PlanManager.ID == ID).first()
@@ -6665,25 +6665,25 @@ def MaterielBalanceCheckedInfoSearch():
                     dic["CheckedSuggestion"] = oclass.CheckedSuggestion
                     dic["CheckedPerson"] = oclass.CheckedPerson
                     if oclass.PUID == 2:
-                        dic["input1"] = oclass.Input
+                        dic["input1"] = oclass.input
                         dic["output1"] = oclass.output
                     elif oclass.PUID == 3:
-                        dic["input2"] = oclass.Input
+                        dic["input2"] = oclass.input
                         dic["output2"] = oclass.output
                     elif oclass.PUID == 4:
-                        dic["input3"] = oclass.Input
+                        dic["input3"] = oclass.input
                         dic["output3"] = oclass.output
                     elif oclass.PUID == 5:
-                        dic["input4"] = oclass.Input
+                        dic["input4"] = oclass.input
                         dic["output4"] = oclass.output
                     elif oclass.PUID == 6:
-                        dic["input5"] = oclass.Input
+                        dic["input5"] = oclass.input
                         dic["output5"] = oclass.output
                     elif oclass.PUID == 7:
-                        dic["input6"] = oclass.Input
+                        dic["input6"] = oclass.input
                         dic["output6"] = oclass.output
                     elif oclass.PUID == 8:
-                        dic["input7"] = oclass.Input
+                        dic["input7"] = oclass.input
                         dic["output7"] = oclass.output
                 return json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
