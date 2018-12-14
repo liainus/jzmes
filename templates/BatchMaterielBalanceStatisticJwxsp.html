@@ -179,10 +179,13 @@
                                         data: {
                                             ID:rows[0].ID,
                                             PName:PName,
-                                            TZS:$("#TZS").val(),
-                                            CMY:$("#CMY").val(),
-                                            JSZ:$("#JSZ").val(),
-                                            CP:$("#CP").val(),
+                                            taizishen:$("#TZS").val(),
+                                            chaomaiya:$("#CMY").val(),
+                                            jingshanzha:$("#JSZ").val(),
+                                            chenpi:$("#CP").val(),
+                                            jingzjf:"",
+                                            Input:"",
+                                            Output:"",
                                             DeviationDescription:$("#BDeviationDescription").val(),
                                             CheckedSuggestion:$("#BCheckedSuggestion").val()
                                         },
@@ -228,8 +231,13 @@
                                         data: {
                                             ID:rows[0].ID,
                                             PName:PName,
-                                            InMateriel:$("#InMateriel").val(),
-                                            OutMateriel:$("#OutMateriel").val(),
+                                            taizishen:"",
+                                            chaomaiya:"",
+                                            jingshanzha:"",
+                                            chenpi:"",
+                                            jingzjf:"",
+                                            Input:$("#InMateriel").val(),
+                                            Output:$("#OutMateriel").val(),
                                             DeviationDescription:$("#DeviationDescription").val(),
                                             CheckedSuggestion:$("#CheckedSuggestion").val()
                                         },
@@ -312,7 +320,7 @@
                                     }
                                 });
                             }
-                        });
+                        });''
                     }
                 }
             })
