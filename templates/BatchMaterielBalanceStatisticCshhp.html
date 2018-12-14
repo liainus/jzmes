@@ -280,8 +280,8 @@
                     $("#TemplateClassDialog").dialog('open').dialog('setTitle', '审核人确认');
                     $("#InMateriel").val("")
                     $("#OutMateriel").val("")
-                    $("#DeviationDescription").val("")
-                    $("#CheckedSuggestion").val("")
+                    $("#aDeviationDescription").val("")
+                    $("#aCheckedSuggestion").val("")
                     check = {
                         checkConfirm:function () {
                             var rows = $("#tab").datagrid('getSelections');
@@ -351,6 +351,10 @@
                 $("#checkedClassDialog").dialog('open').dialog('setTitle', '工序负责人确认');
                 var rows = $("#tab").datagrid('getSelections');
                 var PName = $(this).attr("name")
+                $("#DeviationDescription").textbox("setValue", "")
+                $("#CheckedSuggestion").textbox("setValue", "")
+                $("#CheckedPerson").textbox("setValue", "")
+                $("#OperationSpaceNum").textbox("setValue", "")
                 $.ajax({
                     url: '/MaterielBalanceCheckedInfoSearch',
                     method: 'get',
@@ -675,13 +679,13 @@
                     <tr>
                         <td class="kv-label" style="width: 150px;">偏差说明及备注</td>
                         <td class="kv-content">
-                            <input id="DeviationDescription" name="DeviationDescription" style="height:60px" type="message" class="easyui-textbox" autocomplete="off" placeholder="" >
+                            <input id="aDeviationDescription" name="aDeviationDescription" style="height:60px" type="message" class="easyui-textbox" autocomplete="off" placeholder="" >
                         </td>
                     </tr>
                     <tr>
                         <td class="kv-label">审核意见</td>
                         <td class="kv-content">
-                            <input id="CheckedSuggestion" name="CheckedSuggestion" style="height:60px" type="message" class="easyui-textbox" autocomplete="off" placeholder="" >
+                            <input id="aCheckedSuggestion" name="aCheckedSuggestion" style="height:60px" type="message" class="easyui-textbox" autocomplete="off" placeholder="" >
                         </td>
                     </tr>
                 </tbody>
@@ -707,13 +711,13 @@
                     <tr>
                         <td class="kv-label" style="width: 150px;">偏差说明及备注</td>
                         <td class="kv-content">
-                            <input id="DeviationDescription" name="DeviationDescription" style="height:60px" type="message" class="easyui-textbox" autocomplete="off" placeholder="" >
+                            <input id="BDeviationDescription" name="BDeviationDescription" style="height:60px" type="message" class="easyui-textbox" autocomplete="off" placeholder="" >
                         </td>
                     </tr>
                     <tr>
                         <td class="kv-label">审核意见</td>
                         <td class="kv-content">
-                            <input id="CheckedSuggestion" name="CheckedSuggestion" style="height:60px" type="message" class="easyui-textbox" autocomplete="off" placeholder="" >
+                            <input id="BCheckedSuggestion" name="BCheckedSuggestion" style="height:60px" type="message" class="easyui-textbox" autocomplete="off" placeholder="" >
                         </td>
                     </tr>
                 </tbody>
@@ -733,25 +737,25 @@
                     <tr>
                         <td class="kv-label" style="width: 150px;">偏差说明及备注</td>
                         <td class="kv-content">
-                            <input id="DeviationDescription" name="aDeviationDescription" style="height:60px" type="message" class="easyui-textbox" autocomplete="off" placeholder="" disabled="disabled">
+                            <input id="DeviationDescription" name="DeviationDescription" style="height:60px" type="message" class="easyui-textbox" autocomplete="off" placeholder="" disabled="disabled">
                         </td>
                     </tr>
                     <tr>
                         <td class="kv-label">审核意见</td>
                         <td class="kv-content">
-                            <input id="CheckedSuggestion" name="aCheckedSuggestion" style="height:60px" type="message" class="easyui-textbox" autocomplete="off" placeholder="" disabled="disabled" >
+                            <input id="CheckedSuggestion" name="CheckedSuggestion" style="height:60px" type="message" class="easyui-textbox" autocomplete="off" placeholder="" disabled="disabled" >
                         </td>
                     </tr>
                     <tr>
                         <td class="kv-label" style="width: 150px;">审核人</td>
                         <td class="kv-content">
-                            <input id="CheckedPerson" name="aCheckedPerson" type="message" class="easyui-textbox" autocomplete="off" placeholder="" disabled="disabled" >
+                            <input id="CheckedPerson" name="CheckedPerson" type="message" class="easyui-textbox" autocomplete="off" placeholder="" disabled="disabled" >
                         </td>
                     </tr>
                     <tr>
                         <td class="kv-label" style="width: 150px;">操作间编号</td>
                         <td class="kv-content">
-                            <input id="OperationSpaceNum" name="aOperationSpaceNum" type="message" class="easyui-textbox" autocomplete="off" placeholder="" disabled="disabled" >
+                            <input id="OperationSpaceNum" name="OperationSpaceNum" type="message" class="easyui-textbox" autocomplete="off" placeholder="" disabled="disabled" >
                         </td>
                     </tr>
                 </tbody>

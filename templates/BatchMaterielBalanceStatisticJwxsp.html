@@ -171,7 +171,6 @@
                         success: function (data) {
                             $("#loadingModal").modal('hide');
                             data = JSON.parse(data)
-                            console.log(data)
                             for(var key in data) {
                                 adddata(key,data[key])
                             }
@@ -192,7 +191,6 @@
                         success: function (data) {
                             $("#loadingModal").modal('hide');
                             data = JSON.parse(data)
-                            console.log(data)
                             for(var key in data) {
                                 adddata(key,data[key])
                             }
@@ -352,6 +350,10 @@
                 $("#checkedClassDialog").dialog('open').dialog('setTitle', '工序负责人确认');
                 var rows = $("#tab").datagrid('getSelections');
                 var PName = $(this).attr("name")
+                $("#DeviationDescription").textbox("setValue", "")
+                $("#CheckedSuggestion").textbox("setValue", "")
+                $("#CheckedPerson").textbox("setValue", "")
+                $("#OperationSpaceNum").textbox("setValue", "")
                 $.ajax({
                     url: '/MaterielBalanceCheckedInfoSearch',
                     method: 'get',
