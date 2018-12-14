@@ -51,8 +51,6 @@ from threading import Timer
 from constant import constant
 import numpy
 from sqlalchemy.exc import InvalidRequestError
-import pandas as pd
-from pandas import DataFrame
 import matplotlib.pyplot as plt
 plt.switch_backend('agg')
 
@@ -6495,7 +6493,6 @@ def electionBatchSearch():
                             dwd = searO(BrandID, BatchID, Pclass.ID, EQPID, "单效浓缩温度采集" + str(j))
                             dic["dwd_" + str(i) + "_" + str(yy)] = dwd.SampleValue + dwd.Unit
                             dic["dwdTime_" + str(i) + "_" + str(yy)] = strchange(dwd.SampleDate)
-                print(dic)
                 return json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
@@ -6568,6 +6565,13 @@ def CheckedBatchMaterielBalance():
                 PName = data['PName']  # 工艺段名称
                 CheckedSuggestion = data['CheckedSuggestion']  # 审核意见
                 DeviationDescription = data['DeviationDescription']  # 偏差说明
+                taizishen = data['taizishen']
+                chaomaiya = data['chaomaiya']
+                jingshanzha = data['jingshanzha']
+                chenpi = data['chenpi']
+                jingzjf = data['jingzjf']
+                Input = data['Input']
+                Output = data['Output']
                 PMClass = db_session.query(PlanManager).filter(PlanManager.ID == ID).first()
                 PUID = db_session.query(ProductUnitRoute.PUID).filter(ProductUnitRoute.PDUnitRouteName == PName, ProductUnitRoute.ProductRuleID == PMClass.BrandID).first()
                 db_session.add(
@@ -6577,7 +6581,14 @@ def CheckedBatchMaterielBalance():
                         DeviationDescription=DeviationDescription,
                         CheckedSuggestion=CheckedSuggestion,
                         CheckedPerson=current_user.Name,
-                        OperationDate=datetime.datetime.now()
+                        OperationDate=datetime.datetime.now(),
+                        taizishen=taizishen,
+                        chaomaiya=chaomaiya,
+                        jingshanzha=jingshanzha,
+                        chenpi=chenpi,
+                        jingzjf=jingzjf,
+                        Input=Input,
+                        Output=Output
                     ))
                 db_session.commit()
                 return 'OK'
