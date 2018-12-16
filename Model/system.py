@@ -267,10 +267,10 @@ class BatchMaterielBalance(Base):
     PUID = Column(Integer, nullable=False, primary_key=False)
 
     # 偏差说明:
-    DeviationDescription = Column(String(800), primary_key=False, autoincrement=False, nullable=True)
+    DeviationDescription = Column(String(120), primary_key=False, autoincrement=False, nullable=True)
 
     # 审核意见:
-    CheckedSuggestion = Column(Unicode(800), primary_key=False, autoincrement=False, nullable=True)
+    CheckedSuggestion = Column(Unicode(120), primary_key=False, autoincrement=False, nullable=True)
 
     # 审核人:
     CheckedPerson = Column(Unicode(20), primary_key=False, autoincrement=False, nullable=True)
@@ -283,6 +283,28 @@ class BatchMaterielBalance(Base):
 
     # 操作时间:
     OperationDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+
+    # 太子参:
+    taizishen = Column(String(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 炒麦芽:
+    chaomaiya = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 净山楂:
+    jingshanzha = Column(String(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 陈皮:
+    chenpi = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 净肿节风:
+    jingzjf = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 进:
+    input = Column(String(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 出:
+    output = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
 
 
 # 设备操作手册

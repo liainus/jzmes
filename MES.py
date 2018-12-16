@@ -51,10 +51,6 @@ from threading import Timer
 from constant import constant
 import numpy
 from sqlalchemy.exc import InvalidRequestError
-import pandas as pd
-from pandas import DataFrame
-import matplotlib.pyplot as plt
-plt.switch_backend('agg')
 
 
 #flask_login的初始化
@@ -6423,11 +6419,9 @@ def electionBatchSearch():
                             dic["wdTime" + "_" + str(i) + "_" + str(count)] = strchange(wd.SampleDate)
                             count = count + 1
                         dic["nsstartTime" + str(i)] = strch(
-                            searO(BrandID, BatchID, Pclass.ID, EQPID, "提取开始时间").SampleValue)
+                            searO(BrandID, BatchID, Pclass.ID, EQPID, "浓缩开始时间").SampleValue)
                         dic["nsendTime" + str(i)] = strch(
-                            searO(BrandID, BatchID, Pclass.ID, EQPID, "提取结束时间").SampleValue)
-                        firstAddWater = searO(BrandID, BatchID, Pclass.ID, EQPID, "提取第一次加水量设定值")
-                        dic["firstAddWater" + str(i)] = firstAddWater.SampleValue + firstAddWater.Unit
+                            searO(BrandID, BatchID, Pclass.ID, EQPID, "浓缩结束时间").SampleValue)
                 elif (Pclass.PDUnitRouteName == "喷雾干燥段"):
                     HEQPIDs = searchEqpID(BrandID,BatchID,PUID, "总混罐")
                     for i in range(len(HEQPIDs)):
@@ -6497,7 +6491,6 @@ def electionBatchSearch():
                             dwd = searO(BrandID, BatchID, Pclass.ID, EQPID, "单效浓缩温度采集" + str(j))
                             dic["dwd_" + str(i) + "_" + str(yy)] = dwd.SampleValue + dwd.Unit
                             dic["dwdTime_" + str(i) + "_" + str(yy)] = strchange(dwd.SampleDate)
-                print(dic)
                 return json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
@@ -6549,7 +6542,6 @@ def searO(BrandID, BatchID, PID, EQPID, Type):
         return re
 def searchEqpID(BrandID,BatchID,PID,name):
     EQPIDs = db_session.query(Equipment.ID).filter(Equipment.PUID == PID, Equipment.EQPName.like("%" + name + "%")).all()
-    print(EQPIDs)
     EQPS = db_session.query(ElectronicBatch.EQPID).distinct().filter(ElectronicBatch.PDUnitRouteID == PID, ElectronicBatch.BrandID == BrandID,
                                                           ElectronicBatch.BatchID == BatchID).all()
     tmp = [val for val in EQPIDs if val in EQPS]
@@ -6571,17 +6563,45 @@ def CheckedBatchMaterielBalance():
                 PName = data['PName']  # 工艺段名称
                 CheckedSuggestion = data['CheckedSuggestion']  # 审核意见
                 DeviationDescription = data['DeviationDescription']  # 偏差说明
+                taizishen = data['taizishen']
+                chaomaiya = data['chaomaiya']
+                jingshanzha = data['jingshanzha']
+                chenpi = data['chenpi']
+                jingzjf = data['jingzjf']
+                input = data['input']
+                output = data['output']
                 PMClass = db_session.query(PlanManager).filter(PlanManager.ID == ID).first()
                 PUID = db_session.query(ProductUnitRoute.PUID).filter(ProductUnitRoute.PDUnitRouteName == PName, ProductUnitRoute.ProductRuleID == PMClass.BrandID).first()
-                db_session.add(
-                    BatchMaterielBalance(
-                        PlanManagerID=PMClass.ID,
-                        PUID=PUID,
-                        DeviationDescription=DeviationDescription,
-                        CheckedSuggestion=CheckedSuggestion,
-                        CheckedPerson=current_user.Name,
-                        OperationDate=datetime.datetime.now()
-                    ))
+                oclass = db_session.query(BatchMaterielBalance).filter(BatchMaterielBalance.PlanManagerID == PMClass.ID, BatchMaterielBalance.PUID == PUID).first()
+                if oclass == None:
+                    db_session.add(
+                        BatchMaterielBalance(
+                            PlanManagerID=PMClass.ID,
+                            PUID=PUID,
+                            DeviationDescription=DeviationDescription,
+                            CheckedSuggestion=CheckedSuggestion,
+                            CheckedPerson=current_user.Name,
+                            OperationDate=datetime.datetime.now(),
+                            taizishen=taizishen,
+                            chaomaiya=chaomaiya,
+                            jingshanzha=jingshanzha,
+                            chenpi=chenpi,
+                            jingzjf=jingzjf,
+                            input=input,
+                            output=output
+                        ))
+                else:
+                    oclass.DeviationDescription = DeviationDescription
+                    oclass.CheckedSuggestion = CheckedSuggestion
+                    oclass.CheckedPerson = current_user.Name
+                    oclass.OperationDate = datetime.datetime.now()
+                    oclass.taizishen = taizishen
+                    oclass.chaomaiya = chaomaiya
+                    oclass.jingshanzha = jingshanzha
+                    oclass.chenpi = chenpi
+                    oclass.jingzjf = jingzjf
+                    oclass.input = input
+                    oclass.output = output
                 db_session.commit()
                 return 'OK'
         except Exception as e:
@@ -6601,11 +6621,73 @@ def MaterielBalanceCheckedInfoSearch():
             if len(json_str) > 2:
                 ID = data['ID']  # 计划ID
                 PName = data['PName']  # 工艺段名称
-                PMClass = db_session.query(PlanManager).filter(PlanManager.ID == ID).first()
-                PUID = db_session.query(ProductUnitRoute.PUID).filter(ProductUnitRoute.PDUnitRouteName == PName,
-                                                                      ProductUnitRoute.ProductRuleID == PMClass.BrandID).first()
-                oclass = db_session.query(BatchMaterielBalance).filter(BatchMaterielBalance.PlanManagerID == ID, BatchMaterielBalance.PUID == PUID).first()
-                return json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
+                dic = {}
+                if PName == "" or PName == None:
+                    oclass = db_session.query(BatchMaterielBalance).filter(BatchMaterielBalance.PlanManagerID == ID).all()
+                    for i in range(len(oclass)):
+                        if oclass[i].PUID == 1:
+                            dic["taizishen"] = oclass[i].taizishen
+                            dic["chaomaiya"] = oclass[i].chaomaiya
+                            dic["jingshanzha"] = oclass[i].jingshanzha
+                            dic["chenpi"] = oclass[i].chenpi
+                            dic["jingzjf"] = oclass[i].jingzjf
+                        if oclass[i].PUID == 2:
+                            dic["input1"] = oclass[i].input
+                            dic["output1"] = oclass[i].output
+                        elif oclass[i].PUID == 3:
+                            dic["input2"] = oclass[i].input
+                            dic["output2"] = oclass[i].output
+                        elif oclass[i].PUID == 4:
+                            dic["input3"] = oclass[i].input
+                            dic["output3"] = oclass[i].output
+                        elif oclass[i].PUID == 5:
+                            dic["input4"] = oclass[i].input
+                            dic["output4"] = oclass[i].output
+                        elif oclass[i].PUID == 6:
+                            dic["input5"] = oclass[i].input
+                            dic["output5"] = oclass[i].output
+                        elif oclass[i].PUID == 7:
+                            dic["input6"] = oclass[i].input
+                            dic["output6"] = oclass[i].output
+                        elif oclass[i].PUID == 8:
+                            dic["input7"] = oclass[i].input
+                            dic["output7"] = oclass[i].output
+                else:
+                    PMClass = db_session.query(PlanManager).filter(PlanManager.ID == ID).first()
+                    PUID = db_session.query(ProductUnitRoute.PUID).filter(ProductUnitRoute.PDUnitRouteName == PName,
+                                                                          ProductUnitRoute.ProductRuleID == PMClass.BrandID).first()
+                    oclass = db_session.query(BatchMaterielBalance).filter(BatchMaterielBalance.PlanManagerID == ID, BatchMaterielBalance.PUID == PUID).first()
+                    dic["DeviationDescription"] = oclass.DeviationDescription
+                    dic["CheckedSuggestion"] = oclass.CheckedSuggestion
+                    dic["CheckedPerson"] = oclass.CheckedPerson
+                    if oclass.PUID == 1:
+                        dic["taizishen"] = oclass.taizishen
+                        dic["chaomaiya"] = oclass.chaomaiya
+                        dic["jingshanzha"] = oclass.jingshanzha
+                        dic["chenpi"] = oclass.chenpi
+                        dic["jingzjf"] = oclass.jingzjf
+                    if oclass.PUID == 2:
+                        dic["input1"] = oclass.input
+                        dic["output1"] = oclass.output
+                    elif oclass.PUID == 3:
+                        dic["input2"] = oclass.input
+                        dic["output2"] = oclass.output
+                    elif oclass.PUID == 4:
+                        dic["input3"] = oclass.input
+                        dic["output3"] = oclass.output
+                    elif oclass.PUID == 5:
+                        dic["input4"] = oclass.input
+                        dic["output4"] = oclass.output
+                    elif oclass.PUID == 6:
+                        dic["input5"] = oclass.input
+                        dic["output5"] = oclass.output
+                    elif oclass.PUID == 7:
+                        dic["input6"] = oclass.input
+                        dic["output6"] = oclass.output
+                    elif oclass.PUID == 8:
+                        dic["input7"] = oclass.input
+                        dic["output7"] = oclass.output
+                return json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
             logger.error(e)

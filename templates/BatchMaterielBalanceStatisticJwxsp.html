@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>健胃消食片物料平衡</title>
+    <link href="../static/css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css" crossorigin="anonymous">
+	<link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
+	<link href="../static/css/basic_info.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
+	<link href="../static/js/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
+    <script type="text/javascript" src="../static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
+    <style>
+        /*横向时间轴*/
+        .progress-head{
+            position: relative;
+            min-width: 1190px;
+            padding:170px 20px 140px;
+            clear: both;
+            overflow: hidden;
+        }
+        .host-progress{
+            position: relative;
+            float: left;
+        }
+        .host-ball{
+            float: left;
+            width: 150px;
+            height: 30px;
+            line-height: 30px;
+            border-radius: 3px;
+            background-color: #9f9f9f;
+            color: #fff;
+            text-align: center;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+        .host-line{
+            position: relative;
+            float: left;
+            width: 50px;
+            height: 2px;
+            margin-top: 15px;
+            background-color: #9F9F9F;
+            z-index: 3;
+        }
+        .host-arrow{
+            position: relative;
+        }
+        .host-arrow:after,.host-arrow:before{
+            width: 0;
+            height: 0;
+            border: 10px solid transparent;
+            border-left-color: #9f9f9f;
+            position: absolute;
+            content: "";
+            top: 6px;
+            left:191px;
+        }
+        .host-arrow:before{
+            top: 6px;
+            left: 188px;
+            border-left-color: white;
+            z-index: 2;
+        }
+        .host-progress-active .host-arrow:after{
+            border-left-color: #5cb85c;
+        }
+        .host-progress-way-active .host-arrow:after{
+            border-left-color: #ffac38;
+        }
+        /*物料信息*/
+        .materielInfo{
+            position: absolute;
+            bottom:25px;
+            width:150px;
+            color: #333;
+        }
+        /*纵向时间轴*/
+        .childBox{
+            position: absolute;
+            width:200px;
+        }
+        .childNode{
+            margin-left: 45px;
+        }
+        .ball{
+            display: block;
+            width: 20px;
+            height: 20px;
+            border-radius: 10px;
+            margin-left: 20px;
+            background-color: #9f9f9f;
+            cursor: pointer;
+        }
+        .progress-line{
+            width: 0px;
+            height: 50px;
+            margin-left: 30px;
+            border-left: 1px dashed #9f9f9f;
+        }
+        .progress-line.progress-line-active{
+            border-left: 1px dashed #5cb85c;
+        }
+        .detail{
+            margin-left: 40px;
+            float:left;
+            font-size: 12px;
+            color: #666;
+            line-height:20px;
+            position: relative;
+            top: -20px;
+            left: 5px;
+        }
+        .flow-detail{
+            margin-bottom: 10px;
+        }
+        .ball-active{
+            background-color: #5cb85c;
+        }
+        .table tbody tr td{
+            min-width:60px;
+        }
+    </style>
+    <script>
+        $(function(){
+            function createKeyIDObj(keyID){
+                return {
+                    ID:keyID
+                }
+            }
+            CollectToolbar = {
+                search:function(){
+                    var searchBatchID = $('input[name="search"]').val()
+                    $("#tab").datagrid({
+                        queryParams: {
+                            BatchID: searchBatchID
+                        }
+                    })
+                    $("#tab2").datagrid({
+                        queryParams: {
+                            BatchID: searchBatchID
+                        }
+                    })
+                },
+                refresh:function(){
+                    $("#tab").datagrid('load')
+                    $("#tab2").datagrid('load')
+                }
+            }
+            //表格默认选中第一行
+            $("#tab").datagrid({
+                url:'/MaterielBalanceSearch',
+                queryParams: {
+                    BatchID: '',
+                    name:'健胃消食片浸膏粉'
+                },
+                onLoadSuccess:function(data){
+                    $(this).datagrid("checkRow",0)
+                    $("#loadingModal").modal('show');
+                    $.ajax({
+                        url: '/MaterielBalanceCheckedInfoSearch',
+                        method: 'get',
+                        data: {
+                            ID:data.rows[0].ID,
+                            PName:""
+                        },
+                        success: function (data) {
+                            $("#loadingModal").modal('hide');
+                            data = JSON.parse(data)
+                            for(var key in data) {
+                                adddata(key,data[key])
+                            }
+                        },error:function(){
+                            $("#loadingModal").modal('hide');
+                        }
+                    });
+                },
+                onClickRow:function(rowIndex, rowData){
+                    $("#loadingModal").modal('show');
+                    $.ajax({
+                        url: '/MaterielBalanceCheckedInfoSearch',
+                        method: 'get',
+                        data: {
+                            ID:rowData.ID,
+                            PName:""
+                        },
+                        success: function (data) {
+                            $("#loadingModal").modal('hide');
+                            data = JSON.parse(data)
+                            for(var key in data) {
+                                adddata(key,data[key])
+                            }
+                        },error:function(){
+                            $("#loadingModal").modal('hide');
+                        }
+                    });
+                }
+            })
+
+            //审核人确认
+            $(".audit").on('click',function(){
+                var PName = $(this).attr("name")
+                if(PName == "备料段"){
+                    $("#BTemplateClassDialog").dialog('open').dialog('setTitle', '审核人确认');
+                    $("#TZS").val("")
+                    $("#CMY").val("")
+                    $("#JSZ").val("")
+                    $("#CP").val("")
+                    $("#BDeviationDescription").val("")
+                    $("#BCheckedSuggestion").val("")
+                    check = {
+                        checkConfirm:function () {
+                            var rows = $("#tab").datagrid('getSelections');
+                            $.messager.confirm('确定操作', '您确认完成批次审核吗？', function (flag) {
+                                if (flag) {
+                                    $.ajax({
+                                        url: '/CheckedBatchMaterielBalance',
+                                        method: 'POST',
+                                        data: {
+                                            ID:rows[0].ID,
+                                            PName:PName,
+                                            taizishen:$("#TZS").val(),
+                                            chaomaiya:$("#CMY").val(),
+                                            jingshanzha:$("#JSZ").val(),
+                                            chenpi:$("#CP").val(),
+                                            jingzjf:"",
+                                            input:"",
+                                            output:"",
+                                            DeviationDescription:$("#BDeviationDescription").val(),
+                                            CheckedSuggestion:$("#BCheckedSuggestion").val()
+                                        },
+                                        success: function (data) {
+                                            $.messager.progress('close');
+                                            if (data == "OK") {
+                                                $.messager.show({
+                                                    title: '提示',
+                                                    timeout:1000,
+                                                    msg: '审核成功',
+                                                    style: {
+                                                        right: '',
+                                                        top: document.body.scrollTop + document.documentElement.scrollTop,
+                                                        bottom: ''
+                                                    }
+                                                });
+                                                $("#BTemplateClassDialog").dialog('close');
+                                                $.ajax({
+                                                    url: '/MaterielBalanceCheckedInfoSearch',
+                                                    method: 'get',
+                                                    data: {
+                                                        ID:rows[0].ID,
+                                                        PName:PName
+                                                    },
+                                                    success: function (data) {
+                                                        data = JSON.parse(data)
+                                                        console.log(data)
+                                                        for(var key in data) {
+                                                            adddata(key,data[key])
+                                                        }
+                                                    },error:function(){
+                                                        alert("获取当前工艺段信息时请求错误！")
+                                                    }
+                                                });
+                                            }else{
+                                                $.messager.alert('提示', data, 'info');
+                                            }
+                                        },error:function(){
+                                            alert("请求错误！")
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    }
+                }else{
+                    $("#TemplateClassDialog").dialog('open').dialog('setTitle', '审核人确认');
+                    $("#InMateriel").val("")
+                    $("#OutMateriel").val("")
+                    $("#DeviationDescription").val("")
+                    $("#CheckedSuggestion").val("")
+                    check = {
+                        checkConfirm:function () {
+                            var rows = $("#tab").datagrid('getSelections');
+                            $.messager.confirm('确定操作', '您确认完成批次审核吗？', function (flag) {
+                                if (flag) {
+                                    $.ajax({
+                                        url: '/CheckedBatchMaterielBalance',
+                                        method: 'POST',
+                                        data: {
+                                            ID:rows[0].ID,
+                                            PName:PName,
+                                            taizishen:"",
+                                            chaomaiya:"",
+                                            jingshanzha:"",
+                                            chenpi:"",
+                                            jingzjf:"",
+                                            input:$("#InMateriel").val(),
+                                            output:$("#OutMateriel").val(),
+                                            DeviationDescription:$("#aDeviationDescription").val(),
+                                            CheckedSuggestion:$("#aCheckedSuggestion").val()
+                                        },
+                                        success: function (data) {
+                                            $.messager.progress('close');
+                                            if (data == "OK") {
+                                                $.messager.show({
+                                                    title: '提示',
+                                                    timeout:1000,
+                                                    msg: '审核成功',
+                                                    style: {
+                                                        right: '',
+                                                        top: document.body.scrollTop + document.documentElement.scrollTop,
+                                                        bottom: ''
+                                                    }
+                                                });
+                                                $("#TemplateClassDialog").dialog('close');
+                                                $.ajax({
+                                                    url: '/MaterielBalanceCheckedInfoSearch',
+                                                    method: 'get',
+                                                    data: {
+                                                        ID:rows[0].ID,
+                                                        PName:PName
+                                                    },
+                                                    success: function (data) {
+                                                        data = JSON.parse(data)
+                                                        for(var key in data) {
+                                                            adddata(key,data[key])
+                                                        }
+                                                    },error:function(){
+                                                        alert("获取当前工艺段信息时请求错误！")
+                                                    }
+                                                });
+                                            }else{
+                                                $.messager.alert('提示', data, 'info');
+                                            }
+                                        },error:function(){
+                                            alert("请求错误！")
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    }
+                }
+            })
+            //工序负责人确认
+            $(".principal").on('click',function(){
+                $("#checkedClassDialog").dialog('open').dialog('setTitle', '工序负责人确认');
+                var rows = $("#tab").datagrid('getSelections');
+                var PName = $(this).attr("name")
+                $("#DeviationDescription").textbox("setValue", "")
+                $("#CheckedSuggestion").textbox("setValue", "")
+                $("#CheckedPerson").textbox("setValue", "")
+                $("#OperationSpaceNum").textbox("setValue", "")
+                $.ajax({
+                    url: '/MaterielBalanceCheckedInfoSearch',
+                    method: 'get',
+                    data: {
+                        ID:rows[0].ID,
+                        PName:PName
+                    },
+                    success: function (data) {
+                        data = JSON.parse(data)
+                        $("#DeviationDescription").textbox("setValue", data.DeviationDescription)
+                        $("#CheckedSuggestion").textbox("setValue", data.CheckedSuggestion)
+                        $("#CheckedPerson").textbox("setValue", data.CheckedPerson)
+                    }
+                });
+                check = {
+                    checkedConfirm:function () {
+                        $.messager.confirm('确定操作', '您是否要确认通过审核？', function (flag) {
+                            if (flag) {
+                                $.ajax({
+                                    url: '/PUIDChargeBatchMaterielBalance',
+                                    method: 'POST',
+                                    data: {
+                                        ID:rows[0].ID,
+                                        PName:PName,
+                                        OperationSpaceNum:$("#OperationSpaceNum").val()
+                                    },
+                                    success: function (data) {
+                                        $.messager.progress('close');
+                                        if (data == "OK") {
+                                            $.messager.show({
+                                                title: '提示',
+                                                timeout:1000,
+                                                msg: '负责人已确认成功',
+                                                style: {
+                                                    right: '',
+                                                    top: document.body.scrollTop + document.documentElement.scrollTop,
+                                                    bottom: ''
+                                                }
+                                            });
+                                            $("#checkedClassDialog").dialog('close');
+                                        }else{
+                                            $.messager.alert('提示', data, 'info');
+                                        }
+                                    },error:function(){
+                                        alert("请求错误！")
+                                    }
+                                });
+                            }
+                        });''
+                    }
+                }
+            })
+            //根据key匹配id  加入数据
+            function adddata(ids,res){
+                $("#" + ids).html(res)
+            }
+        })
+
+        //按钮点击后添加选项卡
+        function addTab(title, url) {
+            if (parent.parent.$('.easyui-tabs1').tabs('exists', title)) {
+                parent.parent.$('.easyui-tabs1').tabs('select', title);
+            }
+            else {
+                var content = '<iframe class="page-iframe" src="' + url + '" frameborder="no" border="no" height="100%" width="100%" scrolling="auto"></iframe>';
+                parent.parent.$('.easyui-tabs1').tabs('add', {
+                    title: title,
+                    content: content,
+                    closable: true
+                });
+            }
+        }
+        function formatterStatus(value, row, index){
+            if (value == 10){
+                return '新增计划'
+            }else if(value == 11){
+                return '审核计划'
+            }else if(value == 20){
+                return '下发计划'
+            }else if(value == 40){
+                return '撤回计划'
+            }else if(value == 50){
+                return '执行计划'
+            }else if(value == 60){
+                return '完成计划'
+            }else if(value == 70){
+                return 'QA入库'
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="modal" id="loadingModal" data-backdrop="static" data-keyboard="false">
+        <div style="width: 200px;height:20px; z-index: 20000; position: absolute; text-align: center; left: 50%; top: 50%;margin-left:-100px;margin-top:-10px">
+            <div class="progress progress-striped active" style="margin-bottom: 0;">
+                <div class="progress-bar" style="width: 100%;"></div>
+            </div>
+            <h5>正在加载物料信息...</h5>
+        </div>
+    </div>
+    <!--流程图-->
+    <div class="progress-head">
+        <div class="host-progress bigPlan1">
+            <div class="host-ball batchRecord">备料</div>
+            <div class="host-line"></div>
+            <div class="host-arrow"></div>
+            <div class="materielInfo">
+                <table class="table table-bordered">
+                    <tbody>
+                        <tr>
+                            <td>太子参</td>
+                            <td id="taizishen"></td>
+                        </tr>
+                        <tr>
+                            <td>炒麦芽</td>
+                            <td id="chaomaiya"></td>
+                        </tr>
+                        <tr>
+                            <td>净山楂</td>
+                            <td id="jingshanzha"></td>
+                        </tr>
+                        <tr>
+                            <td>陈皮</td>
+                            <td id="chenpi"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="childBox">
+                <div class="childNode">
+                    <div class="progress-line"></div>
+                    <a class="ball audit" name="备料段"></a>
+                    <div class="detail">
+                        <div class="flow-detail">审核人确认</div>
+                    </div>
+                    <div class="progress-line"></div>
+                </div>
+                <div class="childNode">
+                    <a class="ball principal" name="备料段"></a>
+                    <div class="detail">
+                        <div class="flow-detail">工序负责人确认</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="host-progress bigPlan2">
+            <div class="host-ball batchRecord">煎煮</div>
+            <div class="host-line"></div>
+            <div class="host-arrow"></div>
+            <div class="materielInfo">
+                <table class="table table-bordered">
+                    <tbody>
+                        <tr>
+                            <td>进</td>
+                            <td id="input1"></td>
+                        </tr>
+                        <tr>
+                            <td>出</td>
+                            <td id="output1"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="childBox">
+                <div class="childNode">
+                    <div class="progress-line"></div>
+                    <a class="ball audit" name="煎煮段"></a>
+                    <div class="detail">
+                        <div class="flow-detail">审核人确认</div>
+                    </div>
+                    <div class="progress-line"></div>
+                </div>
+                <div class="childNode">
+                    <a class="ball principal" name="煎煮段"></a>
+                    <div class="detail">
+                        <div class="flow-detail">工序负责人确认</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="host-progress bigPlan3">
+            <div class="host-ball batchRecord">浓缩</div>
+            <div class="host-line"></div>
+            <div class="host-arrow"></div>
+            <div class="materielInfo">
+                <table class="table table-bordered">
+                    <tbody>
+                        <tr>
+                            <td>进</td>
+                            <td id="input2"></td>
+                        </tr>
+                        <tr>
+                            <td>出</td>
+                            <td id="output2"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="childBox">
+                <div class="childNode">
+                    <div class="progress-line"></div>
+                    <a class="ball audit" name="浓缩段"></a>
+                    <div class="detail">
+                        <div class="flow-detail">审核人确认</div>
+                    </div>
+                    <div class="progress-line"></div>
+                </div>
+                <div class="childNode">
+                    <a class="ball principal" name="浓缩段"></a>
+                    <div class="detail">
+                        <div class="flow-detail">工序负责人确认</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="host-progress bigPlan4">
+            <div class="host-ball batchRecord">喷雾干燥</div>
+            <div class="host-line"></div>
+            <div class="host-arrow"></div>
+            <div class="materielInfo">
+                <table class="table table-bordered">
+                    <tbody>
+                        <tr>
+                            <td>进</td>
+                            <td id="input3"></td>
+                        </tr>
+                        <tr>
+                            <td>出</td>
+                            <td id="output3"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="childBox">
+                <div class="childNode">
+                    <div class="progress-line"></div>
+                    <a class="ball audit" name="喷雾干燥段"></a>
+                    <div class="detail">
+                        <div class="flow-detail">审核人确认</div>
+                    </div>
+                    <div class="progress-line"></div>
+                </div>
+                <div class="childNode">
+                    <a class="ball principal" name="喷雾干燥段"></a>
+                    <div class="detail">
+                        <div class="flow-detail">工序负责人确认</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="host-progress bigPlan5">
+            <div class="host-ball batchRecord">收粉</div>
+            <div class="materielInfo">
+                <table class="table table-bordered">
+                    <tbody>
+                        <tr>
+                            <td>进</td>
+                            <td id="input6"></td>
+                        </tr>
+                        <tr>
+                            <td>出</td>
+                            <td id="output6"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="childBox">
+                <div class="childNode">
+                    <div class="progress-line"></div>
+                    <a class="ball audit" name="收粉段"></a>
+                    <div class="detail">
+                        <div class="flow-detail">审核人确认</div>
+                    </div>
+                    <div class="progress-line"></div>
+                </div>
+                <div class="childNode">
+                    <a class="ball principal" name="收粉段"></a>
+                    <div class="detail">
+                        <div class="flow-detail">工序负责人确认</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--审核信息确认框-->
+    <div id="TemplateClassDialog" class="easyui-dialog" style="width:400px;height:300px;padding:10px;"
+         data-options="closed:'true',buttons:'#TemplateClassDialogButtons',modal:true">
+        <form id="TemplateClassForm" method="post" class="dialog-form">
+            <table class="kv-table">
+                <tbody>
+                    <tr>
+                        <td class="kv-label">进</td>
+                        <td class="kv-content">
+                            <input id="InMateriel" name="InMateriel" type="message" class="easyui-textbox" autocomplete="off" placeholder="" >
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="kv-label">出</td>
+                        <td class="kv-content">
+                            <input id="OutMateriel" name="OutMateriel" type="message" class="easyui-textbox" autocomplete="off" placeholder="" >
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="kv-label" style="width: 150px;">偏差说明及备注</td>
+                        <td class="kv-content">
+                            <input id="aDeviationDescription" name="DeviationDescription" style="height:60px" type="message" class="easyui-textbox" autocomplete="off" placeholder="" >
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="kv-label">审核意见</td>
+                        <td class="kv-content">
+                            <input id="aCheckedSuggestion" name="CheckedSuggestion" style="height:60px" type="message" class="easyui-textbox" autocomplete="off" placeholder="" >
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div id="TemplateClassDialogButtons" >
+                <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" onclick="check.checkConfirm()" >确认</a>
+                <a href="#" class="easyui-linkbutton" onclick="$('#TemplateClassDialog').dialog('close')">关闭</a>
+            </div>
+        </form>
+    </div>
+    <!--备料审核信息确认框-->
+    <div id="BTemplateClassDialog" class="easyui-dialog" style="width:400px;height:300px;padding:10px;"
+         data-options="closed:'true',buttons:'#BTemplateClassDialogButtons',modal:true">
+        <form id="BTemplateClassForm" method="post" class="dialog-form">
+            <table class="kv-table">
+                <tbody>
+                    <tr>
+                        <td class="kv-label">太子参（kg）</td>
+                        <td class="kv-content">
+                            <input id="TZS" name="TZS" type="message" class="easyui-textbox" autocomplete="off" placeholder="" >
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="kv-label">炒麦芽（kg）</td>
+                        <td class="kv-content">
+                            <input id="CMY" name="CMY" type="message" class="easyui-textbox" autocomplete="off" placeholder="" >
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="kv-label">净山楂（kg）</td>
+                        <td class="kv-content">
+                            <input id="JSZ" name="JSZ" type="message" class="easyui-textbox" autocomplete="off" placeholder="" >
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="kv-label">陈皮（kg）</td>
+                        <td class="kv-content">
+                            <input id="CP" name="CP" type="message" class="easyui-textbox" autocomplete="off" placeholder="" >
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="kv-label" style="width: 150px;">偏差说明及备注</td>
+                        <td class="kv-content">
+                            <input id="BDeviationDescription" name="BDeviationDescription" style="height:60px" type="message" class="easyui-textbox" autocomplete="off" placeholder="" >
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="kv-label">审核意见</td>
+                        <td class="kv-content">
+                            <input id="BCheckedSuggestion" name="BCheckedSuggestion" style="height:60px" type="message" class="easyui-textbox" autocomplete="off" placeholder="" >
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div id="BTemplateClassDialogButtons" >
+                <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" onclick="check.checkConfirm()" >确认</a>
+                <a href="#" class="easyui-linkbutton" onclick="$('#BTemplateClassDialog').dialog('close')">关闭</a>
+            </div>
+        </form>
+    </div>
+    <!--工序负责人确认框-->
+    <div id="checkedClassDialog" class="easyui-dialog" style="width:400px;height:320px;padding:10px;"
+         data-options="closed:'true',buttons:'#checkedClassDialogButtons',modal:true">
+        <form id="checkedClassForm" method="post" class="dialog-form">
+            <table class="kv-table">
+                <tbody>
+                    <tr>
+                        <td class="kv-label" style="width: 150px;">偏差说明及备注</td>
+                        <td class="kv-content">
+                            <input id="DeviationDescription" name="DeviationDescription" style="height:60px" type="message" class="easyui-textbox" autocomplete="off" placeholder="" disabled="disabled">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="kv-label">审核意见</td>
+                        <td class="kv-content">
+                            <input id="CheckedSuggestion" name="CheckedSuggestion" style="height:60px" type="message" class="easyui-textbox" autocomplete="off" placeholder="" disabled="disabled" >
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="kv-label" style="width: 150px;">审核人</td>
+                        <td class="kv-content">
+                            <input id="CheckedPerson" name="CheckedPerson" type="message" class="easyui-textbox" autocomplete="off" placeholder="" disabled="disabled" >
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="kv-label" style="width: 150px;">操作间编号</td>
+                        <td class="kv-content">
+                            <input id="OperationSpaceNum" name="OperationSpaceNum" type="message" class="easyui-textbox" autocomplete="off" placeholder="">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div id="checkedClassDialogButtons" >
+                <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" onclick="check.checkedConfirm()" >确认</a>
+                <a href="#" class="easyui-linkbutton" onclick="$('#checkedClassDialog').dialog('close')">关闭</a>
+            </div>
+        </form>
+    </div>
+    <!--表格-->
+    <div id="Toolbar" style="padding:0 10px;">
+        批次号:
+        <input type="text" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
+            placeholder="">
+        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="CollectToolbar.search();">查询</a>
+        <a href="#" class="easyui-linkbutton" id="reload" data-options="iconCls:'icon-reload'" onclick="CollectToolbar.refresh();">刷新</a>
+    </div>
+    <table class="easyui-datagrid" id="tab" title="健胃消食片制药计划列表" style="width:100%;" data-options="
+        rownumbers:true,
+        singleSelect:true,
+        autoRowHeight:false,
+        pagination:true,
+        pageSize:10,
+        toolbar:'#Toolbar',
+        method:'GET'">
+        <thead>
+            <tr>
+                <th field="ck" checkbox="true"></th>
+                <th data-options="field:'PlanStatus',width:150,align:'center'" formatter="formatterStatus">计划状态</th>
+                <th data-options="field:'SchedulePlanCode',width:200,align:'center'">调度编号</th>
+                <th data-options="field:'BatchID',width:200,align:'center'">批次号</th>
+                <th data-options="field:'PlanQuantity',width:100,align:'center'">计划重量</th>
+                <th data-options="field:'BrandName',width:150,align:'center'">品名</th>
+                <th data-options="field:'Unit',width:100,align:'center'">单位</th>
+                <th data-options="field:'PlanBeginTime',width:200,align:'center'">计划开始时间</th>
+                <th data-options="field:'PlanEndTime',width:200,align:'center'">计划完成时间</th>
+                <th data-options="field:'Type',width:100,align:'center'">调度类型</th>
+            </tr>
+        </thead>
+    </table>
+</body>
+</html>
