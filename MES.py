@@ -8788,7 +8788,6 @@ def HomePageHistogram():
             output_data = list()
             sampling_data = list()
             data_list = list()
-            data_error_list = list()
             for batch in batchs:
 
                 input = db_session.query(EletronicBatchDataStore.OperationpValue).filter(
@@ -8802,17 +8801,16 @@ def HomePageHistogram():
                          EletronicBatchDataStore.Content == constant.OUTPUT_COMPARE_SAMPLE)).first()
 
                 if input == output == sampling_quantity == None:
-                    data_error_list.append({'time':str(current_year)+'-' +str(current_month),
-                                            'input': '', 'output': '', 'sampling_quantity': '', 'batch': batch})
+                    input_data.append(0)
+                    output_data.append(0)
+                    sampling_data.append(0)
                     continue
                 input_data.append(int(input[0]))
                 output_data.append(int(output[0]))
                 sampling_data.append(float(sampling_quantity[0]))
-                data_list.append({'time':str(current_year)+'-' +str(current_month),
-                                  'input': input_data, 'output': output_data,
-                                  'sampling_quantity': sampling_data})
-            if len(data_error_list) >= 1:
-                return json.dumps(data_error_list, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+            data_list.append({'time':str(current_year)+'-' +str(current_month),
+                              'input': input_data, 'output': output_data,
+                              'sampling_quantity': sampling_data})
             json_data = json.dumps(data_list, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
             return json_data
         except Exception as e:
