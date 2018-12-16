@@ -8787,6 +8787,7 @@ def HomePageHistogram():
             input_data = list()
             output_data = list()
             sampling_data = list()
+            batch_list = list()
             data_list = list()
             for batch in batchs:
 
@@ -8804,13 +8805,15 @@ def HomePageHistogram():
                     input_data.append(0)
                     output_data.append(0)
                     sampling_data.append(0)
+                    batch_list.append(batch[0])
                     continue
                 input_data.append(int(input[0]))
                 output_data.append(int(output[0]))
                 sampling_data.append(float(sampling_quantity[0]))
+                batch_list.append(batch[0])
             data_list.append({'time':str(current_year)+'-' +str(current_month),
                               'input': input_data, 'output': output_data,
-                              'sampling_quantity': sampling_data})
+                              'sampling_quantity': sampling_data, "batch":batch_list})
             json_data = json.dumps(data_list, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
             return json_data
         except Exception as e:
