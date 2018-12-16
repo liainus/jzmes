@@ -8789,8 +8789,7 @@ def HomePageHistogram():
             sampling_data = list()
             batch_list = list()
             data_list = list()
-            for batch in batchs:
-
+            for batch in set(batchs):
                 input = db_session.query(EletronicBatchDataStore.OperationpValue).filter(
                     and_(EletronicBatchDataStore.BatchID == batch,
                          EletronicBatchDataStore.Content == constant.OUTPUT_COMPARE_INPUT)).first()
@@ -8800,16 +8799,9 @@ def HomePageHistogram():
                 sampling_quantity = db_session.query(EletronicBatchDataStore.OperationpValue).filter(
                     and_(EletronicBatchDataStore.BatchID == batch,
                          EletronicBatchDataStore.Content == constant.OUTPUT_COMPARE_SAMPLE)).first()
-
-                if input == output == sampling_quantity == None:
-                    input_data.append(0)
-                    output_data.append(0)
-                    sampling_data.append(0)
-                    batch_list.append(batch[0])
-                    continue
-                input_data.append(int(input[0]))
-                output_data.append(int(output[0]))
-                sampling_data.append(float(sampling_quantity[0]))
+                input_data.append(int(input[0] if input!=None else 0))
+                output_data.append(int(output[0] if output!=None else 0))
+                sampling_data.append(float(sampling_quantity[0] if sampling_quantity!=None else 0))
                 batch_list.append(batch[0])
             data_list.append({'time':str(current_year)+'-' +str(current_month),
                               'input': input_data, 'output': output_data,
