@@ -8758,5 +8758,60 @@ def BatchMaterialTracingBatch():
             insertSyslog("error", "批物料追溯数据获取报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
+@app.route('/HomePageHistogram', methods=['POST', 'GET'])
+def HomePageHistogram():
+    '''
+    purpose：通过前台传入的批次查询响应的批次的投入量、产出量、得率
+    url:/QualityControl/BatchDataCompare
+
+    return: data_list,一个包含突入量、产出量、得率、批次的数据列表extract("year", ZYPlan.ActEndTime == current_year),
+                extract("month", ZYPlan.ActEndTime == current_month)
+    '''
+    if request.method == 'GET':
+        try:
+            current_time = datetime.datetime.now()
+            current_year = current_time.year
+            current_month = current_time.month
+            batch_set = db_session.query(ZYPlan.BatchID).filter(and_(
+                extract("year", ZYPlan.EnterTime) == int(current_year),
+                extract("month", ZYPlan.EnterTime) == int(current_month)
+            )).all()
+            if batch_set:
+                batchs = batch_set
+            else:
+                current_month = int(current_month) - 1
+                batchs = db_session.query(ZYPlan.BatchID).filter(and_(
+                    extract("year", ZYPlan.ActEndTime) == int(current_year),
+                    extract("month", ZYPlan.ActEndTime) == int(current_month)
+                )).all()
+            input_data = list()
+            output_data = list()
+            sampling_data = list()
+            batch_list = list()
+            data_list = list()
+            for batch in set(batchs):
+                input = db_session.query(EletronicBatchDataStore.OperationpValue).filter(
+                    and_(EletronicBatchDataStore.BatchID == batch,
+                         EletronicBatchDataStore.Content == constant.OUTPUT_COMPARE_INPUT)).first()
+                output = db_session.query(EletronicBatchDataStore.OperationpValue).filter(
+                    and_(EletronicBatchDataStore.BatchID == batch,
+                         EletronicBatchDataStore.Content == constant.OUTPUT_COMPARE_OUTPUT)).first()
+                sampling_quantity = db_session.query(EletronicBatchDataStore.OperationpValue).filter(
+                    and_(EletronicBatchDataStore.BatchID == batch,
+                         EletronicBatchDataStore.Content == constant.OUTPUT_COMPARE_SAMPLE)).first()
+                input_data.append(int(input[0] if input!=None else 0))
+                output_data.append(int(output[0] if output!=None else 0))
+                sampling_data.append(float(sampling_quantity[0] if sampling_quantity!=None else 0))
+                batch_list.append(batch[0])
+            data_list.append({'time':str(current_year)+'-' +str(current_month),
+                              'input': input_data, 'output': output_data,
+                              'sampling_quantity': sampling_data, "batch":batch_list})
+            json_data = json.dumps(data_list, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+            return json_data
+        except Exception as e:
+            print(e)
+            insertSyslog("error", "产量对比报错Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
 if __name__ == '__main__':
     app.run(debug=True)

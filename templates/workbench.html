@@ -81,8 +81,9 @@
         <div class="col-md-12">
             <div class="row">
                 <div class="col-md-7" style="height:400px;background: #fff;border-radius: 3px;">
-                    <iframe class="page-iframe" src="../static/Highcharts-4.0.3/examples/column-drilldown/index_height.htm" frameborder="no" border="no"
-                        height="100%" width="100%" scrolling="auto"></iframe>
+                    <div id="compareBox" style="width: 100%;width: 100%; margin: 10px auto;">
+                        <div id="CompareMain" style="width: 700px; height: 380px;"></div>
+                    </div>
                 </div>
                 <div class="col-md-5" style="height: 400px;border-radius: 3px;padding-right: 0">
                     <div class="panel panel-widget" style="height: 100%;">
@@ -113,6 +114,7 @@
 {#        </div>#}
 
     </div>
+    <script type="text/javascript" src="../static/js/echarts.common.min.js"></script>
     <script type="text/javascript" src="../static/js/jquery-3.3.1.min.js"></script>
     <script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="../static/js/bootstrap-table.min.js"></script>
@@ -198,10 +200,135 @@
                 });
             })
 
+            //投入产出数据图表
+            var myDiv = document.getElementById("CompareMain")
+            var myChartContainer = function () {
+                var width = $("#compareBox").width()
+                myDiv.style.width = width +'px';
+            };
+            myChartContainer();
+            myChart = echarts.init(myDiv)
+            myChart.showLoading();
+            $.ajax({
+                url: "/HomePageHistogram",
+                type: "get",
+                dataType: "json",
+                traditional:true,
+                success: function (data) {
+                    myChart.hideLoading();
+                    myChart.setOption(option = {
+                        title:{
+                            text: data[0].time + "-数据对比"
+                        },
+                        tooltip: {
+                            trigger: 'axis',
+                            axisPointer: {
+                                type: 'shadow'
+                            }
+                        },
+                        legend: {
+                            data: ['投入量', '产出量', '得率']
+                        },
+                        toolbox: {
+                            feature: {
+                                dataView: {show: true, readOnly: false},
+                                magicType: {show: true, type: ['line', 'bar']},
+                                restore: {show: true},
+                                saveAsImage: {show: true}
+                            }
+                        },
+                        dataZoom : {
+                            show : true,
+                            realtime : true,
+                            start : 95,
+                            end : 100
+                        },
+                        xAxis: {
+                            type: 'category',
+                            data: data[0].batch
+                        },
+                        yAxis: [
+                            {
+                                type: 'value',
+                                name: '重量',
+                                min: 0,
+                                interval: 500,
+                                axisLabel: {
+                                    formatter: '{value} kg'
+                                }
+                            }, {
+                                type: 'value',
+                                name: '百分比',
+                                min: 0,
+                                max: 100,
+                                interval: 10,
+                                axisLabel: {
+                                    formatter: '{value} %'
+                                }
+                            }
+                        ],
+                        series: [{
+                            name: "投入量",
+                            type: 'bar',
+                            label: {
+                                normal: {
+                                    show: true,
+                                    position: 'top'
+                                }
+                            },
+                            itemStyle:{
+                                normal:{
+                                    color:'#90ed7d'
+                                }
+                            },
+                            data: data[0].input
+                        }, {
+                            name: "产出量",
+                            type: 'bar',
+                            label: {
+                                normal: {
+                                    show: true,
+                                    position: 'top'
+                                }
+                            },
+                            itemStyle:{
+                                normal:{
+                                    color:'#f7a35c'
+                                }
+                            },
+                            data: data[0].output
+                        }, {
+                            name: "得率",
+                            type: 'bar',
+                            yAxisIndex: 1,
+                            label: {
+                                normal: {
+                                    show: true,
+                                    position: 'top',
+                                    formatter: '{c} %'
+                                }
+                            },
+                            itemStyle:{
+                                normal:{
+                                    color:'#7cb5ec'
+                                }
+                            },
+                            data: data[0].sampling_quantity
+                        }]
+                    });
+                    myChart.setOption(option);
+                }
+            })
+            parent.$(window).resize(function(){
+                myChartContainer();
+                myChart.resize();
+            })
+
             //增加tabs跳转到制药计划管理
             $("#toZYPlanManage").on('click',function(){
                 addTab("制药计划管理","/ZYPlanManage")
             })
+
         });
         //按钮点击后添加选项卡
         function addTab(title, url) {
