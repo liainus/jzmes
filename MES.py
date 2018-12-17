@@ -6835,7 +6835,7 @@ def spareStockSearch():
                         spareClass = db_session.query(SpareStock).filter().order_by(desc("InStockDate"))[inipage:endpage]
                 else:
                     spareCount = db_session.query(SpareStock).filter(SpareStock.SpareName.like(SpareName)).count()
-                    spareClass = db_session.query(SpareStock).filter(SpareStock.SpareName.like(SpareName)).all().order_by(desc("InStockDate"))[inipage:endpage]
+                    spareClass = db_session.query(SpareStock).filter(SpareStock.SpareName.like(SpareName)).order_by(desc("InStockDate"))[inipage:endpage]
                 jsonoclass = json.dumps(spareClass, cls=AlchemyEncoder, ensure_ascii=False)
                 return '{"total"' + ":" + str(spareCount) + ',"rows"' + ":\n" + jsonoclass + "}"
         except Exception as e:
