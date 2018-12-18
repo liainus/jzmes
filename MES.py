@@ -6435,6 +6435,7 @@ def electionBatchSearch():
                     PEQPIDs = searchEqpID(BrandID,BatchID,PUID, "喷雾塔")
                     for i in range(len(PEQPIDs)):
                         EQPID = PEQPIDs[i]
+                        EQPName = db_session.query(Equipment.EQPName).filter(Equipment.ID == EQPID).first()
                         dic["PWEQPName" + str(i)] = EQPName[0]
                         dic["pwStartTime" + str(i)] = strch(
                             searO(BrandID, BatchID, Pclass.ID, EQPID, "干燥开始时间").SampleValue)
