@@ -6383,10 +6383,10 @@ def electionBatchSearch():
                         dic["secondAddWater" + str(i)] = secondAddWater.SampleValue + secondAddWater.Unit
                         for j in range(0,3):
                             temp = searO(BrandID, BatchID, Pclass.ID, EQPID, "提取第一次煎煮温度采集0"+str(j+1))
-                            dic["firstTemp" + "_" + str(i) + "_" + str(j)] = temp.SampleValue + temp.Unit
+                            dic["firstTemp" + "_" + str(i) + "_" + str(j)] = changef(temp.SampleValue) + temp.Unit
                             dic["firstTempTime" + "_" + str(i) + "_" + str(j)] = strchange(temp.SampleDate)
                             stemp = searO(BrandID, BatchID, Pclass.ID, EQPID, "提取第二次煎煮温度采集0" + str(j+1))
-                            dic["secondTemp" + "_" + str(i) + "_" + str(j)] = stemp.SampleValue + stemp.Unit
+                            dic["secondTemp" + "_" + str(i) + "_" + str(j)] = changef(stemp.SampleValue) + stemp.Unit
                             dic["secondTempTime" + "_" + str(i) + "_" + str(j)] = strchange(stemp.SampleDate)
                         dic["firstDevotingTime" + str(i)] = strchange(
                             searO(BrandID, BatchID, Pclass.ID, EQPID, "提取第一次煎煮开始时间").SampleValue)
@@ -6396,12 +6396,12 @@ def electionBatchSearch():
                             searO(BrandID, BatchID, Pclass.ID, EQPID, "提取第二次煎煮开始时间").SampleValue)
                         dic["secondDevotingEndTime" + str(i)] = strchange(
                             searO(BrandID, BatchID, Pclass.ID, EQPID, "提取第二次煎煮结束时间").SampleValue)
-                    JEQPIDs = searchEqpID(BrandID,BatchID,PUID, "静置罐")
+                    JEQPIDs = searchEqpID(BrandID,BatchID,PUID, "吊篮提取罐")
                     for i in range(0, len(JEQPIDs)):
                         EQPID = JEQPIDs[i]
-                        dic["jStartTime" + str(i)] = strchange(
+                        dic["jStartTime" + str(i)] = strch(
                             searO(BrandID, BatchID, Pclass.ID, EQPID, "静置开始时间").SampleValue)
-                        dic["jEndTime" + str(i)] = strchange(
+                        dic["jEndTime" + str(i)] = strch(
                             searO(BrandID, BatchID, Pclass.ID, EQPID, "静置结束时间").SampleValue)
                 elif (Pclass.PDUnitRouteName == "浓缩段"):
                     NEQPIDs = searchEqpID(BrandID,BatchID,PUID, "MVR")
@@ -6412,10 +6412,10 @@ def electionBatchSearch():
                         count = 0
                         for j in range(1, 34, 3):
                             zkd = searO(BrandID, BatchID, Pclass.ID, EQPID, "浓缩真空度采集" + str(j))
-                            dic["zkd" + "_" + str(i) + "_" + str(count)] = zkd.SampleValue + zkd.Unit
+                            dic["zkd" + "_" + str(i) + "_" + str(count)] = changef(zkd.SampleValue) + zkd.Unit
                             dic["zkdTime" + "_" + str(i) + "_" + str(count)] = strchange(zkd.SampleDate)
                             wd = searO(BrandID, BatchID, Pclass.ID, EQPID, "浓缩温度采集" + str(j))
-                            dic["wd" + "_" + str(i) + "_" + str(count)] = wd.SampleValue + wd.Unit
+                            dic["wd" + "_" + str(i) + "_" + str(count)] = changef(wd.SampleValue) + wd.Unit
                             dic["wdTime" + "_" + str(i) + "_" + str(count)] = strchange(wd.SampleDate)
                             count = count + 1
                         dic["nsstartTime" + str(i)] = strch(
@@ -6444,13 +6444,13 @@ def electionBatchSearch():
                         cc = 0
                         for j in range(1, 34, 3):
                             hff = searO(BrandID, BatchID, Pclass.ID, EQPID, "混风温度采集" + str(j))
-                            dic["hfTemp_" + str(i) + "_" + str(cc)] = hff.SampleValue + hff.Unit
+                            dic["hfTemp_" + str(i) + "_" + str(cc)] = changef(hff.SampleValue) + hff.Unit
                             dic["hfTime_" + str(i) + "_" + str(cc)] = strchange(hff.SampleDate)
                             zjf = searO(BrandID, BatchID, Pclass.ID, EQPID, "进风温度采集" + str(j))
-                            dic["zjfTemp_" + str(i) + "_" + str(cc)] = zjf.SampleValue + zjf.Unit
+                            dic["zjfTemp_" + str(i) + "_" + str(cc)] = changef(zjf.SampleValue) + zjf.Unit
                             dic["zjfTime_" + str(i) + "_" + str(cc)] = strchange(zjf.SampleDate)
                             zjf = searO(BrandID, BatchID, Pclass.ID, EQPID, "出风温度采集" + str(j))
-                            dic["cfTemp_" + str(i) + "_" + str(cc)] = zjf.SampleValue + zjf.Unit
+                            dic["cfTemp_" + str(i) + "_" + str(cc)] = changef(zjf.SampleValue) + zjf.Unit
                             dic["cfTime_" + str(i) + "_" + str(cc)] = strchange(zjf.SampleDate)
                             cc = cc + 1
                 elif (Pclass.PDUnitRouteName == "醇沉段"):
@@ -6484,13 +6484,13 @@ def electionBatchSearch():
                         yy = 0
                         for j in range(1, 34, 3):
                             zqyl = searO(BrandID, BatchID, Pclass.ID, EQPID, "单效浓缩蒸汽压力采集" + str(j))
-                            dic["zqyl_" + str(i) + "_" + str(yy)] = zqyl.SampleValue + zqyl.Unit
+                            dic["zqyl_" + str(i) + "_" + str(yy)] = changef(zqyl.SampleValue) + zqyl.Unit
                             dic["zqylTime_" + str(i) + "_" + str(yy)] = strchange(zqyl.SampleDate)
                             dzkd = searO(BrandID, BatchID, Pclass.ID, EQPID, "单效浓缩真空度采集" + str(j))
-                            dic["dzkd_" + str(i) + "_" + str(yy)] = dzkd.SampleValue + dzkd.Unit
+                            dic["dzkd_" + str(i) + "_" + str(yy)] = changef(dzkd.SampleValue) + dzkd.Unit
                             dic["dzkdTime_" + str(i) + "_" + str(yy)] =strchange(dzkd.SampleDate)
                             dwd = searO(BrandID, BatchID, Pclass.ID, EQPID, "单效浓缩温度采集" + str(j))
-                            dic["dwd_" + str(i) + "_" + str(yy)] = dwd.SampleValue + dwd.Unit
+                            dic["dwd_" + str(i) + "_" + str(yy)] = changef(dwd.SampleValue) + dwd.Unit
                             dic["dwdTime_" + str(i) + "_" + str(yy)] = strchange(dwd.SampleDate)
                 return json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
@@ -6499,9 +6499,9 @@ def electionBatchSearch():
             insertSyslog("error", "电子批记录查询报错Error：" + str(e), current_user.Name)
             return json.dumps("电子批记录查询", cls=Model.BSFramwork.AlchemyEncoder,
                               ensure_ascii=False)
-def floatcut(args):
-    if(args != None):
-        return str(round(float(str(args)), 1))
+def changef(args):
+    if args != None and args != "":
+        return str(round(float(args), 2))
     else:
         return ""
 def strchange(args):
