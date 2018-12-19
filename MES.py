@@ -8778,31 +8778,31 @@ def HomePageHistogram():
                 extract("month", ZYPlan.EnterTime) == int(current_month)
             )).all()
             if batch_set:
-                batchs = batch_set
+                batchs = set(batch_set)
             else:
                 current_month = int(current_month) - 1
-                batchs = db_session.query(ZYPlan.BatchID).filter(and_(
+                batchs = set(db_session.query(ZYPlan.BatchID).filter(and_(
                     extract("year", ZYPlan.ActEndTime) == int(current_year),
                     extract("month", ZYPlan.ActEndTime) == int(current_month)
-                )).all()
+                )).all())
             input_data = list()
             output_data = list()
             sampling_data = list()
             batch_list = list()
             data_list = list()
-            for batch in set(batchs):
+            for batch in batchs:
                 input = db_session.query(EletronicBatchDataStore.OperationpValue).filter(
-                    and_(EletronicBatchDataStore.BatchID == batch,
+                    and_(EletronicBatchDataStore.BatchID == batch[0],
                          EletronicBatchDataStore.Content == constant.OUTPUT_COMPARE_INPUT)).first()
                 output = db_session.query(EletronicBatchDataStore.OperationpValue).filter(
-                    and_(EletronicBatchDataStore.BatchID == batch,
+                    and_(EletronicBatchDataStore.BatchID == batch[0],
                          EletronicBatchDataStore.Content == constant.OUTPUT_COMPARE_OUTPUT)).first()
                 sampling_quantity = db_session.query(EletronicBatchDataStore.OperationpValue).filter(
-                    and_(EletronicBatchDataStore.BatchID == batch,
+                    and_(EletronicBatchDataStore.BatchID == batch[0],
                          EletronicBatchDataStore.Content == constant.OUTPUT_COMPARE_SAMPLE)).first()
-                input_data.append(int(input[0] if input!=None else 0))
-                output_data.append(int(output[0] if output!=None else 0))
-                sampling_data.append(float(sampling_quantity[0] if sampling_quantity!=None else 0))
+                input_data.append(int(input[0] if input!=None and input!=('',) else 0))
+                output_data.append(int(output[0] if output!=None and output!=('',) else 0))
+                sampling_data.append(float(sampling_quantity[0] if sampling_quantity!=None and sampling_quantity!=('',) else 0))
                 batch_list.append(batch[0])
             data_list.append({'time':str(current_year)+'-' +str(current_month),
                               'input': input_data, 'output': output_data,
