@@ -264,11 +264,14 @@
                         OrganizationName :$('#OrganizationName').find("option:selected").html(),
                         RoleName :$('#RoleName').find("option:selected").html()
                     },
-                    dataType: 'json',
                     cache: false,
                     success: function (data,response,status) {
-                        $('#userClassDialog').dialog('close');
-                        $("#tab").datagrid('reload');
+                        if(data == "OK"){
+                            $('#userClassDialog').dialog('close');
+                            $("#tab").datagrid('reload');
+                        }else{
+                            $.messager.alert('提示', data, 'info');
+                        }
                     },
                      error: function(data){
                            alert("异常，请刷新后重试...");
@@ -305,11 +308,14 @@
                         OrganizationName :$('#OrganizationName').find("option:selected").html(),
                         RoleName :$('#RoleName').find("option:selected").html()
                     },
-                    dataType: 'json',
                     cache: false,
                     success: function (data,response,status) {
-                        $('#userClassDialog').dialog('close');
-                        $("#tab").datagrid('reload');
+                        if(data == "OK") {
+                            $('#userClassDialog').dialog('close');
+                            $("#tab").datagrid('reload');
+                        }else{
+                            $.messager.alert('提示', data, 'info');
+                        }
                     },
                      error: function(data){
                            alert("异常，请刷新后重试...");
