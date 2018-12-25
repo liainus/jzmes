@@ -6897,6 +6897,10 @@ def spareStockUpdate():
                 ID = int(data['ID'])
                 oclass = db_session.query(SpareStock).filter_by(ID=ID).first()
                 oclass.SpareCode = data["SpareCode"]
+                SpareStockclass = db_session.query(SpareStock).filter(SpareStock.SpareCode == oclass.SpareCode).first()
+                if SpareStockclass != None:
+                    if SpareStockclass.ID != ID:
+                        return "备件编码重复！"
                 oclass.SpareName = data["SpareName"]
                 oclass.SpareModel = data["SpareModel"]
                 oclass.SpareFactory = data["SpareFactory"]
@@ -7221,7 +7225,7 @@ def equipmentRunRecordCreate():
                 equipmentRunRecord.PUIDName = ocal.PUIDName
                 equipmentRunRecord.EQPName = EQPName
                 equipmentRunRecord.EQPCode = ocal.EQPCode
-                equipmentRunRecord.InputDate = datetime.datetime.strptime(data["InputDate"],'%Y-%m-%d')
+                equipmentRunRecord.InputDate = data["InputDate"]
                 equipmentRunRecord.Classes = data["Classes"]
                 equipmentRunRecord.RunDate = intkong(data["RunDate"])
                 equipmentRunRecord.ClearDate = intkong(data["ClearDate"])
