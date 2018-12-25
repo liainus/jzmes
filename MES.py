@@ -6521,7 +6521,7 @@ def getmax(args):
         num1.append(temp)
         if x == 0:
             unit = args[x].Unit
-    return floatcut(max(num1))+ unit
+    return changef(max(num1))+ unit
 def getmin(args):
     num1 = []
     for x in range(len(args)):
@@ -6529,7 +6529,7 @@ def getmin(args):
         num1.append(temp)
         if x == 0:
             unit = args[x].Unit
-    return floatcut(min(num1))+ unit
+    return changef(min(num1))+ unit
 def searO(BrandID, BatchID, PID, EQPID, Type):
     re = db_session.query(ElectronicBatch).filter(ElectronicBatch.BrandID == BrandID,ElectronicBatch.BatchID == BatchID,ElectronicBatch.PDUnitRouteID == PID,
                                                    ElectronicBatch.EQPID == EQPID, ElectronicBatch.Type == Type).first()
