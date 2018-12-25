@@ -266,10 +266,13 @@ def addUser():
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 10:
                 user = User()
+                user.WorkNumber=data['WorkNumber']
+                ocal = db_session.query(User).filter(User.WorkNumber == user.WorkNumber).first()
+                if ocal != None:
+                    return "工号重复，请重新录入！"
                 user.Name=data['Name']
                 user.Password=user.password(data['Password'])
                 # print(user.Password)
-                user.WorkNumber=data['WorkNumber']
                 user.Status="1" # 登录状态先设置一个默认值1：已登录，0：未登录
                 user.Creater=data['Creater']
                 user.CreateTime=datetime.datetime.now()
@@ -299,7 +302,10 @@ def UpdateUser():
                 id = int(data['id'])
                 user = db_session.query(User).filter_by(id=id).first()
                 user.Name = data['Name']
-                user.Password = data['Password']
+                user.WorkNumber = data['WorkNumber']
+                ocal = db_session.query(User).filter(User.WorkNumber == user.WorkNumber).first()
+                if ocal != None:
+                    return "工号重复，请重新修改！"
                 user.Password = user.password(data['Password'])
                 # user.Status = data['Status']
                 user.Creater = data['Creater']
@@ -308,7 +314,6 @@ def UpdateUser():
                 # user.IsLock = data['IsLock']
                 user.OrganizationName = data['OrganizationName']
                 db_session.commit()
-                insertSyslog("success", "更新用户" + data['Name'] + "成功", current_user.Name)
                 return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=AlchemyEncoder,
                                   ensure_ascii=False)
         except Exception as e:
