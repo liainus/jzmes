@@ -282,8 +282,7 @@ def addUser():
                 user.RoleName=data['RoleName']
                 db_session.add(user)
                 db_session.commit()
-                insertSyslog("添加用户", "添加用户"+data['Name']+"添加成功", current_user.Name)
-                return json.dumps([{"status": "OK"}], cls=AlchemyEncoder, ensure_ascii=False)
+                return 'OK'
         except Exception as e:
             db_session.rollback()
             print(e)
@@ -305,7 +304,8 @@ def UpdateUser():
                 user.WorkNumber = data['WorkNumber']
                 ocal = db_session.query(User).filter(User.WorkNumber == user.WorkNumber).first()
                 if ocal != None:
-                    return "工号重复，请重新修改！"
+                    if ocal.id != id:
+                        return "工号重复，请重新修改！"
                 user.Password = user.password(data['Password'])
                 # user.Status = data['Status']
                 user.Creater = data['Creater']
@@ -314,8 +314,7 @@ def UpdateUser():
                 # user.IsLock = data['IsLock']
                 user.OrganizationName = data['OrganizationName']
                 db_session.commit()
-                return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=AlchemyEncoder,
-                                  ensure_ascii=False)
+                return 'OK'
         except Exception as e:
             db_session.rollback()
             print(e)
@@ -337,16 +336,12 @@ def deleteUser():
                         oclass = db_session.query(User).filter_by(id=id).first()
                         db_session.delete(oclass)
                         db_session.commit()
-                        insertSyslog("success", "删除ID是" + string(id) + "的用户删除成功", current_user.Name)
                     except Exception as ee:
                         db_session.rollback()
                         print(ee)
-                        logger.error(ee)
                         insertSyslog("error", "删除户ID为"+string(id)+"报错Error：" + string(ee), current_user.Name)
-                        return json.dumps([{"status": "error:" + string(ee)}], cls=AlchemyEncoder,
-                                          ensure_ascii=False)
-                return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=AlchemyEncoder,
-                                  ensure_ascii=False)
+                        return json.dumps("删除用户报错", cls=AlchemyEncoder,ensure_ascii=False)
+                return 'OK'
         except Exception as e:
             print(e)
             logger.error(e)
