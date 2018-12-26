@@ -51,8 +51,8 @@
                 startView: 1 //从小时开始选
             });
             //生产日期
-            $('#PNameProDate').datetimepicker({
-                format: 'yy-mm-dd hh:ii',
+            $('#PNameProDate,.ProDate').datetimepicker({
+                format: 'yyyy-mm-dd hh:ii',
                 autoclose: true,
                 minuteStep:1, //分钟间隔1
             });
@@ -2477,13 +2477,13 @@
                 <tbody>
                     <tr>
                         <td class="tdWidth300" colspan="2">醇沉罐编号</td>
-                        <td id="CCEQPName0"></td>
+                        <td><input type="text" class="form-control batchInput" id="CCEQPName0"></td>
                         <td>操作人</td>
                         <td>复核人</td>
                     </tr>
                     <tr>
                         <td colspan="2">浓缩液体积</td>
-                        <td id="nsy_0_0"></td>
+                        <td><input type="text" class="form-control batchInput" id="nsy_0_0"></td>
                         <td rowspan="7" class="middle-center">
                             {% if '82' == flag %}
                                 {% if None == dir[0]["OperationPeople_d3"] or "" == dir[0]["OperationPeople_d3"] %}
@@ -2520,7 +2520,7 @@
                     </tr>
                     <tr>
                         <td colspan="2">95%乙醇用量</td>
-                        <td id="yc_0_0"></td>
+                        <td><input type="text" class="form-control batchInput" id="yc_0_0"></td>
                     </tr>
                     <tr>
                         <td colspan="2">回收乙醇用量、浓度</td>
@@ -2535,7 +2535,7 @@
                     </tr>
                     <tr>
                         <td colspan="2">生产开始时间</td>
-                        <td id="scStartTime0"></td>
+                        <td><input type="text" class="form-control ProDate" id="scStartTime0"></td>
                     </tr>
                     <tr>
                         <td colspan="2">浓缩液冷却至40℃以下</td>
@@ -2548,11 +2548,11 @@
                     <tr>
                         <td rowspan="2">静置24h</td>
                         <td>开始时间</td>
-                        <td id="jzStartTime0"></td>
+                        <td><input type="text" class="form-control batchInput" id="jzStartTime0"></td>
                     </tr>
                     <tr>
                         <td>结束时间</td>
-                        <td id="jzEndTime0"></td>
+                        <td><input type="text" class="form-control batchInput" id="jzEndTime0"></td>
                         <td>QA签名</td>
                         <td class="middle-center">
                             <input type="hidden" id="QAreadycheckbox" value={{ dir[0]["QAConfirmPeople_d3"] }}>
@@ -3548,9 +3548,9 @@
                 <tbody>
                     <tr>
                         <td colspan="2">生产开始时间</td>
-                        <td colspan="2"><input type="text" class="form-control batchInput" id="SGManuStartDate"></td>
+                        <td colspan="2"><input type="text" class="form-control ProDate" id="SGManuStartDate"></td>
                         <td colspan="2">生产结束时间</td>
-                        <td colspan="2"><input type="text" class="form-control batchInput" id="SGManuEndDate"></td>
+                        <td colspan="2"><input type="text" class="form-control ProDate" id="SGManuEndDate"></td>
                         <td>操作人</td>
                         <td>复核人</td>
                     </tr>
@@ -4429,14 +4429,14 @@
                         endDate7:$("#endDate6").val(),
                         endDate8:$("#endDate6").val(),
                         //煎煮表单
-                        pot1:$("#drugInNumber1").val(),
-                        pot2:$("#drugInNumber2").val(),
-                        pot3:$("#drugInNumber3").val(),
-                        pot4:$("#drugInNumber4").val(),
-                        pot5:$("#drugInNumber5").val(),
-                        pot6:$("#drugInNumber6").val(),
-                        pot7:$("#drugInNumber7").val(),
-                        pot8:$("#drugInNumber8").val(),
+                        pot1:$("#pot1").val(),
+                        pot2:$("#pot2").val(),
+                        pot3:$("#pot3").val(),
+                        pot4:$("#pot4").val(),
+                        pot5:$("#pot5").val(),
+                        pot6:$("#pot6").val(),
+                        pot7:$("#pot7").val(),
+                        pot8:$("#pot8").val(),
 
                         drugInNumber1:$("#drugInNumber1").val(),
                         drugInNumber2:$("#drugInNumber2").val(),
@@ -4478,6 +4478,13 @@
                         NCTemp1:$("#NCTemp1").val(),
                         NCTemp2:$("#NCTemp2").val(),
                         //醇沉表单
+                        CCEQPName0:$("#CCEQPName0").val(),
+                        nsy_0_0:$("#nsy_0_0").val(),
+                        yc_0_0:$("#yc_0_0").val(),
+                        scStartTime0:$("#scStartTime0").val(),
+                        jzStartTime0:$("#jzStartTime0").val(),
+                        jzEndTime0:$("#jzEndTime0").val(),
+
                         aYCBatch:$("#aYCBatch").val(),
                         aYCTestNumber:$("#aYCTestNumber").val(),
                         aYCNumber:$("#aYCNumber").val(),

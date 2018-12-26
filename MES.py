@@ -266,10 +266,13 @@ def addUser():
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 10:
                 user = User()
+                user.WorkNumber=data['WorkNumber']
+                ocal = db_session.query(User).filter(User.WorkNumber == user.WorkNumber).first()
+                if ocal != None:
+                    return "工号重复，请重新录入！"
                 user.Name=data['Name']
                 user.Password=user.password(data['Password'])
                 # print(user.Password)
-                user.WorkNumber=data['WorkNumber']
                 user.Status="1" # 登录状态先设置一个默认值1：已登录，0：未登录
                 user.Creater=data['Creater']
                 user.CreateTime=datetime.datetime.now()
@@ -279,8 +282,7 @@ def addUser():
                 user.RoleName=data['RoleName']
                 db_session.add(user)
                 db_session.commit()
-                insertSyslog("添加用户", "添加用户"+data['Name']+"添加成功", current_user.Name)
-                return json.dumps([{"status": "OK"}], cls=AlchemyEncoder, ensure_ascii=False)
+                return 'OK'
         except Exception as e:
             db_session.rollback()
             print(e)
@@ -299,7 +301,11 @@ def UpdateUser():
                 id = int(data['id'])
                 user = db_session.query(User).filter_by(id=id).first()
                 user.Name = data['Name']
-                user.Password = data['Password']
+                user.WorkNumber = data['WorkNumber']
+                ocal = db_session.query(User).filter(User.WorkNumber == user.WorkNumber).first()
+                if ocal != None:
+                    if ocal.id != id:
+                        return "工号重复，请重新修改！"
                 user.Password = user.password(data['Password'])
                 # user.Status = data['Status']
                 user.Creater = data['Creater']
@@ -308,9 +314,7 @@ def UpdateUser():
                 # user.IsLock = data['IsLock']
                 user.OrganizationName = data['OrganizationName']
                 db_session.commit()
-                insertSyslog("success", "更新用户" + data['Name'] + "成功", current_user.Name)
-                return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=AlchemyEncoder,
-                                  ensure_ascii=False)
+                return 'OK'
         except Exception as e:
             db_session.rollback()
             print(e)
@@ -332,16 +336,12 @@ def deleteUser():
                         oclass = db_session.query(User).filter_by(id=id).first()
                         db_session.delete(oclass)
                         db_session.commit()
-                        insertSyslog("success", "删除ID是" + string(id) + "的用户删除成功", current_user.Name)
                     except Exception as ee:
                         db_session.rollback()
                         print(ee)
-                        logger.error(ee)
                         insertSyslog("error", "删除户ID为"+string(id)+"报错Error：" + string(ee), current_user.Name)
-                        return json.dumps([{"status": "error:" + string(ee)}], cls=AlchemyEncoder,
-                                          ensure_ascii=False)
-                return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=AlchemyEncoder,
-                                  ensure_ascii=False)
+                        return json.dumps("删除用户报错", cls=AlchemyEncoder,ensure_ascii=False)
+                return 'OK'
         except Exception as e:
             print(e)
             logger.error(e)
@@ -6521,7 +6521,7 @@ def getmax(args):
         num1.append(temp)
         if x == 0:
             unit = args[x].Unit
-    return floatcut(max(num1))+ unit
+    return changef(max(num1))+ unit
 def getmin(args):
     num1 = []
     for x in range(len(args)):
@@ -6529,7 +6529,7 @@ def getmin(args):
         num1.append(temp)
         if x == 0:
             unit = args[x].Unit
-    return floatcut(min(num1))+ unit
+    return changef(min(num1))+ unit
 def searO(BrandID, BatchID, PID, EQPID, Type):
     re = db_session.query(ElectronicBatch).filter(ElectronicBatch.BrandID == BrandID,ElectronicBatch.BatchID == BatchID,ElectronicBatch.PDUnitRouteID == PID,
                                                    ElectronicBatch.EQPID == EQPID, ElectronicBatch.Type == Type).first()
@@ -6897,6 +6897,10 @@ def spareStockUpdate():
                 ID = int(data['ID'])
                 oclass = db_session.query(SpareStock).filter_by(ID=ID).first()
                 oclass.SpareCode = data["SpareCode"]
+                SpareStockclass = db_session.query(SpareStock).filter(SpareStock.SpareCode == oclass.SpareCode).first()
+                if SpareStockclass != None:
+                    if SpareStockclass.ID != ID:
+                        return "备件编码重复！"
                 oclass.SpareName = data["SpareName"]
                 oclass.SpareModel = data["SpareModel"]
                 oclass.SpareFactory = data["SpareFactory"]
@@ -7221,7 +7225,7 @@ def equipmentRunRecordCreate():
                 equipmentRunRecord.PUIDName = ocal.PUIDName
                 equipmentRunRecord.EQPName = EQPName
                 equipmentRunRecord.EQPCode = ocal.EQPCode
-                equipmentRunRecord.InputDate = datetime.datetime.strptime(data["InputDate"],'%Y-%m-%d')
+                equipmentRunRecord.InputDate = data["InputDate"]
                 equipmentRunRecord.Classes = data["Classes"]
                 equipmentRunRecord.RunDate = intkong(data["RunDate"])
                 equipmentRunRecord.ClearDate = intkong(data["ClearDate"])
