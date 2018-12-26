@@ -8292,7 +8292,9 @@ def GetQualityControlData(data):
             equip_ID = db_session.query(Equipment.ID).filter_by(EQPCode=equip_code).first()[0]
             object = db_session.query(ZYTask).filter(
                 and_(ZYTask.BatchID == batch, ZYTask.EquipmentID == equip_ID)).first()
-            if object.ActBeginTime is None and object.ActEndTime is None:
+            if object is None:
+                return None, None
+            if object.ActBeginTime is None or object.ActEndTime is None:
                 return None, None
             cursor = conn.cursor()
             sql = "select [DataHistory].[%s],[DataHistory].[SampleTime] from [MES].[dbo].[DataHistory] where [DataHistory].[SampleTime] BETWEEN %s AND %s" % (
