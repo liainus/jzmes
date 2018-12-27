@@ -385,7 +385,7 @@
                                 $("#equimentsClassDialog").dialog('close');
                                 $('#tab').datagrid('reload');
                             } else {
-                                $.messager.alert('请求失败！', '未知错误导致失败，请重试！', 'warning');
+                                $.messager.alert('提醒：', data, 'warning');
                             }
                         },
                         error: function(data){
