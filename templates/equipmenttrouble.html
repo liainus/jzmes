@@ -189,6 +189,7 @@
                         var row = $('#tab').datagrid('getSelected');
                         if (row) {
                             $("#serviceClassDialog").dialog('open').dialog('setTitle','完成维修');
+                            $('#aID').val(row.ID)
                             $("#ActualBeginDate").datetimebox("setValue", "")
                             $("#ActualEndDate").datetimebox("setValue", "")
                             $("#Description").val()
@@ -212,7 +213,7 @@
                         url:"/EquipmentFailureReportingConfirm",
                         type:"post",
                         data:{
-                            ID:$('#ID').val(),
+                            ID:$('#aID').val(),
                             ActualBeginDate:$('#ActualBeginDate').datetimebox('getValue'),
                             ActualEndDate:$('#ActualEndDate').datetimebox('getValue'),
                             Description:$('#Description').val()
@@ -330,6 +331,12 @@
             <form id="serviceClassDialogForm" method="post" class="dialog-form">
                 <table class="kv-table">
                     <tbody>
+                        <tr>
+                            <td class="kv-label">id</td>
+                            <td class="kv-content">
+                                <input name="aID" id="aID" type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="" disabled="disabled">
+                            </td>
+                        </tr>
                         <tr>
                             <td class="kv-label">实际处理开始时间</td>
                             <td class="kv-content">
