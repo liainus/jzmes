@@ -21,12 +21,12 @@ from Model.system import Role, Organization, User, Menu, Role_Menu, BatchMaterie
 from sqlalchemy import create_engine, Column, ForeignKey, Table, Integer, String, and_, or_, desc,extract
 from io import StringIO
 import calendar
+from Model.system import CenterCost
 
 engine = create_engine(Model.Global.GLOBAL_DATABASE_CONNECT_STRING, deprecate_large_types=True)
 Session = sessionmaker(bind=engine)
 db_session = Session()
 
- # 创建蓝图 第一个参数为蓝图的名字
 equip = Blueprint('equip', __name__)
 
 logger = MESLogger('../logs', 'log')
@@ -73,7 +73,15 @@ def equipment():
         name = li[1]
         processUnit_id = {'ID': id, 'text':name}
         data.append(processUnit_id)
-    return render_template('sysEquipment.html', ProcessUnit_id=data)
+    oclasss = db_session.query(CenterCost.ID, CenterCost.CenterCostNum).all()
+    data1 = []
+    for tu in oclasss:
+        li = list(tu)
+        id = li[0]
+        name = li[1]
+        pro_unit_id = {'ID': id, 'text': name}
+        data.append(pro_unit_id)
+    return render_template('sysEquipment.html', ProcessUnit_id=data, dic=data1)
 
 # 设备建模查询
 @equip.route('/equipmentModel/pequipmentFind', methods=['POST', 'GET'])
