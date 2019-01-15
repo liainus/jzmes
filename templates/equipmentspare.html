@@ -112,63 +112,148 @@
 </head>
 <body>
     <div class="" style="padding: 10px;">
-        <div class="progress-head">
-            <div class="host-progress inPlan1">
-                <div class="host-ball" onclick="toolbar.putIn()">入库</div>
-                <div class="host-line"></div>
-                <div class="host-arrow"></div>
-            </div>
-            <div class="host-progress inPlan2">
-                <div class="host-ball" onclick="toolbar.putInCheck()">入库审核</div>
-                <div class="host-line"></div>
-                <div class="host-arrow"></div>
-                <div class="childBox">
-                    <div class="childNode">
-                        <div class="progress-line"></div>
-                        <a class="ball" name=""></a>
-                        <div class="detail">
-                            <div class="flow-detail" onclick="toolbar.putInCheckRecall()">入库撤回</div>
+        <div id="tt" class="easyui-tabs" style="width:100%;height:500px;">
+            <div title="入库" style="padding:10px">
+                <div class="progress-head">
+                    <div class="host-progress inPlan1">
+                        <div class="host-ball" onclick="toolbar.putIn()">入库</div>
+                        <div class="host-line"></div>
+                        <div class="host-arrow"></div>
+                    </div>
+                    <div class="host-progress inPlan2">
+                        <div class="host-ball" onclick="toolbar.putInCheck()">入库审核</div>
+                        <div class="host-line"></div>
+                        <div class="host-arrow"></div>
+                        <div class="childBox">
+                            <div class="childNode">
+                                <div class="progress-line"></div>
+                                <a class="ball" name=""></a>
+                                <div class="detail">
+                                    <div class="flow-detail" onclick="toolbar.putInCheckRecall()">入库撤回</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
-            <div class="host-progress inPlan3">
-                <div class="host-ball">库存</div>
-            </div>
-        </div>
-        <div class="progress-head">
-            <div class="host-progress outPlan1">
-                <div class="host-ball" onclick="toolbar.OutStock()">出库</div>
-                <div class="host-line"></div>
-                <div class="host-arrow"></div>
-            </div>
-            <div class="host-progress outPlan2">
-                <div class="host-ball" onclick="toolbar.OutStockCheck()">出库审核</div>
-                <div class="host-line"></div>
-                <div class="host-arrow"></div>
-                <div class="childBox">
-                    <div class="childNode">
-                        <div class="progress-line"></div>
-                        <a class="ball" name=""></a>
-                        <div class="detail">
-                            <div class="flow-detail" onclick="toolbar.OutStockCheckRecall()">出库撤回</div>
-                        </div>
+                    <div class="host-progress inPlan3">
+                        <div class="host-ball">库存</div>
                     </div>
                 </div>
+                <div id="Toolbar" style="padding:0 10px;">
+                    备件名称:
+                    <input type="text" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
+                        placeholder="">
+                    <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="toolbar.search()">查询</a>
+                    <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="toolbar.create()">添加</a>
+                    <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="toolbar.update()">编辑</a>
+                    <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="toolbar.delete()">删除</a>
+                    <a href="#" class="easyui-linkbutton" iconCls="icon-reload" onclick="toolbar.refresh()">刷新</a>
+                </div>
+                <table class="easyui-datagrid" id="tab" title="" style="width:100%;" data-options="
+                    queryParams: {
+                        SpareName: ''
+                    },
+                    url:'/spareStockSearch',
+                    rownumbers:true,
+                    singleSelect:false,
+                    autoRowHeight:false,
+                    pagination:true,
+                    pageSize:10,
+                    toolbar:'#Toolbar',
+                    method:'get'">
+                    <thead>
+                        <tr>
+                            <th field="ck" checkbox="true"></th>
+                            <th data-options="field:'SpareName',width:150,align:'center'">备件名称</th>
+                            <th data-options="field:'SpareCode',width:100,align:'center'">备件编码</th>
+                            <th data-options="field:'SpareStatus',width:100,align:'center'" formatter="formatterStatus">备件状态</th>
+                            <th data-options="field:'SpareModel',width:150,align:'center'">备件型号</th>
+                            <th data-options="field:'SpareFactory',width:100,align:'center'">生产厂家</th>
+                            <th data-options="field:'SpareType',width:100,align:'center'">备件类型</th>
+                            <th data-options="field:'SparePower',width:100,align:'center'">备件功率</th>
+                            <th data-options="field:'StockUseStatus',width:100,align:'center'">备件使用状况</th>
+                            <th data-options="field:'Description',width:150,align:'center'">描述</th>
+                            <th data-options="field:'ProductionDate',width:150,align:'center'">生产日期</th>
+                            <th data-options="field:'CreateDate',width:150,align:'center'">录入时间</th>
+                            <th data-options="field:'InStockPeople',width:100,align:'center'">录入人</th>
+                            <th data-options="field:'CheckedPeople',width:100,align:'center'">审核人</th>
+                            <th data-options="field:'CheckedDate',width:150,align:'center'">审核时间</th>
+                            <th data-options="field:'InStockDate',width:150,align:'center'">入库时间</th>
+                        </tr>
+                    </thead>
+                </table>
             </div>
-            <div class="host-progress outPlan3">
-                <div class="host-ball clickRecord">库存</div>
+            <div title="出库" style="padding:10px">
+                <div class="progress-head">
+                    <div class="host-progress outPlan1">
+                        <div class="host-ball" onclick="toolbar.OutStock()">出库</div>
+                        <div class="host-line"></div>
+                        <div class="host-arrow"></div>
+                    </div>
+                    <div class="host-progress outPlan2">
+                        <div class="host-ball" onclick="toolbar.OutStockCheck()">出库审核</div>
+                        <div class="host-line"></div>
+                        <div class="host-arrow"></div>
+                        <div class="childBox">
+                            <div class="childNode">
+                                <div class="progress-line"></div>
+                                <a class="ball" name=""></a>
+                                <div class="detail">
+                                    <div class="flow-detail" onclick="toolbar.OutStockCheckRecall()">出库撤回</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="host-progress outPlan3">
+                        <div class="host-ball clickRecord">库存</div>
+                    </div>
+                </div>
+                <div id="Toolbar2" style="padding:0 10px;">
+                    备件名称:
+                    <input type="text" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
+                        placeholder="">
+                    <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="toolbar.search()">查询</a>
+                    <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="toolbar.create()">添加</a>
+                    <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="toolbar.update()">编辑</a>
+                    <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="toolbar.delete()">删除</a>
+                    <a href="#" class="easyui-linkbutton" iconCls="icon-reload" onclick="toolbar.refresh()">刷新</a>
+                </div>
+                <table class="easyui-datagrid" id="tab2" title="" style="width:100%;" data-options="
+                    queryParams: {
+                        SpareName: ''
+                    },
+                    url:'/spareStockSearch',
+                    rownumbers:true,
+                    singleSelect:false,
+                    autoRowHeight:false,
+                    pagination:true,
+                    pageSize:10,
+                    toolbar:'#Toolbar2',
+                    method:'get'">
+                    <thead>
+                        <tr>
+                            <th field="ck" checkbox="true"></th>
+                            <th data-options="field:'SpareName',width:150,align:'center'">备件名称</th>
+                            <th data-options="field:'SpareCode',width:100,align:'center'">备件编码</th>
+                            <th data-options="field:'SpareStatus',width:100,align:'center'" formatter="formatterStatus">备件状态</th>
+                            <th data-options="field:'SpareModel',width:150,align:'center'">备件型号</th>
+                            <th data-options="field:'SpareFactory',width:100,align:'center'">生产厂家</th>
+                            <th data-options="field:'SpareType',width:100,align:'center'">备件类型</th>
+                            <th data-options="field:'SparePower',width:100,align:'center'">备件功率</th>
+                            <th data-options="field:'StockUseStatus',width:100,align:'center'">备件使用状况</th>
+                            <th data-options="field:'Description',width:150,align:'center'">描述</th>
+                            <th data-options="field:'ProductionDate',width:150,align:'center'">生产日期</th>
+                            <th data-options="field:'CreateDate',width:150,align:'center'">录入时间</th>
+                            <th data-options="field:'InStockPeople',width:100,align:'center'">录入人</th>
+                            <th data-options="field:'CheckedPeople',width:100,align:'center'">审核人</th>
+                            <th data-options="field:'CheckedDate',width:150,align:'center'">审核时间</th>
+                            <th data-options="field:'InStockDate',width:150,align:'center'">入库时间</th>
+                        </tr>
+                    </thead>
+                </table>
             </div>
-        </div>
-        <div id="Toolbar" style="padding:0 10px;">
-            备件名称:
-            <input type="text" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
-                placeholder="">
-            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="toolbar.search()">查询</a>
-            <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="toolbar.create()">添加</a>
-            <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="toolbar.update()">编辑</a>
-            <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="toolbar.delete()">删除</a>
-            <a href="#" class="easyui-linkbutton" iconCls="icon-reload" onclick="toolbar.refresh()">刷新</a>
+            <div title="库存" style="padding:10px">
+                <div id="stockData"></div>
+            </div>
         </div>
         <div id="equimentsClassDialog" class="easyui-dialog" style="width:400px;height:560px;padding:10px;"
              data-options="closed:'true',buttons:'#equimentsClassDialogButtons',modal:true">
@@ -247,47 +332,16 @@
                 </div>
             </form>
         </div>
-        <table class="easyui-datagrid" id="tab" title="" style="width:100%;" data-options="
-            queryParams: {
-                SpareName: ''
-            },
-            url:'/spareStockSearch',
-            rownumbers:true,
-            singleSelect:false,
-            autoRowHeight:false,
-            pagination:true,
-            pageSize:10,
-            toolbar:'#Toolbar',
-            method:'get'">
-            <thead>
-                <tr>
-                    <th field="ck" checkbox="true"></th>
-                    <th data-options="field:'SpareName',width:150,align:'center'">备件名称</th>
-                    <th data-options="field:'SpareCode',width:150,align:'center'">备件编码</th>
-                    <th data-options="field:'SpareStatus',width:100,align:'center'" formatter="formatterStatus">备件状态</th>
-                    <th data-options="field:'SpareModel',width:150,align:'center'">备件型号</th>
-                    <th data-options="field:'SpareFactory',width:150,align:'center'">生产厂家</th>
-                    <th data-options="field:'SpareType',width:150,align:'center'">备件类型</th>
-                    <th data-options="field:'SparePower',width:100,align:'center'">备件功率</th>
-                    <th data-options="field:'StockUseStatus',width:200,align:'center'">备件使用状况</th>
-                    <th data-options="field:'Description',width:200,align:'center'">描述</th>
-                    <th data-options="field:'ProductionDate',width:150,align:'center'">生产日期</th>
-                    <th data-options="field:'CreateDate',width:150,align:'center'">录入时间</th>
-                    <th data-options="field:'InStockPeople',width:120,align:'center'">录入人</th>
-                    <th data-options="field:'CheckedPeople',width:120,align:'center'">审核人</th>
-                    <th data-options="field:'CheckedDate',width:150,align:'center'">审核时间</th>
-                    <th data-options="field:'InStockDate',width:150,align:'center'">入库时间</th>
-                </tr>
-            </thead>
-        </table>
-        <!-- 右键菜单 -->
-        <div id="contextmenu" class="easyui-menu" style="width:120px;">
-            <div data-options="iconCls:'icon-edit'" onclick="toolbar.update();">编辑</div>
-            <div data-options="iconCls:'icon-remove'" onclick="toolbar.delete();">删除</div>
-        </div>
     </div>
     <script>
         $(function(){
+            $("#tt").tabs({
+                tabPosition:'left',
+                onSelect:function(title,index){
+                    $('#tab').datagrid('reload');
+                    $('#tab2').datagrid('reload');
+                }
+            })
             function createKeyIDObj(keyID){
                 return {
                     ID:keyID
@@ -296,6 +350,9 @@
             toolbar = {
                 search:function(){
                     $('#tab').datagrid('load',{
+                        SpareName: $("input[name=search]").val()
+                    });
+                    $('#tab2').datagrid('load',{
                         SpareName: $("input[name=search]").val()
                     });
                 },
@@ -606,21 +663,6 @@
                     }
                 }
             }
-            //datagrid表格右键操作
-            $("#tab").datagrid({
-                onRowContextMenu: function (e, rowIndex, rowData) { //右键时触发事件
-                    //三个参数：e里面的内容很多，真心不明白，rowIndex就是当前点击时所在行的索引，rowData当前行的数据
-                    e.preventDefault(); //阻止浏览器捕获右键事件
-                    $(this).datagrid("clearSelections"); //取消所有选中项
-                    $(this).datagrid("selectRow", rowIndex); //根据索引选中该行
-                    $('#contextmenu').menu('show', {
-                        //显示右键菜单
-                        left: e.pageX,//在鼠标点击处显示菜单
-                        top: e.pageY
-                    });
-                    e.preventDefault();  //阻止浏览器自带的右键菜单弹出
-                }
-            });
         })
         function formatterStatus(value, row, index){
             if (value == 10){
