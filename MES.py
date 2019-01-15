@@ -2416,10 +2416,6 @@ def OrganizationFind():
             logger.error(e)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
-
-# 建立会话
-# 主页面路由
-# 保护路由只让已认证的用户访问，如果未认证的用户访问这个路由，Flask-Login 会拦截请求，把用户发往登录页面。
 def isIn(source,target):
     count = 0
     for index in source:
@@ -8199,6 +8195,7 @@ def ContinuousDataTree(depth, ParentNode=None):
                                    "text":obj.Note,
                                    "EQCode":obj.EquipmentCode,
                                    "Brand": obj.Brand,
+                                   "batch_tag": obj.BatchTag,
                                    "state": 'closed',
                                    "children": ContinuousDataTree(depth+1, obj.ID)})
                     if len(get_son(obj.ID)) == 0:
@@ -8207,6 +8204,7 @@ def ContinuousDataTree(depth, ParentNode=None):
                                    "text": obj.Note,
                                    "EQCode": obj.EquipmentCode,
                                    "Brand": obj.Brand,
+                                   "batch_tag": obj.BatchTag,
                                    "state": 'open'})
         return sz
     except Exception as e:
@@ -8256,7 +8254,7 @@ def QualityControlGetBatch():
             endTime = data['endTime']
             if beginTime is None or endTime is None:
                 return 'NO'
-            batchs = set(db_session.query(ZYTask.BatchID).filter(ZYTask.PlanDate.between(beginTime,endTime)).all())
+            batchs = set(db_session.query(ElectronicBatch.BatchID).filter(ElectronicBatch.SampleDate.between(beginTime,endTime)).all())
             if batchs:
                 count = 0
                 batch_list = []
@@ -8277,9 +8275,10 @@ def GetQualityControlData(data):
     try:
         batch = data['batch']
         tag = 't|' + str(data['tag'])
+        batch_tag = 't|' + str(data['batch_tag'])
         Note = data['Note'].replace('*', '#') if '*' in data['Note'] else data['Note']
         equip_code = data['EQCode']
-        if len(data) + len(batch) + len(tag) + len(Note) + len(equip_code) < 5:
+        if len(batch_tag) + len(data) + len(batch) + len(tag) + len(Note) + len(equip_code) < 5:
             return 'NO'
         try:
             conn = pymssql.connect(host=constant.MES_DATABASE_HOST,
@@ -8293,17 +8292,8 @@ def GetQualityControlData(data):
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
         try:
-            equip_ID = db_session.query(Equipment.ID).filter_by(EQPCode=equip_code).first()[0]
-            object = db_session.query(ZYTask).filter(
-                and_(ZYTask.BatchID == batch, ZYTask.EquipmentID == equip_ID)).first()
-            if object is None:
-                return None, None
-            if object.ActBeginTime is None or object.ActEndTime is None:
-                return None, None
             cursor = conn.cursor()
-            sql = "select [DataHistory].[%s],[DataHistory].[SampleTime] from [MES].[dbo].[DataHistory] where [DataHistory].[SampleTime] BETWEEN %s AND %s" % (
-            tag, "'%s'" % object.ActBeginTime.strftime('%Y-%m-%d %H:%M:%S'),
-            "'%s'" % object.ActEndTime.strftime('%Y-%m-%d %H:%M:%S'))
+            sql = "select [Data_History].[%s],[Data_History].[SampleTime] from [MES].[dbo].[DataHistory] WHERE [Data_History].[%s] = %s" %(tag, batch_tag,batch)
             cursor.execute(sql)
             tags_data = cursor.fetchall()
             cursor.close()
