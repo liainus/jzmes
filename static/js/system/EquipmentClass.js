@@ -88,40 +88,10 @@ $(function () {
                 width: 100
             },
              {
-                field: 'EnterpriseCode',
-                title: '企业编码',
+                field: 'SupplierName',
+                title: '供应商',
                 align: 'center',
                 width: 100
-            },
-            {
-                field: 'EnterpriseName',
-                title: '企业名称',
-                width: 100,
-                align: 'center'
-            },
-            {
-                field: 'BatchOpcTag',
-                title: 'OPC/批次',
-                width: 100,
-                align: 'center'
-            },
-            {
-                field: 'BrandOpcTag',
-                title: 'OPC/品名',
-                width: 100,
-                align: 'center'
-            },
-            {
-                field: 'Equipment_Model',
-                title: '设备型号',
-                width: 100,
-                align: 'center'
-            } ,
-            {
-                field: 'Manufactor',
-                title: '生产厂家',
-                width: 100,
-                align: 'center'
             },
             {
                 field: 'Equipment_State',
@@ -130,23 +100,23 @@ $(function () {
                 align: 'center'
             },
             {
-                field: 'money',
-                title: '金额(原值)',
+                field: 'Equipment_Model',
+                title: '基本参数',
                 width: 100,
                 align: 'center'
             },
             {
-                field: 'Equipment_Type',
-                title: '设备类型',
+                field: 'CostAttach',
+                title: '成本归属',
                 width: 100,
                 align: 'center'
             },
             {
-                field: 'Equipment_Power',
-                title: '设备功率(KW/h)',
+                field: 'Procurement_Date',
+                title: '采购日期',
                 width: 100,
                 align: 'center'
-            },
+            } ,
             {
                 field: 'PUID',
                 title: '工艺段ID',
@@ -154,20 +124,8 @@ $(function () {
                 align: 'center'
             },
             {
-                field: 'Manufacture_Date',
-                title: '生产日期',
-                width: 100,
-                align: 'center'
-            },
-            {
                 field: 'Desc',
-                title: '描述',
-                width: 100,
-                align: 'center'
-            },
-            {
-                field: 'Equipment_From',
-                title: ' 来源',
+                title: '备注说明',
                 width: 100,
                 align: 'center'
             }
@@ -178,44 +136,9 @@ $(function () {
     EquipmentClassToolbar = {
         message: "",
         search: function () {
-            // $(tableId).datagrid('load', {
-            //     Name: $.trim($('input[name="search"]').val())
-            // });
-            a = $.trim($('input[name="search"]').val());
-            if  (Bee.StringUtils.isEmpty(a)){
-                return false;
-            }
-            //a = JSON.stringify(a);
-            var entity = {
-                    condition:a
-                };
-            $.ajax({
-                url: '/allEquipments/Search',
-                method: 'POST',
-                traditional: true,
-                // data: JSON.stringify(ids),
-                data: entity,
-                dataType: 'json',
-                success: function (data) {
-                    $.messager.progress('close');
-
-                    if (data) {
-                        // $(tableId).datagrid('loaded');
-                        // $(tableId).datagrid('load');
-                        // $(tableId).datagrid('unselectAll');
-                        $(tableId).datagrid('loadData', data);
-                        $.messager.show({
-                            title: '提示',
-                            timeout: 1000,
-                            msg: '查询' + titleText + '成功',
-                            style: {
-                                right: '',
-                                top: document.body.scrollTop + document.documentElement.scrollTop,
-                                bottom: ''
-                            }
-                        });
-                    }
-                }
+            a = $('input[name="search"]').val();
+            $(tableId).datagrid('load',{
+                EQPName:a
             })
         },
         create: function () {
@@ -225,20 +148,13 @@ $(function () {
             $('input[name="iID"]').val("");
             $('input[name="EQPCode"]').val("");
             $('input[name="EQPName"]').val("");
+            $('input[name="SupplierName"]').val("");
             $('input[name="Equipment_Model"]').val("");
-            $('input[name="EnterpriseName"]').val("");
-            $('input[name="EnterpriseCode"]').val("");
-            $('input[name="BatchOpcTag"]').val("");
-            $('input[name="BrandOpcTag"]').val("");
-            $('input[name="Equipment_State"]').val("");
-            $('input[name="Equipment_Power"]').val("");
-            $('input[name="Equipment_Type"]').val("");
-            $('input[name="money"]').val("");
-            $('input[name="Manufactor"]').val("");
             $('#PUID option:contains("请选择")').prop("selected", 'selected');
-            $('#Manufacture_Date').datebox({value: ""});
+            $('#Equipment_State option:contains("请选择")').prop("selected", 'selected');
+            $('#CostAttach option:contains("请选择")').prop("selected", 'selected');
+            $('#Procurement_Date').datebox({value: ""});
             $('input[name="Desc"]').val("");
-            $('input[name="Equipment_From"]').val("");
 
             // $(formId).form('clear');
             message = '新增' + titleText;
@@ -260,21 +176,13 @@ $(function () {
                     $('input[name="iID"]').val(row.ID);
                     $('input[name="EQPCode"]').val(row.EQPCode);
                     $('input[name="EQPName"]').val(row.EQPName);
+                    $('input[name="SupplierName"]').val(row.SupplierName);
                     $('input[name="Equipment_Model"]').val(row.Equipment_Model);
-                    $('input[name="EnterpriseName"]').val(row.EnterpriseName);
-                    $('input[name="EnterpriseCode"]').val(row.EnterpriseCode);
-                    $('input[name="BatchOpcTag"]').val(row.BatchOpcTag);
-                    $('input[name="BrandOpcTag"]').val(row.BrandOpcTag);
-                    $('input[name="Equipment_State"]').val(row.Equipment_State);
-                    $('input[name="Equipment_Power"]').val(row.Equipment_Power);
-                    $('input[name="Equipment_Type"]').val(row.Equipment_Type);
-                    $('input[name="money"]').val(row.money);
-                    $('input[name="Manufactor"]').val(row.Manufactor);
                     $('#PUID option:contains('+row.PUID+')').prop("selected", 'selected');
-                    $('#Manufacture_Date').datebox("setValue",row.Manufacture_Date);
+                    $('#Equipment_State option:contains('+row.Equipment_State+')').prop("selected", 'selected');
+                    $('#CostAttach option:contains('+row.CostAttach+')').prop("selected", 'selected');
+                    $('#Procurement_Date').datebox("setValue",row.Procurement_Date);
                     $('input[name="Desc"]').val(row.Desc);
-                    $('input[name="Equipment_From"]').val(row.Equipment_From);
-
                     message = '编辑' + titleText;
 
                 };
@@ -358,20 +266,13 @@ $(function () {
                     ID:$('input[name="iID"]').val(),
                     EQPCode:$('input[name="EQPCode"]').val(),
                     EQPName:$('input[name="EQPName"]').val(),
+                    SupplierName:$('input[name="SupplierName"]').val(),
                     Equipment_Model:$('input[name="Equipment_Model"]').val(),
-                    EnterpriseName:$('input[name="EnterpriseName"]').val(),
-                    EnterpriseCode:$('input[name="EnterpriseCode"]').val(),
-                    BatchOpcTag:$('input[name="BatchOpcTag"]').val(),
-                    BrandOpcTag:$('input[name="BrandOpcTag"]').val(),
-                    Equipment_State:$('input[name="Equipment_State"]').val(),
-                    Equipment_Power:$('input[name="Equipment_Power"]').val(),
-                    Equipment_Type:$('input[name="Equipment_Type"]').val(),
-                    money:$('input[name="money"]').val(),
-                    Manufactor:$('input[name="Manufactor"]').val(),
                     PUID:$('#PUID').find("option:selected").val(),
-                    Manufacture_Date:$('#Manufacture_Date').datebox('getValue'),
+                    Equipment_State:$('#Equipment_State').find("option:selected").val(),
+                    CostAttach:$('#CostAttach').find("option:selected").val(),
+                    Procurement_Date:$('#Procurement_Date').datebox('getValue'),
                     Desc:$('input[name="Desc"]').val(),
-                    Equipment_From:$('input[name="Equipment_From"]').val()
                 };
                 $.ajax({
                     url: urlAddr,
@@ -387,10 +288,7 @@ $(function () {
                              },
                     success: function (data,response,status) {
                         $.messager.progress('close');
-                        {
-                }
-                        var obj1 = eval(data);
-                        if(obj1[0].status == "OK"){
+                        if(data == "OK"){
                             $.messager.show({
                                 title: '提示',
                                 msg: message + hintinfo  + '成功',
@@ -404,10 +302,10 @@ $(function () {
 
                             $(formId).form('reset');
                             $(dialogId).dialog('close');
-                            $(tableId).datagrid('reload',{ url: "/allEquipments/Find?_t=" + new Date().getTime() });
+                            $(tableId).datagrid('reload');
                             //$(tableid).datagrid('clearSelections');
                         } else {
-                            $.messager.alert(obj1[0].status + '失败！', '未知错误导致失败，请重试！', 'warning');
+                            $.messager.alert('失败！', '未知错误导致失败，请重试！', 'warning');
                         }
                     }
                 });
@@ -415,127 +313,85 @@ $(function () {
         },
         refresh: function () {
             $(tableId).datagrid({
-        url: urlPrefix + 'Find', // urlPrefix + 'findAll',
-        method: 'get',
-        rownumbers: true,
-        singleSelect: false,
-        autoRowHeight: false,
-        fit: false,
-        pagination: true,
-        fitColumns: true,
-        striped: true,
-        checkOnSelect: true,
-        selectOnCheck: true,
-        collapsible: true,
-        toolbar: toolbarId,
-        pageSize: 10,
-        pagelist:[10,20,30,40,50],
-        idField: 'ID',
-        columns: [[
-            {
-                field: 'ck',
-                width: 100,
-                checkbox: true,
-                align: 'center',
-            },
-            {
-                field: 'EQPCode',
-                title: '设备编码',
-                align: 'center',
-                width: 100
-            },
-            {
-                field: 'EQPName',
-                title: '设备名称',
-                align: 'center',
-                width: 100
-            },
-             {
-                field: 'EnterpriseCode',
-                title: '企业编码',
-                align: 'center',
-                width: 100
-            },
-            {
-                field: 'EnterpriseName',
-                title: '企业名称',
-                width: 100,
-                align: 'center'
-            },
-            {
-                field: 'BatchOpcTag',
-                title: 'OPC/批次',
-                width: 100,
-                align: 'center'
-            },
-            {
-                field: 'BrandOpcTag',
-                title: 'OPC/品名',
-                width: 100,
-                align: 'center'
-            },
-            {
-                field: 'Equipment_Model',
-                title: '设备型号',
-                width: 100,
-                align: 'center'
-            } ,
-            {
-                field: 'Manufactor',
-                title: '生产厂家',
-                width: 100,
-                align: 'center'
-            },
-            {
-                field: 'Equipment_State',
-                title: '设备状态',
-                width: 100,
-                align: 'center'
-            },
-            {
-                field: 'money',
-                title: '金额(原值)',
-                width: 100,
-                align: 'center'
-            },
-            {
-                field: 'Equipment_Type',
-                title: '设备类型',
-                width: 100,
-                align: 'center'
-            },
-            {
-                field: 'Equipment_Power',
-                title: '设备功率(KW/h)',
-                width: 100,
-                align: 'center'
-            },
-            {
-                field: 'PUID',
-                title: '工艺段ID',
-                width: 100,
-                align: 'center'
-            },
-            {
-                field: 'Manufacture_Date',
-                title: '生产日期',
-                width: 100,
-                align: 'center'
-            },
-            {
-                field: 'Desc',
-                title: '描述',
-                width: 100,
-                align: 'center'
-            },
-            {
-                field: 'Equipment_From',
-                title: ' 来源',
-                width: 100,
-                align: 'center'
-            }
-        ]]
-    });
+            url: urlPrefix + 'Find', // urlPrefix + 'findAll',
+            method: 'get',
+            rownumbers: true,
+            singleSelect: false,
+            autoRowHeight: false,
+            fit: false,
+            pagination: true,
+            fitColumns: true,
+            striped: true,
+            checkOnSelect: true,
+            selectOnCheck: true,
+            collapsible: true,
+            toolbar: toolbarId,
+            pageSize: 10,
+            pagelist:[10,20,30,40,50],
+            idField: 'ID',
+            columns: [[
+                {
+                    field: 'ck',
+                    width: 100,
+                    checkbox: true,
+                    align: 'center',
+                },
+                {
+                    field: 'EQPCode',
+                    title: '设备编码',
+                    align: 'center',
+                    width: 100
+                },
+                {
+                    field: 'EQPName',
+                    title: '设备名称',
+                    align: 'center',
+                    width: 100
+                },
+                 {
+                    field: 'SupplierName',
+                    title: '供应商',
+                    align: 'center',
+                    width: 100
+                },
+                {
+                    field: 'Equipment_State',
+                    title: '设备状态',
+                    width: 100,
+                    align: 'center'
+                },
+                {
+                    field: 'Equipment_Model',
+                    title: '基本参数',
+                    width: 100,
+                    align: 'center'
+                },
+                {
+                    field: 'CostAttach',
+                    title: '成本归属',
+                    width: 100,
+                    align: 'center'
+                },
+                {
+                    field: 'Procurement_Date',
+                    title: '采购日期',
+                    width: 100,
+                    align: 'center'
+                } ,
+                {
+                    field: 'PUID',
+                    title: '工艺段ID',
+                    width: 100,
+                    align: 'center'
+                },
+                {
+                    field: 'Desc',
+                    title: '备注说明',
+                    width: 100,
+                    align: 'center'
+                }
+            ]]
+        });
             $(tableId).datagrid('reload');
             $(tableId).datagrid('clearSelections');
            
