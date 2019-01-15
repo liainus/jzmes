@@ -66,10 +66,10 @@
                     var Note = node.text.replace("#","*")
                     if($('#LeftTree').tree('isLeaf',node.target)){
                         if(comboxtext != ""){
-                            addTab(comboxtext + "  " + node.text + "  数据", "/ProcessContinuousData/DataPart?batch=" + comboxtext + "&tag=" + node.Tag + "&Note=" + Note + "&EQCode=" + node.EQCode);
-                            addTab(comboxtext + "  " + node.text + "  折线图", "/ProcessContinuousData/Rainbow?batch=" + comboxtext + "&tag=" + node.Tag + "&Note=" + Note + "&EQCode=" + node.EQCode);
-                            addTab(comboxtext + "  " + node.text + "  CPK", "/ProcessContinuousData/CPK?batch=" + comboxtext + "&tag=" + node.Tag + "&Note=" + Note + "&EQCode=" + node.EQCode);
-                            addTab(comboxtext + "  " + node.text + "  正态分布图", "/ProcessContinuousData/Histogram?batch=" + comboxtext + "&tag=" + node.Tag + "&Note=" + Note + "&EQCode=" + node.EQCode);
+                            addTab(comboxtext + "  " + node.text + "  数据", "/ProcessContinuousData/DataPart?batch=" + comboxtext + "&tag=" + node.Tag + "&Note=" + Note + "&EQCode=" + node.EQCode + "&batch_tag=" + node.batch_tag);
+                            addTab(comboxtext + "  " + node.text + "  折线图", "/ProcessContinuousData/Rainbow?batch=" + comboxtext + "&tag=" + node.Tag + "&Note=" + Note + "&EQCode=" + node.EQCode + "&batch_tag=" + node.batch_tag);
+                            addTab(comboxtext + "  " + node.text + "  CPK", "/ProcessContinuousData/CPK?batch=" + comboxtext + "&tag=" + node.Tag + "&Note=" + Note + "&EQCode=" + node.EQCode + "&batch_tag=" + node.batch_tag);
+                            addTab(comboxtext + "  " + node.text + "  正态分布图", "/ProcessContinuousData/Histogram?batch=" + comboxtext + "&tag=" + node.Tag + "&Note=" + Note + "&EQCode=" + node.EQCode + "&batch_tag=" + node.batch_tag);
                         }else{
                             $.messager.alert('提示', '请选择批次号！', 'info');
                         }
