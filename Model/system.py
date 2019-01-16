@@ -907,10 +907,10 @@ class SpareTypeStore(Base):
     ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
 
     # 备件类型编码
-    Workshop = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    SpareTypeCode = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
     # 备件类型名称
-    PUIDName = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    SpareTypeName = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
 #  设备运行记录
 class EquipmentRunRecord(Base):
