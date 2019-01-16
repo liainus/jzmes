@@ -52,7 +52,7 @@
                 <tr>
                     <td class="kv-label">ID</td>
                     <td class="kv-content">
-                        <input  name="iID" type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="">
+                        <input name="iID" type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="">
                     </td>
                     <td class="kv-label">设备编码</td>
                     <td class="kv-content">
@@ -64,56 +64,47 @@
                     <td class="kv-content">
                         <input  name="EQPName" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
                     </td>
-                    <td class="kv-label">设备型号</td>
+                    <td class="kv-label">供应商</td>
+                    <td class="kv-content">
+                        <input  name="SupplierName" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                    </td>
+                </tr>
+                <tr>
+                    <td class="kv-label">基本参数</td>
                     <td class="kv-content">
                         <input  name="Equipment_Model" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
                     </td>
-                </tr>
-                <tr>
-                    <td class="kv-label">企业名称</td>
+                    <td class="kv-label">采购日期</td>
                     <td class="kv-content">
-                        <input  name="EnterpriseName" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
-                    </td>
-                    <td class="kv-label">企业编码</td>
-                    <td class="kv-content">
-                        <input  name="EnterpriseCode" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                        <input  name="Procurement_Date" type="text" class="easyui-datetimebox" data-options="required:true,editable:false" autocomplete="off" placeholder=""  >
                     </td>
                 </tr>
                 <tr>
-                    <td class="kv-label">OPC/批次</td>
+                    <td class="kv-label">备注说明</td>
                     <td class="kv-content">
-                        <input  name="BatchOpcTag" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                        <input  name="Desc" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
                     </td>
-                    <td class="kv-label">OPC/品名</td>
-                    <td class="kv-content">
-                        <input  name="BrandOpcTag" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
-                    </td>
-                </tr>
-                <tr>
-
                     <td class="kv-label">设备状态</td>
                     <td class="kv-content">
-                        <input  name="Equipment_State" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
-                    </td>
-                    <td class="kv-label">设备功率(KW/h)</td>
-                    <td class="kv-content">
-                        <input  name="Equipment_Power" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
-                    </td>
-                </tr>
-                <tr>
-                    <td class="kv-label">设备类型</td>
-                    <td class="kv-content">
-                        <input  name="Equipment_Type" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
-                    </td>
-                    <td class="kv-label">金额(原值)</td>
-                    <td class="kv-content">
-                        <input  name="money" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                        <select name="Equipment_State" id="Equipment_State" type="text" style="width:157px;" autocomplete="off" placeholder="">
+                            <option value="">请选择</option>
+                            <option value="完好">完好</option>
+                            <option value="运行">运行</option>
+                            <option value="待修">待修</option>
+                            <option value="报废">报废</option>
+                            <option value="闲置">闲置</option>
+                        </select>
                     </td>
                 </tr>
                 <tr>
-                    <td class="kv-label">生产厂家</td>
+                    <td class="kv-label">成本归属</td>
                     <td class="kv-content">
-                        <input  name="Manufactor" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                        <select name="CostAttach" id="CostAttach" type="text" style="width:157px;" autocomplete="off" placeholder="">
+                            <option value="">请选择</option>
+                            {% for dic in dic %}
+                                <option value="{{ dic['text'] }}">{{ dic['text'] }}</option>
+                            {% endfor %}
+                        </select>
                     </td>
                     <td class="kv-label">工艺段名称</td>
                     <td class="kv-content">
@@ -123,22 +114,6 @@
                                 <option value="{{ id['ID'] }}">{{ id['text'] }}</option>
                             {% endfor %}
                         </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="kv-label">生产日期</td>
-                    <td class="kv-content">
-                        <input id="Manufacture_Date" name="Manufacture_Date" type="text" class="easyui-datebox" data-options="showSeconds:false,editable:false" autocomplete="off" placeholder=""  >
-                    </td>
-                    <td class="kv-label">描述</td>
-                    <td class="kv-content">
-                        <input  name="Desc" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
-                    </td>
-                </tr>
-                <tr>
-                    <td class="kv-label">来源</td>
-                    <td class="kv-content">
-                        <input  name="Equipment_From" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
                     </td>
                 </tr>
             </tbody>

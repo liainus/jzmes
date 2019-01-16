@@ -1034,48 +1034,26 @@ class Equipment(Base):
 	#设备名称:
 	EQPName = Column(Unicode(50), primary_key = False, autoincrement = False, nullable = True)
 
-	# 企业编码:
-	EnterpriseCode = Column(Unicode(64), primary_key=False, autoincrement=False, nullable=True)
-
-	# 企业名称:
-	EnterpriseName = Column(Unicode(64), primary_key=False, autoincrement=False, nullable=True)
-
-	# 批次对应的opc变量名
-	BatchOpcTag = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
-
-	# 牌号对应的opc变量名
-	BrandOpcTag = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
-
-	# 设备型号:
-	Equipment_Model = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
-
-	# 生产厂家:
-	Manufactor  = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+	# 供应商:
+	SupplierName = Column(Unicode(64), primary_key=False, autoincrement=False, nullable=True)
 
 	# 设备状态:
 	Equipment_State = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
 
-	#金额(原值):
-	money = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+	# 基本参数:
+	Equipment_Model = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
 
-	# 来源:
-	Equipment_From = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+	# 成本归属:
+	CostAttach  = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
 
-	# 设备类型:
-	Equipment_Type = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
-
-	#  设备功率(KW/h):
-	Equipment_Power = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+	# 采购日期:
+	Procurement_Date = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
 
 	#工艺段ID:
-	PUID =Column(Integer, nullable=False, primary_key=False)
+	PUID =Column(Integer, primary_key=False, nullable=True)
 
-	#描述:
+	#备注说明:
 	Desc = Column(Unicode(50), primary_key = False, autoincrement = False, nullable = True)
-
-	# 生产日期:
-	Manufacture_Date = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
-
 
 # 设备建模表
 class Pequipment(Base):
