@@ -76,8 +76,8 @@
                     <td class="kv-content">
                         <select name="iParentNode" id="iParentNode" type="text" style="width:157px;" autocomplete="off" placeholder="">
                             <option value="">请选择</option>
-                            {% for id in ProcessUnit_id %}
-                                <option value="{{ id['ID'] }}">{{ id['text'] }}</option>
+                            {% for org in organizations %}
+                                <option value="{{ org['id'] }}">{{ org['name'] }}</option>
                             {% endfor %}
                         </select>
                     </td>

@@ -119,18 +119,6 @@ $(function () {
                 title: '创建时间',
                 width: 300,
                 align: 'center'
-            },
-            {
-                field: 'Img',
-                title: '显示图',
-                width: 100,
-                align: 'center'
-            },
-            {
-                field: 'Color',
-                title: '显示颜色',
-                width: 100,
-                align: 'center'
             }
         ]]
     });
@@ -187,7 +175,7 @@ $(function () {
             $('input[name="iID"]').val("");
             $('input[name="iOrganizationCode"]').val("");
             $('input[name="iOrganizationName"]').val("");
-            $('input[name="iParentNode"]').val("");
+            $('#iParentNode option:contains("请选择")').prop("selected", 'selected');
             $('input[name="iOrganizationSeq"]').val("");
             // $('input[name="iOrganizationSeq"]').onChange()
             $('input[name="iDescription"]').val("");
@@ -218,7 +206,7 @@ $(function () {
                     $('input[name="iID"]').val(row.ID);
                     $('input[name="iOrganizationCode"]').val(row.OrganizationCode);
                     $('input[name="iOrganizationName"]').val(row.OrganizationName);
-                    $('input[name="iParentNode"]').val(row.ParentNode);
+                    $('#iParentNode option:contains('+row.ParentNode+')').prop("selected", 'selected');
                     $('input[name="iOrganizationSeq"]').val(row.OrganizationSeq);
                     $('input[name="iDescription"]').val(row.Description);
                     $('input[name="iCreatePerson"]').val(row.CreatePerson);
@@ -323,7 +311,7 @@ $(function () {
                     ID:$('input[name="iID"]').val(),
                     OrganizationCode:$('input[name="iOrganizationCode"]').val(),
                     OrganizationName:$('input[name="iOrganizationName"]').val(),
-                    ParentNode:$('input[name="iParentNode"]').val(),
+                    ParentNode:$('#iParentNode').find("option:selected").val(),
                     OrganizationSeq:$('input[name="iOrganizationSeq"]').val(),
                     Description:$('input[name="iDescription"]').val(),
                     CreatePerson:$('input[name="iCreatePerson"]').val(),
@@ -446,18 +434,6 @@ $(function () {
                 field: 'CreateDate',
                 title: '创建时间',
                 width: 300,
-                align: 'center'
-            },
-            {
-                field: 'Img',
-                title: '显示图',
-                width: 100,
-                align: 'center'
-            },
-            {
-                field: 'Color',
-                title: '显示颜色',
-                width: 100,
                 align: 'center'
             }
         ]]
