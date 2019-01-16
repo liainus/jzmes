@@ -167,11 +167,8 @@ $(function () {
             $('input[name="iOrganizationSeq"]').val("");
             // $('input[name="iOrganizationSeq"]').onChange()
             $('input[name="iDescription"]').val("");
-            $('input[name="iCreatePerson"]').val("");
             $('input[name="iCreateDate"]').val(Bee.DateUtils.getCurrentTime());
             $('input[name="iCreateDate"]').attr("disabled", "disabled");
-            $('input[name="iImg"]').val("");
-            $('input[name="iColor"]').val("");
 
 
             // $(formId).form('clear');
@@ -194,14 +191,11 @@ $(function () {
                     $('input[name="iID"]').val(row.ID);
                     $('input[name="iOrganizationCode"]').val(row.OrganizationCode);
                     $('input[name="iOrganizationName"]').val(row.OrganizationName);
-                    $('#iParentNode option:contains('+row.ParentNode+')').prop("selected", 'selected');
+                    $('#iParentNode option[value='+row.ParentNode+']').prop("selected", 'selected');
                     $('input[name="iOrganizationSeq"]').val(row.OrganizationSeq);
                     $('input[name="iDescription"]').val(row.Description);
-                    $('input[name="iCreatePerson"]').val(row.CreatePerson);
                     $('input[name="iCreateDate"]').val(row.CreateDate);
                     $('input[name="iCreateDate"]').attr("disabled", "disabled");
-                    $('input[name="iImg"]').val(row.Img);
-                    $('input[name="iColor"]').val(row.Color);
                     //var thisSwitchbuttonObj = $(".switchstatus").find("[switchbuttonName='IsEnable']");//获取switchbutton对象  
                     if (row.IsEnable == '禁用') {
 
