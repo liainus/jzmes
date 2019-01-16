@@ -87,12 +87,6 @@ $(function () {
                 align: 'center',
                 width: 200
             },
-             {
-                field: 'ParentNode',
-                title: '父节点ID',
-                align: 'center',
-                width: 100
-            },
             {
                 field: 'OrganizationSeq',
                 title: '顺序',
@@ -106,12 +100,6 @@ $(function () {
                 field: 'Description',
                 title: '说明',
                 width: 300,
-                align: 'center'
-            },
-            {
-                field: 'CreatePerson',
-                title: '创建人',
-                width: 100,
                 align: 'center'
             },
             {
@@ -268,7 +256,6 @@ $(function () {
             }
         },
         save: function () {
-            console.log($('input[name="iParentNode"]').val())
             var validate=$(formId).form('validate');
             var strID = $('input[name="iID"]').val();
             var msg = ""
@@ -291,7 +278,7 @@ $(function () {
                 alert('Warning：组织机构顺序输入错误,请输入数字！');
                 return false;
             }
-            iParentNode = $('input[name="iParentNode"]').val();
+            iParentNode = $('#iParentNode').find("option:selected").val();
             if(Bee.StringUtils.isInteger(iParentNode)) {
             //
             }else{
@@ -314,10 +301,7 @@ $(function () {
                     ParentNode:$('#iParentNode').find("option:selected").val(),
                     OrganizationSeq:$('input[name="iOrganizationSeq"]').val(),
                     Description:$('input[name="iDescription"]').val(),
-                    CreatePerson:$('input[name="iCreatePerson"]').val(),
-                    CreateDate:$('input[name="iCreateDate"]').val(),
-                    Img:$('input[name="iImg"]').val(),
-                    Color:$('input[name="iColor"]').val()
+                    CreateDate:$('input[name="iCreateDate"]').val()
                 };
                 $.ajax({
                     url: urlAddr,
@@ -403,12 +387,6 @@ $(function () {
                 align: 'center',
                 width: 200
             },
-             {
-                field: 'ParentNode',
-                title: '父节点ID',
-                align: 'center',
-                width: 100
-            },
             {
                 field: 'OrganizationSeq',
                 title: '顺序',
@@ -422,12 +400,6 @@ $(function () {
                 field: 'Description',
                 title: '说明',
                 width: 300,
-                align: 'center'
-            },
-            {
-                field: 'CreatePerson',
-                title: '创建人',
-                width: 100,
                 align: 'center'
             },
             {
