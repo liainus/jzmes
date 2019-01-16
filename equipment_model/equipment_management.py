@@ -80,7 +80,7 @@ def equipment():
         id = li[0]
         name = li[1]
         pro_unit_id = {'ID': id, 'text': name}
-        data.append(pro_unit_id)
+        data1.append(pro_unit_id)
     return render_template('sysEquipment.html', ProcessUnit_id=data, dic=data1)
 
 # 设备建模查询
@@ -192,10 +192,29 @@ def pequipmentDelete():
 @equip.route('/allEquipments/Find')
 def EquipmentsFind():
     if request.method == 'GET':
-        data = request.values
-        EquipmentIFS = Model.core.EquipmentWebIFS("EquipmentFind")
-        re = EquipmentIFS.EquipmentsFind(data)
-        return re
+        data = request.values  # 返回请求中的参数和form
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                pages = int(data['page'])  # 页数
+                rowsnumber = int(data['rows'])  # 行数
+                inipage = (pages - 1) * rowsnumber + 0  # 起始页
+                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+                EQPName = data['EQPName']  # 设备名称
+                if (EQPName == "" or EQPName == None):
+                    total = db_session.query(Equipment).count()
+                    pequipments = db_session.query(Equipment).all()[inipage:endpage]
+                else:
+                    total = db_session.query(Equipment).filter(Equipment.EQPName.like("%" + EQPName + "%")).count()
+                    pequipments = db_session.query(Equipment).filter(
+                        Equipment.EQPName.like("%" + EQPName + "%")).all()[inipage:endpage]
+                jsonpequipments = json.dumps(pequipments, cls=AlchemyEncoder, ensure_ascii=False)
+                jsonpequipments = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonpequipments + "}"
+                return jsonpequipments
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "设备建模查询报错Error：" + str(e), current_user.Name)
 
 
 # role更新数据，通过传入的json数据，解析之后进行相应更新
@@ -281,6 +300,25 @@ def spareStockSearch():
             logger.error(e)
             insertSyslog("error", "备件库查询报错Error：" + str(e), current_user.Name)
             return json.dumps("备件库查询报错", cls=Model.BSFramwork.AlchemyEncoder,ensure_ascii=False)
+
+# 备件库存查询
+@equip.route('/spareStockSearchEchis', methods=['POST', 'GET'])
+def spareStockSearchEchis():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                SpareName = data["SpareName"]
+                if data["SpareName"] == "":
+                    return "请输入要查询的备件名！"
+                spareCount = db_session.query(SpareStock).filter(SpareStock.SpareName == SpareName).count()
+                return json.dumps(spareCount, cls=AlchemyEncoder, ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "备件库存查询报错Error：" + str(e), current_user.Name)
+            return json.dumps("备件库存查询报错", cls=Model.BSFramwork.AlchemyEncoder,ensure_ascii=False)
 
 # 备件新增
 @equip.route('/spareStockCreate', methods=['POST', 'GET'])

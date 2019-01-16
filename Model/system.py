@@ -900,6 +900,18 @@ class SpareStock(Base):
     # 入库时间:
     InStockDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
 
+#  备件类型库
+class SpareTypeStore(Base):
+    __tablename__ = 'SpareTypeStore'
+    # id:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+    # 备件类型编码
+    Workshop = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 备件类型名称
+    PUIDName = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
 #  设备运行记录
 class EquipmentRunRecord(Base):
     __tablename__ = 'EquipmentRunRecord'
