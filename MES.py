@@ -236,7 +236,7 @@ def MyUserSelect():
                 id = odata['id']
                 Name = odata['Name']
                 if id != '':
-                    OrganizationCodeData = db_session.query(Organization).filter_by(id=id).first()
+                    OrganizationCodeData = db_session.query(Organization).filter_by(ID=id).first()
                     if OrganizationCodeData != None:
                         OrganizationName = str(OrganizationCodeData.OrganizationName)
                         total = db_session.query(User).filter(and_(User.OrganizationName.like("%" + OrganizationName + "%") if OrganizationName is not None else "",
@@ -688,8 +688,17 @@ def getMyOrganizationChildrenMap(id):
 # 加载工作台
 @app.route('/organization')
 def organization():
-    return render_template('sysOrganization.html')
-
+    try:
+        org_class = db_session.query(Organization).all()
+        org_data = list()
+        for org in org_class:
+            org_data.append({'id': org.ID,'name': org.OrganizationName})
+        return render_template('sysOrganization.html', organizations=org_data)
+    except Exception as e:
+        print(e)
+        logger.error(e)
+        insertSyslog("error", "/organization查询组织名称报错Error：" + str(e), current_user.Name)
+        return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 @app.route('/allOrganizations/Find')
 def OrganizationsFind():
@@ -6999,7 +7008,7 @@ def GetQualityControlData(data):
 
         try:
             cursor = conn.cursor()
-            sql = "select [Data_History].[%s],[Data_History].[SampleTime] from [MES].[dbo].[DataHistory] WHERE [Data_History].[%s] = %s" %(tag, batch_tag,batch)
+            sql = "select [DataHistory].[%s],[DataHistory].[SampleTime] from [MES].[dbo].[DataHistory] WHERE [Data_History].[%s] = %s" %(tag, batch_tag,batch)
             cursor.execute(sql)
             tags_data = cursor.fetchall()
             cursor.close()

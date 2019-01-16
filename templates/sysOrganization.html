@@ -74,7 +74,12 @@
                 <tr>
                     <td class="kv-label">父节点</td>
                     <td class="kv-content">
-                        <input name="iParentNode" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                        <select name="iParentNode" id="iParentNode" type="text" style="width:157px;" autocomplete="off" placeholder="">
+                            <option value="">请选择</option>
+                            {% for org in organizations %}
+                                <option value="{{ org['id'] }}">{{ org['name'] }}</option>
+                            {% endfor %}
+                        </select>
                     </td>
                 </tr>
                 <tr>
@@ -95,19 +100,6 @@
                         <input  name="iCreateDate" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
                     </td>
                 </tr>
-                <tr>
-                    <td class="kv-label">显示图</td>
-                    <td class="kv-content">
-                        <input  name="iImg" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
-                    </td>
-                </tr>
-                <tr>
-                    <td class="kv-label">显示颜色</td>
-                    <td class="kv-content">
-                        <input  name="iColor" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
-                    </td>
-                </tr>
-
             </tbody>
         </table>
         <div id="OrganizationClassDialogButtons" >
