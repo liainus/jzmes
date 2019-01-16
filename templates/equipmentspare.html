@@ -11,6 +11,7 @@
     <link href="../static/css/datagridpanel_customer.css" rel="stylesheet">
     <link href="../static/css/dialogpanel.css" type="text/css" rel="stylesheet">
     <link href="../static/css/datagrid_customer.css" type="text/css" rel="stylesheet">
+    <script type="text/javascript" src="../static/js/echarts.common.min.js"></script>
     <script type="text/javascript" src="../static/js/jquery.min.js"></script>
     <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
     <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
@@ -109,230 +110,6 @@
             margin-bottom: 10px;
         }
     </style>
-</head>
-<body>
-    <div class="" style="padding: 10px;">
-        <div id="tt" class="easyui-tabs" style="width:100%;height:500px;">
-            <div title="入库" style="padding:10px">
-                <div class="progress-head">
-                    <div class="host-progress inPlan1">
-                        <div class="host-ball" onclick="toolbar.putIn()">入库</div>
-                        <div class="host-line"></div>
-                        <div class="host-arrow"></div>
-                    </div>
-                    <div class="host-progress inPlan2">
-                        <div class="host-ball" onclick="toolbar.putInCheck()">入库审核</div>
-                        <div class="host-line"></div>
-                        <div class="host-arrow"></div>
-                        <div class="childBox">
-                            <div class="childNode">
-                                <div class="progress-line"></div>
-                                <a class="ball" name=""></a>
-                                <div class="detail">
-                                    <div class="flow-detail" onclick="toolbar.putInCheckRecall()">入库撤回</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="host-progress inPlan3">
-                        <div class="host-ball">库存</div>
-                    </div>
-                </div>
-                <div id="Toolbar" style="padding:0 10px;">
-                    备件名称:
-                    <input type="text" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
-                        placeholder="">
-                    <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="toolbar.search()">查询</a>
-                    <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="toolbar.create()">添加</a>
-                    <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="toolbar.update()">编辑</a>
-                    <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="toolbar.delete()">删除</a>
-                    <a href="#" class="easyui-linkbutton" iconCls="icon-reload" onclick="toolbar.refresh()">刷新</a>
-                </div>
-                <table class="easyui-datagrid" id="tab" title="" style="width:100%;" data-options="
-                    queryParams: {
-                        SpareName: ''
-                    },
-                    url:'/spareStockSearch',
-                    rownumbers:true,
-                    singleSelect:false,
-                    autoRowHeight:false,
-                    pagination:true,
-                    pageSize:10,
-                    toolbar:'#Toolbar',
-                    method:'get'">
-                    <thead>
-                        <tr>
-                            <th field="ck" checkbox="true"></th>
-                            <th data-options="field:'SpareName',width:150,align:'center'">备件名称</th>
-                            <th data-options="field:'SpareCode',width:100,align:'center'">备件编码</th>
-                            <th data-options="field:'SpareStatus',width:100,align:'center'" formatter="formatterStatus">备件状态</th>
-                            <th data-options="field:'SpareModel',width:150,align:'center'">备件型号</th>
-                            <th data-options="field:'SpareFactory',width:100,align:'center'">生产厂家</th>
-                            <th data-options="field:'SpareType',width:100,align:'center'">备件类型</th>
-                            <th data-options="field:'SparePower',width:100,align:'center'">备件功率</th>
-                            <th data-options="field:'StockUseStatus',width:100,align:'center'">备件使用状况</th>
-                            <th data-options="field:'Description',width:150,align:'center'">描述</th>
-                            <th data-options="field:'ProductionDate',width:150,align:'center'">生产日期</th>
-                            <th data-options="field:'CreateDate',width:150,align:'center'">录入时间</th>
-                            <th data-options="field:'InStockPeople',width:100,align:'center'">录入人</th>
-                            <th data-options="field:'CheckedPeople',width:100,align:'center'">审核人</th>
-                            <th data-options="field:'CheckedDate',width:150,align:'center'">审核时间</th>
-                            <th data-options="field:'InStockDate',width:150,align:'center'">入库时间</th>
-                        </tr>
-                    </thead>
-                </table>
-            </div>
-            <div title="出库" style="padding:10px">
-                <div class="progress-head">
-                    <div class="host-progress outPlan1">
-                        <div class="host-ball" onclick="toolbar.OutStock()">出库</div>
-                        <div class="host-line"></div>
-                        <div class="host-arrow"></div>
-                    </div>
-                    <div class="host-progress outPlan2">
-                        <div class="host-ball" onclick="toolbar.OutStockCheck()">出库审核</div>
-                        <div class="host-line"></div>
-                        <div class="host-arrow"></div>
-                        <div class="childBox">
-                            <div class="childNode">
-                                <div class="progress-line"></div>
-                                <a class="ball" name=""></a>
-                                <div class="detail">
-                                    <div class="flow-detail" onclick="toolbar.OutStockCheckRecall()">出库撤回</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="host-progress outPlan3">
-                        <div class="host-ball clickRecord">库存</div>
-                    </div>
-                </div>
-                <div id="Toolbar2" style="padding:0 10px;">
-                    备件名称:
-                    <input type="text" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
-                        placeholder="">
-                    <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="toolbar.search()">查询</a>
-                    <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="toolbar.create()">添加</a>
-                    <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="toolbar.update()">编辑</a>
-                    <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="toolbar.delete()">删除</a>
-                    <a href="#" class="easyui-linkbutton" iconCls="icon-reload" onclick="toolbar.refresh()">刷新</a>
-                </div>
-                <table class="easyui-datagrid" id="tab2" title="" style="width:100%;" data-options="
-                    queryParams: {
-                        SpareName: ''
-                    },
-                    url:'/spareStockSearch',
-                    rownumbers:true,
-                    singleSelect:false,
-                    autoRowHeight:false,
-                    pagination:true,
-                    pageSize:10,
-                    toolbar:'#Toolbar2',
-                    method:'get'">
-                    <thead>
-                        <tr>
-                            <th field="ck" checkbox="true"></th>
-                            <th data-options="field:'SpareName',width:150,align:'center'">备件名称</th>
-                            <th data-options="field:'SpareCode',width:100,align:'center'">备件编码</th>
-                            <th data-options="field:'SpareStatus',width:100,align:'center'" formatter="formatterStatus">备件状态</th>
-                            <th data-options="field:'SpareModel',width:150,align:'center'">备件型号</th>
-                            <th data-options="field:'SpareFactory',width:100,align:'center'">生产厂家</th>
-                            <th data-options="field:'SpareType',width:100,align:'center'">备件类型</th>
-                            <th data-options="field:'SparePower',width:100,align:'center'">备件功率</th>
-                            <th data-options="field:'StockUseStatus',width:100,align:'center'">备件使用状况</th>
-                            <th data-options="field:'Description',width:150,align:'center'">描述</th>
-                            <th data-options="field:'ProductionDate',width:150,align:'center'">生产日期</th>
-                            <th data-options="field:'CreateDate',width:150,align:'center'">录入时间</th>
-                            <th data-options="field:'InStockPeople',width:100,align:'center'">录入人</th>
-                            <th data-options="field:'CheckedPeople',width:100,align:'center'">审核人</th>
-                            <th data-options="field:'CheckedDate',width:150,align:'center'">审核时间</th>
-                            <th data-options="field:'InStockDate',width:150,align:'center'">入库时间</th>
-                        </tr>
-                    </thead>
-                </table>
-            </div>
-            <div title="库存" style="padding:10px">
-                <div id="stockData"></div>
-            </div>
-        </div>
-        <div id="equimentsClassDialog" class="easyui-dialog" style="width:400px;height:560px;padding:10px;"
-             data-options="closed:'true',buttons:'#equimentsClassDialogButtons',modal:true">
-            <form id="equimentsClassDialogForm" method="post" class="dialog-form">
-                <table class="kv-table">
-                    <tbody>
-                        <tr>
-                            <td class="kv-label">id</td>
-                            <td class="kv-content">
-                                <input name="ID" id="ID" type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="" disabled="disabled">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="kv-label">备件名称</td>
-                            <td class="kv-content">
-                                <input name="SpareName" id="SpareName" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="kv-label">备件编码</td>
-                            <td class="kv-content">
-                                <input name="SpareCode" id="SpareCode" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="kv-label">备件型号</td>
-                            <td class="kv-content">
-                                <input name="SpareModel" id="SpareModel" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="kv-label">生产厂家</td>
-                            <td class="kv-content">
-                                <input name="SpareFactory" id="SpareFactory" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="kv-label">备件类型</td>
-                            <td class="kv-content">
-                                <input name="SpareType" id="SpareType" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="kv-label">备件功率</td>
-                            <td class="kv-content">
-                                <input name="SparePower" id="SparePower" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="kv-label">备件使用状况</td>
-                            <td class="kv-content">
-                                <select name="StockUseStatus" id="StockUseStatus" type="text" style="width:157px;" autocomplete="off" placeholder="">
-                                    <option value="">请选择</option>
-                                        <option value="全新">全新</option>
-                                        <option value="旧备件">旧备件</option>
-                                </select>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="kv-label">描述</td>
-                            <td class="kv-content">
-                                <input name="Description" id="Description" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="kv-label">生产日期</td>
-                            <td class="kv-content">
-                                <input name="ProductionDate" id="ProductionDate" type="text" class="easyui-datebox" data-options="editable:false" autocomplete="off" placeholder=""  >
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div id="equimentsClassDialogButtons">
-                    <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" id="saveAdd" onclick="toolbar.save()" >保存</a>
-                    <a href="#" class="easyui-linkbutton" onclick="$('#equimentsClassDialog').dialog('close')">关闭</a>
-                </div>
-            </form>
-        </div>
-    </div>
     <script>
         $(function(){
             $("#tt").tabs({
@@ -342,6 +119,69 @@
                     $('#tab2').datagrid('reload');
                 }
             })
+            //选择备件类型
+            $("#tree").tree({
+                url:'/MyOp',
+                method: 'get',
+                animate:true,
+                loadFilter:function(data){
+                    return data
+                },
+                onClick :function(node){
+                    code = node.id
+                    toJson();
+                }
+            })
+            //初始化
+            function toJson(){
+                var myChart = echarts.init(document.getElementById("stockData"))
+                myChart.showLoading();
+                $.ajax({
+                    url:"/ProcessContinuousData/CPKCapture",
+                    type:"post",
+                    data:{
+                        batch: ''
+                    },
+                    success:function(data){
+                        data = JSON.parse(data)
+                        myChart.hideLoading();
+                        myChart.setOption(option = {
+                            tooltip: {
+                                trigger: 'axis',
+                                axisPointer: {
+                                    type: 'cross',
+                                    crossStyle: {
+                                        color: '#999'
+                                    }
+                                }
+                            },
+                            toolbox: {
+                                feature : {
+                                    dataView: {show: true, readOnly: false},
+                                    magicType: {show: true, type: ['line', 'bar']},
+                                    restore: {show: true},
+                                    saveAsImage: {show: true}
+                                }
+                            },
+                            xAxis:  {
+                                name: ,
+                                type: 'category',
+                                boundaryGap : false,
+                                data:[]
+                            },
+                            yAxis: {
+                                type : 'value'
+                            },
+                            series: [{
+                                name: "概率密度",
+                                type: 'line',
+                                data: []
+                            }]
+                        });
+                        myChart.setOption(option);
+                    }
+                })
+            }
             function createKeyIDObj(keyID){
                 return {
                     ID:keyID
@@ -678,5 +518,232 @@
             }
         }
     </script>
+</head>
+<body>
+    <div class="" style="padding: 10px;">
+        <div id="tt" class="easyui-tabs" style="width:100%;height:500px;">
+            <div title="入库" style="padding:10px">
+                <div class="progress-head">
+                    <div class="host-progress inPlan1">
+                        <div class="host-ball" onclick="toolbar.putIn()">入库</div>
+                        <div class="host-line"></div>
+                        <div class="host-arrow"></div>
+                    </div>
+                    <div class="host-progress inPlan2">
+                        <div class="host-ball" onclick="toolbar.putInCheck()">入库审核</div>
+                        <div class="host-line"></div>
+                        <div class="host-arrow"></div>
+                        <div class="childBox">
+                            <div class="childNode">
+                                <div class="progress-line"></div>
+                                <a class="ball" name=""></a>
+                                <div class="detail">
+                                    <div class="flow-detail" onclick="toolbar.putInCheckRecall()">入库撤回</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="host-progress inPlan3">
+                        <div class="host-ball">库存</div>
+                    </div>
+                </div>
+                <div id="Toolbar" style="padding:0 10px;">
+                    备件名称:
+                    <input type="text" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
+                        placeholder="">
+                    <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="toolbar.search()">查询</a>
+                    <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="toolbar.create()">添加</a>
+                    <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="toolbar.update()">编辑</a>
+                    <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="toolbar.delete()">删除</a>
+                    <a href="#" class="easyui-linkbutton" iconCls="icon-reload" onclick="toolbar.refresh()">刷新</a>
+                </div>
+                <table class="easyui-datagrid" id="tab" title="" style="width:100%;" data-options="
+                    queryParams: {
+                        SpareName: ''
+                    },
+                    url:'/spareStockSearch',
+                    rownumbers:true,
+                    singleSelect:false,
+                    autoRowHeight:false,
+                    pagination:true,
+                    pageSize:10,
+                    toolbar:'#Toolbar',
+                    method:'get'">
+                    <thead>
+                        <tr>
+                            <th field="ck" checkbox="true"></th>
+                            <th data-options="field:'SpareName',width:150,align:'center'">备件名称</th>
+                            <th data-options="field:'SpareCode',width:100,align:'center'">备件编码</th>
+                            <th data-options="field:'SpareStatus',width:100,align:'center'" formatter="formatterStatus">备件状态</th>
+                            <th data-options="field:'SpareModel',width:150,align:'center'">备件型号</th>
+                            <th data-options="field:'SpareFactory',width:100,align:'center'">生产厂家</th>
+                            <th data-options="field:'SpareType',width:100,align:'center'">备件类型</th>
+                            <th data-options="field:'SparePower',width:100,align:'center'">备件功率</th>
+                            <th data-options="field:'StockUseStatus',width:100,align:'center'">备件使用状况</th>
+                            <th data-options="field:'Description',width:150,align:'center'">描述</th>
+                            <th data-options="field:'ProductionDate',width:150,align:'center'">生产日期</th>
+                            <th data-options="field:'CreateDate',width:150,align:'center'">录入时间</th>
+                            <th data-options="field:'InStockPeople',width:100,align:'center'">录入人</th>
+                            <th data-options="field:'CheckedPeople',width:100,align:'center'">审核人</th>
+                            <th data-options="field:'CheckedDate',width:150,align:'center'">审核时间</th>
+                            <th data-options="field:'InStockDate',width:150,align:'center'">入库时间</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div title="出库" style="padding:10px">
+                <div class="progress-head">
+                    <div class="host-progress outPlan1">
+                        <div class="host-ball" onclick="toolbar.OutStock()">出库</div>
+                        <div class="host-line"></div>
+                        <div class="host-arrow"></div>
+                    </div>
+                    <div class="host-progress outPlan2">
+                        <div class="host-ball" onclick="toolbar.OutStockCheck()">出库审核</div>
+                        <div class="host-line"></div>
+                        <div class="host-arrow"></div>
+                        <div class="childBox">
+                            <div class="childNode">
+                                <div class="progress-line"></div>
+                                <a class="ball" name=""></a>
+                                <div class="detail">
+                                    <div class="flow-detail" onclick="toolbar.OutStockCheckRecall()">出库撤回</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="host-progress outPlan3">
+                        <div class="host-ball clickRecord">库存</div>
+                    </div>
+                </div>
+                <div id="Toolbar2" style="padding:0 10px;">
+                    备件名称:
+                    <input type="text" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
+                        placeholder="">
+                    <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="toolbar.search()">查询</a>
+                    <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="toolbar.create()">添加</a>
+                    <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="toolbar.update()">编辑</a>
+                    <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="toolbar.delete()">删除</a>
+                    <a href="#" class="easyui-linkbutton" iconCls="icon-reload" onclick="toolbar.refresh()">刷新</a>
+                </div>
+                <table class="easyui-datagrid" id="tab2" title="" style="width:100%;" data-options="
+                    queryParams: {
+                        SpareName: ''
+                    },
+                    url:'/spareStockSearch',
+                    rownumbers:true,
+                    singleSelect:false,
+                    autoRowHeight:false,
+                    pagination:true,
+                    pageSize:10,
+                    toolbar:'#Toolbar2',
+                    method:'get'">
+                    <thead>
+                        <tr>
+                            <th field="ck" checkbox="true"></th>
+                            <th data-options="field:'SpareName',width:150,align:'center'">备件名称</th>
+                            <th data-options="field:'SpareCode',width:100,align:'center'">备件编码</th>
+                            <th data-options="field:'SpareStatus',width:100,align:'center'" formatter="formatterStatus">备件状态</th>
+                            <th data-options="field:'SpareModel',width:150,align:'center'">备件型号</th>
+                            <th data-options="field:'SpareFactory',width:100,align:'center'">生产厂家</th>
+                            <th data-options="field:'SpareType',width:100,align:'center'">备件类型</th>
+                            <th data-options="field:'SparePower',width:100,align:'center'">备件功率</th>
+                            <th data-options="field:'StockUseStatus',width:100,align:'center'">备件使用状况</th>
+                            <th data-options="field:'Description',width:150,align:'center'">描述</th>
+                            <th data-options="field:'ProductionDate',width:150,align:'center'">生产日期</th>
+                            <th data-options="field:'CreateDate',width:150,align:'center'">录入时间</th>
+                            <th data-options="field:'InStockPeople',width:100,align:'center'">录入人</th>
+                            <th data-options="field:'CheckedPeople',width:100,align:'center'">审核人</th>
+                            <th data-options="field:'CheckedDate',width:150,align:'center'">审核时间</th>
+                            <th data-options="field:'InStockDate',width:150,align:'center'">入库时间</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div title="库存" style="padding:10px">
+                <div class="left-tree" style="width:180px;vertical-align: top;border: 1px solid #ccc;margin: 1%;padding: 1%;">
+                    <ul class="easyui-tree" id="tree"></ul>
+                </div>
+                <div id="stockData" style="width: 600px; height: 500px;"></div>
+            </div>
+        </div>
+        <div id="equimentsClassDialog" class="easyui-dialog" style="width:400px;height:560px;padding:10px;"
+             data-options="closed:'true',buttons:'#equimentsClassDialogButtons',modal:true">
+            <form id="equimentsClassDialogForm" method="post" class="dialog-form">
+                <table class="kv-table">
+                    <tbody>
+                        <tr>
+                            <td class="kv-label">id</td>
+                            <td class="kv-content">
+                                <input name="ID" id="ID" type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="" disabled="disabled">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">备件名称</td>
+                            <td class="kv-content">
+                                <input name="SpareName" id="SpareName" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">备件编码</td>
+                            <td class="kv-content">
+                                <input name="SpareCode" id="SpareCode" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">备件型号</td>
+                            <td class="kv-content">
+                                <input name="SpareModel" id="SpareModel" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">生产厂家</td>
+                            <td class="kv-content">
+                                <input name="SpareFactory" id="SpareFactory" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">备件类型</td>
+                            <td class="kv-content">
+                                <input name="SpareType" id="SpareType" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">备件功率</td>
+                            <td class="kv-content">
+                                <input name="SparePower" id="SparePower" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">备件使用状况</td>
+                            <td class="kv-content">
+                                <select name="StockUseStatus" id="StockUseStatus" type="text" style="width:157px;" autocomplete="off" placeholder="">
+                                    <option value="">请选择</option>
+                                        <option value="全新">全新</option>
+                                        <option value="旧备件">旧备件</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">描述</td>
+                            <td class="kv-content">
+                                <input name="Description" id="Description" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">生产日期</td>
+                            <td class="kv-content">
+                                <input name="ProductionDate" id="ProductionDate" type="text" class="easyui-datebox" data-options="editable:false" autocomplete="off" placeholder=""  >
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div id="equimentsClassDialogButtons">
+                    <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" id="saveAdd" onclick="toolbar.save()" >保存</a>
+                    <a href="#" class="easyui-linkbutton" onclick="$('#equimentsClassDialog').dialog('close')">关闭</a>
+                </div>
+            </form>
+        </div>
+    </div>
 </body>
 </html>

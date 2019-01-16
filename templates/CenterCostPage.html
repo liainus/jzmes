@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>成本中心</title>
+    <link href="../static/css/base.css" rel="stylesheet">
+	<link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
+	<link href="../static/css/basic_info.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
+	<link href="../static/js/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
+    <link href="../static/css/datagridpanel_customer.css" rel="stylesheet">
+    <link href="../static/css/dialogpanel.css" type="text/css" rel="stylesheet">
+    <link href="../static/css/datagrid_customer.css" type="text/css" rel="stylesheet">
+    <script type="text/javascript" src="../static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
+    <script>
+        $(function(){
+            toolbar = {
+                search:function(){
+                    $('#tab').datagrid('load',{
+                        CharityPerson: $("input[name=search]").val()
+                    });
+                },
+                create:function(){
+                    $("#equimentsClassDialog").dialog('open').dialog('setTitle','新增成本中心');
+                    $('#ID').val();
+                    $('#CenterCostNum').val();
+                    $('#CharityPerson').val();
+                },
+                update:function(){
+                    var rows = $('#tab').datagrid('getSelections');
+                    if (rows.length > 1) {
+                        $.messager.alert('警告操作！', '编辑记录只能选定一条数据！', 'warning');
+                    } else if (rows.length == 1) {
+                        var row = $('#tab').datagrid('getSelected');
+                        if (row) {
+                            $("#equimentsClassDialog").dialog('open').dialog('setTitle','修改成本中心');
+                            $('#ID').val(row.ID);
+                            $('#CenterCostNum').val(row.CenterCostNum);
+                            $('#CharityPerson').val(row.CharityPerson);
+                        };
+                    } else if (rows.length == 0) {
+                        $.messager.alert('警告操作！', '请至少选定一条数据进行编辑！', 'warning');
+                    }
+                },
+                save:function(){
+                    var strID = $('#ID').val();
+                    var urlAddr = ''
+                    var hintinfo = ''
+                    if(Bee.StringUtils.isEmpty($('#CenterCostNum').val())) {
+                        $.messager.alert('提示', '成本中心号不能为空！', 'info');
+                        return false;
+                    }else if(Bee.StringUtils.isEmpty($('#CharityPerson').val())){
+                        $.messager.alert('提示', '负责人不能为空！', 'info');
+                     return false;
+                    }
+                    if (strID.length >= 1){
+                        urlAddr = '/equipment_model/CenterCostUpdate'
+                        hintinfo = "修改成本中心"
+                    }
+                    else {
+                        urlAddr = '/equipment_model/CenterCostCreate'
+                        hintinfo = "新增成本中心"
+                    }
+                    $.ajax({
+                        url:urlAddr,
+                        type:"post",
+                        data:{
+                            ID:$('#ID').val(),
+                            CenterCostNum:$('#CenterCostNum').val(),
+                            CharityPerson:$('#CharityPerson').val()
+                        },
+                        success:function(data){
+                            $.messager.progress('close');
+                            if(data == "OK"){
+                                $.messager.show({
+                                    title: '提示',
+                                    msg: hintinfo  + '成功',
+                                    timeout:1000,
+                                    style: {
+                                        right: '',
+                                        top: document.body.scrollTop + document.documentElement.scrollTop,
+                                        bottom: ''
+                                    }
+                                });
+                                $("#equimentsClassDialog").dialog('close');
+                                $('#tab').datagrid('reload');
+                            } else {
+                                $.messager.alert('提醒：', data, 'warning');
+                            }
+                        },
+                        error: function(data){
+                           console.log(data.responseText)
+                           alert(hintinfo+ "异常，请刷新后重试...");
+                        },
+                    })
+                },
+                delete:function(){
+                    var rows = $("#tab").datagrid('getSelections');
+                    if (rows.length > 0) {
+                        var jsonarray=[];
+                        $.messager.confirm('确定操作', '您正在删除所选的记录吗？', function (flag) {
+                            if (flag) {
+                                for (var i = 0; i < rows.length; i++) {
+                                    var obj=createKeyIDObj(parseInt(rows[i].ID));
+                                    jsonarray.push(obj);
+                                }
+                                var a = JSON.stringify(jsonarray);
+                                $.ajax({
+                                    url: '/equipment_model/CenterCostDelete',
+                                    method: 'POST',
+                                    data: a,
+                                    success: function (data) {
+                                        if(data == "OK"){
+                                            $.messager.progress('close');
+                                            $("#tab").datagrid('reload');
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                    } else {
+                        $.messager.alert('提示', '请选择要删除的记录！', 'info');
+                    }
+                },
+                refresh:function(){
+                    $('#tab').datagrid('reload');
+                }
+            }
+            function createKeyIDObj(keyID){
+                return {
+                    ID:keyID
+                }
+            }
+        })
+    </script>
+</head>
+<body>
+    <div class="" style="padding: 10px;">
+        <div id="Toolbar" style="padding:0 10px;">
+            负责人:
+            <input type="text" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
+                placeholder="">
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="toolbar.search()">查询</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="toolbar.create()">添加</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="toolbar.update()">编辑</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="toolbar.delete()">删除</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-reload" onclick="toolbar.refresh()">刷新</a>
+        </div>
+        <table class="easyui-datagrid" id="tab" title="" style="width:100%;" data-options="
+            queryParams: {
+                SpareTypeName: ''
+            },
+            url:'/equipment_model/CenterCostSelect',
+            rownumbers:true,
+            singleSelect:false,
+            autoRowHeight:false,
+            pagination:true,
+            pageSize:10,
+            toolbar:'#Toolbar',
+            method:'get'">
+            <thead>
+                <tr>
+                    <th field="ck" checkbox="true"></th>
+                    <th data-options="field:'CenterCostNum',width:150,align:'center'">成本中心号</th>
+                    <th data-options="field:'CharityPerson',width:100,align:'center'">负责人</th>
+                </tr>
+            </thead>
+        </table>
+        <div id="equimentsClassDialog" class="easyui-dialog" style="width:400px;height:560px;padding:10px;"
+             data-options="closed:'true',buttons:'#equimentsClassDialogButtons',modal:true">
+            <form id="equimentsClassDialogForm" method="post" class="dialog-form">
+                <table class="kv-table">
+                    <tbody>
+                        <tr>
+                            <td class="kv-label">id</td>
+                            <td class="kv-content">
+                                <input name="ID" id="ID" type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="" disabled="disabled">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">成本中心号</td>
+                            <td class="kv-content">
+                                <input name="CenterCostNum" id="CenterCostNum" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">负责人</td>
+                            <td class="kv-content">
+                                <input name="CharityPerson" id="CharityPerson" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div id="equimentsClassDialogButtons">
+                    <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" id="saveAdd" onclick="toolbar.save()" >保存</a>
+                    <a href="#" class="easyui-linkbutton" onclick="$('#equimentsClassDialog').dialog('close')">关闭</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

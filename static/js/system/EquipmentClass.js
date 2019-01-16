@@ -53,6 +53,9 @@ $(function () {
 
     $(tableId).datagrid({
         url: urlPrefix + 'Find', // urlPrefix + 'findAll',
+        queryParams: {
+            EQPName: ''
+        },
         method: 'get',
         rownumbers: true,
         singleSelect: false,
@@ -117,12 +120,6 @@ $(function () {
                 width: 100,
                 align: 'center'
             } ,
-            {
-                field: 'PUID',
-                title: '工艺段ID',
-                width: 100,
-                align: 'center'
-            },
             {
                 field: 'Desc',
                 title: '备注说明',
@@ -378,12 +375,6 @@ $(function () {
                     width: 100,
                     align: 'center'
                 } ,
-                {
-                    field: 'PUID',
-                    title: '工艺段ID',
-                    width: 100,
-                    align: 'center'
-                },
                 {
                     field: 'Desc',
                     title: '备注说明',

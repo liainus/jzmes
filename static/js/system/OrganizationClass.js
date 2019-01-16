@@ -87,12 +87,6 @@ $(function () {
                 align: 'center',
                 width: 200
             },
-             {
-                field: 'ParentNode',
-                title: '父节点ID',
-                align: 'center',
-                width: 100
-            },
             {
                 field: 'OrganizationSeq',
                 title: '顺序',
@@ -106,12 +100,6 @@ $(function () {
                 field: 'Description',
                 title: '说明',
                 width: 300,
-                align: 'center'
-            },
-            {
-                field: 'CreatePerson',
-                title: '创建人',
-                width: 100,
                 align: 'center'
             },
             {
@@ -179,11 +167,8 @@ $(function () {
             $('input[name="iOrganizationSeq"]').val("");
             // $('input[name="iOrganizationSeq"]').onChange()
             $('input[name="iDescription"]').val("");
-            $('input[name="iCreatePerson"]').val("");
             $('input[name="iCreateDate"]').val(Bee.DateUtils.getCurrentTime());
             $('input[name="iCreateDate"]').attr("disabled", "disabled");
-            $('input[name="iImg"]').val("");
-            $('input[name="iColor"]').val("");
 
 
             // $(formId).form('clear');
@@ -206,14 +191,11 @@ $(function () {
                     $('input[name="iID"]').val(row.ID);
                     $('input[name="iOrganizationCode"]').val(row.OrganizationCode);
                     $('input[name="iOrganizationName"]').val(row.OrganizationName);
-                    $('#iParentNode option:contains('+row.ParentNode+')').prop("selected", 'selected');
+                    $('#iParentNode option[value='+row.ParentNode+']').prop("selected", 'selected');
                     $('input[name="iOrganizationSeq"]').val(row.OrganizationSeq);
                     $('input[name="iDescription"]').val(row.Description);
-                    $('input[name="iCreatePerson"]').val(row.CreatePerson);
                     $('input[name="iCreateDate"]').val(row.CreateDate);
                     $('input[name="iCreateDate"]').attr("disabled", "disabled");
-                    $('input[name="iImg"]').val(row.Img);
-                    $('input[name="iColor"]').val(row.Color);
                     //var thisSwitchbuttonObj = $(".switchstatus").find("[switchbuttonName='IsEnable']");//获取switchbutton对象  
                     if (row.IsEnable == '禁用') {
 
@@ -268,7 +250,6 @@ $(function () {
             }
         },
         save: function () {
-            console.log($('input[name="iParentNode"]').val())
             var validate=$(formId).form('validate');
             var strID = $('input[name="iID"]').val();
             var msg = ""
@@ -291,7 +272,7 @@ $(function () {
                 alert('Warning：组织机构顺序输入错误,请输入数字！');
                 return false;
             }
-            iParentNode = $('input[name="iParentNode"]').val();
+            iParentNode = $('#iParentNode').find("option:selected").val();
             if(Bee.StringUtils.isInteger(iParentNode)) {
             //
             }else{
@@ -314,10 +295,7 @@ $(function () {
                     ParentNode:$('#iParentNode').find("option:selected").val(),
                     OrganizationSeq:$('input[name="iOrganizationSeq"]').val(),
                     Description:$('input[name="iDescription"]').val(),
-                    CreatePerson:$('input[name="iCreatePerson"]').val(),
-                    CreateDate:$('input[name="iCreateDate"]').val(),
-                    Img:$('input[name="iImg"]').val(),
-                    Color:$('input[name="iColor"]').val()
+                    CreateDate:$('input[name="iCreateDate"]').val()
                 };
                 $.ajax({
                     url: urlAddr,
@@ -403,12 +381,6 @@ $(function () {
                 align: 'center',
                 width: 200
             },
-             {
-                field: 'ParentNode',
-                title: '父节点ID',
-                align: 'center',
-                width: 100
-            },
             {
                 field: 'OrganizationSeq',
                 title: '顺序',
@@ -422,12 +394,6 @@ $(function () {
                 field: 'Description',
                 title: '说明',
                 width: 300,
-                align: 'center'
-            },
-            {
-                field: 'CreatePerson',
-                title: '创建人',
-                width: 100,
                 align: 'center'
             },
             {

@@ -22,6 +22,28 @@
     <script type="text/javascript">
         $(function () {
             $('#OrganizationName').attr("disabled", true);
+            $("#SpareTypeStoreHrefBtn").on('click',function(){
+                var btn_title = $(this).html()
+                addTab(btn_title, "/equipment_model/SpareTypeStorePage")
+            })
+            $("#CenterCostHrefBtn").on('click',function(){
+                var btn_title = $(this).html()
+                addTab(btn_title, "/equipment_model/CenterCostPage")
+            })
+            //按钮点击后添加选项卡
+            function addTab(title, url) {
+                if (parent.parent.$('.easyui-tabs1').tabs('exists', title)) {
+                    parent.parent.$('.easyui-tabs1').tabs('select', title);
+                }
+                else {
+                    var content = '<iframe class="page-iframe" src="' + url + '" frameborder="no" border="no" height="100%" width="100%" scrolling="auto"></iframe>';
+                    parent.parent.$('.easyui-tabs1').tabs('add', {
+                        title: title,
+                        content: content,
+                        closable: true
+                    });
+                }
+            }
         });
     </script>
 </head>
@@ -38,6 +60,8 @@
             <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit'" onclick="OrganizationClassToolbar.update();">修改</a>
             <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove'" onclick="OrganizationClassToolbar.delete();">删除</a>
             <a href="#" class="easyui-linkbutton" id="reload" data-options="iconCls:'icon-reload'" onclick="OrganizationClassToolbar.refresh();">刷新</a>
+            <a href="#" class="easyui-linkbutton" id="SpareTypeStoreHrefBtn">备件类型管理</a>
+            <a href="#" class="easyui-linkbutton" id="CenterCostHrefBtn">成本中心管理</a>
         </div>
     </div>
 
@@ -72,7 +96,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td class="kv-label">父节点</td>
+                    <td class="kv-label">归属机构</td>
                     <td class="kv-content">
                         <select name="iParentNode" id="iParentNode" type="text" style="width:157px;" autocomplete="off" placeholder="">
                             <option value="">请选择</option>
@@ -85,13 +109,7 @@
                 <tr>
                     <td class="kv-label">说明</td>
                     <td class="kv-content">
-                        <input  name="iDescription" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
-                    </td>
-                </tr>
-                <tr>
-                    <td class="kv-label">创建人</td>
-                    <td class="kv-content">
-                        <input  name="iCreatePerson" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                        <input  name="iDescription" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
                     </td>
                 </tr>
                 <tr>
