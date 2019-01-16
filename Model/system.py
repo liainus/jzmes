@@ -1054,6 +1054,17 @@ class EquipmentMaintenanceStore(Base):
     # 操作时间
     OperationDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
 
+# 成本中心
+class CenterCost(Base):
+    __tablename__ = 'CenterCost'
+    # id:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+    # 成本中心号
+    CenterCostNum = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 负责人
+    CharityPerson = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
 # 生成表单的执行语句
 Base.metadata.create_all(engine)

@@ -51,7 +51,7 @@ from threading import Timer
 from constant import constant
 import numpy
 from sqlalchemy.exc import InvalidRequestError
-from equipment_model import equip
+from equipment_model.equipment_management import equip
 
 #flask_login的初始化
 login_manager = LoginManager()
