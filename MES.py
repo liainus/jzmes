@@ -740,10 +740,8 @@ def allOrganizationsUpdate():
                 organization.ParentCode = data['ParentNode']
                 organization.OrganizationSeq = data['OrganizationSeq']
                 organization.Description = data['Description']
-                organization.CreatePerson = data['CreatePerson']
+                organization.CreatePerson = current_user.Name
                 organization.CreateDate = data['CreateDate']
-                organization.Img = data['Img']
-                organization.Color = data['Color']
                 db_session.commit()
                 insertSyslog("success", "更新组织" + data['OrganizationName'] + "的组织更新成功", current_user.Name)
                 return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=AlchemyEncoder,
@@ -801,23 +799,14 @@ def allOrganizationsCreate():
         try:
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 10:
-                if data['Img'] == "":
-                    DspImg = "antonio.jpg"
-                else:
-                    DspImg = data['Img']
-
-                if data['Color'] == "":
-                    DspColor = "#1696d3"
-                else:
-                    DspColor = data['Color']
                 db_session.add(
                     Organization(OrganizationCode=data['OrganizationCode'],
                                  OrganizationName=data['OrganizationName'],
                                  ParentNode=data['ParentNode'],
                                  OrganizationSeq=data['OrganizationSeq'],
                                  Description=data['Description'],
-                                 CreatePerson=data['CreatePerson'],
-                                 CreateDate=datetime.datetime.now(),Img = DspImg,Color = DspColor))
+                                 CreatePerson=current_user.Name,
+                                 CreateDate=datetime.datetime.now()))
                 db_session.commit()
                 insertSyslog("success", "新增组织" + data['OrganizationName'] + "的组织新增成功", current_user.Name)
                 return json.dumps([{"status": "OK"}], cls=AlchemyEncoder, ensure_ascii=False)
