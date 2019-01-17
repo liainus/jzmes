@@ -1421,7 +1421,7 @@ def runDataChart():
 #备件类型页面跳转
 @equip.route('/equipment_model/SpareTypeStorePage')
 def SpareTypeStorePage():
-    return "SpareTypeStorePage.html"
+    return render_template("SpareTypeStorePage.html")
 
 #备件类型查询
 @equip.route('/equipment_model/SpareTypeStoreSelect')
@@ -1477,7 +1477,7 @@ def SpareTypeStoreDetele():
 #成本中心页面跳转
 @equip.route('/equipment_model/CenterCostPage')
 def CenterCostPage():
-    return "CenterCostPage.html"
+    return render_template('CenterCostPage.html')
 
 #成本中心查询
 @equip.route('/equipment_model/CenterCostSelect')
