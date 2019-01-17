@@ -8,6 +8,7 @@ from tools.MESLogger import MESLogger
 import socket
 import datetime
 from Model.BSFramwork import AlchemyEncoder
+import re
 
 
 engine = create_engine(Model.Global.GLOBAL_DATABASE_CONNECT_STRING, deprecate_large_types=True)
@@ -55,26 +56,32 @@ def insert(tablename, data):
                 insertSyslog("error", "%s数据添加报错："%tablename + str(e), current_user.Name)
                 return json.dumps('数据添加失败！')
 
-def delete(tablename, recv_data):
+def delete(tablename, delete_data):
     '''
     :param tablename: 要进行删除信息的model
     :param recv_data: 要进行更新的数据，数据类型为list，list中的每个元素为需要删除的每条记录的ID
     :return: 返回json信息，包含status，message
     '''
     if hasattr(tablename, '__tablename__'):
-        if isinstance(recv_data, list) and len(recv_data) > 0:
-            try:
-                for id in recv_data:
-                    Table_ID = int(id)
-                    oclass = db_session.query(tablename).filter(tablename.ID == Table_ID).first()
-                    if oclass:
+        try:
+            jsonstr = json.dumps(delete_data.to_dict())
+            if len(jsonstr) > 10:
+                jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
+                for key in jsonnumber:
+                    id = int(key)
+                    try:
+                        oclass = db_session.query(tablename).filter_by(ID=id).first()
                         db_session.delete(oclass)
                         db_session.commit()
+                    except Exception as ee:
+                        db_session.rollback()
+                        insertSyslog("error", "删除户ID为"+str(id)+"报错Error：" + str(ee), current_user.Name)
+                        return json.dumps("删除用户报错", cls=AlchemyEncoder,ensure_ascii=False)
                 return 'OK'
-            except Exception as e:
-                logger.error(e)
-                insertSyslog("error", "%s数据删除报错："%tablename + str(e), current_user.Name)
-                return json.dumps('数据删除失败！')
+        except Exception as e:
+            logger.error(e)
+            insertSyslog("error", "%s数据删除报错："%tablename + str(e), current_user.Name)
+            return json.dumps('数据删除失败！')
 
 def update(tablename, new_data):
     '''
