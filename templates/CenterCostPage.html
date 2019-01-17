@@ -25,9 +25,9 @@
                 },
                 create:function(){
                     $("#equimentsClassDialog").dialog('open').dialog('setTitle','新增成本中心');
-                    $('#ID').val();
-                    $('#CenterCostNum').val();
-                    $('#CharityPerson').val();
+                    $('#ID').val("");
+                    $('#CenterCostNum').val("");
+                    $('#CharityPerson').val("");
                 },
                 update:function(){
                     var rows = $('#tab').datagrid('getSelections');
@@ -115,6 +115,16 @@
                                     success: function (data) {
                                         if(data == "OK"){
                                             $.messager.progress('close');
+                                            $.messager.show({
+                                                title: '提示',
+                                                msg: hintinfo  + '成功',
+                                                timeout:1000,
+                                                style: {
+                                                    right: '',
+                                                    top: document.body.scrollTop + document.documentElement.scrollTop,
+                                                    bottom: ''
+                                                }
+                                            });
                                             $("#tab").datagrid('reload');
                                         }
                                     }
