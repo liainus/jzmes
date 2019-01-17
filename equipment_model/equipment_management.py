@@ -1424,7 +1424,7 @@ def SpareTypeStorePage():
     return render_template("SpareTypeStorePage.html")
 
 #备件类型查询
-@equip.route('/equipment_model/SpareTypeStoreSelect')
+@equip.route('/equipment_model/SpareTypeStoreSelect', methods=['GET', 'POST'])
 def SpareTypeStoreSelect():
     if request.method == 'GET':
         data = request.values
@@ -1453,23 +1453,23 @@ def SpareTypeStoreSelect():
             return json.dumps("备件类型查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 #备件类型增加
-@equip.route('/equipment_model/SpareTypeStoreCreate')
+@equip.route('/equipment_model/SpareTypeStoreCreate', methods=['GET', 'POST'])
 def SpareTypeStoreCreate():
-    if request.method == 'GET':
+    if request.method == 'POST':
         data = request.values
         return insert(SpareTypeStore, data)
 
 #备件类型修改
-@equip.route('/equipment_model/SpareTypeStoreUpdate')
+@equip.route('/equipment_model/SpareTypeStoreUpdate', methods=['GET', 'POST'])
 def SpareTypeStoreUpdate():
-    if request.method == 'GET':
+    if request.method == 'POST':
         data = request.values
         return update(SpareTypeStore, data)
 
 #备件类型删除
-@equip.route('/equipment_model/SpareTypeStoreDetele')
+@equip.route('/equipment_model/SpareTypeStoreDetele', methods=['GET', 'POST'])
 def SpareTypeStoreDetele():
-    if request.method == 'GET':
+    if request.method == 'POST':
         data = request.values
         return delete(SpareTypeStore, data)
 
@@ -1480,7 +1480,7 @@ def CenterCostPage():
     return render_template('CenterCostPage.html')
 
 #成本中心查询
-@equip.route('/equipment_model/CenterCostSelect')
+@equip.route('/equipment_model/CenterCostSelect', methods=['GET', 'POST'])
 def CenterCostSelect():
     if request.method == 'GET':
         data = request.values
@@ -1509,22 +1509,22 @@ def CenterCostSelect():
             return json.dumps("成本中心查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 #成本中心增加
-@equip.route('/equipment_model/CenterCostCreate')
+@equip.route('/equipment_model/CenterCostCreate', methods=['GET', 'POST'])
 def CenterCostCreate():
-    if request.method == 'GET':
+    if request.method == 'POST':
         data = request.values
         return insert(CenterCost, data)
 
 #成本中心修改
-@equip.route('/equipment_model/CenterCostUpdate')
+@equip.route('/equipment_model/CenterCostUpdate', methods=['GET', 'POST'])
 def CenterCostUpdate():
-    if request.method == 'GET':
+    if request.method == 'POST':
         data = request.values
         return update(CenterCost, data)
 
 #成本中心删除
-@equip.route('/equipment_model/CenterCostDelete')
+@equip.route('/equipment_model/CenterCostDelete', methods=['GET', 'POST'])
 def CenterCostDelete():
-    if request.method == 'GET':
+    if request.method == 'POST':
         data = request.values
         return delete(CenterCost, data)
