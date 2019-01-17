@@ -34,7 +34,7 @@ def insertSyslog(operationType, operationContent, userName):
             print(e)
             logger.error(e)
 
-def insert(tablename, insert_dict):
+def insert(tablename, data):
     '''
     :param tablename: 要进行插入数据的model
     :param insert_dict: 要进行插入的数据，数据类型为dict，key为model的字段属性，value为要插入的值
@@ -42,21 +42,18 @@ def insert(tablename, insert_dict):
     '''
     if hasattr(tablename, '__tablename__'):
         oclass = tablename()
-        if isinstance(insert_dict, dict) and len(insert_dict) > 0:
+        if isinstance(data, dict) and len(data) > 0:
             try:
-                for key in insert_dict.keys():
-                    setattr(oclass, key, insert_dict[key])
+                for key in data:
+                    if key != 'ID':
+                        setattr(oclass, key, data[key])
                 db_session.add(oclass)
                 db_session.commit()
-                return json.dumps({'status':'OK', 'message': '数据添加成功！'}, cls=AlchemyEncoder, ensure_ascii=False)
+                return 'OK'
             except Exception as e:
                 logger.error(e)
                 insertSyslog("error", "%s数据添加报错："%tablename + str(e), current_user.Name)
-                return json.dumps({'status':'error', 'message': '数据添加失败！'}, cls=AlchemyEncoder, ensure_ascii=False)
-        else:
-            return json.dumps({'status': 'error', 'message': '系统错误，请联系系统管理员解决...'}, cls=AlchemyEncoder, ensure_ascii=False)
-    else:
-        return json.dumps({'status':'error', 'message': '系统错误，请联系系统管理员解决...'}, cls=AlchemyEncoder, ensure_ascii=False)
+                return json.dumps('数据添加失败！')
 
 def delete(tablename, recv_data):
     '''
@@ -73,15 +70,11 @@ def delete(tablename, recv_data):
                     if oclass:
                         db_session.delete(oclass)
                         db_session.commit()
-                return json.dumps({'status': 'OK', 'message': '数据删除成功！'}, cls=AlchemyEncoder, ensure_ascii=False)
+                return 'OK'
             except Exception as e:
                 logger.error(e)
                 insertSyslog("error", "%s数据删除报错："%tablename + str(e), current_user.Name)
-                return json.dumps({'status':'error', 'message': '数据删除失败！'}, cls=AlchemyEncoder, ensure_ascii=False)
-        else:
-            return json.dumps({'status': 'error', 'message': '系统错误，请联系系统管理员解决...'}, cls=AlchemyEncoder, ensure_ascii=False)
-    else:
-        return json.dumps({'status': 'error', 'message': '系统错误，请联系系统管理员解决...'}, cls=AlchemyEncoder, ensure_ascii=False)
+                return json.dumps('数据删除失败！')
 
 def update(tablename, new_data):
     '''
@@ -94,24 +87,18 @@ def update(tablename, new_data):
             try:
                 oclass = db_session.query(tablename).filter(tablename.ID==new_data['ID']).first()
                 if oclass:
-                    for key in new_data.keys():
-                        if hasattr(oclass, key):
+                    for key in new_data:
+                        if hasattr(oclass, key) and key != 'ID':
                             setattr(oclass, key, new_data[key])
-                        else:
-                            json.dumps({'status': 'error', 'message': '数据更新失败！'}, cls=AlchemyEncoder,ensure_ascii=False)
                     db_session.add(oclass)
                     db_session.commit()
-                    return json.dumps({'status': 'OK', 'message': '数据更新成功！'}, cls=AlchemyEncoder, ensure_ascii=False)
+                    return 'OK'
                 else:
-                    return json.dumps({'status': 'error', 'message': '当前记录不存在！'}, cls=AlchemyEncoder, ensure_ascii=False)
+                    return json.dumps('当前记录不存在！', cls=AlchemyEncoder, ensure_ascii=False)
             except Exception as e:
                 logger.error(e)
                 insertSyslog("error", "%s数据更新报错："%tablename + str(e), current_user.Name)
-                return json.dumps({'status':'error', 'message': '数据更新失败！'}, cls=AlchemyEncoder, ensure_ascii=False)
-        else:
-            return json.dumps({'status': 'error', 'message': '系统错误，请联系系统管理员解决...'}, cls=AlchemyEncoder, ensure_ascii=False)
-    else:
-        return json.dumps({'status': 'error', 'message': '系统错误，请联系系统管理员解决...'}, cls=AlchemyEncoder, ensure_ascii=False)
+                return json.dumps('数据更新失败！', cls=AlchemyEncoder, ensure_ascii=False)
 
 def select(table, data, fieid, param, tableName):
     '''
