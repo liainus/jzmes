@@ -130,14 +130,17 @@
                 onClick :function(node){
                     clickText = node.text
                     toJson(clickText);
-                },
-                onLoadSuccess:function(node,data){
-                    console.log(node,data)
                 }
             })
             //初始化
+            var myDiv = document.getElementById("compareMain")
+            var myChartContainer = function () {
+                var width = $("#compareBox").width()
+                myDiv.style.width = width +'px';
+            };
             function toJson(text){
-                var myChart = echarts.init(document.getElementById("stockData"))
+                myChartContainer();
+                myChart = echarts.init(myDiv)
                 myChart.showLoading();
                 $.ajax({
                     url:"/equipment_model/spareStoreEcharts",
@@ -146,17 +149,14 @@
                         SpareTypeName: text
                     },
                     success:function(data){
-                        console.log(data)
                         data = JSON.parse(data)
+                        console.log(data)
                         myChart.hideLoading();
                         myChart.setOption(option = {
                             tooltip: {
                                 trigger: 'axis',
                                 axisPointer: {
-                                    type: 'cross',
-                                    crossStyle: {
-                                        color: '#999'
-                                    }
+                                    type: 'shadow'
                                 }
                             },
                             toolbox: {
@@ -170,22 +170,30 @@
                             xAxis:  {
                                 name: text,
                                 type: 'category',
-                                boundaryGap : false,
-                                data:[]
+                                data:data.name
                             },
                             yAxis: {
                                 type : 'value'
                             },
                             series: [{
-                                name: "概率密度",
-                                type: 'line',
-                                data: []
+                                name: "数量",
+                                type: 'bar',
+                                itemStyle:{
+                                    normal:{
+                                        color:'#90ed7d'
+                                    }
+                                },
+                                data: data.count
                             }]
                         });
                         myChart.setOption(option);
                     }
                 })
             }
+            parent.$(window).resize(function(){
+                myChartContainer();
+                myChart.resize();
+             })
             function createKeyIDObj(keyID){
                 return {
                     ID:keyID
@@ -207,9 +215,9 @@
                     $('#SpareCode').val();
                     $('#SpareModel').val();
                     $('#SpareFactory').val();
-                    $('#SpareType').val();
+                    $('#SpareType option[value=""]').prop("selected", 'selected');
                     $('#SparePower').val();
-                    $('#StockUseStatus option[value="0"]').prop("selected", 'selected');
+                    $('#StockUseStatus option[value=""]').prop("selected", 'selected');
                     $('#Description').val();
                     $('#ProductionDate').datebox('setValue','');
                 },
@@ -226,7 +234,7 @@
                             $('#SpareCode').val(row.SpareCode);
                             $('#SpareModel').val(row.SpareModel);
                             $('#SpareFactory').val(row.SpareFactory);
-                            $('#SpareType').val(row.SpareType);
+                            $('#SpareType option:contains('+row.SpareType+')').prop("selected", 'selected');
                             $('#SparePower').val(row.SparePower);
                             $('#StockUseStatus option:contains('+row.StockUseStatus+')').prop("selected", 'selected');
                             $('#Description').val(row.Description);
@@ -264,7 +272,7 @@
                             SpareCode:$('#SpareCode').val(),
                             SpareModel:$('#SpareModel').val(),
                             SpareFactory:$('#SpareFactory').val(),
-                            SpareType:$('#SpareType').val(),
+                            SpareType:$('#SpareType').find("option:selected").html(),
                             SparePower:$('#SparePower').val(),
                             StockUseStatus:$('#StockUseStatus').find("option:selected").html(),
                             Description:$('#Description').val(),
@@ -685,10 +693,12 @@
                 </table>
             </div>
             <div title="库存" style="padding:10px">
-                <div class="left-tree" style="width:180px;vertical-align: top;border: 1px solid #ccc;margin: 1%;padding: 1%;">
+                <div class="left-tree" style="width:15%;float: left;vertical-align: top;border: 1px solid #ccc;margin: 1%;padding: 1%;">
                     <ul class="easyui-tree" id="tree"></ul>
                 </div>
-                <div id="stockData" style="width: 600px; height: 500px;"></div>
+                <div id="compareBox" style="width: 80%; height: 500px;float: left;">
+                    <div id="compareMain" style="width: 600px;height: 500px;"></div>
+                </div>
             </div>
         </div>
         <div id="equimentsClassDialog" class="easyui-dialog" style="width:400px;height:560px;padding:10px;"
@@ -731,8 +741,8 @@
                             <td class="kv-content">
                                 <select name="SpareType" id="SpareType" type="text" style="width:157px;" autocomplete="off" placeholder="">
                                     <option value="">请选择</option>
-                                    {% for dic in dic %}
-                                        <option value="{{ dic['text'] }}">{{ dic['text'] }}</option>
+                                    {% for dic in dic%}
+                                        <option value="{{ dic['SpareTypeName'] }}">{{ dic['SpareTypeName'] }}</option>
                                     {% endfor %}
                                 </select>
                             </td>
