@@ -238,15 +238,10 @@ def allEquipmentsSearch():
         EquipmentIFS = Model.core.EquipmentWebIFS("EquipmentSearch")
         re = EquipmentIFS.allEquipmentsSearch(data)
         return re
-# 备件出入库管理
+# 备件库管理
 @equip.route('/sparePartInStockManagement', methods=['POST', 'GET'])
 def sparePartInStockManagement():
-    oclass = db_session.query(SpareTypeStore.ID,SpareTypeStore.SpareTypeName).all()
-    dic = []
-    for i in oclass:
-        lis = list(i)
-        dic.append({"ID":lis[0],"SpareTypeName":lis[1]})
-    return render_template('sparePartInStockManagement.html',dic=dic)
+    return render_template('sparePartInStockManagement.html')
 
 # 备件库查询
 @equip.route('/spareStockSearch', methods=['POST', 'GET'])
@@ -1159,7 +1154,12 @@ def getMyEquipmentRunPUIDChildren(id):
 # 备件管理
 @equip.route('/equipmentspare')
 def equipmentbeij():
-    return render_template('equipmentspare.html')
+    oclass = db_session.query(SpareTypeStore.ID, SpareTypeStore.SpareTypeName).all()
+    dic = []
+    for i in oclass:
+        lis = list(i)
+        dic.append({"ID": lis[0], "SpareTypeName": lis[1]})
+    return render_template('equipmentspare.html',dic = dic)
 
 # 故障管理
 @equip.route('/equipmenttrouble')
@@ -1583,7 +1583,6 @@ def spareStoreEcharts():
                         dlistc.append(count)
                 dir["name"] = dlistn
                 dir["count"] = dlistc
-                print(dir)
                 return json.dumps(dir, cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
