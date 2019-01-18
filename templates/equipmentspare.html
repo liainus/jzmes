@@ -121,28 +121,32 @@
             })
             //选择备件类型
             $("#tree").tree({
-                url:'/MyOp',
+                url:'/equipment_model/spareStoreTree',
                 method: 'get',
                 animate:true,
                 loadFilter:function(data){
                     return data
                 },
                 onClick :function(node){
-                    code = node.id
-                    toJson();
+                    clickText = node.text
+                    toJson(clickText);
+                },
+                onLoadSuccess:function(node,data){
+                    console.log(node,data)
                 }
             })
             //初始化
-            function toJson(){
+            function toJson(text){
                 var myChart = echarts.init(document.getElementById("stockData"))
                 myChart.showLoading();
                 $.ajax({
-                    url:"/ProcessContinuousData/CPKCapture",
+                    url:"/equipment_model/spareStoreEcharts",
                     type:"post",
                     data:{
-                        batch: ''
+                        SpareTypeName: text
                     },
                     success:function(data){
+                        console.log(data)
                         data = JSON.parse(data)
                         myChart.hideLoading();
                         myChart.setOption(option = {
@@ -164,7 +168,7 @@
                                 }
                             },
                             xAxis:  {
-                                name: [],
+                                name: text,
                                 type: 'category',
                                 boundaryGap : false,
                                 data:[]
@@ -725,7 +729,12 @@
                         <tr>
                             <td class="kv-label">备件类型</td>
                             <td class="kv-content">
-                                <input name="SpareType" id="SpareType" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                                <select name="SpareType" id="SpareType" type="text" style="width:157px;" autocomplete="off" placeholder="">
+                                    <option value="">请选择</option>
+                                    {% for dic in dic %}
+                                        <option value="{{ dic['text'] }}">{{ dic['text'] }}</option>
+                                    {% endfor %}
+                                </select>
                             </td>
                         </tr>
                         <tr>

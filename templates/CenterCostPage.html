@@ -53,7 +53,7 @@
                         $.messager.alert('提示', '成本中心号不能为空！', 'info');
                         return false;
                     }else if(Bee.StringUtils.isEmpty($('#CharityPerson').val())){
-                        $.messager.alert('提示', '负责人不能为空！', 'info');
+                        $.messager.alert('提示', '成本中心不能为空！', 'info');
                      return false;
                     }
                     if (strID.length >= 1){
@@ -150,7 +150,7 @@
 <body>
     <div class="" style="padding: 10px;">
         <div id="Toolbar" style="padding:0 10px;">
-            负责人:
+            成本中心:
             <input type="text" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
                 placeholder="">
             <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="toolbar.search()">查询</a>
@@ -175,7 +175,7 @@
                 <tr>
                     <th field="ck" checkbox="true"></th>
                     <th data-options="field:'CenterCostNum',width:150,align:'center'">成本中心号</th>
-                    <th data-options="field:'CharityPerson',width:100,align:'center'">负责人</th>
+                    <th data-options="field:'CharityPerson',width:100,align:'center'">成本中心</th>
                 </tr>
             </thead>
         </table>
@@ -197,7 +197,7 @@
                             </td>
                         </tr>
                         <tr>
-                            <td class="kv-label">负责人</td>
+                            <td class="kv-label">成本中心</td>
                             <td class="kv-content">
                                 <input name="CharityPerson" id="CharityPerson" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
                             </td>
