@@ -1578,7 +1578,7 @@ def spareStoreEcharts():
                 else:
                     oclassSpare = db_session.query(SpareStock.SpareName).distinct().filter(SpareStock.SpareType.like("%"+SpareTypeName+"%"), SpareStock.SpareStatus==Model.Global.SpareStatus.InStockChecked.value).all()
                     for name in oclassSpare:
-                        dlistn.append(name)
+                        dlistn.append(name[0])
                         count = db_session.query(SpareStock).filter(SpareStock.SpareName.like("%"+name[0]+"%"), SpareStock.SpareStatus==Model.Global.SpareStatus.InStockChecked.value).count()
                         dlistc.append(count)
                 dir["name"] = dlistn
