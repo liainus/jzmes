@@ -241,7 +241,12 @@ def allEquipmentsSearch():
 # 备件出入库管理
 @equip.route('/sparePartInStockManagement', methods=['POST', 'GET'])
 def sparePartInStockManagement():
-    return render_template('sparePartInStockManagement.html')
+    oclass = db_session.query(SpareTypeStore.ID,SpareTypeStore.SpareTypeName).all()
+    dic = []
+    for i in oclass:
+        lis = list(i)
+        dic.append({"ID":lis[0],"SpareTypeName":lis[1]})
+    return render_template('sparePartInStockManagement.html',dic=dic)
 
 # 备件库查询
 @equip.route('/spareStockSearch', methods=['POST', 'GET'])
@@ -1528,3 +1533,60 @@ def CenterCostDelete():
     if request.method == 'POST':
         data = request.values
         return delete(CenterCost, data)
+
+# 设备类型库存树形列表
+@equip.route('/equipment_model/spareStoreTree', methods=['POST', 'GET'])
+def spareStoreTree():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            data = getSpareStoreTree(id=0)
+            return json.dumps(data)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "设备类型库存树形列表报错Error：" + str(e), current_user.Name)
+            return json.dumps("设备类型库存树形列表报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+def getSpareStoreTree(id):
+    sz = []
+    try:
+        orgs = db_session.query(SpareTypeStore).filter(SpareTypeStore.ParentNode == id).all()
+        for obj in orgs:
+            if obj.ParentNode != 0 and obj.ParentNode != 1:
+                sz.append({"id": obj.ID, "text": obj.SpareTypeName, "state": "open","children": []})
+            else:
+                sz.append({"id": obj.ID, "text": obj.SpareTypeName, "state": "closed","children": getSpareStoreTree(obj.ID)})
+        return sz
+    except Exception as e:
+        print(e)
+        return json.dumps("设备类型库存树形列表报错", cls=AlchemyEncoder, ensure_ascii=False)
+
+#设备库存柱状图
+@equip.route('/equipment_model/spareStoreEcharts', methods=['GET', 'POST'])
+def spareStoreEcharts():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                dir = {}
+                dlistn = []
+                dlistc = []
+                SpareTypeName = data["SpareTypeName"]
+                if SpareTypeName == "" or SpareTypeName == None:
+                    return "请选择设备类型！"
+                else:
+                    oclassSpare = db_session.query(SpareStock.SpareName).filter_by(SpareType=SpareTypeName, SpareStatus=Model.Global.SpareStatus.InStockChecked.value).all()
+                    for name in oclassSpare:
+                        dlistn.append(name)
+                        count = db_session.query(SpareStock).filter_by(SpareType=name, SpareStatus=Model.Global.SpareStatus.InStockChecked.value).count()
+                        dlistc.append(count)
+                dir["name"] = dlistn
+                dir["count"] = dlistn
+                print(dir)
+                return json.dumps(dir, cls=AlchemyEncoder, ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "设备库存柱状图查询报错Error：" + str(e), current_user.Name)
+            return json.dumps("设备库存柱状图查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
