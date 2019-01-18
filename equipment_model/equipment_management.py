@@ -1564,7 +1564,7 @@ def getSpareStoreTree(id):
 #设备库存柱状图
 @equip.route('/equipment_model/spareStoreEcharts', methods=['GET', 'POST'])
 def spareStoreEcharts():
-    if request.method == 'GET':
+    if request.method == 'POST':
         data = request.values
         try:
             json_str = json.dumps(data.to_dict())
@@ -1576,13 +1576,13 @@ def spareStoreEcharts():
                 if SpareTypeName == "" or SpareTypeName == None:
                     return "请选择设备类型！"
                 else:
-                    oclassSpare = db_session.query(SpareStock.SpareName).filter_by(SpareType=SpareTypeName, SpareStatus=Model.Global.SpareStatus.InStockChecked.value).all()
+                    oclassSpare = db_session.query(SpareStock.SpareName).distinct().filter(SpareStock.SpareType.like("%"+SpareTypeName+"%"), SpareStock.SpareStatus==Model.Global.SpareStatus.InStockChecked.value).all()
                     for name in oclassSpare:
                         dlistn.append(name)
-                        count = db_session.query(SpareStock).filter_by(SpareType=name, SpareStatus=Model.Global.SpareStatus.InStockChecked.value).count()
+                        count = db_session.query(SpareStock).filter(SpareStock.SpareName.like("%"+name[0]+"%"), SpareStock.SpareStatus==Model.Global.SpareStatus.InStockChecked.value).count()
                         dlistc.append(count)
                 dir["name"] = dlistn
-                dir["count"] = dlistn
+                dir["count"] = dlistc
                 print(dir)
                 return json.dumps(dir, cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
