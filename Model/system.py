@@ -14,7 +14,7 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker, backref
 from sqlalchemy import create_engine, \
-    Column,ForeignKey, Table, DateTime, Integer, String
+    Column, ForeignKey, Table, DateTime, Integer, String, BigInteger
 from sqlalchemy import Column, DateTime, Float, Integer, String, Unicode, Boolean
 from sqlalchemy.dialects.mssql.base import BIT
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -1077,6 +1077,24 @@ class CenterCost(Base):
 
     # 负责人
     CharityPerson = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+class EquipmentStatusCount(Base):
+    __tablename__ = "EquipmentStatusCount"
+    # ID:
+    ID = Column(BigInteger, primary_key=True, autoincrement=True, nullable=True)
+    #采集时间
+    SampleTime = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+    # 系统内部设备编码:
+    SYSEQPCode = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+    # 状态
+    Status =  Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+    # 状态类型
+    StatusType = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+    # 是否停机
+    IsStop = Column(Unicode(10), primary_key=False, autoincrement=False, nullable=True)
+    #持续时间
+    Duration = Column(Float, primary_key=False, autoincrement=False, nullable=True)
+
 
 # 生成表单的执行语句
 Base.metadata.create_all(engine)
