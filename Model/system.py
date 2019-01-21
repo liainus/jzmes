@@ -907,10 +907,13 @@ class SpareTypeStore(Base):
     ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
 
     # 备件类型编码
-    Workshop = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    SpareTypeCode = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
     # 备件类型名称
-    PUIDName = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    SpareTypeName = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 父节点
+    ParentNode = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True, default='0')
 
 #  设备运行记录
 class EquipmentRunRecord(Base):
@@ -1075,7 +1078,7 @@ class CenterCost(Base):
     # 成本中心号
     CenterCostNum = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
-    # 负责人
+    # 成本中心
     CharityPerson = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
 class EquipmentStatusCount(Base):

@@ -302,7 +302,7 @@ def UpdateUser():
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 10:
                 id = int(data['id'])
-                user = db_session.query(User).filter_by(id=id).first()
+                user = db_session.query(User).filter_by(ID=id).first()
                 user.Name = data['Name']
                 user.WorkNumber = data['WorkNumber']
                 ocal = db_session.query(User).filter(User.WorkNumber == user.WorkNumber).first()
@@ -336,7 +336,7 @@ def deleteUser():
                 for key in jsonnumber:
                     id = int(key)
                     try:
-                        oclass = db_session.query(User).filter_by(id=id).first()
+                        oclass = db_session.query(User).filter_by(ID=id).first()
                         db_session.delete(oclass)
                         db_session.commit()
                     except Exception as ee:

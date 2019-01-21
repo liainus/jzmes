@@ -22,6 +22,24 @@
     <script type="text/javascript">
         $(function () {
             $('#EquipmentName').attr("disabled", true);
+            $("#CenterCostHrefBtn").on('click',function(){
+                var btn_title = $(this).html()
+                addTab(btn_title, "/equipment_model/CenterCostPage")
+            })
+            //按钮点击后添加选项卡
+            function addTab(title, url) {
+                if (parent.parent.$('.easyui-tabs1').tabs('exists', title)) {
+                    parent.parent.$('.easyui-tabs1').tabs('select', title);
+                }
+                else {
+                    var content = '<iframe class="page-iframe" src="' + url + '" frameborder="no" border="no" height="100%" width="100%" scrolling="auto"></iframe>';
+                    parent.parent.$('.easyui-tabs1').tabs('add', {
+                        title: title,
+                        content: content,
+                        closable: true
+                    });
+                }
+            }
         });
     </script>
 </head>
@@ -40,10 +58,11 @@
             <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit'" onclick="EquipmentClassToolbar.update();">修改</a>
             <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove'" onclick="EquipmentClassToolbar.delete();">删除</a>
             <a href="#" class="easyui-linkbutton" id="reload" data-options="iconCls:'icon-reload'" onclick="EquipmentClassToolbar.refresh();">刷新</a>
+            <a href="#" class="easyui-linkbutton" id="CenterCostHrefBtn">成本中心管理</a>
         </div>
     </div>
 
-    <div id="EquipmentClassDialog" class="easyui-dialog" style="width:720px;height:440px;padding:10px;"
+    <div id="EquipmentClassDialog" class="easyui-dialog" style="width:720px;height:400px;padding:10px;"
      data-options="closed:'true',buttons:'#EquipmentClassDialogButtons',modal:true">
     <!-- <div id="EquipmentClassFormTitle" class="field-title">Title</div> -->
     <form id="EquipmentClassForm" method="post" class="dialog-form">

@@ -17,11 +17,12 @@ from Model.system import Role, Organization, User, Menu, Role_Menu, BatchMaterie
     EquipmentMaintain, \
     SchedulePlan, SparePartInStockManagement, SparePartStock, Area, Instruments, MaintenanceStatus, MaintenanceCycle, \
     EquipmentRunRecord, \
-    EquipmentRunPUID, EquipmentMaintenanceStore
+    EquipmentRunPUID, EquipmentMaintenanceStore, SpareTypeStore
 from sqlalchemy import create_engine, Column, ForeignKey, Table, Integer, String, and_, or_, desc,extract
 from io import StringIO
 import calendar
 from Model.system import CenterCost
+from tools.common import logger,insertSyslog,insert,delete,update,select
 
 engine = create_engine(Model.Global.GLOBAL_DATABASE_CONNECT_STRING, deprecate_large_types=True)
 Session = sessionmaker(bind=engine)
@@ -29,25 +30,7 @@ db_session = Session()
 
 equip = Blueprint('equip', __name__)
 
-logger = MESLogger('../logs', 'log')
-#插入日志OperationType OperationContent OperationDate UserName ComputerName IP
-def insertSyslog(operationType, operationContent, userName):
-        try:
-            if operationType == None: operationType = ""
-            if operationContent == None:
-                operationContent = ""
-            else:
-                operationContent = str(operationContent)
-            if userName == None: userName = ""
-            ComputerName = socket.gethostname()
-            db_session.add(
-                SysLog(OperationType=operationType, OperationContent=operationContent,OperationDate=datetime.datetime.now(), UserName=userName,
-                       ComputerName=ComputerName, IP=socket.gethostbyname(ComputerName)))
-            db_session.commit()
-        except Exception as e:
-            db_session.rollback()
-            print(e)
-            logger.error(e)
+
 
 # 设备建模
 @equip.route('/Pequipment')
@@ -255,7 +238,7 @@ def allEquipmentsSearch():
         EquipmentIFS = Model.core.EquipmentWebIFS("EquipmentSearch")
         re = EquipmentIFS.allEquipmentsSearch(data)
         return re
-# 备件出入库管理
+# 备件库管理
 @equip.route('/sparePartInStockManagement', methods=['POST', 'GET'])
 def sparePartInStockManagement():
     return render_template('sparePartInStockManagement.html')
@@ -1171,7 +1154,12 @@ def getMyEquipmentRunPUIDChildren(id):
 # 备件管理
 @equip.route('/equipmentspare')
 def equipmentbeij():
-    return render_template('equipmentspare.html')
+    oclass = db_session.query(SpareTypeStore.ID, SpareTypeStore.SpareTypeName).all()
+    dic = []
+    for i in oclass:
+        lis = list(i)
+        dic.append({"ID": lis[0], "SpareTypeName": lis[1]})
+    return render_template('equipmentspare.html',dic = dic)
 
 # 故障管理
 @equip.route('/equipmenttrouble')
@@ -1434,3 +1422,170 @@ def runDataChart():
             logger.error(e)
             insertSyslog("error", "设备运行-图表数据获取报错Error：" + str(e), current_user.Name)
             return json.dumps("设备运行-图表数据获取报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+#备件类型页面跳转
+@equip.route('/equipment_model/SpareTypeStorePage')
+def SpareTypeStorePage():
+    return render_template("SpareTypeStorePage.html")
+
+#备件类型查询
+@equip.route('/equipment_model/SpareTypeStoreSelect', methods=['GET', 'POST'])
+def SpareTypeStoreSelect():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                pages = int(data['page'])
+                rowsnumber = int(data['rows'])
+                inipage = (pages - 1) * rowsnumber + 0
+                endpage = (pages - 1) * rowsnumber + rowsnumber
+                SpareTypeName = data["SpareTypeName"]
+                if SpareTypeName == "":
+                    SpareTypeStoreCount = db_session.query(SpareTypeStore).filter_by().count()
+                    SpareTypeStoreClass = db_session.query(SpareTypeStore).filter_by().all()[inipage:endpage]
+                else:
+                    SpareTypeStoreCount = db_session.query(SpareTypeStore).filter(
+                        SpareTypeStore.SpareTypeName.like("%"+SpareTypeName+"%")).count()
+                    SpareTypeStoreClass = db_session.query(SpareTypeStore).filter(
+                        SpareTypeStore.SpareTypeName.like("%"+SpareTypeName+"%")).all()[inipage:endpage]
+                jsonoclass = json.dumps(SpareTypeStoreClass, cls=AlchemyEncoder, ensure_ascii=False)
+                return '{"total"' + ":" + str(SpareTypeStoreCount) + ',"rows"' + ":\n" + jsonoclass + "}"
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "备件类型查询报错Error：" + str(e), current_user.Name)
+            return json.dumps("备件类型查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+#备件类型增加
+@equip.route('/equipment_model/SpareTypeStoreCreate', methods=['GET', 'POST'])
+def SpareTypeStoreCreate():
+    if request.method == 'POST':
+        data = request.values
+        return insert(SpareTypeStore, data)
+
+#备件类型修改
+@equip.route('/equipment_model/SpareTypeStoreUpdate', methods=['GET', 'POST'])
+def SpareTypeStoreUpdate():
+    if request.method == 'POST':
+        data = request.values
+        return update(SpareTypeStore, data)
+
+#备件类型删除
+@equip.route('/equipment_model/SpareTypeStoreDetele', methods=['GET', 'POST'])
+def SpareTypeStoreDetele():
+    if request.method == 'POST':
+        data = request.values
+        return delete(SpareTypeStore, data)
+
+
+#成本中心页面跳转
+@equip.route('/equipment_model/CenterCostPage')
+def CenterCostPage():
+    return render_template('CenterCostPage.html')
+
+#成本中心查询
+@equip.route('/equipment_model/CenterCostSelect', methods=['GET', 'POST'])
+def CenterCostSelect():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                pages = int(data['page'])
+                rowsnumber = int(data['rows'])
+                inipage = (pages - 1) * rowsnumber + 0
+                endpage = (pages - 1) * rowsnumber + rowsnumber
+                CharityPerson = data["CharityPerson"]
+                if CharityPerson == "":
+                    CenterCostCount = db_session.query(CenterCost).filter_by().count()
+                    CenterCostClass = db_session.query(CenterCost).filter_by().all()[inipage:endpage]
+                else:
+                    CenterCostCount = db_session.query(CenterCost).filter(
+                        CenterCost.CharityPerson.like("%"+CharityPerson+"%")).count()
+                    CenterCostClass = db_session.query(CenterCost).filter(
+                        CenterCost.CharityPerson.like("%"+CharityPerson+"%")).all()[inipage:endpage]
+                jsonoclass = json.dumps(CenterCostClass, cls=AlchemyEncoder, ensure_ascii=False)
+                return '{"total"' + ":" + str(CenterCostCount) + ',"rows"' + ":\n" + jsonoclass + "}"
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "成本中心查询报错Error：" + str(e), current_user.Name)
+            return json.dumps("成本中心查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+#成本中心增加
+@equip.route('/equipment_model/CenterCostCreate', methods=['GET', 'POST'])
+def CenterCostCreate():
+    if request.method == 'POST':
+        data = request.values
+        return insert(CenterCost, data)
+
+#成本中心修改
+@equip.route('/equipment_model/CenterCostUpdate', methods=['GET', 'POST'])
+def CenterCostUpdate():
+    if request.method == 'POST':
+        data = request.values
+        return update(CenterCost, data)
+
+#成本中心删除
+@equip.route('/equipment_model/CenterCostDelete', methods=['GET', 'POST'])
+def CenterCostDelete():
+    if request.method == 'POST':
+        data = request.values
+        return delete(CenterCost, data)
+
+# 设备类型库存树形列表
+@equip.route('/equipment_model/spareStoreTree', methods=['POST', 'GET'])
+def spareStoreTree():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            data = getSpareStoreTree(id=0)
+            return json.dumps(data)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "设备类型库存树形列表报错Error：" + str(e), current_user.Name)
+            return json.dumps("设备类型库存树形列表报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+def getSpareStoreTree(id):
+    sz = []
+    try:
+        orgs = db_session.query(SpareTypeStore).filter(SpareTypeStore.ParentNode == id).all()
+        for obj in orgs:
+            if obj.ParentNode != 0 and obj.ParentNode != 1:
+                sz.append({"id": obj.ID, "text": obj.SpareTypeName, "state": "open","children": []})
+            else:
+                sz.append({"id": obj.ID, "text": obj.SpareTypeName, "state": "closed","children": getSpareStoreTree(obj.ID)})
+        return sz
+    except Exception as e:
+        print(e)
+        return json.dumps("设备类型库存树形列表报错", cls=AlchemyEncoder, ensure_ascii=False)
+
+#设备库存柱状图
+@equip.route('/equipment_model/spareStoreEcharts', methods=['GET', 'POST'])
+def spareStoreEcharts():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                dir = {}
+                dlistn = []
+                dlistc = []
+                SpareTypeName = data["SpareTypeName"]
+                if SpareTypeName == "" or SpareTypeName == None:
+                    return "请选择设备类型！"
+                else:
+                    oclassSpare = db_session.query(SpareStock.SpareName).distinct().filter(SpareStock.SpareType.like("%"+SpareTypeName+"%"), SpareStock.SpareStatus==Model.Global.SpareStatus.InStockChecked.value).all()
+                    for name in oclassSpare:
+                        dlistn.append(name[0])
+                        count = db_session.query(SpareStock).filter(SpareStock.SpareName.like("%"+name[0]+"%"), SpareStock.SpareStatus==Model.Global.SpareStatus.InStockChecked.value).count()
+                        dlistc.append(count)
+                dir["name"] = dlistn
+                dir["count"] = dlistc
+                return json.dumps(dir, cls=AlchemyEncoder, ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "设备库存柱状图查询报错Error：" + str(e), current_user.Name)
+            return json.dumps("设备库存柱状图查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
