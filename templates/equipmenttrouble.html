@@ -24,10 +24,10 @@
                 }
             })
             function createKeyIDObj(keyID){
-                    return {
-                        ID:keyID
-                    }
+                return {
+                    ID:keyID
                 }
+            }
             toolbar = {
                 search:function(){
                     $('#tab').datagrid('load',{
@@ -241,29 +241,34 @@
                 },
                 file:function(){
                     $("#fileClassDialog").dialog('open').dialog('setTitle','导入Excel表');
+
                 },
                 fileSave:function(){
-                    var formData = new FormData($('#fileClassDialogForm')[0]);
-                    console.log(formData)
-                    $.ajax({
-                        url:'/equipment_model/EquipmentFailureReportingExcel',
-                        type:"post",
-                        data:formData,
-                        async: true,
-                        cache: false,
-                        contentType:false,
-                        processData:false,
-                        success:function(data){
-                            console.log(data)
-                        },
-                        error: function (returndata) {
-                    　　　　　alert("上传失败！")
-                    　　}
-                    })
-                },
+                    {#var fileObj = $("#file").prop("files")[0]#}
+                    {#var form = new FormData();#}
+                    {#form.append("file", fileObj);#}
+                    {#$.ajax({#}
+                    {#    url:'/equipment_model/EquipmentFailureReportingExcel',#}
+                    {#    type:"post",#}
+                    {#    data:form,#}
+                    {#    cache:false,#}
+                    {#    processData: false,// 告诉jQuery不要去处理发送的数据#}
+                    {#    contentType: false,// 告诉jQuery不要去设置Content-Type请求头#}
+                    {#    success:function(data){#}
+                    {#        console.log(data)#}
+                    {#    },#}
+                    {#    error:function(data){#}
+                    {#        alert("上传失败")#}
+                    {#    }#}
+                    {#})#}
+                 },
                 refresh:function(){
                     $('#tab').datagrid('reload');
                 }
+            }
+            function getFileName(file){//通过第一种方式获取文件名
+                var pos=file.lastIndexOf("\\");//查找最后一个\的位置
+                return file.substring(pos+1); //截取最后一个\位置到字符长度，也就是截取文件名
             }
         })
     </script>
@@ -416,19 +421,19 @@
         </div>
         <div id="fileClassDialog" class="easyui-dialog" style="width:400px;height:300px;padding:10px;"
              data-options="closed:'true',buttons:'#fileClassDialogButtons',modal:true">
-            <form id="fileClassDialogForm" method="post" class="dialog-form" enctype="multipart/form-data">
+            <form id="fileClassDialogForm" action="/equipment_model/EquipmentFailureReportingExcel" method="post" class="dialog-form" enctype="multipart/form-data">
                 <table class="kv-table">
                     <tbody>
                         <tr>
                             <td class="kv-label">文件名</td>
                             <td class="kv-content">
-                                <input class="easyui-filebox" name="file" id="file" data-options="prompt:'选择一个文件'">
+                                <input class="" type="file" name="file" id="file" style="width: 100%;">
                             </td>
                         </tr>
                     </tbody>
                 </table>
                 <div id="fileClassDialogButtons">
-                    <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" onclick="toolbar.fileSave()">保存</a>
+                    <a href="#" class="easyui-linkbutton"  data-options="iconCls:'icon-save'" onclick="document.getElementById('fileClassDialogForm').submit();return false;">保存</a>
                     <a href="#" class="easyui-linkbutton" onclick="$('#fileClassDialog').dialog('close')">关闭</a>
                 </div>
             </form>

@@ -1830,6 +1830,7 @@ def allowe_file(filename):
 def EquipmentFailureReportingExcel():
     if request.method == 'POST':
         data = request.values
+        print(data)
         file_path = data['file_path']
         if allowe_file(file_path) == True:
             return read_Excel(file_path)
