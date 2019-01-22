@@ -1664,7 +1664,7 @@ def EquipmentRunRecordGet(unit, brand, date, interval=None):
 
     # first、 Judging time interval
     else:
-        if interval == 'MorningShift':
+        if interval == '早班':
             # Obtaining the time period of day shift.
             dayshift = db_session.query(Shifts).filter_by(ShiftsCode='Day').first()
             if dayshift:
@@ -1674,7 +1674,7 @@ def EquipmentRunRecordGet(unit, brand, date, interval=None):
             else:
                 return 'error'
 
-        elif interval == 'NightShif':
+        elif interval == '晚班':
             dayshift = db_session.query(Shifts).filter_by(ShiftsCode='Night').first()
             if dayshift:
                 # currentDate = datetime.datetime.now().strftime('%Y-%m-%d')
@@ -1683,7 +1683,7 @@ def EquipmentRunRecordGet(unit, brand, date, interval=None):
             else:
                 return 'error'
 
-        elif interval == 'AllDay':
+        elif interval == '全天':
                 # currentDate = datetime.datetime.now().strftime('%Y-%m-%d')
                 beginTime = date + " " + "00:00:00"
                 endTime = date + " " + "23:59:59"
