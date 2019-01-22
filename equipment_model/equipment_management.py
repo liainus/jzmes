@@ -1821,4 +1821,3 @@ def EquipmentFailureReportingExcel():
             return read_Excel(file_path)
         else:
             return "请上传xlsx格式的excel！"
->>>>>>> 5a7111dbc47218dc0d3176acb45408228f1578c0
