@@ -1620,13 +1620,13 @@ def EquipmentTimeStatistics(ParentNode=None):
             if obj.ParentNode == str(ParentNode):
                 if len(get_son(obj.ID)) > 0:
                     sz.append({"id": obj.ID,
-                               "Tag": obj.Key,
+                               "text": obj.Key,
                                "Brand": obj.Brand,
                                "state": 'closed',
                                "children": EquipmentTimeStatistics(obj.ID)})
                 if len(get_son(obj.ID)) == 0:
                     sz.append({"id": obj.ID,
-                               "Tag": obj.Key,
+                               "text": obj.Key,
                                "Brand": obj.Brand,
                                "state": 'open'})
         return sz
