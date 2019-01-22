@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>设备运行数据</title>
+    <title>设备运行采集数据</title>
     <link href="../static/css/base.css" rel="stylesheet">
     <link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
     <link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
@@ -13,39 +13,9 @@
     <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
     <script>
         $(function(){
-            $("#beginTime").datebox({
-                onShowPanel: function () {//显示日趋选择对象后再触发弹出月份层的事件，初始化时没有生成月份层
-                    span.trigger('click'); //触发click事件弹出月份层
-                    if (!tds)
-                        setTimeout(function() { //延时触发获取月份对象，因为上面的事件触发和对象生成有时间间隔
-                            tds = p.find('div.calendar-menu-month-inner td');
-                            tds.click(function(e) {
-                                e.stopPropagation(); //禁止冒泡执行easyui给月份绑定的事件
-                                var year = /\d{4}/.exec(span.html())[0] //得到年份
-                                    ,month = parseInt($(this).attr('abbr'), 10); //月份 之前是这样的month = parseInt($(this).attr('abbr'), 10) + 1;
-                                $('#beginTime').datebox('hidePanel') //隐藏日期对象
-                                    .datebox('setValue', year + '-' + month); //设置日期的值
-                            });
-                        }, 0);
-                },
-                parser: function (s) {//配置parser，返回选择的日期
-                    if (!s) return new Date();
-                    var arr = s.split('-');
-                    return new Date(parseInt(arr[0], 10), parseInt(arr[1], 10) - 1, 1);
-                },
-                formatter: function (d) {
-                    return d.getFullYear() + '-' +(d.getMonth()+1);
-                }//配置formatter，只返回年月 之前是这样的d.getFullYear() + '-' +(d.getMonth());
-            });
-            var p = $('#beginTime').datebox('panel'), //日期选择对象
-            tds = false, //日期选择对象中月份
-            span = p.find('span.calendar-text'); //显示月份层的触发控件
-            var curr_time = new Date();
-            $("#beginTime").datebox("setValue", myformatter(curr_time));//设置前当月
-
             var EQPName = ""
             $('#LeftTree').tree({
-                url:"/quipmentRunPUIDParent",
+                url:"/EquipmentTimeStatistics/DataTree",
                 method: 'get',
                 animate:true,
                 loadFilter:function(data){
@@ -67,13 +37,10 @@
         })
         function toJson(name,date){
             var myChart = echarts.init(document.getElementById("main"))
-            var myChart2 = echarts.init(document.getElementById("mainYear"))
             if(name == ""){
                 myChart.hideLoading();
-                myChart2.hideLoading();
             }else {
                 myChart.showLoading();
-                myChart2.showLoading();
                 $.ajax({
                     url: "/EquipmentManage/runDataChart",
                     type: "get",
@@ -86,7 +53,6 @@
                     success: function (data) {
                         if (data !=  "NO") {
                             myChart.hideLoading();
-                            myChart2.hideLoading();
                             myChart.setOption(option = {
                                 tooltip: {
                                     trigger: 'axis',
@@ -156,60 +122,6 @@
                                 }]
                             });
                             myChart.setOption(option);
-                            myChart2.setOption(option = {
-                                tooltip: {
-                                    trigger: 'axis',
-                                    axisPointer: {
-                                        type: 'shadow'
-                                    }
-                                },
-                                legend: {
-                                    data: ['累计运行时间', '累计故障时间']
-                                },
-                                toolbox: {
-                                    feature: {
-                                        dataView: {show: true, readOnly: false},
-                                        magicType: {show: true, type: ['line', 'bar']},
-                                        restore: {show: true},
-                                        saveAsImage: {show: true}
-                                    }
-                                },
-                                xAxis: {
-                                    type: 'category',
-                                    name: '月',
-                                    data: [1,2,3,4,5,6,7,8,9,10,11,12]
-                                },
-                                yAxis: [
-                                    {
-                                        type: 'value',
-                                        name: '时间',
-                                        min: 0,
-                                        axisLabel: {
-                                            formatter: '{value} h'
-                                        }
-                                    }
-                                ],
-                                series: [{
-                                    name: "运行时间",
-                                    type: 'bar',
-                                    itemStyle:{
-                                        normal:{
-                                            color:'#90ed7d'
-                                        }
-                                    },
-                                    data: data[0].year_run_time
-                                }, {
-                                    name: "故障时间",
-                                    type: 'bar',
-                                    itemStyle:{
-                                        normal:{
-                                            color:'#f15c80'
-                                        }
-                                    },
-                                    data: data[0].year_error_time
-                                }]
-                            });
-                            myChart2.setOption(option);
                         } else {
                             $.messager.alert({
                                 title: '提示',
@@ -220,7 +132,6 @@
                                 left: 500
                             })
                             myChart.hideLoading();
-                            myChart2.hideLoading();
                         }
                     },
                     error:function(data){
@@ -233,17 +144,10 @@
                             left: 500
                         })
                         myChart.hideLoading();
-                        myChart2.hideLoading();
                     }
 
                 })
             }
-        }
-        function myformatter(date) {
-            var y = date.getFullYear();
-            var m = date.getMonth() + 1;
-            //var d = 1;
-            return y + '-' + (m < 10 ? ('0' + m) : m);//+ '-' + (d < 10 ? ('0' + d) : d);
         }
     </script>
 </head>
@@ -258,11 +162,8 @@
             <a id="searchDate" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'">选择时间</a>
         </div>
         <div id="tt" class="easyui-tabs" style="width:100%;height:600px;margin-top:10px; scrolling:'false'">
-            <div title="设备运行月数据">
+            <div title="设备运行数据">
                 <div id="main" style="width: 1000px; height: 560px; margin: 10px auto;"></div>
-            </div>
-            <div title="设备运行年数据">
-                <div id="mainYear" style="width: 1000px; height: 560px; margin: 10px auto;"></div>
             </div>
         </div>
     </div>

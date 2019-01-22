@@ -9,6 +9,7 @@
 	<link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
     <link rel="stylesheet" href="../static/css/bootstrap.min.css">
     <link rel="stylesheet" href="../static/css/bootstrap-table.min.css">
+    <link rel="stylesheet" href="../static/css/fullcalendar.min.css">
     <style>
         .content{
             background: #fff;
@@ -45,6 +46,40 @@
         }
         .panel-body{
             border:none;
+        }
+        .fc-toolbar h2{
+            font-size: 18px;
+            line-height: 30px;
+        }
+        .fc-event{
+            line-height: 1;
+        }
+        .fc-content-skeleton td{
+            text-align: center;
+        }
+        .fc-ltr .fc-basic-view .fc-day-top .fc-day-number{
+            float: none;
+        }
+        .bg-proceed{
+            padding: 6px 10px;
+            color: #fff;
+            margin: 10px 0;
+            border-radius: 3px;
+            background: #00c3db;
+        }
+        .bg-backlog{
+            padding: 6px 10px;
+            color: #fff;
+            margin: 10px 0;
+            border-radius: 3px;
+            background: #f7d013;
+        }
+        .bg-urgency{
+            padding: 6px 10px;
+            color: #fff;
+            margin: 10px 0;
+            border-radius: 3px;
+            background: #e73b3b;
         }
     </style>
 </head>
@@ -86,36 +121,50 @@
                                 <span><i class="glyphicon glyphicon-pencil"></i> 物料平衡待确认</span>
                             </div>
                         </div>
-                        <div class="col-md-3" skip-src="/BatchMaterielBalanceStatistic" title="设备故障待维修">
-                            <div class="AgencyArea-item">
-                                <h3 id="daiban4">0</h3>
-                                <span><i class="glyphicon glyphicon-pencil"></i> 设备故障待维修</span>
-                            </div>
-                        </div>
-                        <div class="col-md-3" skip-src="/BatchMaterielBalanceStatistic" title="设备故障待完成">
-                            <div class="AgencyArea-item">
-                                <h3 id="daiban4">0</h3>
-                                <span><i class="glyphicon glyphicon-pencil"></i> 设备故障待完成</span>
-                            </div>
-                        </div>
-                        <div class="col-md-3" skip-src="/BatchMaterielBalanceStatistic" title="设备检修待完成">
-                            <div class="AgencyArea-item">
-                                <h3 id="daiban4">0</h3>
-                                <span><i class="glyphicon glyphicon-pencil"></i> 设备检修待完成</span>
-                            </div>
-                        </div>
-                        <div class="col-md-3" skip-src="/BatchMaterielBalanceStatistic" title="设备检修待审核">
-                            <div class="AgencyArea-item">
-                                <h3 id="daiban4">0</h3>
-                                <span><i class="glyphicon glyphicon-pencil"></i> 设备检修待审核</span>
-                            </div>
-                        </div>
+{#                        <div class="col-md-3" skip-src="/BatchMaterielBalanceStatistic" title="设备故障待维修">#}
+{#                            <div class="AgencyArea-item">#}
+{#                                <h3 id="daiban4">0</h3>#}
+{#                                <span><i class="glyphicon glyphicon-pencil"></i> 设备故障待维修</span>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                        <div class="col-md-3" skip-src="/BatchMaterielBalanceStatistic" title="设备故障待完成">#}
+{#                            <div class="AgencyArea-item">#}
+{#                                <h3 id="daiban4">0</h3>#}
+{#                                <span><i class="glyphicon glyphicon-pencil"></i> 设备故障待完成</span>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                        <div class="col-md-3" skip-src="/BatchMaterielBalanceStatistic" title="设备检修待完成">#}
+{#                            <div class="AgencyArea-item">#}
+{#                                <h3 id="daiban4">0</h3>#}
+{#                                <span><i class="glyphicon glyphicon-pencil"></i> 设备检修待完成</span>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                        <div class="col-md-3" skip-src="/BatchMaterielBalanceStatistic" title="设备检修待审核">#}
+{#                            <div class="AgencyArea-item">#}
+{#                                <h3 id="daiban4">0</h3>#}
+{#                                <span><i class="glyphicon glyphicon-pencil"></i> 设备检修待审核</span>#}
+{#                            </div>#}
+{#                        </div>#}
                     </div>
                     <div id="compareBox" style="width: 100%;width: 100%; margin: 10px auto;">
                         <div id="CompareMain" style="width: 700px; height: 380px;"></div>
                     </div>
                 </div>
                 <div class="col-md-4 col-sm-12">
+                    <div id='calendar' style="width: 100%;background: #f2f2f2;padding: 15px;"></div>
+                    <div class="col-md-12 col-sm-12" style="background: #d2d2d2;margin-bottom: 20px;">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <p class="bg-proceed text-center">进行</p>
+                            </div>
+                            <div class="col-md-4">
+                                <p class="bg-backlog text-center">待办</p>
+                            </div>
+                            <div class="col-md-4">
+                                <p class="bg-urgency text-center">紧急</p>
+                            </div>
+                        </div>
+                    </div>
                     <div class="panel panel-widget" style="background: #e3e3e3;">
                         <div class="panel-heading">制药计划待处理列表<a href="javascript:;" id="toZYPlanManage" style="float: right">去处理</a></div>
                         <div class="panel-body">
@@ -133,11 +182,14 @@
         </div>
     </div>
     <script type="text/javascript" src="../static/js/echarts.common.min.js"></script>
+    <script type="text/javascript" src="../static/js/moment.min.js"></script>
     <script type="text/javascript" src="../static/js/jquery-3.3.1.min.js"></script>
     <script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="../static/js/bootstrap-table.min.js"></script>
     <script type="text/javascript" src="../static/js/bootstrap-table-zh-CN.min.js"></script>
     <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../static/js/fullcalendar.min.js"></script>
+    <script type="text/javascript" src="../static/js/zh-cn.js"></script>
     <script type="text/javascript">
         //chart0
         $(document).ready(function () {
@@ -341,6 +393,38 @@
                 myChartContainer();
                 myChart.resize();
             })
+
+            //日历排产
+            $('#calendar').fullCalendar({
+                locale:'zh-cn',
+                //weekNumbers: true, //是否在日历中显示第几周
+                eventLimit: true, // allow "more" link when too many events
+                events: [
+                    {
+                        start: '2019-01-23',
+                        color: '#f7d013'
+                    },
+                    {
+                        start: '2019-03-07',
+                        end: '2018-03-10',
+                        color:"#f7d013"
+                    },
+                    {
+                        start: '2019-03-09',
+                        color:"#00c3db"
+                    },
+                    {
+                        start: '2019-03-11',
+                        end: '2019-03-13',
+                        color: '#f7d013'
+                    },
+                    {
+                        start: '2019-03-12 10:30:00',
+                        end: '2019-03-12 12:30:00',
+                        color:"#e73b3b"
+                    }
+                ]
+            });
 
             //增加tabs跳转到制药计划管理
             $("#toZYPlanManage").on('click',function(){
