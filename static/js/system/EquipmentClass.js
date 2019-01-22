@@ -150,7 +150,7 @@ $(function () {
             $('#PUID option:contains("请选择")').prop("selected", 'selected');
             $('#Equipment_State option:contains("请选择")').prop("selected", 'selected');
             $('#CostAttach option:contains("请选择")').prop("selected", 'selected');
-            $('#Procurement_Date').datebox({value: ""});
+            $('#Procurement_Date').datetimebox({value: ""});
             $('input[name="Desc"]').val("");
 
             // $(formId).form('clear');
