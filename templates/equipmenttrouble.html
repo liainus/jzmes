@@ -20,7 +20,7 @@
             $("#tab").datagrid({
                 url:'/EquipmentFailureReportingSearch',
                 queryParams: {
-                    FailureReportingNum: ''
+                    EQPName: ''
                 }
             })
             function createKeyIDObj(keyID){
@@ -31,16 +31,15 @@
             toolbar = {
                 search:function(){
                     $('#tab').datagrid('load',{
-                        FailureReportingNum:$("#search").val()
+                        EQPName:$("#search").val()
                     });
                 },
                 create:function(){
                     $("#equimentsClassDialog").dialog('open').dialog('setTitle','新增故障记录');
                     $('#ID').val();
-                    $("#FailureReportingNum").val()
-                    $("#FailureReportingType").val()
+                    $('#PUIDName option[value=""]').prop("selected", 'selected')
+                    $('#Shift option[value=""]').prop("selected", 'selected')
                     $("#EQPName").val()
-                    $("#FailureBeginDate").datetimebox("setValue", "")
                     $("#FailureReportingDesc").val()
                 },
                 update:function(){
@@ -52,10 +51,9 @@
                         if (row) {
                             $("#equimentsClassDialog").dialog('open').dialog('setTitle','修改记录');
                             $('#ID').val(row.ID);
-                            $("#FailureReportingNum").val(row.FailureReportingNum)
-                            $("#FailureReportingType").val(row.FailureReportingType)
+                            $('#PUIDName option:contains('+row.PUIDName+')').prop("selected", 'selected');
+                            $('#Shift option:contains('+row.Shift+')').prop("selected", 'selected');
                             $("#EQPName").val(row.EQPName)
-                            $("#FailureBeginDate").datetimebox("setValue", row.FailureBeginDate)
                             $("#FailureReportingDesc").val(row.FailureReportingDesc)
                         };
                     } else if (rows.length == 0) {
@@ -66,17 +64,17 @@
                     var strID = $('#ID').val();
                     var urlAddr = ''
                     var hintinfo = ''
-                    if(Bee.StringUtils.isEmpty($('#FailureReportingNum').val())){
-                        $.messager.alert('提示', '设备故障报修计划单号不能为空！', 'info');
+                    if(Bee.StringUtils.isEmpty($('#PUIDName').find("option:selected").val())){
+                        $.messager.alert('提示', '工序不能为空！', 'info');
                         return false;
-                    }else if(Bee.StringUtils.isEmpty($('#FailureReportingType').val())){
-                        $.messager.alert('提示', '故障类型不能为空！', 'info');
+                    }else if(Bee.StringUtils.isEmpty($('#Shift').find("option:selected").val())){
+                        $.messager.alert('提示', '早晚班不能为空！', 'info');
                         return false;
                     }else if(Bee.StringUtils.isEmpty($('#EQPName').val())){
                         $.messager.alert('提示', '设备名称不能为空！', 'info');
                         return false;
-                    }else if(Bee.StringUtils.isEmpty($('#FailureBeginDate').datetimebox('getValue'))){
-                        $.messager.alert('提示', '故障开始时间不能为空！', 'info');
+                    }else if(Bee.StringUtils.isEmpty($('#FailureReportingDesc').val())){
+                        $.messager.alert('提示', '故障描述不能为空！', 'info');
                         return false;
                     }
                     if (strID.length >= 1){
@@ -92,10 +90,9 @@
                         type:"post",
                         data:{
                             ID:$('#ID').val(),
-                            FailureReportingNum:$('#FailureReportingNum').val(),
-                            FailureReportingType:$('#FailureReportingType').val(),
+                            PUIDName:$('#PUIDName').find("option:selected").val(),
+                            Shift:$('#Shift').find("option:selected").val(),
                             EQPName:$('#EQPName').val(),
-                            FailureBeginDate:$('#FailureBeginDate').datetimebox('getValue'),
                             FailureReportingDesc:$('#FailureReportingDesc').val()
                         },
                         success:function(data){
@@ -190,33 +187,29 @@
                         if (row) {
                             $("#serviceClassDialog").dialog('open').dialog('setTitle','完成维修');
                             $('#aID').val(row.ID)
-                            $("#ActualBeginDate").datetimebox("setValue", "")
-                            $("#ActualEndDate").datetimebox("setValue", "")
-                            $("#Description").val()
+                            $("#AnalysisFailure").val()
+                            $("#Precautions").val()
+                            $("#UnAffectingProduction").val()
+                            $("#AffectingProduction").val()
+                            $("#Repairman").val()
+                            $("#ReplacementOfSpareParts").val()
                         };
                     } else if (rows.length == 0) {
                         $.messager.alert('警告操作！', '请至少选定一条数据进行完成！', 'warning');
                     }
                 },
                 service:function(){
-                    if(Bee.StringUtils.isEmpty($('#ActualBeginDate').datetimebox('getValue'))){
-                        $.messager.alert('提示', '实际处理开始时间不能为空！', 'info');
-                        return false;
-                    }else if(Bee.StringUtils.isEmpty($('#ActualEndDate').datetimebox('getValue'))){
-                        $.messager.alert('提示', '实际处理完成时间不能为空！', 'info');
-                        return false;
-                    }else if(Bee.StringUtils.isEmpty($('#Description').val())){
-                        $.messager.alert('提示', '故障详细不能为空！', 'info');
-                        return false;
-                    }
                     $.ajax({
                         url:"/EquipmentFailureReportingConfirm",
                         type:"post",
                         data:{
                             ID:$('#aID').val(),
-                            ActualBeginDate:$('#ActualBeginDate').datetimebox('getValue'),
-                            ActualEndDate:$('#ActualEndDate').datetimebox('getValue'),
-                            Description:$('#Description').val()
+                            AnalysisFailure:$('#ActualBeginDate').val(),
+                            Precautions:$('#Precautions').val(),
+                            UnAffectingProduction:$('#UnAffectingProduction').val(),
+                            AffectingProduction:$('#AffectingProduction').val(),
+                            Repairman:$('#Repairman').val(),
+                            ReplacementOfSpareParts:$('#ReplacementOfSpareParts').val()
                         },
                         success:function(data){
                             $.messager.progress('close');
@@ -248,21 +241,12 @@
                 }
             }
         })
-        function formatterStatus(value, row, index){
-            if (value == 10){
-                return '新增'
-            }else if(value == 20){
-                return '处理中'
-            }else if(value == 30){
-                return '维修完成'
-            }
-        }
     </script>
 </head>
 <body>
     <div class="content" style="padding: 10px;">
         <div id="Toolbar" style="padding:0 10px;">
-            设备故障报修计划单号:
+            设备名称:
             <input type="text" class="textbox-text validatebox-text textbox-prompt" id="search" name="search" style="height:28px;" autocomplete="off"
                 placeholder="">
             <a href="#" class="easyui-linkbutton" iconCls="icon-search" onclick="toolbar.search();">查询</a>
@@ -289,15 +273,38 @@
                             </td>
                         </tr>
                         <tr>
-                            <td class="kv-label">设备故障报修计划单号</td>
+                            <td class="kv-label">工序</td>
                             <td class="kv-content">
-                                <input name="FailureReportingNum" id="FailureReportingNum" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder="">
+                                <select name="PUIDName" id="PUIDName" type="text" style="width:157px;" autocomplete="off" placeholder="">
+                                    <option value="">请选择</option>
+                                    <option value="前处理">前处理</option>
+                                    <option value="吊篮输送">吊篮输送</option>
+                                    <option value="吊篮提取罐">吊篮提取罐</option>
+                                    <option value="碟片离心机">碟片离心机</option>
+                                    <option value="MVR">MVR</option>
+                                    <option value="喷雾塔">喷雾塔</option>
+                                    <option value="醇沉系统">醇沉系统</option>
+                                    <option value="称量包装机">称量包装机</option>
+                                    <option value="除渣机">除渣机</option>
+                                    <option value="粉碎机">粉碎机</option>
+                                    <option value="投料系统">投料系统</option>
+                                    <option value="空调系统">空调系统</option>
+                                    <option value="配电系统">配电系统</option>
+                                    <option value="纯水系统">纯水系统</option>
+                                    <option value="锅炉">锅炉</option>
+                                    <option value="其他辅助设备">其他辅助设备</option>
+                                </select>
                             </td>
                         </tr>
                         <tr>
-                            <td class="kv-label">故障类型</td>
+                            <td class="kv-label">早晚班</td>
                             <td class="kv-content">
-                                <input name="FailureReportingType" id="FailureReportingType" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                                <select name="Shift" id="Shift" type="text" style="width:157px;" autocomplete="off" placeholder="">
+                                    <option value="">请选择</option>
+                                    <option value="早班">早班</option>
+                                    <option value="晚班">晚班</option>
+                                    <option value="全天">全天</option>
+                                </select>
                             </td>
                         </tr>
                         <tr>
@@ -307,15 +314,9 @@
                             </td>
                         </tr>
                         <tr>
-                            <td class="kv-label">故障开始时间</td>
-                            <td class="kv-content">
-                                <input name="FailureBeginDate" id="FailureBeginDate" type="text" class="easyui-datetimebox" data-options="required:true,editable:false" autocomplete="off" placeholder="" style="height: 25px;" >
-                            </td>
-                        </tr>
-                        <tr>
                             <td class="kv-label">故障描述</td>
                             <td class="kv-content">
-                                <input name="FailureReportingDesc" id="FailureReportingDesc" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                                <input name="FailureReportingDesc" required="true" id="FailureReportingDesc" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
                             </td>
                         </tr>
                     </tbody>
@@ -338,21 +339,39 @@
                             </td>
                         </tr>
                         <tr>
-                            <td class="kv-label">实际处理开始时间</td>
+                            <td class="kv-label">原因分析</td>
                             <td class="kv-content">
-                                <input name="ActualBeginDate" id="ActualBeginDate" type="text" class="easyui-datetimebox" data-options="required:true,editable:false" autocomplete="off" placeholder="">
+                                <input name="AnalysisFailure" id="AnalysisFailure" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
                             </td>
                         </tr>
                         <tr>
-                            <td class="kv-label">实际处理完成时间</td>
+                            <td class="kv-label">解决措施</td>
                             <td class="kv-content">
-                                <input name="ActualEndDate" id="ActualEndDate" type="text" class="easyui-datetimebox" data-options="required:true,editable:false" autocomplete="off" placeholder="">
+                                <input name="Precautions" id="Precautions" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
                             </td>
                         </tr>
                         <tr>
-                            <td class="kv-label">故障详细</td>
+                            <td class="kv-label">不影响生产（分钟）</td>
                             <td class="kv-content">
-                                <input name="Description" id="Description" required="true" type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="">
+                                <input name="UnAffectingProduction" id="UnAffectingProduction" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">影响生产（分钟）</td>
+                            <td class="kv-content">
+                                <input name="AffectingProduction" id="AffectingProduction" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">维修人</td>
+                            <td class="kv-content">
+                                <input name="Repairman" id="Repairman" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">备件更换情况</td>
+                            <td class="kv-content">
+                                <input name="ReplacementOfSpareParts" id="ReplacementOfSpareParts" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
                             </td>
                         </tr>
                     </tbody>
@@ -374,16 +393,17 @@
             <thead>
                 <tr>
                     <th field="ck" checkbox="true"></th>
-                    <th data-options="field:'FailureReportingNum',width:150,align:'center'">设备故障报修计划单号</th>
-                    <th data-options="field:'FailureReportingType',width:150,align:'center'">故障类型</th>
+                    <th data-options="field:'ReportingNum',width:150,align:'center'">设备故障报修计划单号</th>
+                    <th data-options="field:'PUIDName',width:150,align:'center'">工序</th>
+                    <th data-options="field:'Shift',width:150,align:'center'">早晚班</th>
                     <th data-options="field:'EQPName',width:150,align:'center'">设备名称</th>
-                    <th data-options="field:'ReportingBeginDate',width:150,align:'center'">报修开始时间</th>
-                    <th data-options="field:'FailureBeginDate',width:150,align:'center'">故障开始时间</th>
                     <th data-options="field:'FailureReportingDesc',width:150,align:'center'">故障描述</th>
-                    <th data-options="field:'ActualBeginDate',width:150,align:'center'">实际处理开始时间</th>
-                    <th data-options="field:'ActualEndDate',width:150,align:'center'">实际处理完成时间</th>
-                    <th data-options="field:'ReportingStatus',width:150,align:'center'" formatter="formatterStatus">状态</th>
-                    <th data-options="field:'Description',width:150,align:'center'">故障详细</th>
+                    <th data-options="field:'AnalysisFailure',width:150,align:'center'">原因分析</th>
+                    <th data-options="field:'Precautions',width:150,align:'center'">解决措施</th>
+                    <th data-options="field:'UnAffectingProduction',width:150,align:'center'">不影响生产（分钟）</th>
+                    <th data-options="field:'AffectingProduction',width:150,align:'center'">影响生产（分钟）</th>
+                    <th data-options="field:'Repairman',width:150,align:'center'">维修人</th>
+                    <th data-options="field:'ReplacementOfSpareParts',width:150,align:'center'">备件更换情况</th>
                 </tr>
             </thead>
         </table>
