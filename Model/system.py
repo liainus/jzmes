@@ -14,7 +14,7 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker, backref
 from sqlalchemy import create_engine, \
-    Column, ForeignKey, Table, DateTime, Integer, String, BigInteger
+    Column, ForeignKey, Table, DateTime, Integer, String, BigInteger, Time
 from sqlalchemy import Column, DateTime, Float, Integer, String, Unicode, Boolean
 from sqlalchemy.dialects.mssql.base import BIT
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -1098,6 +1098,65 @@ class EquipmentStatusCount(Base):
     #持续时间
     Duration = Column(Float, primary_key=False, autoincrement=False, nullable=True)
 
+# 班次
+class Shifts(Base):
+    __tablename__ = "Shifts"
+    # ID:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=True)
+    # 班次编码
+    ShiftsCode = Column(Unicode(20), primary_key=False, autoincrement=False, nullable=True)
+    # 班次名称
+    ShiftsName = Column(Unicode(20), primary_key=False, autoincrement=False, nullable=True)
+    #班次开始时间
+    BeginTime = Column(Time, primary_key=False, autoincrement=False, nullable=True)
+    # 班次结束时间
+    EndTime = Column(Time, primary_key=False, autoincrement=False, nullable=True)
+
+
+# 设备运行数据自动采集树形
+class EquipmentTimeStatisticTree(Base):
+
+    __tablename__ = "EquipmentTimeStatisticTree"
+    # ID:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=True)
+    # 树节点
+    Key = Column(Unicode(20), primary_key=False, autoincrement=False, nullable=True)
+    # 品名
+    Brand = Column(Unicode(20), primary_key=False, autoincrement=False, nullable=True)
+    # 父节点
+    ParentNode = Column(Unicode(10), primary_key=False, autoincrement=False, nullable=True)
+
+# 设备运行记录设备编码
+class SystemEQPCode(Base):
+    __tablename__ = "SystemEQPCode"
+    # ID:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=True)
+    # 工序
+    Unit = Column(Unicode(20), primary_key=False, autoincrement=False, nullable=True)
+    # Brand
+    Brand = Column(Unicode(20), primary_key=False, autoincrement=False, nullable=True)
+    # EquipCode
+    EquipCode = Column(Unicode(20), primary_key=False, autoincrement=False, nullable=True)
+
+# 设备运行记录自动获取
+class EquipmentTimeStatistic(Base):
+    __tablename__ = "EquipmentTimeStatistic"
+    # ID:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=True)
+    # 采样时间
+    SampleTime = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+    # 班次ID
+    ShiftsID = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
+    # 设备编码
+    EquipmentCode = Column(Unicode(20), primary_key=False, autoincrement=False, nullable=True)
+    # 运行时间
+    RunTime = Column(Float, primary_key=False, autoincrement=False, nullable=True)
+    # 故障时间
+    ErrorTime = Column(Float, primary_key=False, autoincrement=False, nullable=True)
+    # 停机时间
+    StopTime = Column(Float, primary_key=False, autoincrement=False, nullable=True)
+    # 清场时间
+    ClearTime = Column(Float, primary_key=False, autoincrement=False, nullable=True)
 
 # 生成表单的执行语句
 Base.metadata.create_all(engine)
