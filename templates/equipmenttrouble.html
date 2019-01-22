@@ -40,6 +40,7 @@
                     $('#PUIDName option[value=""]').prop("selected", 'selected')
                     $('#Shift option[value=""]').prop("selected", 'selected')
                     $("#EQPName").val()
+                    $('#FailureDate').datetimebox("setValue","");
                     $("#FailureReportingDesc").val()
                 },
                 update:function(){
@@ -54,6 +55,7 @@
                             $('#PUIDName option:contains('+row.PUIDName+')').prop("selected", 'selected');
                             $('#Shift option:contains('+row.Shift+')').prop("selected", 'selected');
                             $("#EQPName").val(row.EQPName)
+                            $('#FailureDate').datetimebox("setValue",row.FailureDate);
                             $("#FailureReportingDesc").val(row.FailureReportingDesc)
                         };
                     } else if (rows.length == 0) {
@@ -93,6 +95,7 @@
                             PUIDName:$('#PUIDName').find("option:selected").val(),
                             Shift:$('#Shift').find("option:selected").val(),
                             EQPName:$('#EQPName').val(),
+                            FailureDate:$('#FailureDate').datebox('getValue'),
                             FailureReportingDesc:$('#FailureReportingDesc').val()
                         },
                         success:function(data){
@@ -236,6 +239,28 @@
                         },
                     })
                 },
+                file:function(){
+                    $("#fileClassDialog").dialog('open').dialog('setTitle','导入Excel表');
+                },
+                fileSave:function(){
+                    var formData = new FormData($('#fileClassDialogForm')[0]);
+                    console.log(formData)
+                    $.ajax({
+                        url:'/equipment_model/EquipmentFailureReportingExcel',
+                        type:"post",
+                        data:formData,
+                        async: true,
+                        cache: false,
+                        contentType:false,
+                        processData:false,
+                        success:function(data){
+                            console.log(data)
+                        },
+                        error: function (returndata) {
+                    　　　　　alert("上传失败！")
+                    　　}
+                    })
+                },
                 refresh:function(){
                     $('#tab').datagrid('reload');
                 }
@@ -260,6 +285,7 @@
                 <a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="toolbar.ReceiptOK()">维修完成</a>
             {% endif %}
             <a href="#" class="easyui-linkbutton" iconCls="icon-reload" onclick="toolbar.refresh()">刷新</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-print" onclick="toolbar.file()">导入Excel表</a>
         </div>
         <div id="equimentsClassDialog" class="easyui-dialog" style="width:400px;height:360px;padding:10px;"
              data-options="closed:'true',buttons:'#equimentsClassDialogButtons',modal:true">
@@ -311,6 +337,12 @@
                             <td class="kv-label">设备名称</td>
                             <td class="kv-content">
                                 <input name="EQPName" id="EQPName" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">故障时间</td>
+                            <td class="kv-content">
+                                <input name="FailureDate" id="FailureDate" type="text" class="easyui-datetimebox" data-options="editable:false" autocomplete="off" placeholder=""  >
                             </td>
                         </tr>
                         <tr>
@@ -382,6 +414,25 @@
                 </div>
             </form>
         </div>
+        <div id="fileClassDialog" class="easyui-dialog" style="width:400px;height:300px;padding:10px;"
+             data-options="closed:'true',buttons:'#fileClassDialogButtons',modal:true">
+            <form id="fileClassDialogForm" method="post" class="dialog-form" enctype="multipart/form-data">
+                <table class="kv-table">
+                    <tbody>
+                        <tr>
+                            <td class="kv-label">文件名</td>
+                            <td class="kv-content">
+                                <input class="easyui-filebox" name="file" id="file" data-options="prompt:'选择一个文件'">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div id="fileClassDialogButtons">
+                    <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" onclick="toolbar.fileSave()">保存</a>
+                    <a href="#" class="easyui-linkbutton" onclick="$('#fileClassDialog').dialog('close')">关闭</a>
+                </div>
+            </form>
+        </div>
         <table class="easyui-datagrid" id="tab" title="" style="width:100%;" data-options="
             rownumbers:true,
             singleSelect:false,
@@ -397,6 +448,7 @@
                     <th data-options="field:'PUIDName',width:150,align:'center'">工序</th>
                     <th data-options="field:'Shift',width:150,align:'center'">早晚班</th>
                     <th data-options="field:'EQPName',width:150,align:'center'">设备名称</th>
+                    <th data-options="field:'FailureDate',width:150,align:'center'">故障时间</th>
                     <th data-options="field:'FailureReportingDesc',width:150,align:'center'">故障描述</th>
                     <th data-options="field:'AnalysisFailure',width:150,align:'center'">原因分析</th>
                     <th data-options="field:'Precautions',width:150,align:'center'">解决措施</th>

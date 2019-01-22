@@ -31,7 +31,7 @@ from Model.core import Enterprise, Area, Factory, ProductLine, ProcessUnit, Equi
     CollectTaskCollection, ReadyWork, NodeIdNote, ProductUnitRoute, ProductionMonitor, NewZYPlanMaterial, \
     QualityControlTree
 from Model.system import Role, Organization, User, Menu, Role_Menu, BatchMaterielBalance, OperationManual, NewReadyWork, \
-    EquipmentWork, EletronicBatchDataStore, SpareStock, EquipmentMaintenanceKnowledge, EquipmentFailureReporting, EquipmentMaintain, \
+    EquipmentWork, EletronicBatchDataStore, SpareStock, EquipmentMaintenanceKnowledge, EquipmentMaintain, \
     SchedulePlan, SparePartInStockManagement, SparePartStock, Area, Instruments, MaintenanceStatus, MaintenanceCycle
 from tools.MESLogger import MESLogger
 from Model.core import SysLog
@@ -62,6 +62,7 @@ login_manager.login_view ='login'
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'qeqhqiqd131'
 login_manager.init_app(app)
+
 
 # 设备蓝图模块
 app.register_blueprint(equip)

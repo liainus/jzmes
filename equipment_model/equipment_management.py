@@ -15,7 +15,7 @@ import datetime
 from flask_login import login_required, logout_user, login_user,current_user,LoginManager
 import re
 from Model.system import Role, Organization, User, Menu, Role_Menu, BatchMaterielBalance, OperationManual, NewReadyWork, \
-    EquipmentWork, EletronicBatchDataStore, SpareStock, EquipmentMaintenanceKnowledge, EquipmentFailureReporting, \
+    EquipmentWork, EletronicBatchDataStore, SpareStock, EquipmentMaintenanceKnowledge, EquipmentReportingRecord, \
     EquipmentMaintain, \
     SchedulePlan, SparePartInStockManagement, SparePartStock, Area, Instruments, MaintenanceStatus, MaintenanceCycle, \
     EquipmentRunRecord, \
@@ -26,6 +26,8 @@ from io import StringIO
 import calendar
 from Model.system import CenterCost
 from tools.common import logger,insertSyslog,insert,delete,update,select
+import os
+import openpyxl
 
 engine = create_engine(Model.Global.GLOBAL_DATABASE_CONNECT_STRING, deprecate_large_types=True)
 Session = sessionmaker(bind=engine)
@@ -1754,3 +1756,69 @@ def RequipmentRunData():
             insertSyslog("error", "路由：/RequipmentRunData/GetBatch，获取批次Error：" + str(e), current_user.Name)
 
 
+
+def read_Excel(file_dir):
+    workbook = xlrd.open_workbook(file_dir)
+    wb = openpyxl.load_workbook(file_dir)
+    if workbook:
+        for i in range(0,len(wb.sheetnames)):
+            table = workbook.sheet_by_index(i)
+            if table:
+                PNamelist = []
+                for row in range(2, table.nrows):
+                    row_value = table.row_values(row)
+                    if len(row_value)==12:
+                        if (row_value[2] == "" or row_value[2] == None) and (row_value[3] == "" or row_value[3] == None):
+                            continue
+                        val1 = row_value[1]
+                        if val1 != "" and val1 != None:
+                            PNamelist.append(row_value[1])
+                        else:
+                            val1 = PNamelist[-1]
+                        db_session.add(EquipmentReportingRecord(
+                            PUIDName=val1,
+                            FailureDate=row_value[2],
+                            Shift=row_value[3],
+                            EQPName=row_value[4],
+                            FailureReportingDesc=row_value[5],
+                            AnalysisFailure=row_value[6],
+                            Precautions=row_value[7],
+                            UnAffectingProduction=row_value[8],
+                            AffectingProduction=row_value[9],
+                            Repairman=row_value[10],
+                            ReplacementOfSpareParts = row_value[11]
+                        ))
+                    if len(row_value)==10:
+                        db_session.add(EquipmentReportingRecord(
+                            FailureDate=row_value[0],
+                            Shift=row_value[1],
+                            EQPName=row_value[2],
+                            FailureReportingDesc=row_value[3],
+                            AnalysisFailure=row_value[4],
+                            Precautions=row_value[5],
+                            UnAffectingProduction=row_value[6],
+                            AffectingProduction=row_value[7],
+                            Repairman=row_value[8],
+                            ReplacementOfSpareParts=row_value[9]
+                        ))
+                    db_session.commit()
+        return 'OK'
+ALLOWED_EXTENSIONS = ['xlsx']
+def allowe_file(filename):
+    '''
+    限制上传的文件格式
+    :param filename:
+    :return:
+    '''
+    return '.' in filename and filename.rsplit('.',1)[1] in ALLOWED_EXTENSIONS
+#设备故障管理excel表导入
+@equip.route('/equipment_model/EquipmentFailureReportingExcel', methods=['GET', 'POST'])
+def EquipmentFailureReportingExcel():
+    if request.method == 'POST':
+        data = request.values
+        file_path = data['file_path']
+        if allowe_file(file_path) == True:
+            return read_Excel(file_path)
+        else:
+            return "请上传xlsx格式的excel！"
+>>>>>>> 5a7111dbc47218dc0d3176acb45408228f1578c0
