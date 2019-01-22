@@ -412,7 +412,12 @@
                             {% endif %}
                             {% if '95' in session.get('menus') %}
                                 <li>
-                                    <a href="#" onclick="addTab('设备运行数据','/EquipmentManage/runData')">设备运行数据</a>
+                                    <a href="#" onclick="addTab('设备运行数据(人工录入)','/EquipmentManage/runData')">设备运行数据(人工录入)</a>
+                                </li>
+                            {% endif %}
+                            {% if '95' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onclick="addTab('设备运行数据(系统采集)','/EquipmentTimeStatistics/Index')">设备运行数据(系统采集)</a>
                                 </li>
                             {% endif %}
 {#                            {% if '45' in session.get('menus') %}#}
