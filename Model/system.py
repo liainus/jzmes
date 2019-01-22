@@ -966,47 +966,47 @@ class EquipmentRunRecord(Base):
     # 添加时间:
     CreateDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
 
-#  设备故障报修
-class EquipmentFailureReporting(Base):
-    __tablename__ = 'EquipmentFailureReporting'
+#  设备维修记录表
+class EquipmentReportingRecord(Base):
+    __tablename__ = 'EquipmentReportingRecord'
     # id:
     ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
 
-    # 设备故障报修计划单号  :
-    FailureReportingNum = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    # 设备维修计划单号  :
+    ReportingNum = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
-    # 类型（故障报修）  ：
-    FailureReportingType = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    # 工序  ：
+    PUIDName = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
-    # 设备名称（可以多选）  :
-    EQPName = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    # 故障时间:
+    FailureDate = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
-    # 报修开始时间  :
-    ReportingBeginDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+    # 早晚班  :
+    Shift = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
-    # 故障开始时间  ：
-    FailureBeginDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+    # 设备名称:
+    EQPName = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
 
     # 故障描述   ：
-    FailureReportingDesc = Column(Unicode(120), primary_key=False, autoincrement=False, nullable=True)
+    FailureReportingDesc = Column(Unicode(65), primary_key=False, autoincrement=False, nullable=True)
 
-    # 实际处理开始时间  :
-    ActualBeginDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+    # 原因分析   ：
+    AnalysisFailure = Column(Unicode(65), primary_key=False, autoincrement=False, nullable=True)
 
-    # 实际处理完成时间  ：
-    ActualEndDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+    # 解决措施  ：
+    Precautions = Column(Unicode(65), primary_key=False, autoincrement=False, nullable=True)
 
-    # 状态  ：
-    ReportingStatus = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    # 不影响生产（分钟）  ：
+    UnAffectingProduction = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
 
-    # 描述  ：
-    Description = Column(Unicode(65), primary_key=False, autoincrement=False, nullable=True)
+    # 影响生产（分钟）  ：
+    AffectingProduction = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
 
-    # 报修人:
-    NewPeople = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    # 维修人:
+    Repairman = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
-    # 处理人:
-    HandlePeople = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    # 备件更换情况:
+    ReplacementOfSpareParts = Column(Unicode(40), primary_key=False, autoincrement=False, nullable=True)
 
 class EquipmentRunPUID(Base):
     __tablename__ = 'EquipmentRunPUID'
