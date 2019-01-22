@@ -249,7 +249,10 @@
                         url:'/equipment_model/EquipmentFailureReportingExcel',
                         type:"post",
                         data:formData,
+                        async: true,
                         cache: false,
+                        contentType:false,
+                        processData:false,
                         success:function(data){
                             console.log(data)
                         },
