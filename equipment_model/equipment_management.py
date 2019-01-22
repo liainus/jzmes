@@ -1651,7 +1651,7 @@ def allowe_file(filename):
 #设备故障管理excel表导入
 @equip.route('/equipment_model/EquipmentFailureReportingExcel', methods=['GET', 'POST'])
 def EquipmentFailureReportingExcel():
-    if request.method == 'GET':
+    if request.method == 'POST':
         data = request.values
         file_path = data['file_path']
         if allowe_file(file_path) == True:
