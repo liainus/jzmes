@@ -1,5 +1,6 @@
 from typing import Optional, Any
 
+import xlrd
 import xlwt
 from flask import Blueprint, render_template
 from sqlalchemy.orm import Session, relationship, sessionmaker
