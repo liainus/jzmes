@@ -45,9 +45,10 @@ def insert(tablename, data):
         oclass = tablename()
         if isinstance(data, dict) and len(data) > 0:
             try:
+                if "ID" in data.keys():
+                    data = data.pop("ID")
                 for key in data:
-                    if key != 'ID':
-                        setattr(oclass, key, data[key])
+                    setattr(oclass, key, data[key])
                 db_session.add(oclass)
                 db_session.commit()
                 return 'OK'
