@@ -1146,7 +1146,7 @@ class EquipmentTimeStatistic(Base):
     # 采样时间
     SampleTime = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
     # 班次ID
-    ShiftsID = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
+    ShiftsCode= Column(Integer, primary_key=False, autoincrement=False, nullable=True)
     # 设备编码
     EquipmentCode = Column(Unicode(20), primary_key=False, autoincrement=False, nullable=True)
     # 运行时间
