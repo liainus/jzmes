@@ -1671,9 +1671,9 @@ def EquipmentRunRecordGet(unit, brand, date, interval=None):
                      EquipmentStatusCount.IsStop == 'y')
             ).all()
 
-            equip_run_time.append(float(run_time)/60 if run_time else 0)
-            equip_failure_time.append(float(failure_time)/60 if failure_time else 0)
-            equip_downtime.append(float(downtime)/60 if downtime else 0)
+            equip_run_time.append(sum(float(run_time)/60) if run_time else 0)
+            equip_failure_time.append(sum(float(failure_time)/60) if failure_time else 0)
+            equip_downtime.append(sum(float(downtime)/60) if downtime else 0)
             equipment_codes.append(code[0])
         clear_time = [60 for _ in range(len(equip_codes))]
 
