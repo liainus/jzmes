@@ -244,23 +244,23 @@
 
                 },
                 fileSave:function(){
-                    {#var fileObj = $("#file").prop("files")[0]#}
-                    {#var form = new FormData();#}
-                    {#form.append("file", fileObj);#}
-                    {#$.ajax({#}
-                    {#    url:'/equipment_model/EquipmentFailureReportingExcel',#}
-                    {#    type:"post",#}
-                    {#    data:form,#}
-                    {#    cache:false,#}
-                    {#    processData: false,// 告诉jQuery不要去处理发送的数据#}
-                    {#    contentType: false,// 告诉jQuery不要去设置Content-Type请求头#}
-                    {#    success:function(data){#}
-                    {#        console.log(data)#}
-                    {#    },#}
-                    {#    error:function(data){#}
-                    {#        alert("上传失败")#}
-                    {#    }#}
-                    {#})#}
+                    var fileObj = $("#file").prop("files")[0]
+                    var form = new FormData();
+                    form.append("file", fileObj);
+                    $.ajax({
+                        url:'/equipment_model/EquipmentFailureReportingExcel',
+                        type:"post",
+                        data:form,
+                        cache:false,
+                        processData: false,// 告诉jQuery不要去处理发送的数据
+                        contentType: false,// 告诉jQuery不要去设置Content-Type请求头
+                        success:function(data){
+                            console.log(data)
+                        },
+                        error:function(data){
+                            alert("上传失败")
+                        }
+                    })
                  },
                 refresh:function(){
                     $('#tab').datagrid('reload');
@@ -421,7 +421,7 @@
         </div>
         <div id="fileClassDialog" class="easyui-dialog" style="width:400px;height:300px;padding:10px;"
              data-options="closed:'true',buttons:'#fileClassDialogButtons',modal:true">
-            <form id="fileClassDialogForm" action="/equipment_model/EquipmentFailureReportingExcel" method="post" class="dialog-form" enctype="multipart/form-data">
+            <form id="fileClassDialogForm" method="post" class="dialog-form" enctype="multipart/form-data">
                 <table class="kv-table">
                     <tbody>
                         <tr>
@@ -433,7 +433,7 @@
                     </tbody>
                 </table>
                 <div id="fileClassDialogButtons">
-                    <a href="#" class="easyui-linkbutton"  data-options="iconCls:'icon-save'" onclick="document.getElementById('fileClassDialogForm').submit();return false;">保存</a>
+                    <a href="#" class="easyui-linkbutton"  data-options="iconCls:'icon-save'" onclick="toolbar.fileSave()">保存</a>
                     <a href="#" class="easyui-linkbutton" onclick="$('#fileClassDialog').dialog('close')">关闭</a>
                 </div>
             </form>
