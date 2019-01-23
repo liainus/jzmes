@@ -258,7 +258,20 @@
                         processData: false,// 告诉jQuery不要去处理发送的数据
                         contentType: false,// 告诉jQuery不要去设置Content-Type请求头
                         success:function(data){
-                            console.log(data)
+                            if(data = "OK"){
+                                $.messager.show({
+                                    title: '提示',
+                                    msg: '上传成功',
+                                    timeout:1000,
+                                    style: {
+                                        right: '',
+                                        top: document.body.scrollTop + document.documentElement.scrollTop,
+                                        bottom: ''
+                                    }
+                                });
+                            }else{
+                                $.messager.alert('上传失败！', data, 'warning');
+                            }
                         },
                         error:function(data){
                             alert("上传失败")
