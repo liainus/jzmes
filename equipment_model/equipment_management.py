@@ -1,8 +1,9 @@
 from typing import Optional, Any
-
+import time
 import xlrd
 import xlwt
 from flask import Blueprint, render_template
+from openpyxl.compat import file
 from sqlalchemy.orm import Session, relationship, sessionmaker
 from sqlalchemy import create_engine
 import Model.Global
@@ -787,14 +788,14 @@ def EquipmentFailureReportingSearch():
                 rowsnumber = int(data['rows'])
                 inipage = (pages - 1) * rowsnumber + 0
                 endpage = (pages - 1) * rowsnumber + rowsnumber
-                FailureReportingNum = data["FailureReportingNum"]
-                if FailureReportingNum == "":
-                    EquipmentFailureReportingCount = db_session.query(EquipmentFailureReporting).filter_by().count()
-                    EquipmentFailureReportingClass = db_session.query(EquipmentFailureReporting).filter_by().all()[inipage:endpage]
+                EQPName = data["EQPName"]
+                if EQPName == "":
+                    EquipmentFailureReportingCount = db_session.query(EquipmentReportingRecord).count()
+                    EquipmentFailureReportingClass = db_session.query(EquipmentReportingRecord).order_by(desc("ID")).all()[inipage:endpage]
                 else:
-                    EquipmentFailureReportingCount = db_session.query(EquipmentFailureReporting).filter(EquipmentFailureReporting.FailureReportingNum == FailureReportingNum).count()
-                    EquipmentFailureReportingClass = db_session.query(EquipmentFailureReporting).filter(
-                        EquipmentFailureReporting.FailureReportingNum == FailureReportingNum).all()[inipage:endpage]
+                    EquipmentFailureReportingCount = db_session.query(EquipmentReportingRecord).filter(EquipmentReportingRecord.EQPName == EQPName).count()
+                    EquipmentFailureReportingClass = db_session.query(EquipmentReportingRecord).filter(
+                        EquipmentReportingRecord.EQPName == EQPName).order_by(desc("ID")).all()[inipage:endpage]
                 jsonoclass = json.dumps(EquipmentFailureReportingClass, cls=AlchemyEncoder, ensure_ascii=False)
                 return '{"total"' + ":" + str(EquipmentFailureReportingCount) + ',"rows"' + ":\n" + jsonoclass + "}"
         except Exception as e:
@@ -808,50 +809,14 @@ def EquipmentFailureReportingSearch():
 def EquipmentFailureReportingCreate():
     if request.method == 'POST':
         data = request.values
-        try:
-            json_str = json.dumps(data.to_dict())
-            if len(json_str) > 10:
-                failureReporting = EquipmentFailureReporting()
-                failureReporting.FailureReportingNum = data["FailureReportingNum"]
-                failureReporting.FailureReportingType = data["FailureReportingType"]
-                failureReporting.EQPName = data["EQPName"]
-                failureReporting.ReportingBeginDate = datetime.datetime.now()
-                failureReporting.FailureBeginDate = datetime.datetime.strptime(data["FailureBeginDate"],'%Y-%m-%d %H:%M:%S')
-                failureReporting.ReportingStatus = Model.Global.ReportingStatus.New.value
-                failureReporting.FailureReportingDesc = data["FailureReportingDesc"]
-                failureReporting.NewPeople = current_user.Name
-                db_session.add(failureReporting)
-                db_session.commit()
-                return 'OK'
-        except Exception as e:
-            print(e)
-            logger.error(e)
-            insertSyslog("error", "设备故障报修添加报错Error：" + str(e), current_user.Name)
-            return json.dumps("设备故障报修添加加报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+        return insert(EquipmentReportingRecord, data)
 
 # 设备故障报修修改
 @equip.route('/EquipmentFailureReportingUpdate', methods=['POST', 'GET'])
 def EquipmentFailureReportingUpdate():
     if request.method == 'POST':
         data = request.values
-        try:
-            json_str = json.dumps(data.to_dict())
-            if len(json_str) > 10:
-                ID = data["ID"]
-                oclass = db_session.query(EquipmentFailureReporting).filter(
-                    EquipmentFailureReporting.ID == ID).first()
-                oclass.FailureReportingNum = data["FailureReportingNum"]
-                oclass.FailureReportingType = data["FailureReportingType"]
-                oclass.EQPName = data["EQPName"]
-                oclass.FailureBeginDate = datetime.datetime.strptime(data["FailureBeginDate"],'%Y-%m-%d %H:%M:%S')
-                oclass.FailureReportingDesc = data["FailureReportingDesc"]
-                db_session.commit()
-                return 'OK'
-        except Exception as e:
-            print(e)
-            logger.error(e)
-            insertSyslog("error", "设备故障报修修报错Error：" + str(e), current_user.Name)
-            return json.dumps("设备故障报修修改报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+        return update(EquipmentReportingRecord, data)
 
 # 设备故障报修处理
 @equip.route('/EquipmentFailureReportingHandle', methods=['POST', 'GET'])
@@ -865,8 +830,8 @@ def EquipmentFailureReportingHandle():
                 for key in jsonnumber:
                     ID = int(key)
                     try:
-                        oclass = db_session.query(EquipmentFailureReporting).filter(
-                            EquipmentFailureReporting.ID == ID).first()
+                        oclass = db_session.query(EquipmentReportingRecord).filter(
+                            EquipmentReportingRecord.ID == ID).first()
                         if oclass.ReportingStatus == Model.Global.ReportingStatus.Confirm.value or oclass.ReportingStatus == Model.Global.ReportingStatus.Handle.value:
                             return "此报修单号已被处理，请选择未处理的维修单！"
                         oclass.ReportingStatus = Model.Global.ReportingStatus.Handle.value
@@ -894,8 +859,8 @@ def EquipmentFailureReportingConfirm():
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 10:
                 ID = data["ID"]
-                oclass = db_session.query(EquipmentFailureReporting).filter(
-                    EquipmentFailureReporting.ID == ID).first()
+                oclass = db_session.query(EquipmentReportingRecord).filter(
+                    EquipmentReportingRecord.ID == ID).first()
                 oclass.ActualBeginDate = datetime.datetime.strptime(data["ActualBeginDate"],'%Y-%m-%d %H:%M:%S')
                 oclass.ActualEndDate = datetime.datetime.strptime(data["ActualEndDate"],'%Y-%m-%d %H:%M:%S')
                 oclass.Description = data["Description"]
@@ -913,27 +878,7 @@ def EquipmentFailureReportingConfirm():
 def EquipmentFailureReportingDelete():
     if request.method == 'POST':
         data = request.values
-        try:
-            jsonstr = json.dumps(data.to_dict())
-            if len(jsonstr) > 10:
-                jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
-                for key in jsonnumber:
-                    ID = int(key)
-                    try:
-                        oclass = db_session.query(EquipmentFailureReporting).filter_by(ID=ID).first()
-                        db_session.delete(oclass)
-                        db_session.commit()
-                    except Exception as ee:
-                        print(ee)
-                        logger.error(ee)
-                        return json.dumps("设备故障报修删除报错", cls=Model.BSFramwork.AlchemyEncoder,
-                                          ensure_ascii=False)
-                return 'OK'
-        except Exception as e:
-            print(e)
-            logger.error(e)
-            insertSyslog("error", "设备故障报修删除报错Error：" + str(e), current_user.Name)
-            return json.dumps("设备故障报修删除报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+        return update(EquipmentReportingRecord, data)
 
 # 设备检修计划查询
 @equip.route('/EquipmentMaintainSearch', methods=['POST', 'GET'])
@@ -1816,9 +1761,9 @@ def allowe_file(filename):
 @equip.route('/equipment_model/EquipmentFailureReportingExcel', methods=['GET', 'POST'])
 def EquipmentFailureReportingExcel():
     if request.method == 'POST':
-        data = request.values
-        print(data)
-        file_path = data['file_path']
+        file = request.files['file']
+        file_path = os.path.join(os.path.realpath("files"),file.filename)
+        file.save(file_path)
         if allowe_file(file_path) == True:
             return read_Excel(file_path)
         else:
