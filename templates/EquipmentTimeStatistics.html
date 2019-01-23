@@ -13,6 +13,7 @@
     <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
     <script>
         $(function(){
+            $('#beginTime').datebox("setValue", myformatter(new Date()))
             var brand = ""
             var unit = ""
             $('#LeftTree').tree({
@@ -23,7 +24,6 @@
                     return data
                 },
                 onClick: function (node) {
-                    console.log(node)
                     if($('#LeftTree').tree('isLeaf',node.target)){
                         brand = node.Brand
                         unit = node.text
@@ -58,7 +58,6 @@
                     dataType: "json",
                     traditional:true,
                     success: function (data) {
-                        console.log(data)
                         if (data !=  "NO") {
                             myChart.hideLoading();
                             myChart.setOption(option = {
@@ -88,7 +87,7 @@
                                 xAxis: {
                                     type: 'category',
                                     name: '日',
-                                    data: []
+                                    data: data.equip_codes
                                 },
                                 yAxis: [
                                     {
@@ -96,7 +95,7 @@
                                         name: '时间',
                                         min: 0,
                                         axisLabel: {
-                                            formatter: '{value} h'
+                                            formatter: '{value} 分钟'
                                         }
                                     }
                                 ],
@@ -108,7 +107,7 @@
                                             color:'#90ed7d'
                                         }
                                     },
-                                    data: []
+                                    data: data.equip_run_time
                                 },{
                                     name: "故障时间",
                                     type: 'bar',
@@ -117,16 +116,16 @@
                                             color:'#f15c80'
                                         }
                                     },
-                                    data: []
+                                    data: data.equip_failure_time
                                 },{
                                     name: "停机时间",
                                     type: 'bar',
                                     itemStyle:{
                                         normal:{
-                                            color:'#7cb5ec'
+                                            color:'#858585'
                                         }
                                     },
-                                    data: []
+                                    data: data.equip_downtime
                                 },{
                                     name: "清场时间",
                                     type: 'bar',
@@ -135,7 +134,7 @@
                                             color:'#7cb5ec'
                                         }
                                     },
-                                    data: []
+                                    data: data.clear_time
                                 }]
                             });
                             myChart.setOption(option);
@@ -166,6 +165,16 @@
                 })
             }
         }
+        //时间格式拼接
+        function myformatter(date){
+            var y = date.getFullYear();
+            var m = date.getMonth()+1;
+            var d = date.getDate();
+            return y + "-" + getNow(m) + "-" + getNow(d);
+        }
+        function getNow(s) {
+            return s < 10 ? '0' + s: s;
+        }
     </script>
 </head>
 <body>
@@ -178,7 +187,6 @@
             <input class="easyui-datebox" id="beginTime" editable="fasle" style="width:166px;height:35px;line-height:35px;">
             <a>  数据范围:  </a>
             <select name="Shift" id="Shift" type="text" style="width:157px;" autocomplete="off" placeholder="">
-                <option value="">请选择</option>
                 <option value="早班">早班</option>
                 <option value="晚班">晚班</option>
                 <option value="全天">全天</option>
