@@ -1613,7 +1613,6 @@ def EquipmentRunRecordGet(unit, brand, date, interval=None):
             # Obtaining the time period of day shift.
             dayshift = db_session.query(Shifts).filter_by(ShiftsName=interval).first()
             if dayshift:
-                # currentDate = datetime.datetime.now().strftime('%Y-%m-%d')
                 beginTime = date + " " + str(dayshift.BeginTime).split('.')[0] if dayshift.BeginTime else "08:52:00"
                 endTime = date + " " + str(dayshift.EndTime).split('.')[0] if dayshift.EndTime else "20:52:00"
             else:
@@ -1622,9 +1621,11 @@ def EquipmentRunRecordGet(unit, brand, date, interval=None):
         elif interval == '晚班':
             dayshift = db_session.query(Shifts).filter_by(ShiftsName=interval).first()
             if dayshift:
-                # currentDate = datetime.datetime.now().strftime('%Y-%m-%d')
                 beginTime = date + " " + str(dayshift.BeginTime).split('.')[0] if dayshift.BeginTime else "20:52:00"
-                endTime = date + " " + str(dayshift.EndTime).split('.')[0] if dayshift.EndTime else "08:52:00"
+                date_time = datetime.datetime.strptime(date, '%Y-%m-%d')
+                delta = datetime.timedelta(days=1)
+                n_days = date_time + delta
+                endTime = n_days.strftime('%Y-%m-%d') + " " + str(dayshift.EndTime).split('.')[0] if dayshift.EndTime else "08:52:00"
             else:
                 return 'error'
 
@@ -1656,7 +1657,7 @@ def EquipmentRunRecordGet(unit, brand, date, interval=None):
                     EquipmentStatusCount.SYSEQPCode == code,
                     EquipmentStatusCount.SampleTime.between(beginTime, endTime),
                     EquipmentStatusCount.StatusType == 'RUN',
-                     EquipmentStatusCount.IsStop == 'n')
+                     EquipmentStatusCount.IsStop == 'N')
             ).all()
 
             failure_time = db_session.query(EquipmentStatusCount.Duration).filter(
@@ -1668,16 +1669,18 @@ def EquipmentRunRecordGet(unit, brand, date, interval=None):
             downtime = db_session.query(EquipmentStatusCount.Duration).filter(
                 and_(EquipmentStatusCount.SYSEQPCode == code,
                     EquipmentStatusCount.SampleTime.between(beginTime, endTime),
-                     EquipmentStatusCount.IsStop == 'y')
+                     EquipmentStatusCount.IsStop == 'Y')
             ).all()
 
-            equip_run_time.append(sum(run_time)/60 if run_time else 0)
-            equip_failure_time.append(sum(failure_time)/60 if failure_time else 0)
-            equip_downtime.append(sum(downtime)/60 if downtime else 0)
+            equip_run_time.append(round(sum([time[0] for time in run_time])/60, 3) if run_time else 0)
+            equip_failure_time.append(round(sum([time[0] for time in failure_time])/60, 3) if failure_time else 0)
+            equip_downtime.append(round(sum([time[0] for time in downtime])/60, 3) if downtime else 0)
             equipment_codes.append(code[0])
         clear_time = [60 for _ in range(len(equip_codes))]
 
         # third、 return data
+        if len(equip_run_time) == 0:
+            return "暂无数据"
         return {"equip_run_time": equip_run_time,
                 "equip_failure_time": equip_failure_time,
                 "equip_downtime": equip_downtime,
