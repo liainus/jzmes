@@ -1670,7 +1670,7 @@ def EquipmentRunRecordGet(unit, brand, date, interval=None):
             if dayshift:
                 # currentDate = datetime.datetime.now().strftime('%Y-%m-%d')
                 beginTime = date + " " + str(dayshift.BeginTime).split('.')[0] if dayshift.BeginTime else "08:52:00"
-                endTime = date + " " + str(dayshift.BeginTime).split('.')[0] if dayshift.BeginTime else "20:52:00"
+                endTime = date + " " + str(dayshift.EndTime).split('.')[0] if dayshift.EndTime else "20:52:00"
             else:
                 return 'error'
 
@@ -1679,7 +1679,7 @@ def EquipmentRunRecordGet(unit, brand, date, interval=None):
             if dayshift:
                 # currentDate = datetime.datetime.now().strftime('%Y-%m-%d')
                 beginTime = date + " " + str(dayshift.BeginTime).split('.')[0] if dayshift.BeginTime else "20:52:00"
-                endTime = date + " " + str(dayshift.endTime).split('.')[0] if dayshift.BeginTime else "08:52:00"
+                endTime = date + " " + str(dayshift.EndTime).split('.')[0] if dayshift.EndTime else "08:52:00"
             else:
                 return 'error'
 
@@ -1690,8 +1690,9 @@ def EquipmentRunRecordGet(unit, brand, date, interval=None):
 
         # Monthly calculation
         else:
-            beginTime = date
-            endTime = date
+            firstDay,lastDay = getMonthFirstDayAndLastDay(date.split('-')[0], date.split('-')[1])
+            beginTime = firstDay
+            endTime = lastDay
 
         # second、 Obtain runtime, failure time, downtime from table EquipmentStatusCount according to time interval
         equip_codes = db_session.query(SystemEQPCode.EquipCode).filter(
@@ -1702,6 +1703,7 @@ def EquipmentRunRecordGet(unit, brand, date, interval=None):
         equip_run_time = list()
         equip_failure_time = list()
         equip_downtime = list()
+        equipment_codes = list()
 
         for code in equip_codes:
             run_time = db_session.query(EquipmentStatusCount.Duration).filter(
@@ -1727,13 +1729,14 @@ def EquipmentRunRecordGet(unit, brand, date, interval=None):
             equip_run_time.append(float(run_time)/60 if run_time else 0)
             equip_failure_time.append(float(failure_time)/60 if failure_time else 0)
             equip_downtime.append(float(downtime)/60 if downtime else 0)
+            equipment_codes.append(code[0])
         clear_time = [60 for _ in range(len(equip_codes))]
 
         # third、 return data
         return {"equip_run_time": equip_run_time,
                 "equip_failure_time": equip_failure_time,
                 "equip_downtime": equip_downtime,
-                "equip_codes": list(equip_codes),
+                "equip_codes": equipment_codes,
                 "clear_time": clear_time}
 
 
