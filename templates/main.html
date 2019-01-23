@@ -410,16 +410,6 @@
                                     <a href="#" onClick="addTab('投入产出数据','/QualityControl/YieldCompare.html')">投入产出数据</a>
                                 </li>
                             {% endif %}
-                            {% if '95' in session.get('menus') %}
-                                <li>
-                                    <a href="#" onclick="addTab('设备运行数据(人工录入)','/EquipmentManage/runData')">设备运行数据(人工录入)</a>
-                                </li>
-                            {% endif %}
-                            {% if '95' in session.get('menus') %}
-                                <li>
-                                    <a href="#" onclick="addTab('设备运行数据(系统采集)','/EquipmentTimeStatistics/Index')">设备运行数据(系统采集)</a>
-                                </li>
-                            {% endif %}
 {#                            {% if '45' in session.get('menus') %}#}
 {#                                <li>#}
 {#                                    <a href="#" onClick="addTab('离散数据录入','/DiscreteDataEntry')">离散数据录入</a>#}
@@ -489,6 +479,16 @@
                             {% if '53' in session.get('menus') %}
                                 <li>
                                     <a href="#" onclick="addTab('设备保养记录','/EMaintainEveryDay')">设备保养记录</a>
+                                </li>
+                            {% endif %}
+                            {% if '95' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onclick="addTab('设备运行数据(人工录入)','/EquipmentManage/runData')">设备运行数据(人工录入)</a>
+                                </li>
+                            {% endif %}
+                            {% if '95' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onclick="addTab('设备运行数据(系统采集)','/EquipmentTimeStatistics/Index')">设备运行数据(系统采集)</a>
                                 </li>
                             {% endif %}
 {#                            {% if '57' in session.get('menus') %}#}

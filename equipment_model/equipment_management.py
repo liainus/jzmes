@@ -878,7 +878,7 @@ def EquipmentFailureReportingConfirm():
 def EquipmentFailureReportingDelete():
     if request.method == 'POST':
         data = request.values
-        return update(EquipmentReportingRecord, data)
+        return delete(EquipmentReportingRecord, data)
 
 # 设备检修计划查询
 @equip.route('/EquipmentMaintainSearch', methods=['POST', 'GET'])
