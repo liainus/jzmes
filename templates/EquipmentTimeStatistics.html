@@ -88,7 +88,7 @@
                                 xAxis: {
                                     type: 'category',
                                     name: '日',
-                                    data: []
+                                    data: data.equip_codes
                                 },
                                 yAxis: [
                                     {
@@ -96,7 +96,7 @@
                                         name: '时间',
                                         min: 0,
                                         axisLabel: {
-                                            formatter: '{value} h'
+                                            formatter: '{value} 分钟'
                                         }
                                     }
                                 ],
@@ -108,7 +108,7 @@
                                             color:'#90ed7d'
                                         }
                                     },
-                                    data: []
+                                    data: data.equip_run_time
                                 },{
                                     name: "故障时间",
                                     type: 'bar',
@@ -117,16 +117,16 @@
                                             color:'#f15c80'
                                         }
                                     },
-                                    data: []
+                                    data: data.equip_failure_time
                                 },{
                                     name: "停机时间",
                                     type: 'bar',
                                     itemStyle:{
                                         normal:{
-                                            color:'#7cb5ec'
+                                            color:'#858585'
                                         }
                                     },
-                                    data: []
+                                    data: data.equip_downtime
                                 },{
                                     name: "清场时间",
                                     type: 'bar',
@@ -135,7 +135,7 @@
                                             color:'#7cb5ec'
                                         }
                                     },
-                                    data: []
+                                    data: data.clear_time
                                 }]
                             });
                             myChart.setOption(option);

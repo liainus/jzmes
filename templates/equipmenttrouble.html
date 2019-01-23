@@ -66,6 +66,8 @@
                     var strID = $('#ID').val();
                     var urlAddr = ''
                     var hintinfo = ''
+                    var todayDate = myformatter(new Date())
+                    todayDate = todayDate.replace(/\-/g,"")
                     if(Bee.StringUtils.isEmpty($('#PUIDName').find("option:selected").val())){
                         $.messager.alert('提示', '工序不能为空！', 'info');
                         return false;
@@ -92,6 +94,7 @@
                         type:"post",
                         data:{
                             ID:$('#ID').val(),
+                            ReportingNum:todayDate,
                             PUIDName:$('#PUIDName').find("option:selected").val(),
                             Shift:$('#Shift').find("option:selected").val(),
                             EQPName:$('#EQPName').val(),
@@ -269,6 +272,19 @@
             function getFileName(file){//通过第一种方式获取文件名
                 var pos=file.lastIndexOf("\\");//查找最后一个\的位置
                 return file.substring(pos+1); //截取最后一个\位置到字符长度，也就是截取文件名
+            }
+            //时间格式拼接,不要符号
+            function myformatter(date){
+                var y = date.getFullYear();
+                var m = date.getMonth()+1;
+                var d = date.getDate();
+                var h = date.getHours();
+                var i = date.getMinutes();
+                var s = date.getSeconds();
+                return y + "-" + getNow(m) + "-" + getNow(d) + "-" + getNow(h) + "-" + getNow(i) + "-" + getNow(s);
+            }
+            function getNow(s) {
+                return s < 10 ? '0' + s: s;
             }
         })
     </script>
