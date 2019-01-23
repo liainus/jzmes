@@ -13,6 +13,7 @@
     <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
     <script>
         $(function(){
+            $('#beginTime').datebox("setValue", myformatter(new Date()))
             var brand = ""
             var unit = ""
             $('#LeftTree').tree({
@@ -166,6 +167,16 @@
                 })
             }
         }
+        //时间格式拼接
+        function myformatter(date){
+            var y = date.getFullYear();
+            var m = date.getMonth()+1;
+            var d = date.getDate();
+            return y + "-" + getNow(m) + "-" + getNow(d);
+        }
+        function getNow(s) {
+            return s < 10 ? '0' + s: s;
+        }
     </script>
 </head>
 <body>
@@ -178,7 +189,6 @@
             <input class="easyui-datebox" id="beginTime" editable="fasle" style="width:166px;height:35px;line-height:35px;">
             <a>  数据范围:  </a>
             <select name="Shift" id="Shift" type="text" style="width:157px;" autocomplete="off" placeholder="">
-                <option value="">请选择</option>
                 <option value="早班">早班</option>
                 <option value="晚班">晚班</option>
                 <option value="全天">全天</option>
