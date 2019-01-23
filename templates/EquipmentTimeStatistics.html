@@ -42,7 +42,7 @@
         })
         function toJson(brand,unit,select_time,interval){
             var myChart = echarts.init(document.getElementById("main"))
-            if(name == ""){
+            if(unit == ""){
                 myChart.hideLoading();
             }else {
                 myChart.showLoading();
@@ -142,7 +142,7 @@
                         } else {
                             $.messager.alert({
                                 title: '提示',
-                                msg: "暂无数据，请查看其它记录。",
+                                msg: "请选择工序",
                                 icon: 'info',
                                 width: 300,
                                 top: 200,
@@ -154,7 +154,7 @@
                     error:function(data){
                         $.messager.alert({
                             title: '提示',
-                            msg: "暂无数据，请查看其它记录。",
+                            msg: "请求失败",
                             icon: 'info',
                             width: 300,
                             top: 200,
