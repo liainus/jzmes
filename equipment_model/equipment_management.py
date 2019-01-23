@@ -1666,20 +1666,20 @@ def EquipmentRunRecordGet(unit, brand, date, interval=None):
     else:
         if interval == '早班':
             # Obtaining the time period of day shift.
-            dayshift = db_session.query(Shifts).filter_by(ShiftsCode='Day').first()
+            dayshift = db_session.query(Shifts).filter_by(ShiftsName=interval).first()
             if dayshift:
                 # currentDate = datetime.datetime.now().strftime('%Y-%m-%d')
-                beginTime = date + " " + dayshift.BeginTime if dayshift.BeginTime else "08:52:00"
-                endTime = date + " " + dayshift.endTime if dayshift.BeginTime else "20:52:00"
+                beginTime = date + " " + str(dayshift.BeginTime).split('.')[0] if dayshift.BeginTime else "08:52:00"
+                endTime = date + " " + str(dayshift.BeginTime).split('.')[0] if dayshift.BeginTime else "20:52:00"
             else:
                 return 'error'
 
         elif interval == '晚班':
-            dayshift = db_session.query(Shifts).filter_by(ShiftsCode='Night').first()
+            dayshift = db_session.query(Shifts).filter_by(ShiftsName=interval).first()
             if dayshift:
                 # currentDate = datetime.datetime.now().strftime('%Y-%m-%d')
-                beginTime = date + " " + dayshift.BeginTime if dayshift.BeginTime else "20:52:00"
-                endTime = date + " " + dayshift.endTime if dayshift.BeginTime else "08:52:00"
+                beginTime = date + " " + str(dayshift.BeginTime).split('.')[0] if dayshift.BeginTime else "20:52:00"
+                endTime = date + " " + str(dayshift.endTime).split('.')[0] if dayshift.BeginTime else "08:52:00"
             else:
                 return 'error'
 
@@ -1724,15 +1724,17 @@ def EquipmentRunRecordGet(unit, brand, date, interval=None):
                      EquipmentStatusCount.IsStop == 'y')
             ).all()
 
-            equip_run_time.append(float(run_time)/60)
-            equip_failure_time.append(float(failure_time)/60)
-            equip_downtime.append(float(downtime)/60)
+            equip_run_time.append(float(run_time)/60 if run_time else 0)
+            equip_failure_time.append(float(failure_time)/60 if failure_time else 0)
+            equip_downtime.append(float(downtime)/60 if downtime else 0)
+        clear_time = [60 for _ in range(len(equip_codes))]
 
         # third、 return data
         return {"equip_run_time": equip_run_time,
                 "equip_failure_time": equip_failure_time,
                 "equip_downtime": equip_downtime,
-                "equip_codes": list(equip_codes)}
+                "equip_codes": list(equip_codes),
+                "clear_time": clear_time}
 
 
 @equip.route('/EquipmentTimeStatistics/GetData', methods=['GET', 'POST'])
