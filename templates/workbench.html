@@ -31,19 +31,20 @@
         .AgencyArea h3{
             font-size: 28px;
             font-weight: bold;
+            color: #fff;
         }
-        .AgencyArea .AgencyArea-item:nth-child(4n+1) h3{
-            color: #46b8da;
-        }
-        .AgencyArea .AgencyArea-item:nth-child(4n+2) h3{
-            color: #f0ad4e;
-        }
-        .AgencyArea .AgencyArea-item:nth-child(4n+3) h3{
-            color: #5cb85c;
-        }
-        .AgencyArea .AgencyArea-item:nth-child(4n) h3{
-            color: #337ab7;
-        }
+        {#.AgencyArea .AgencyArea-item:nth-child(4n+1) h3{#}
+        {#    color: #46b8da;#}
+        {# }#}
+        {#.AgencyArea .AgencyArea-item:nth-child(4n+2) h3{#}
+        {#    color: #f0ad4e;#}
+        {# }#}
+        {#.AgencyArea .AgencyArea-item:nth-child(4n+3) h3{#}
+        {#    color: #5cb85c;#}
+        {# }#}
+        {#.AgencyArea .AgencyArea-item:nth-child(4n) h3{#}
+        {#    color: #337ab7;#}
+        {# }#}
         .panel-body{
             border:none;
         }
@@ -171,12 +172,12 @@
                             <table id="planTable" class="table table-striped"></table>
                         </div>
                     </div>
-                    <div class="panel panel-widget" style="background: #e3e3e3;">
-                        <div class="panel-heading">备件待审核列表<a href="javascript:;" id="toEquipmentspare" style="float: right">去审核</a></div>
-                        <div class="panel-body">
-                            <table id="spareTable" class="table table-striped"></table>
-                        </div>
-                    </div>
+{#                    <div class="panel panel-widget" style="background: #e3e3e3;">#}
+{#                        <div class="panel-heading">备件待审核列表<a href="javascript:;" id="toEquipmentspare" style="float: right">去审核</a></div>#}
+{#                        <div class="panel-body">#}
+{#                            <table id="spareTable" class="table table-striped"></table>#}
+{#                        </div>#}
+{#                    </div>#}
                 </div>
             </div>
         </div>
@@ -310,7 +311,7 @@
                         dataZoom : {
                             show : true,
                             realtime : true,
-                            start : 95,
+                            start : 50,
                             end : 100
                         },
                         xAxis: {
@@ -397,7 +398,7 @@
             //日历排产
             $('#calendar').fullCalendar({
                 locale:'zh-cn',
-                //weekNumbers: true, //是否在日历中显示第几周
+                weekNumbers: true, //是否在日历中显示第几周
                 eventLimit: true, // allow "more" link when too many events
                 events: [
                     {
