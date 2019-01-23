@@ -22,7 +22,7 @@ from Model.system import Role, Organization, User, Menu, Role_Menu, BatchMaterie
     SchedulePlan, SparePartInStockManagement, SparePartStock, Area, Instruments, MaintenanceStatus, MaintenanceCycle, \
     EquipmentRunRecord, \
     EquipmentRunPUID, EquipmentMaintenanceStore, SpareTypeStore, ElectronicBatch, EquipmentStatusCount, Shifts, \
-    EquipmentTimeStatisticTree
+    EquipmentTimeStatisticTree, SystemEQPCode
 from sqlalchemy import create_engine, Column, ForeignKey, Table, Integer, String, and_, or_, desc,extract
 from io import StringIO
 import calendar
@@ -1553,7 +1553,7 @@ def get_son(ParentNode):
     childs = db_session.query(EquipmentTimeStatisticTree).filter_by(ParentNode=ParentNode).all()
     return childs
 
-def EquipmentTimeStatistics(depth, ParentNode=None):
+def EquipmentTimeStatistics(ParentNode=None):
     '''
         :param ParentNode: 父节点
         :return: the tree structure of QualityControlTree
@@ -1561,20 +1561,19 @@ def EquipmentTimeStatistics(depth, ParentNode=None):
     sz = []
     try:
         Datas = db_session.query(EquipmentTimeStatisticTree).filter_by(ParentNode=int(ParentNode)).all()
-        if depth <= 1:
-            for obj in Datas:
-                if obj.ParentNode == int(ParentNode):
-                    if len(get_son(obj.ID)) > 0:
-                        sz.append({"id": obj.ID,
-                                   "Tag": obj.Key,
-                                   "Brand": obj.Brand,
-                                   "state": 'closed',
-                                   "children": EquipmentTimeStatistics(depth + 1, obj.ID)})
-                    if len(get_son(obj.ID)) == 0:
-                        sz.append({"id": obj.ID,
-                                   "Tag": obj.Key,
-                                   "Brand": obj.Brand,
-                                   "state": 'open'})
+        for obj in Datas:
+            if obj.ParentNode == str(ParentNode):
+                if len(get_son(obj.ID)) > 0:
+                    sz.append({"id": obj.ID,
+                               "text": obj.Key,
+                               "Brand": obj.Brand,
+                               "state": 'closed',
+                               "children": EquipmentTimeStatistics(obj.ID)})
+                if len(get_son(obj.ID)) == 0:
+                    sz.append({"id": obj.ID,
+                               "text": obj.Key,
+                               "Brand": obj.Brand,
+                               "state": 'open'})
         return sz
     except Exception as e:
         print(e)
@@ -1590,7 +1589,7 @@ def DataTree():
     '''
     if request.method == 'GET':
         try:
-            data_tree = EquipmentTimeStatistics(1, ParentNode=0)
+            data_tree = EquipmentTimeStatistics(ParentNode=0)
             return json.dumps(data_tree, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
 
@@ -1598,104 +1597,123 @@ def DataTree():
             insertSyslog("error", "路由：/EquipmentTimeStatistics/DataTree 查询数据树形结构报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
-def EquipmentRunRecordGet(unit, interval='Day'):
+def EquipmentRunRecordGet(unit, brand, date, interval=None):
     """
     get the running time, failure time, downtime of equipment from the EquipmentStatusCount of database tables
     :param: Default parameters,time interval
-    :return: the set includes the running time, failure time, downtime.etc
+    :return: the dict includes the running time, failure time, downtime.etc
     """
 
-    if not interval or not unit:
+    if not interval or not unit or not brand or not date:
         return None
+
     # first、 Judging time interval
     else:
-        if interval == 'MorningShift':
+        if interval == '早班':
             # Obtaining the time period of day shift.
-            dayshift = db_session.query(Shifts).filter_by(ShiftsCode='Day').first()
+            dayshift = db_session.query(Shifts).filter_by(ShiftsName=interval).first()
             if dayshift:
-                currentDate = datetime.datetime.now().strftime('%Y-%m-%d')
-                beginTime = currentDate + " " + dayshift.BeginTime if dayshift.BeginTime else "08:52:00"
-                endTime = currentDate + " " + dayshift.endTime if dayshift.BeginTime else "20:52:00"
-            else:
-                return 'error'
-        elif interval == 'NightShif':
-            dayshift = db_session.query(Shifts).filter_by(ShiftsCode='Night').first()
-            if dayshift:
-                currentDate = datetime.datetime.now().strftime('%Y-%m-%d')
-                beginTime = currentDate + " " + dayshift.BeginTime if dayshift.BeginTime else "20:52:00"
-                endTime = currentDate + " " + dayshift.endTime if dayshift.BeginTime else "08:52:00"
+                # currentDate = datetime.datetime.now().strftime('%Y-%m-%d')
+                beginTime = date + " " + str(dayshift.BeginTime).split('.')[0] if dayshift.BeginTime else "08:52:00"
+                endTime = date + " " + str(dayshift.EndTime).split('.')[0] if dayshift.EndTime else "20:52:00"
             else:
                 return 'error'
 
-        elif interval == 'Day':
-                currentDate = datetime.datetime.now().strftime('%Y-%m-%d')
-                beginTime = currentDate + " " + "00:00:00"
-                endTime = currentDate + " " + "23:59:59"
+        elif interval == '晚班':
+            dayshift = db_session.query(Shifts).filter_by(ShiftsName=interval).first()
+            if dayshift:
+                # currentDate = datetime.datetime.now().strftime('%Y-%m-%d')
+                beginTime = date + " " + str(dayshift.BeginTime).split('.')[0] if dayshift.BeginTime else "20:52:00"
+                endTime = date + " " + str(dayshift.EndTime).split('.')[0] if dayshift.EndTime else "08:52:00"
+            else:
+                return 'error'
+
+        elif interval == '全天':
+                # currentDate = datetime.datetime.now().strftime('%Y-%m-%d')
+                beginTime = date + " " + "00:00:00"
+                endTime = date + " " + "23:59:59"
 
         # Monthly calculation
         else:
-            pass
+            firstDay,lastDay = getMonthFirstDayAndLastDay(date.split('-')[0], date.split('-')[1])
+            beginTime = firstDay
+            endTime = lastDay
 
         # second、 Obtain runtime, failure time, downtime from table EquipmentStatusCount according to time interval
-        run_time = db_session.query(EquipmentStatusCount.Duration).filter(
-            and_(
-                EquipmentStatusCount.SampleTime.between(beginTime, endTime),
-                EquipmentStatusCount.StatusType == 'RUN',
-                 EquipmentStatusCount.IsStop == 'n')
+        equip_codes = db_session.query(SystemEQPCode.EquipCode).filter(
+            and_(SystemEQPCode.Unit == unit,
+                 SystemEQPCode.Brand == brand)
         ).all()
 
-        failure_time = db_session.query(EquipmentStatusCount.Duration).filter(
-            and_(EquipmentStatusCount.SampleTime.between(beginTime, endTime),
-                 EquipmentStatusCount.StatusType == 'FAULT')
-        ).all()
+        equip_run_time = list()
+        equip_failure_time = list()
+        equip_downtime = list()
+        equipment_codes = list()
 
-        downtime = db_session.query(EquipmentStatusCount.Duration).filter(
-            and_(EquipmentStatusCount.SampleTime.between(beginTime, endTime),
-                 EquipmentStatusCount.IsStop == 'y')
-        ).all()
+        for code in equip_codes:
+            run_time = db_session.query(EquipmentStatusCount.Duration).filter(
+                and_(
+                    EquipmentStatusCount.SYSEQPCode == code,
+                    EquipmentStatusCount.SampleTime.between(beginTime, endTime),
+                    EquipmentStatusCount.StatusType == 'RUN',
+                     EquipmentStatusCount.IsStop == 'n')
+            ).all()
+
+            failure_time = db_session.query(EquipmentStatusCount.Duration).filter(
+                and_(EquipmentStatusCount.SYSEQPCode == code,
+                    EquipmentStatusCount.SampleTime.between(beginTime, endTime),
+                     EquipmentStatusCount.StatusType == 'FAULT')
+            ).all()
+
+            downtime = db_session.query(EquipmentStatusCount.Duration).filter(
+                and_(EquipmentStatusCount.SYSEQPCode == code,
+                    EquipmentStatusCount.SampleTime.between(beginTime, endTime),
+                     EquipmentStatusCount.IsStop == 'y')
+            ).all()
+
+            equip_run_time.append(float(run_time)/60 if run_time else 0)
+            equip_failure_time.append(float(failure_time)/60 if failure_time else 0)
+            equip_downtime.append(float(downtime)/60 if downtime else 0)
+            equipment_codes.append(code[0])
+        clear_time = [60 for _ in range(len(equip_codes))]
 
         # third、 return data
-        return run_time, failure_time, downtime
+        return {"equip_run_time": equip_run_time,
+                "equip_failure_time": equip_failure_time,
+                "equip_downtime": equip_downtime,
+                "equip_codes": equipment_codes,
+                "clear_time": clear_time}
 
 
-
-
-
-
-@equip.route('/RequipmentRunData/GetBatch', methods=['GET', 'POST'])
-def RequipmentRunData():
+@equip.route('/EquipmentTimeStatistics/GetData', methods=['GET', 'POST'])
+def EquipmentTimeStatisticsGetData():
     """
-    equipment running time, failure time, downtime, etc.
-    request method: GET、POST
-    url: /RequipmentRunData/GetBatch.
-    param: GET: batch、brand、equip_code.
-           POST: brand、beginTime、endTime.
+    call the EquipmentRunRecordGet of methods to Obtain data which includes the running time, failure time, downtime .etc.
+    url: /EquipmentTimeStatistics/GetData
+    request: 'GET', 'POST'
     :return: Json
     """
     if request.method == 'POST':
         try:
-            # 1、获取前端参数
+            # first、Getting parameters for front-end transmission
             recv_data = request.values
             if not recv_data:
                 return json.dumps("系统错误！", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
             dict_data = recv_data.to_dict()
             brand = dict_data.get('brand')
-            beginTime = dict_data.get('beginTime')
-            endTime = dict_data.get('endTime')
+            unit = dict_data.get('unit')
+            select_time = dict_data.get('select_time')
+            interval = dict_data.get('interval')
         except Exception as e:
             print(e)
             logger.error(e)
             insertSyslog("error", "路由：/RequipmentRunData/GetBatch，获取前端参数Error：" + str(e), current_user.Name)
+
         try:
-            # 2、根据参数从批记录表查询批次
-            Batchs = db_session.query(ElectronicBatch.BatchID).filter(and_(
-                ElectronicBatch.BrandName==brand,
-                ElectronicBatch.SampleDate.between(beginTime, endTime)
-            )).all
-            # 对批次Batch去重
-            Batchs = set(Batchs)
-            # 3、整理批次数据格式转化成json返回前端
-            return json.dumps(Batchs, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+            # second、call the EquipmentRunRecordGet of methods to Obtain data
+            data = EquipmentRunRecordGet(unit, brand, select_time, interval=interval)
+            # third、return data to front end
+            return json.dumps(data, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
             logger.error(e)

@@ -13,7 +13,8 @@
     <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
     <script>
         $(function(){
-            var EQPName = ""
+            var brand = ""
+            var unit = ""
             $('#LeftTree').tree({
                 url:"/EquipmentTimeStatistics/DataTree",
                 method: 'get',
@@ -22,35 +23,42 @@
                     return data
                 },
                 onClick: function (node) {
+                    console.log(node)
                     if($('#LeftTree').tree('isLeaf',node.target)){
-                        EQPName = node.text
-                        var beginTime = $('#beginTime').datebox('getValue')
-                        toJson(EQPName,beginTime)
+                        brand = node.Brand
+                        unit = node.text
+                        var select_time = $('#beginTime').datebox('getValue')
+                        var interval = $("#Shift").find("option:selected").val()
+                        toJson(brand,unit,select_time,interval)
                     }
 
                 }
             })
             $("#searchDate").on("click",function(){
-                var beginTime = $('#beginTime').datebox('getValue')
-                toJson(EQPName,beginTime)
+                var select_time = $('#beginTime').datebox('getValue')
+                var interval = $("#Shift").find("option:selected").val()
+                toJson(brand,unit,select_time,interval)
             })
         })
-        function toJson(name,date){
+        function toJson(brand,unit,select_time,interval){
             var myChart = echarts.init(document.getElementById("main"))
-            if(name == ""){
+            if(unit == ""){
                 myChart.hideLoading();
             }else {
                 myChart.showLoading();
                 $.ajax({
-                    url: "/EquipmentManage/runDataChart",
-                    type: "get",
+                    url: "/EquipmentTimeStatistics/GetData",
+                    type: "post",
                     data: {
-                        equip: name,
-                        date: date
+                        brand: brand,
+                        unit: unit,
+                        select_time: select_time,
+                        interval: interval
                     },
                     dataType: "json",
                     traditional:true,
                     success: function (data) {
+                        console.log(data)
                         if (data !=  "NO") {
                             myChart.hideLoading();
                             myChart.setOption(option = {
@@ -61,7 +69,7 @@
                                     }
                                 },
                                 legend: {
-                                    data: ['运行时间', '清场时间', '故障时间']
+                                    data: ['运行时间', '故障时间', '停机时间','清场时间']
                                 },
                                 toolbox: {
                                     feature: {
@@ -74,13 +82,13 @@
                                 dataZoom : {
                                     show : true,
                                     realtime : true,
-                                    start : 0,
+                                    start : 80,
                                     end : 100
                                 },
                                 xAxis: {
                                     type: 'category',
                                     name: '日',
-                                    data: data[0].time
+                                    data: []
                                 },
                                 yAxis: [
                                     {
@@ -100,17 +108,8 @@
                                             color:'#90ed7d'
                                         }
                                     },
-                                    data: data[0].run_time
-                                }, {
-                                    name: "清场时间",
-                                    type: 'bar',
-                                    itemStyle:{
-                                        normal:{
-                                            color:'#7cb5ec'
-                                        }
-                                    },
-                                    data: data[0].clear_time
-                                }, {
+                                    data: []
+                                },{
                                     name: "故障时间",
                                     type: 'bar',
                                     itemStyle:{
@@ -118,14 +117,32 @@
                                             color:'#f15c80'
                                         }
                                     },
-                                    data: data[0].error_time
+                                    data: []
+                                },{
+                                    name: "停机时间",
+                                    type: 'bar',
+                                    itemStyle:{
+                                        normal:{
+                                            color:'#7cb5ec'
+                                        }
+                                    },
+                                    data: []
+                                },{
+                                    name: "清场时间",
+                                    type: 'bar',
+                                    itemStyle:{
+                                        normal:{
+                                            color:'#7cb5ec'
+                                        }
+                                    },
+                                    data: []
                                 }]
                             });
                             myChart.setOption(option);
                         } else {
                             $.messager.alert({
                                 title: '提示',
-                                msg: "暂无数据，请查看其它记录。",
+                                msg: "请选择工序",
                                 icon: 'info',
                                 width: 300,
                                 top: 200,
@@ -137,7 +154,7 @@
                     error:function(data){
                         $.messager.alert({
                             title: '提示',
-                            msg: "暂无数据，请查看其它记录。",
+                            msg: "请求失败",
                             icon: 'info',
                             width: 300,
                             top: 200,
@@ -159,7 +176,15 @@
         <div style="padding:10px 0px 5px 10px;">
             <a>  设备运行日期:  </a>
             <input class="easyui-datebox" id="beginTime" editable="fasle" style="width:166px;height:35px;line-height:35px;">
-            <a id="searchDate" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'">选择时间</a>
+            <a>  数据范围:  </a>
+            <select name="Shift" id="Shift" type="text" style="width:157px;" autocomplete="off" placeholder="">
+                <option value="">请选择</option>
+                <option value="早班">早班</option>
+                <option value="晚班">晚班</option>
+                <option value="全天">全天</option>
+                <option value="当月">当月</option>
+            </select>
+            <a id="searchDate" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'">查看</a>
         </div>
         <div id="tt" class="easyui-tabs" style="width:100%;height:600px;margin-top:10px; scrolling:'false'">
             <div title="设备运行数据">
