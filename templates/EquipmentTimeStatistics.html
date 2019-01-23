@@ -24,7 +24,6 @@
                     return data
                 },
                 onClick: function (node) {
-                    console.log(node)
                     if($('#LeftTree').tree('isLeaf',node.target)){
                         brand = node.Brand
                         unit = node.text
@@ -59,7 +58,6 @@
                     dataType: "json",
                     traditional:true,
                     success: function (data) {
-                        console.log(data)
                         if (data !=  "NO") {
                             myChart.hideLoading();
                             myChart.setOption(option = {
