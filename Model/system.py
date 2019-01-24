@@ -1158,6 +1158,19 @@ class EquipmentTimeStatistic(Base):
     # 清场时间
     ClearTime = Column(Float, primary_key=False, autoincrement=False, nullable=True)
 
+# 设备说明书
+class EquipmentManagementManua(Base):
+    __tablename__ = "EquipmentManagementManua"
+    # ID:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=True)
+    # 说明书名称
+    Name = Column(Unicode(20), primary_key=False, autoincrement=False, nullable=True)
+    # 存储路径
+    Path = Column(Unicode(20), primary_key=False, autoincrement=False, nullable=True)
+    # 作者
+    Author = Column(Unicode(20), primary_key=False, autoincrement=False, nullable=True)
+    # 上传时间
+    UploadTime = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
 # 生成表单的执行语句
 Base.metadata.create_all(engine)
 
