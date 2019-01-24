@@ -1,4 +1,5 @@
 from typing import Optional, Any
+from collections import Counter
 import time
 import xlrd
 import xlwt
@@ -22,7 +23,7 @@ from Model.system import Role, Organization, User, Menu, Role_Menu, BatchMaterie
     SchedulePlan, SparePartInStockManagement, SparePartStock, Area, Instruments, MaintenanceStatus, MaintenanceCycle, \
     EquipmentRunRecord, \
     EquipmentRunPUID, EquipmentMaintenanceStore, SpareTypeStore, ElectronicBatch, EquipmentStatusCount, Shifts, \
-    EquipmentTimeStatisticTree, SystemEQPCode, EquipmentMaintenanceStandard
+    EquipmentTimeStatisticTree, SystemEQPCode, EquipmentManagementManua
 from sqlalchemy import create_engine, Column, ForeignKey, Table, Integer, String, and_, or_, desc,extract
 from io import StringIO
 import calendar
@@ -1720,7 +1721,7 @@ def EquipmentTimeStatisticsGetData():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "路由：/RequipmentRunData/GetBatch，获取批次Error：" + str(e), current_user.Name)
+            insertSyslog("error", "路由：/RequipmentRunData/GetBatch，获取设备运行数据Error：" + str(e), current_user.Name)
 
 
 
@@ -1789,6 +1790,129 @@ def EquipmentFailureReportingExcel():
             return read_Excel(file_path)
         else:
             return "请上传xlsx格式的excel！"
+
+@equip.route('/EquipmentManagementManual/ManualIndex')
+def EquipmentManualIndex():
+    """
+    Instructions for Equipment under Equipment Management Module
+    url: /EquipmentManagementManual/Manual
+    request method: GET and POST
+    params: <-- GET: None; POST: Word document -->
+    :return: <-- GET: EquipmentManual.html; POST: Word document -->
+    """
+
+    if request.method == "GET":
+
+        return render_template('EquipmentManual.html')
+
+@equip.route('/EquipmentManagementManual/ManualUpload', methods=['GET', 'POST'])
+def ManualUpload():
+    """
+    Upload the instructions for Equipment.
+    url: /EquipmentManagementManual/ManualUpload
+    request method: POST
+    params: Word document
+    :return: Json-data
+    """
+
+    if request.method == "POST":
+        try:
+            # first、obtain the word document from front-end transmissed
+            file = request.files.get('file')
+            if not file:
+                return json.dumps("error！", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+            # second、save the word document
+            file_dir = os.getcwd() + r"\files"
+            if not file_dir:
+                return json.dumps("error！", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+            file.save(os.path.join(file_dir, file.filename))
+
+            # third、Write file information to the database
+            data_dict = {"Name": file.filename.split('.')[0],
+                         "Path": os.path.join(file_dir, file.filename),
+                         "Author": current_user.Name,
+                         "UploadTime": datetime.datetime.now()}
+            message = insert(EquipmentManagementManua, data_dict)
+
+            # forth、return json-data to front-end
+            return json.dumps(message, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "路由：/EquipmentManagementManual/ManualUpload，文件上传Error：" + str(e), current_user.Name)
+
+@equip.route('/EquipmentManagementManual/ManualDownload',)
+def ManualDownload():
+    """
+    Download the instructions for Equipment.
+    url: /EquipmentManagementManual/ManualDownload
+    request method: GET
+    params: Word document
+    :return: Json-data
+    """
+    pass
+
+
+@equip.route('/EquipmentManagementManual/ManualShow')
+def ManualShow():
+    """
+    Display documents in tables
+    url: /EquipmentManagementManual/ManualShow
+    request method: GET
+    params：filename
+    :return: info of word document
+    """
+    if request.method == "GET":
+        try:
+            recv_data = request.values.to_dict()
+            filename = recv_data.get('Name')
+            if not filename:
+                if len(recv_data) > 0:
+                    pages = int(recv_data['page'])
+                    rowsnumber = int(recv_data['rows'])
+                    inipage = (pages - 1) * rowsnumber + 0
+                    endpage = (pages - 1) * rowsnumber + rowsnumber
+                    total = db_session.query(EquipmentManagementManua.ID).count()
+                    if total > 0:
+                        oclass = db_session.query(EquipmentManagementManua).all()[inipage:endpage]
+                        jsondata = json.dumps(oclass, cls=Model.BSFramwork.AlchemyEncoder,ensure_ascii=False)
+                        Data = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsondata + "}"
+                        return Data
+                    return '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + '' + "}"
+
+            else:
+                all = db_session.query(EquipmentManagementManua).filter(EquipmentManagementManua.Name.like(filename)).all()
+                total = Counter(all)
+                jsondata = json.dumps(all, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+                jsondata = '{"total"' + ":" + str(total.__len__()) + ',"rows"' + ":\n" + jsondata + "}"
+                return jsondata
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "路由：/EquipmentManagementManual/ManualShow，说明书信息获取Error：" + str(e), current_user.Name)
+
+@equip.route('/EquipmentManagementManual/ManualDelete', methods=['GET', 'POST'])
+def ManualDelete():
+    """
+    Delete documents in tables
+    url: /EquipmentManagementManual/ManualDelete
+    request method: GET
+    params：filename
+    :return: json-data
+    """
+    if request.method == "POST":
+        try:
+            recv_data = request.values #{'[{"ID":1}]': ''}
+            message = delete(EquipmentManagementManua,recv_data)
+            # oclass = db_session.query(EquipmentManagementManua).filter_by(Name=filename)
+            # db_session.delete(oclass)
+            # db_session.commit()
+            return json.dumps(message, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "路由：/EquipmentManagementManual/ManualDelete，说明书删除Error：" + str(e), current_user.Name)
 
 @equip.route('/EquipmentTimeStatistics/EMaintainEveryDayStandard')
 def EMaintainEveryDayStandard():
@@ -1876,3 +2000,4 @@ def MaintenanceReminder():
             logger.error(e)
             insertSyslog("error", "保养标准查询报错Error：" + str(e), current_user.Name)
             return json.dumps("保养标准查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
