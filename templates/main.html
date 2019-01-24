@@ -491,6 +491,11 @@
                                     <a href="#" onclick="addTab('设备运行数据(系统采集)','/EquipmentTimeStatistics/Index')">设备运行数据(系统采集)</a>
                                 </li>
                             {% endif %}
+                            {% if '95' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onclick="addTab('设备说明书管理','/EquipmentManagementManual/ManualIndex')">设备说明书管理</a>
+                                </li>
+                            {% endif %}
 {#                            {% if '57' in session.get('menus') %}#}
 {#                                <li>#}
 {#                                    <a href="#">原/设备维护记录</a>#}

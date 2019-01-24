@@ -18,20 +18,22 @@
         .AgencyArea{
             position: relative;
             background: #fff;
-            font-size: 14px;
-            text-align: center;
+            font-size: 12px;
         }
         .AgencyArea .AgencyArea-item{
-            background: #2fd6a0;
+            background: #00c4dc;
             color: #fff;
-            padding: 10px 0;
-            border-radius: 5px;
+            padding: 10px;
+            border-radius: 3px;
             margin-bottom: 15px;
         }
-        .AgencyArea h3{
-            font-size: 28px;
-            font-weight: bold;
-            color: #fff;
+        .AgencyArea-head{
+            border-bottom: 1px solid #FFF;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+        .text-muted{
+            color: #333;
         }
         {#.AgencyArea .AgencyArea-item:nth-child(4n+1) h3{#}
         {#    color: #46b8da;#}
@@ -100,26 +102,42 @@
                     <div class="row AgencyArea">
                         <div class="col-md-3">
                             <div class="AgencyArea-item" skip-src="/ZYPlanGuid/checkplanmanager" title="审核计划">
-                                <h3 id="daiban1">0</h3>
-                                <span><i class="glyphicon glyphicon-check"></i> 计划待审核</span>
+                                <div class="AgencyArea-head">
+                                    <i class="glyphicon glyphicon-check"></i>
+                                    <span class="pull-right">计划待审核</span>
+                                </div>
+                                <span class="text-muted">待审核数量</span>
+                                <h3 id="daiban1" class="modal-title">0</h3>
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="AgencyArea-item" skip-src="/ZYPlanGuid/planmanager" title="下发计划">
-                                <h3 id="daiban2">0</h3>
-                                <span><i class="glyphicon glyphicon-send"></i> 计划待下发</span>
+                                <div class="AgencyArea-head">
+                                    <i class="glyphicon glyphicon-send"></i>
+                                    <span class="pull-right">计划待下发</span>
+                                </div>
+                                <span class="text-muted">待下发数量</span>
+                                <h3 id="daiban2" class="modal-title">0</h3>
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="AgencyArea-item" skip-src="/QAauthPass" title="QA放行">
-                                <h3 id="daiban3">0</h3>
-                                <span><i class="glyphicon glyphicon-log-out"></i> 计划待入库</span>
+                                <div class="AgencyArea-head">
+                                    <i class="glyphicon glyphicon-log-out"></i>
+                                    <span class="pull-right">计划待入库</span>
+                                </div>
+                                <span class="text-muted">待入库数量</span>
+                                <h3 id="daiban3" class="modal-title">0</h3>
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="AgencyArea-item" skip-src="/BatchMaterielBalanceStatistic" title="批物料平衡统计">
-                                <h3 id="daiban4">0</h3>
-                                <span><i class="glyphicon glyphicon-pencil"></i> 物料平衡待确认</span>
+                                <div class="AgencyArea-head">
+                                    <i class="glyphicon glyphicon-pencil"></i>
+                                    <span class="pull-right">物料平衡待确认</span>
+                                </div>
+                                <span class="text-muted">待确认数量</span>
+                                <h3 id="daiban4" class="modal-title">0</h3>
                             </div>
                         </div>
 {#                        <div class="col-md-3" skip-src="/BatchMaterielBalanceStatistic" title="设备故障待维修">#}
