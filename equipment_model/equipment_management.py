@@ -1925,7 +1925,7 @@ def ManualDelete():
         try:
             recv_data = request.values
             delete(EquipmentManagementManua,recv_data)
-            return json.dumps('OK', cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+            return 'OK'
         except Exception as e:
             print(e)
             logger.error(e)
