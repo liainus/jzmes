@@ -22,7 +22,7 @@ from Model.system import Role, Organization, User, Menu, Role_Menu, BatchMaterie
     SchedulePlan, SparePartInStockManagement, SparePartStock, Area, Instruments, MaintenanceStatus, MaintenanceCycle, \
     EquipmentRunRecord, \
     EquipmentRunPUID, EquipmentMaintenanceStore, SpareTypeStore, ElectronicBatch, EquipmentStatusCount, Shifts, \
-    EquipmentTimeStatisticTree, SystemEQPCode
+    EquipmentTimeStatisticTree, SystemEQPCode, EquipmentMaintenanceStandard
 from sqlalchemy import create_engine, Column, ForeignKey, Table, Integer, String, and_, or_, desc,extract
 from io import StringIO
 import calendar
@@ -1786,3 +1786,60 @@ def EquipmentFailureReportingExcel():
             return read_Excel(file_path)
         else:
             return "请上传xlsx格式的excel！"
+
+@equip.route('/EquipmentTimeStatistics/EMaintainEveryDayStandard')
+def RequipmentRunDataIndex():
+    '''
+    :return: 保养标准页面跳转
+    '''
+    return render_template('EMaintainEveryDayStandard.html')
+
+#保养标准查询
+@equip.route('/equipment_model/MaintenanceStandardSelect', methods=['GET', 'POST'])
+def MaintenanceStandardSelect():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                pages = int(data['page'])
+                rowsnumber = int(data['rows'])
+                inipage = (pages - 1) * rowsnumber + 0
+                endpage = (pages - 1) * rowsnumber + rowsnumber
+                EquipentName = data["EquipentName"]
+                if EquipentName == "":
+                    count = db_session.query(EquipmentMaintenanceStandard).filter_by().count()
+                    oclass = db_session.query(EquipmentMaintenanceStandard).filter_by().all()[inipage:endpage]
+                else:
+                    count = db_session.query(EquipmentMaintenanceStandard).filter(
+                        EquipmentMaintenanceStandard.EquipentName.like("%"+EquipentName+"%")).count()
+                    oclass = db_session.query(EquipmentMaintenanceStandard).filter(
+                        EquipmentMaintenanceStandard.EquipentName.like("%"+EquipentName+"%")).all()[inipage:endpage]
+                jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
+                return '{"total"' + ":" + str(count) + ',"rows"' + ":\n" + jsonoclass + "}"
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "保养标准查询报错Error：" + str(e), current_user.Name)
+            return json.dumps("保养标准查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+#备件类型增加
+@equip.route('/equipment_model/EquipmentMaintenanceStandardCreate', methods=['GET', 'POST'])
+def EquipmentMaintenanceStandardCreate():
+    if request.method == 'POST':
+        data = request.values
+        return insert(EquipmentMaintenanceStandard, data)
+
+#备件类型修改
+@equip.route('/equipment_model/EquipmentMaintenanceStandardUpdate', methods=['GET', 'POST'])
+def EquipmentMaintenanceStandardUpdate():
+    if request.method == 'POST':
+        data = request.values
+        return update(EquipmentMaintenanceStandard, data)
+
+#备件类型删除
+@equip.route('/equipment_model/EquipmentMaintenanceStandardDetele', methods=['GET', 'POST'])
+def EquipmentMaintenanceStandardDetele():
+    if request.method == 'POST':
+        data = request.values
+        return delete(EquipmentMaintenanceStandard, data)
