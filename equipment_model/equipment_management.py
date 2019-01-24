@@ -1908,7 +1908,7 @@ def ManualDelete():
             # oclass = db_session.query(EquipmentManagementManua).filter_by(Name=filename)
             # db_session.delete(oclass)
             # db_session.commit()
-            return json.dumps(message, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+            return json.dumps('OK', cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
             logger.error(e)
