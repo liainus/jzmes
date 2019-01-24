@@ -1863,12 +1863,9 @@ def ManualDownload():
             recv_data = request.values.to_dict()
             filename = recv_data.get('Name')
             file_path = db_session.query(EquipmentManagementManua.Path).filter_by(Name=filename).first()[0]
-            # if file_path:
-            #     if os.path.isfile(os.path.join(os.getcwd() + r"\files", filename)):
-            #         response = send_from_directory(os.getcwd() + r"\files", filename, as_attachment=True)
-            #         response.headers["Content-Disposition"] = "attachment; filename={}".format(filename.encode().decode('latin-1'))
-            #         return response
-            return json.dumps(file_path, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+            if file_path:
+                return json.dumps(file_path, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+            return 'NO'
         except Exception as e:
             print(e)
             logger.error(e)
