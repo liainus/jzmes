@@ -1849,9 +1849,20 @@ def ManualDownload():
     url: /EquipmentManagementManual/ManualDownload
     request method: GET
     params: Word document
-    :return: Json-data
+    :return: the path of document
     """
-    pass
+    if request.method == "GET":
+        try:
+            recv_data = request.values.to_dict()
+            filename = recv_data.get('Name')
+            file_path = db_session.query(EquipmentManagementManua.Path).filter_by(Name=filename).first()[0]
+            return json.dumps(file_path, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "路由：/EquipmentManagementManual/ManualDownload，返回文件路径Error：" + str(e), current_user.Name)
+
+
 
 
 @equip.route('/EquipmentManagementManual/ManualShow')
@@ -1903,11 +1914,8 @@ def ManualDelete():
     """
     if request.method == "POST":
         try:
-            recv_data = request.values #{'[{"ID":1}]': ''}
-            message = delete(EquipmentManagementManua,recv_data)
-            # oclass = db_session.query(EquipmentManagementManua).filter_by(Name=filename)
-            # db_session.delete(oclass)
-            # db_session.commit()
+            recv_data = request.values
+            delete(EquipmentManagementManua,recv_data)
             return json.dumps('OK', cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
