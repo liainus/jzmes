@@ -103,19 +103,7 @@
                     } else if (rows.length == 1) {
                         var row = $('#tab').datagrid('getSelected');
                         if (row) {
-                            $.ajax({
-                                url: '/EquipmentManagementManual/ManualDownload',
-                                method: 'get',
-                                data: {
-                                    Name:row.Name
-                                },
-                                success: function (data) {
-                                    console.log(data)
-                                    if(data){
-                                        window.open(data);
-                                     }
-                                }
-                            });
+                            window.open("/EquipmentManagementManual/ManualDownload?Name=" + row.Name);
                         };
                     } else if (rows.length == 0) {
                         $.messager.alert('警告操作！', '请至少选定一条数据进行编辑！', 'warning');
