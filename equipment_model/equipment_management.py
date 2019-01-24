@@ -22,7 +22,7 @@ from Model.system import Role, Organization, User, Menu, Role_Menu, BatchMaterie
     SchedulePlan, SparePartInStockManagement, SparePartStock, Area, Instruments, MaintenanceStatus, MaintenanceCycle, \
     EquipmentRunRecord, \
     EquipmentRunPUID, EquipmentMaintenanceStore, SpareTypeStore, ElectronicBatch, EquipmentStatusCount, Shifts, \
-    EquipmentTimeStatisticTree, SystemEQPCode
+    EquipmentTimeStatisticTree, SystemEQPCode, EquipmentMaintenanceStandard
 from sqlalchemy import create_engine, Column, ForeignKey, Table, Integer, String, and_, or_, desc,extract
 from io import StringIO
 import calendar
@@ -1613,20 +1613,21 @@ def EquipmentRunRecordGet(unit, brand, date, interval=None):
             # Obtaining the time period of day shift.
             dayshift = db_session.query(Shifts).filter_by(ShiftsName=interval).first()
             if dayshift:
-                # currentDate = datetime.datetime.now().strftime('%Y-%m-%d')
                 beginTime = date + " " + str(dayshift.BeginTime).split('.')[0] if dayshift.BeginTime else "08:52:00"
                 endTime = date + " " + str(dayshift.EndTime).split('.')[0] if dayshift.EndTime else "20:52:00"
             else:
-                return 'error'
+                return 'NO'
 
         elif interval == '晚班':
             dayshift = db_session.query(Shifts).filter_by(ShiftsName=interval).first()
             if dayshift:
-                # currentDate = datetime.datetime.now().strftime('%Y-%m-%d')
                 beginTime = date + " " + str(dayshift.BeginTime).split('.')[0] if dayshift.BeginTime else "20:52:00"
-                endTime = date + " " + str(dayshift.EndTime).split('.')[0] if dayshift.EndTime else "08:52:00"
+                date_time = datetime.datetime.strptime(date, '%Y-%m-%d')
+                delta = datetime.timedelta(days=1)
+                n_days = date_time + delta
+                endTime = n_days.strftime('%Y-%m-%d') + " " + str(dayshift.EndTime).split('.')[0] if dayshift.EndTime else "08:52:00"
             else:
-                return 'error'
+                return 'NO'
 
         elif interval == '全天':
                 # currentDate = datetime.datetime.now().strftime('%Y-%m-%d')
@@ -1656,7 +1657,7 @@ def EquipmentRunRecordGet(unit, brand, date, interval=None):
                     EquipmentStatusCount.SYSEQPCode == code,
                     EquipmentStatusCount.SampleTime.between(beginTime, endTime),
                     EquipmentStatusCount.StatusType == 'RUN',
-                     EquipmentStatusCount.IsStop == 'n')
+                     EquipmentStatusCount.IsStop == 'N')
             ).all()
 
             failure_time = db_session.query(EquipmentStatusCount.Duration).filter(
@@ -1668,16 +1669,18 @@ def EquipmentRunRecordGet(unit, brand, date, interval=None):
             downtime = db_session.query(EquipmentStatusCount.Duration).filter(
                 and_(EquipmentStatusCount.SYSEQPCode == code,
                     EquipmentStatusCount.SampleTime.between(beginTime, endTime),
-                     EquipmentStatusCount.IsStop == 'y')
+                     EquipmentStatusCount.IsStop == 'Y')
             ).all()
 
-            equip_run_time.append(sum(run_time)/60 if run_time else 0)
-            equip_failure_time.append(sum(failure_time)/60 if failure_time else 0)
-            equip_downtime.append(sum(downtime)/60 if downtime else 0)
+            equip_run_time.append(round(sum([time[0] for time in run_time])/60, 3) if run_time else 0)
+            equip_failure_time.append(round(sum([time[0] for time in failure_time])/60, 3) if failure_time else 0)
+            equip_downtime.append(round(sum([time[0] for time in downtime])/60, 3) if downtime else 0)
             equipment_codes.append(code[0])
         clear_time = [60 for _ in range(len(equip_codes))]
 
         # third、 return data
+        if len(equip_run_time) == 0:
+            return "NO"
         return {"equip_run_time": equip_run_time,
                 "equip_failure_time": equip_failure_time,
                 "equip_downtime": equip_downtime,
@@ -1698,7 +1701,7 @@ def EquipmentTimeStatisticsGetData():
             # first、Getting parameters for front-end transmission
             recv_data = request.values
             if not recv_data:
-                return json.dumps("系统错误！", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+                return json.dumps("NO！", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
             dict_data = recv_data.to_dict()
             brand = dict_data.get('brand')
             unit = dict_data.get('unit')
@@ -1786,3 +1789,60 @@ def EquipmentFailureReportingExcel():
             return read_Excel(file_path)
         else:
             return "请上传xlsx格式的excel！"
+
+@equip.route('/EquipmentTimeStatistics/EMaintainEveryDayStandard')
+def RequipmentRunDataIndex():
+    '''
+    :return: 保养标准页面跳转
+    '''
+    return render_template('EMaintainEveryDayStandard.html')
+
+#保养标准查询
+@equip.route('/equipment_model/MaintenanceStandardSelect', methods=['GET', 'POST'])
+def MaintenanceStandardSelect():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                pages = int(data['page'])
+                rowsnumber = int(data['rows'])
+                inipage = (pages - 1) * rowsnumber + 0
+                endpage = (pages - 1) * rowsnumber + rowsnumber
+                EquipentName = data["EquipentName"]
+                if EquipentName == "":
+                    count = db_session.query(EquipmentMaintenanceStandard).filter_by().count()
+                    oclass = db_session.query(EquipmentMaintenanceStandard).filter_by().all()[inipage:endpage]
+                else:
+                    count = db_session.query(EquipmentMaintenanceStandard).filter(
+                        EquipmentMaintenanceStandard.EquipentName.like("%"+EquipentName+"%")).count()
+                    oclass = db_session.query(EquipmentMaintenanceStandard).filter(
+                        EquipmentMaintenanceStandard.EquipentName.like("%"+EquipentName+"%")).all()[inipage:endpage]
+                jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
+                return '{"total"' + ":" + str(count) + ',"rows"' + ":\n" + jsonoclass + "}"
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "保养标准查询报错Error：" + str(e), current_user.Name)
+            return json.dumps("保养标准查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+#备件类型增加
+@equip.route('/equipment_model/EquipmentMaintenanceStandardCreate', methods=['GET', 'POST'])
+def EquipmentMaintenanceStandardCreate():
+    if request.method == 'POST':
+        data = request.values
+        return insert(EquipmentMaintenanceStandard, data)
+
+#备件类型修改
+@equip.route('/equipment_model/EquipmentMaintenanceStandardUpdate', methods=['GET', 'POST'])
+def EquipmentMaintenanceStandardUpdate():
+    if request.method == 'POST':
+        data = request.values
+        return update(EquipmentMaintenanceStandard, data)
+
+#备件类型删除
+@equip.route('/equipment_model/EquipmentMaintenanceStandardDetele', methods=['GET', 'POST'])
+def EquipmentMaintenanceStandardDetele():
+    if request.method == 'POST':
+        data = request.values
+        return delete(EquipmentMaintenanceStandard, data)
