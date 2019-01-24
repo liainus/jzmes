@@ -3,7 +3,7 @@ from collections import Counter
 import time
 import xlrd
 import xlwt
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, send_from_directory
 from openpyxl.compat import file
 from sqlalchemy.orm import Session, relationship, sessionmaker
 from sqlalchemy import create_engine
@@ -1836,7 +1836,7 @@ def ManualUpload():
             file.save(os.path.join(file_dir, file.filename))
 
             # third、Write file information to the database
-            data_dict = {"Name": file.filename.split('.')[0],
+            data_dict = {"Name": file.filename,
                          "Path": os.path.join(file_dir, file.filename),
                          "Author": current_user.Name,
                          "UploadTime": datetime.datetime.now()}
@@ -1863,7 +1863,9 @@ def ManualDownload():
             recv_data = request.values.to_dict()
             filename = recv_data.get('Name')
             file_path = db_session.query(EquipmentManagementManua.Path).filter_by(Name=filename).first()[0]
-            return json.dumps(file_path, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+            if file_path:
+                return json.dumps(file_path, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+            return 'NO'
         except Exception as e:
             print(e)
             logger.error(e)
@@ -1923,7 +1925,7 @@ def ManualDelete():
         try:
             recv_data = request.values
             delete(EquipmentManagementManua,recv_data)
-            return json.dumps('OK', cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+            return 'OK'
         except Exception as e:
             print(e)
             logger.error(e)
