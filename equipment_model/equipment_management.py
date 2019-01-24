@@ -2026,7 +2026,7 @@ def MaintenanceReminder():
                     OperationDate = datetime.datetime.strptime(OperationDate[0].strftime('%Y-%m-%d'), "%Y-%m-%d")
                     nowdays = int((nowTime - OperationDate).days) #现在天数
                     if nowdays > tisdays:
-                        dir[EquipentName] = "设备名："+EquipentName+" 的设备需要保养，请尽快处理！"
+                        dir[EquipentName] = "%s 设备需要保养，请尽快处理！"%EquipentName
             return json.dumps(dir, cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             logger.error(e)
