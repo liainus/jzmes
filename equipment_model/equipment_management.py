@@ -3,7 +3,7 @@ from collections import Counter
 import time
 import xlrd
 import xlwt
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, send_from_directory
 from openpyxl.compat import file
 from sqlalchemy.orm import Session, relationship, sessionmaker
 from sqlalchemy import create_engine
@@ -23,7 +23,7 @@ from Model.system import Role, Organization, User, Menu, Role_Menu, BatchMaterie
     SchedulePlan, SparePartInStockManagement, SparePartStock, Area, Instruments, MaintenanceStatus, MaintenanceCycle, \
     EquipmentRunRecord, \
     EquipmentRunPUID, EquipmentMaintenanceStore, SpareTypeStore, ElectronicBatch, EquipmentStatusCount, Shifts, \
-    EquipmentTimeStatisticTree, SystemEQPCode, EquipmentManagementManua
+    EquipmentTimeStatisticTree, SystemEQPCode, EquipmentManagementManua, EquipmentMaintenanceStandard
 from sqlalchemy import create_engine, Column, ForeignKey, Table, Integer, String, and_, or_, desc,extract
 from io import StringIO
 import calendar
@@ -1791,6 +1791,13 @@ def EquipmentFailureReportingExcel():
         else:
             return "请上传xlsx格式的excel！"
 
+@equip.route('/EMaintainEveryDayStandard')
+def EMaintainEveryDayStandard():
+    '''
+    :return: 保养标准页面跳转
+    '''
+    return render_template('EMaintainEveryDayStandard.html')
+
 @equip.route('/EquipmentManagementManual/ManualIndex')
 def EquipmentManualIndex():
     """
@@ -1829,7 +1836,7 @@ def ManualUpload():
             file.save(os.path.join(file_dir, file.filename))
 
             # third、Write file information to the database
-            data_dict = {"Name": file.filename.split('.')[0],
+            data_dict = {"Name": file.filename,
                          "Path": os.path.join(file_dir, file.filename),
                          "Author": current_user.Name,
                          "UploadTime": datetime.datetime.now()}
@@ -1856,7 +1863,13 @@ def ManualDownload():
             recv_data = request.values.to_dict()
             filename = recv_data.get('Name')
             file_path = db_session.query(EquipmentManagementManua.Path).filter_by(Name=filename).first()[0]
-            return json.dumps(file_path, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+            if file_path:
+                if os.path.isfile(os.path.join(os.getcwd() + r"\files", filename)):
+                    response = send_from_directory(os.getcwd() + r"\files", filename, as_attachment=True)
+                    response.headers["Content-Disposition"] = "attachment; filename={}".format(filename.encode().decode('latin-1'))
+                    return response
+                return 'NO'
+            return 'NO'
         except Exception as e:
             print(e)
             logger.error(e)
@@ -1922,14 +1935,9 @@ def ManualDelete():
             logger.error(e)
             insertSyslog("error", "路由：/EquipmentManagementManual/ManualDelete，说明书删除Error：" + str(e), current_user.Name)
 
-@equip.route('/EquipmentTimeStatistics/EMaintainEveryDayStandard')
-def EMaintainEveryDayStandard():
-    '''
-    :return: 保养标准页面跳转
-    '''
-    return render_template('EMaintainEveryDayStandard.html')
 
-#保养标准查询
+
+#设备保养标准查询
 @equip.route('/equipment_model/MaintenanceStandardSelect', methods=['GET', 'POST'])
 def MaintenanceStandardSelect():
     if request.method == 'GET':
@@ -1958,21 +1966,38 @@ def MaintenanceStandardSelect():
             insertSyslog("error", "保养标准查询报错Error：" + str(e), current_user.Name)
             return json.dumps("保养标准查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
-#备件类型增加
+#设备保养标准增加
 @equip.route('/equipment_model/EquipmentMaintenanceStandardCreate', methods=['GET', 'POST'])
 def EquipmentMaintenanceStandardCreate():
     if request.method == 'POST':
-        data = request.values
-        return insert(EquipmentMaintenanceStandard, data)
+        data = request.values  # 返回请求中的参数和form
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                db_session.add(
+                    EquipmentMaintenanceStandard(
+                        EquipentName=data['EquipentName'],
+                        MaintenanceCycle=data['MaintenanceCycle'],
+                        MaintenanceReminderCycle=data['MaintenanceReminderCycle'],
+                        EntryPerson=current_user.Name,
+                        EntryTime=datetime.datetime.now()
+                    ))
+                db_session.commit()
+                return 'OK'
+        except Exception as e:
+            db_session.rollback()
+            logger.error(e)
+            return json.dumps("设备保养标准增加报错")
+            insertSyslog("error", "设备保养标准增加报错Error：" + str(e), current_user.Name)
 
-#备件类型修改
+#设备保养标准修改
 @equip.route('/equipment_model/EquipmentMaintenanceStandardUpdate', methods=['GET', 'POST'])
 def EquipmentMaintenanceStandardUpdate():
     if request.method == 'POST':
         data = request.values
         return update(EquipmentMaintenanceStandard, data)
 
-#备件类型删除
+#设备保养标准删除
 @equip.route('/equipment_model/EquipmentMaintenanceStandardDetele', methods=['GET', 'POST'])
 def EquipmentMaintenanceStandardDetele():
     if request.method == 'POST':
@@ -1981,31 +2006,35 @@ def EquipmentMaintenanceStandardDetele():
 
 @equip.route('/equipment_model/MaintenanceReminder', methods=['GET', 'POST'])
 def MaintenanceReminder():
+    '''
+    设备保养周期提醒功能
+    :return:
+    '''
     if request.method == 'GET':
         data = request.values
         try:
-            json_str = json.dumps(data.to_dict())
-            if len(json_str) > 10:
-                pages = int(data['page'])
-                rowsnumber = int(data['rows'])
-                inipage = (pages - 1) * rowsnumber + 0
-                endpage = (pages - 1) * rowsnumber + rowsnumber
-                dir = {}
-                oclass = db_session.query(EquipmentMaintenanceStandard).all()
-                for i in oclass:
-                    EquipentName = i.EquipentName
-                    MaintenanceCycle = i.MaintenanceCycle
-                    MaintenanceReminderCycle = i.MaintenanceReminderCycle
-                    EntryTime = i.EntryTime
-                    OperationDate = db_session.query(EquipmentMaintenanceStore.OperationDate).filter_by(EquipentName = EquipentName).first()
-                    if OperationDate == "" or OperationDate == None:
-                        nowTime = datetime.datetime.now()
-                        nowTime - EntryTime - MaintenanceReminderCycle
-                        OperationDate
-                return json.dumps(dir, cls=AlchemyEncoder, ensure_ascii=False)
+            dir = {}
+            oclass = db_session.query(EquipmentMaintenanceStandard).all()
+            for i in oclass:
+                EquipentName = i.EquipentName
+                MaintenanceCycle = i.MaintenanceCycle
+                MaintenanceReminderCycle = i.MaintenanceReminderCycle
+                EntryTime = i.EntryTime
+                OperationDate = db_session.query(EquipmentMaintenanceStore.OperationDate).filter_by(EquipentName = EquipentName).order_by(desc("OperationDate")).first()
+                nowTime = datetime.datetime.strptime(datetime.datetime.now().strftime('%Y-%m-%d'), "%Y-%m-%d")
+                tisdays = int(MaintenanceCycle) * 30 - int(MaintenanceReminderCycle) * 7  # 提示天数
+                if OperationDate == "" or OperationDate == None:
+                    EntryTime = datetime.datetime.strptime(EntryTime.strftime('%Y-%m-%d'), "%Y-%m-%d")
+                    nowdays = int((nowTime - EntryTime).days)
+                    if nowdays > tisdays:
+                        dir[EquipentName] = "设备名：" + EquipentName + " 的设备需要保养，请尽快处理！"
+                else:
+                    OperationDate = datetime.datetime.strptime(OperationDate[0].strftime('%Y-%m-%d'), "%Y-%m-%d")
+                    nowdays = int((nowTime - OperationDate).days) #现在天数
+                    if nowdays > tisdays:
+                        dir[EquipentName] = "设备名："+EquipentName+" 的设备需要保养，请尽快处理！"
+            return json.dumps(dir, cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
-            print(e)
             logger.error(e)
-            insertSyslog("error", "保养标准查询报错Error：" + str(e), current_user.Name)
-            return json.dumps("保养标准查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
-
+            insertSyslog("error", "设备保养周期提醒功能查询报错Error：" + str(e), current_user.Name)
+            return json.dumps("设备保养周期提醒功能查询报错")
