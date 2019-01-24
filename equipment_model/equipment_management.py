@@ -1616,7 +1616,7 @@ def EquipmentRunRecordGet(unit, brand, date, interval=None):
                 beginTime = date + " " + str(dayshift.BeginTime).split('.')[0] if dayshift.BeginTime else "08:52:00"
                 endTime = date + " " + str(dayshift.EndTime).split('.')[0] if dayshift.EndTime else "20:52:00"
             else:
-                return 'error'
+                return 'NO'
 
         elif interval == '晚班':
             dayshift = db_session.query(Shifts).filter_by(ShiftsName=interval).first()
@@ -1627,7 +1627,7 @@ def EquipmentRunRecordGet(unit, brand, date, interval=None):
                 n_days = date_time + delta
                 endTime = n_days.strftime('%Y-%m-%d') + " " + str(dayshift.EndTime).split('.')[0] if dayshift.EndTime else "08:52:00"
             else:
-                return 'error'
+                return 'NO'
 
         elif interval == '全天':
                 # currentDate = datetime.datetime.now().strftime('%Y-%m-%d')
@@ -1680,7 +1680,7 @@ def EquipmentRunRecordGet(unit, brand, date, interval=None):
 
         # third、 return data
         if len(equip_run_time) == 0:
-            return "暂无数据"
+            return "NO"
         return {"equip_run_time": equip_run_time,
                 "equip_failure_time": equip_failure_time,
                 "equip_downtime": equip_downtime,
@@ -1701,7 +1701,7 @@ def EquipmentTimeStatisticsGetData():
             # first、Getting parameters for front-end transmission
             recv_data = request.values
             if not recv_data:
-                return json.dumps("系统错误！", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+                return json.dumps("NO！", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
             dict_data = recv_data.to_dict()
             brand = dict_data.get('brand')
             unit = dict_data.get('unit')
