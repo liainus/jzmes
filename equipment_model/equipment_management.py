@@ -3,7 +3,7 @@ from collections import Counter
 import time
 import xlrd
 import xlwt
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, send_from_directory
 from openpyxl.compat import file
 from sqlalchemy.orm import Session, relationship, sessionmaker
 from sqlalchemy import create_engine
@@ -1856,7 +1856,8 @@ def ManualDownload():
             recv_data = request.values.to_dict()
             filename = recv_data.get('Name')
             file_path = db_session.query(EquipmentManagementManua.Path).filter_by(Name=filename).first()[0]
-            return json.dumps(file_path, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+            if os.path.isfile(os.path.join(os.getcwd() + r"\files", filename)):
+                return send_from_directory(os.getcwd() + r"\files", filename, as_attachment=True)
         except Exception as e:
             print(e)
             logger.error(e)
