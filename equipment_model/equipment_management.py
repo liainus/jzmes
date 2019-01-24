@@ -1829,7 +1829,7 @@ def ManualUpload():
             file.save(os.path.join(file_dir, file.filename))
 
             # third、Write file information to the database
-            data_dict = {"Name": file.filename.split('.')[0],
+            data_dict = {"Name": file.filename,
                          "Path": os.path.join(file_dir, file.filename),
                          "Author": current_user.Name,
                          "UploadTime": datetime.datetime.now()}
@@ -1856,8 +1856,13 @@ def ManualDownload():
             recv_data = request.values.to_dict()
             filename = recv_data.get('Name')
             file_path = db_session.query(EquipmentManagementManua.Path).filter_by(Name=filename).first()[0]
-            if os.path.isfile(os.path.join(os.getcwd() + r"\files", filename)):
-                return send_from_directory(os.getcwd() + r"\files", filename, as_attachment=True)
+            if file_path:
+                if os.path.isfile(os.path.join(os.getcwd() + r"\files", filename)):
+                    response = send_from_directory(os.getcwd() + r"\files", filename, as_attachment=True)
+                    response.headers["Content-Disposition"] = "attachment; filename={}".format(filename.encode().decode('latin-1'))
+                    return response
+                return 'NO'
+            return 'NO'
         except Exception as e:
             print(e)
             logger.error(e)
