@@ -1823,7 +1823,7 @@ def ManualUpload():
                 return json.dumps("error！", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
             # second、save the word document
-            file_dir = os.getcwd() + r"\\files"
+            file_dir = os.getcwd() + r"\files"
             if not file_dir:
                 return json.dumps("error！", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
             file.save(os.path.join(file_dir, file.filename))
@@ -1831,10 +1831,8 @@ def ManualUpload():
             # third、Write file information to the database
             data_dict = {"Name": file.filename.split('.')[0],
                          "Path": os.path.join(file_dir, file.filename),
-                         "IsDelete": 0,
                          "Author": current_user.Name,
-                         "UploadTime": datetime.datetime.now(),
-                         "LastUpdate": datetime.datetime.now()}
+                         "UploadTime": datetime.datetime.now()}
             message = insert(EquipmentManagementManua, data_dict)
 
             # forth、return json-data to front-end
@@ -1868,9 +1866,9 @@ def ManualShow():
     if request.method == "GET":
         try:
             recv_data = request.values.to_dict()
-            filename = recv_data.get('filename')
+            filename = recv_data.get('Name')
             if not filename:
-                if len(recv_data) > 10:
+                if len(recv_data) > 0:
                     pages = int(recv_data['page'])
                     rowsnumber = int(recv_data['rows'])
                     inipage = (pages - 1) * rowsnumber + 0
@@ -1881,11 +1879,10 @@ def ManualShow():
                         jsondata = json.dumps(oclass, cls=Model.BSFramwork.AlchemyEncoder,ensure_ascii=False)
                         Data = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsondata + "}"
                         return Data
-                    return None
-                return None
+                    return '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + '' + "}"
 
             else:
-                all = db_session.query(EquipmentManagementManua).filter(quipmentManagementManua.Name.like(filename)).all()
+                all = db_session.query(EquipmentManagementManua).filter(EquipmentManagementManua.Name.like(filename)).all()
                 total = Counter(all)
                 jsondata = json.dumps(all, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
                 jsondata = '{"total"' + ":" + str(total.__len__()) + ',"rows"' + ":\n" + jsondata + "}"
@@ -1894,6 +1891,28 @@ def ManualShow():
             print(e)
             logger.error(e)
             insertSyslog("error", "路由：/EquipmentManagementManual/ManualShow，说明书信息获取Error：" + str(e), current_user.Name)
+
+@equip.route('/EquipmentManagementManual/ManualDelete', methods=['GET', 'POST'])
+def ManualDelete():
+    """
+    Delete documents in tables
+    url: /EquipmentManagementManual/ManualDelete
+    request method: GET
+    params：filename
+    :return: json-data
+    """
+    if request.method == "POST":
+        try:
+            recv_data = request.values #{'[{"ID":1}]': ''}
+            message = delete(EquipmentManagementManua,recv_data)
+            # oclass = db_session.query(EquipmentManagementManua).filter_by(Name=filename)
+            # db_session.delete(oclass)
+            # db_session.commit()
+            return json.dumps(message, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "路由：/EquipmentManagementManual/ManualDelete，说明书删除Error：" + str(e), current_user.Name)
 
 @equip.route('/EquipmentTimeStatistics/EMaintainEveryDayStandard')
 def EMaintainEveryDayStandard():
