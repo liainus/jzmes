@@ -1048,9 +1048,6 @@ class EquipmentMaintenanceStandard(Base):
     # 保养周期
     MaintenanceCycle = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
 
-    # 上一次保养时间
-    LastMaintenanceTime = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
-
     # 保养提醒周期
     MaintenanceReminderCycle = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 

@@ -1791,7 +1791,7 @@ def EquipmentFailureReportingExcel():
             return "请上传xlsx格式的excel！"
 
 @equip.route('/EquipmentTimeStatistics/EMaintainEveryDayStandard')
-def RequipmentRunDataIndex():
+def EMaintainEveryDayStandard():
     '''
     :return: 保养标准页面跳转
     '''
@@ -1846,3 +1846,33 @@ def EquipmentMaintenanceStandardDetele():
     if request.method == 'POST':
         data = request.values
         return delete(EquipmentMaintenanceStandard, data)
+
+@equip.route('/equipment_model/MaintenanceReminder', methods=['GET', 'POST'])
+def MaintenanceReminder():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                pages = int(data['page'])
+                rowsnumber = int(data['rows'])
+                inipage = (pages - 1) * rowsnumber + 0
+                endpage = (pages - 1) * rowsnumber + rowsnumber
+                dir = {}
+                oclass = db_session.query(EquipmentMaintenanceStandard).all()
+                for i in oclass:
+                    EquipentName = i.EquipentName
+                    MaintenanceCycle = i.MaintenanceCycle
+                    MaintenanceReminderCycle = i.MaintenanceReminderCycle
+                    EntryTime = i.EntryTime
+                    OperationDate = db_session.query(EquipmentMaintenanceStore.OperationDate).filter_by(EquipentName = EquipentName).first()
+                    if OperationDate == "" or OperationDate == None:
+                        nowTime = datetime.datetime.now()
+                        nowTime - EntryTime - MaintenanceReminderCycle
+                        OperationDate
+                return json.dumps(dir, cls=AlchemyEncoder, ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "保养标准查询报错Error：" + str(e), current_user.Name)
+            return json.dumps("保养标准查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
