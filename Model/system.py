@@ -1036,6 +1036,27 @@ class BatchNameTypeName(Base):
     # 采集对应的TypeName:
     TypeName = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
+# 设备保养标准
+class EquipmentMaintenanceStandard(Base):
+    __tablename__ = 'EquipmentMaintenanceStandard'
+    # id:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+    # 设备名称
+    EquipentName = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 保养周期
+    MaintenanceCycle = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
+
+    # 保养提醒周期
+    MaintenanceReminderCycle = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 录入人
+    EntryPerson = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 录入时间
+    EntryTime = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+
 # 设备保养数据
 class EquipmentMaintenanceStore(Base):
     __tablename__ = 'EquipmentMaintenanceStore'

@@ -155,6 +155,10 @@
                     }
                 })
             })
+            $("#maintainStandardHref").on('click',function(){
+                var title = $(this).html()
+                addTab(title,"/EMaintainEveryDayStandard")
+            })
             function dateLimit(){
                 var nowDate = new Date()
                 var myDate = myformatter(nowDate);//当前时间 格式2018-12
@@ -209,6 +213,20 @@
                 var d = date.getDate();
                 return y+'-'+(m<10?('0'+m):m);
             }
+            //按钮点击后添加选项卡
+            function addTab(title, url) {
+                if (parent.$('.easyui-tabs1').tabs('exists', title)) {
+                    parent.$('.easyui-tabs1').tabs('select', title);
+                }
+                else {
+                    var content = '<iframe class="page-iframe" src="' + url + '" frameborder="no" border="no" height="100%" width="100%" scrolling="auto"></iframe>';
+                    parent.$('.easyui-tabs1').tabs('add', {
+                        title: title,
+                        content: content,
+                        closable: true
+                    });
+                }
+            }
         })
     </script>
 </head>
@@ -233,6 +251,7 @@
                     <input type="text" class="form-control" id="selectMonth">
                     <button id="save" class="btn btn-primary">保存新增/修改的记录</button>
                     <button class="btn btn-primary" id="seachRecord">查询保养记录</button>
+                    <button class="btn btn-primary" id="maintainStandardHref">保养标准管理</button>
                 </div>
             </div>
         </div>

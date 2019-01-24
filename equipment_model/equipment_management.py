@@ -1894,3 +1894,91 @@ def ManualShow():
             print(e)
             logger.error(e)
             insertSyslog("error", "路由：/EquipmentManagementManual/ManualShow，说明书信息获取Error：" + str(e), current_user.Name)
+
+@equip.route('/EquipmentTimeStatistics/EMaintainEveryDayStandard')
+def EMaintainEveryDayStandard():
+    '''
+    :return: 保养标准页面跳转
+    '''
+    return render_template('EMaintainEveryDayStandard.html')
+
+#保养标准查询
+@equip.route('/equipment_model/MaintenanceStandardSelect', methods=['GET', 'POST'])
+def MaintenanceStandardSelect():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                pages = int(data['page'])
+                rowsnumber = int(data['rows'])
+                inipage = (pages - 1) * rowsnumber + 0
+                endpage = (pages - 1) * rowsnumber + rowsnumber
+                EquipentName = data["EquipentName"]
+                if EquipentName == "":
+                    count = db_session.query(EquipmentMaintenanceStandard).filter_by().count()
+                    oclass = db_session.query(EquipmentMaintenanceStandard).filter_by().all()[inipage:endpage]
+                else:
+                    count = db_session.query(EquipmentMaintenanceStandard).filter(
+                        EquipmentMaintenanceStandard.EquipentName.like("%"+EquipentName+"%")).count()
+                    oclass = db_session.query(EquipmentMaintenanceStandard).filter(
+                        EquipmentMaintenanceStandard.EquipentName.like("%"+EquipentName+"%")).all()[inipage:endpage]
+                jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
+                return '{"total"' + ":" + str(count) + ',"rows"' + ":\n" + jsonoclass + "}"
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "保养标准查询报错Error：" + str(e), current_user.Name)
+            return json.dumps("保养标准查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+#备件类型增加
+@equip.route('/equipment_model/EquipmentMaintenanceStandardCreate', methods=['GET', 'POST'])
+def EquipmentMaintenanceStandardCreate():
+    if request.method == 'POST':
+        data = request.values
+        return insert(EquipmentMaintenanceStandard, data)
+
+#备件类型修改
+@equip.route('/equipment_model/EquipmentMaintenanceStandardUpdate', methods=['GET', 'POST'])
+def EquipmentMaintenanceStandardUpdate():
+    if request.method == 'POST':
+        data = request.values
+        return update(EquipmentMaintenanceStandard, data)
+
+#备件类型删除
+@equip.route('/equipment_model/EquipmentMaintenanceStandardDetele', methods=['GET', 'POST'])
+def EquipmentMaintenanceStandardDetele():
+    if request.method == 'POST':
+        data = request.values
+        return delete(EquipmentMaintenanceStandard, data)
+
+@equip.route('/equipment_model/MaintenanceReminder', methods=['GET', 'POST'])
+def MaintenanceReminder():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                pages = int(data['page'])
+                rowsnumber = int(data['rows'])
+                inipage = (pages - 1) * rowsnumber + 0
+                endpage = (pages - 1) * rowsnumber + rowsnumber
+                dir = {}
+                oclass = db_session.query(EquipmentMaintenanceStandard).all()
+                for i in oclass:
+                    EquipentName = i.EquipentName
+                    MaintenanceCycle = i.MaintenanceCycle
+                    MaintenanceReminderCycle = i.MaintenanceReminderCycle
+                    EntryTime = i.EntryTime
+                    OperationDate = db_session.query(EquipmentMaintenanceStore.OperationDate).filter_by(EquipentName = EquipentName).first()
+                    if OperationDate == "" or OperationDate == None:
+                        nowTime = datetime.datetime.now()
+                        nowTime - EntryTime - MaintenanceReminderCycle
+                        OperationDate
+                return json.dumps(dir, cls=AlchemyEncoder, ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "保养标准查询报错Error：" + str(e), current_user.Name)
+            return json.dumps("保养标准查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
