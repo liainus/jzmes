@@ -32,7 +32,7 @@ from Model.core import Enterprise, Area, Factory, ProductLine, ProcessUnit, Equi
     QualityControlTree
 from Model.system import Role, Organization, User, Menu, Role_Menu, BatchMaterielBalance, OperationManual, NewReadyWork, \
     EquipmentWork, EletronicBatchDataStore, SpareStock, EquipmentMaintenanceKnowledge, EquipmentMaintain, \
-    SchedulePlan, SparePartInStockManagement, SparePartStock, Area, Instruments, MaintenanceStatus, MaintenanceCycle
+    SchedulePlan, SparePartInStockManagement, SparePartStock, Area, Instruments, MaintenanceStatus, MaintenanceCycle, plantCalendarScheduling
 from tools.MESLogger import MESLogger
 from Model.core import SysLog
 from sqlalchemy import func
@@ -52,6 +52,7 @@ from constant import constant
 import numpy
 from sqlalchemy.exc import InvalidRequestError
 from equipment_model.equipment_management import equip
+from tools.common import logger,insertSyslog,insert,delete,update,select
 
 #flask_login的初始化
 login_manager = LoginManager()
@@ -7522,6 +7523,52 @@ def plantCalendar():
     :return: 工厂日历页面跳转
     '''
     return render_template('plantCalendar.html')
+@app.route('/systemManager_model/plantCalendarSchedulingCreate', methods=['GET', 'POST'])
+def plantCalendarSchedulingCreate():
+    '''
+    工厂日历
+    :return:
+    '''
+    if request.method == 'POST':
+        data = request.values
+        return insert(plantCalendarScheduling, data)
+
+@app.route('/systemManager_model/plantCalendarSchedulingUpdate', methods=['GET', 'POST'])
+def plantCalendarSchedulingUpdate():
+    '''
+    工厂日历
+    :return:
+    '''
+    if request.method == 'POST':
+        data = request.values
+        return update(plantCalendarScheduling, data)
+
+@app.route('/systemManager_model/plantCalendarSchedulingDelete', methods=['GET', 'POST'])
+def plantCalendarSchedulingDelete():
+    '''
+    工厂日历
+    :return:
+    '''
+    if request.method == 'POST':
+        data = request.values
+        return delete(plantCalendarScheduling, data)
+@equip.route('/systemManager_model/plantCalendarSchedulingSelect', methods=['GET', 'POST'])
+def plantCalendarSchedulingSelect():
+    '''
+    工厂日历
+    :return:
+    '''
+    if request.method == 'GET':
+        data = request.values
+        try:
+            count = db_session.query(plantCalendarScheduling).count()
+            oclass = db_session.query(plantCalendarScheduling).all()
+            jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
+            return '{"total"' + ":" + str(count) + ',"rows"' + ":\n" + jsonoclass + "}"
+        except Exception as e:
+            logger.error(e)
+            insertSyslog("error", "工厂日历查询报错Error：" + str(e), current_user.Name)
+            return json.dumps("工厂日历查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 if __name__ == '__main__':
     app.run(debug=True)

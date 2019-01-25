@@ -1192,6 +1192,17 @@ class EquipmentManagementManua(Base):
     Author = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
     # 上传时间
     UploadTime = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+
+# 工厂日历
+class plantCalendarScheduling(Base):
+    __tablename__ = "plantCalendarMode"
+    # ID:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=True)
+    # 时间
+    start = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+    # 排产
+    title = Column(Unicode(30), primary_key=False, autoincrement=False, nullable=True)
+
 # 生成表单的执行语句
 Base.metadata.create_all(engine)
 
