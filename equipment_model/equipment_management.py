@@ -545,64 +545,6 @@ def EqpMaintainCreate():
             insertSyslog("error", "制定检修计划报错Error：" + str(e), current_user.Name)
             return json.dumps("制定检修计划报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
-# 操作手册
-@equip.route('/CreateOperationManual', methods=['POST', 'GET'])
-def CreateOperationManual():
-    if request.method == "GET":
-        data = request.values
-        try:
-            json_str = json.dumps(data.to_dict())
-            if len(json_str) > 2:
-                ManualName = data['ManualName']
-                ManualFile = data['ManualFile']
-                book = xlwt.Workbook(encoding='utf-8')
-                print(ManualFile)
-                bb = re.findall(r'.{7}', ManualFile)
-                print(bb)
-                aa = ""
-                [chr(i) for i in [int(b, 2) for b in ManualFile.split(' ')]]
-                for b in bb:
-                    aa += chr(int(b, 2))
-                print(aa)
-                output = StringIO.StringIO(aa)
-                book.save(output)
-                response = make_response(output.getvalue())
-                response.headers['Content-Type'] = 'application/vnd.ms-excel'
-                response.headers['Content-Disposition'] = 'attachment; filename=' + ManualName + '.doc'
-                output.closed
-                return response
-                ManualName = data['ManualName']
-                ManualFile = data['ManualFile']
-                print(ManualFile)
-                bb = re.findall(r'.{7}', ManualFile)
-                print(bb)
-                String = []
-                # String = ManualFile.split(" ")
-                aa = ""
-                for b in bb:
-                    aa += chr(int(b, 2))
-                print(aa)
-                # print(A.encode(encoding="utf-8").decode(encoding="utf-8"))
-                file = open('D:/Temp/' + ManualName + '.doc', 'wr')
-                file.write(aa.encode(encoding="utf-8").decode(encoding="utf-8"))
-                file.closed
-                # response = make_response(aa.getvalue())
-                # response.headers['Content-Type'] = 'application/vnd.ms-excel'
-                # response.headers['Content-Disposition'] = 'attachment; filename=' + ManualName + '.xls'
-                # Description = data['Description']
-                # Type = data['Type']
-                # UploadDate = datetime.datetime.now()
-                # db_session.add(OperationManual(ManualName = ManualName,ManualFile = ManualFile,Description = Description,Type = Type,UploadDate = UploadDate))
-                # db_session.commit()
-                return 'OK'
-        except Exception as e:
-            db_session.rollback()
-            print(e)
-            logger.error(e)
-            insertSyslog("error", "创建操作手册报错Error：" + str(e), current_user.Name)
-            return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
-                              ensure_ascii=False)
-
 def getMonthFirstDayAndLastDay(year, month):
     """
     :param year: 年份，默认是本年，可传int或str类型

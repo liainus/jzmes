@@ -7515,5 +7515,13 @@ def HomePageHistogram():
             insertSyslog("error", "产量对比报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
+
+@app.route('/plantCalendar')
+def plantCalendar():
+    '''
+    :return: 工厂日历页面跳转
+    '''
+    return render_template('plantCalendar.html')
+
 if __name__ == '__main__':
     app.run(debug=True)
