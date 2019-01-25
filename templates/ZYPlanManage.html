@@ -29,10 +29,6 @@
     </style>
     <script>
         $(function(){
-            //选项卡样式
-            $(".nav-tabs li").on("click",function(){
-                $(this).addClass("active").siblings().removeClass("active")
-            })
             //tab-pane 自适应页面高度
             var height = $(window).height();   // 浏览器的高度
             var menuHeight = $(".nav-tabs").height()
@@ -48,7 +44,7 @@
                 <li role="presentation"><a href="#Section2" role="tab" data-toggle="tab">草珊瑚含片</a></li>
             </ul>
             <div class="tab-content tabs">
-                <div role="tabpanel" class="tab-pane show active" id="Section1" style="height: 100%;">
+                <div role="tabpanel" class="tab-pane active" id="Section1" style="height: 100%;">
                     <iframe src="/ZYPlanGuid/jwxspflowtu" frameborder="0" border="no" height="100%" width="100%"></iframe>
                 </div>
                 <div role="tabpanel" class="tab-pane" id="Section2" style="height: 100%;">
