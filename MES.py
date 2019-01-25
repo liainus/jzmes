@@ -7552,7 +7552,7 @@ def plantCalendarSchedulingDelete():
     if request.method == 'POST':
         data = request.values
         return delete(plantCalendarScheduling, data)
-@equip.route('/systemManager_model/plantCalendarSchedulingSelect', methods=['GET', 'POST'])
+@app.route('/systemManager_model/plantCalendarSchedulingSelect', methods=['GET', 'POST'])
 def plantCalendarSchedulingSelect():
     '''
     工厂日历
