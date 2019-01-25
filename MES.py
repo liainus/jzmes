@@ -7563,8 +7563,7 @@ def plantCalendarSchedulingSelect():
         try:
             count = db_session.query(plantCalendarScheduling).count()
             oclass = db_session.query(plantCalendarScheduling).all()
-            jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
-            return '{"total"' + ":" + str(count) + ',"rows"' + ":\n" + jsonoclass + "}"
+            return json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             logger.error(e)
             insertSyslog("error", "工厂日历查询报错Error：" + str(e), current_user.Name)
