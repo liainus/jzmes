@@ -7,17 +7,15 @@
     <link rel="stylesheet" href="../static/css/fullcalendar.min.css">
     <script type="text/javascript" src="../static/js/moment.min.js"></script>
     <script type="text/javascript" src="../static/js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="../static/js/jquery-ui.min.js"></script>
     <script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootbox.min.js"></script>
     <script type="text/javascript" src="../static/js/fullcalendar.min.js"></script>
     <script type="text/javascript" src="../static/js/zh-cn.js"></script>
     <style>
         #external-events {
-            float: left;
-            width: 150px;
             padding: 0 10px;
-            border: 1px solid #ccc;
             background: #eee;
-            text-align: left;
           }
 
           #external-events h4 {
@@ -43,54 +41,162 @@
           }
     </style>
 </head>
-<body>
-    <div id='external-events'>
-        <h4>Draggable Events</h4>
-        <div class='fc-event'>My Event 1</div>
-        <div class='fc-event'>My Event 2</div>
-        <div class='fc-event'>My Event 3</div>
-        <div class='fc-event'>My Event 4</div>
-        <div class='fc-event'>My Event 5</div>
-        <p>
-            <input type='checkbox' id='drop-remove' />
-            <label for='drop-remove'>remove after drop</label>
-        </p>
+<body style="padding: 20px 0;">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-2 col-sm-2">
+                <div id='external-events'>
+                    <h4>可拖放的事件</h4>
+                    <div class='fc-event'>维保</div>
+                    <div class='fc-event'>休息</div>
+                    <div class='fc-event'>紧急</div>
+                    <p>
+                        <input type='checkbox' id='drop-remove' />
+                        <label for='drop-remove'>移出后删除</label>
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-10 col-sm-10">
+                <div id='calendar' style="width: 100%;"></div>
+            </div>
+        </div>
     </div>
-    <div id='calendar' style="width: 100%;"></div>
     <script>
         $(function(){
+            $('#external-events .fc-event').each(function() {
+                $(this).data('event', {
+                    title: $.trim($(this).text()), // use the element's text as the event title
+                    stick: true // maintain when user navigates (see docs on the renderEvent method)
+                });
+                // make the event draggable using jQuery UI
+                $(this).draggable({
+                    zIndex: 999,
+                    revert: true,      // will cause the event to go back to its
+                    revertDuration: 0  //  original position after the drag
+                });
+            });
             //日历排产
             $('#calendar').fullCalendar({
                 locale:'zh-cn',
+                editable: true, //支持拖动换位
                 weekNumbers: true, //是否在日历中显示第几周
-                eventLimit: true, // allow "more" link when too many events
-                events: [
-                    {
-                        start: '2019-01-23',
-                        color: '#f7d013'
-                    },
-                    {
-                        start: '2019-03-07',
-                        end: '2018-03-10',
-                        color:"#f7d013"
-                    },
-                    {
-                        start: '2019-03-09',
-                        color:"#00c3db"
-                    },
-                    {
-                        start: '2019-03-11',
-                        end: '2019-03-13',
-                        color: '#f7d013'
-                    },
-                    {
-                        start: '2019-03-12 10:30:00',
-                        end: '2019-03-12 12:30:00',
-                        color:"#e73b3b"
+                droppable: true, // 允许将事件放在日历上
+                //初始化数据
+                events:function(start,end,timezone,callback){
+                    var events = []
+                    $.ajax({
+                        url: '/systemManager_model/plantCalendarSchedulingSelect',
+                        type: 'get',
+                        success: function (data) {
+                            data = JSON.parse(data)
+                            var _id = ""
+                            var _title = ""
+                            var _start = ""
+                            var _color = ""
+                            for (var i=0;i<data.length;i++){
+                                _id = data[i].ID
+                                _title = data[i].title
+                                _start = data[i].start
+                                _color = data[i].color
+                                events.push({
+                                    ID:_id,
+                                    title:_title,
+                                    start:_start,
+                                    color:_color
+                                })
+                            }
+                            callback(events);
+                        },
+                        error: function () {
+                            bootbox.alert("请求失败")
+                        }
+                     });
+                 },
+                drop: function(date, allDay) {
+                    var color = ""
+                    if($(this).html() == "维保"){
+                        color = "#00c3db"
+                    }else if($(this).html() == "休息"){
+                        color = "#f7d013"
+                    }else{
+                        color = "#e73b3b"
                     }
-                ]
+                    var startDate = myformatter(date._d)
+                    if ($('#drop-remove').is(':checked')) {
+                      $(this).remove();
+                    }
+                    $.ajax({
+                        url: '/systemManager_model/plantCalendarSchedulingCreate',
+                        type: 'post',
+                        data:{
+                            title:$(this).html(),
+                            start:startDate,
+                            color:color
+                        },
+                        success: function (data) {
+                            //
+                        },
+                        error: function () {
+                            bootbox.alert("请求失败")
+                        }
+                     });
+                },
+                //拖拽换位事件
+                eventDrop:function(event,dayDelta,minuteDelta,allDay,revertFund){
+                    console.log(event)
+                    var startDate = myformatter(event.start._d)
+                    $.ajax({
+                        url: '/systemManager_model/plantCalendarSchedulingUpdate',
+                        type: 'post',
+                        data:{
+                            ID:event.ID,
+                            start:startDate
+                        },
+                        success: function (data) {
+                            console.log(data)
+                        },
+                        error: function () {
+                            bootbox.alert("修改时请求失败")
+                        }
+                     });
+                },
+                //删除事件
+                eventClick:function(event){
+                    var startDate = myformatter(event.start._d)
+                    bootbox.setLocale("zh_CN");
+                    bootbox.confirm({
+                        size: "small",
+                        message: "确认删除",
+                        callback: function(result){ /* result is a boolean; true = OK, false = Cancel*/
+                            $.ajax({
+                            url: '/systemManager_model/plantCalendarSchedulingDelete',
+                            type: 'post',
+                            data:{
+                                ID:event.ID
+                            },
+                            success: function (data) {
+                                console.log(data)
+                            },
+                            error: function () {
+                                $("#loadingModal").modal('hide');
+                                bootbox.alert("删除时请求失败")
+                            }
+                         });
+                        }
+                    })
+                }
             });
         })
+        //时间格式拼接
+        function myformatter(date){
+            var y = date.getFullYear();
+            var m = date.getMonth()+1;
+            var d = date.getDate();
+            return y + "-" + getNow(m) + "-" + getNow(d);
+        }
+        function getNow(s) {
+            return s < 10 ? '0' + s: s;
+        }
     </script>
 </body>
 </html>
