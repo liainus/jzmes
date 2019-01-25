@@ -134,16 +134,17 @@
                             color:color
                         },
                         success: function (data) {
-                            //
+                            if(data == "OK"){
+                                //$('#calendar').fullCalendar('refetchEvents');
+                            }
                         },
                         error: function () {
                             bootbox.alert("请求失败")
                         }
                      });
-                },
+                 },
                 //拖拽换位事件
                 eventDrop:function(event,dayDelta,minuteDelta,allDay,revertFund){
-                    console.log(event)
                     var startDate = myformatter(event.start._d)
                     $.ajax({
                         url: '/systemManager_model/plantCalendarSchedulingUpdate',
@@ -153,7 +154,9 @@
                             start:startDate
                         },
                         success: function (data) {
-                            console.log(data)
+                            if(data == "OK"){
+                                $('#calendar').fullCalendar('refetchEvents');
+                            }
                         },
                         error: function () {
                             bootbox.alert("修改时请求失败")
@@ -175,7 +178,9 @@
                                 ID:event.ID
                             },
                             success: function (data) {
-                                console.log(data)
+                                if(data == "OK"){
+                                    $('#calendar').fullCalendar('refetchEvents');
+                                }
                             },
                             error: function () {
                                 $("#loadingModal").modal('hide');
