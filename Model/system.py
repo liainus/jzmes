@@ -1199,9 +1199,11 @@ class plantCalendarScheduling(Base):
     # ID:
     ID = Column(Integer, primary_key=True, autoincrement=True, nullable=True)
     # 时间
-    start = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+    start = Column(Unicode(30), primary_key=False, autoincrement=False, nullable=True)
     # 排产
     title = Column(Unicode(30), primary_key=False, autoincrement=False, nullable=True)
+    #颜色
+    color = Column(Unicode(30), primary_key=False, autoincrement=False, nullable=True)
 
 # 生成表单的执行语句
 Base.metadata.create_all(engine)
