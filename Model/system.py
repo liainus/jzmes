@@ -1197,7 +1197,7 @@ class EquipmentManagementManua(Base):
 class plantCalendarScheduling(Base):
     __tablename__ = "plantCalendarMode"
     # ID:
-    id = Column(Integer, primary_key=True, autoincrement=True, nullable=True)
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=True)
     # 时间
     start = Column(Unicode(30), primary_key=False, autoincrement=False, nullable=True)
     # 排产
