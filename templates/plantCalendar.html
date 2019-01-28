@@ -47,9 +47,9 @@
             <div class="col-md-2 col-sm-2">
                 <div id='external-events'>
                     <h4>可拖放的事件</h4>
-                    <div class='fc-event'>维保</div>
-                    <div class='fc-event'>休息</div>
-                    <div class='fc-event'>紧急</div>
+                    <div class='fc-event' style="background: #00c3db;border: 1px solid #00c3db;">维保</div>
+                    <div class='fc-event' style="background: #f7d013;border: 1px solid #f7d013;">休息</div>
+                    <div class='fc-event' style="background: #e73b3b;border: 1px solid #e73b3b;">紧急</div>
                     <p>
                         <input type='checkbox' id='drop-remove' />
                         <label for='drop-remove'>移出后删除</label>
@@ -66,7 +66,7 @@
             $('#external-events .fc-event').each(function() {
                 $(this).data('event', {
                     title: $.trim($(this).text()), // use the element's text as the event title
-                    stick: true // maintain when user navigates (see docs on the renderEvent method)
+                    stick: false // 拖动后不固定显示在日历上
                 });
                 // make the event draggable using jQuery UI
                 $(this).draggable({
@@ -135,7 +135,7 @@
                         },
                         success: function (data) {
                             if(data == "OK"){
-                                //$('#calendar').fullCalendar('refetchEvents');
+                                $('#calendar').fullCalendar('refetchEvents');
                             }
                         },
                         error: function () {
@@ -171,22 +171,24 @@
                         size: "small",
                         message: "确认删除",
                         callback: function(result){ /* result is a boolean; true = OK, false = Cancel*/
-                            $.ajax({
-                            url: '/systemManager_model/plantCalendarSchedulingDelete',
-                            type: 'post',
-                            data:{
-                                ID:event.ID
-                            },
-                            success: function (data) {
-                                if(data == "OK"){
-                                    $('#calendar').fullCalendar('refetchEvents');
-                                }
-                            },
-                            error: function () {
-                                $("#loadingModal").modal('hide');
-                                bootbox.alert("删除时请求失败")
+                            if(result){
+                                $.ajax({
+                                    url: '/systemManager_model/plantCalendarSchedulingDelete',
+                                    type: 'post',
+                                    data:{
+                                        ID:event.ID
+                                    },
+                                    success: function (data) {
+                                        if(data == "OK"){
+                                            $('#calendar').fullCalendar('refetchEvents');
+                                        }
+                                    },
+                                    error: function () {
+                                        $("#loadingModal").modal('hide');
+                                        bootbox.alert("删除时请求失败")
+                                    }
+                                 });
                             }
-                         });
                         }
                     })
                 }

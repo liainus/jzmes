@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>组织机构管理</title>
     <link href="../static/css/base.css" rel="stylesheet">
+    <link href="../static/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
     <link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
     <link rel="stylesheet" href="../static/css/providers.css">
@@ -14,6 +15,7 @@
     <link href="../static/css/datagridpanel_customer.css" rel="stylesheet">
     <link href="../static/css/dialogpanel.css" type="text/css" rel="stylesheet">
     <link href="../static/css/datagrid_customer.css" type="text/css" rel="stylesheet">
+    <script type="text/javascript" src="../static/js/echarts-all.js"></script>
     <script type="text/javascript" src="../static/js/jquery.min.js"></script>
     <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
     <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
@@ -25,92 +27,94 @@
         });
     </script>
 </head>
-<body>
-    <div class="container">
-        <table id="OrganizationClassTable"></table>
-
-        <div id="OrganizationClassToolbar" style="padding:0 10px;">
-            名称:
-            <input type="text" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
-                placeholder="">
-            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="OrganizationClassToolbar.search();">查询</a>
-            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add'" onclick="OrganizationClassToolbar.create();">添加</a>
-            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit'" onclick="OrganizationClassToolbar.update();">修改</a>
-            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove'" onclick="OrganizationClassToolbar.delete();">删除</a>
-            <a href="#" class="easyui-linkbutton" id="reload" data-options="iconCls:'icon-reload'" onclick="OrganizationClassToolbar.refresh();">刷新</a>
+<body style="padding: 10px;">
+    <div class="easyui-layout" style="width:100%;height:600px;">
+        <div data-options="region:'center'" title="组织结构图">
+            <div id="example" style="width: 100%;height: 800px;"></div>
         </div>
+        <div data-options="region:'west'" title="组织结构表" style="width:50%;padding:10px">
+            <table id="OrganizationClassTable"></table>
+            <div id="OrganizationClassToolbar" style="padding:0 10px;">
+                名称:
+                <input type="text" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
+                    placeholder="">
+                <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="OrganizationClassToolbar.search();">查询</a>
+                <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add'" onclick="OrganizationClassToolbar.create();">添加</a>
+                <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit'" onclick="OrganizationClassToolbar.update();">修改</a>
+                <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove'" onclick="OrganizationClassToolbar.delete();">删除</a>
+                <a href="#" class="easyui-linkbutton" id="reload" data-options="iconCls:'icon-reload'" onclick="OrganizationClassToolbar.refresh();">刷新</a>
+            </div>
+            <div id="OrganizationClassDialog" class="easyui-dialog" style="width:520px;height:510px;padding:10px;"
+             data-options="closed:'true',buttons:'#OrganizationClassDialogButtons',modal:true">
+            <!-- <div id="OrganizationClassFormTitle" class="field-title">Title</div> -->
+                <form id="OrganizationClassForm" method="post" class="dialog-form">
+                    <table class="kv-table">
+                        <tbody>
+                            <tr>
+                                <td class="kv-label">Id</td>
+                                <td class="kv-content">
+                                    <input  name="iID" type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="kv-label">组织编码</td>
+                                <td class="kv-content">
+                                    <input  name="iOrganizationCode" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="kv-label">组织名称</td>
+                                <td class="kv-content">
+                                    <input  name="iOrganizationName" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="kv-label">顺序</td>
+                                <td class="kv-content">
+                                    <input  name="iOrganizationSeq" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="kv-label">归属机构</td>
+                                <td class="kv-content">
+                                    <select name="iParentNode" id="iParentNode" type="text" style="width:157px;" autocomplete="off" placeholder="">
+                                        <option value="">请选择</option>
+                                        {% for org in organizations %}
+                                            <option value="{{ org['id'] }}">{{ org['name'] }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="kv-label">说明</td>
+                                <td class="kv-content">
+                                    <input  name="iDescription" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="kv-label">创建时间</td>
+                                <td class="kv-content">
+                                    <input  name="iCreateDate" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div id="OrganizationClassDialogButtons" >
+                        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'"  onclick="OrganizationClassToolbar.save()" value="submit" >保存</a>
+                        <a href="#" class="easyui-linkbutton" onclick="$('#OrganizationClassDialog').dialog('close')">关闭</a>
+                    </div>
+                </form>
+            </div>
+            <!-- 右键菜单 -->
+            <div id="contextmenu" class="easyui-menu" style="width:120px;">
+                <div data-options="iconCls:'icon-reload'" onclick="OrganizationClassToolbar.refresh();">刷新</div>
+                <div data-options="iconCls:'icon-add'" onclick="OrganizationClassToolbar.create();">新建</div>
+                <div class="menu-sep"></div>
+
+                <div data-options="iconCls:'icon-edit'" onclick="OrganizationClassToolbar.update();">编辑</div>
+                <div data-options="iconCls:'icon-remove'" onclick="OrganizationClassToolbar.delete();">删除</div>
+            </div>
+		</div>
     </div>
-
-    <div id="OrganizationClassDialog" class="easyui-dialog" style="width:520px;height:510px;padding:10px;"
-     data-options="closed:'true',buttons:'#OrganizationClassDialogButtons',modal:true">
-    <!-- <div id="OrganizationClassFormTitle" class="field-title">Title</div> -->
-    <form id="OrganizationClassForm" method="post" class="dialog-form">
-        <table class="kv-table">
-            <tbody>
-                <tr>
-                    <td class="kv-label">Id</td>
-                    <td class="kv-content">
-                        <input  name="iID" type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="">
-                    </td>
-                </tr>
-                <tr>
-                    <td class="kv-label">组织编码</td>
-                    <td class="kv-content">
-                        <input  name="iOrganizationCode" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
-                    </td>
-                </tr>
-                <tr>
-                    <td class="kv-label">组织名称</td>
-                    <td class="kv-content">
-                        <input  name="iOrganizationName" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
-                    </td>
-                </tr>
-                <tr>
-                    <td class="kv-label">顺序</td>
-                    <td class="kv-content">
-                        <input  name="iOrganizationSeq" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
-                    </td>
-                </tr>
-                <tr>
-                    <td class="kv-label">归属机构</td>
-                    <td class="kv-content">
-                        <select name="iParentNode" id="iParentNode" type="text" style="width:157px;" autocomplete="off" placeholder="">
-                            <option value="">请选择</option>
-                            {% for org in organizations %}
-                                <option value="{{ org['id'] }}">{{ org['name'] }}</option>
-                            {% endfor %}
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="kv-label">说明</td>
-                    <td class="kv-content">
-                        <input  name="iDescription" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
-                    </td>
-                </tr>
-                <tr>
-                    <td class="kv-label">创建时间</td>
-                    <td class="kv-content">
-                        <input  name="iCreateDate" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        <div id="OrganizationClassDialogButtons" >
-            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'"  onclick="OrganizationClassToolbar.save()" value="submit" >保存</a>
-            <a href="#" class="easyui-linkbutton" onclick="$('#OrganizationClassDialog').dialog('close')">关闭</a>
-        </div>
-    </form>
-</div>
-<!-- 右键菜单 -->
-    <div id="contextmenu" class="easyui-menu" style="width:120px;">
-        <div data-options="iconCls:'icon-reload'" onclick="OrganizationClassToolbar.refresh();">刷新</div>
-        <div data-options="iconCls:'icon-add'" onclick="OrganizationClassToolbar.create();">新建</div>
-        <div class="menu-sep"></div>
-
-        <div data-options="iconCls:'icon-edit'" onclick="OrganizationClassToolbar.update();">编辑</div>
-        <div data-options="iconCls:'icon-remove'" onclick="OrganizationClassToolbar.delete();">删除</div>
-    </div>
-
 </body>
 </html>
