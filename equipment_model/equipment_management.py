@@ -116,8 +116,7 @@ def pequipmentCreate():
                         PUID=data['PUID'],
                         Desc=data['Desc']))
                 db_session.commit()
-                return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
-                              ensure_ascii=False)
+                return 'OK'
         except Exception as e:
             db_session.rollback()
             print(e)
@@ -140,8 +139,7 @@ def pequipmentUpdate():
                 oclass.PUID=data['PUID']
                 oclass.Desc=data['Desc']
                 db_session.commit()
-                return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
-                                  ensure_ascii=False)
+                return 'OK'
         except Exception as e:
             db_session.rollback()
             print(e)
@@ -213,9 +211,7 @@ def EquipmentsFind():
 def allEquipmentsUpdate():
     if request.method == 'POST':
         data = request.values
-        EquipmentIFS = Model.core.EquipmentWebIFS("EquipmentUpdate")
-        re = EquipmentIFS.allEquipmentsUpdate(data)
-        return re
+        return update(Equipment, data)
 
 
 # role删除数据，通过传入的json数据，json数据只包含主键，解析之后进行相应更新
@@ -224,9 +220,7 @@ def allEquipmentsUpdate():
 def allEquipmentsDelete():
     if request.method == 'POST':
         data = request.values
-        EquipmentIFS = Model.core.EquipmentWebIFS("EquipmentDelete")
-        re = EquipmentIFS.allEquipmentsDelete(data)
-        return re
+        return delete(Equipment, data)
 
 
 # role创建数据，通过传入的json数据，解析之后进行相应更新
@@ -234,9 +228,7 @@ def allEquipmentsDelete():
 def allEquipmentsCreate():
     if request.method == 'POST':
         data = request.values
-        EquipmentIFS = Model.core.EquipmentWebIFS("EquipmentCreate")
-        re = EquipmentIFS.allEquipmentsCreate(data)
-        return re
+        return insert(Equipment, data)
 
 
 @equip.route('/allEquipments/Search', methods=['POST', 'GET'])
