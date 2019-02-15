@@ -71,47 +71,44 @@
                 <tr>
                     <td class="kv-label">ID</td>
                     <td class="kv-content">
-                        <input name="iID" type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="">
+                        <input name="iID" id="iID" type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="">
                     </td>
                     <td class="kv-label">设备编码</td>
                     <td class="kv-content">
-                        <input  name="EQPCode" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                        <input id="EQPCode" name="EQPCode" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
                     </td>
                 </tr>
                 <tr>
                     <td class="kv-label">设备名称</td>
                     <td class="kv-content">
-                        <input  name="EQPName" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                        <input id="EQPName" name="EQPName" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
                     </td>
                     <td class="kv-label">供应商</td>
                     <td class="kv-content">
-                        <input  name="SupplierName" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                        <input id="SupplierName" name="SupplierName" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
                     </td>
                 </tr>
                 <tr>
                     <td class="kv-label">基本参数</td>
                     <td class="kv-content">
-                        <input  name="Equipment_Model" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                        <input id="Equipment_Model" name="Equipment_Model" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
                     </td>
                     <td class="kv-label">采购日期</td>
                     <td class="kv-content">
-                        <input  name="Procurement_Date" type="text" class="easyui-datetimebox" data-options="required:true,editable:false" autocomplete="off" placeholder=""  >
+                        <input name="Procurement_Date" id="Procurement_Date" type="text" class="easyui-datetimebox" data-options="required:true,editable:false" autocomplete="off" placeholder=""  >
                     </td>
                 </tr>
                 <tr>
                     <td class="kv-label">备注说明</td>
                     <td class="kv-content">
-                        <input  name="Desc" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                        <input name="Desc" id="Desc" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
                     </td>
                     <td class="kv-label">设备状态</td>
                     <td class="kv-content">
                         <select name="Equipment_State" id="Equipment_State" type="text" style="width:157px;" autocomplete="off" placeholder="">
                             <option value="">请选择</option>
-                            <option value="完好">完好</option>
-                            <option value="运行">运行</option>
-                            <option value="待修">待修</option>
-                            <option value="报废">报废</option>
-                            <option value="闲置">闲置</option>
+                            <option value="正常">正常</option>
+                            <option value="故障">故障</option>
                         </select>
                     </td>
                 </tr>
