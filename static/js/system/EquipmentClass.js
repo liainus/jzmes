@@ -250,7 +250,11 @@ $(function () {
                alert('Warning：设备名称不能为空！');
                return false;
             }
-
+            stmp = $('#Equipment_State').find("option:selected").val();
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：设备状态不能为空！');
+               return false;
+            }
             if (strID.length >= 1){
                 urlAddr = urlPrefix + 'Update'
                 hintinfo = "更新数据"
