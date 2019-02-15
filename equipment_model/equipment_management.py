@@ -1976,3 +1976,10 @@ def MaintenanceReminder():
             logger.error(e)
             insertSyslog("error", "设备保养周期提醒功能查询报错Error：" + str(e), current_user.Name)
             return json.dumps("设备保养周期提醒功能查询报错")
+
+#设备状态修改
+@equip.route('/equipment_model/Equipment_StateUpdate', methods=['GET', 'POST'])
+def Equipment_StateUpdate():
+    if request.method == 'POST':
+        data = request.values
+        return update(Equipment, data)
