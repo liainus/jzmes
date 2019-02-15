@@ -281,7 +281,6 @@ $(function () {
                     method: 'POST',
                     traditional: true,
                     data: entity,
-                    dataType: 'json',
                     cache: false,
                     error: function(data){
                            console.log(data.responseText)
