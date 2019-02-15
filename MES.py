@@ -4671,14 +4671,35 @@ def saveEQPCode():
                                                               ZYTask.BatchID == oclass.BatchID, ZYTask.BrandID == oclass.BrandID).all()
                 if confirm == "1":
                     if PUID == 2:
-                        for i in range(len(oclasstasks)):
-                            oclasstasks[i].EquipmentID = ""
-                            id = db_session.query(Equipment.ID).filter(Equipment.EQPCode == "R1101-"+ str(i+1)).first()
+                        EQPCo = "R1101-"
+                    elif PUID == 3:
+                        EQPCo = "MVR"
+                    elif PUID == 4:
+                        EQPCo = "PWGZ"
+                    elif PUID == 5:
+                        EQPCo = "CCG"
+                    elif PUID == 6:
+                        EQPCo = "DXNS-"
+                    for i in range(len(oclasstasks)):
+                        oclasstasks[i].EquipmentID = ""
+                        eqps = db_session.query(Equipment.ID).filter_by(PUID = PUID).all()
+                        id = db_session.query(Equipment.ID).filter(Equipment.EQPCode == EQPCo + str(i+1), Equipment.Equipment_State =="正常").first()
+                        if id != None:
+                            oclasstasks[i].EquipmentID = id[0]
+                        else:
+                            id = db_session.query(Equipment.ID).filter(
+                                Equipment.EQPCode == EQPCo + str((i + 1)%len(eqps)), Equipment.Equipment_State == "正常").first()
                             if id != None:
                                 oclasstasks[i].EquipmentID = id[0]
-                            oclasstasks[i].TaskStatus = Model.Global.TASKSTATUS.COMFIRM.value
-                    else:
-                        return "只能是煎煮段的可以一键分配！"
+                            else:
+                                id = db_session.query(Equipment.ID).filter(
+                                    Equipment.EQPCode == EQPCo + str((i + 1 + 1) % len(eqps)),
+                                    Equipment.Equipment_State == "正常").first()
+                                if id != None:
+                                    oclasstasks[i].EquipmentID = id[0]
+                                else:
+                                    return "没有此工艺段对应的设备号！"
+                        oclasstasks[i].TaskStatus = Model.Global.TASKSTATUS.COMFIRM.value
                 else:
                     oclass.EquipmentID = EQPCode
                     oclass.TaskStatus = Model.Global.TASKSTATUS.COMFIRM.value
