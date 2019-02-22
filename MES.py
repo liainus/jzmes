@@ -4615,11 +4615,9 @@ def taskConfirmSearch():
                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
                 data = request.values
-                ID = data['ID']
                 name = data['name']
-                planM = db_session.query(PlanManager).filter(PlanManager.ID == ID).first()
-                BrandID = planM.BrandID
-                BatchID = planM.BatchID
+                BrandID = data['BrandID']
+                BatchID = data['BatchID']
                 PUID = db_session.query(ProductUnitRoute.PUID).filter(ProductUnitRoute.PDUnitRouteName == name, ProductUnitRoute.ProductRuleID == BrandID).first()
                 total = db_session.query(ZYTask.ID).filter(ZYTask.PUID == PUID[0], ZYTask.BatchID == BatchID, ZYTask.BrandID == BrandID).count()
                 tasks = db_session.query(ZYTask).filter(ZYTask.PUID == PUID[0], ZYTask.BatchID == BatchID, ZYTask.BrandID == BrandID).all()[inipage:endpage]
@@ -4668,7 +4666,7 @@ def searchPnameEquipment():
             if len(jsonstr) > 10:
                 PName = data['PName']
                 ProductRuleID = data['BrandID']
-                oclass = session.query(Equipment).join(ProductUnitRoute, Equipment.PUID == ProductUnitRoute.PUID).filter(
+                oclass = db_session.query(Equipment).join(ProductUnitRoute, Equipment.PUID == ProductUnitRoute.PUID).filter(
                     ProductUnitRoute.PDUnitRouteName == PName, ProductUnitRoute.ProductRuleID == ProductRuleID).all()
                 return json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
@@ -4684,23 +4682,24 @@ def saveEQPCode():
         try:
             jsonstr = json.dumps(data.to_dict())
             if len(jsonstr) > 10:
-                EQPCode = data['EQPCode']
-                ID = data['ID']
                 confirm = data['confirm']
-                oclass = db_session.query(ZYTask).filter(ZYTask.ID == ID).first()
-                PUID = oclass.PUID
-                oclasstasks = db_session.query(ZYTask).filter(ZYTask.PUID == PUID,
-                                                              ZYTask.BatchID == oclass.BatchID, ZYTask.BrandID == oclass.BrandID).all()
                 if confirm == "1":
-                    if PUID == 2:
+                    BrandID = data['BrandID']
+                    PName = data['PName']
+                    BatchID = data['BatchID']
+                    oclasstasks = db_session.query(ZYTask).join(ProductUnitRoute,
+                                                                ZYTask.PUID == ProductUnitRoute.PUID).filter(
+                        ProductUnitRoute.PDUnitRouteName == PName,
+                        ZYTask.BatchID == BatchID, ZYTask.BrandID == BrandID).all()
+                    if PName == "煎煮段":
                         EQPCo = "R1101-"
-                    elif PUID == 3:
+                    elif PName == "浓缩段":
                         EQPCo = "MVR"
-                    elif PUID == 4:
+                    elif PName == "喷雾干燥段":
                         EQPCo = "PWGZ"
-                    elif PUID == 5:
+                    elif PName == "醇沉段":
                         EQPCo = "CCG"
-                    elif PUID == 6:
+                    elif PName == "单效浓缩段":
                         EQPCo = "DXNS-"
                     for i in range(len(oclasstasks)):
                         oclasstasks[i].EquipmentID = ""
@@ -4723,6 +4722,9 @@ def saveEQPCode():
                                     return "没有此工艺段对应的设备号！"
                         oclasstasks[i].TaskStatus = Model.Global.TASKSTATUS.COMFIRM.value
                 else:
+                    ID = data['ID']
+                    EQPCode = data['EQPCode']
+                    oclass = db_session.query(ZYTask).filter(ZYTask.ID == ID).first()
                     oclass.EquipmentID = EQPCode
                     oclass.TaskStatus = Model.Global.TASKSTATUS.COMFIRM.value
                 db_session.commit()
