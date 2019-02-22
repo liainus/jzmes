@@ -4654,6 +4654,28 @@ def searchAllEquipments():
             logger.error(e)
             insertSyslog("error", "任务确认工艺段下的所有设备报错Error：" + str(e), current_user.Name)
 
+
+@app.route('/processMonitorLine/searchPnameEquipment', methods=['POST', 'GET'])
+def searchPnameEquipment():
+    '''
+    #任务确认查询工艺段下的设备
+    :return: 设备信息
+    '''
+    if request.method == 'GET':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                PName = data['PName']
+                ProductRuleID = data['BrandID']
+                oclass = session.query(Equipment).join(ProductUnitRoute, Equipment.PUID == ProductUnitRoute.PUID).filter(
+                    ProductUnitRoute.PDUnitRouteName == PName, ProductUnitRoute.ProductRuleID == ProductRuleID).all()
+                return json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "任务确认工艺段下的所有设备报错Error：" + str(e), current_user.Name)
+
 #任务确认保存设备code
 @app.route('/processMonitorLine/saveEQPCode', methods=['POST', 'GET'])
 def saveEQPCode():
