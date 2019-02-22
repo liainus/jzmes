@@ -9,6 +9,7 @@
 	<link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
     <link rel="stylesheet" href="../static/css/bootstrap.min.css">
     <link rel="stylesheet" href="../static/css/bootstrap-table.min.css">
+    <link rel="stylesheet" href="../static/css/bootstrap-datetimepicker.min.css" crossorigin="anonymous">
     <link rel="stylesheet" href="../static/css/fullcalendar.min.css">
     <style>
         .content{
@@ -23,6 +24,7 @@
             background: #00c4dc;
             color: #fff;
             padding: 10px;
+            margin-bottom: 20px;
             border-radius: 3px;
             cursor: pointer;
         }
@@ -152,20 +154,58 @@
 {#                            </div>#}
 {#                        </div>#}
                     </div>
-                    <div id="compareBox" style="width: 100%;width: 100%; margin: 20px auto;padding: 10px;background: #fff;border-radius: 5px;">
+                    <div id="compareBox" style="width: 100%;width: 100%;margin-bottom:20px;padding: 10px;background: #fff;border-radius: 5px;">
                         <div id="CompareMain" style="width: 760px; height: 360px;"></div>
                     </div>
-                    <div class="col-md-12">
+                    <div class="col-md-12" style="margin-bottom: 20px;">
                         <div class="row">
                             <div class="col-md-8 col-sm-8" style="padding-left: 0">
-                                <div class="" style="background: #fff;height: 150px;margin-bottom: 15px;border-radius: 5px;">
-
+                                <div class="" style="background: #fff;height: 130px;margin-bottom: 15px;border-radius: 5px;padding: 15px 0;">
+                                    <div class="col-md-9">
+                                        <p style="margin-bottom: 40px;">生产数据</p>
+                                        <form class="form-inline">
+                                            <div class="form-group">
+                                                <div class="input-group input-append date col-sm-4">
+                                                    <input type="text" value="" id="start_date" class="form-control" readonly>
+                                                    <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+                                                </div>
+                                                <div class="input-group input-append date col-sm-4">
+                                                    <input type="text" value="" id="over_date" class="form-control" readonly>
+                                                    <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+                                                </div>
+                                                <button type="button" class="btn btn-primary">查询</button>
+                                                <button type="button" class="btn btn-primary">重置</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <p class="text-right" style="margin-top: 50px;color: #00bbee;font-size: 22px;">3544</p>
+                                    </div>
                                 </div>
-                                <div class="" style="background: #fff;height: 150px;border-radius: 5px;">
-
+                                <div class="" style="background: #fff;height: 130px;border-radius: 5px;padding: 15px 0;">
+                                    <div class="col-md-9">
+                                        <p style="margin-bottom: 40px;">生产成本</p>
+                                        <form class="form-inline">
+                                            <div class="form-group">
+                                                <div class="input-group input-append date col-sm-4">
+                                                    <input type="text" value="" id="" class="form-control" readonly>
+                                                    <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+                                                </div>
+                                                <div class="input-group input-append date col-sm-4">
+                                                    <input type="text" value="" id="" class="form-control" readonly>
+                                                    <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+                                                </div>
+                                                <button type="button" class="btn btn-primary">查询</button>
+                                                <button type="button" class="btn btn-primary">重置</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <p class="text-right" style="margin-top: 50px;color: #00bbee;font-size: 22px;">6345</p>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-md-4 col-sm-4" style="background:#fff;height: 315px;border-radius: 5px;">
+                            <div class="col-md-4 col-sm-4" style="background:#fff;height: 275px;border-radius: 5px;">
 
                             </div>
                         </div>
@@ -173,24 +213,26 @@
                 </div>
                 <div class="col-md-4 col-sm-12">
                     <div class="row">
-                        <div id='calendar' style="width: 100%;background: #fff;padding: 15px;border-radius: 5px;"></div>
-                        <div class="col-md-12 col-sm-12" style="background: #d2d2d2;margin-bottom: 20px;">
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <p class="bg-proceed text-center">维保</p>
-                                </div>
-                                <div class="col-md-4">
-                                    <p class="bg-backlog text-center">休息</p>
-                                </div>
-                                <div class="col-md-4">
-                                    <p class="bg-urgency text-center">紧急</p>
+                        <div class="col-md-12">
+                            <div id='calendar' style="width: 100%;background: #fff;padding: 15px;border-radius: 5px;"></div>
+                            <div class="col-md-12 col-sm-12" style="background: #d2d2d2;margin-bottom: 20px;">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <p class="bg-proceed text-center">维保</p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <p class="bg-backlog text-center">休息</p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <p class="bg-urgency text-center">紧急</p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="panel panel-widget" style="background: #e3e3e3;">
-                            <div class="panel-heading">制药计划待处理列表<a href="javascript:;" id="toZYPlanManage" style="float: right">去处理</a></div>
-                            <div class="panel-body">
-                                <table id="planTable" class="table table-striped"></table>
+                            <div class="panel panel-widget" style="background: #e3e3e3;">
+                                <div class="panel-heading">制药计划待处理列表<a href="javascript:;" id="toZYPlanManage" style="float: right">去处理</a></div>
+                                <div class="panel-body">
+                                    <table id="planTable" class="table table-striped"></table>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -204,6 +246,7 @@
     <script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="../static/js/bootstrap-table.min.js"></script>
     <script type="text/javascript" src="../static/js/bootstrap-table-zh-CN.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootstrap-datetimepicker.min.js"></script>
     <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
     <script type="text/javascript" src="../static/js/fullcalendar.min.js"></script>
     <script type="text/javascript" src="../static/js/zh-cn.js"></script>
@@ -286,6 +329,22 @@
                     }
                 });
             })
+
+            //时间选择控件
+            $('.date').datetimepicker({
+                autoclose: true, //选择完成自动关闭下拉框
+                minView: 2,
+                startView: 2, //从日开始选
+                format: 'yyyy-mm-dd',
+                todayBtn: true,
+            });
+            $("#start_date").val(myformatter(new Date()))
+            function myformatter(date){
+                var y = date.getFullYear();
+                var m = date.getMonth()+1;
+                var d = date.getDate();
+                return y+'-'+(m<10?('0'+m):m)+'-'+( d<10?('0'+d):d);
+            }
 
             //投入产出数据图表
             var myDiv = document.getElementById("CompareMain")
