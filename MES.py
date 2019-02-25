@@ -76,6 +76,10 @@ logger = MESLogger('../logs', 'log')
 
 pool = redis.ConnectionPool(host=constant.REDIS_HOST, password=constant.REDIS_PASSWORD)  # 实现一个连接池
 
+engine_ERP = create_engine(Model.Global.GLOBAL_DATABASE_CONNECT_STRING_ERP, deprecate_large_types=True)
+Session_ERP = sessionmaker(bind=engine_ERP)
+ERP_session = Session_ERP()
+
 # 存储
 def store(data):
     # 调用__enter__函数，该函数把返回值传给变量json_file
