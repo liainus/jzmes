@@ -179,7 +179,7 @@
             <div id="oneKeyDialog" class="easyui-dialog" style="width:360px;height:500px;padding:10px;"
                  data-options="closed:'true',buttons:'#oneKeyDialogButtons',modal:true">
                 <form id="oneKeyClassForm" method="post" class="dialog-form">
-                    <table class="easyui-datagrid" id="tabEQP" title="选择不需要分配的设备" style="width:100%;" data-options="
+                    <table class="easyui-datagrid" id="tabEQP" title="" style="width:100%;" data-options="
                         queryParams: {
                             PName: '',
                             BrandID:''
@@ -231,7 +231,7 @@
 
          CollectToolbar = {
             selectEq:function(){
-                $('#oneKeyDialog').dialog("open").dialog('setTitle', '任务分配');
+                $('#oneKeyDialog').dialog("open").dialog('setTitle', '选择不使用的设备，自动分配');
                 //获取工艺段的设备
                 $("#tabEQP").datagrid({
                     queryParams: {
