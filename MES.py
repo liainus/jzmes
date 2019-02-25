@@ -53,6 +53,7 @@ import numpy
 from sqlalchemy.exc import InvalidRequestError
 from equipment_model.equipment_management import equip
 from tools.common import logger,insertSyslog,insert,delete,update,select
+from erp_model.erp_model import ERP_model
 
 #flask_login的初始化
 login_manager = LoginManager()
@@ -67,6 +68,8 @@ login_manager.init_app(app)
 
 # 设备蓝图模块
 app.register_blueprint(equip)
+app.register_blueprint(ERP_model)
+
 
 
 engine = create_engine(Model.Global.GLOBAL_DATABASE_CONNECT_STRING, deprecate_large_types=True)
@@ -75,10 +78,6 @@ db_session = Session()
 logger = MESLogger('../logs', 'log')
 
 pool = redis.ConnectionPool(host=constant.REDIS_HOST, password=constant.REDIS_PASSWORD)  # 实现一个连接池
-
-engine_ERP = create_engine(Model.Global.GLOBAL_DATABASE_CONNECT_STRING_ERP, deprecate_large_types=True)
-Session_ERP = sessionmaker(bind=engine_ERP)
-ERP_session = Session_ERP()
 
 # 存储
 def store(data):
