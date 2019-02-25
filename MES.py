@@ -4671,7 +4671,7 @@ def searchPnameEquipment():
                 PName = data['PName']
                 ProductRuleID = data['BrandID']
                 oclass = db_session.query(Equipment).join(ProductUnitRoute, Equipment.PUID == ProductUnitRoute.PUID).filter(
-                    ProductUnitRoute.PDUnitRouteName == PName, ProductUnitRoute.ProductRuleID == ProductRuleID).all()
+                    ProductUnitRoute.PDUnitRouteName == PName, ProductUnitRoute.ProductRuleID == ProductRuleID, Equipment.PUID).all()
                 return json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
@@ -4691,6 +4691,9 @@ def saveEQPCode():
                     BrandID = data['BrandID']
                     PName = data['PName']
                     BatchID = data['BatchID']
+                    IDm = db_session.query(PlanManager.ID).filter(PlanManager.BatchID == BatchID,
+                                                                  PlanManager.BrandID == BrandID).first()
+                    na = PName
                     oclasstasks = db_session.query(ZYTask).join(ProductUnitRoute,
                                                                 ZYTask.PUID == ProductUnitRoute.PUID).filter(
                         ProductUnitRoute.PDUnitRouteName == PName,
@@ -4729,17 +4732,20 @@ def saveEQPCode():
                     ID = data['ID']
                     EQPCode = data['EQPCode']
                     oclass = db_session.query(ZYTask).filter(ZYTask.ID == ID).first()
+                    oclasstasks = db_session.query(ZYTask).filter(ZYTask.BatchID == oclass.BatchID, ZYTask.PUID == oclass.PUID, ZYTask.BrandID == oclass.BrandID).all()
                     oclass.EquipmentID = EQPCode
                     oclass.TaskStatus = Model.Global.TASKSTATUS.COMFIRM.value
+                    IDm = db_session.query(PlanManager.ID).filter(PlanManager.BatchID == oclass.BatchID,
+                                                                  PlanManager.BrandID == oclass.BrandID).first()
+                    nameP = db_session.query(ProductUnitRoute.PDUnitRouteName).filter(
+                        ProductUnitRoute.PUID == oclass.PUID).first()
+                    na = nameP[0]
                 db_session.commit()
-                IDm = db_session.query(PlanManager.ID).filter(PlanManager.BatchID == oclass.BatchID,PlanManager.BrandID == oclass.BrandID).first()
                 IDm = IDm[0]
                 flag = "TRUE"
                 for task in oclasstasks:
                     if(task.TaskStatus != Model.Global.TASKSTATUS.COMFIRM.value):
                         flag = "FALSE"
-                nameP = db_session.query(ProductUnitRoute.PDUnitRouteName).filter(ProductUnitRoute.PUID == PUID).first()
-                na = nameP[0]
                 if(flag == "TRUE"):
                     if(na == "备料段"):
                         aa = '（备料段）任务确认'
@@ -4765,7 +4771,7 @@ def saveEQPCode():
                     elif (na == "收膏段"):
                         hh = '（收膏段）任务确认'
                         updateNodeA(IDm, hh)
-                return "OK"
+                return 'OK'
         except Exception as e:
             db_session.rollback()
             print(e)
@@ -4776,8 +4782,11 @@ def updateNodeA(id,name):
     try:
         noclass = db_session.query(Model.node.NodeCollection).filter(Model.node.NodeCollection.name == name,
                                                                      Model.node.NodeCollection.oddNum == id).first()
-        noclass.status = Model.node.NodeStatus.PASSED.value
-        db_session.commit()
+        if noclass != None:
+            noclass.status = Model.node.NodeStatus.PASSED.value
+            db_session.commit()
+        else:
+            print("没有对应的NodeCollection节点！")
     except Exception as e:
         db_session.rollback()
         print(e)
