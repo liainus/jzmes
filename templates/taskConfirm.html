@@ -49,8 +49,6 @@
                         <th data-options="field:'EnterTime',width:150,align:'center'">录入时间</th>
                         <th data-options="field:'ActBeginTime',width:150,align:'center'">实际开始时间</th>
                         <th data-options="field:'ActEndTime',width:150,align:'center'">实际完成时间</th>
-                        <th data-options="field:'PlanSeq',width:150,align:'center'">顺序号</th>
-                        <th data-options="field:'PUID',width:120,align:'center'">工艺段</th>
                         <th data-options="field:'SetRepeatCount',width:100,align:'center'">设定重复次数</th>
                         <th data-options="field:'CurretnRepeatCount',width:100,align:'center'">当前重复次数</th>
                         <th data-options="field:'ActTank',width:100,align:'center'">实际罐号</th>
@@ -181,7 +179,7 @@
             <div id="oneKeyDialog" class="easyui-dialog" style="width:360px;height:500px;padding:10px;"
                  data-options="closed:'true',buttons:'#oneKeyDialogButtons',modal:true">
                 <form id="oneKeyClassForm" method="post" class="dialog-form">
-                    <table class="easyui-datagrid" id="tabEQP" title="选择不需要分配的设备" style="width:100%;" data-options="
+                    <table class="easyui-datagrid" id="tabEQP" title="" style="width:100%;" data-options="
                         queryParams: {
                             PName: '',
                             BrandID:''
@@ -233,7 +231,7 @@
 
          CollectToolbar = {
             selectEq:function(){
-                $('#oneKeyDialog').dialog("open").dialog('setTitle', '任务分配');
+                $('#oneKeyDialog').dialog("open").dialog('setTitle', '选择不使用的设备，自动分配');
                 //获取工艺段的设备
                 $("#tabEQP").datagrid({
                     queryParams: {
@@ -287,12 +285,12 @@
         }
         $('#tabTask').datagrid({
             queryParams: {
-                name:getUrlParam('name'),
+                name:getUrlParam('name') + "段",
                 BatchID: getUrlParam('BatchID'),
                 BrandID: getUrlParam('BrandID')
             },
             onClickRow:function(rowIndex,rowData){
-                if(rowData.LockStatus == 0){
+                if(rowData.LockStatus != 10){
                     $('#updataPlanDialog').dialog("open").dialog('setTitle', '修改设备编码');
                     $('#updataPlanDialog').window('center');
                     $('#ID').val(rowData.ID);
@@ -326,7 +324,7 @@
                          textField:'text'
                      })
                     })
-                }else if(rowData.LockStatus == 10){
+                }else{
                     $.messager.alert('提示', "任务已锁定，请解锁后操作", 'info');
                 }
 
