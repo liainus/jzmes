@@ -188,13 +188,14 @@
                         },
                         loadMsg:false,
                         rownumbers:true,
-                        singleSelect:true,
+                        singleSelect:false,
                         autoRowHeight:false,
                         pagination:false,
                         url:'/processMonitorLine/searchPnameEquipment',
                         method:'get'">
                         <thead>
                             <th field="ck" checkbox="true"></th>
+                            <th data-options="field:'EQPCode',width:100,align:'center'">设备编号</th>
                             <th data-options="field:'EQPName',width:100,align:'center'">设备名称</th>
                         </thead>
                     </table>
@@ -242,26 +243,37 @@
                 })
             },
              oneKeySave:function(){
+                var rows = $("#tabEQP").datagrid('getSelections'); //选择的设备
+                var a = "";
+                for (var i = 0; i < rows.length; i++) {
+                    var obj=createKeyIDObj(parseInt(rows[i].EQPCode));
+                    jsonarray.push(obj);
+                }
+                a = JSON.stringify(jsonarray);
+                console.log(a)
                 $.ajax({
-                    url: '/processMonitorLine/searchAllEquipments',
+                    url: '/processMonitorLine/saveEQPCode',
                     method: 'GET',
                     data: {
-                        confirm: 1,
-                        EQPCode:"",
-                        ID:currentRow.ID
+                        ID:"",
+                        UNEQPCode:a,
+                        confirm:"1",
+                        PName: getUrlParam('name') + "段",
+                        BrandID: getUrlParam('BrandID')
                     },
                     success: function (data) {
                         if (data == "OK") {
                             $.messager.show({
                                 title: '提示',
                                 timeout: 1000,
-                                msg: '操作成功！',
+                                msg: '分配成功！',
                                 style: {
                                     right: '',
                                     top: document.body.scrollTop + document.documentElement.scrollTop,
                                     bottom: ''
                                 }
                             });
+                            $("#oneKeyDialog").dialog('close');
                             $("#tabTask").datagrid('load')
                         }else{
                             $.messager.alert('提示', data, 'info');
@@ -275,8 +287,9 @@
         }
         $('#tabTask').datagrid({
             queryParams: {
-                ID:getUrlParam('ID'),
-                name:getUrlParam('name')
+                name:getUrlParam('name'),
+                BatchID: getUrlParam('BatchID'),
+                BrandID: getUrlParam('BrandID')
             },
             onClickRow:function(rowIndex,rowData){
                 if(rowData.LockStatus == 0){
@@ -362,6 +375,11 @@
                     alert("请求错误，请刷新后重试！")
                 }
             })
+        }
+        function createKeyIDObj(keyID){
+            return {
+                EQPCode:keyID
+            }
         }
         function formatterStatus(value, row, index){
             if (value == 10){
