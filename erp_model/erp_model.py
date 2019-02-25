@@ -40,5 +40,5 @@ engine_ERP = create_engine(Model.Global.GLOBAL_DATABASE_CONNECT_STRING_ERP, depr
 Session_ERP = sessionmaker(bind=engine_ERP)
 ERP_session = Session_ERP()
 
-equip = Blueprint('equip', __name__)
+ERP_model = Blueprint('ERP_model', __name__)
 
