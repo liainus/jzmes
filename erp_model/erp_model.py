@@ -51,7 +51,7 @@ def ERP_productplan():
     return render_template('ERP_productplan.html')
 
 @ERP.route('/erp_model/ERP_productinfoSearch', methods=['POST', 'GET'])
-def ERP_productinfoSynchro():
+def ERP_productinfoSearch():
     '''
     ERP产品物料表查询
     :return:
@@ -101,7 +101,7 @@ def productinfoSearch():
             insertSyslog("error", "ERP产品物料表查询报错Error：" + str(e), current_user.Name)
 
 @ERP.route('/erp_model/ERP_productplanSearch', methods=['POST', 'GET'])
-def ERP_productinfoSynchro():
+def ERP_productplanSearch():
     '''
     ERP产品物料表查询
     :return:
@@ -126,7 +126,7 @@ def ERP_productinfoSynchro():
             insertSyslog("error", "ERP产品物料表查询报错Error：" + str(e), current_user.Name)
 
 @ERP.route('/erp_model/productplanSearch', methods=['POST', 'GET'])
-def productinfoSearch():
+def productplanSearch():
     '''
     ERP计划表查询
     :return:
@@ -159,21 +159,19 @@ def ERP_productinfoSynchro():
     if request.method == 'GET':
         data = request.values  # 返回请求中的参数和form
         try:
-            jsonstr = json.dumps(data.to_dict())
-            if len(jsonstr) > 10:
-                product_infos = ERP_session.query(product_info).all()
-                sql = "TRUNCATE TABLE product_info"
-                db_session.execute(sql)
-                db_session.commit()
-                for p in product_infos:
-                    e = product_infoERP()
-                    e.product_code = p.product_code
-                    e.product_name = p.product_name
-                    e.product_type = p.product_type
-                    e.product_unit = p.product_unit
-                    db_session.add(e)
-                db_session.commit()
-                return 'OK'
+            product_infos = ERP_session.query(product_info).all()
+            sql = "TRUNCATE TABLE product_info"
+            db_session.execute(sql)
+            db_session.commit()
+            for p in product_infos:
+                e = product_infoERP()
+                e.product_code = p.product_code
+                e.product_name = p.product_name
+                e.product_type = p.product_type
+                e.product_unit = p.product_unit
+                db_session.add(e)
+            db_session.commit()
+            return 'OK'
         except Exception as e:
             print(e)
             logger.error(e)
@@ -188,23 +186,22 @@ def ERP_productplanSynchro():
     if request.method == 'GET':
         data = request.values  # 返回请求中的参数和form
         try:
-            jsonstr = json.dumps(data.to_dict())
-            if len(jsonstr) > 10:
-                product_plans = ERP_session.query(product_plan).all()
-                sql = "TRUNCATE TABLE product_plan"
-                db_session.execute(sql)
-                db_session.commit()
-                for p in product_plans:
-                    e = product_plan()
-                    e.product_code = p.product_code
-                    e.plan_quantity = p.plan_quantity
-                    e.product_type = p.product_type
-                    e.create_time = p.create_time
-                    e.transform_time = p.transform_time
-                    e.transform_flag = p.transform_flag
-                    db_session.add(e)
-                db_session.commit()
-                return 'OK'
+            product_plans = ERP_session.query(product_plan).all()
+            sql = "TRUNCATE TABLE product_plan"
+            db_session.execute(sql)
+            db_session.commit()
+            for p in product_plans:
+                e = product_plan()
+                e.product_code = p.product_code
+                e.product_name = p.product_name
+                e.plan_quantity = p.plan_quantity
+                e.plan_type = p.plan_type
+                e.create_time = p.create_time
+                e.transform_time = p.transform_time
+                e.transform_flag = p.transform_flag
+                db_session.add(e)
+            db_session.commit()
+            return 'OK'
         except Exception as e:
             print(e)
             logger.error(e)

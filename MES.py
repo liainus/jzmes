@@ -95,8 +95,6 @@ def load():
 
 
 '''登录'''
-
-
 @login_manager.user_loader
 def load_user(user_id):
     return db_session.query(User).filter_by(id=int(user_id)).first()
