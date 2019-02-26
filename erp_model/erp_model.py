@@ -50,10 +50,10 @@ def ERP_productinfo():
 def ERP_productplan():
     return render_template('ERP_productplan.html')
 
-@ERP.route('/erp_model/ERP_productinfoSynchro', methods=['POST', 'GET'])
+@ERP.route('/erp_model/ERP_productinfoSearch', methods=['POST', 'GET'])
 def ERP_productinfoSynchro():
     '''
-    同步ERP产品物料表
+    ERP产品物料表查询
     :return:
     '''
     if request.method == 'GET':
@@ -65,7 +65,102 @@ def ERP_productinfoSynchro():
                 rowsnumber = int(data['rows'])  # 行数
                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+                total = ERP_session.query(product_info).count()
+                oclass = ERP_session.query(product_info).all()[inipage:endpage]
+                jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
+                jsonpequipments = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
+                return jsonpequipments
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "ERP产品物料表查询报错Error：" + str(e), current_user.Name)
 
+@ERP.route('/erp_model/productinfoSearch', methods=['POST', 'GET'])
+def productinfoSearch():
+    '''
+    ERP产品物料表查询
+    :return:
+    '''
+    if request.method == 'GET':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                pages = int(data['page'])  # 页数
+                rowsnumber = int(data['rows'])  # 行数
+                inipage = (pages - 1) * rowsnumber + 0  # 起始页
+                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+                total = db_session.query(product_info).count()
+                oclass = db_session.query(product_info).all()[inipage:endpage]
+                jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
+                jsonpequipments = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
+                return jsonpequipments
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "ERP产品物料表查询报错Error：" + str(e), current_user.Name)
+
+@ERP.route('/erp_model/ERP_productplanSearch', methods=['POST', 'GET'])
+def ERP_productinfoSynchro():
+    '''
+    ERP产品物料表查询
+    :return:
+    '''
+    if request.method == 'GET':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                pages = int(data['page'])  # 页数
+                rowsnumber = int(data['rows'])  # 行数
+                inipage = (pages - 1) * rowsnumber + 0  # 起始页
+                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+                total = ERP_session.query(product_plan).count()
+                oclass = ERP_session.query(product_plan).all()[inipage:endpage]
+                jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
+                jsonpequipments = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
+                return jsonpequipments
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "ERP产品物料表查询报错Error：" + str(e), current_user.Name)
+
+@ERP.route('/erp_model/productplanSearch', methods=['POST', 'GET'])
+def productinfoSearch():
+    '''
+    ERP计划表查询
+    :return:
+    '''
+    if request.method == 'GET':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                pages = int(data['page'])  # 页数
+                rowsnumber = int(data['rows'])  # 行数
+                inipage = (pages - 1) * rowsnumber + 0  # 起始页
+                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+                total = db_session.query(product_plan).count()
+                oclass = db_session.query(product_plan).all()[inipage:endpage]
+                jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
+                jsonpequipments = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
+                return jsonpequipments
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "ERP产品物料表查询报错Error：" + str(e), current_user.Name)
+
+@ERP.route('/erp_model/ERP_productinfoSynchro', methods=['POST', 'GET'])
+def ERP_productinfoSynchro():
+    '''
+    同步ERP产品物料表
+    :return:
+    '''
+    if request.method == 'GET':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
                 product_infos = ERP_session.query(product_info).all()
                 sql = "TRUNCATE TABLE product_info"
                 db_session.execute(sql)
@@ -78,11 +173,7 @@ def ERP_productinfoSynchro():
                     e.product_unit = p.product_unit
                     db_session.add(e)
                 db_session.commit()
-                total = db_session.query(product_info).count()
-                oclass = db_session.query(product_info).all()[inipage:endpage]
-                jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
-                jsonpequipments = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
-                return jsonpequipments
+                return 'OK'
         except Exception as e:
             print(e)
             logger.error(e)
@@ -99,11 +190,6 @@ def ERP_productplanSynchro():
         try:
             jsonstr = json.dumps(data.to_dict())
             if len(jsonstr) > 10:
-                pages = int(data['page'])  # 页数
-                rowsnumber = int(data['rows'])  # 行数
-                inipage = (pages - 1) * rowsnumber + 0  # 起始页
-                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
-
                 product_plans = ERP_session.query(product_plan).all()
                 sql = "TRUNCATE TABLE product_plan"
                 db_session.execute(sql)
@@ -118,11 +204,7 @@ def ERP_productplanSynchro():
                     e.transform_flag = p.transform_flag
                     db_session.add(e)
                 db_session.commit()
-                total = db_session.query(product_info).count()
-                oclass = db_session.query(product_info).all()[inipage:endpage]
-                jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
-                jsonpequipments = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
-                return jsonpequipments
+                return 'OK'
         except Exception as e:
             print(e)
             logger.error(e)
