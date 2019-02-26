@@ -18,7 +18,7 @@
 </head>
 <body>
     <div style="padding: 10px;">
-        <div class="easyui-layout" style="width:100%;height:350px;">
+        <div class="easyui-layout" style="width:100%;height:550px;">
             <div data-options="region:'east',split:true" title="系统物料列表" style="width:45%;">
                 <table class="easyui-datagrid" id="selfTab" title="" style="width:100%;" data-options="
                     loadMsg:false,
@@ -27,13 +27,14 @@
                     autoRowHeight:false,
                     pagination:true,
                     pageSize:10,
-                    url:'/erp_model/productinfoSearch',
+                    url:'/erp_model/productplanSearch',
                     method:'get'">
                     <thead>
                         <tr>
                             <th data-options="field:'product_code',width:150,align:'center'">计划单号</th>
+                            <th data-options="field:'product_name',width:100,align:'center'">计划名称</th>
                             <th data-options="field:'plan_quantity',width:100,align:'center'">计划重量</th>
-                            <th data-options="field:'product_type',width:100,align:'center'">计划类型</th>
+                            <th data-options="field:'plan_type',width:100,align:'center'">计划类型</th>
                             <th data-options="field:'create_time',width:120,align:'center'">创建时间</th>
                             <th data-options="field:'transform_time',width:120,align:'center'">更换时间</th>
                             <th data-options="field:'transform_flag',width:100,align:'center'">更换标志</th>
@@ -49,14 +50,17 @@
                     autoRowHeight:false,
                     pagination:true,
                     pageSize:10,
-                    url:'/erp_model/ERP_productinfoSearch',
+                    url:'/erp_model/ERP_productplanSearch',
                     method:'get'">
                     <thead>
                         <tr>
                             <th data-options="field:'product_code',width:150,align:'center'">计划单号</th>
                             <th data-options="field:'product_name',width:100,align:'center'">计划名称</th>
-                            <th data-options="field:'product_unit',width:100,align:'center'">计划单位</th>
-                            <th data-options="field:'product_type',width:120,align:'center'">计划类型</th>
+                            <th data-options="field:'plan_quantity',width:100,align:'center'">计划重量</th>
+                            <th data-options="field:'plan_type',width:100,align:'center'">计划类型</th>
+                            <th data-options="field:'create_time',width:120,align:'center'">创建时间</th>
+                            <th data-options="field:'transform_time',width:120,align:'center'">更换时间</th>
+                            <th data-options="field:'transform_flag',width:100,align:'center'">更换标志</th>
                         </tr>
                     </thead>
                 </table>
@@ -70,7 +74,7 @@
         $(function(){
             $("#synchronization").on('click',function(){
                 $.ajax({
-                    url: '/erp_model/ERP_productinfoSynchro',
+                    url: '/erp_model/ERP_productplanSynchro',
                     method: 'GET',
                     success: function (data) {
                         if (data == "OK") {
