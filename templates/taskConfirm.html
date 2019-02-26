@@ -239,6 +239,8 @@
                         BrandID: getUrlParam('BrandID')
                     }
                 })
+                var dataLenth = $("#tabEQP").datagrid("getData")
+                console.log(dataLenth)
             },
              oneKeySave:function(){
                 var rows = $("#tabEQP").datagrid('getSelections'); //选择的设备
@@ -248,7 +250,6 @@
                     jsonarray.push(obj);
                 }
                 a = JSON.stringify(jsonarray);
-                console.log(a)
                 $.ajax({
                     url: '/processMonitorLine/saveEQPCode',
                     method: 'GET',
