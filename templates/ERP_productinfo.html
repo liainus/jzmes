@@ -18,51 +18,43 @@
 </head>
 <body>
     <div style="padding: 10px;">
-        <div class="easyui-layout" style="width:100%;height:550px;">
-            <div data-options="region:'east',split:true" title="系统物料列表" style="width:45%;">
-                <table class="easyui-datagrid" id="selfTab" title="" style="width:100%;" data-options="
-                    loadMsg:false,
-                    rownumbers:true,
-                    singleSelect:true,
-                    autoRowHeight:false,
-                    pagination:true,
-                    pageSize:10,
-                    url:'/erp_model/productinfoSearch',
-                    method:'get'">
-                    <thead>
-                        <tr>
-                            <th data-options="field:'product_code',width:150,align:'center'">计划单号</th>
-                            <th data-options="field:'product_name',width:100,align:'center'">计划名称</th>
-                            <th data-options="field:'product_unit',width:100,align:'center'">计划单位</th>
-                            <th data-options="field:'product_type',width:120,align:'center'">计划类型</th>
-                        </tr>
-                    </thead>
-                </table>
-            </div>
-            <div data-options="region:'west',split:true" title="ERP物料列表" style="width:45%;">
-                <table class="easyui-datagrid" id="ERPTab" title="" style="width:100%;" data-options="
-                    loadMsg:false,
-                    rownumbers:true,
-                    singleSelect:true,
-                    autoRowHeight:false,
-                    pagination:true,
-                    pageSize:10,
-                    url:'/erp_model/ERP_productinfoSearch',
-                    method:'get'">
-                    <thead>
-                        <tr>
-                            <th data-options="field:'product_code',width:150,align:'center'">计划单号</th>
-                            <th data-options="field:'product_name',width:100,align:'center'">计划名称</th>
-                            <th data-options="field:'product_unit',width:100,align:'center'">计划单位</th>
-                            <th data-options="field:'product_type',width:120,align:'center'">计划类型</th>
-                        </tr>
-                    </thead>
-                </table>
-            </div>
-            <div data-options="region:'center',title:'',iconCls:'icon-redo'" style="text-align: center">
-                <a href="#" class="easyui-linkbutton" id="synchronization" data-options="iconCls:'icon-redo'" style="margin-top: 20px">同步</a>
-            </div>
-        </div>
+        <table class="easyui-datagrid" id="ERPTab" title="ERP物料列表" style="width:100%;" data-options="
+            loadMsg:false,
+            rownumbers:true,
+            singleSelect:true,
+            autoRowHeight:false,
+            pagination:true,
+            pageSize:10,
+            url:'/erp_model/ERP_productinfoSearch',
+            method:'get'">
+            <thead>
+                <tr>
+                    <th data-options="field:'product_code',width:200,align:'center'">计划单号</th>
+                    <th data-options="field:'product_name',width:250,align:'center'">计划名称</th>
+                    <th data-options="field:'product_unit',width:200,align:'center'">计划单位</th>
+                    <th data-options="field:'product_type',width:200,align:'center'">计划类型</th>
+                </tr>
+            </thead>
+        </table>
+        <a href="#" class="easyui-linkbutton" id="synchronization" data-options="iconCls:'icon-redo'" style="margin-top: 20px">同步</a>
+        <table class="easyui-datagrid" id="selfTab" title="系统物料列表" style="width:100%;" data-options="
+            loadMsg:false,
+            rownumbers:true,
+            singleSelect:true,
+            autoRowHeight:false,
+            pagination:true,
+            pageSize:10,
+            url:'/erp_model/productinfoSearch',
+            method:'get'">
+            <thead>
+                <tr>
+                    <th data-options="field:'product_code',width:200,align:'center'">计划单号</th>
+                    <th data-options="field:'product_name',width:250,align:'center'">计划名称</th>
+                    <th data-options="field:'product_unit',width:200,align:'center'">计划单位</th>
+                    <th data-options="field:'product_type',width:200,align:'center'">计划类型</th>
+                </tr>
+            </thead>
+        </table>
     </div>
     <script>
         $(function(){
