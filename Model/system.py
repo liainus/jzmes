@@ -1205,6 +1205,38 @@ class plantCalendarScheduling(Base):
     #颜色
     color = Column(Unicode(30), primary_key=False, autoincrement=False, nullable=True)
 
+# ERPProductInfo
+class ERPProductInfo(Base):
+    __tablename__ = "ERPProductInfo"
+    # ID:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=True)
+    # 计划单号
+    product_code = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+    # 计划名称
+    product_name = Column(Unicode(100), primary_key=False, autoincrement=False, nullable=True)
+    # 计划单位
+    product_unit = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    # 计划类型
+    product_type = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+# ERPProductPlan
+class ERPProductPlan(Base):
+    __tablename__ = "ERPProductPlan"
+    # ID:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=True)
+    # 计划单号
+    product_code = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+    # 计划重量
+    plan_quantity = Column(Unicode(100), primary_key=False, autoincrement=False, nullable=True)
+    # 计划类型
+    product_type = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    # 创建时间
+    create_time = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+    # 更换时间
+    transform_time = Column(Unicode(100), primary_key=False, autoincrement=False, nullable=True)
+    # 更换标志
+    transform_flag = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
 # 生成表单的执行语句
 Base.metadata.create_all(engine)
 

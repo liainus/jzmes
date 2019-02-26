@@ -40,5 +40,20 @@ engine_ERP = create_engine(Model.Global.GLOBAL_DATABASE_CONNECT_STRING_ERP, depr
 Session_ERP = sessionmaker(bind=engine_ERP)
 ERP_session = Session_ERP()
 
-ERP_model = Blueprint('ERP_model', __name__)
+ERP = Blueprint('ERP', __name__)
+
+# 设备建模
+@ERP.route('/ERP_productinfo')
+def ERP_productinfo():
+    # ID = db_session.query(ProcessUnit.ID, ProcessUnit.PUName).all()
+    # data = []
+    # for tu in ID:
+    #     li = list(tu)
+    #     id = li[0]
+    #     name = li[1]
+    #     processUnit_id = {'ID': id, 'text': name}
+    #     data.append(processUnit_id)
+    return render_template('ERP_productinfo.html')
+
+
 

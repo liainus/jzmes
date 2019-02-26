@@ -18,7 +18,7 @@ import xlrd
 from flask import Flask, jsonify, redirect, url_for
 from flask import render_template, request, make_response
 from flask import session
-from sqlalchemy import create_engine, Column, ForeignKey, Table, Integer, String, and_, or_, desc,extract
+from sqlalchemy import create_engine, Column, ForeignKey, Table, Integer, String, and_, or_, desc, extract
 from sqlalchemy import func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session, relationship, sessionmaker
@@ -32,17 +32,19 @@ from Model.core import Enterprise, Area, Factory, ProductLine, ProcessUnit, Equi
     QualityControlTree
 from Model.system import Role, Organization, User, Menu, Role_Menu, BatchMaterielBalance, OperationManual, NewReadyWork, \
     EquipmentWork, EletronicBatchDataStore, SpareStock, EquipmentMaintenanceKnowledge, EquipmentMaintain, \
-    SchedulePlan, SparePartInStockManagement, SparePartStock, Area, Instruments, MaintenanceStatus, MaintenanceCycle, plantCalendarScheduling
+    SchedulePlan, SparePartInStockManagement, SparePartStock, Area, Instruments, MaintenanceStatus, MaintenanceCycle, \
+    plantCalendarScheduling
 from tools.MESLogger import MESLogger
 from Model.core import SysLog
 from sqlalchemy import func
 import string
 import re
 from collections import Counter
-from Model.system import User, EquipmentRunPUID, ElectronicBatch, EquipmentRunRecord, QualityControl, PackMaterial, TypeCollection, OperationProcedure, EquipmentMaintenanceStore
+from Model.system import User, EquipmentRunPUID, ElectronicBatch, EquipmentRunRecord, QualityControl, PackMaterial, \
+    TypeCollection, OperationProcedure, EquipmentMaintenanceStore
 from Model.Global import WeightUnit
 from Model.control import ctrlPlan
-from flask_login import login_required, logout_user, login_user,current_user,LoginManager
+from flask_login import login_required, logout_user, login_user, current_user, LoginManager
 import socket
 from opcua import Client
 from Model.dynamic_model import make_dynamic_classes
@@ -52,25 +54,22 @@ from constant import constant
 import numpy
 from sqlalchemy.exc import InvalidRequestError
 from equipment_model.equipment_management import equip
-from tools.common import logger,insertSyslog,insert,delete,update,select
-from erp_model.erp_model import ERP_model
+from tools.common import logger, insertSyslog, insert, delete, update, select
+from erp_model.erp_model import ERP
 
-#flask_login的初始化
+# flask_login的初始化
 login_manager = LoginManager()
 login_manager.db_session_protection = 'strong'
-login_manager.login_view ='login'
+login_manager.login_view = 'login'
 
 # 获取本文件名实例化一个flask对象
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'qeqhqiqd131'
 login_manager.init_app(app)
 
-
 # 设备蓝图模块
 app.register_blueprint(equip)
-app.register_blueprint(ERP_model)
-
-
+app.register_blueprint(ERP)
 
 engine = create_engine(Model.Global.GLOBAL_DATABASE_CONNECT_STRING, deprecate_large_types=True)
 Session = sessionmaker(bind=engine)
@@ -78,6 +77,7 @@ db_session = Session()
 logger = MESLogger('../logs', 'log')
 
 pool = redis.ConnectionPool(host=constant.REDIS_HOST, password=constant.REDIS_PASSWORD)  # 实现一个连接池
+
 
 # 存储
 def store(data):
@@ -95,9 +95,12 @@ def load():
 
 
 '''登录'''
+
+
 @login_manager.user_loader
 def load_user(user_id):
     return db_session.query(User).filter_by(id=int(user_id)).first()
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -108,7 +111,7 @@ def login():
             data = request.values
             work_number = data['WorkNumber']
             password = data['password']
-                # 验证账户与密码
+            # 验证账户与密码
             user = db_session.query(User).filter_by(WorkNumber=work_number).first()
             if user and user.confirm_password(password):
                 login_user(user)  # login_user(user)调用user_loader()把用户设置到db_session中
@@ -118,7 +121,8 @@ def login():
                 for role in roles:
                     for index in role:
                         role_id = db_session.query(Role.ID).filter_by(RoleName=index).first()
-                        menu = db_session.query(Menu.ModuleCode).join(Role_Menu, isouter=True).filter_by(Role_ID=role_id).all()
+                        menu = db_session.query(Menu.ModuleCode).join(Role_Menu, isouter=True).filter_by(
+                            Role_ID=role_id).all()
                         for li in menu:
                             menus.append(li[0])
                 session['menus'] = menus
@@ -143,11 +147,11 @@ def logout():
     return redirect(url_for('login'))
 
 
-
 # 系统日志
 @app.route('/syslogs')
 def syslogs():
     return render_template('syslogs.html')
+
 
 # 日志查询
 @app.route('/syslogs/findByDate')
@@ -169,11 +173,13 @@ def syslogsFindByDate():
                 elif startTime != "" and endTime == "":
                     nowTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                     total = db_session.query(SysLog).filter(SysLog.OperationDate.between(startTime, nowTime)).count()
-                    syslogs = db_session.query(SysLog).filter(SysLog.OperationDate.between(startTime, nowTime)).order_by(desc("OperationDate"))[
+                    syslogs = db_session.query(SysLog).filter(
+                        SysLog.OperationDate.between(startTime, nowTime)).order_by(desc("OperationDate"))[
                               inipage:endpage]
                 else:
                     total = db_session.query(SysLog).filter(SysLog.OperationDate.between(startTime, endTime)).count()
-                    syslogs = db_session.query(SysLog).filter(SysLog.OperationDate.between(startTime, endTime)).order_by(desc("OperationDate"))[
+                    syslogs = db_session.query(SysLog).filter(
+                        SysLog.OperationDate.between(startTime, endTime)).order_by(desc("OperationDate"))[
                               inipage:endpage]
                 jsonsyslogs = json.dumps(syslogs, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonsyslogs = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonsyslogs + "}"
@@ -183,24 +189,27 @@ def syslogsFindByDate():
             logger.error(e)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
-#插入日志OperationType OperationContent OperationDate UserName ComputerName IP
+
+# 插入日志OperationType OperationContent OperationDate UserName ComputerName IP
 def insertSyslog(operationType, operationContent, userName):
-        try:
-            if operationType == None: operationType = ""
-            if operationContent == None:
-                operationContent = ""
-            else:
-                operationContent = str(operationContent)
-            if userName == None: userName = ""
-            ComputerName = socket.gethostname()
-            db_session.add(
-                SysLog(OperationType=operationType, OperationContent=operationContent,OperationDate=datetime.datetime.now(), UserName=userName,
-                       ComputerName=ComputerName, IP=socket.gethostbyname(ComputerName)))
-            db_session.commit()
-        except Exception as e:
-            db_session.rollback()
-            print(e)
-            logger.error(e)
+    try:
+        if operationType == None: operationType = ""
+        if operationContent == None:
+            operationContent = ""
+        else:
+            operationContent = str(operationContent)
+        if userName == None: userName = ""
+        ComputerName = socket.gethostname()
+        db_session.add(
+            SysLog(OperationType=operationType, OperationContent=operationContent,
+                   OperationDate=datetime.datetime.now(), UserName=userName,
+                   ComputerName=ComputerName, IP=socket.gethostbyname(ComputerName)))
+        db_session.commit()
+    except Exception as e:
+        db_session.rollback()
+        print(e)
+        logger.error(e)
+
 
 # 用户管理
 @app.route('/userManager')
@@ -213,7 +222,7 @@ def userManager():
         li = list(tu)
         id = li[0]
         name = li[1]
-        department = {'OrganizationID':id,'OrganizationName':name}
+        department = {'OrganizationID': id, 'OrganizationName': name}
         data.append(department)
 
     dataRoleName = []
@@ -224,7 +233,7 @@ def userManager():
         name = li[1]
         roleName = {'RoleID': id, 'RoleName': name}
         dataRoleName.append(roleName)
-    return render_template('userManager.html',departments=data,roleNames=dataRoleName)
+    return render_template('userManager.html', departments=data, roleNames=dataRoleName)
 
 
 @app.route('/MyUser/Select')
@@ -244,16 +253,27 @@ def MyUserSelect():
                     OrganizationCodeData = db_session.query(Organization).filter_by(ID=id).first()
                     if OrganizationCodeData != None:
                         OrganizationName = str(OrganizationCodeData.OrganizationName)
-                        total = db_session.query(User).filter(and_(User.OrganizationName.like("%" + OrganizationName + "%") if OrganizationName is not None else "",
-                                                           User.Name.like("%" + Name + "%") if Name is not None else "")).count()
-                        oclass = db_session.query(User).filter(and_(User.OrganizationName.like("%" + OrganizationName + "%") if OrganizationName is not None else "",
-                                                           User.Name.like("%" + Name + "%") if Name is not None else "")).order_by(desc("CreateTime")).all()[inipage:endpage]
+                        total = db_session.query(User).filter(and_(User.OrganizationName.like(
+                            "%" + OrganizationName + "%") if OrganizationName is not None else "",
+                                                                   User.Name.like(
+                                                                       "%" + Name + "%") if Name is not None else "")).count()
+                        oclass = db_session.query(User).filter(and_(User.OrganizationName.like(
+                            "%" + OrganizationName + "%") if OrganizationName is not None else "",
+                                                                    User.Name.like(
+                                                                        "%" + Name + "%") if Name is not None else "")).order_by(
+                            desc("CreateTime")).all()[inipage:endpage]
                     else:
-                        total = db_session.query(User).filter(User.Name.like("%" + Name + "%") if Name is not None else "").count()
-                        oclass = db_session.query(User).filter(User.Name.like("%" + Name + "%") if Name is not None else "").order_by(desc("CreateTime")).all()[inipage:endpage]
+                        total = db_session.query(User).filter(
+                            User.Name.like("%" + Name + "%") if Name is not None else "").count()
+                        oclass = db_session.query(User).filter(
+                            User.Name.like("%" + Name + "%") if Name is not None else "").order_by(
+                            desc("CreateTime")).all()[inipage:endpage]
                 else:
-                    total = db_session.query(User).filter(User.Name.like("%" + Name + "%") if Name is not None else "").count()
-                    oclass = db_session.query(User).filter(User.Name.like("%" + Name + "%") if Name is not None else "").order_by(desc("CreateTime")).all()[inipage:endpage]
+                    total = db_session.query(User).filter(
+                        User.Name.like("%" + Name + "%") if Name is not None else "").count()
+                    oclass = db_session.query(User).filter(
+                        User.Name.like("%" + Name + "%") if Name is not None else "").order_by(
+                        desc("CreateTime")).all()[inipage:endpage]
                 jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonoclass = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
             return jsonoclass
@@ -262,7 +282,6 @@ def MyUserSelect():
             logger.error(e)
             insertSyslog("error", "查询用户列表报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
-
 
 
 @app.route('/user/addUser', methods=['POST', 'GET'])
@@ -274,20 +293,20 @@ def addUser():
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 10:
                 user = User()
-                user.WorkNumber=data['WorkNumber']
+                user.WorkNumber = data['WorkNumber']
                 ocal = db_session.query(User).filter(User.WorkNumber == user.WorkNumber).first()
                 if ocal != None:
                     return "工号重复，请重新录入！"
-                user.Name=data['Name']
-                user.Password=user.password(data['Password'])
+                user.Name = data['Name']
+                user.Password = user.password(data['Password'])
                 # print(user.Password)
-                user.Status="1" # 登录状态先设置一个默认值1：已登录，0：未登录
-                user.Creater=data['Creater']
-                user.CreateTime=datetime.datetime.now()
-                user.LastLoginTime=datetime.datetime.now()
-                user.IsLock='false' # data['IsLock'],
-                user.OrganizationName=data['OrganizationName']
-                user.RoleName=data['RoleName']
+                user.Status = "1"  # 登录状态先设置一个默认值1：已登录，0：未登录
+                user.Creater = data['Creater']
+                user.CreateTime = datetime.datetime.now()
+                user.LastLoginTime = datetime.datetime.now()
+                user.IsLock = 'false'  # data['IsLock'],
+                user.OrganizationName = data['OrganizationName']
+                user.RoleName = data['RoleName']
                 db_session.add(user)
                 db_session.commit()
                 return 'OK'
@@ -297,6 +316,7 @@ def addUser():
             logger.error(e)
             insertSyslog("error", "添加用户报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
 
 @app.route('/user/updateUser', methods=['POST', 'GET'])
 def UpdateUser():
@@ -330,6 +350,7 @@ def UpdateUser():
             insertSyslog("error", "更新用户报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
+
 @app.route('/user/deleteUser', methods=['POST', 'GET'])
 def deleteUser():
     if request.method == 'POST':
@@ -347,8 +368,8 @@ def deleteUser():
                     except Exception as ee:
                         db_session.rollback()
                         print(ee)
-                        insertSyslog("error", "删除户ID为"+string(id)+"报错Error：" + string(ee), current_user.Name)
-                        return json.dumps("删除用户报错", cls=AlchemyEncoder,ensure_ascii=False)
+                        insertSyslog("error", "删除户ID为" + string(id) + "报错Error：" + string(ee), current_user.Name)
+                        return json.dumps("删除用户报错", cls=AlchemyEncoder, ensure_ascii=False)
                 return 'OK'
         except Exception as e:
             print(e)
@@ -356,10 +377,12 @@ def deleteUser():
             insertSyslog("error", "删除用户报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
+
 # 权限分配
 @app.route('/roleright')
 def roleright():
     return render_template('roleRight.html')
+
 
 # 角色列表树形图
 def getRoleList(id=0):
@@ -378,6 +401,7 @@ def getRoleList(id=0):
         print(e)
         insertSyslog("error", "查询角色报错Error：" + str(e), current_user.Name)
         return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
 
 # 权限分配下的角色列表
 @app.route('/Permission/SelectRoles')
@@ -432,7 +456,7 @@ def userList():
                     endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
                     # 通过角色ID获取当前角色对应的用户
                     role_id = data['ID']
-                    role_name= db_session.query(Role.RoleName).filter_by(ID=role_id).first()
+                    role_name = db_session.query(Role.RoleName).filter_by(ID=role_id).first()
                     if role_name is None:  # 判断当前角色是否存在
                         return
                     total = db_session.query(User).filter_by(RoleName=role_name).count()
@@ -448,10 +472,12 @@ def userList():
                 insertSyslog("error", "通过点击角色查询用户报错Error：" + str(e), current_user.Name)
                 return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
-def trueOrFalse(obj,role_menus):
+
+def trueOrFalse(obj, role_menus):
     if str(obj.ModuleName) in role_menus:
         return True
     return False
+
 
 # 权限分配下的功能模块列表
 def getMenuList(role_menus, id=0):
@@ -460,10 +486,10 @@ def getMenuList(role_menus, id=0):
         menus = db_session.query(Menu).filter_by(ParentNode=id).all()
         for obj in menus:
             if obj.ParentNode == id:
-                    sz.append({"id": obj.ID,
-                               "text": obj.ModuleName,
-                               "checked": trueOrFalse(obj, role_menus),
-                               "children": getMenuList(role_menus, obj.ID)})
+                sz.append({"id": obj.ID,
+                           "text": obj.ModuleName,
+                           "checked": trueOrFalse(obj, role_menus),
+                           "children": getMenuList(role_menus, obj.ID)})
         return sz
     except Exception as e:
         print(e)
@@ -478,7 +504,7 @@ def menulist():
         role_data = request.values
         if 'id' not in role_data.keys():
             try:
-                data = getMenuList(role_menus=[],id=0)
+                data = getMenuList(role_menus=[], id=0)
                 jsondata = json.dumps(data, cls=AlchemyEncoder, ensure_ascii=False)
                 return jsondata.encode("utf8")
             except Exception as e:
@@ -501,6 +527,7 @@ def menulist():
             insertSyslog("error", "加载菜单列表Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
+
 # 权限分配下为角色添加权限
 @app.route('/permission/MenuToRole')
 def menuToUser():
@@ -515,7 +542,7 @@ def menuToUser():
             if menus:
                 db_session.delete(menus)
                 db_session.commit()
-            menu_id = data['menu_id'] # 获取菜单ID
+            menu_id = data['menu_id']  # 获取菜单ID
             if menu_id is None:
                 return
             menu_id = re.findall(r'\d+\.?\d*', menu_id)
@@ -548,7 +575,8 @@ def batchmanager():
     #     data.append(pro_unit_id)
     return render_template('batch_manager.html')
 
-#批次管理查询计划
+
+# 批次管理查询计划
 @app.route('/batchManager/SearchBatchManager')
 def SearchBatchManager():
     if request.method == 'GET':
@@ -562,12 +590,15 @@ def SearchBatchManager():
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
                 currentWorkdate = data["currentWorkdate"]
                 PUID = data["PUID"]
-                if(PUID == ""):
+                if (PUID == ""):
                     total = db_session.query(PlanManager).count()
                     zYPlans = db_session.query(PlanManager).order_by(desc("PlanBeginTime")).all()[inipage:endpage]
                 else:
-                    total = db_session.query(PlanManager).filter(PlanManager.PlanBeginTime == currentWorkdate, PlanManager.PUID == PUID).count()
-                    zYPlans = db_session.query(PlanManager).filter(PlanManager.PlanBeginTime == currentWorkdate, PlanManager.PUID == PUID).order_by(desc("PlanBeginTime")).all()[inipage:endpage]
+                    total = db_session.query(PlanManager).filter(PlanManager.PlanBeginTime == currentWorkdate,
+                                                                 PlanManager.PUID == PUID).count()
+                    zYPlans = db_session.query(PlanManager).filter(PlanManager.PlanBeginTime == currentWorkdate,
+                                                                   PlanManager.PUID == PUID).order_by(
+                        desc("PlanBeginTime")).all()[inipage:endpage]
                 jsonzyplans = json.dumps(zYPlans, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonzyplans = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonzyplans + "}"
                 return jsonzyplans
@@ -576,6 +607,7 @@ def SearchBatchManager():
             logger.error(e)
             insertSyslog("error", "批次管理查询计划报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
 
 # 批次管理查询计划明细
 @app.route('/batchManager/SearchBatchZYPlan')
@@ -592,9 +624,12 @@ def SearchBatchZYPlan():
                 ID = data["ID"]
                 PName = data["PName"]
                 planMa = db_session.query(PlanManager).filter(PlanManager.ID == ID).first()
-                PUID = db_session.query(ProductUnitRoute.PUID).filter(ProductUnitRoute.PDUnitRouteName == PName, ProductUnitRoute.ProductRuleID == planMa.BrandID).first()
-                total = db_session.query(ZYPlan.ID).filter(ZYPlan.BatchID == planMa.BatchID, ZYPlan.PUID == PUID[0]).count()
-                zYPlans = db_session.query(ZYPlan).filter(ZYPlan.BatchID == planMa.BatchID, ZYPlan.PUID == PUID[0]).order_by(desc("EnterTime")).all()[
+                PUID = db_session.query(ProductUnitRoute.PUID).filter(ProductUnitRoute.PDUnitRouteName == PName,
+                                                                      ProductUnitRoute.ProductRuleID == planMa.BrandID).first()
+                total = db_session.query(ZYPlan.ID).filter(ZYPlan.BatchID == planMa.BatchID,
+                                                           ZYPlan.PUID == PUID[0]).count()
+                zYPlans = db_session.query(ZYPlan).filter(ZYPlan.BatchID == planMa.BatchID,
+                                                          ZYPlan.PUID == PUID[0]).order_by(desc("EnterTime")).all()[
                           inipage:endpage]
                 jsonzyplans = json.dumps(zYPlans, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonzyplans = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonzyplans + "}"
@@ -604,6 +639,7 @@ def SearchBatchZYPlan():
             logger.error(e)
             insertSyslog("error", "批次管理查询计划明细报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
 
 # 批次管理查询任务明细
 @app.route('/batchManager/SearchBatchZYTask')
@@ -633,6 +669,7 @@ def SearchBatchZYTask():
             logger.error(e)
             insertSyslog("error", "批次管理查询任务明细报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
 
 # 计划向导获取批次任务明细
 @app.route('/ZYPlanGuid/CriticalTasks', methods=['POST', 'GET'])
@@ -665,18 +702,21 @@ def criticalTasks():
 def organizationMap():
     return render_template('index_organization.html')
 
-@app.route('/organizationMap/selectAll')#组织结构
+
+@app.route('/organizationMap/selectAll')  # 组织结构
 def selectAll():
     if request.method == 'GET':
         try:
             data = getMyOrganizationChildrenMap(id=0)
-            jsondata = [{"name":"江中集团","value":"0","children":data}]
+            jsondata = [{"name": "江中集团", "value": "0", "children": data}]
             jsondatas = json.dumps(jsondata, cls=AlchemyEncoder, ensure_ascii=False)
             return jsondatas
         except Exception as e:
             print(e)
             insertSyslog("error", "查询组织结构报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
+
 def getMyOrganizationChildrenMap(id):
     sz = []
     try:
@@ -689,6 +729,8 @@ def getMyOrganizationChildrenMap(id):
     except Exception as e:
         print(e)
         return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
+
 # 组织机构建模
 # 加载工作台
 @app.route('/organization')
@@ -697,7 +739,7 @@ def organization():
         org_class = db_session.query(Organization).all()
         org_data = list()
         for org in org_class:
-            org_data.append({'id': org.ID,'name': org.OrganizationName})
+            org_data.append({'id': org.ID, 'name': org.OrganizationName})
         return render_template('sysOrganization.html', organizations=org_data)
     except Exception as e:
         print(e)
@@ -705,28 +747,30 @@ def organization():
         insertSyslog("error", "/organization查询组织名称报错Error：" + str(e), current_user.Name)
         return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
+
 @app.route('/allOrganizations/Find')
 def OrganizationsFind():
     if request.method == 'GET':
-        data = request.values # 返回请求中的参数和form
+        data = request.values  # 返回请求中的参数和form
         try:
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 10:
-                pages = int(data['page']) # 页数
+                pages = int(data['page'])  # 页数
                 rowsnumber = int(data['rows'])  # 行数
                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
-                endpage = (pages-1) * rowsnumber + rowsnumber #截止页
+                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
                 total = db_session.query(func.count(Organization.ID)).scalar()
                 organiztions = db_session.query(Organization).all()[inipage:endpage]
-                #ORM模型转换json格式
+                # ORM模型转换json格式
                 jsonorganzitions = json.dumps(organiztions, cls=AlchemyEncoder, ensure_ascii=False)
-                jsonorganzitions = '{"total"'+":"+str(total)+',"rows"' +":\n" + jsonorganzitions + "}"
+                jsonorganzitions = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonorganzitions + "}"
                 return jsonorganzitions
         except Exception as e:
             print(e)
             logger.error(e)
             insertSyslog("error", "查询组织报错Error：" + str(e), current_user.Name)
-            return json.dumps([{"status": "Error:"+ str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+            return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
 
 # role更新数据，通过传入的json数据，解析之后进行相应更新
 @app.route('/allOrganizations/Update', methods=['POST', 'GET'])
@@ -831,10 +875,12 @@ def allOrganizationsSearch():
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 2:
                 strconditon = "%" + data['condition'] + "%"
-                organizations = db_session.query(Organization).filter(Organization.OrganizationName.like(strconditon)).all()
+                organizations = db_session.query(Organization).filter(
+                    Organization.OrganizationName.like(strconditon)).all()
                 total = Counter(organizations)
                 jsonorganizations = json.dumps(organizations, cls=AlchemyEncoder, ensure_ascii=False)
-                jsonorganizations = '{"total"' + ":" + str(total.__len__()) + ',"rows"' + ":\n" + jsonorganizations + "}"
+                jsonorganizations = '{"total"' + ":" + str(
+                    total.__len__()) + ',"rows"' + ":\n" + jsonorganizations + "}"
                 return jsonorganizations
         except Exception as e:
             print(e)
@@ -908,6 +954,7 @@ def allEnterprisesCreate():
         re = EnterpriseIFS.allEnterprisesCreate(data)
         return re
 
+
 # 父节点树形结构图
 def getOrganizationList(id=0):
     sz = []
@@ -926,6 +973,7 @@ def getOrganizationList(id=0):
         insertSyslog("error", "查询组织树形结构报错Error：" + str(e), current_user.Name)
         return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
+
 # 加载菜单列表
 @app.route('/Enterprize/parentNode')
 def parentNode():
@@ -940,6 +988,7 @@ def parentNode():
             insertSyslog("error", "加父级载菜单列表报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
+
 def getEnterprizeList(id=0):
     sz = []
     try:
@@ -953,6 +1002,7 @@ def getEnterprizeList(id=0):
         logger.error(e)
         insertSyslog("error", "加父级载菜单列表报错Error：" + str(e), current_user.Name)
         return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
 
 @app.route('/allEnterprises/Search', methods=['POST', 'GET'])
 def allEnterprisesSearch():
@@ -1074,6 +1124,7 @@ def allAreasSearch():
         re = AreaIFS.allAreasSearch(data)
         return re
 
+
 # 生产线
 # 加载工作台
 @app.route('/ProductLine')
@@ -1084,7 +1135,7 @@ def productLine():
         li = list(tu)
         id = li[0]
         name = li[1]
-        area_id = {'ID': id,'text':name}
+        area_id = {'ID': id, 'text': name}
         data.append(area_id)
     return render_template('sysProductLine.html', area_id=data)
 
@@ -1147,7 +1198,7 @@ def processUnit():
         li = list(tu)
         id = li[0]
         name = li[1]
-        ProductLine_id = {'ID': id, 'text':name}
+        ProductLine_id = {'ID': id, 'text': name}
         data.append(ProductLine_id)
     return render_template('sysProcessUnit.html', productLine_id=data)
 
@@ -1199,7 +1250,6 @@ def allProcessUnitsSearch():
         ProcessUnitIFS = Model.core.ProcessUnitWebIFS("ProcessUnitSearch")
         re = ProcessUnitIFS.allProcessUnitsSearch(data)
         return re
-
 
 
 # 加载工作台
@@ -1257,7 +1307,6 @@ def allProductRulesSearch():
         return re
 
 
-
 # 加载工作台
 @app.route('/ZYPlan')
 def zYPlan():
@@ -1295,6 +1344,7 @@ def ZYPlansFind():
         ZYPlanIFS = Model.core.ZYPlanWebIFS("ZYPlanFind")
         re = ZYPlanIFS.ZYPlansFind(data)
         return re
+
 
 # role更新数据，通过传入的json数据，解析之后进行相应更新
 @app.route('/allZYPlans/Update', methods=['POST', 'GET'])
@@ -1368,7 +1418,8 @@ def zYTask():
             id = li[0]
             pro_info = {'ID': id}
             data_batch.append(pro_info)
-        return render_template('sysZYTask.html', Data_pro=data_pro, Unit=WeightUnit, Data_proUnit=data_proUnit, Data_batch=data_batch)
+        return render_template('sysZYTask.html', Data_pro=data_pro, Unit=WeightUnit, Data_proUnit=data_proUnit,
+                               Data_batch=data_batch)
     except Exception as e:
         print(e)
         logger.error(e)
@@ -1428,13 +1479,13 @@ def allZYTasksSearch():
 @app.route('/ProductControlTask')
 def productControlTask():
     try:
-        product_def_ID = db_session.query(ProductRule.ID,ProductRule.PRName).all()
+        product_def_ID = db_session.query(ProductRule.ID, ProductRule.PRName).all()
         data1 = []
         for tu in product_def_ID:
             li = list(tu)
             id = li[0]
             name = li[1]
-            pro_def_id = {'ID': id, 'text':name}
+            pro_def_id = {'ID': id, 'text': name}
             data1.append(pro_def_id)
 
         productUnit_ID = db_session.query(ProcessUnit.ID, ProcessUnit.PUName).all()
@@ -1443,9 +1494,9 @@ def productControlTask():
             li = list(tu)
             id = li[0]
             name = li[1]
-            pro_unit_id = {'ID': id, 'text':name}
+            pro_unit_id = {'ID': id, 'text': name}
             data.append(pro_unit_id)
-        return render_template('sysProductControlTask.html', Product_def_ID= data1, Product_unit_ID=data)
+        return render_template('sysProductControlTask.html', Product_def_ID=data1, Product_unit_ID=data)
     except Exception as e:
         print(e)
         logger.error(e)
@@ -1511,7 +1562,7 @@ def productParameter():
             li = list(tu)
             id = li[0]
             name = li[1]
-            pro_def_id = {'ID': id, 'text':name}
+            pro_def_id = {'ID': id, 'text': name}
             data1.append(pro_def_id)
 
         productUnit_ID = db_session.query(ProcessUnit.ID, ProcessUnit.PUName).all()
@@ -1520,9 +1571,9 @@ def productParameter():
             li = list(tu)
             id = li[0]
             name = li[1]
-            pro_unit_id = {'ID': id, 'text':name}
+            pro_unit_id = {'ID': id, 'text': name}
             data.append(pro_unit_id)
-        return render_template('sysProductParameter.html', Product_def_ID= data1, Product_unit_ID=data)
+        return render_template('sysProductParameter.html', Product_def_ID=data1, Product_unit_ID=data)
     except Exception as e:
         print(e)
         logger.error(e)
@@ -1642,7 +1693,7 @@ def material():
         li = list(tu)
         id = li[0]
         name = li[1]
-        materialType_id = {'ID': id,'text':name}
+        materialType_id = {'ID': id, 'text': name}
         data.append(materialType_id)
     return render_template('sysMaterial.html', Material_ID=data)
 
@@ -1709,13 +1760,13 @@ def allMaterialsSearch():
 @app.route('/MaterialBOM')
 def materialBOM():
     try:
-        material_ID = db_session.query(Material.ID,Material.MATName).all()
+        material_ID = db_session.query(Material.ID, Material.MATName).all()
         data_material = []
         for tu in material_ID:
             li = list(tu)
             id = li[0]
             name = li[1]
-            material_id = {'ID': id,'text':name}
+            material_id = {'ID': id, 'text': name}
             data_material.append(material_id)
 
         product_def_ID = db_session.query(ProductRule.ID, ProductRule.PRName).all()
@@ -1724,7 +1775,7 @@ def materialBOM():
             li = list(tu)
             id = li[0]
             name = li[1]
-            pro_def_id = {'ID': id, 'text':name}
+            pro_def_id = {'ID': id, 'text': name}
             data1.append(pro_def_id)
 
         productUnit_ID = db_session.query(ProcessUnit.ID, ProcessUnit.PUName).all()
@@ -1733,7 +1784,7 @@ def materialBOM():
             li = list(tu)
             id = li[0]
             name = li[1]
-            pro_unit_id = {'ID': id, 'text':name}
+            pro_unit_id = {'ID': id, 'text': name}
             data.append(pro_unit_id)
 
         material_Type_ID = db_session.query(MaterialType.ID, MaterialType.MATTypeName).all()
@@ -1742,10 +1793,10 @@ def materialBOM():
             li = list(tu)
             id = li[0]
             name = li[1]
-            material_type_id = {'ID': id, 'text':name}
+            material_type_id = {'ID': id, 'text': name}
             data_material_typeID.append(material_type_id)
         return render_template('sysMaterialBOM.html', Material_ID=data_material,
-                               Product_def_ID= data1, Product_unit_ID=data,
+                               Product_def_ID=data1, Product_unit_ID=data,
                                MaterialType_ID=data_material_typeID)
     except Exception as e:
         print(e)
@@ -1867,7 +1918,7 @@ def productUnit():
             li = list(tu)
             id = li[0]
             name = li[1]
-            pro_def_id = {'ID': id, 'text':name}
+            pro_def_id = {'ID': id, 'text': name}
             data1.append(pro_def_id)
 
         productUnit_ID = db_session.query(ProcessUnit.ID, ProcessUnit.PUName).all()
@@ -1876,9 +1927,9 @@ def productUnit():
             li = list(tu)
             id = li[0]
             name = li[1]
-            pro_unit_id = {'ID': id, 'text':name}
+            pro_unit_id = {'ID': id, 'text': name}
             data.append(pro_unit_id)
-        return render_template('sysProductUnit.html', Product_def_ID= data1, Product_unit_ID=data)
+        return render_template('sysProductUnit.html', Product_def_ID=data1, Product_unit_ID=data)
     except Exception as e:
         print(e)
         logger.error(e)
@@ -1944,7 +1995,7 @@ def productUnitRoute():
             li = list(tu)
             id = li[0]
             name = li[1]
-            pro_def_id = {'ID': id, 'text':name}
+            pro_def_id = {'ID': id, 'text': name}
             data1.append(pro_def_id)
 
         productUnit_ID = db_session.query(ProcessUnit.ID, ProcessUnit.PUName).all()
@@ -1953,14 +2004,13 @@ def productUnitRoute():
             li = list(tu)
             id = li[0]
             name = li[1]
-            pro_unit_id = {'ID': id, 'text':name}
+            pro_unit_id = {'ID': id, 'text': name}
             data.append(pro_unit_id)
         return render_template('sysProductUnitRoute.html', Product_def_ID=data1, ProductUnit_ID=data)
     except Exception as e:
         print(e)
         logger.error(e)
         return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
-
 
 
 @app.route('/allProductUnitRoutes/Find')
@@ -2136,7 +2186,7 @@ def allPlanManagersCreate():
         Type = Model.Global.Type.NEW.value
         PlanCreate = ctrlPlan('PlanCreate')
         bReturn = PlanCreate.createWorkFlowEventPlan(PlanManageID, userName, Desc, Type)
-        if(bReturn == False):
+        if (bReturn == False):
             re = False
         PlanManageID = PlanManageID
         AuditStatus = Model.Global.AuditStatus.Unaudited.value
@@ -2244,7 +2294,8 @@ def OrganizationFind():
             logger.error(e)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
-def isIn(source,target):
+
+def isIn(source, target):
     count = 0
     for index in source:
         if index in target:
@@ -2252,7 +2303,9 @@ def isIn(source,target):
             if count <= len(source):
                 return True
             return False
-app.add_template_global(isIn,'isIn')
+
+
+app.add_template_global(isIn, 'isIn')
 
 
 @app.route('/')
@@ -2351,12 +2404,12 @@ def allrolesCreate():
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 10:
                 db_session.add(Role(RoleName=data['RoleName'],
-                                 RoleSeq=data['RoleSeq'],
-                                 Description=data['Description'],
-                                 CreatePerson=data['CreatePerson'],
-                                 CreateDate= datetime.datetime.now(),
-                                 ParentNode = data['ParentNode']
-                                 ))
+                                    RoleSeq=data['RoleSeq'],
+                                    Description=data['Description'],
+                                    CreatePerson=data['CreatePerson'],
+                                    CreateDate=datetime.datetime.now(),
+                                    ParentNode=data['ParentNode']
+                                    ))
                 db_session.commit()
                 return json.dumps([{"status": "OK"}], cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
@@ -2364,12 +2417,12 @@ def allrolesCreate():
             print(e)
             logger.error(e)
             insertSyslog("error", "创建角色报错Error：" + str(e), current_user.Name)
-            return json.dumps([{"status": "Error:"+ str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+            return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
-#role查询数据，通过传入的json数据，解析之后进行相应更新
-#采用服务端数据分页，通过easyui-datagrid传入的页数和每页包含的记录数回传
-#注意写easyui-datagrid的json数据格式！特别是最开始部分"total":20,"rows":[]}
+# role查询数据，通过传入的json数据，解析之后进行相应更新
+# 采用服务端数据分页，通过easyui-datagrid传入的页数和每页包含的记录数回传
+# 注意写easyui-datagrid的json数据格式！特别是最开始部分"total":20,"rows":[]}
 @app.route('/allroles/Find')
 def allrolesFind():
     if request.method == 'GET':
@@ -2509,7 +2562,7 @@ def createPlanWizard():
             li = list(tu)
             id = li[0]
             name = li[1]
-            pro_info = {'ID': id, 'text':name}
+            pro_info = {'ID': id, 'text': name}
             data.append(pro_info)
         dataUnitName = []
         unitNames = db_session.query(Unit.UnitCode, Unit.UnitName).all()
@@ -2527,7 +2580,7 @@ def createPlanWizard():
             name = li[1]
             pLineName = {'PLineCode': id, 'PLineName': name}
             dataPLineName.append(pLineName)
-        return render_template('createPlanWizard.html', Product_info=data, Unit=dataUnitName,PLine_info=dataPLineName)
+        return render_template('createPlanWizard.html', Product_info=data, Unit=dataUnitName, PLine_info=dataPLineName)
     except Exception as e:
         print(e)
         logger.error(e)
@@ -2604,6 +2657,7 @@ def treeProductRule():
 def opcServer():
     return render_template('OpcServer.html')
 
+
 # 返回Opc服务列表
 @app.route('/OpcServer/Find')
 def OpcServerFind():
@@ -2621,7 +2675,7 @@ def OpcServerFind():
                     qDatas = db_session.query(OpcServer).all()[inipage:endpage]
                     # ORM模型转换json格式
                     jsonopcserver = json.dumps(qDatas, cls=Model.BSFramwork.AlchemyEncoder,
-                                                  ensure_ascii=False)
+                                               ensure_ascii=False)
                     jsonopcserver = '{"total"' + ":" + str(
                         total) + ',"rows"' + ":\n" + jsonopcserver + "}"
                     return jsonopcserver
@@ -2632,6 +2686,8 @@ def OpcServerFind():
             logger.error(e)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
                               ensure_ascii=False)
+
+
 # 添加Opc服务配置
 @app.route('/OpcServer/Create', methods=['POST', 'GET'])
 def OpcServerCreate():
@@ -2653,6 +2709,7 @@ def OpcServerCreate():
             print(e)
             logger.error(e)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
 
 # 删除Opc服务配置
 @app.route('/OpcServer/Delete', methods=['POST', 'GET'])
@@ -2682,6 +2739,7 @@ def OpcServerDelete():
             logger.error(e)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
+
 # 修改Opc服务
 @app.route('/OpcServer/Update', methods=['POST', 'GET'])
 def OpcServerUpdate():
@@ -2705,6 +2763,7 @@ def OpcServerUpdate():
             logger.error(e)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
+
 # 查询Opc服务
 @app.route('/OpcServer/Search', methods=['POST', 'GET'])
 def OpcServerSearch():
@@ -2725,6 +2784,7 @@ def OpcServerSearch():
             logger.error(e)
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
+
 # 加载OPC-Tag
 @app.route('/OpcTag/load')
 def opcTagLoad():
@@ -2741,6 +2801,7 @@ def opcTagLoad():
         print(e)
         logger.error(e)
         insertSyslog("error", "加载OPC-Tag错误Error：" + str(e), current_user.Name)
+
 
 @app.route('/OpcServer/Tag', methods=['POST', 'GET'])
 def opcServerTag():
@@ -2759,23 +2820,24 @@ def opcServerTag():
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 
-
 global id
 id = 0
-def printSelect(node, depth): # id:0, depth:1
+
+
+def printSelect(node, depth):  # id:0, depth:1
     result = []
     global id
-    id += 1 # 控制下一层
+    id += 1  # 控制下一层
     if depth <= 2:
-        for cNode in node.get_children():#[Node(TwoByteNodeId(i=86)), Node(TwoByteNodeId(i=85)), Node(TwoByteNodeId(i=87))]
+        for cNode in node.get_children():  # [Node(TwoByteNodeId(i=86)), Node(TwoByteNodeId(i=85)), Node(TwoByteNodeId(i=87))]
             if len(cNode.get_children()) >= 0:
                 if len(cNode.get_children()) > 0:
-                    result.append({"id": id+1,
+                    result.append({"id": id + 1,
                                    "nodeId": cNode.nodeid.to_string(),
                                    "displayName": cNode.get_display_name().Text,
                                    "BrowseName": cNode.get_browse_name().to_string(),
                                    "state": 'closed',
-                                   "children": printSelect(cNode, depth+1)
+                                   "children": printSelect(cNode, depth + 1)
                                    })
                 if len(cNode.get_children()) == 0:
                     result.append({"id": id + 1,
@@ -2786,6 +2848,7 @@ def printSelect(node, depth): # id:0, depth:1
                                    "children": printSelect(cNode, depth + 1)
                                    })
         return result
+
 
 # nodeid displayname browsename
 # 连接opcua-client
@@ -2798,7 +2861,7 @@ def opcuaClientLink():
             URI = data["URI"]
             if URI is None or URI == '':
                 return
-            client = Client("%s"% URI)
+            client = Client("%s" % URI)
             client.connect()
             # 获取根节点
             rootNode = client.get_root_node()
@@ -2810,6 +2873,7 @@ def opcuaClientLink():
             logger.error(e)
             insertSyslog("error", "opcuaClient连接失败Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
 
 @app.route('/opcuaClient/NodeLoadMore', methods=['POST', 'GET'])
 def nodeLoad():
@@ -2848,6 +2912,7 @@ def store_child(node, OpcServerID):
         if len(cNode.get_children()) > 0:
             store_child(cNode, OpcServerID)
 
+
 # 将所选OPC-Tag加载到数据库
 @app.route("/opcuaClient/storeOpcTag", methods=['POST', 'GET'])
 def storeOpcTag():
@@ -2875,17 +2940,20 @@ def storeOpcTag():
             # 存储子节点
             node = client.get_node(nodeId)
             store_child(node, OpcServerID)
-            return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+            return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
+                              ensure_ascii=False)
         except Exception as e:
             print(e)
             logger.error(e)
             insertSyslog("error", "OpcTag存储失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
+
 # 配置采集策略模板
 @app.route('/CollectParamsTemplate/config')
 def collectParamsTemplateConfig():
     return render_template('collectParamsTemplateConfig.html')
+
 
 @app.route('/CollectParamsTemplate/config/find', methods=['POST', 'GET'])
 def templateFind():
@@ -2903,7 +2971,7 @@ def templateFind():
                     qDatas = db_session.query(CollectParamsTemplate).all()[inipage:endpage]
                     # ORM模型转换json格式
                     jsonTemplateconfig = json.dumps(qDatas, cls=Model.BSFramwork.AlchemyEncoder,
-                                                  ensure_ascii=False)
+                                                    ensure_ascii=False)
                     jsonTemplateconfig = '{"total"' + ":" + str(
                         total) + ',"rows"' + ":\n" + jsonTemplateconfig + "}"
                     return jsonTemplateconfig
@@ -2913,7 +2981,8 @@ def templateFind():
             print(e)
             logger.error(e)
             insertSyslog("error", "CollectParamsTemplate数据加载失败报错Error：" + str(e), current_user.Name)
-            return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,ensure_ascii=False)
+            return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
 
 @app.route('/CollectParamsTemplate/config/create', methods=['POST', 'GET'])
 def templateCreate():
@@ -2935,6 +3004,7 @@ def templateCreate():
             insertSyslog("error", "CollectParamsTemplate数据创建失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
+
 @app.route('/CollectParamsTemplate/config/delete', methods=['POST', 'GET'])
 def templateDelete():
     if request.method == 'POST':
@@ -2947,7 +3017,8 @@ def templateDelete():
                     TemplateID = int(key)
                     try:
                         oclass = db_session.query(CollectParamsTemplate).filter_by(ID=TemplateID).first()
-                        oclass_params = db_session.query(CollectParams).filter_by(CollectParamsTemplateID=TemplateID).first()
+                        oclass_params = db_session.query(CollectParams).filter_by(
+                            CollectParamsTemplateID=TemplateID).first()
                         db_session.delete(oclass)
                         if oclass_params is not None:
                             db_session.delete(oclass_params)
@@ -2964,6 +3035,7 @@ def templateDelete():
             logger.error(e)
             insertSyslog("error", "CollectParamsTemplate数据删除失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
 
 @app.route('/CollectParamsTemplate/config/update', methods=['POST', 'GET'])
 def templateUpdate():
@@ -2986,6 +3058,7 @@ def templateUpdate():
             logger.error(e)
             insertSyslog("error", "CollectParamsTemplate数据更新失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
 
 @app.route('/CollectParamsTemplate/config/search', methods=['POST', 'GET'])
 def templateSearch():
@@ -3027,15 +3100,17 @@ def collectParamsConfig():
         NodeID.append(node_id)
     return render_template('collectParamsConfig.html', TempNames=TemplateNames, NodeID=NodeID)
 
+
 def get_childs(ParentID):
     childs = db_session.query(OpcTag).filter_by(ParentID=ParentID).all()
     return childs
+
 
 def getOpcTagList(depth, ParentID=None):
     sz = []
     try:
         opcTags = db_session.query(OpcTag).filter_by(ParentID=ParentID).all()
-        if depth<=1:
+        if depth <= 1:
             for obj in opcTags:
                 if obj.ParentID == ParentID:
                     if len(get_childs(ParentID)) > 0:
@@ -3043,19 +3118,20 @@ def getOpcTagList(depth, ParentID=None):
                                    "NodeId": obj.NodeID,
                                    "Desc": obj.Note,
                                    "state": 'closed',
-                                   "children": getOpcTagList(depth+1, ParentID=obj.NodeID)})
+                                   "children": getOpcTagList(depth + 1, ParentID=obj.NodeID)})
                     if len(get_childs(ParentID)) == 0:
                         sz.append({"id": obj.ID,
                                    "NodeId": obj.NodeID,
                                    "Desc": obj.Note,
                                    "state": 'open',
-                                   "children": getOpcTagList(depth+1, ParentID=obj.NodeID)})
+                                   "children": getOpcTagList(depth + 1, ParentID=obj.NodeID)})
             return sz
     except Exception as e:
         print(e)
         logger.error(e)
         insertSyslog("error", "getOpcTagList加载父级菜单列表报错Error：" + str(e), current_user.Name)
         return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
 
 @app.route('/NodeID/LoadMore', methods=['POST', 'GET'])
 def nodeIdLoadMore():
@@ -3076,6 +3152,7 @@ def nodeIdLoadMore():
             insertSyslog("error", "加载NodeID变量节点失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
+
 @app.route('/CollectParams/OpcTagLoad', methods=['POST', 'GET'])
 def OpcTagLoad():
     if request.method == 'POST':
@@ -3088,6 +3165,7 @@ def OpcTagLoad():
             logger.error(e)
             insertSyslog("error", "路由/CollectParams/OpcTagLoad生成OpcTag树形图报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
 
 @app.route('/CollectParams/store', methods=['POST', 'GET'])
 def collectParams():
@@ -3102,7 +3180,8 @@ def collectParams():
             if len(Ids) > 0:
                 for Id in Ids:
                     # 判断当前模板是否存在
-                    object = db_session.query(CollectParams).filter(and_(CollectParams.OpcTagID==Id['nodeId'],CollectParams.CollectParamsTemplateID==CollectParamsTemplateID)).first()
+                    object = db_session.query(CollectParams).filter(and_(CollectParams.OpcTagID == Id['nodeId'],
+                                                                         CollectParams.CollectParamsTemplateID == CollectParamsTemplateID)).first()
                     if object is not None:
                         db_session.delete(object)
                         db_session.commit()
@@ -3123,6 +3202,7 @@ def collectParams():
             insertSyslog("error", "CollectParams数据创建失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
+
 def transform(IDs):
     Datas = []
     for ID in IDs:
@@ -3137,6 +3217,7 @@ def transform(IDs):
         Desc = db_session.query(CollectParams.Desc).filter_by(ID=ID).first()[0]
         Datas.append({"TemplateName": tempName, "NodeID": NodeID, "Desc": Desc})
     return Datas
+
 
 @app.route('/CollectParams/find', methods=['POST', 'GET'])
 def collectParamsFind():
@@ -3155,7 +3236,7 @@ def collectParamsFind():
                     IDs = db_session.query(CollectParams.ID).all()[inipage:endpage]
                     Datas = transform(IDs)
                     # ORM模型转换json格式
-                    jsonCollectParams= json.dumps(Datas)
+                    jsonCollectParams = json.dumps(Datas)
                     jsonCollectParams = '{"total"' + ":" + str(
                         total) + ',"rows"' + ":\n" + jsonCollectParams + "}"
                     return jsonCollectParams
@@ -3181,7 +3262,8 @@ def collectParamsCreate():
                 Desc = data['Desc']
                 if tempName is None or NodeId is None:
                     return
-                CollectParamsTemplateID = db_session.query(CollectParamsTemplate.ID).filter_by(TemplateName=tempName).first()[0]
+                CollectParamsTemplateID = \
+                db_session.query(CollectParamsTemplate.ID).filter_by(TemplateName=tempName).first()[0]
                 OpcTagID = db_session.query(OpcTag.ID).filter_by(NodeID=NodeId).first()[0]
                 object = db_session.query(CollectParams).filter(
                     CollectParams.OpcTagID == OpcTagID and CollectParams.CollectParamsTemplateID == CollectParamsTemplateID).first()
@@ -3189,8 +3271,8 @@ def collectParamsCreate():
                     return
                 db_session.add(
                     CollectParams(
-                        CollectParamsTemplateID= CollectParamsTemplateID,
-                        OpcTagID= OpcTagID,
+                        CollectParamsTemplateID=CollectParamsTemplateID,
+                        OpcTagID=OpcTagID,
                         Desc=Desc))
                 db_session.commit()
                 return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
@@ -3224,7 +3306,7 @@ def collectParamsDelete():
                         return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
                                           ensure_ascii=False)
             return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
-                                  ensure_ascii=False)
+                              ensure_ascii=False)
         except Exception as e:
             print(e)
             logger.error(e)
@@ -3246,7 +3328,7 @@ def collectParamsUpdate():
                 ID_byOpcTagID = db_session.query(CollectParams.ID).filter_by(OpcTagID=OpcTagID).first()
                 if ID_byOpcTagID is None:
                     ID_byTempID = db_session.query(CollectParams.ID).filter_by(CollectParamsTemplateID=TempID).first()
-                    if ID_byTempID is None: # 两者为空则相当于添加一个新的策略
+                    if ID_byTempID is None:  # 两者为空则相当于添加一个新的策略
                         oclass = CollectParams()
                         oclass.CollectParamsTemplateID = TempID
                         oclass.OpcTagID = OpcTagID
@@ -3254,7 +3336,7 @@ def collectParamsUpdate():
                         db_session.add(oclass)
                         db_session.commit()
                         return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
-                                      ensure_ascii=False)
+                                          ensure_ascii=False)
                     # 改变NodeID的情况
                     oclass = db_session.query(CollectParams).filter_by(ID=ID_byTempID).first()
                     oclass.CollectParamsTemplateID = TempID
@@ -3263,7 +3345,7 @@ def collectParamsUpdate():
                     db_session.add(oclass)
                     db_session.commit()
                     return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
-                                  ensure_ascii=False)
+                                      ensure_ascii=False)
                 # 改变模板的情况
                 oclass = db_session.query(CollectParams).filter_by(ID=ID_byOpcTagID).first()
                 oclass.OpcTagID = OpcTagID
@@ -3278,6 +3360,7 @@ def collectParamsUpdate():
             logger.error(e)
             insertSyslog("error", "CollectParamsTemplate数据更新失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
 
 @app.route('/CollectParams/search', methods=['POST', 'GET'])
 def collectParamsSearch():
@@ -3300,10 +3383,12 @@ def collectParamsSearch():
             insertSyslog("error", "CollectParamsTemplate数据查询失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
+
 # 配置采集策略
 @app.route('/Collectionstrategy/config')
 def collectionstrategyConfig():
     return render_template('CollectionstrategyConfig.html')
+
 
 @app.route('/Collectionstrategy/config/find', methods=['POST', 'GET'])
 def strategyFind():
@@ -3352,6 +3437,7 @@ def strategyCreate():
             insertSyslog("error", "Collectionstrategy数据创建失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
+
 @app.route('/Collectionstrategy/config/delete', methods=['POST', 'GET'])
 def strategyDelete():
     if request.method == 'POST':
@@ -3379,6 +3465,7 @@ def strategyDelete():
             insertSyslog("error", "Collectionstrategy数据删除失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
+
 @app.route('/Collectionstrategy/config/update', methods=['POST', 'GET'])
 def strategyUpdate():
     if request.method == 'POST':
@@ -3402,6 +3489,7 @@ def strategyUpdate():
             insertSyslog("error", "Collectionstrategy数据更新失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
+
 @app.route('/Collectionstrategy/config/search', methods=['POST', 'GET'])
 def strategySearch():
     if request.method == 'POST':
@@ -3421,6 +3509,7 @@ def strategySearch():
             logger.error(e)
             insertSyslog("error", "Collectionstrategy数据查询失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
 
 # 采集任务
 @app.route('/CollectTask/config')
@@ -3448,6 +3537,7 @@ def CollectTaskConfig():
                            StrategyNames=StrategyNames,
                            CollectTaskNames=CollectTaskNames)
 
+
 @app.route('/CollectTask/config/find', methods=['POST', 'GET'])
 def CollectTaskFind():
     if request.method == 'GET':
@@ -3464,7 +3554,7 @@ def CollectTaskFind():
                     qDatas = db_session.query(CollectTask).all()[inipage:endpage]
                     # ORM模型转换json格式
                     jsonCollectTask = json.dumps(qDatas, cls=Model.BSFramwork.AlchemyEncoder,
-                                                  ensure_ascii=False)
+                                                 ensure_ascii=False)
                     jsonCollectTask = '{"total"' + ":" + str(
                         total) + ',"rows"' + ":\n" + jsonCollectTask + "}"
                     return jsonCollectTask
@@ -3474,7 +3564,7 @@ def CollectTaskFind():
             print(e)
             logger.error(e)
             insertSyslog("error", "jsonCollectTask数据加载失败报错Error：" + str(e), current_user.Name)
-            return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,ensure_ascii=False)
+            return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 
 @app.route('/CollectTask/config/create', methods=['POST', 'GET'])
@@ -3489,7 +3579,7 @@ def CollectTaskCreate():
                         CollectTaskName=data['CollectTaskName'],
                         TableName=data['TableName'],
                         Desc=data['Desc'],
-                        Enabled = data['Enabled']
+                        Enabled=data['Enabled']
                     ))
                 db_session.commit()
                 return json.dumps([Model.Global.GLOBAL_JSON_RETURN_OK], cls=Model.BSFramwork.AlchemyEncoder,
@@ -3499,6 +3589,7 @@ def CollectTaskCreate():
             logger.error(e)
             insertSyslog("error", "CollectTask数据创建失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
 
 @app.route('/CollectTask/config/delete', methods=['POST', 'GET'])
 def CollectTaskDelete():
@@ -3530,6 +3621,7 @@ def CollectTaskDelete():
             insertSyslog("error", "CollectTask数据删除失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
+
 @app.route('/CollectTask/config/update', methods=['POST', 'GET'])
 def CollectTaskUpdate():
     if request.method == 'POST':
@@ -3553,6 +3645,7 @@ def CollectTaskUpdate():
             insertSyslog("error", "CollectTask数据更新失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
+
 @app.route('/CollectTask/config/search', methods=['POST', 'GET'])
 def CollectTaskSearch():
     if request.method == 'POST':
@@ -3572,6 +3665,7 @@ def CollectTaskSearch():
             logger.error(e)
             insertSyslog("error", "CollectTask数据查询失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
 
 # 采集任务配置
 @app.route('/CollectTaskConfig/find', methods=['POST', 'GET'])
@@ -3598,10 +3692,11 @@ def collectTaskCollection():
             if len(json_str) > 10:
                 total = db_session.query(CollectTaskCollection).filter_by(CollectTaskName=TaskName).count()
                 if total > 0:
-                    qDatas = db_session.query(CollectTaskCollection).filter_by(CollectTaskName=TaskName).all()[inipage:endpage]
+                    qDatas = db_session.query(CollectTaskCollection).filter_by(CollectTaskName=TaskName).all()[
+                             inipage:endpage]
                     # ORM模型转换json格式
                     jsonCollectTask = json.dumps(qDatas, cls=Model.BSFramwork.AlchemyEncoder,
-                                                  ensure_ascii=False)
+                                                 ensure_ascii=False)
                     jsonCollectTask = '{"total"' + ":" + str(
                         total) + ',"rows"' + ":\n" + jsonCollectTask + "}"
                     return jsonCollectTask
@@ -3611,7 +3706,7 @@ def collectTaskCollection():
             print(e)
             logger.error(e)
             insertSyslog("error", "jsonCollectTask数据加载失败报错Error：" + str(e), current_user.Name)
-            return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,ensure_ascii=False)
+            return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 
 @app.route('/CollectTaskConfig/create', methods=['POST', 'GET'])
@@ -3649,6 +3744,7 @@ def TaskCollectionCreate():
             insertSyslog("error", "CollectTaskCollection数据创建失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
+
 @app.route('/CollectTaskConfig/delete', methods=['POST', 'GET'])
 def TaskCollectionDelete():
     if request.method == 'POST':
@@ -3675,6 +3771,7 @@ def TaskCollectionDelete():
             logger.error(e)
             insertSyslog("error", "CollectTaskCollection数据删除失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
 
 @app.route('/CollectTaskConfig/update', methods=['POST', 'GET'])
 def TaskCollectionUpdate():
@@ -3711,6 +3808,7 @@ def TaskCollectionUpdate():
             insertSyslog("error", "CollectTaskCollection数据更新失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
+
 @app.route('/CollectTaskConfig/search', methods=['POST', 'GET'])
 def TaskCollectionSearch():
     if request.method == 'POST':
@@ -3731,6 +3829,7 @@ def TaskCollectionSearch():
             insertSyslog("error", "CollectTaskCollection数据查询失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
+
 @app.route('/CollectTaskConfig/load', methods=['POST', 'GET'])
 def Taskload():
     if request.method == 'GET':
@@ -3744,7 +3843,8 @@ def Taskload():
             insertSyslog("error", "Task数据加载失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
-#计划向导生成的计划查询
+
+# 计划向导生成的计划查询
 @app.route('/ZYPlanGuid/searchPlanmanager', methods=['POST', 'GET'])
 def searchPlanmanager():
     if request.method == 'GET':
@@ -3758,7 +3858,8 @@ def searchPlanmanager():
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
                 ABatchID = data['ABatchID']  # 批次号
                 total = db_session.query(PlanManager).filter(PlanManager.BatchID == ABatchID).count()
-                planManagers = db_session.query(PlanManager).filter(PlanManager.BatchID == ABatchID).all()[inipage:endpage]
+                planManagers = db_session.query(PlanManager).filter(PlanManager.BatchID == ABatchID).all()[
+                               inipage:endpage]
                 planManagers = json.dumps(planManagers, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonPlanManagers = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + planManagers + "}"
                 return jsonPlanManagers
@@ -3767,7 +3868,8 @@ def searchPlanmanager():
             logger.error(e)
             insertSyslog("error", "计划向导生成的计划查询报错Error：" + str(e), current_user.Name)
 
-#菜单权限控制
+
+# 菜单权限控制
 @app.route('/ZYPlanGuid/menuRedirect', methods=['POST', 'GET'])
 def menuRedirect():
     if request.method == 'POST':
@@ -3780,7 +3882,7 @@ def menuRedirect():
                 roleID = db_session.query(Role.ID).filter(Role.RoleName == rN[0]).first()
                 menus = db_session.query(Menu.ModuleName).join(Role_Menu, isouter=True).filter_by(Role_ID=roleID).all()
                 for menu in menus:
-                    if(menu[0] == menuName):
+                    if (menu[0] == menuName):
                         return 'OK'
                     else:
                         flag = '当前用户没有此操作权限！'
@@ -3791,6 +3893,7 @@ def menuRedirect():
             insertSyslog("error", "计划向导生成计划报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
+
 # 计划向导生成计划
 @app.route('/ZYPlanGuid/makePlan', methods=['POST', 'GET'])
 def makePlan():
@@ -3799,17 +3902,18 @@ def makePlan():
         try:
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 10:
-                AProductRuleID = int(data['AProductRuleID'])# 产品定义ID
-                APlanWeight = data['APlanWeight']# 计划重量
-                APlanDate = data['APlanDate']# 计划生产日期
-                ABatchID = data['ABatchID']# 批次号
-                ABrandName = data['ABrandName'] # 产品名称
-                PLineName = data['PLineName']#生产线名字
-                AUnit = data['AUnit']#d单位
+                AProductRuleID = int(data['AProductRuleID'])  # 产品定义ID
+                APlanWeight = data['APlanWeight']  # 计划重量
+                APlanDate = data['APlanDate']  # 计划生产日期
+                ABatchID = data['ABatchID']  # 批次号
+                ABrandName = data['ABrandName']  # 产品名称
+                PLineName = data['PLineName']  # 生产线名字
+                AUnit = data['AUnit']  # d单位
                 PlanCreate = ctrlPlan('PlanCreate')
                 userName = current_user.Name
                 ABrandID = AProductRuleID
-                re = PlanCreate.createLinePlanManager(AProductRuleID, APlanWeight, APlanDate, ABatchID, ABrandID, ABrandName, PLineName, AUnit, userName)
+                re = PlanCreate.createLinePlanManager(AProductRuleID, APlanWeight, APlanDate, ABatchID, ABrandID,
+                                                      ABrandName, PLineName, AUnit, userName)
                 re = json.dumps(re)
                 return re
         except Exception as e:
@@ -3817,6 +3921,7 @@ def makePlan():
             logger.error(e)
             insertSyslog("error", "计划向导生成计划报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
 
 # 审核计划
 @app.route('/ZYPlanGuid/checkPlanManager', methods=['POST', 'GET'])
@@ -3833,7 +3938,8 @@ def checkPlanManager():
                         oclassplan = db_session.query(PlanManager).filter_by(ID=id).first()
                         oclassplan.PlanStatus = Model.Global.PlanStatus.Checked.value
                         userName = current_user.Name
-                        oclassNodeColl = db_session.query(Model.node.NodeCollection).filter_by(oddNum=id, name="审核计划").first()
+                        oclassNodeColl = db_session.query(Model.node.NodeCollection).filter_by(oddNum=id,
+                                                                                               name="审核计划").first()
                         oclassNodeColl.status = Model.node.NodeStatus.PASSED.value
                         oclassNodeColl.oddUser = userName
                         oclassNodeColl.opertionTime = datetime.datetime.now()
@@ -3852,6 +3958,7 @@ def checkPlanManager():
             logger.error(e)
             insertSyslog("error", "生产管理部审核计划报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
 
 # 计划下发查询
 @app.route('/RealsePlanManagersearch')
@@ -3878,6 +3985,7 @@ def RealsePlanManagersearch():
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
                               ensure_ascii=False)
 
+
 # 下发计划生成ZY计划、任务
 @app.route('/ZYPlanGuid/createZYPlanZYtask', methods=['POST', 'GET'])
 def createZYPlanZYtask():
@@ -3892,7 +4000,7 @@ def createZYPlanZYtask():
                     try:
                         PlanCreate = ctrlPlan('PlanCreate')
                         returnmsg = PlanCreate.createZYPlanZYTask(id)
-                        if(returnmsg == False):
+                        if (returnmsg == False):
                             return 'NO'
                         oclassplan = db_session.query(PlanManager).filter_by(ID=id).first()
                         oclassplan.PlanStatus = Model.Global.PlanStatus.Realse.value
@@ -3958,14 +4066,16 @@ def RecallPlan():
                             try:
                                 oclass = db_session.query(ZYPlan).filter_by(ID=zYPl.ID).first()
                                 db_session.delete(oclass)
-                                oclassZ = db_session.query(WorkFlowEventZYPlan).filter_by(WorkFlowEventZYPlan.ZYPlanID == zYPl.ID).first()
+                                oclassZ = db_session.query(WorkFlowEventZYPlan).filter_by(
+                                    WorkFlowEventZYPlan.ZYPlanID == zYPl.ID).first()
                                 db_session.delete(oclassZ)
                                 db_session.commit()
                             except Exception as ee:
                                 db_session.rollback()
                                 logger.error(ee)
                                 insertSyslog("error", "删除批次计划信息报错Error" + string(ee), current_user.Name)
-                                return json.dumps([{"status": "Error:" + str(ee)}], cls=AlchemyEncoder, ensure_ascii=False)
+                                return json.dumps([{"status": "Error:" + str(ee)}], cls=AlchemyEncoder,
+                                                  ensure_ascii=False)
                         for zYTask in zYTasks:
                             try:
                                 oclass = db_session.query(ZYTask).filter_by(ID=zYTask.ID).first()
@@ -3976,7 +4086,8 @@ def RecallPlan():
                                 print(ee)
                                 logger.error(ee)
                                 insertSyslog("error", "删除批次任务信息报错Error" + string(ee), current_user.Name)
-                                return json.dumps([{"status": "Error:" + str(ee)}], cls=AlchemyEncoder, ensure_ascii=False)
+                                return json.dumps([{"status": "Error:" + str(ee)}], cls=AlchemyEncoder,
+                                                  ensure_ascii=False)
                         planM.PlanStatus = Model.Global.PlanStatus.Recall.value
                         userName = current_user.Name
                         oclassNodeColl = db_session.query(Model.node.NodeCollection).filter_by(oddNum=id,
@@ -3986,7 +4097,7 @@ def RecallPlan():
                         oclassNodeColl.opertionTime = datetime.datetime.now()
                         oclassNodeColl.seq = 0
                         oclassNodeCollA = db_session.query(Model.node.NodeCollection).filter_by(oddNum=id,
-                                                                                               name=Model.node.flowPathNameJWXSP.A.value).first()
+                                                                                                name=Model.node.flowPathNameJWXSP.A.value).first()
                         oclassNodeCollA.status = Model.node.NodeStatus.NOTEXE.value
                         oclassNodeCollA.oddUser = userName
                         oclassNodeCollA.opertionTime = datetime.datetime.now()
@@ -4006,15 +4117,18 @@ def RecallPlan():
             insertSyslog("error", "撤回批次计划报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
+
 # 草珊瑚含片
 @app.route('/ZYPlanGuid/cshflowtu')
 def cshflowtu():
     return render_template('cshflowtu.html')
 
+
 # 健胃消食片
 @app.route('/ZYPlanGuid/jwxspflowtu')
 def jwxspflowtu():
     return render_template('jwxspflowtu.html')
+
 
 # 计划向导获取批次物料明细
 @app.route('/ZYPlanGuid/CriticalMaterials', methods=['POST', 'GET'])
@@ -4030,7 +4144,8 @@ def criticalMaterials():
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
                 ABatchID = data['ABatchID']
                 total = db_session.query(ZYPlanMaterial).filter(ZYPlanMaterial.BatchID == ABatchID).count()
-                zyMaterials = db_session.query(ZYPlanMaterial).filter(ZYPlanMaterial.BatchID == ABatchID).all()[inipage:endpage]
+                zyMaterials = db_session.query(ZYPlanMaterial).filter(ZYPlanMaterial.BatchID == ABatchID).all()[
+                              inipage:endpage]
                 jsonzyMaterials = json.dumps(zyMaterials, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonzyMaterials = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonzyMaterials + "}"
                 return jsonzyMaterials
@@ -4040,6 +4155,7 @@ def criticalMaterials():
             insertSyslog("error", "计划向导获取批次物料明细报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
+
 # 批次号判重
 @app.route('/ZYPlanGuid/isBatchNumber', methods=['POST', 'GET'])
 def isBatchNumber():
@@ -4048,11 +4164,12 @@ def isBatchNumber():
         try:
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 10:
-                isExist = ''#前台判断标识：OK为批次号可用，NO为此批次号已存在
+                isExist = ''  # 前台判断标识：OK为批次号可用，NO为此批次号已存在
                 ABatchID = data['ABatchID']
                 BrandName = data['BrandName']
-                BatchID = db_session.query(PlanManager.BatchID).filter(PlanManager.BatchID == ABatchID, PlanManager.BrandName == BrandName).first()
-                if(BatchID == None):
+                BatchID = db_session.query(PlanManager.BatchID).filter(PlanManager.BatchID == ABatchID,
+                                                                       PlanManager.BrandName == BrandName).first()
+                if (BatchID == None):
                     isExist = 'OK'
                 else:
                     isExist = 'NO'
@@ -4064,6 +4181,7 @@ def isBatchNumber():
             insertSyslog("error", "批次号判重报错Error：" + str(e), current_user.Name)
             return 'NO'
 
+
 # 计划向导重量校验
 @app.route('/ZYPlanGuid/weightCheck', methods=['POST', 'GET'])
 def weightCheck():
@@ -4073,12 +4191,15 @@ def weightCheck():
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 10:
                 PUID = data['PUID']
-                LowLimit,HighLimit = db_session.query(ProductControlTask.LowLimit, ProductControlTask.HighLimit).filter(ProductControlTask.PUID == PUID).first()
-                return LowLimit,HighLimit
+                LowLimit, HighLimit = db_session.query(ProductControlTask.LowLimit,
+                                                       ProductControlTask.HighLimit).filter(
+                    ProductControlTask.PUID == PUID).first()
+                return LowLimit, HighLimit
         except Exception as e:
             print(e)
             logger.error(e)
             insertSyslog("error", "计划向导重量校验报错Error：" + str(e), current_user.Name)
+
 
 # 获取批次计划信息
 @app.route('/ZYPlanGuid/searchZYPlan', methods=['POST', 'GET'])
@@ -4092,11 +4213,14 @@ def searchZYPlan():
                 rowsnumber = int(data['rows'])  # 行数
                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
-                ABatchID = data['ABatchID']#批次号
-                APlanDate = data['APlanDate']#计划日期
-                total = db_session.query(ZYPlan).filter(ZYPlan.BatchID == ABatchID, ZYPlan.PlanDate == APlanDate).count()
-                zYPlans = db_session.query(ZYPlan).filter(ZYPlan.BatchID == ABatchID, ZYPlan.PlanDate == APlanDate).order_by(desc("EnterTime")).all()[
-                              inipage:endpage]
+                ABatchID = data['ABatchID']  # 批次号
+                APlanDate = data['APlanDate']  # 计划日期
+                total = db_session.query(ZYPlan).filter(ZYPlan.BatchID == ABatchID,
+                                                        ZYPlan.PlanDate == APlanDate).count()
+                zYPlans = db_session.query(ZYPlan).filter(ZYPlan.BatchID == ABatchID,
+                                                          ZYPlan.PlanDate == APlanDate).order_by(
+                    desc("EnterTime")).all()[
+                          inipage:endpage]
                 jsonzYPlans = json.dumps(zYPlans, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonzYPlans = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonzYPlans + "}"
                 return jsonzYPlans
@@ -4105,10 +4229,12 @@ def searchZYPlan():
             logger.error(e)
             insertSyslog("error", "获取批次计划信息报错Error：" + str(e), current_user.Name)
 
+
 # 前处理段监控
 @app.route('/PreprocessingSectionMonitor')
 def Preprocessing():
     return render_template('PreprocessingSectionMonitor.html')
+
 
 # 运输段监控
 @app.route('/TransportMonitor')
@@ -4121,7 +4247,7 @@ def Transport():
             red_data = list(getMonitorData(red_tags).values())
             if len(blue_data) == len(red_data):
                 TransportMonitorData = list()
-                for index in range(0,len(blue_data)):
+                for index in range(0, len(blue_data)):
                     ConveyorBeltColor = dict()
                     key = 'ConveyorBeltColor_' + str(index)
                     if index == 36 or index == 45:
@@ -4152,13 +4278,14 @@ def Transport():
             logger.error(e)
             insertSyslog("error", "运输段监控报错Error：" + str(e), current_user.Name)
 
+
 def getMonitorData(tags):
     if tags:
         try:
             data_dict = dict()
             redis_conn = redis.Redis(connection_pool=pool)
             for tag in tags:
-                data_dict[tags[tag]] = redis_conn.hget(constant.REDIS_TABLENAME, 't|'+str(tags[tag])).decode('utf-8')
+                data_dict[tags[tag]] = redis_conn.hget(constant.REDIS_TABLENAME, 't|' + str(tags[tag])).decode('utf-8')
             return data_dict
         except Exception as e:
             print(e)
@@ -4173,23 +4300,26 @@ def FeedingSection():
     return render_template('FeedingSectionMonitor.html')
 
 
-#生产线监控
+# 生产线监控
 @app.route('/processMonitorLine')
 def processMonitor():
     return render_template('processMonitorLine.html')
 
-def get_data_from_realtime_Decocting(batch,brand,tankOver,status):
+
+def get_data_from_realtime_Decocting(batch, brand, tankOver, status):
     try:
         redis_conn = redis.Redis(connection_pool=pool)
         Batch = redis_conn.hget(constant.REDIS_TABLENAME, batch).decode('utf-8')
-        Brand = redis_conn.hget(constant.REDIS_TABLENAME,brand).decode('utf-8')
-        TankOver = redis_conn.hget(constant.REDIS_TABLENAME,tankOver).decode('utf-8') if redis_conn.hget(constant.REDIS_TABLENAME,tankOver) is not None else False
-        Status = redis_conn.hget(constant.REDIS_TABLENAME,status).decode('utf-8')
+        Brand = redis_conn.hget(constant.REDIS_TABLENAME, brand).decode('utf-8')
+        TankOver = redis_conn.hget(constant.REDIS_TABLENAME, tankOver).decode('utf-8') if redis_conn.hget(
+            constant.REDIS_TABLENAME, tankOver) is not None else False
+        Status = redis_conn.hget(constant.REDIS_TABLENAME, status).decode('utf-8')
         return Batch, Brand, TankOver, Status
     except Exception as e:
         print('连接实时数据服务器失败!')
         print('详细信息为:%s' % str(e))
         return
+
 
 # 生产监控提取段——健胃消食片
 @app.route('/processMonitorLine/extract')
@@ -4201,7 +4331,7 @@ def Extract():
                                                                               brand='t|PdtNR1101-1',
                                                                               tankOver='t|R1101_1_TQKGG_SB_Pat_CloseSwith',
                                                                               status='t|SB_R1101_1_StartProduction')
-            equip1_data = {'a1': Batch,'a2': Brand,'a3':'提取罐1','a5':TankOver,'a6':Status}
+            equip1_data = {'a1': Batch, 'a2': Brand, 'a3': '提取罐1', 'a5': TankOver, 'a6': Status}
             Equips_data.update(equip1_data)
 
             Batch, Brand, TankOver, Status = get_data_from_realtime_Decocting(batch='t|BhNR1101-2',
@@ -4246,6 +4376,7 @@ def Extract():
             logger.error(e)
             insertSyslog("error", "健胃消食片生产线监控提取段数据获取报错Error：" + str(e), current_user.Name)
 
+
 # 肿节风清膏提取段监控
 @app.route('/processMonitorLine/HerbaGlabraDecocting')
 def HerbaGlabraDecocting():
@@ -4286,7 +4417,8 @@ def HerbaGlabraDecocting():
             logger.error(e)
             insertSyslog("error", "肿节风清膏上产线监控提取段数据获取报错Error：" + str(e), current_user.Name)
 
-def get_data_from_realtime_Standing(name,Unit=None):
+
+def get_data_from_realtime_Standing(name, Unit=None):
     try:
         redis_conn = redis.Redis(connection_pool=pool)
         if Unit == 'Concentrate':
@@ -4294,7 +4426,7 @@ def get_data_from_realtime_Standing(name,Unit=None):
             brand_tag = 't|MVRPM_' + name[-1]
             Batch = redis_conn.hget(constant.REDIS_TABLENAME, str(batch_tag)).decode('utf-8')
             Brand = redis_conn.hget(constant.REDIS_TABLENAME, str(brand_tag)).decode('utf-8')
-            return Batch,Brand
+            return Batch, Brand
         if Unit == 'Decocting':
             batch_tag = 't|BhNR1101-' + name[-1]
             brand_tag = 't|PdtNR1101-' + name[-1]
@@ -4303,7 +4435,8 @@ def get_data_from_realtime_Standing(name,Unit=None):
 
             Batch = redis_conn.hget(constant.REDIS_TABLENAME, str(batch_tag)).decode('utf-8')
             Brand = redis_conn.hget(constant.REDIS_TABLENAME, str(brand_tag)).decode('utf-8')
-            tankOver = redis_conn.hget(constant.REDIS_TABLENAME, str(tankOver_tag)).decode('utf-8') if redis_conn.hget(constant.REDIS_TABLENAME, str(tankOver_tag)) is not None else False
+            tankOver = redis_conn.hget(constant.REDIS_TABLENAME, str(tankOver_tag)).decode('utf-8') if redis_conn.hget(
+                constant.REDIS_TABLENAME, str(tankOver_tag)) is not None else False
             status = redis_conn.hget(constant.REDIS_TABLENAME, str(status_tag)).decode('utf-8')
             return Batch, Brand, tankOver, status
 
@@ -4324,49 +4457,58 @@ def get_data_from_realtime_Standing(name,Unit=None):
         print('详细信息为:%s' % str(e))
         return
 
-def get_integer(object,count=None):
+
+def get_integer(object, count=None):
     if object is None or object == 'init':
         return object
-    return round(float(object),count)
+    return round(float(object), count)
 
-def standing_consentrate_collect(a,b,c,d,e,f,g,h,j):
-        Equips_data = {}
-        Batch, Brand, TankOver, Status = get_data_from_realtime_Standing(name=a, Unit='Decocting')
-        equip1_data = {'a1': Batch, 'a2': Brand, 'a3': '提取罐%s'%a[-1], 'a5': TankOver, 'a6': Status}
-        Equips_data.update(equip1_data)
 
-        Batch, Brand, Status, Feed_time, Volume = get_data_from_realtime_Standing(name=b)
-        equip2_data = {'b1': Batch, 'b2': get_integer(Feed_time),'b5': '静置罐%s'%b[4:], 'b6':Status, 'b7': get_integer(Volume,1)}
-        Equips_data.update(equip2_data)
+def standing_consentrate_collect(a, b, c, d, e, f, g, h, j):
+    Equips_data = {}
+    Batch, Brand, TankOver, Status = get_data_from_realtime_Standing(name=a, Unit='Decocting')
+    equip1_data = {'a1': Batch, 'a2': Brand, 'a3': '提取罐%s' % a[-1], 'a5': TankOver, 'a6': Status}
+    Equips_data.update(equip1_data)
 
-        Batch, Brand, Status, Feed_time, Volume = get_data_from_realtime_Standing(name=c)
-        equip3_data = {'c1': Batch, 'c2': get_integer(Feed_time), 'c5': '静置罐%s'%c[4:], 'c6': Status,'c7': get_integer(Volume,1)}
-        Equips_data.update(equip3_data)
+    Batch, Brand, Status, Feed_time, Volume = get_data_from_realtime_Standing(name=b)
+    equip2_data = {'b1': Batch, 'b2': get_integer(Feed_time), 'b5': '静置罐%s' % b[4:], 'b6': Status,
+                   'b7': get_integer(Volume, 1)}
+    Equips_data.update(equip2_data)
 
-        Batch, Brand, Status, Feed_time, Volume = get_data_from_realtime_Standing(name=d)
-        equip4_data = {'d1': Batch, 'd2': get_integer(Feed_time), 'd5': '静置罐%s'%d[4:], 'd6': Status,'d7': get_integer(Volume,1)}
-        Equips_data.update(equip4_data)
+    Batch, Brand, Status, Feed_time, Volume = get_data_from_realtime_Standing(name=c)
+    equip3_data = {'c1': Batch, 'c2': get_integer(Feed_time), 'c5': '静置罐%s' % c[4:], 'c6': Status,
+                   'c7': get_integer(Volume, 1)}
+    Equips_data.update(equip3_data)
 
-        Batch, Brand, TankOver, Status = get_data_from_realtime_Standing(name=e, Unit='Decocting')
-        equip5_data = {'e1': Batch, 'e2': Brand, 'e3': '提取罐%s'%a[-1], 'e5': TankOver, 'e6': Status}
-        Equips_data.update(equip5_data)
+    Batch, Brand, Status, Feed_time, Volume = get_data_from_realtime_Standing(name=d)
+    equip4_data = {'d1': Batch, 'd2': get_integer(Feed_time), 'd5': '静置罐%s' % d[4:], 'd6': Status,
+                   'd7': get_integer(Volume, 1)}
+    Equips_data.update(equip4_data)
 
-        Batch, Brand, Status, Feed_time, Volume = get_data_from_realtime_Standing(name=f)
-        equip6_data = {'f1': Batch, 'f2': get_integer(Feed_time), 'f5': '静置罐%s'%f[4:], 'f6': Status,'f7': get_integer(Volume,1)}
-        Equips_data.update(equip6_data)
+    Batch, Brand, TankOver, Status = get_data_from_realtime_Standing(name=e, Unit='Decocting')
+    equip5_data = {'e1': Batch, 'e2': Brand, 'e3': '提取罐%s' % a[-1], 'e5': TankOver, 'e6': Status}
+    Equips_data.update(equip5_data)
 
-        Batch, Brand, Status, Feed_time, Volume = get_data_from_realtime_Standing(name=g)
-        equip7_data = {'g1': Batch, 'g2': get_integer(Feed_time), 'g5': '静置罐%s'%g[4:], 'g6': Status,'g7': get_integer(Volume,1)}
-        Equips_data.update(equip7_data)
+    Batch, Brand, Status, Feed_time, Volume = get_data_from_realtime_Standing(name=f)
+    equip6_data = {'f1': Batch, 'f2': get_integer(Feed_time), 'f5': '静置罐%s' % f[4:], 'f6': Status,
+                   'f7': get_integer(Volume, 1)}
+    Equips_data.update(equip6_data)
 
-        Batch, Brand, Status, Feed_time, Volume = get_data_from_realtime_Standing(name=h)
-        equip8_data = {'h1': Batch, 'h2': get_integer(Feed_time), 'h5': '静置罐%s'%h[4:], 'h6': Status,'h7': get_integer(Volume,1)}
-        Equips_data.update(equip8_data)
+    Batch, Brand, Status, Feed_time, Volume = get_data_from_realtime_Standing(name=g)
+    equip7_data = {'g1': Batch, 'g2': get_integer(Feed_time), 'g5': '静置罐%s' % g[4:], 'g6': Status,
+                   'g7': get_integer(Volume, 1)}
+    Equips_data.update(equip7_data)
 
-        Batch, Brand = get_data_from_realtime_Standing(j,Unit='Concentrate')
-        equip9_data = {'i1': Batch, 'i2': Brand, 'i3': '浓缩罐%s'%j[:-1]}
-        Equips_data.update(equip9_data)
-        return Equips_data
+    Batch, Brand, Status, Feed_time, Volume = get_data_from_realtime_Standing(name=h)
+    equip8_data = {'h1': Batch, 'h2': get_integer(Feed_time), 'h5': '静置罐%s' % h[4:], 'h6': Status,
+                   'h7': get_integer(Volume, 1)}
+    Equips_data.update(equip8_data)
+
+    Batch, Brand = get_data_from_realtime_Standing(j, Unit='Concentrate')
+    equip9_data = {'i1': Batch, 'i2': Brand, 'i3': '浓缩罐%s' % j[:-1]}
+    Equips_data.update(equip9_data)
+    return Equips_data
+
 
 # 生产监控静止浓缩段
 @app.route('/processMonitorLine/StandingAndConsentrate')
@@ -4413,7 +4555,7 @@ def StandingAndConsentrate():
             insertSyslog("error", "生长线监控静止浓缩段数据获取报错Error：" + str(e), current_user.Name)
 
 
-def get_data_Total_MixtureAndDry(num,Unit=None):
+def get_data_Total_MixtureAndDry(num, Unit=None):
     try:
         share_data = redis.Redis(connection_pool=pool)
 
@@ -4432,7 +4574,7 @@ def get_data_Total_MixtureAndDry(num,Unit=None):
             Temperature = share_data.hget(constant.REDIS_TABLENAME, temp_tag).decode('utf-8')
             Flow = share_data.hget(constant.REDIS_TABLENAME, flow_tag).decode('utf-8')
 
-            return Batch, Brand, Height, Volume,Temperature,Flow
+            return Batch, Brand, Height, Volume, Temperature, Flow
         if Unit == 'Dry':
             batch_tag = 't|PGPC_' + num
             brand_tag = 't|PGPM_' + num
@@ -4445,22 +4587,25 @@ def get_data_Total_MixtureAndDry(num,Unit=None):
         logger.error(e)
         insertSyslog("error", "生产监控总混干燥段获取数据报错Error：" + str(e), current_user.Name)
 
+
 # 生产监控总混干燥段-健胃消食片
 @app.route('/processMonitorLine/Total_MixtureAndDry')
 def Total_MixtureAndDry():
     if request.method == 'GET':
         try:
             Equips_data = {}
-            Batch, Brand, Height, Volume, Temperature,Flow = get_data_Total_MixtureAndDry(num='1',Unit='Total_Mixture')
-            equip1_data = {'a1': Batch, 'a2': Brand, 'a3': get_integer(Height,1), 'a4': get_integer(Volume,1),
-                           'a5': get_integer(Flow,1),'a6': get_integer(Temperature,1)}
+            Batch, Brand, Height, Volume, Temperature, Flow = get_data_Total_MixtureAndDry(num='1',
+                                                                                           Unit='Total_Mixture')
+            equip1_data = {'a1': Batch, 'a2': Brand, 'a3': get_integer(Height, 1), 'a4': get_integer(Volume, 1),
+                           'a5': get_integer(Flow, 1), 'a6': get_integer(Temperature, 1)}
             Equips_data.update(equip1_data)
 
-            Batch, Brand = get_data_Total_MixtureAndDry(num='1',Unit='Dry')
+            Batch, Brand = get_data_Total_MixtureAndDry(num='1', Unit='Dry')
             equip2_data = {'b1': Batch, 'b2': Brand}
             Equips_data.update(equip2_data)
 
-            Batch, Brand, Height, Volume, Temperature, Flow = get_data_Total_MixtureAndDry(num='2',Unit='Total_Mixture')
+            Batch, Brand, Height, Volume, Temperature, Flow = get_data_Total_MixtureAndDry(num='2',
+                                                                                           Unit='Total_Mixture')
             equip3_data = {'c1': Batch, 'c2': Brand, 'c3': get_integer(Height, 1), 'c4': get_integer(Volume, 1),
                            'c5': get_integer(Flow, 1), 'c6': get_integer(Temperature, 1)}
             Equips_data.update(equip3_data)
@@ -4475,17 +4620,20 @@ def Total_MixtureAndDry():
             logger.error(e)
             insertSyslog("error", "生产监控总混干燥段返回数据报错Error：" + str(e), current_user.Name)
 
-#健胃消食片静置浓缩段页面
+
+# 健胃消食片静置浓缩段页面
 @app.route('/processMonitorLine/IndigestionTablet/StaticConcentration')
 def StaticConcentration():
     return render_template('processMonitorLine_IndigestionTablet_StaticConcentration.html')
 
-#肿节风清膏醇沉收膏段页面
+
+# 肿节风清膏醇沉收膏段页面
 @app.route('/processMonitorLine/HerbaGlabra/AlcoholPrecipitation')
 def HerbaGlabraMonitor():
     return render_template('processMonitorLine_HerbaGlabra_AlcoholPrecipitation.html')
 
-#肿节风数据刷新
+
+# 肿节风数据刷新
 @app.route('/HerbaGlabra/AlcoholPrecipitationData')
 def AlcoholPrecipitationData():
     if request.method == 'GET':
@@ -4531,7 +4679,8 @@ def AlcoholPrecipitationData():
             logger.error(e)
             insertSyslog("error", "生产监控醇沉收膏段返回数据报错Error：" + str(e), current_user.Name)
 
-#任务确认
+
+# 任务确认
 @app.route('/taskConfirm')
 def taskConfirm():
     if request.method == 'GET':
@@ -4548,7 +4697,8 @@ def taskConfirm():
         # print(zytasks)
         return render_template('taskConfirm.html')
 
-#任务确认获取工艺段
+
+# 任务确认获取工艺段
 @app.route('/processMonitorLine/taskConfirmPuid', methods=['POST', 'GET'])
 def taskConfirmPuidDate():
     if request.method == 'GET':
@@ -4576,6 +4726,7 @@ def taskConfirmPuidDate():
             logger.error(e)
             insertSyslog("error", "任务确认获取工艺段报错Error：" + str(e), current_user.Name)
 
+
 # 任务确认查询计划
 @app.route('/processMonitorLine/planConfirmSearch', methods=['POST', 'GET'])
 def planConfirmSearch():
@@ -4589,14 +4740,16 @@ def planConfirmSearch():
                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
                 APUID = data['PUID']  # 工艺段编码
-                if(APUID == "" or APUID == None):
+                if (APUID == "" or APUID == None):
                     total = db_session.query(ZYPlan).filter(ZYPlan.ZYPlanStatus.in_((31, 40, 50))).count()
-                    ZYPlans = db_session.query(ZYPlan).filter(ZYPlan.ZYPlanStatus.in_((31, 40, 50))).order_by(desc("EnterTime")).all()[inipage:endpage]
+                    ZYPlans = db_session.query(ZYPlan).filter(ZYPlan.ZYPlanStatus.in_((31, 40, 50))).order_by(
+                        desc("EnterTime")).all()[inipage:endpage]
                 else:
                     total = db_session.query(ZYPlan).filter(ZYPlan.ZYPlanStatus.in_((31, 40, 50)),
                                                             ZYPlan.PUID == APUID).count()
                     ZYPlans = db_session.query(ZYPlan).filter(ZYPlan.ZYPlanStatus.in_((31, 40, 50)),
-                                                              ZYPlan.PUID == APUID).order_by(desc("EnterTime")).all()[inipage:endpage]
+                                                              ZYPlan.PUID == APUID).order_by(desc("EnterTime")).all()[
+                              inipage:endpage]
                 jsonZYPlans = json.dumps(ZYPlans, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonZYPlans = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonZYPlans + "}"
                 return jsonZYPlans
@@ -4604,6 +4757,7 @@ def planConfirmSearch():
             print(e)
             logger.error(e)
             insertSyslog("error", "任务确认查询计划报错Error：" + str(e), current_user.Name)
+
 
 # 任务确认查询任务
 @app.route('/processMonitorLine/taskConfirmSearch', methods=['POST', 'GET'])
@@ -4621,9 +4775,12 @@ def taskConfirmSearch():
                 name = data['name']
                 BrandID = data['BrandID']
                 BatchID = data['BatchID']
-                PUID = db_session.query(ProductUnitRoute.PUID).filter(ProductUnitRoute.PDUnitRouteName == name, ProductUnitRoute.ProductRuleID == BrandID).first()
-                total = db_session.query(ZYTask.ID).filter(ZYTask.PUID == PUID[0], ZYTask.BatchID == BatchID, ZYTask.BrandID == BrandID).count()
-                tasks = db_session.query(ZYTask).filter(ZYTask.PUID == PUID[0], ZYTask.BatchID == BatchID, ZYTask.BrandID == BrandID).all()[inipage:endpage]
+                PUID = db_session.query(ProductUnitRoute.PUID).filter(ProductUnitRoute.PDUnitRouteName == name,
+                                                                      ProductUnitRoute.ProductRuleID == BrandID).first()
+                total = db_session.query(ZYTask.ID).filter(ZYTask.PUID == PUID[0], ZYTask.BatchID == BatchID,
+                                                           ZYTask.BrandID == BrandID).count()
+                tasks = db_session.query(ZYTask).filter(ZYTask.PUID == PUID[0], ZYTask.BatchID == BatchID,
+                                                        ZYTask.BrandID == BrandID).all()[inipage:endpage]
                 jsonZYTasks = json.dumps(tasks, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonZYTasks = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonZYTasks + "}"
                 return jsonZYTasks
@@ -4631,7 +4788,9 @@ def taskConfirmSearch():
             print(e)
             logger.error(e)
             insertSyslog("error", "获取任务确认的任务列表报错Error：" + str(e), current_user.Name)
-#任务确认工艺段下的所有设备
+
+
+# 任务确认工艺段下的所有设备
 @app.route('/processMonitorLine/searchAllEquipments', methods=['POST', 'GET'])
 def searchAllEquipments():
     if request.method == 'GET':
@@ -4641,7 +4800,7 @@ def searchAllEquipments():
             if len(jsonstr) > 10:
                 APUID = data['PUID']  # 工艺段编码
                 dataequipmentNames = []
-                equipmentNames = db_session.query(Equipment.ID,Equipment.EQPName).filter(Equipment.PUID == APUID).all()
+                equipmentNames = db_session.query(Equipment.ID, Equipment.EQPName).filter(Equipment.PUID == APUID).all()
                 for equip in equipmentNames:
                     li = list(equip)
                     id = li[0]
@@ -4669,15 +4828,18 @@ def searchPnameEquipment():
             if len(jsonstr) > 10:
                 PName = data['PName']
                 ProductRuleID = data['BrandID']
-                oclass = db_session.query(Equipment).join(ProductUnitRoute, Equipment.PUID == ProductUnitRoute.PUID).filter(
-                    ProductUnitRoute.PDUnitRouteName == PName, ProductUnitRoute.ProductRuleID == ProductRuleID, Equipment.PUID).all()
+                oclass = db_session.query(Equipment).join(ProductUnitRoute,
+                                                          Equipment.PUID == ProductUnitRoute.PUID).filter(
+                    ProductUnitRoute.PDUnitRouteName == PName, ProductUnitRoute.ProductRuleID == ProductRuleID,
+                    Equipment.PUID).all()
                 return json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
             logger.error(e)
             insertSyslog("error", "任务确认工艺段下的所有设备报错Error：" + str(e), current_user.Name)
 
-#任务确认保存设备code
+
+# 任务确认保存设备code
 @app.route('/processMonitorLine/saveEQPCode', methods=['POST', 'GET'])
 def saveEQPCode():
     if request.method == 'GET':
@@ -4709,13 +4871,15 @@ def saveEQPCode():
                         EQPCo = "DXNS-"
                     for i in range(len(oclasstasks)):
                         oclasstasks[i].EquipmentID = ""
-                        eqps = db_session.query(Equipment.ID).filter_by(PUID = PUID).all()
-                        id = db_session.query(Equipment.ID).filter(Equipment.EQPCode == EQPCo + str(i+1), Equipment.Equipment_State =="正常").first()
+                        eqps = db_session.query(Equipment.ID).filter_by(PUID=PUID).all()
+                        id = db_session.query(Equipment.ID).filter(Equipment.EQPCode == EQPCo + str(i + 1),
+                                                                   Equipment.Equipment_State == "正常").first()
                         if id != None:
                             oclasstasks[i].EquipmentID = id[0]
                         else:
                             id = db_session.query(Equipment.ID).filter(
-                                Equipment.EQPCode == EQPCo + str((i + 1)%len(eqps)), Equipment.Equipment_State == "正常").first()
+                                Equipment.EQPCode == EQPCo + str((i + 1) % len(eqps)),
+                                Equipment.Equipment_State == "正常").first()
                             if id != None:
                                 oclasstasks[i].EquipmentID = id[0]
                             else:
@@ -4731,7 +4895,9 @@ def saveEQPCode():
                     ID = data['ID']
                     EQPCode = data['EQPCode']
                     oclass = db_session.query(ZYTask).filter(ZYTask.ID == ID).first()
-                    oclasstasks = db_session.query(ZYTask).filter(ZYTask.BatchID == oclass.BatchID, ZYTask.PUID == oclass.PUID, ZYTask.BrandID == oclass.BrandID).all()
+                    oclasstasks = db_session.query(ZYTask).filter(ZYTask.BatchID == oclass.BatchID,
+                                                                  ZYTask.PUID == oclass.PUID,
+                                                                  ZYTask.BrandID == oclass.BrandID).all()
                     oclass.EquipmentID = EQPCode
                     oclass.TaskStatus = Model.Global.TASKSTATUS.COMFIRM.value
                     IDm = db_session.query(PlanManager.ID).filter(PlanManager.BatchID == oclass.BatchID,
@@ -4743,13 +4909,13 @@ def saveEQPCode():
                 IDm = IDm[0]
                 flag = "TRUE"
                 for task in oclasstasks:
-                    if(task.TaskStatus != Model.Global.TASKSTATUS.COMFIRM.value):
+                    if (task.TaskStatus != Model.Global.TASKSTATUS.COMFIRM.value):
                         flag = "FALSE"
-                if(flag == "TRUE"):
-                    if(na == "备料段"):
+                if (flag == "TRUE"):
+                    if (na == "备料段"):
                         aa = '（备料段）任务确认'
-                        updateNodeA(IDm,aa)
-                    elif(na == "煎煮段"):
+                        updateNodeA(IDm, aa)
+                    elif (na == "煎煮段"):
                         bb = '（煎煮段）任务确认'
                         updateNodeA(IDm, bb)
                     elif (na == "浓缩段"):
@@ -4777,7 +4943,9 @@ def saveEQPCode():
             logger.error(e)
             insertSyslog("error", "任务确认保存设备code报错Error：" + str(e), current_user.Name)
             return "任务确认保存设备code报错"
-def updateNodeA(id,name):
+
+
+def updateNodeA(id, name):
     try:
         noclass = db_session.query(Model.node.NodeCollection).filter(Model.node.NodeCollection.name == name,
                                                                      Model.node.NodeCollection.oddNum == id).first()
@@ -4792,7 +4960,8 @@ def updateNodeA(id,name):
         logger.error(e)
         insertSyslog("error", "更新NodeCollection报错Error：" + str(e), current_user.Name)
 
-#任务确认查询设备下任务
+
+# 任务确认查询设备下任务
 @app.route('/processMonitorLine/searchTasksByEquipmentID', methods=['POST', 'GET'])
 def searchTasksByEquipmentID():
     if request.method == 'GET':
@@ -4815,7 +4984,8 @@ def searchTasksByEquipmentID():
 def checkplanmanager():
     return render_template('checkplanmanager.html')
 
-#计划审核查询
+
+# 计划审核查询
 @app.route('/allPlanManagers/searchcheckplanmanager', methods=['POST', 'GET'])
 def searchcheckplanmanager():
     if request.method == 'GET':
@@ -4830,13 +5000,15 @@ def searchcheckplanmanager():
                 ABatchID = data['BatchID']  # 批次号
                 if (ABatchID == None or ABatchID == ""):
                     total = db_session.query(PlanManager.ID).filter(PlanManager.PlanStatus.in_((10, 40))).count()
-                    planManagers = db_session.query(PlanManager).filter(PlanManager.PlanStatus.in_((10, 40))).order_by(desc("ID")).all()[
+                    planManagers = db_session.query(PlanManager).filter(PlanManager.PlanStatus.in_((10, 40))).order_by(
+                        desc("ID")).all()[
                                    inipage:endpage]
                 else:
                     total = db_session.query(PlanManager).filter(PlanManager.BatchID == ABatchID,
                                                                  PlanManager.PlanStatus.in_((10, 40))).count()
                     planManagers = db_session.query(PlanManager).filter(PlanManager.BatchID == ABatchID,
-                                                                        PlanManager.PlanStatus.in_((10, 40))).order_by(desc("ID")).all()[
+                                                                        PlanManager.PlanStatus.in_((10, 40))).order_by(
+                        desc("ID")).all()[
                                    inipage:endpage]
                 planManagers = json.dumps(planManagers, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonPlanManagers = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + planManagers + "}"
@@ -4853,12 +5025,16 @@ def GetEquipmentData():
     # ProcessSection = db_session.query(Equipment.Equipment_State).all()
     pass
 
+
 def Productmonitor():
     t = Timer(2, GetEquipmentData)
     t.start()
+
+
 app.add_template_global(Productmonitor, 'Productmonitor')
 
-#操作人确认
+
+# 操作人确认
 @app.route('/ZYPlanGuid/operateConfirm', methods=['POST', 'GET'])
 def operateConfirm():
     if request.method == 'POST':
@@ -4866,14 +5042,14 @@ def operateConfirm():
         try:
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 10:
-                ID = data['ID']#计划ID
-                PName = data['PName']#计划名称
-                PUName = data['PUName']#计划明细名称
+                ID = data['ID']  # 计划ID
+                PName = data['PName']  # 计划名称
+                PUName = data['PUName']  # 计划明细名称
                 planM = db_session.query(PlanManager).filter(PlanManager.ID == ID).first()
                 BrandName = planM.BrandName
-                if(PName == "备料"):
+                if (PName == "备料"):
                     PName = '备料段'
-                    if(PUName == "生产前的准备"):
+                    if (PUName == "生产前的准备"):
                         name = '（备料段）生产前准备（操作人）'
                         node = db_session.query(Model.node.NodeCollection).filter(
                             Model.node.NodeCollection.oddNum == ID,
@@ -4883,27 +5059,27 @@ def operateConfirm():
                         node.oddUser = current_user.Name
                         db_session.commit()
                         return operateflow(ID, name, PName)
-                    elif(PUName == "备料开始"):
+                    elif (PUName == "备料开始"):
                         name = '备料操作按SOP执行（操作人）'
                         return operateflow(ID, name, PName)
-                    elif(PUName == "备料结束清场"):
+                    elif (PUName == "备料结束清场"):
                         name = '（备料段）生产结束清场（操作人）'
                         return operateflow(ID, name, PName)
-                elif(PName == "煎煮"):
+                elif (PName == "煎煮"):
                     PName = '煎煮段'
-                    if(PUName == "生产前的准备"):
+                    if (PUName == "生产前的准备"):
                         name = '（煎煮段）生产前准备（操作人）'
                         return operateflow(ID, name, PName)
-                    elif(PUName == "煎煮开始"):
+                    elif (PUName == "煎煮开始"):
                         name = '煎煮开始，操作按SOP执行（操作人）'
                         return operateflow(ID, name, PName)
-                    elif(PUName == "静置开始"):
+                    elif (PUName == "静置开始"):
                         name = '静置开始，操作按SOP执行（操作人）'
                         return operateflow(ID, name, PName)
-                    elif(PUName == "煎煮结束清场"):
+                    elif (PUName == "煎煮结束清场"):
                         name = '（煎煮段）生产结束清场（操作人）'
                         return operateflow(ID, name, PName)
-                elif(PName == "浓缩"):
+                elif (PName == "浓缩"):
                     PName = "浓缩段"
                     if (PUName == "生产前的准备"):
                         name = '（浓缩段）生产前准备（操作人）'
@@ -4914,7 +5090,7 @@ def operateConfirm():
                     elif (PUName == "浓缩结束清场"):
                         name = '浓缩结束清场（操作人）'
                         return operateflow(ID, name, PName)
-                elif(PName == "喷雾干燥"):
+                elif (PName == "喷雾干燥"):
                     PName = "喷雾干燥段"
                     if (PUName == "生产前的准备"):
                         name = '（喷雾干燥段）生产前准备（操作人）'
@@ -4925,7 +5101,7 @@ def operateConfirm():
                     elif (PUName == "喷雾干燥结束清场"):
                         name = '喷雾干燥结束，按SOP清场（操作人）'
                         return operateflow(ID, name, PName)
-                elif(PName == "收粉"):
+                elif (PName == "收粉"):
                     PName = '收粉段'
                     if (PUName == "生产前的准备"):
                         name = '（收粉段）生产前准备（操作人）'
@@ -4943,7 +5119,7 @@ def operateConfirm():
                     elif (PUName == "收粉结束清场"):
                         name = '收粉结束，按SOP清场（操作人）'
                         return operateflow(ID, name, PName)
-                elif(PName == "醇沉"):
+                elif (PName == "醇沉"):
                     PName = "醇沉段"
                     if (PUName == "生产前的准备"):
                         name = '（醇沉段）生产前准备（操作人）'
@@ -4954,7 +5130,7 @@ def operateConfirm():
                     elif (PUName == "醇沉结束清场"):
                         name = '醇沉结束，按SOP清场（操作人）'
                         return operateflow(ID, name, PName)
-                elif(PName == "单效浓缩"):
+                elif (PName == "单效浓缩"):
                     PName = "单效浓缩段"
                     if (PUName == "生产前的准备"):
                         name = '（单效浓缩段）生产前准备（操作人）'
@@ -4965,7 +5141,7 @@ def operateConfirm():
                     elif (PUName == "单效浓缩结束清场"):
                         name = '单效浓缩结束，按SOP清场（操作人）'
                         return operateflow(ID, name, PName)
-                elif(PName == "收膏"):
+                elif (PName == "收膏"):
                     PName = "收膏段"
                     if (PUName == "生产前的准备"):
                         name = '（收膏段）生产前准备（操作人）'
@@ -4980,14 +5156,17 @@ def operateConfirm():
             print(e)
             logger.error(e)
             insertSyslog("error", "操作人确认报错Error：" + str(e), current_user.Name)
+
+
 def operateflow(ID, name, PName):
     flag = 'OK'
     try:
         BatchID = db_session.query(PlanManager.BatchID).filter(PlanManager.ID == ID).first()
         PUID = db_session.query(ProductUnitRoute.PUID).filter(ProductUnitRoute.PDUnitRouteName == PName).first()
-        taskStatuss = db_session.query(ZYTask.TaskStatus).filter(ZYTask.PUID == PUID[0], ZYTask.BatchID == BatchID[0]).all()
+        taskStatuss = db_session.query(ZYTask.TaskStatus).filter(ZYTask.PUID == PUID[0],
+                                                                 ZYTask.BatchID == BatchID[0]).all()
         for status in taskStatuss:
-            if(status[0] == Model.Global.TASKSTATUS.NEW.value):
+            if (status[0] == Model.Global.TASKSTATUS.NEW.value):
                 return "请先进行任务确认，再进行操作！"
             else:
                 pass
@@ -5005,6 +5184,7 @@ def operateflow(ID, name, PName):
         logger.error(e)
         insertSyslog("error", "复核报错Error：" + str(e), current_user.Name)
         return "复核报错Error：" + str(e), current_user.Name
+
 
 # 复核人确认
 @app.route('/ZYPlanGuid/checkedConfirm', methods=['POST', 'GET'])
@@ -5144,12 +5324,14 @@ def checkedConfirm():
                     elif (PUName == "收膏结束清场"):
                         statusName = '收膏结束，按SOP清场（操作人）'
                         name = '收膏结束，按SOP清场（复核人）'
-                        return checkflow(ID,statusName,name)
+                        return checkflow(ID, statusName, name)
         except Exception as e:
             print(e)
             logger.error(e)
             insertSyslog("error", "复核报错Error：" + str(e), current_user.Name)
-def checkflow(ID,statusName,name):
+
+
+def checkflow(ID, statusName, name):
     flag = 'OK'
     try:
         status = db_session.query(Model.node.NodeCollection.status).filter(
@@ -5171,6 +5353,7 @@ def checkflow(ID,statusName,name):
         logger.error(e)
         insertSyslog("error", "复核报错Error：" + str(e), current_user.Name)
         return "复核报错Error：" + str(e), current_user.Name
+
 
 # QA确认人
 @app.route('/ZYPlanGuid/QAautograph', methods=['POST', 'GET'])
@@ -5298,6 +5481,7 @@ def QAautograph():
             logger.error(e)
             insertSyslog("error", "复核报错Error：" + str(e), current_user.Name)
 
+
 def QAflow(ID, statusName, name):
     flag = 'OK'
     try:
@@ -5313,12 +5497,13 @@ def QAflow(ID, statusName, name):
         node.opertionTime = datetime.datetime.now()
         node.oddUser = current_user.Name
         db_session.commit()
-        PStatuss = db_session.query(Model.node.NodeCollection.status).filter(Model.node.NodeCollection.oddNum == ID, Model.node.NodeCollection.name != 'QA放行').all()
+        PStatuss = db_session.query(Model.node.NodeCollection.status).filter(Model.node.NodeCollection.oddNum == ID,
+                                                                             Model.node.NodeCollection.name != 'QA放行').all()
         fl = "TRUE"
         for pst in PStatuss:
-            if(pst[0] != 10):
+            if (pst[0] != 10):
                 fl = "FALSE"
-        if(fl == "TRUE"):
+        if (fl == "TRUE"):
             planaMStatus = db_session.query(PlanManager).filter(PlanManager.ID == ID).first()
             planaMStatus.PlanStatus = Model.Global.PlanStatus.FINISH.value
             db_session.commit()
@@ -5329,6 +5514,7 @@ def QAflow(ID, statusName, name):
         logger.error(e)
         insertSyslog("error", "QA签名报错Error：" + str(e), current_user.Name)
         return "QA签名报错Error：" + str(e), current_user.Name
+
 
 # QA放行查询
 @app.route('/ZYPlanGuid/QAPassSearch', methods=['POST', 'GET'])
@@ -5349,9 +5535,9 @@ def QAPassSearch():
                         desc("PlanBeginTime")).all()[inipage:endpage]
                 else:
                     total = db_session.query(PlanManager.ID).filter(PlanManager.BatchID == ABatchID,
-                                                               PlanManager.PlanStatus.in_((60, 70))).count()
+                                                                    PlanManager.PlanStatus.in_((60, 70))).count()
                     PlanManagers = db_session.query(PlanManager).filter(ZYPlan.BatchID == ABatchID,
-                                                              PlanManager.PlanStatus.in_((60, 70))).order_by(
+                                                                        PlanManager.PlanStatus.in_((60, 70))).order_by(
                         desc("PlanBeginTime")).all()[inipage:endpage]
                 PlanManagers = json.dumps(PlanManagers, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonPlanManagers = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + PlanManagers + "}"
@@ -5360,6 +5546,7 @@ def QAPassSearch():
             print(e)
             logger.error(e)
             insertSyslog("error", "QA放行查询报错Error：" + str(e), current_user.Name)
+
 
 # QA放行
 @app.route('/ZYPlanGuid/QAPass', methods=['POST', 'GET'])
@@ -5373,7 +5560,8 @@ def QAPass():
                 for key in jsonnumber:
                     id = int(key)
                     try:
-                        nodec = db_session.query(Model.node.NodeCollection).filter(Model.node.NodeCollection.oddNum == id, Model.node.NodeCollection.name == 'QA放行').first()
+                        nodec = db_session.query(Model.node.NodeCollection).filter(
+                            Model.node.NodeCollection.oddNum == id, Model.node.NodeCollection.name == 'QA放行').first()
                         nodec.status = Model.node.NodeStatus.PASSED.value
                         oclass = db_session.query(PlanManager).filter(PlanManager.ID == id).first()
                         oclass.PlanStatus = Model.Global.PlanStatus.QApass.value
@@ -5389,10 +5577,12 @@ def QAPass():
             logger.error(e)
             insertSyslog("error", "QA放行报错Error：" + str(e), current_user.Name)
 
+
 # 计划执行进度
 @app.route('/PlanExecutionProgress')
 def PlanExecutionProgress():
     return render_template('PlanExecutionProgress.html')
+
 
 # 计划执行进度查询计划明细
 @app.route('/PlanExecutionProgress/zyPlanProgressSearch', methods=['POST', 'GET'])
@@ -5409,7 +5599,9 @@ def zyPlanProgressSearch():
                 BatchID = data['BatchID']  # 批次号
                 BrandID = data['BrandID']  # 品名ID
                 total = db_session.query(ZYPlan.ID).filter(ZYPlan.BatchID == BatchID, ZYPlan.BrandID == BrandID).count()
-                zyplans = db_session.query(ZYPlan.ID).filter(ZYPlan.BatchID == BatchID, ZYPlan.BrandID == BrandID).order_by(desc("EnterTime")).all()[inipage:endpage]
+                zyplans = db_session.query(ZYPlan.ID).filter(ZYPlan.BatchID == BatchID,
+                                                             ZYPlan.BrandID == BrandID).order_by(
+                    desc("EnterTime")).all()[inipage:endpage]
                 jsonzyplans = json.dumps(zyplans, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonzyplans = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonzyplans + "}"
                 return jsonzyplans
@@ -5418,6 +5610,7 @@ def zyPlanProgressSearch():
             logger.error(e)
             insertSyslog("error", "计划执行进度查询计划明细Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
 
 # 计划执行进度查询流程图
 @app.route('/PlanExecutionProgress/planmanagerProgressTuSearch', methods=['POST', 'GET'])
@@ -5432,7 +5625,7 @@ def planmanagerProgressTuSearch():
                 planM = db_session.query(PlanManager).filter(PlanManager.ID == ID).first()
                 BrandName = planM.BrandName
                 PlanStatus = planM.PlanStatus
-                if(BrandName == "健胃消食片浸膏粉"):
+                if (BrandName == "健胃消食片浸膏粉"):
                     aa = '（备料段）任务确认'
                     dic['aa'] = queryPlanMStatus(PlanStatus)
                     a1 = '（备料段）生产前准备（QA签名）'
@@ -5475,7 +5668,7 @@ def planmanagerProgressTuSearch():
                     dic['e2'] = queryFlow(ID, e2)
                     e3 = '收粉结束，按SOP清场（QA签名）'
                     dic['e3'] = queryFlow(ID, e3)
-                elif(BrandName == "肿节风浸膏"):
+                elif (BrandName == "肿节风浸膏"):
                     aa = '（备料段）任务确认'
                     dic['aa'] = queryPlanMStatus(PlanStatus)
                     a1 = '（备料段）生产前准备（QA签名）'
@@ -5523,7 +5716,7 @@ def planmanagerProgressTuSearch():
                     h1 = '（收膏段）生产前准备（QA签名）'
                     dic['h1'] = queryFlow(ID, h1)
                     h2 = '收膏开始，操作按SOP执行（QA签名）'
-                    dic['h2'] = queryFlow(ID,h2)
+                    dic['h2'] = queryFlow(ID, h2)
                     h3 = '收膏结束，按SOP清场（QA签名）'
                     dic['h3'] = queryFlow(ID, h3)
                 return json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False)
@@ -5532,23 +5725,29 @@ def planmanagerProgressTuSearch():
             logger.error(e)
             insertSyslog("error", "计划执行进度查询流程图查询报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+
 def queryPlanMStatus(PlanStatus):
-    if(PlanStatus not in('10','11','40')):
+    if (PlanStatus not in ('10', '11', '40')):
         return 'OK'
     else:
         return 'NO'
+
+
 def queryFlow(ID, name):
     status = db_session.query(Model.node.NodeCollection.status).filter(Model.node.NodeCollection.oddNum == ID,
                                                                        Model.node.NodeCollection.name == name).first()
-    if(status[0] == 10):
+    if (status[0] == 10):
         return 'OK'
     else:
         return 'NO'
+
 
 # 计划管理
 @app.route('/ZYPlanManage')
 def zYPlanManage():
     return render_template('ZYPlanManage.html')
+
 
 # 电子批记录跳转
 @app.route('/electronicBatchRecord')
@@ -5561,7 +5760,7 @@ def electronicBatchRecord():
         oclass = db_session.query(PlanManager).filter(PlanManager.ID == ID).first()
         dic = {}
         dir = []
-        if(title == "备料"):
+        if (title == "备料"):
             dic["OperationPeople_a1"] = ""
             dic["CheckedPeople_a1"] = ""
             dic["QAConfirmPeople_a1"] = ""
@@ -5580,9 +5779,9 @@ def electronicBatchRecord():
             Zclass = re[1]
             Noclas = re[3]
             for no in Noclas:
-                if(no.name == "（备料段）生产前准备（操作人）"):
+                if (no.name == "（备料段）生产前准备（操作人）"):
                     dic["OperationPeople_a1"] = no.oddUser
-                elif(no.name == "（备料段）生产前准备（复核人）"):
+                elif (no.name == "（备料段）生产前准备（复核人）"):
                     dic["CheckedPeople_a1"] = no.oddUser
                 elif (no.name == "（备料段）生产前准备（QA签名）"):
                     dic["QAConfirmPeople_a1"] = no.oddUser
@@ -5598,19 +5797,19 @@ def electronicBatchRecord():
                     dic["CheckedPeople_a4"] = no.oddUser
                 elif (no.name == "（备料段）生产结束清场（QA签名）"):
                     dic["QAConfirmPeople_a4"] = no.oddUser
-            Newoclass = db_session.query(NewReadyWork).filter(NewReadyWork.PUID == Pclass.PUID,NewReadyWork.BatchID ==
-                                                            oclass.BatchID,NewReadyWork.Type == "32").first()
-            if(Newoclass != None):
+            Newoclass = db_session.query(NewReadyWork).filter(NewReadyWork.PUID == Pclass.PUID, NewReadyWork.BatchID ==
+                                                              oclass.BatchID, NewReadyWork.Type == "32").first()
+            if (Newoclass != None):
                 dic["OperationPeople_a2"] = Newoclass.OperationPeople
                 dic["CheckedPeople_a2"] = Newoclass.CheckedPeople
                 if Newoclass.CheckedPeople == None:
                     dic["CheckedPeople_a2"] = ""
-            if(re[2] != None):
+            if (re[2] != None):
                 dic["OperationPeople_a5"] = re[2].OperationPeople
                 dic["CheckedPeople_a5"] = re[2].CheckedPeople
                 if re[2].CheckedPeople == None:
                     dic["CheckedPeople_a5"] = ""
-        elif(title == "煎煮"):
+        elif (title == "煎煮"):
             dic["OperationPeople_b1"] = ""
             dic["CheckedPeople_b1"] = ""
             dic["QAConfirmPeople_b1"] = ""
@@ -5632,9 +5831,9 @@ def electronicBatchRecord():
             Zclass = re[1]
             Noclas = re[3]
             for no in Noclas:
-                if(no.name == "（煎煮段）生产前准备（操作人）"):
+                if (no.name == "（煎煮段）生产前准备（操作人）"):
                     dic["OperationPeople_b1"] = no.oddUser
-                elif(no.name == "（煎煮段）生产前准备（复核人）"):
+                elif (no.name == "（煎煮段）生产前准备（复核人）"):
                     dic["CheckedPeople_b1"] = no.oddUser
                 elif (no.name == "（煎煮段）生产前准备（QA签名）"):
                     dic["QAConfirmPeople_b1"] = no.oddUser
@@ -5657,8 +5856,8 @@ def electronicBatchRecord():
                 elif (no.name == "（煎煮段）生产结束清场（QA签名）"):
                     dic["QAConfirmPeople_b4"] = no.oddUser
             Newoclass = db_session.query(NewReadyWork).filter(NewReadyWork.PUID == Pclass.PUID, NewReadyWork.BatchID ==
-                                                            oclass.BatchID,NewReadyWork.Type == "42").first()
-            if(Newoclass != None):
+                                                              oclass.BatchID, NewReadyWork.Type == "42").first()
+            if (Newoclass != None):
                 dic["OperationPeople_b5"] = Newoclass.OperationPeople
                 dic["CheckedPeople_b5"] = Newoclass.CheckedPeople
                 if Newoclass.CheckedPeople == None:
@@ -5838,10 +6037,11 @@ def electronicBatchRecord():
                 elif (no.name == "收粉结束，按SOP清场（QA签名）"):
                     dic["QAConfirmPeople_e6"] = no.oddUser
             Newoclasss = db_session.query(NewReadyWork).filter(NewReadyWork.PUID == Pclass.PUID, NewReadyWork.BatchID ==
-                                                               oclass.BatchID, NewReadyWork.Type.in_(("48", "50", "51", "52"))).all()
-            if(len(Newoclasss) > 0):
+                                                               oclass.BatchID,
+                                                               NewReadyWork.Type.in_(("48", "50", "51", "52"))).all()
+            if (len(Newoclasss) > 0):
                 for nc in Newoclasss:
-                    if(nc.Type == "48"):
+                    if (nc.Type == "48"):
                         dic["OperationPeople_e2"] = nc.OperationPeople
                         dic["CheckedPeople_e2"] = nc.CheckedPeople
                         if nc.CheckedPeople == None:
@@ -5849,7 +6049,7 @@ def electronicBatchRecord():
                         dic["QAConfirmPeople_e2"] = nc.QAConfirmPeople
                         if nc.QAConfirmPeople == None:
                             dic["QAConfirmPeople_e2"] = ""
-                    elif(nc.Type == "50"):
+                    elif (nc.Type == "50"):
                         dic["OperationPeople_e5"] = nc.OperationPeople
                         dic["CheckedPeople_e5"] = nc.CheckedPeople
                         if nc.CheckedPeople == None:
@@ -5876,7 +6076,7 @@ def electronicBatchRecord():
             dic["QAConfirmPeople_d4"] = ""
             dic["OperationPeople_d5"] = ""
             dic["CheckedPeople_d5"] = ""
-            re = electronicBatchRecords("醇沉段", oclass.BrandID, oclass.BatchID,ID)
+            re = electronicBatchRecords("醇沉段", oclass.BrandID, oclass.BatchID, ID)
             Pclass = re[0]
             Zclass = re[1]
             Newoclasss = db_session.query(NewReadyWork).filter(NewReadyWork.PUID == Pclass.PUID, NewReadyWork.BatchID ==
@@ -5935,7 +6135,7 @@ def electronicBatchRecord():
             dic["OperationPeople_e7"] = ""
             dic["CheckedPeople_e7"] = ""
             dic["QAConfirmPeople_e7"] = ""
-            re = electronicBatchRecords("单效浓缩段", oclass.BrandID, oclass.BatchID,ID)
+            re = electronicBatchRecords("单效浓缩段", oclass.BrandID, oclass.BatchID, ID)
             Pclass = re[0]
             Zclass = re[1]
             Noclas = re[3]
@@ -6004,7 +6204,7 @@ def electronicBatchRecord():
             dic["OperationPeople_f6"] = ""
             dic["CheckedPeople_f6"] = ""
             dic["QAConfirmPeople_f6"] = ""
-            re = electronicBatchRecords("收膏段", oclass.BrandID, oclass.BatchID,ID)
+            re = electronicBatchRecords("收膏段", oclass.BrandID, oclass.BatchID, ID)
             Pclass = re[0]
             Zclass = re[1]
             Noclas = re[3]
@@ -6055,28 +6255,34 @@ def electronicBatchRecord():
             for menu in menus:
                 if (menu[0] == "操作人确认"):
                     flag = "82"
-                elif(menu[0] == "复核人确认"):
+                elif (menu[0] == "复核人确认"):
                     flag = "83"
-                elif(menu[0] == "QA确认"):
+                elif (menu[0] == "QA确认"):
                     flag = "84"
         dir.append(dic)
-        if(oclass.BrandID == 1):
+        if (oclass.BrandID == 1):
             return render_template('electronicBatchRecord.html',
-                                   PName=Pclass.PDUnitRouteName,PUID=Pclass.PUID,BatchID=oclass.BatchID,PlanQuantity=oclass.PlanQuantity,
-                                   flag=flag,dir=dir)
-        elif(oclass.BrandID == 2):
+                                   PName=Pclass.PDUnitRouteName, PUID=Pclass.PUID, BatchID=oclass.BatchID,
+                                   PlanQuantity=oclass.PlanQuantity,
+                                   flag=flag, dir=dir)
+        elif (oclass.BrandID == 2):
             return render_template('electronicBatchRecordcaoshanhu.html',
                                    PName=Pclass.PDUnitRouteName, PUID=Pclass.PUID, BatchID=oclass.BatchID,
                                    PlanQuantity=oclass.PlanQuantity, flag=flag, dir=dir)
-def electronicBatchRecords(name,BrandID,BatchID,ID):
+
+
+def electronicBatchRecords(name, BrandID, BatchID, ID):
     Pclass = db_session.query(ProductUnitRoute).filter(ProductUnitRoute.PDUnitRouteName == name,
                                                        ProductUnitRoute.ProductRuleID == BrandID).first()
-    Zclass = db_session.query(ZYPlan).filter(ZYPlan.BatchID == BatchID,ZYPlan.PUID == Pclass.PUID).first()
-    Eoclas = db_session.query(EquipmentWork).filter(EquipmentWork.PUID == Pclass.PUID, EquipmentWork.BatchID == BatchID).first()
-    Noclas = db_session.query(Model.node.NodeCollection).filter(Model.node.NodeCollection.oddNum == ID,Model.node.NodeCollection.status == "10").all()
-    return Pclass,Zclass,Eoclas,Noclas
+    Zclass = db_session.query(ZYPlan).filter(ZYPlan.BatchID == BatchID, ZYPlan.PUID == Pclass.PUID).first()
+    Eoclas = db_session.query(EquipmentWork).filter(EquipmentWork.PUID == Pclass.PUID,
+                                                    EquipmentWork.BatchID == BatchID).first()
+    Noclas = db_session.query(Model.node.NodeCollection).filter(Model.node.NodeCollection.oddNum == ID,
+                                                                Model.node.NodeCollection.status == "10").all()
+    return Pclass, Zclass, Eoclas, Noclas
 
-#设备工作情况确认
+
+# 设备工作情况确认
 @app.route('/addEquipmentWork', methods=['POST', 'GET'])
 def addEquipmentWork():
     if request.method == 'POST':
@@ -6091,7 +6297,7 @@ def addEquipmentWork():
                 # ISNormal = data['ISNormal']# 设备运转情况
                 # IsStandard = data['IsStandard']# 生产过程是否符合安全管理规定
                 confirm = data['confirm']
-                if(confirm == "操作人"):
+                if (confirm == "操作人"):
                     db_session.add(
                         EquipmentWork(
                             BatchID=BatchID,
@@ -6106,7 +6312,8 @@ def addEquipmentWork():
                             OperationDate=datetime.datetime.now()
                         ))
                 else:
-                    oclasss = db_session.query(EquipmentWork).filter(EquipmentWork.PUID == PUID,EquipmentWork.BatchID == BatchID).all()
+                    oclasss = db_session.query(EquipmentWork).filter(EquipmentWork.PUID == PUID,
+                                                                     EquipmentWork.BatchID == BatchID).all()
                     for oc in oclasss:
                         oc.CheckedPeople = current_user.Name
                         oc.OperationDate = datetime.datetime.now()
@@ -6117,7 +6324,8 @@ def addEquipmentWork():
             print(e)
             logger.error(e)
             insertSyslog("error", "设备工作情况确认报错Error：" + str(e), current_user.Name)
-            return  "设备工作情况确认报错Error"
+            return "设备工作情况确认报错Error"
+
 
 # 新加流程确认复核
 @app.route('/addNewReadyWork', methods=['POST', 'GET'])
@@ -6142,7 +6350,8 @@ def addNewReadyWork():
                         ))
                 elif confirm == "2":
                     oclass = db_session.query(NewReadyWork).filter(NewReadyWork.PUID == PUID,
-                                                                                   NewReadyWork.BatchID == BatchID,NewReadyWork.Type == Type).first()
+                                                                   NewReadyWork.BatchID == BatchID,
+                                                                   NewReadyWork.Type == Type).first()
                     oclass.CheckedPeople = current_user.Name
                     oclass.OperationDate = datetime.datetime.now()
                 elif confirm == "3":
@@ -6172,6 +6381,7 @@ def addNewReadyWork():
             return json.dumps("新加流程确认复核报错", cls=Model.BSFramwork.AlchemyEncoder,
                               ensure_ascii=False)
 
+
 # 所有工艺段保存查询操作
 @app.route('/allUnitDataMutual', methods=['POST', 'GET'])
 def allUnitDataMutual():
@@ -6180,9 +6390,9 @@ def allUnitDataMutual():
         data = data.to_dict()
         try:
             for key in data.keys():
-                if key=="PUID":
+                if key == "PUID":
                     continue
-                if key=="BatchID":
+                if key == "BatchID":
                     continue
                 val = data.get(key)
                 addUpdateEletronicBatchDataStore(data.get("PUID"), data.get("BatchID"), key, val)
@@ -6201,11 +6411,12 @@ def allUnitDataMutual():
             if len(json_str) > 2:
                 PUID = data['PUID']
                 BatchID = data['BatchID']
-                oclasss = db_session.query(EletronicBatchDataStore).filter(EletronicBatchDataStore.PUID == PUID,EletronicBatchDataStore.BatchID == BatchID).all()
+                oclasss = db_session.query(EletronicBatchDataStore).filter(EletronicBatchDataStore.PUID == PUID,
+                                                                           EletronicBatchDataStore.BatchID == BatchID).all()
                 dic = {}
                 for oclass in oclasss:
                     dic[oclass.Content] = oclass.OperationpValue
-            return json.dumps(dic,cls=Model.BSFramwork.AlchemyEncoder,ensure_ascii=False)
+            return json.dumps(dic, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             db_session.rollback()
             print(e)
@@ -6214,12 +6425,15 @@ def allUnitDataMutual():
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
                               ensure_ascii=False)
 
-def addUpdateEletronicBatchDataStore(PUID,BatchID,ke,val):
+
+def addUpdateEletronicBatchDataStore(PUID, BatchID, ke, val):
     try:
         oc = db_session.query(EletronicBatchDataStore).filter(EletronicBatchDataStore.PUID == PUID,
-                                                              EletronicBatchDataStore.BatchID == BatchID, EletronicBatchDataStore.Content == ke).first()
-        if oc==None:
-            db_session.add(EletronicBatchDataStore(BatchID=BatchID,PUID=PUID,Content=ke,OperationpValue=val,Operator=current_user.Name))
+                                                              EletronicBatchDataStore.BatchID == BatchID,
+                                                              EletronicBatchDataStore.Content == ke).first()
+        if oc == None:
+            db_session.add(EletronicBatchDataStore(BatchID=BatchID, PUID=PUID, Content=ke, OperationpValue=val,
+                                                   Operator=current_user.Name))
         else:
             oc.Content = ke
             oc.OperationpValue = val
@@ -6232,6 +6446,7 @@ def addUpdateEletronicBatchDataStore(PUID,BatchID,ke,val):
         insertSyslog("error", "保存更新EletronicBatchDataStore报错：" + str(e), current_user.Name)
         return json.dumps("保存更新EletronicBatchDataStore报错", cls=Model.BSFramwork.AlchemyEncoder,
                           ensure_ascii=False)
+
 
 # 电子批记录查询
 @app.route('/electionBatchSearch')
@@ -6247,23 +6462,25 @@ def electionBatchSearch():
                 Pclass = db_session.query(ProductUnitRoute).filter(ProductUnitRoute.PDUnitRouteName == PName).first()
                 PUID = Pclass.PUID
                 dic = {}
-                if(Pclass.PDUnitRouteName == "煎煮段"):
-                    TEQPIDs = searchEqpID(BrandID,BatchID,PUID,"吊篮提取罐")
+                if (Pclass.PDUnitRouteName == "煎煮段"):
+                    TEQPIDs = searchEqpID(BrandID, BatchID, PUID, "吊篮提取罐")
                     for i in range(0, len(TEQPIDs)):
                         EQPID = TEQPIDs[i]
                         EQPName = db_session.query(Equipment.EQPName).filter(Equipment.ID == EQPID).first()
-                        dic["TQEQPName"+str(i)] = EQPName[0]
-                        dic["tqstartTime" + str(i)] =  strch(searO(BrandID, BatchID, Pclass.ID, EQPID, "提取开始时间").SampleValue)
-                        dic["tqendTime" + str(i)] = strch(searO(BrandID, BatchID, Pclass.ID, EQPID, "提取结束时间").SampleValue)
+                        dic["TQEQPName" + str(i)] = EQPName[0]
+                        dic["tqstartTime" + str(i)] = strch(
+                            searO(BrandID, BatchID, Pclass.ID, EQPID, "提取开始时间").SampleValue)
+                        dic["tqendTime" + str(i)] = strch(
+                            searO(BrandID, BatchID, Pclass.ID, EQPID, "提取结束时间").SampleValue)
                         firstAddWater = searO(BrandID, BatchID, Pclass.ID, EQPID, "提取第一次加水量设定值")
                         dic["firstAddWater" + str(i)] = firstAddWater.SampleValue + firstAddWater.Unit
                         secondAddWater = searO(BrandID, BatchID, Pclass.ID, EQPID, "提取第二次加水量设定值")
                         dic["secondAddWater" + str(i)] = secondAddWater.SampleValue + secondAddWater.Unit
-                        for j in range(0,3):
-                            temp = searO(BrandID, BatchID, Pclass.ID, EQPID, "提取第一次煎煮温度采集0"+str(j+1))
+                        for j in range(0, 3):
+                            temp = searO(BrandID, BatchID, Pclass.ID, EQPID, "提取第一次煎煮温度采集0" + str(j + 1))
                             dic["firstTemp" + "_" + str(i) + "_" + str(j)] = changef(temp.SampleValue) + temp.Unit
                             dic["firstTempTime" + "_" + str(i) + "_" + str(j)] = strchange(temp.SampleDate)
-                            stemp = searO(BrandID, BatchID, Pclass.ID, EQPID, "提取第二次煎煮温度采集0" + str(j+1))
+                            stemp = searO(BrandID, BatchID, Pclass.ID, EQPID, "提取第二次煎煮温度采集0" + str(j + 1))
                             dic["secondTemp" + "_" + str(i) + "_" + str(j)] = changef(stemp.SampleValue) + stemp.Unit
                             dic["secondTempTime" + "_" + str(i) + "_" + str(j)] = strchange(stemp.SampleDate)
                         dic["firstDevotingTime" + str(i)] = strchange(
@@ -6274,7 +6491,7 @@ def electionBatchSearch():
                             searO(BrandID, BatchID, Pclass.ID, EQPID, "提取第二次煎煮开始时间").SampleValue)
                         dic["secondDevotingEndTime" + str(i)] = strchange(
                             searO(BrandID, BatchID, Pclass.ID, EQPID, "提取第二次煎煮结束时间").SampleValue)
-                    JEQPIDs = searchEqpID(BrandID,BatchID,PUID, "吊篮提取罐")
+                    JEQPIDs = searchEqpID(BrandID, BatchID, PUID, "吊篮提取罐")
                     for i in range(0, len(JEQPIDs)):
                         EQPID = JEQPIDs[i]
                         dic["jStartTime" + str(i)] = strch(
@@ -6282,7 +6499,7 @@ def electionBatchSearch():
                         dic["jEndTime" + str(i)] = strch(
                             searO(BrandID, BatchID, Pclass.ID, EQPID, "静置结束时间").SampleValue)
                 elif (Pclass.PDUnitRouteName == "浓缩段"):
-                    NEQPIDs = searchEqpID(BrandID,BatchID,PUID, "MVR")
+                    NEQPIDs = searchEqpID(BrandID, BatchID, PUID, "MVR")
                     for i in range(len(NEQPIDs)):
                         EQPID = NEQPIDs[i]
                         EQPName = db_session.query(Equipment.EQPName).filter(Equipment.ID == EQPID).first()
@@ -6301,7 +6518,7 @@ def electionBatchSearch():
                         dic["nsendTime" + str(i)] = strch(
                             searO(BrandID, BatchID, Pclass.ID, EQPID, "浓缩结束时间").SampleValue)
                 elif (Pclass.PDUnitRouteName == "喷雾干燥段"):
-                    HEQPIDs = searchEqpID(BrandID,BatchID,PUID, "总混罐")
+                    HEQPIDs = searchEqpID(BrandID, BatchID, PUID, "总混罐")
                     for i in range(len(HEQPIDs)):
                         EQPID = HEQPIDs[i]
                         EQPName = db_session.query(Equipment.EQPName).filter(Equipment.ID == EQPID).first()
@@ -6310,7 +6527,7 @@ def electionBatchSearch():
                             searO(BrandID, BatchID, Pclass.ID, EQPID, "总混搅拌开始时间").SampleValue)
                         dic["zhEndTime" + str(i)] = strch(
                             searO(BrandID, BatchID, Pclass.ID, EQPID, "总混搅拌结束时间").SampleValue)
-                    PEQPIDs = searchEqpID(BrandID,BatchID,PUID, "喷雾塔")
+                    PEQPIDs = searchEqpID(BrandID, BatchID, PUID, "喷雾塔")
                     for i in range(len(PEQPIDs)):
                         EQPID = PEQPIDs[i]
                         EQPName = db_session.query(Equipment.EQPName).filter(Equipment.ID == EQPID).first()
@@ -6332,8 +6549,8 @@ def electionBatchSearch():
                             dic["cfTime_" + str(i) + "_" + str(cc)] = strchange(zjf.SampleDate)
                             cc = cc + 1
                 elif (Pclass.PDUnitRouteName == "醇沉段"):
-                     CEQPIDs = searchEqpID(BrandID,BatchID,PUID, "醇沉罐")
-                     for i in range(len(CEQPIDs)):
+                    CEQPIDs = searchEqpID(BrandID, BatchID, PUID, "醇沉罐")
+                    for i in range(len(CEQPIDs)):
                         EQPID = CEQPIDs[i]
                         EQPName = db_session.query(Equipment.EQPName).filter(Equipment.ID == EQPID).first()
                         dic["CCEQPName" + str(i)] = EQPName[0]
@@ -6350,7 +6567,7 @@ def electionBatchSearch():
                         dic["scStartTime" + str(i)] = strch(
                             searO(BrandID, BatchID, Pclass.ID, EQPID, "醇沉开始时间").SampleValue)
                 elif (Pclass.PDUnitRouteName == "单效浓缩段"):
-                    DIDs = searchEqpID(BrandID,BatchID,PUID, "单效浓缩")
+                    DIDs = searchEqpID(BrandID, BatchID, PUID, "单效浓缩")
                     for i in range(len(DIDs)):
                         EQPID = DIDs[i]
                         EQPName = db_session.query(Equipment.EQPName).filter(Equipment.ID == EQPID).first()
@@ -6366,7 +6583,7 @@ def electionBatchSearch():
                             dic["zqylTime_" + str(i) + "_" + str(yy)] = strchange(zqyl.SampleDate)
                             dzkd = searO(BrandID, BatchID, Pclass.ID, EQPID, "单效浓缩真空度采集" + str(j))
                             dic["dzkd_" + str(i) + "_" + str(yy)] = changef(dzkd.SampleValue) + dzkd.Unit
-                            dic["dzkdTime_" + str(i) + "_" + str(yy)] =strchange(dzkd.SampleDate)
+                            dic["dzkdTime_" + str(i) + "_" + str(yy)] = strchange(dzkd.SampleDate)
                             dwd = searO(BrandID, BatchID, Pclass.ID, EQPID, "单效浓缩温度采集" + str(j))
                             dic["dwd_" + str(i) + "_" + str(yy)] = changef(dwd.SampleValue) + dwd.Unit
                             dic["dwdTime_" + str(i) + "_" + str(yy)] = strchange(dwd.SampleDate)
@@ -6377,21 +6594,29 @@ def electionBatchSearch():
             insertSyslog("error", "电子批记录查询报错Error：" + str(e), current_user.Name)
             return json.dumps("电子批记录查询", cls=Model.BSFramwork.AlchemyEncoder,
                               ensure_ascii=False)
+
+
 def changef(args):
     if args != None and args != "":
         return str(round(float(args), 2))
     else:
         return ""
+
+
 def strchange(args):
     if args != None and args != "":
         return str(args)[10:-10]
     else:
         return ""
+
+
 def strch(args):
     if args != None and args != "":
         return str(args)[0:-7]
     else:
         return ""
+
+
 def getmax(args):
     num1 = []
     for x in range(len(args)):
@@ -6399,7 +6624,9 @@ def getmax(args):
         num1.append(temp)
         if x == 0:
             unit = args[x].Unit
-    return changef(max(num1))+ unit
+    return changef(max(num1)) + unit
+
+
 def getmin(args):
     num1 = []
     for x in range(len(args)):
@@ -6407,10 +6634,14 @@ def getmin(args):
         num1.append(temp)
         if x == 0:
             unit = args[x].Unit
-    return changef(min(num1))+ unit
+    return changef(min(num1)) + unit
+
+
 def searO(BrandID, BatchID, PID, EQPID, Type):
-    re = db_session.query(ElectronicBatch).filter(ElectronicBatch.BrandID == BrandID,ElectronicBatch.BatchID == BatchID,ElectronicBatch.PDUnitRouteID == PID,
-                                                   ElectronicBatch.EQPID == EQPID, ElectronicBatch.Type == Type).first()
+    re = db_session.query(ElectronicBatch).filter(ElectronicBatch.BrandID == BrandID,
+                                                  ElectronicBatch.BatchID == BatchID,
+                                                  ElectronicBatch.PDUnitRouteID == PID,
+                                                  ElectronicBatch.EQPID == EQPID, ElectronicBatch.Type == Type).first()
     if re == None:
         electronicBatch = ElectronicBatch()
         electronicBatch.SampleValue = ""
@@ -6419,18 +6650,25 @@ def searO(BrandID, BatchID, PID, EQPID, Type):
         return electronicBatch
     else:
         return re
-def searchEqpID(BrandID,BatchID,PID,name):
-    EQPIDs = db_session.query(Equipment.ID).filter(Equipment.PUID == PID, Equipment.EQPName.like("%" + name + "%")).all()
-    EQPS = db_session.query(ElectronicBatch.EQPID).distinct().filter(ElectronicBatch.PDUnitRouteID == PID, ElectronicBatch.BrandID == BrandID,
-                                                          ElectronicBatch.BatchID == BatchID).all()
+
+
+def searchEqpID(BrandID, BatchID, PID, name):
+    EQPIDs = db_session.query(Equipment.ID).filter(Equipment.PUID == PID,
+                                                   Equipment.EQPName.like("%" + name + "%")).all()
+    EQPS = db_session.query(ElectronicBatch.EQPID).distinct().filter(ElectronicBatch.PDUnitRouteID == PID,
+                                                                     ElectronicBatch.BrandID == BrandID,
+                                                                     ElectronicBatch.BatchID == BatchID).all()
     tmp = [val for val in EQPIDs if val in EQPS]
     return tmp
+
+
 # QA放行
 @app.route('/QAauthPass')
 def QApass():
     return render_template('QAPassAuth.html')
 
-#批物料平衡审核人确认
+
+# 批物料平衡审核人确认
 @app.route('/CheckedBatchMaterielBalance', methods=['POST', 'GET'])
 def CheckedBatchMaterielBalance():
     if request.method == 'POST':
@@ -6450,8 +6688,10 @@ def CheckedBatchMaterielBalance():
                 input = data['input']
                 output = data['output']
                 PMClass = db_session.query(PlanManager).filter(PlanManager.ID == ID).first()
-                PUID = db_session.query(ProductUnitRoute.PUID).filter(ProductUnitRoute.PDUnitRouteName == PName, ProductUnitRoute.ProductRuleID == PMClass.BrandID).first()
-                oclass = db_session.query(BatchMaterielBalance).filter(BatchMaterielBalance.PlanManagerID == PMClass.ID, BatchMaterielBalance.PUID == PUID).first()
+                PUID = db_session.query(ProductUnitRoute.PUID).filter(ProductUnitRoute.PDUnitRouteName == PName,
+                                                                      ProductUnitRoute.ProductRuleID == PMClass.BrandID).first()
+                oclass = db_session.query(BatchMaterielBalance).filter(BatchMaterielBalance.PlanManagerID == PMClass.ID,
+                                                                       BatchMaterielBalance.PUID == PUID).first()
                 if oclass == None:
                     db_session.add(
                         BatchMaterielBalance(
@@ -6490,6 +6730,7 @@ def CheckedBatchMaterielBalance():
             insertSyslog("error", "批物料平衡审核人确认报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
+
 # 查询批物料平衡审核人确认信息
 @app.route('/MaterielBalanceCheckedInfoSearch')
 def MaterielBalanceCheckedInfoSearch():
@@ -6502,7 +6743,8 @@ def MaterielBalanceCheckedInfoSearch():
                 PName = data['PName']  # 工艺段名称
                 dic = {}
                 if PName == "" or PName == None:
-                    oclass = db_session.query(BatchMaterielBalance).filter(BatchMaterielBalance.PlanManagerID == ID).all()
+                    oclass = db_session.query(BatchMaterielBalance).filter(
+                        BatchMaterielBalance.PlanManagerID == ID).all()
                     for i in range(len(oclass)):
                         if oclass[i].PUID == 1:
                             dic["taizishen"] = oclass[i].taizishen
@@ -6535,7 +6777,8 @@ def MaterielBalanceCheckedInfoSearch():
                     PMClass = db_session.query(PlanManager).filter(PlanManager.ID == ID).first()
                     PUID = db_session.query(ProductUnitRoute.PUID).filter(ProductUnitRoute.PDUnitRouteName == PName,
                                                                           ProductUnitRoute.ProductRuleID == PMClass.BrandID).first()
-                    oclass = db_session.query(BatchMaterielBalance).filter(BatchMaterielBalance.PlanManagerID == ID, BatchMaterielBalance.PUID == PUID).first()
+                    oclass = db_session.query(BatchMaterielBalance).filter(BatchMaterielBalance.PlanManagerID == ID,
+                                                                           BatchMaterielBalance.PUID == PUID).first()
                     dic["DeviationDescription"] = oclass.DeviationDescription
                     dic["CheckedSuggestion"] = oclass.CheckedSuggestion
                     dic["CheckedPerson"] = oclass.CheckedPerson
@@ -6574,7 +6817,8 @@ def MaterielBalanceCheckedInfoSearch():
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
                               ensure_ascii=False)
 
-#批物料平衡工序负责人确认
+
+# 批物料平衡工序负责人确认
 @app.route('/PUIDChargeBatchMaterielBalance', methods=['POST', 'GET'])
 def PUIDChargeBatchMaterielBalance():
     if request.method == 'POST':
@@ -6586,9 +6830,11 @@ def PUIDChargeBatchMaterielBalance():
                 PName = data['PName']  # 工艺段名称
                 OperationSpaceNum = data['OperationSpaceNum']  # 操作间编号
                 PMClass = db_session.query(PlanManager).filter(PlanManager.ID == ID).first()
-                PUID = db_session.query(ProductUnitRoute.PUID).filter(ProductUnitRoute.PDUnitRouteName == PName, ProductUnitRoute.ProductRuleID == PMClass.BrandID).first()
-                oclass = db_session.query(BatchMaterielBalance).filter(BatchMaterielBalance.PlanManagerID == PMClass.ID, BatchMaterielBalance.PUID == PUID)
-                if(oclass == None):
+                PUID = db_session.query(ProductUnitRoute.PUID).filter(ProductUnitRoute.PDUnitRouteName == PName,
+                                                                      ProductUnitRoute.ProductRuleID == PMClass.BrandID).first()
+                oclass = db_session.query(BatchMaterielBalance).filter(BatchMaterielBalance.PlanManagerID == PMClass.ID,
+                                                                       BatchMaterielBalance.PUID == PUID)
+                if (oclass == None):
                     return "请先进行批物料平衡审核人确认！"
                 oclass.PUIDChargePerson = current_user.Name
                 oclass.OperationSpaceNum = OperationSpaceNum
@@ -6602,7 +6848,8 @@ def PUIDChargeBatchMaterielBalance():
             insertSyslog("error", "批物料平衡工序负责人确认报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
-#查询批物料平衡
+
+# 查询批物料平衡
 @app.route('/MaterielBalanceSearch', methods=['POST', 'GET'])
 def MaterielBalanceSearch():
     if request.method == 'GET':
@@ -6618,13 +6865,21 @@ def MaterielBalanceSearch():
                 BatchID = data['BatchID']
                 BrandName = data['name']
                 if BatchID == None or BatchID == "":
-                    total = db_session.query(PlanManager.ID).filter(PlanManager.PlanStatus.in_((20, 40, 50, 60, 70)), PlanManager.BrandName == BrandName).count()
-                    oclass = db_session.query(PlanManager).filter(PlanManager.PlanStatus.in_((20, 40, 50, 60, 70)), PlanManager.BrandName == BrandName).order_by(desc("PlanBeginTime")).all()[inipage:endpage]
+                    total = db_session.query(PlanManager.ID).filter(PlanManager.PlanStatus.in_((20, 40, 50, 60, 70)),
+                                                                    PlanManager.BrandName == BrandName).count()
+                    oclass = db_session.query(PlanManager).filter(PlanManager.PlanStatus.in_((20, 40, 50, 60, 70)),
+                                                                  PlanManager.BrandName == BrandName).order_by(
+                        desc("PlanBeginTime")).all()[inipage:endpage]
                 else:
-                    total = db_session.query(PlanManager.ID).filter(PlanManager.BatchID == BatchID, PlanManager.BrandName == BrandName,
-                        PlanManager.PlanStatus.in_((20, 40, 50, 60, 70))).count()
-                    oclass = db_session.query(PlanManager).filter(PlanManager.BatchID == BatchID, PlanManager.BrandName == BrandName,
-                        PlanManager.PlanStatus.in_((20, 40, 50, 60, 70))).order_by(desc("PlanBeginTime")).all()[
+                    total = db_session.query(PlanManager.ID).filter(PlanManager.BatchID == BatchID,
+                                                                    PlanManager.BrandName == BrandName,
+                                                                    PlanManager.PlanStatus.in_(
+                                                                        (20, 40, 50, 60, 70))).count()
+                    oclass = db_session.query(PlanManager).filter(PlanManager.BatchID == BatchID,
+                                                                  PlanManager.BrandName == BrandName,
+                                                                  PlanManager.PlanStatus.in_(
+                                                                      (20, 40, 50, 60, 70))).order_by(
+                        desc("PlanBeginTime")).all()[
                              inipage:endpage]
                 jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
                 return '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
@@ -6633,6 +6888,7 @@ def MaterielBalanceSearch():
             logger.error(e)
             insertSyslog("error", "查询批物料平衡报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
 
 # 查询待办
 @app.route('/maindaiban', methods=['POST', 'GET'])
@@ -6660,7 +6916,8 @@ def maindaiban():
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
                               ensure_ascii=False)
 
-#首页查询
+
+# 首页查询
 @app.route('/souyesearch', methods=['POST', 'GET'])
 def souyesearch():
     if request.method == 'GET':
@@ -6670,7 +6927,7 @@ def souyesearch():
             B = db_session.query(PlanManager.ID).filter(PlanManager.PlanStatus == "11").count()
             C = db_session.query(PlanManager.ID).filter(PlanManager.PlanStatus == "60").count()
             D = db_session.query(PlanManager.ID).filter(PlanManager.PlanStatus.in_((20, 40, 50, 60, 70))).count()
-            return '{"A"' + ":" + str(A) + ',"B"' + ":" + str(B) + ',"C"' + ":" + str(C) +',"D"' + ":" + str(D)+ "}"
+            return '{"A"' + ":" + str(A) + ',"B"' + ":" + str(B) + ',"C"' + ":" + str(C) + ',"D"' + ":" + str(D) + "}"
         except Exception as e:
             print(e)
             logger.error(e)
@@ -6718,22 +6975,22 @@ def intkong(args):
         return 0
 
 
-
 # 收粉监控画面
 @app.route('/processMonitorLineCollect')
 def processMonitorLineCollect():
     return render_template('processMonitorLineCollect.html')
+
 
 # 收粉监控画面
 @app.route('/electronicBatchRecordNav1')
 def electronicBatchRecordNav1():
     return render_template('electronicBatchRecordNav1.html')
 
+
 # 收粉监控画面
 @app.route('/electronicBatchRecordNav2')
 def electronicBatchRecordNav2():
     return render_template('electronicBatchRecordNav2.html')
-
 
 
 def getExcel(file, method='r'):
@@ -6753,6 +7010,7 @@ def getExcel(file, method='r'):
         col_list = [table.col_values(i) for i in range(0, ncols)]  # 所有列的数据
         return col_list
 
+
 # NodeID注释配置
 @app.route('/NodeIdNote/config', methods=['POST', 'GET'])
 def nodeIdNote():
@@ -6760,20 +7018,20 @@ def nodeIdNote():
         return render_template('nodeIDNote.html')
     if request.method == 'POST':
         try:
-            nodes = [] # 收集为匹配的变量
-            x = 0 # Excel横坐标
-            y = 0 # Excel纵坐标
+            nodes = []  # 收集为匹配的变量
+            x = 0  # Excel横坐标
+            y = 0  # Excel纵坐标
             file = request.files.get('note')
             if file is None or file == '':
                 return
             file.save(os.path.join(os.getcwd(), file.filename))
-            new_file = '%s%s%s'%(os.getcwd(), "\\", file.filename)
+            new_file = '%s%s%s' % (os.getcwd(), "\\", file.filename)
             data = getExcel(new_file)
             for index in data:
-                if index[1].lower() == 'note': #去表头
+                if index[1].lower() == 'note':  # 去表头
                     continue
                 elements = ('ns=1;s=t|', 'ns=1;s=f|')
-                for element in elements:  #将注释Note插入OpcTag中
+                for element in elements:  # 将注释Note插入OpcTag中
                     nodeId = element + index[0]
                     opcTag = db_session.query(OpcTag.NodeID).filter_by(NodeID=nodeId).first()
                     if opcTag is None:
@@ -6789,8 +7047,8 @@ def nodeIdNote():
                         db_session.commit()
                     if len(index) == 2:
                         db_session.add(NodeIdNote(
-                                NodeID=nodeId,
-                                Note=index[1]))
+                            NodeID=nodeId,
+                            Note=index[1]))
                         try:
                             db_session.commit()
                         except:
@@ -6811,6 +7069,7 @@ def nodeIdNote():
             insertSyslog("error", "Excel数据读取失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
+
 @app.route('/NodeIdNote/Find')
 def NodeIdNoteFind():
     if request.method == 'GET':
@@ -6827,7 +7086,7 @@ def NodeIdNoteFind():
                     qDatas = db_session.query(NodeIdNote).all()[inipage:endpage]
                     # ORM模型转换json格式
                     jsonNodeIdNote = json.dumps(qDatas, cls=Model.BSFramwork.AlchemyEncoder,
-                                                 ensure_ascii=False)
+                                                ensure_ascii=False)
                     jsonNodeIdNote = '{"total"' + ":" + str(
                         total) + ',"rows"' + ":\n" + jsonNodeIdNote + "}"
                     return jsonNodeIdNote
@@ -6911,6 +7170,7 @@ def NodeIdNoteUpdate():
             insertSyslog("error", "NodeIdNote数据更新失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
+
 @app.route('/NodeIdNote/Search', methods=['POST', 'GET'])
 def NodeIdNoteSearch():
     if request.method == 'POST':
@@ -6931,15 +7191,18 @@ def NodeIdNoteSearch():
             insertSyslog("error", "NodeIdNote数据查询失败报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
+
 # 质量管理
 # 过程连续数据
 @app.route('/ProcessContinuousData')
 def processContinuousData():
     return render_template('BatchData_Process.html')
 
+
 def get_son(ParentNode):
     childs = db_session.query(QualityControlTree).filter_by(ParentNode=ParentNode).all()
     return childs
+
 
 def ContinuousDataTree(depth, ParentNode=None):
     '''
@@ -6955,12 +7218,12 @@ def ContinuousDataTree(depth, ParentNode=None):
                     if len(get_son(obj.ID)) > 0:
                         sz.append({"id": obj.ID,
                                    "Tag": obj.Name,
-                                   "text":obj.Note,
-                                   "EQCode":obj.EquipmentCode,
+                                   "text": obj.Note,
+                                   "EQCode": obj.EquipmentCode,
                                    "Brand": obj.Brand,
                                    "batch_tag": obj.BatchTag,
                                    "state": 'closed',
-                                   "children": ContinuousDataTree(depth+1, obj.ID)})
+                                   "children": ContinuousDataTree(depth + 1, obj.ID)})
                     if len(get_son(obj.ID)) == 0:
                         sz.append({"id": obj.ID,
                                    "Tag": obj.Name,
@@ -6974,6 +7237,7 @@ def ContinuousDataTree(depth, ParentNode=None):
         print(e)
         insertSyslog("error", "查询过程连续数据树形结构报错Error：" + str(e), current_user.Name)
         return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
 
 @app.route('/ProcessContinuousData/DataTree', methods=['POST', 'GET'])
 def DataTree():
@@ -6991,6 +7255,7 @@ def DataTree():
             insertSyslog("error", "查询过程连续数据树形结构报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
+
 @app.route('/ProcessContinuousData/DataTree/LoadMore', methods=['POST', 'GET'])
 def DataTreeLoadMore():
     if request.method == 'GET':
@@ -7002,6 +7267,7 @@ def DataTreeLoadMore():
             print(e)
             insertSyslog("error", "查询过程连续数据树形结构报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
 
 @app.route('/QualityControl/getBatch', methods=['POST', 'GET'])
 def QualityControlGetBatch():
@@ -7017,7 +7283,8 @@ def QualityControlGetBatch():
             endTime = data['endTime']
             if beginTime is None or endTime is None:
                 return 'NO'
-            batchs = set(db_session.query(ElectronicBatch.BatchID).filter(ElectronicBatch.SampleDate.between(beginTime,endTime)).all())
+            batchs = set(db_session.query(ElectronicBatch.BatchID).filter(
+                ElectronicBatch.SampleDate.between(beginTime, endTime)).all())
             if batchs:
                 count = 0
                 batch_list = []
@@ -7031,8 +7298,9 @@ def QualityControlGetBatch():
             return 'NO'
         except Exception as e:
             print(e)
-            insertSyslog("error", "程连续数据获取从%s到%s时间段内的批次号报错Error："%(beginTime,endTime) + str(e), current_user.Name)
+            insertSyslog("error", "程连续数据获取从%s到%s时间段内的批次号报错Error：" % (beginTime, endTime) + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
 
 def GetQualityControlData(data):
     try:
@@ -7056,7 +7324,8 @@ def GetQualityControlData(data):
 
         try:
             cursor = conn.cursor()
-            sql = "select [DataHistory].[%s],[DataHistory].[SampleTime] from [MES].[dbo].[DataHistory] WHERE [Data_History].[%s] = %s" %(tag, batch_tag,batch)
+            sql = "select [DataHistory].[%s],[DataHistory].[SampleTime] from [MES].[dbo].[DataHistory] WHERE [Data_History].[%s] = %s" % (
+            tag, batch_tag, batch)
             cursor.execute(sql)
             tags_data = cursor.fetchall()
             cursor.close()
@@ -7068,7 +7337,7 @@ def GetQualityControlData(data):
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
     except Exception as e:
         print(e)
-        insertSyslog("error", "路由/ProcessContinuousData/TagAnalysis报错Error：" + str(e),current_user.Name)
+        insertSyslog("error", "路由/ProcessContinuousData/TagAnalysis报错Error：" + str(e), current_user.Name)
         return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
@@ -7100,7 +7369,7 @@ def TagDataShow():
                     tag_['batch'] = data['batch']
                     tag_['brand'] = object.BrandName
                     tag_['tag'] = data['Note']
-                    tag_['tag_value'] = round(float(tag_data[0]),2)
+                    tag_['tag_value'] = round(float(tag_data[0]), 2)
                     tag_['collect_time'] = tag_data[1].strftime('%Y-%m-%d %H:%M:%S')
                     tag_['collect_worker'] = 'Automatic acquisition'
                     tag_data_list.append(tag_)
@@ -7113,8 +7382,9 @@ def TagDataShow():
             return 'NO'
         except Exception as e:
             print(e)
-            insertSyslog("error", "路由/ProcessContinuousData/TagAnalysis报错Error：" + str(e),current_user.Name)
+            insertSyslog("error", "路由/ProcessContinuousData/TagAnalysis报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
 
 # 彩虹图数据
 @app.route('/ProcessContinuousData/RainbowChartData', methods=['POST', 'GET'])
@@ -7136,23 +7406,24 @@ def RainbowChartData():
                         tags_data = tag_
                     else:
                         tags_data = random.sample(tag_, 100)
-                    tag_data_list =[{'data':[tag_data[0] for tag_data in tags_data]},
-                                    {'time': [tag_data[1].strftime('%Y-%m-%d %H:%M:%S') for tag_data in tags_data]}]
+                    tag_data_list = [{'data': [tag_data[0] for tag_data in tags_data]},
+                                     {'time': [tag_data[1].strftime('%Y-%m-%d %H:%M:%S') for tag_data in tags_data]}]
                     json_data = json.dumps(tag_data_list, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
                     return json_data
                 return 'NO'
             except Exception as e:
                 print(e)
-                insertSyslog("error", "过程连续数据获取值报错Error：" + str(e),current_user.Name)
+                insertSyslog("error", "过程连续数据获取值报错Error：" + str(e), current_user.Name)
                 return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
-            insertSyslog("error", "路由/ProcessContinuousData/TagAnalysis报错Error：" + str(e),current_user.Name)
+            insertSyslog("error", "路由/ProcessContinuousData/TagAnalysis报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
-#正态分布的概率密度函数。可以理解成 x 是 mu（均值）和 sigma（标准差）的函数
-def normfun(x,mu,sigma):
-    pdf = numpy.exp(-((x - mu)**2)/(2*sigma**2)) / (sigma * numpy.sqrt(2*numpy.pi))
+
+# 正态分布的概率密度函数。可以理解成 x 是 mu（均值）和 sigma（标准差）的函数
+def normfun(x, mu, sigma):
+    pdf = numpy.exp(-((x - mu) ** 2) / (2 * sigma ** 2)) / (sigma * numpy.sqrt(2 * numpy.pi))
     return pdf
 
 
@@ -7175,24 +7446,24 @@ def CPKData():
                         tags_data = random.sample(tag_, 125)
                     tag_range = constant.CPK_TAG_LIST[data['tag']].split(';')
 
-                    C = (int(tag_range[0]) + int(tag_range[1]))/2   #规格中心
+                    C = (int(tag_range[0]) + int(tag_range[1])) / 2  # 规格中心
                     tag_value = [float(i[0]) for i in tags_data]
-                    average = sum(tag_value)/len(tags_data) # 平均值
-                    T = int(tag_range[1]) - int(tag_range[0]) # 规格公差
+                    average = sum(tag_value) / len(tags_data)  # 平均值
+                    T = int(tag_range[1]) - int(tag_range[0])  # 规格公差
 
-                    standard_deviation = round(float(numpy.std(numpy.array(tag_value), ddof=1)),2) # 标准差
+                    standard_deviation = round(float(numpy.std(numpy.array(tag_value), ddof=1)), 2)  # 标准差
 
-                    Ca = round(float((average - C)/(T/2)),2) # 准确度
+                    Ca = round(float((average - C) / (T / 2)), 2)  # 准确度
 
-                    Cp = round(float(T/(6*standard_deviation)),2)
+                    Cp = round(float(T / (6 * standard_deviation)), 2)
 
-                    CPK = round(float(Cp*(1 - abs(Ca))),2)
+                    CPK = round(float(Cp * (1 - abs(Ca))), 2)
 
-                    data_list = {'USL':tag_range[1],'LSL':tag_range[0],
-                                  'average':round(average,2),'min':round(min(tag_value),2),
-                                  'max':round(max(tag_value),2),'T':T,'total':len(tag_value),
-                                  'standard':standard_deviation,'C':C,
-                                  'Ca':Ca,'Cp':Cp,'CPK':CPK}
+                    data_list = {'USL': tag_range[1], 'LSL': tag_range[0],
+                                 'average': round(average, 2), 'min': round(min(tag_value), 2),
+                                 'max': round(max(tag_value), 2), 'T': T, 'total': len(tag_value),
+                                 'standard': standard_deviation, 'C': C,
+                                 'Ca': Ca, 'Cp': Cp, 'CPK': CPK}
                     json_data = json.dumps(data_list, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
                     return json_data
             return 'NO'
@@ -7200,6 +7471,7 @@ def CPKData():
             print(e)
             insertSyslog("error", "路由/ProcessContinuousData/TagAnalysis报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
 
 @app.route('/ProcessContinuousData/CPKCapture', methods=['POST', 'GET'])
 def CPKCapture():
@@ -7217,15 +7489,15 @@ def CPKCapture():
                     if len(tag_) <= 125:
                         return "NO"
                     else:
-                        tags_data = random.sample(tag_, 300 if len(tag_)>300 else 125)
+                        tags_data = random.sample(tag_, 300 if len(tag_) > 300 else 125)
                     tag_range = constant.CPK_TAG_LIST[data['tag']].split(';')
                     tag_value = [float(i[0]) for i in tags_data]
-                    average = sum(tag_value)/len(tags_data) # 平均值
-                    standard_deviation = round(float(numpy.std(numpy.array(tag_value), ddof=1)),2) # 标准差
+                    average = sum(tag_value) / len(tags_data)  # 平均值
+                    standard_deviation = round(float(numpy.std(numpy.array(tag_value), ddof=1)), 2)  # 标准差
 
                     x = numpy.arange(int(tag_range[0]), int(tag_range[1]) + 1, 0.1)
                     y = normfun(x, average, standard_deviation)
-                    normal_distribution = [{'x':[round(i, 2) for i in x.tolist()], 'y':y.tolist()}]
+                    normal_distribution = [{'x': [round(i, 2) for i in x.tolist()], 'y': y.tolist()}]
                     json_data = json.dumps(normal_distribution, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
                     return json_data
                 return 'NO'
@@ -7235,10 +7507,12 @@ def CPKCapture():
             insertSyslog("error", "路由/ProcessContinuousData/TagAnalysis报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
+
 # 产量对比
 @app.route('/QualityControl/YieldCompare.html')
 def YieldCompare():
     return render_template('QualityControlYieldCompare.html')
+
 
 @app.route('/QualityControl/YieldCompare/getBatch', methods=['POST', 'GET'])
 def YieldCompareGetBatch():
@@ -7254,7 +7528,7 @@ def YieldCompareGetBatch():
                 count = 0
                 batch_data = list()
                 for batch in batchs:
-                    batch_data.append({"id": count,"text":batch[0]})
+                    batch_data.append({"id": count, "text": batch[0]})
                     count += 1
                 json_data = json.dumps(batch_data, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
                 return json_data
@@ -7264,12 +7538,13 @@ def YieldCompareGetBatch():
             insertSyslog("error", "路由: /QualityControl/YieldCompare/getBatch报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
+
 @app.route('/QualityControl/BatchDataCompare', methods=['POST', 'GET'])
 def BatchDataCompare():
     '''
     purpose：通过前台传入的批次查询响应的批次的投入量、产出量、得率
     url:/QualityControl/BatchDataCompare
-    
+
     return: data_list,一个包含突入量、产出量、得率、批次的数据列表
     '''
     if request.method == 'POST':
@@ -7286,14 +7561,14 @@ def BatchDataCompare():
             for batch in batchs:
 
                 input = db_session.query(EletronicBatchDataStore.OperationpValue).filter(
-                    and_(EletronicBatchDataStore.BatchID==batch,
-                         EletronicBatchDataStore.Content==constant.OUTPUT_COMPARE_INPUT)).first()
+                    and_(EletronicBatchDataStore.BatchID == batch,
+                         EletronicBatchDataStore.Content == constant.OUTPUT_COMPARE_INPUT)).first()
                 output = db_session.query(EletronicBatchDataStore.OperationpValue).filter(
-                    and_(EletronicBatchDataStore.BatchID==batch,
-                         EletronicBatchDataStore.Content==constant.OUTPUT_COMPARE_OUTPUT)).first()
+                    and_(EletronicBatchDataStore.BatchID == batch,
+                         EletronicBatchDataStore.Content == constant.OUTPUT_COMPARE_OUTPUT)).first()
                 sampling_quantity = db_session.query(EletronicBatchDataStore.OperationpValue).filter(
-                    and_(EletronicBatchDataStore.BatchID==batch,
-                         EletronicBatchDataStore.Content==constant.OUTPUT_COMPARE_SAMPLE)).first()
+                    and_(EletronicBatchDataStore.BatchID == batch,
+                         EletronicBatchDataStore.Content == constant.OUTPUT_COMPARE_SAMPLE)).first()
 
                 if input == output == sampling_quantity == None:
                     data_error_list.append({'input': 'NO', 'output': 'NO', 'sampling_quantity': 'NO', 'batch': batch})
@@ -7301,88 +7576,104 @@ def BatchDataCompare():
                 input_data.append(int(input[0]))
                 output_data.append(int(output[0]))
                 sampling_data.append(float(sampling_quantity[0]))
-                data_list.append({'input':input_data, 'output':output_data, 'sampling_quantity':sampling_data})
+                data_list.append({'input': input_data, 'output': output_data, 'sampling_quantity': sampling_data})
             if len(data_error_list) >= 1:
-                return json.dumps(data_error_list,cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
-            json_data = json.dumps(data_list,cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+                return json.dumps(data_error_list, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+            json_data = json.dumps(data_list, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
             return json_data
         except Exception as e:
             print(e)
             insertSyslog("error", "产量对比报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
+
 # 过程连续数据——Data
 @app.route('/ProcessContinuousData/DataPart')
 def DataPart():
     return render_template('BatchData_Process_Data.html')
+
 
 # 过程连续数据——彩虹图
 @app.route('/ProcessContinuousData/Rainbow')
 def Rainbow():
     return render_template('BatchData_Process_Trend.html')
 
+
 # 过程连续数据——CPK
 @app.route('/ProcessContinuousData/CPK')
 def CPK():
     return render_template('BatchData_Process_CPK.html')
+
 
 # 过程连续数据—— 直方图
 @app.route('/ProcessContinuousData/Histogram')
 def histogram():
     return render_template('BatchData_Process_Histogram.html')
 
-#离散数据录入
+
+# 离散数据录入
 @app.route('/DiscreteDataEntry')
 def discreteDataEntry():
     return render_template('DataEntry_Discrete.html')
+
 
 # 统计-数据点
 @app.route('/StatisticDataSpot')
 def statisticDataSpot():
     return render_template('DataSpot_Statistic.html')
 
+
 # 统计-数据点-批次数据列表
 @app.route('/StatisticDataSpot/BatchDataList')
 def BatchDataList():
     return render_template('BatchStatistics_Point_Data.html')
+
 
 # 统计-数据点-批次数据趋势
 @app.route('/StatisticDataSpot/BatchDataTrend')
 def BatchDataTrend():
     return render_template('BatchStatistics_Point_Trend.html')
 
+
 # 统计-数据点-批次数据CPK
 @app.route('/StatisticDataSpot/BatchDataCPK')
 def BatchDataCPK():
     return render_template('BatchStatistics_Point_CPK.html')
+
 
 # 统计-数据点-批次数据直方图
 @app.route('/StatisticDataSpot/BatchDataHistogram')
 def BatchDataHistogram():
     return render_template('BatchStatistics_Point_Histogram.html')
 
+
 # 质量标准管理
 @app.route('/QualityStandardManagement')
 def qualityStandardManagement():
     return render_template('QualityStandard_Management.html')
+
 
 # 生产数据管理-电子批记录
 @app.route('/ElectronicBatchRecord')
 def ElectronicBatchRecord():
     return render_template('ElectronicBatchRecordParent.html')
 
+
 # 生产数据管理-批物料平衡统计
 @app.route('/BatchMaterielBalanceStatistic')
 def BatchMaterielBalanceStatistic():
     return render_template('BatchMaterielBalanceStatistic.html')
 
+
 @app.route('/BatchMaterielBalanceStatistic/Jwxsp')
 def MaterielBalanceJwxsp():
     return render_template('BatchMaterielBalanceStatisticJwxsp.html')
 
+
 @app.route('/BatchMaterielBalanceStatistic/Cshhp')
 def MaterielBalanceCshhp():
     return render_template('BatchMaterielBalanceStatisticCshhp.html')
+
 
 # 生产数据管理-批物料平衡统计数据存储
 @app.route('/BatchMaterielBalance/DataStore')
@@ -7402,10 +7693,12 @@ def BatchMaterialTracing():
     brands = set(db_session.query(ProductRule.PRName).all())
     return render_template('ProductDataManageBatchMaterialTracing.html', brands=brands)
 
+
 def time_trans_format(time_string, from_format, to_format='%Y-%m-%d'):
-    time_struct = time.strptime(time_string,from_format)
+    time_struct = time.strptime(time_string, from_format)
     times = time.strftime(to_format, time_struct)
     return times
+
 
 @app.route('/BatchMaterialTracing/GetData')
 def BatchMaterialTracingGetBatch():
@@ -7414,7 +7707,7 @@ def BatchMaterialTracingGetBatch():
             data = request.values
             brand = data['brand']
             beginTime = data['beginTime']
-            beginTime = time_trans_format(beginTime,'%a %b %d %Y %H:%M:%S GMT+0800 (中国标准时间)')
+            beginTime = time_trans_format(beginTime, '%a %b %d %Y %H:%M:%S GMT+0800 (中国标准时间)')
             endTime = data['endTime']
             endTime = time_trans_format(endTime, '%a %b %d %Y %H:%M:%S GMT+0800 (中国标准时间)')
 
@@ -7423,11 +7716,13 @@ def BatchMaterialTracingGetBatch():
             batchs = set(db_session.query(ZYPlan.BatchID).filter(and_(
                 ZYPlan.BrandName == brand,
                 ZYPlan.PlanDate.between(beginTime, endTime))).all())
-            return json.dumps({"batchs":[batch[0] for batch in batchs]},cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+            return json.dumps({"batchs": [batch[0] for batch in batchs]}, cls=Model.BSFramwork.AlchemyEncoder,
+                              ensure_ascii=False)
         except Exception as e:
             print(e)
             insertSyslog("error", "批物料追溯批次获取报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
 
 # 物料追溯数据
 @app.route('/BatchMaterialTracing/BatchData')
@@ -7512,11 +7807,12 @@ def BatchMaterialTracingBatch():
                 else:
                     material_data[tank[2]] = nothing
 
-            return json.dumps(material_data,cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+            return json.dumps(material_data, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
             insertSyslog("error", "批物料追溯数据获取报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
+
 
 @app.route('/HomePageHistogram', methods=['POST', 'GET'])
 def HomePageHistogram():
@@ -7559,13 +7855,14 @@ def HomePageHistogram():
                 sampling_quantity = db_session.query(EletronicBatchDataStore.OperationpValue).filter(
                     and_(EletronicBatchDataStore.BatchID == batch[0],
                          EletronicBatchDataStore.Content == constant.OUTPUT_COMPARE_SAMPLE)).first()
-                input_data.append(int(input[0] if input!=None and input!=('',) else 0))
-                output_data.append(int(output[0] if output!=None and output!=('',) else 0))
-                sampling_data.append(float(sampling_quantity[0] if sampling_quantity!=None and sampling_quantity!=('',) else 0))
+                input_data.append(int(input[0] if input != None and input != ('',) else 0))
+                output_data.append(int(output[0] if output != None and output != ('',) else 0))
+                sampling_data.append(
+                    float(sampling_quantity[0] if sampling_quantity != None and sampling_quantity != ('',) else 0))
                 batch_list.append(batch[0])
-            data_list.append({'time':str(current_year)+'-' +str(current_month),
+            data_list.append({'time': str(current_year) + '-' + str(current_month),
                               'input': input_data, 'output': output_data,
-                              'sampling_quantity': sampling_data, "batch":batch_list})
+                              'sampling_quantity': sampling_data, "batch": batch_list})
             json_data = json.dumps(data_list, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
             return json_data
         except Exception as e:
@@ -7580,6 +7877,8 @@ def plantCalendar():
     :return: 工厂日历页面跳转
     '''
     return render_template('plantCalendar.html')
+
+
 @app.route('/systemManager_model/plantCalendarSchedulingCreate', methods=['GET', 'POST'])
 def plantCalendarSchedulingCreate():
     '''
@@ -7589,6 +7888,7 @@ def plantCalendarSchedulingCreate():
     if request.method == 'POST':
         data = request.values
         return insert(plantCalendarScheduling, data)
+
 
 @app.route('/systemManager_model/plantCalendarSchedulingUpdate', methods=['GET', 'POST'])
 def plantCalendarSchedulingUpdate():
@@ -7600,6 +7900,7 @@ def plantCalendarSchedulingUpdate():
         data = request.values
         return update(plantCalendarScheduling, data)
 
+
 @app.route('/systemManager_model/plantCalendarSchedulingDelete', methods=['GET', 'POST'])
 def plantCalendarSchedulingDelete():
     '''
@@ -7609,6 +7910,8 @@ def plantCalendarSchedulingDelete():
     if request.method == 'POST':
         data = request.values
         return delete(plantCalendarScheduling, data)
+
+
 @app.route('/systemManager_model/plantCalendarSchedulingSelect', methods=['GET', 'POST'])
 def plantCalendarSchedulingSelect():
     '''
@@ -7625,6 +7928,7 @@ def plantCalendarSchedulingSelect():
             logger.error(e)
             insertSyslog("error", "工厂日历查询报错Error：" + str(e), current_user.Name)
             return json.dumps("工厂日历查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
