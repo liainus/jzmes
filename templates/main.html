@@ -138,6 +138,21 @@
                         </ul>
                     </li>
                 {% endif %}
+                <li>
+                    <a href="javascript:;">
+                        <span class="iconfont sider-nav-icon">&#xe6ed;</span>
+                        <span class="sider-nav-title">ERP数据管理</span>
+                        <i class="iconfont">&#xe642;</i>
+                    </a>
+                    <ul class="sider-nav-s">
+                        <li>
+                            <a href="#" onclick="addTab('ERP物料信息','/ERP_productplan')">ERP物料信息</a>
+                        </li>
+                        <li>
+                            <a href="#" onclick="addTab('ERP计划信息','/ERP_productinfo')">ERP计划信息</a>
+                        </li>
+                    </ul>
+                </li>
 {#                {% if isIn(['17', '18', '19', '20', '21', '22', '23'], session.get('menus')) %}#}
 {#                    <li>#}
 {#                        <a href="javascript:;">#}
