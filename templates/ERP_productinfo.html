@@ -27,16 +27,14 @@
                     autoRowHeight:false,
                     pagination:true,
                     pageSize:10,
-                    url:'/erp_model/productplanSearch',
+                    url:'/erp_model/productinfoSearch',
                     method:'get'">
                     <thead>
                         <tr>
                             <th data-options="field:'product_code',width:150,align:'center'">计划单号</th>
-                            <th data-options="field:'plan_quantity',width:100,align:'center'">计划重量</th>
-                            <th data-options="field:'product_type',width:100,align:'center'">计划类型</th>
-                            <th data-options="field:'create_time',width:120,align:'center'">创建时间</th>
-                            <th data-options="field:'transform_time',width:120,align:'center'">更换时间</th>
-                            <th data-options="field:'transform_flag',width:100,align:'center'">更换标志</th>
+                            <th data-options="field:'product_name',width:100,align:'center'">计划名称</th>
+                            <th data-options="field:'product_unit',width:100,align:'center'">计划单位</th>
+                            <th data-options="field:'product_type',width:120,align:'center'">计划类型</th>
                         </tr>
                     </thead>
                 </table>
@@ -49,16 +47,14 @@
                     autoRowHeight:false,
                     pagination:true,
                     pageSize:10,
-                    url:'/erp_model/ERP_productplanSearch',
+                    url:'/erp_model/ERP_productinfoSearch',
                     method:'get'">
                     <thead>
                         <tr>
                             <th data-options="field:'product_code',width:150,align:'center'">计划单号</th>
-                            <th data-options="field:'plan_quantity',width:100,align:'center'">计划重量</th>
-                            <th data-options="field:'product_type',width:100,align:'center'">计划类型</th>
-                            <th data-options="field:'create_time',width:120,align:'center'">创建时间</th>
-                            <th data-options="field:'transform_time',width:120,align:'center'">更换时间</th>
-                            <th data-options="field:'transform_flag',width:100,align:'center'">更换标志</th>
+                            <th data-options="field:'product_name',width:100,align:'center'">计划名称</th>
+                            <th data-options="field:'product_unit',width:100,align:'center'">计划单位</th>
+                            <th data-options="field:'product_type',width:120,align:'center'">计划类型</th>
                         </tr>
                     </thead>
                 </table>
@@ -72,7 +68,7 @@
         $(function(){
             $("#synchronization").on('click',function(){
                 $.ajax({
-                    url: '/erp_model/ERP_productplanSynchro',
+                    url: '/erp_model/ERP_productinfoSynchro',
                     method: 'GET',
                     success: function (data) {
                         if (data == "OK") {
