@@ -1205,13 +1205,11 @@ class plantCalendarScheduling(Base):
     #颜色
     color = Column(Unicode(30), primary_key=False, autoincrement=False, nullable=True)
 
-# ERPProductInfo
-class ERPProductInfo(Base):
-    __tablename__ = "ERPProductInfo"
-    # ID:
-    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=True)
+# product_info
+class product_info(Base):
+    __tablename__ = "product_info"
     # 计划单号
-    product_code = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+    product_code = Column(Integer, primary_key=True, autoincrement=True, nullable=True)
     # 计划名称
     product_name = Column(Unicode(100), primary_key=False, autoincrement=False, nullable=True)
     # 计划单位
@@ -1219,11 +1217,25 @@ class ERPProductInfo(Base):
     # 计划类型
     product_type = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
-# ERPProductPlan
-class ERPProductPlan(Base):
-    __tablename__ = "ERPProductPlan"
+# product_info
+class product_infoERP(Base):
+    __tablename__ = "product_infoERP"
     # ID:
     ID = Column(Integer, primary_key=True, autoincrement=True, nullable=True)
+    # 计划单号
+    product_code = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    # 计划名称
+    product_name = Column(Unicode(100), primary_key=False, autoincrement=False, nullable=True)
+    # 计划单位
+    product_unit = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    # 计划类型
+    product_type = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+# product_plan
+class product_plan(Base):
+    __tablename__ = "product_plan"
+    # ID:
+    plan_id = Column(Integer, primary_key=True, autoincrement=True, nullable=True)
     # 计划单号
     product_code = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
     # 计划重量

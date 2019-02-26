@@ -23,7 +23,7 @@ from Model.system import Role, Organization, User, Menu, Role_Menu, BatchMaterie
     SchedulePlan, SparePartInStockManagement, SparePartStock, Area, Instruments, MaintenanceStatus, MaintenanceCycle, \
     EquipmentRunRecord, \
     EquipmentRunPUID, EquipmentMaintenanceStore, SpareTypeStore, ElectronicBatch, EquipmentStatusCount, Shifts, \
-    EquipmentTimeStatisticTree, SystemEQPCode, EquipmentManagementManua, EquipmentMaintenanceStandard
+    EquipmentTimeStatisticTree, SystemEQPCode, EquipmentManagementManua, EquipmentMaintenanceStandard, product_info, product_plan, product_infoERP
 from sqlalchemy import create_engine, Column, ForeignKey, Table, Integer, String, and_, or_, desc,extract
 from io import StringIO
 import calendar
@@ -42,18 +42,90 @@ ERP_session = Session_ERP()
 
 ERP = Blueprint('ERP', __name__)
 
-# 设备建模
 @ERP.route('/ERP_productinfo')
 def ERP_productinfo():
-    # ID = db_session.query(ProcessUnit.ID, ProcessUnit.PUName).all()
-    # data = []
-    # for tu in ID:
-    #     li = list(tu)
-    #     id = li[0]
-    #     name = li[1]
-    #     processUnit_id = {'ID': id, 'text': name}
-    #     data.append(processUnit_id)
     return render_template('ERP_productinfo.html')
 
+@ERP.route('/ERP_productplan')
+def ERP_productplan():
+    return render_template('ERP_productplan.html')
+
+@ERP.route('/erp_model/ERP_productinfoSynchro', methods=['POST', 'GET'])
+def ERP_productinfoSynchro():
+    '''
+    同步ERP产品物料表
+    :return:
+    '''
+    if request.method == 'GET':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                pages = int(data['page'])  # 页数
+                rowsnumber = int(data['rows'])  # 行数
+                inipage = (pages - 1) * rowsnumber + 0  # 起始页
+                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+
+                product_infos = ERP_session.query(product_info).all()
+                sql = "TRUNCATE TABLE product_info"
+                db_session.execute(sql)
+                db_session.commit()
+                for p in product_infos:
+                    e = product_infoERP()
+                    e.product_code = p.product_code
+                    e.product_name = p.product_name
+                    e.product_type = p.product_type
+                    e.product_unit = p.product_unit
+                    db_session.add(e)
+                db_session.commit()
+                total = db_session.query(product_info).count()
+                oclass = db_session.query(product_info).all()[inipage:endpage]
+                jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
+                jsonpequipments = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
+                return jsonpequipments
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "同步ERP产品物料表报错Error：" + str(e), current_user.Name)
+
+@ERP.route('/erp_model/ERP_productplanSynchro', methods=['POST', 'GET'])
+def ERP_productplanSynchro():
+    '''
+    同步ERP计划表
+    :return:
+    '''
+    if request.method == 'GET':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                pages = int(data['page'])  # 页数
+                rowsnumber = int(data['rows'])  # 行数
+                inipage = (pages - 1) * rowsnumber + 0  # 起始页
+                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+
+                product_plans = ERP_session.query(product_plan).all()
+                sql = "TRUNCATE TABLE product_plan"
+                db_session.execute(sql)
+                db_session.commit()
+                for p in product_plans:
+                    e = product_plan()
+                    e.product_code = p.product_code
+                    e.plan_quantity = p.plan_quantity
+                    e.product_type = p.product_type
+                    e.create_time = p.create_time
+                    e.transform_time = p.transform_time
+                    e.transform_flag = p.transform_flag
+                    db_session.add(e)
+                db_session.commit()
+                total = db_session.query(product_info).count()
+                oclass = db_session.query(product_info).all()[inipage:endpage]
+                jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
+                jsonpequipments = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
+                return jsonpequipments
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "同步ERP计划表报错Error：" + str(e), current_user.Name)
 
 
