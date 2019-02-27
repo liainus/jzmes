@@ -248,19 +248,16 @@
             },
              oneKeySave:function(){
                 var rows = $("#tabEQP").datagrid('getSelections'); //选择的设备
-                var a = "";
                 var jsonarray = []
                 for (var i = 0; i < rows.length; i++) {
-                    var obj=createKeyIDObj(rows[i].EQPCode);
-                    jsonarray.push(obj);
+                    jsonarray.push(rows[i].EQPCode);
                 }
-                a = JSON.stringify(jsonarray);
                 $.ajax({
                     url: '/processMonitorLine/saveEQPCode',
                     method: 'GET',
                     data: {
                         ID:"",
-                        UNEQPCode:a,
+                        UNEQPCode:jsonarray,
                         confirm:"1",
                         PName: getUrlParam('name') + "段",
                         BatchID: getUrlParam('BatchID'),
@@ -380,11 +377,6 @@
                     alert("请求错误，请刷新后重试！")
                 }
             })
-        }
-        function createKeyIDObj(keyID){
-            return {
-                EQPCode:keyID
-            }
         }
         function formatterStatus(value, row, index){
             if (value == 10){
