@@ -34,7 +34,7 @@
                 method:'get'">
                 <thead>
                     <tr>
-                        <th data-options="field:'BrandName',width:100,align:'center'">品名</th>
+                        <th data-options="field:'BrandName',width:120,align:'center'">品名</th>
                         <th data-options="field:'BatchID',width:120,align:'center'">批次号</th>
                         <th data-options="field:'TaskStatus',width:100,align:'center'" formatter="formatterStatus" styler="styleStatus">任务状态</th>
                         <th data-options="field:'EquipmentID',width:120,align:'center'">设备编码</th>
@@ -263,6 +263,7 @@
                         UNEQPCode:a,
                         confirm:"1",
                         PName: getUrlParam('name') + "段",
+                        BatchID: getUrlParam('BatchID'),
                         BrandID: getUrlParam('BrandID')
                     },
                     success: function (data) {
