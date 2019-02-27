@@ -107,7 +107,7 @@ def login():
             return render_template('login.html')
         if request.method == 'POST':
             data = request.values
-            work_number = data['WorkNumber']
+            work_number = int(data['WorkNumber'])
             password = data['password']
             # 验证账户与密码
             user = db_session.query(User).filter_by(WorkNumber=work_number).first()
@@ -4826,11 +4826,12 @@ def searchPnameEquipment():
             if len(jsonstr) > 10:
                 PName = data['PName']
                 ProductRuleID = data['BrandID']
-                oclass = db_session.query(Equipment).join(ProductUnitRoute,
-                                                          Equipment.PUID == ProductUnitRoute.PUID).filter(
-                    ProductUnitRoute.PDUnitRouteName == PName, ProductUnitRoute.ProductRuleID == ProductRuleID,
-                    Equipment.PUID).all()
-                return json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
+                if PName != None:
+                    oclass = db_session.query(Equipment).join(ProductUnitRoute,
+                                                              Equipment.PUID == ProductUnitRoute.PUID).filter(
+                        ProductUnitRoute.PDUnitRouteName == PName, ProductUnitRoute.ProductRuleID == ProductRuleID,
+                        ~Equipment.EQPName.like('%静置%'), ~Equipment.EQPName.like('%碟片离心%'), ~Equipment.EQPName.like('%缓存罐%')).all()
+                    return json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
             logger.error(e)
@@ -4850,12 +4851,15 @@ def saveEQPCode():
                     BrandID = data['BrandID']
                     PName = data['PName']
                     BatchID = data['BatchID']
+                    UNEQUIPCode = data['UNEQUIPCode']
+                    print(UNEQUIPCode)
+                    PUID = db_session.query(ProductUnitRoute.PUID).filter(ProductUnitRoute.PDUnitRouteName == PName).first()
+                    PUID = PUID[0]
                     IDm = db_session.query(PlanManager.ID).filter(PlanManager.BatchID == BatchID,
                                                                   PlanManager.BrandID == BrandID).first()
                     na = PName
-                    oclasstasks = db_session.query(ZYTask).join(ProductUnitRoute,
-                                                                ZYTask.PUID == ProductUnitRoute.PUID).filter(
-                        ProductUnitRoute.PDUnitRouteName == PName,
+                    oclasstasks = db_session.query(ZYTask).filter(
+                        ZYTask.PUID == PUID,
                         ZYTask.BatchID == BatchID, ZYTask.BrandID == BrandID).all()
                     if PName == "煎煮段":
                         EQPCo = "R1101-"
@@ -4871,19 +4875,19 @@ def saveEQPCode():
                         oclasstasks[i].EquipmentID = ""
                         eqps = db_session.query(Equipment.ID).filter_by(PUID=PUID).all()
                         id = db_session.query(Equipment.ID).filter(Equipment.EQPCode == EQPCo + str(i + 1),
-                                                                   Equipment.Equipment_State == "正常").first()
+                                                                   Equipment.EQPCode.in_(UNEQUIPCode)).first()
                         if id != None:
                             oclasstasks[i].EquipmentID = id[0]
                         else:
                             id = db_session.query(Equipment.ID).filter(
                                 Equipment.EQPCode == EQPCo + str((i + 1) % len(eqps)),
-                                Equipment.Equipment_State == "正常").first()
+                                Equipment.EQPCode.in_(UNEQUIPCode)).first()
                             if id != None:
                                 oclasstasks[i].EquipmentID = id[0]
                             else:
                                 id = db_session.query(Equipment.ID).filter(
                                     Equipment.EQPCode == EQPCo + str((i + 1 + 1) % len(eqps)),
-                                    Equipment.Equipment_State == "正常").first()
+                                    Equipment.EQPCode.in_(UNEQUIPCode)).first()
                                 if id != None:
                                     oclasstasks[i].EquipmentID = id[0]
                                 else:

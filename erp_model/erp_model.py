@@ -160,7 +160,7 @@ def ERP_productinfoSynchro():
         data = request.values  # 返回请求中的参数和form
         try:
             product_infos = ERP_session.query(product_info).all()
-            sql = "TRUNCATE TABLE product_info"
+            sql = "TRUNCATE TABLE product_infoERP"
             db_session.execute(sql)
             db_session.commit()
             for p in product_infos:
