@@ -231,7 +231,7 @@
 
          CollectToolbar = {
             selectEq:function(){
-                $('#oneKeyDialog').dialog("open").dialog('setTitle', '选择不使用的设备，自动分配');
+                $('#oneKeyDialog').dialog("open").dialog('setTitle', '选择设备，自动分配');
                 //获取工艺段的设备
                 $("#tabEQP").datagrid({
                     queryParams: {
@@ -251,7 +251,7 @@
                 var a = "";
                 var jsonarray = []
                 for (var i = 0; i < rows.length; i++) {
-                    var obj=createKeyIDObj(parseInt(rows[i].EQPCode));
+                    var obj=createKeyIDObj(rows[i].EQPCode);
                     jsonarray.push(obj);
                 }
                 a = JSON.stringify(jsonarray);
