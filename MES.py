@@ -4851,91 +4851,55 @@ def saveEQPCode():
                     BrandID = data['BrandID']
                     PName = data['PName']
                     BatchID = data['BatchID']
-                    UNEQUIPCode = data['UNEQUIPCode']
-                    print(UNEQUIPCode)
-                    PUID = db_session.query(ProductUnitRoute.PUID).filter(ProductUnitRoute.PDUnitRouteName == PName).first()
-                    PUID = PUID[0]
-                    IDm = db_session.query(PlanManager.ID).filter(PlanManager.BatchID == BatchID,
-                                                                  PlanManager.BrandID == BrandID).first()
-                    na = PName
-                    oclasstasks = db_session.query(ZYTask).filter(
-                        ZYTask.PUID == PUID,
-                        ZYTask.BatchID == BatchID, ZYTask.BrandID == BrandID).all()
-                    if PName == "煎煮段":
-                        EQPCo = "R1101-"
-                    elif PName == "浓缩段":
-                        EQPCo = "MVR"
-                    elif PName == "喷雾干燥段":
-                        EQPCo = "PWGZ"
-                    elif PName == "醇沉段":
-                        EQPCo = "CCG"
-                    elif PName == "单效浓缩段":
-                        EQPCo = "DXNS-"
+                    UNEQPCode = data['UNEQPCode']
+                    eq = UNEQPCode.split(",")
+                    PUID = db_session.query(ProductUnitRoute.PUID).filter(ProductUnitRoute.PDUnitRouteName == PName).first()[0]
+                    IDm = db_session.query(PlanManager.ID).filter(PlanManager.BatchID == BatchID,PlanManager.BrandID == BrandID).first()[0]
+                    oclasstasks = db_session.query(ZYTask).join(ProductUnitRoute, ZYTask.PUID == ProductUnitRoute.PUID).filter(
+                        ProductUnitRoute.PDUnitRouteName == PName,ZYTask.BatchID == BatchID, ZYTask.BrandID == BrandID).all()
                     for i in range(len(oclasstasks)):
-                        oclasstasks[i].EquipmentID = ""
-                        eqps = db_session.query(Equipment.ID).filter_by(PUID=PUID).all()
-                        id = db_session.query(Equipment.ID).filter(Equipment.EQPCode == EQPCo + str(i + 1),
-                                                                   Equipment.EQPCode.in_(UNEQUIPCode)).first()
-                        if id != None:
-                            oclasstasks[i].EquipmentID = id[0]
-                        else:
-                            id = db_session.query(Equipment.ID).filter(
-                                Equipment.EQPCode == EQPCo + str((i + 1) % len(eqps)),
-                                Equipment.EQPCode.in_(UNEQUIPCode)).first()
-                            if id != None:
-                                oclasstasks[i].EquipmentID = id[0]
-                            else:
-                                id = db_session.query(Equipment.ID).filter(
-                                    Equipment.EQPCode == EQPCo + str((i + 1 + 1) % len(eqps)),
-                                    Equipment.EQPCode.in_(UNEQUIPCode)).first()
-                                if id != None:
-                                    oclasstasks[i].EquipmentID = id[0]
-                                else:
-                                    return "没有此工艺段对应的设备号！"
+                        oclasstasks[i].EquipmentID = eq[i % len(eq)]
                         oclasstasks[i].TaskStatus = Model.Global.TASKSTATUS.COMFIRM.value
                 else:
                     ID = data['ID']
                     EQPCode = data['EQPCode']
                     oclass = db_session.query(ZYTask).filter(ZYTask.ID == ID).first()
-                    oclasstasks = db_session.query(ZYTask).filter(ZYTask.BatchID == oclass.BatchID,
-                                                                  ZYTask.PUID == oclass.PUID,
-                                                                  ZYTask.BrandID == oclass.BrandID).all()
+                    BatchID = oclass.BatchID
+                    BrandID = oclass.BrandID
+                    PUID = oclass.PUID
                     oclass.EquipmentID = EQPCode
                     oclass.TaskStatus = Model.Global.TASKSTATUS.COMFIRM.value
-                    IDm = db_session.query(PlanManager.ID).filter(PlanManager.BatchID == oclass.BatchID,
-                                                                  PlanManager.BrandID == oclass.BrandID).first()
-                    nameP = db_session.query(ProductUnitRoute.PDUnitRouteName).filter(
-                        ProductUnitRoute.PUID == oclass.PUID).first()
-                    na = nameP[0]
+                    IDm = db_session.query(PlanManager.ID).filter(PlanManager.BatchID == BatchID,PlanManager.BrandID == BrandID).first()[0]
+                    PName = db_session.query(ProductUnitRoute.PDUnitRouteName).filter(ProductUnitRoute.PUID == PUID).first()[0]
                 db_session.commit()
-                IDm = IDm[0]
+                oclasstasks = db_session.query(ZYTask).filter(ZYTask.BatchID == BatchID,ZYTask.PUID == PUID,ZYTask.BrandID == BrandID).all()
                 flag = "TRUE"
                 for task in oclasstasks:
                     if (task.TaskStatus != Model.Global.TASKSTATUS.COMFIRM.value):
                         flag = "FALSE"
                 if (flag == "TRUE"):
-                    if (na == "备料段"):
+                    if (PName == "备料段"):
                         aa = '（备料段）任务确认'
                         updateNodeA(IDm, aa)
-                    elif (na == "煎煮段"):
+                    elif (PName == "煎煮段"):
                         bb = '（煎煮段）任务确认'
                         updateNodeA(IDm, bb)
-                    elif (na == "浓缩段"):
+                    elif (PName == "浓缩段"):
                         cc = '（浓缩段）任务确认'
                         updateNodeA(IDm, cc)
-                    elif (na == "喷雾干燥段"):
+                    elif (PName == "喷雾干燥段"):
                         dd = '（喷雾干燥段）任务确认'
                         updateNodeA(IDm, dd)
-                    elif (na == "收粉段"):
+                    elif (PName == "收粉段"):
                         ee = '（收粉段）任务确认'
                         updateNodeA(IDm, ee)
-                    elif (na == "醇沉段"):
+                    elif (PName == "醇沉段"):
                         ff = '（醇沉段）任务确认'
                         updateNodeA(IDm, ff)
-                    elif (na == "单效浓缩段"):
+                    elif (PName == "单效浓缩段"):
                         gg = '（单效浓缩段）任务确认'
                         updateNodeA(IDm, gg)
-                    elif (na == "收膏段"):
+                    elif (PName == "收膏段"):
                         hh = '（收膏段）任务确认'
                         updateNodeA(IDm, hh)
                 return 'OK'
