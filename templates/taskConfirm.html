@@ -249,6 +249,7 @@
              oneKeySave:function(){
                 var rows = $("#tabEQP").datagrid('getSelections'); //选择的设备
                 var a = "";
+                var jsonarray = []
                 for (var i = 0; i < rows.length; i++) {
                     var obj=createKeyIDObj(parseInt(rows[i].EQPCode));
                     jsonarray.push(obj);
