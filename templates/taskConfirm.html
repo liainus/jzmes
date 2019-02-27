@@ -250,7 +250,7 @@
                 var rows = $("#tabEQP").datagrid('getSelections'); //选择的设备
                 var jsonarray = []
                 for (var i = 0; i < rows.length; i++) {
-                    jsonarray.push(rows[i].EQPCode);
+                    jsonarray.push(rows[i].id);
                 }
                 jsonarray = JSON.stringify(jsonarray)
                 jsonarray = jsonarray.replace(/\[|]/g,'')
