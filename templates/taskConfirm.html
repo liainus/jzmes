@@ -237,10 +237,14 @@
                     queryParams: {
                         PName: getUrlParam('name') + "段",
                         BrandID: getUrlParam('BrandID')
+                    },
+                    onLoadSuccess:function(){
+                        var dataLenth = $("#tabEQP").datagrid("getData")
+                        for (var i=0;i<dataLenth.total;i++){
+                            $('#tabEQP').datagrid('selectRow',i);
+                        }
                     }
                 })
-                var dataLenth = $("#tabEQP").datagrid("getData")
-                console.log(dataLenth)
             },
              oneKeySave:function(){
                 var rows = $("#tabEQP").datagrid('getSelections'); //选择的设备
