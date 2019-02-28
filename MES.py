@@ -4827,10 +4827,19 @@ def searchPnameEquipment():
                 PName = data['PName']
                 ProductRuleID = data['BrandID']
                 if PName != None:
-                    oclass = db_session.query(Equipment).join(ProductUnitRoute,
-                                                              Equipment.PUID == ProductUnitRoute.PUID).filter(
-                        ProductUnitRoute.PDUnitRouteName == PName, ProductUnitRoute.ProductRuleID == ProductRuleID,
-                        ~Equipment.EQPName.like('%静置%'), ~Equipment.EQPName.like('%碟片离心%'), ~Equipment.EQPName.like('%缓存罐%')).all()
+                    if PName == "煎煮段" and ProductRuleID == "1":
+                        oclass = db_session.query(Equipment).filter(Equipment.EQPCode.in_(("R1101-1","R1101-2","R1101-3","R1101-4","R1101-5","R1101-6"))).all()
+                    elif PName == "煎煮段" and ProductRuleID == "2":
+                        oclass = db_session.query(Equipment).filter(Equipment.EQPCode.in_(("R1101-7", "R1101-8", "R1101-9", "R1101-0"))).all()
+                    elif PName == "浓缩段" and ProductRuleID == "1":
+                        oclass = db_session.query(Equipment).filter(Equipment.EQPCode.in_(("MVR1","MVR2","MVR3"))).all()
+                    elif PName == "浓缩段" and ProductRuleID == "2":
+                        oclass = db_session.query(Equipment).filter(Equipment.EQPCode.in_(("MVR4", "MVR5"))).all()
+                    else:
+                        oclass = db_session.query(Equipment).join(ProductUnitRoute,
+                                                                  Equipment.PUID == ProductUnitRoute.PUID).filter(
+                            ProductUnitRoute.PDUnitRouteName == PName, ProductUnitRoute.ProductRuleID == ProductRuleID).filter(or_(
+                                Equipment.EQPName.like('%喷雾塔%'), Equipment.EQPName.like('%醇沉罐%'), Equipment.EQPName.like('%单效浓缩%'))).all()
                     return json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
@@ -7895,6 +7904,37 @@ def plantCalendarSchedulingSelect():
             insertSyslog("error", "工厂日历查询报错Error：" + str(e), current_user.Name)
             return json.dumps("工厂日历查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
+@app.route('/systemManager_model/planScheduling', methods=['GET', 'POST'])
+def planScheduling():
+    '''
+    计划排产
+    :return:
+    '''
+    if request.method == 'GET':
+        data = request.values
+        try:
+            count = db_session.query(plantCalendarScheduling).count()
+            oclass = db_session.query(plantCalendarScheduling).all()
+            return json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
+        except Exception as e:
+            logger.error(e)
+            insertSyslog("error", "工厂日历查询报错Error：" + str(e), current_user.Name)
+            return json.dumps("工厂日历查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+# 设置安全库存
+@app.route('/plantCalendarSafeStock')
+def plantCalendarSafeStock():
+    return render_template('plantCalendarSafeStock.html')
+
+# 设置每日批数
+@app.route('/plantCalendarbatchNumber')
+def plantCalendarbatchNumber():
+    return render_template('plantCalendarbatchNumber.html')
+
+# 日历排产
+@app.route('/plantCalendarScheduling')
+def plantCalendarScheduling():
+    return render_template('plantCalendarScheduling.html')
 
 if __name__ == '__main__':
     app.run(debug=True)

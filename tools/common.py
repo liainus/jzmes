@@ -109,7 +109,7 @@ def update(tablename, new_data):
                 insertSyslog("error", "%s数据更新报错："%tablename + str(e), current_user.Name)
                 return json.dumps('数据更新失败！', cls=AlchemyEncoder, ensure_ascii=False)
 
-def select(table, data, fieid, param, tableName):
+def select(table, page, rows, fieid, param):
     '''
     :param tablename: 查询表
     :param pages: 页数
@@ -119,26 +119,24 @@ def select(table, data, fieid, param, tableName):
     :return: 
     '''
     try:
-        json_str = json.dumps(data.to_dict())
-        if len(json_str) > 10:
-            pages = int(data['page'])
-            rowsnumber = int(data['rows'])
-            inipage = (pages - 1) * rowsnumber + 0
-            endpage = (pages - 1) * rowsnumber + rowsnumber
-            if (param == "" or param == None):
-                total = db_session.query(table).count()
-                oclass = db_session.query(table).all()[inipage:endpage]
-            else:
-                # sql = "select * from "+tableName+" t where t."+fieid+" like "+"'%"+param+"%'"
-                # oclass = db_session.execute(sql).fetchall()
-                # total = len(oclass)
-                # db_session.close()
-                a = 'SpareTypeName'
-                total = db_session.query(table).filter_by(a = param).count()
-                oclass = db_session.query(table).filter_by(a = param).all()[inipage:endpage]
-            jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
-            jsonoclass = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
-            return jsonoclass
+        inipage = (page - 1) * rows + 0
+        endpage = (page - 1) * rows + rows
+        if (param == "" or param == None):
+            total = db_session.query(table).count()
+            oclass = db_session.query(table).all()[inipage:endpage]
+        else:
+            # sql = "select * from "+tableName+" t where t."+fieid+" like "+"'%"+param+"%'"
+            # oclass = db_session.execute(sql).fetchall()
+            # total = len(oclass)
+            # db_session.close()
+            print(fieid)
+            print(param)
+            print(table)
+            total = db_session.query(table).filter_by(fieid=param).count()
+            oclass = db_session.query(table).filter_by(fieid=param).all()[inipage:endpage]
+        jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
+        jsonoclass = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
+        return jsonoclass
     except Exception as e:
         print(e)
         logger.error(e)
