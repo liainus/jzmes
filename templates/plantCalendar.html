@@ -5,6 +5,7 @@
     <title>工厂日历</title>
     <link rel="stylesheet" href="../static/css/bootstrap.min.css">
     <link rel="stylesheet" href="../static/css/fullcalendar.min.css">
+    <link rel="stylesheet" href="../static/css/step.css">
     <script type="text/javascript" src="../static/js/moment.min.js"></script>
     <script type="text/javascript" src="../static/js/jquery-3.3.1.min.js"></script>
     <script type="text/javascript" src="../static/js/jquery-ui.min.js"></script>
@@ -12,6 +13,8 @@
     <script type="text/javascript" src="../static/js/bootbox.min.js"></script>
     <script type="text/javascript" src="../static/js/fullcalendar.min.js"></script>
     <script type="text/javascript" src="../static/js/zh-cn.js"></script>
+    <script type="text/javascript" src="../static/js/bsStep.js"></script>
+    <script type="text/javascript" src="../static/js/less.js"></script>
     <style>
         #external-events {
             padding: 0 10px;
@@ -44,6 +47,20 @@
 <body style="padding: 20px 0;">
     <div class="col-md-12">
         <div class="row">
+            <ul class="nav nav-pills nav-justified step step-round" data-step="1">
+				<li>
+					<a href="/plantCalendar">工厂日历</a>
+				</li>
+				<li>
+					<a href="/plantCalendarSafeStock">设置安全库存</a>
+				</li>
+				<li>
+					<a href="/plantCalendarbatchNumber">设置每日生产批数</a>
+				</li>
+				<li>
+					<a href="/plantCalendarScheduling">日历排产结果</a>
+				</li>
+			</ul>
             <div class="col-md-2 col-sm-2">
                 <div id='external-events'>
                     <h4>可拖放的事件</h4>
@@ -63,6 +80,8 @@
     </div>
     <script>
         $(function(){
+            bsStep();
+
             $('#external-events .fc-event').each(function() {
                 $(this).data('event', {
                     title: $.trim($(this).text()), // use the element's text as the event title
