@@ -41,7 +41,7 @@ import string
 import re
 from collections import Counter
 from Model.system import User, EquipmentRunPUID, ElectronicBatch, EquipmentRunRecord, QualityControl, PackMaterial, \
-    TypeCollection, OperationProcedure, EquipmentMaintenanceStore
+    TypeCollection, OperationProcedure, EquipmentMaintenanceStore, Scheduling
 from Model.Global import WeightUnit
 from Model.control import ctrlPlan
 from flask_login import login_required, logout_user, login_user, current_user, LoginManager
@@ -7913,9 +7913,17 @@ def planScheduling():
     if request.method == 'GET':
         data = request.values
         try:
-            count = db_session.query(plantCalendarScheduling).count()
+            month = data['month'][0:-3]#月份
+            count = db_session.query(plantCalendarScheduling).filter(plantCalendarScheduling.start.like("%" + month + "%")).count()
             oclass = db_session.query(plantCalendarScheduling).all()
-            return json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
+            mou = month.split("-")
+            monthRange = calendar.monthrange(int(mou[0]), int(mou[1]))
+            monthRangeNext = calendar.monthrange(int(mou[0]), int(mou[1])+1)
+            SchedulDates = monthRange[1] - count
+            capacity = data['capacity']
+
+
+            return 'OK'
         except Exception as e:
             logger.error(e)
             insertSyslog("error", "工厂日历查询报错Error：" + str(e), current_user.Name)
@@ -7932,8 +7940,8 @@ def plantCalendarbatchNumber():
     return render_template('plantCalendarbatchNumber.html')
 
 # 日历排产
-@app.route('/plantCalendarScheduling')
-def plantCalendarScheduling():
+@app.route('/calendarScheduling')
+def calendarScheduling():
     return render_template('plantCalendarScheduling.html')
 
 if __name__ == '__main__':

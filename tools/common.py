@@ -132,7 +132,8 @@ def select(table, page, rows, fieid, param):
             print(fieid)
             print(param)
             print(table)
-            total = db_session.query(table).filter_by(fieid=param).count()
+            # obj.__tablename__ = table
+            total = db_session.query(table).filter_by(fieid==param).count()
             oclass = db_session.query(table).filter_by(fieid=param).all()[inipage:endpage]
         jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
         jsonoclass = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"

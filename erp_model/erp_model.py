@@ -115,8 +115,8 @@ def ERP_productplanSearch():
                 rowsnumber = int(data['rows'])  # 行数
                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
-                total = ERP_session.query(product_plan).count()
-                oclass = ERP_session.query(product_plan).all()[inipage:endpage]
+                total = ERP_session.query(product_info).count()
+                oclass = ERP_session.query(product_info).all()[inipage:endpage]
                 jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonpequipments = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
                 return jsonpequipments
@@ -186,25 +186,49 @@ def ERP_productplanSynchro():
     if request.method == 'GET':
         data = request.values  # 返回请求中的参数和form
         try:
-            product_plans = ERP_session.query(product_plan).all()
-            sql = "TRUNCATE TABLE product_plan"
-            db_session.execute(sql)
+            plan_id = data['plan_id']
+            plan = ERP_session.query(product_plan).filter(product_plan.plan_id == plan_id).first()
+            e = product_plan()
+            e.product_code = plan.product_code
+            e.product_name = plan.product_name
+            e.plan_quantity = plan.plan_quantity
+            e.plan_type = plan.plan_type
+            e.create_time = plan.create_time
+            e.transform_time = plan.transform_time
+            e.transform_flag = plan.transform_flag
+            db_session.add(e)
             db_session.commit()
-            for p in product_plans:
-                e = product_plan()
-                e.product_code = p.product_code
-                e.product_name = p.product_name
-                e.plan_quantity = p.plan_quantity
-                e.plan_type = p.plan_type
-                e.create_time = p.create_time
-                e.transform_time = p.transform_time
-                e.transform_flag = p.transform_flag
-                db_session.add(e)
-            db_session.commit()
+            plan.transform_time = datetime.datetime.now()
+            plan.transform_flag = 1
+            ERP_session.commit()
             return 'OK'
         except Exception as e:
             print(e)
             logger.error(e)
             insertSyslog("error", "同步ERP计划表报错Error：" + str(e), current_user.Name)
+
+# role更新数据，通过传入的json数据，解析之后进行相应更新
+@ERP.route('/erp_model/product_planUpdate', methods=['POST', 'GET'])
+def product_planUpdate():
+    if request.method == 'POST':
+        data = request.values
+        return update(product_plan, data)
+
+
+# role删除数据，通过传入的json数据，json数据只包含主键，解析之后进行相应更新
+# 解析方法：主键为数字，通过正则表达式把数字筛选出来，进行相应操作
+@ERP.route('/erp_model/product_planDelete', methods=['POST', 'GET'])
+def product_planDelete():
+    if request.method == 'POST':
+        data = request.values
+        return delete(product_plan, data)
+
+
+# role创建数据，通过传入的json数据，解析之后进行相应更新
+@ERP.route('/erp_model/product_planCreate', methods=['POST', 'GET'])
+def product_planCreate():
+    if request.method == 'POST':
+        data = request.values
+        return insert(product_plan, data)
 
 

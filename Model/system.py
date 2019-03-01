@@ -1205,51 +1205,65 @@ class plantCalendarScheduling(Base):
     #颜色
     color = Column(Unicode(30), primary_key=False, autoincrement=False, nullable=True)
 
-# product_info
+#物料主数据
 class product_info(Base):
     __tablename__ = "product_info"
-    # 计划单号
+    # 物料编码
     product_code = Column(Integer, primary_key=True, autoincrement=True, nullable=True)
-    # 计划名称
+    # 物料名称
     product_name = Column(Unicode(100), primary_key=False, autoincrement=False, nullable=True)
-    # 计划单位
+    # 计量单位
     product_unit = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
-    # 计划类型
+    # 物料类型
     product_type = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
-# product_info
+# 物料主数据表
 class product_infoERP(Base):
     __tablename__ = "product_infoERP"
     # ID:
     ID = Column(Integer, primary_key=True, autoincrement=True, nullable=True)
-    # 计划单号
+    # 物料编码
     product_code = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
-    # 计划名称
+    # 物料名称
     product_name = Column(Unicode(100), primary_key=False, autoincrement=False, nullable=True)
-    # 计划单位
+    # 计量单位
     product_unit = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
-    # 计划类型
+    # 物料类型
     product_type = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
-# product_plan
+# 生产计划表
 class product_plan(Base):
     __tablename__ = "product_plan"
-    # ID:
+    # 计划ID:
     plan_id = Column(Integer, primary_key=True, autoincrement=True, nullable=True)
-    # 计划单号
+    # 产品(即物料)编码
     product_code = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
-    # 计划名称
+    # 产品(即物料)名称
     product_name = Column(Unicode(100), primary_key=False, autoincrement=False, nullable=True)
-    # 计划重量
+    # 计划数量
     plan_quantity = Column(Unicode(100), primary_key=False, autoincrement=False, nullable=True)
-    # 计划类型
+    # 计划类型 'M' 月计划
     plan_type = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
-    # 创建时间
-    create_time = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
-    # 更换时间
-    transform_time = Column(Unicode(100), primary_key=False, autoincrement=False, nullable=True)
-    # 更换标志
+    # 插入时间
+    create_time = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+    # 数据对接时间
+    transform_time = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+    # 数据对接MES 1 已对接 0 未对接
     transform_flag = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+# 排产表
+class Scheduling(Base):
+    __tablename__ = "Scheduling"
+    ## ID:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=True)
+    # 排产月份
+    SchedulingMonth = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+    # 产能
+    capacity = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+    # 创建时间
+    create_time = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+    # 修改时间
+    update_time = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
 
 # 生成表单的执行语句
 Base.metadata.create_all(engine)
