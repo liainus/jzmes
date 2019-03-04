@@ -7938,29 +7938,30 @@ def planSchedulingTu():
     if request.method == 'GET':
         data = request.values
         try:
-            dir = {}
+            dir = []
             x = []
             x.append("肿节风浸膏")
             x.append("消食片浸膏粉")
             x.append("山药粉")
-            print(x)
-            y1 = []
-            y2 = []
-            for i in range(0, len(x)):
-                yi = db_session.query(Stock.StockHouse, Stock.SafetyStock).filter(Stock.ProductName == x[i]).first()
-                y1.append(yi[0])
-                y2.append(yi[1])
-            print(y1)
-            print(y2)
-            dir["x"] = x
-            dir["y1"] = y1
-            dir["y2"] = y2
-            print(dir)
+            for i in range(0,len(x)):
+                dir.append(yselect(x[i]))
             return json.dumps(dir, cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             logger.error(e)
-            insertSyslog("error", "工厂日历查询报错Error：" + str(e), current_user.Name)
-            return json.dumps("工厂日历查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+            insertSyslog("error", "计划排产柱状图报错Error：" + str(e), current_user.Name)
+            return json.dumps("计划排产柱状图报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+def yselect(name):
+    yc = {}
+    y = db_session.query(Stock.StockHouse, Stock.SafetyStock).filter(Stock.ProductName == "肿节风浸膏").first()
+    if y == None:
+        yc["name"] = "肿节风浸膏"
+        yc["max"] = ""
+        yc["min"] = ""
+    else:
+        yc["name"] = "肿节风浸膏"
+        yc["max"] = y[0]
+        yc["min"] = y[1]
+    return yc
 
 # 设置安全库存
 @app.route('/plantCalendarSafeStock')
