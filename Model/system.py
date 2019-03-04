@@ -1258,6 +1258,8 @@ class Scheduling(Base):
     ID = Column(Integer, primary_key=True, autoincrement=True, nullable=True)
     # 排产月份
     SchedulingMonth = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+    #工厂日历时间
+    SchedulingTime = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
     # 产能
     capacity = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
     # 创建时间

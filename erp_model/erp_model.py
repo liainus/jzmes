@@ -115,8 +115,8 @@ def ERP_productplanSearch():
                 rowsnumber = int(data['rows'])  # 行数
                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
-                total = ERP_session.query(product_info).count()
-                oclass = ERP_session.query(product_info).all()[inipage:endpage]
+                total = ERP_session.query(product_plan).count()
+                oclass = ERP_session.query(product_plan).all()[inipage:endpage]
                 jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonpequipments = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
                 return jsonpequipments
