@@ -11,7 +11,7 @@
     <link href="../static/css/datagridpanel_customer.css" rel="stylesheet">
     <link href="../static/css/dialogpanel.css" type="text/css" rel="stylesheet">
     <link href="../static/css/datagrid_customer.css" type="text/css" rel="stylesheet">
-    <script type="text/javascript" src="../static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="../static/js/jquery-3.3.1.min.js"></script>
     <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
     <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
     <script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
@@ -59,7 +59,7 @@
         <table class="easyui-datagrid" id="selfTab" title="系统计划列表" style="width:100%;" data-options="
             loadMsg:false,
             rownumbers:true,
-            singleSelect:true,
+            singleSelect:false,
             autoRowHeight:false,
             pagination:true,
             pageSize:10,
@@ -122,7 +122,7 @@
                         <tr>
                             <td class="kv-label">插入时间</td>
                             <td class="kv-content">
-                                <input name="create_time" id="create_time" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  disabled="disabled" >
+                                <input name="create_time" id="create_time" required="true" editable="fasle" type="text" class="easyui-datetimebox" autocomplete="off" placeholder=""  disabled="disabled" >
                             </td>
                         </tr>
                     </tbody>
@@ -165,19 +165,19 @@
             Toolbar = {
                 add:function(){
                     $("#planDialog").dialog('open').dialog('setTitle','添加计划');
-                    $("#plan_id").val()
-                    $("#product_code").val()
-                    $("#product_name").val()
-                    $("#plan_quantity").val()
+                    $("#plan_id").val('')
+                    $("#product_code").val('')
+                    $("#product_name").val('')
+                    $("#plan_quantity").val('')
                     $("#plan_type option[value='']").prop("selected", 'selected');
-                    $("#create_time").datebox("setValue", myformatter(new Date()))
+                    $("#create_time").datetimebox("setValue", myformatter(new Date()))
                 },
                 updata:function(){
                     var rows = $("#selfTab").datagrid('getSelections');
                     if (rows.length > 1) {
                         $.messager.alert('警告操作！', '编辑记录只能选定一条数据！', 'warning');
                     }else if(rows.length == 1) {
-                        var row = $("#tab").datagrid('getSelected');
+                        var row = $("#selfTab").datagrid('getSelected');
                         if (row) {
                             $("#planDialog").dialog('open').dialog('setTitle', '修改计划');
                             $("#plan_id").val(row.plan_id)
@@ -185,7 +185,7 @@
                             $("#product_name").val(row.product_name)
                             $("#plan_quantity").val(row.plan_quantity)
                             $('#plan_type option:contains('+row.plan_type+')').prop("selected", 'selected');
-                            $("#create_time").datebox("setValue", row.create_time)
+                            $("#create_time").datetimebox("setValue", row.create_time)
                         }
                     } else if (rows.length == 0) {
                         $.messager.alert('警告操作！', '请至少选定一条数据进行编辑！', 'warning');
@@ -209,7 +209,7 @@
                        alert('Warning：计划数量不能为空！');
                        return false;
                     }
-                    stmp = $('#plan_type').find("option:selected").var();
+                    stmp = $('#plan_type').find("option:selected").val();
                     if(Bee.StringUtils.isEmpty(stmp)) {
                        alert('Warning：计划类型 \'M\' 月计划不能为空！');
                        return false;
@@ -228,8 +228,8 @@
                             product_code:$('#product_code').val(),
                             product_name:$('#product_name').val(),
                             plan_quantity:$('#plan_quantity').val(),
-                            plan_type:$('#plan_type').find("option:selected").var(),
-                            create_time:$('#create_time').val()
+                            plan_type:$('#plan_type').find("option:selected").val(),
+                            create_time:$('#create_time').datetimebox('getValue')
                         },
                         cache: false,
                         error: function(data){
@@ -270,7 +270,7 @@
                                 }
                                 a = JSON.stringify(jsonarray);
                                 $.ajax({
-                                    url: '/erp_model/product_planCreate',
+                                    url: '/erp_model/product_planDelete',
                                     method: 'POST',
                                     traditional: true,
                                     data: a,
@@ -298,7 +298,7 @@
                     }
                 },
                 reload:function(){
-                    $("#selfTab").datagrid('reload');
+                    $("#selfTab").datagrid('load');
                 }
             }
 
@@ -312,7 +312,10 @@
             var y = date.getFullYear();
             var m = date.getMonth()+1;
             var d = date.getDate();
-            return y+'-'+(m<10?('0'+m):m)+'-'+( d<10?('0'+d):d);
+            var h = date.getHours();
+            var minutes = date.getMinutes();
+            var s = date.getSeconds();
+            return y + '-' + (m<10?('0'+m):m) + '-' + (d<10?('0'+d):d) + ' ' + (h<10?('0'+h):h) + ':' + (minutes<10?('0'+minutes):minutes) + ':' + (s<10?('0'+s):s);
         }
     </script>
 </body>
