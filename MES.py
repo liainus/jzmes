@@ -41,7 +41,7 @@ import string
 import re
 from collections import Counter
 from Model.system import User, EquipmentRunPUID, ElectronicBatch, EquipmentRunRecord, QualityControl, PackMaterial, \
-    TypeCollection, OperationProcedure, EquipmentMaintenanceStore, Scheduling
+    TypeCollection, OperationProcedure, EquipmentMaintenanceStore, Scheduling, Stock
 from Model.Global import WeightUnit
 from Model.control import ctrlPlan
 from flask_login import login_required, logout_user, login_user, current_user, LoginManager
@@ -7924,6 +7924,39 @@ def planScheduling():
 
 
             return 'OK'
+        except Exception as e:
+            logger.error(e)
+            insertSyslog("error", "工厂日历查询报错Error：" + str(e), current_user.Name)
+            return json.dumps("工厂日历查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+@app.route('/planSchedulingTu', methods=['GET', 'POST'])
+def planSchedulingTu():
+    '''
+    计划排产柱状图
+    :return:
+    '''
+    if request.method == 'GET':
+        data = request.values
+        try:
+            dir = {}
+            x = []
+            x.append("肿节风浸膏")
+            x.append("消食片浸膏粉")
+            x.append("山药粉")
+            print(x)
+            y1 = []
+            y2 = []
+            for i in range(0, len(x)):
+                yi = db_session.query(Stock.StockHouse, Stock.SafetyStock).filter(Stock.ProductName == x[i]).first()
+                y1.append(yi[0])
+                y2.append(yi[1])
+            print(y1)
+            print(y2)
+            dir["x"] = x
+            dir["y1"] = y1
+            dir["y2"] = y2
+            print(dir)
+            return json.dumps(dir, cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             logger.error(e)
             insertSyslog("error", "工厂日历查询报错Error：" + str(e), current_user.Name)

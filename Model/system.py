@@ -1267,6 +1267,22 @@ class Scheduling(Base):
     # 修改时间
     update_time = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
 
+# 库存表
+class Stock(Base):
+    __tablename__ = "Stock"
+    ## ID:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=True)
+    #产品名称
+    ProductName = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    # 仓库库存
+    StockHouse = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    #安全库存
+    SafetyStock = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    # 创建时间
+    create_time = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+    # 修改时间
+    update_time = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+
 # 生成表单的执行语句
 Base.metadata.create_all(engine)
 

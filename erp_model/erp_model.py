@@ -207,7 +207,6 @@ def ERP_productplanSynchro():
             logger.error(e)
             insertSyslog("error", "同步ERP计划表报错Error：" + str(e), current_user.Name)
 
-# role更新数据，通过传入的json数据，解析之后进行相应更新
 @ERP.route('/erp_model/product_planUpdate', methods=['POST', 'GET'])
 def product_planUpdate():
     if request.method == 'POST':
@@ -215,16 +214,36 @@ def product_planUpdate():
         return update(product_plan, data)
 
 
-# role删除数据，通过传入的json数据，json数据只包含主键，解析之后进行相应更新
-# 解析方法：主键为数字，通过正则表达式把数字筛选出来，进行相应操作
 @ERP.route('/erp_model/product_planDelete', methods=['POST', 'GET'])
 def product_planDelete():
+    '''
+    删除ERP计划信息
+    :return:
+    '''
     if request.method == 'POST':
         data = request.values
-        return delete(product_plan, data)
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
+                for key in jsonnumber:
+                    id = int(key)
+                    try:
+                        oclass = db_session.query(product_plan).filter_by(plan_id=id).first()
+                        db_session.delete(oclass)
+                        db_session.commit()
+                    except Exception as ee:
+                        db_session.rollback()
+                        print(ee)
+                        insertSyslog("error", "删除户ID为" + str(id) + "报错Error：" + str(ee), current_user.Name)
+                        return json.dumps("删除ERP计划信息报错", cls=AlchemyEncoder, ensure_ascii=False)
+                return 'OK'
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "删除ERP计划信息报错Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
-
-# role创建数据，通过传入的json数据，解析之后进行相应更新
 @ERP.route('/erp_model/product_planCreate', methods=['POST', 'GET'])
 def product_planCreate():
     if request.method == 'POST':
