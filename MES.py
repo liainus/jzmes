@@ -7952,15 +7952,17 @@ def planSchedulingTu():
             return json.dumps("计划排产柱状图报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 def yselect(name):
     yc = {}
-    y = db_session.query(Stock.StockHouse, Stock.SafetyStock).filter(Stock.ProductName == "肿节风浸膏").first()
+    y = db_session.query(Stock).filter(Stock.ProductName == name).first()
     if y == None:
-        yc["name"] = "肿节风浸膏"
+        yc["id"] = "y"
+        yc["name"] = name
         yc["max"] = ""
         yc["min"] = ""
     else:
-        yc["name"] = "肿节风浸膏"
-        yc["max"] = y[0]
-        yc["min"] = y[1]
+        yc["id"] = "y" + str(y.ID)
+        yc["name"] = name
+        yc["max"] = y.StockHouse
+        yc["min"] = y.SafetyStock
     return yc
 
 # 设置安全库存
