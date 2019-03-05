@@ -115,7 +115,6 @@
                             $(this).siblings(".sliderVal").find("span").html(slideEvt.value)
                         })
                         $(".material-slider").on("slideStop ",function (slideEvt) {
-                            console.log(slideEvt)
                             var ids = slideEvt.target.classList[1]
                             var type = slideEvt.target.dataset.sliderId
                             var json = ""
@@ -132,12 +131,17 @@
                             }
                             $.ajax({
                                 url: '/SchedulingStockUpdateCreate',
-                                type: 'get',
+                                type: 'post',
                                 data:json,
                                 success: function (data) {
                                     if(data == "OK"){
                                         console.log(data)
+                                    }else{
+                                        bootbox.alert(data)
                                     }
+                                },
+                                error:function(){
+                                    bootbox.alert("请求失败")
                                 }
                             });
                         })
