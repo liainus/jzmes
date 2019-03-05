@@ -63,7 +63,7 @@
         <div class="col-md-12 col-sm-12 text-center">
             <form class="form-inline" style="margin-bottom: 15px;">
               <div class="form-group">
-                <p class="form-control-static">选择品名：</p>
+                <p class="form-control-static">选择物料：</p>
               </div>
               <div class="form-group">
                 <select class="form-control" id="PRNameSelect">
@@ -96,28 +96,51 @@
                     },
                     success: function (data) {
                         data = JSON.parse(data)
-                        console.log(data)
                         var str= ""
                         for(var i in data){
                             str = '<div class="col-md-2 col-sm-2 text-center">'+
                                         '<p class="material-title">'+ data[i].name +'</p>'+
-                                        '<input type="text" class="material-slider '+ data[i].id +'" value="" id="" data-slider-id="total" data-slider-step="100" data-slider-min="0" data-slider-max="10000"'+
-                                        'data-slider-value="'+ data[i].max +'" data-slider-orientation="vertical"/>'+
-                                        '<input type="text" class="material-slider '+ data[i].id +'" value="" id="" data-slider-step="50" data-slider-min="0" data-slider-max="10000"'+
-                                        'data-slider-value="'+ data[i].min +'" data-slider-orientation="vertical"/>'+
-                                        '<p class="sliderVal">安全库存为：<span>'+ data[i].min +'</span> kg</p>'+
+                                        '<input type="text" class="material-slider '+ data[i].ID +'" value="" id="" data-slider-id="total" data-slider-step="100" data-slider-min="0" data-slider-max="10000"'+
+                                        'data-slider-value="'+ data[i].total +'" data-slider-orientation="vertical"/>'+
+                                        '<input type="text" class="material-slider '+ data[i].ID +'" value="" id="" data-slider-id="safe" data-slider-step="50" data-slider-min="0" data-slider-max="10000"'+
+                                        'data-slider-value="'+ data[i].safe +'" data-slider-orientation="vertical"/>'+
+                                        '<p class="sliderVal">安全库存为：<span>'+ data[i].safe +'</span> kg</p>'+
                                     '</div>'
                             $(".material-main").append(str)
-                            $('.'+ data[i].id +'').slider({
+                            $('.'+ data[i].ID +'').slider({
                                 reversed : true
                             })
-                            $(".material-slider").on("slide",function (slideEvt) {
-                                $(this).siblings(".sliderVal").find("span").html(slideEvt.value)
-                            })
-                            $(".material-slider").on("slideStop ",function (slideEvt) {
-                                console.log(slideEvt)
-                            })
                         }
+                        $(".material-slider").on("slide",function (slideEvt) {
+                            $(this).siblings(".sliderVal").find("span").html(slideEvt.value)
+                        })
+                        $(".material-slider").on("slideStop ",function (slideEvt) {
+                            console.log(slideEvt)
+                            var ids = slideEvt.target.classList[1]
+                            var type = slideEvt.target.dataset.sliderId
+                            var json = ""
+                            if(type == "total"){
+                                json = {
+                                    ID:ids,
+                                    StockHouse:type
+                                }
+                            }else if(type == "safe"){
+                                json = {
+                                    ID:ids,
+                                    SafetyStock:type
+                                }
+                            }
+                            $.ajax({
+                                url: '/SchedulingStockUpdateCreate',
+                                type: 'get',
+                                data:json,
+                                success: function (data) {
+                                    if(data == "OK"){
+                                        console.log(data)
+                                    }
+                                }
+                            });
+                        })
                     }
                 });
             }
