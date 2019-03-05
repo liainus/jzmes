@@ -1269,7 +1269,7 @@ class Scheduling(Base):
 
 # 排产库存表
 class SchedulingStock(Base):
-    __tablename__ = "Stock"
+    __tablename__ = "SchedulingStock"
     # ID:
     ID = Column(Integer, primary_key=True, autoincrement=True, nullable=True)
     # 产品(即物料)编码

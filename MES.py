@@ -7942,8 +7942,8 @@ def planSchedulingTu():
             PRName = data['PRName']
             MATNames = db_session.query(Material.MATName).join(MaterialBOM, MaterialBOM.MATID == Material.ID).join(
                 ProductRule, ProductRule.ID == MaterialBOM.ProductRuleID).filter(ProductRule.PRName == PRName).all()
-            for i in range(0,len(MATNames)):
-                dir.append(yselect(MATNames[i]))
+            for na in MATNames:
+                dir.append(yselect(na[0]))
             return json.dumps(dir, cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             logger.error(e)
@@ -7951,7 +7951,7 @@ def planSchedulingTu():
             return json.dumps("计划排产柱状图报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 def yselect(name):
     yc = {}
-    y = db_session.query(SchedulingStock).filter(SchedulingStock.ProductName == name).first()
+    y = db_session.query(SchedulingStock).filter(SchedulingStock.MATName == name).first()
     if y == None:
         yc["id"] = "y"
         yc["name"] = name
