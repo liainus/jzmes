@@ -7972,6 +7972,20 @@ def yselect(name, product_code):
         yc["safe"] = y.SafetyStock
     return yc
 
+@app.route('/SchedulingStockUpdateCreate', methods=['POST', 'GET'])
+def SchedulingStockUpdateCreate():
+    '''
+    SchedulingStock的更新添加
+    :return:
+    '''
+    if request.method == 'POST':
+        data = request.values
+        ID = data["ID"]
+        if(ID != None):
+            return update(SchedulingStock, data)
+        else:
+            return insert(SchedulingStock, data)
+
 # 设置安全库存
 @app.route('/plantCalendarSafeStock')
 def plantCalendarSafeStock():
