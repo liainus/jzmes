@@ -7981,10 +7981,10 @@ def SchedulingStockUpdateCreate():
     if request.method == 'POST':
         data = request.values
         ID = data["ID"]
-        if(ID != None):
-            return update(SchedulingStock, data)
-        else:
+        if(ID == "" or ID == None):
             return insert(SchedulingStock, data)
+        else:
+            return update(SchedulingStock, data)
 
 # 设置安全库存
 @app.route('/plantCalendarSafeStock')
