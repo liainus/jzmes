@@ -7961,12 +7961,12 @@ def yselect(name, product_code):
     yc = {}
     y = db_session.query(SchedulingStock).filter(SchedulingStock.MATName == name, SchedulingStock.product_code == product_code).first()
     if y == None:
-        yc["id"] = "y"
+        yc["ID"] = "y"
         yc["name"] = name
         yc["total"] = ""
         yc["safe"] = ""
     else:
-        yc["id"] = "y" + str(y.ID)
+        yc["ID"] = "y" + str(y.ID)
         yc["name"] = name
         yc["total"] = y.StockHouse
         yc["safe"] = y.SafetyStock
