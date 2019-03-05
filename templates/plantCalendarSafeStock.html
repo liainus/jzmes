@@ -61,6 +61,10 @@
 			</ul>
         </div>
         <div class="col-md-12 col-sm-12 text-center">
+            <div id="myAlert" class="alert alert-success">
+                <a href="#" class="close" data-dismiss="alert">&times;</a>
+                <strong>成功！</strong>物料库存修改成功！
+            </div>
             <form class="form-inline" style="margin-bottom: 15px;">
               <div class="form-group">
                 <p class="form-control-static">选择物料：</p>
@@ -80,6 +84,7 @@
     </div>
     <script>
         $(function(){
+            $("#myAlert").alert("close");
             var PRName = $("#PRNameSelect").find("option").eq(0).html()
             render(PRName)
             $("#PRNameSelect").change(function(){
@@ -116,6 +121,7 @@
                         })
                         $(".material-slider").on("slideStop ",function (slideEvt) {
                             var ids = slideEvt.target.classList[1]
+                            ids = ids.replace("y","")
                             var type = slideEvt.target.dataset.sliderId
                             var json = ""
                             if(type == "total"){
@@ -135,7 +141,7 @@
                                 data:json,
                                 success: function (data) {
                                     if(data == "OK"){
-                                        console.log(data)
+                                        $("#myAlert").alert();
                                     }else{
                                         bootbox.alert(data)
                                     }
