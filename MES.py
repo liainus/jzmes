@@ -35,13 +35,13 @@ from Model.system import Role, Organization, User, Menu, Role_Menu, BatchMaterie
     SchedulePlan, SparePartInStockManagement, SparePartStock, Area, Instruments, MaintenanceStatus, MaintenanceCycle, \
     plantCalendarScheduling
 from tools.MESLogger import MESLogger
-from Model.core import SysLog
+from Model.core import SysLog, MaterialBOM
 from sqlalchemy import func
 import string
 import re
 from collections import Counter
 from Model.system import User, EquipmentRunPUID, ElectronicBatch, EquipmentRunRecord, QualityControl, PackMaterial, \
-    TypeCollection, OperationProcedure, EquipmentMaintenanceStore, Scheduling, Stock
+    TypeCollection, OperationProcedure, EquipmentMaintenanceStore, Scheduling, SchedulingStock
 from Model.Global import WeightUnit
 from Model.control import ctrlPlan
 from flask_login import login_required, logout_user, login_user, current_user, LoginManager
@@ -7939,12 +7939,11 @@ def planSchedulingTu():
         data = request.values
         try:
             dir = []
-            x = []
-            x.append("肿节风浸膏")
-            x.append("消食片浸膏粉")
-            x.append("山药粉")
-            for i in range(0,len(x)):
-                dir.append(yselect(x[i]))
+            PRName = data['PRName']
+            MATNames = db_session.query(Material.MATName).join(MaterialBOM, MaterialBOM.MATID == Material.ID).join(
+                ProductRule, ProductRule.ID == MaterialBOM.ProductRuleID).filter(ProductRule.PRName == PRName).all()
+            for i in range(0,len(MATNames)):
+                dir.append(yselect(MATNames[i]))
             return json.dumps(dir, cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             logger.error(e)
@@ -7952,7 +7951,7 @@ def planSchedulingTu():
             return json.dumps("计划排产柱状图报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 def yselect(name):
     yc = {}
-    y = db_session.query(Stock).filter(Stock.ProductName == name).first()
+    y = db_session.query(SchedulingStock).filter(SchedulingStock.ProductName == name).first()
     if y == None:
         yc["id"] = "y"
         yc["name"] = name
@@ -7968,7 +7967,12 @@ def yselect(name):
 # 设置安全库存
 @app.route('/plantCalendarSafeStock')
 def plantCalendarSafeStock():
-    return render_template('plantCalendarSafeStock.html')
+    data = []
+    codenames = db_session.query(ProductRule.PRCode, ProductRule.PRName).all()
+    for i in codenames:
+        dir = {"id":i[0],"text":i[1]}
+        data.append(dir)
+    return render_template('plantCalendarSafeStock.html', data=data)
 
 # 设置每日批数
 @app.route('/plantCalendarbatchNumber')
