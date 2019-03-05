@@ -303,22 +303,22 @@ $(function () {
             var urlAddr = ""
             var stmp = $('#iMATID').find("option:selected").val();
             if(Bee.StringUtils.isEmpty(stmp)) {
-               alert('Warning：物料ID不能为空！');
+               alert('Warning：物料名称不能为空！');
                return false;
             }
             stmp = $('#iProductRuleID').find("option:selected").val();
             if(Bee.StringUtils.isEmpty(stmp)) {
-               alert('Warning：产品定义ID不能为空！');
+               alert('Warning：产品定义名称不能为空！');
                return false;
             }
             stmp = $('#iPUID').find("option:selected").val();
             if(Bee.StringUtils.isEmpty(stmp)) {
-               alert('Warning：工艺段ID不能为空！');
+               alert('Warning：工艺段名称不能为空！');
                return false;
             }
             stmp = $('#iMATTypeID').find("option:selected").val();
             if(Bee.StringUtils.isEmpty(stmp)) {
-               alert('Warning：物料类型ID不能为空！');
+               alert('Warning：物料类型不能为空！');
                return false;
             }
             stmp = $('input[name="iSeq"]').val();

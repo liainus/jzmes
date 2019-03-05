@@ -265,10 +265,11 @@
                                 var PrimaryKey = "id";
                                 var a = "";
                                 for (var i = 0; i < rows.length; i++) {
-                                    var obj=createKeyIDObj(parseInt(rows[i].product_code));
+                                    var obj=createKeyIDObj(parseInt(rows[i].plan_id));
                                     jsonarray.push(obj);
                                 }
                                 a = JSON.stringify(jsonarray);
+                                console.log(a)
                                 $.ajax({
                                     url: '/erp_model/product_planDelete',
                                     method: 'POST',
@@ -298,7 +299,7 @@
                     }
                 },
                 reload:function(){
-                    $("#selfTab").datagrid('load');
+                    $("#selfTab").datagrid('reload');
                 }
             }
 

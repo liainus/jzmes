@@ -5,11 +5,42 @@
     <title>设置安全库存</title>
     <link rel="stylesheet" href="../static/css/bootstrap.min.css">
     <link rel="stylesheet" href="../static/css/step.css">
+    <link rel="stylesheet" href="../static/css/bootstrap-slider.min.css">
     <script type="text/javascript" src="../static/js/jquery-3.3.1.min.js"></script>
     <script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="../static/js/bootbox.min.js"></script>
     <script type="text/javascript" src="../static/js/bsStep.js"></script>
     <script type="text/javascript" src="../static/js/less.js"></script>
+    <script type="text/javascript" src="../static/js/bootstrap-slider.min.js"></script>
+    <style>
+        .step-round{
+            margin-bottom: 20px;
+        }
+        .slider.slider-vertical{
+            height: 500px;
+            margin: 0 10px;
+        }
+        .slider.slider-vertical .slider-track{
+            background: #FAA13C;
+        }
+        #total.slider.slider-vertical .slider-track{
+            background: #00C2EE;
+        }
+        .slider-selection {
+            background: #BABABA;
+        }
+        .slider-handle {
+            background: #FAA13C;
+        }
+        #total .slider-handle {
+            background: #00C2EE;
+        }
+    </style>
+    <script>
+        $(function(){
+            bsStep();
+        })
+    </script>
 </head>
 <body style="padding: 20px 0;">
     <div class="col-md-12">
@@ -25,17 +56,71 @@
 					<a href="/plantCalendarbatchNumber">设置每日生产批数</a>
 				</li>
 				<li>
-					<a href="/plantCalendarScheduling">日历排产结果</a>
+					<a href="/calendarScheduling">日历排产</a>
 				</li>
 			</ul>
         </div>
-        <div class="col-md-12 col-sm-12">
+        <div class="col-md-12 col-sm-12 text-center">
+            <form class="form-inline" style="margin-bottom: 15px;">
+              <div class="form-group">
+                <p class="form-control-static">选择品名：</p>
+              </div>
+              <div class="form-group">
+                <select class="form-control" id="PRNameSelect">
+                    {% for i in data %}
+                        <option value="{{ i['id'] }}">{{ i['text'] }}</option>
+                    {% endfor %}
+                </select>
+              </div>
+            </form>
+        </div>
+        <div class="col-md-12 col-sm-12 material-main">
 
         </div>
     </div>
     <script>
         $(function(){
-            bsStep();
+            var PRName = $("#PRNameSelect").find("option").eq(0).html()
+            render(PRName)
+            $("#PRNameSelect").change(function(){
+                PRName = $(this).find("option:checked").html()
+                render(PRName)
+            })
+            function render(PRName){
+                $(".material-main").html("")
+                $.ajax({
+                    url: '/planSchedulingTu',
+                    type: 'get',
+                    data:{
+                        PRName:PRName
+                    },
+                    success: function (data) {
+                        data = JSON.parse(data)
+                        console.log(data)
+                        var str= ""
+                        for(var i in data){
+                            str = '<div class="col-md-2 col-sm-2 text-center">'+
+                                        '<p class="material-title">'+ data[i].name +'</p>'+
+                                        '<input type="text" class="material-slider '+ data[i].id +'" value="" id="" data-slider-id="total" data-slider-step="100" data-slider-min="0" data-slider-max="10000"'+
+                                        'data-slider-value="'+ data[i].max +'" data-slider-orientation="vertical"/>'+
+                                        '<input type="text" class="material-slider '+ data[i].id +'" value="" id="" data-slider-step="50" data-slider-min="0" data-slider-max="10000"'+
+                                        'data-slider-value="'+ data[i].min +'" data-slider-orientation="vertical"/>'+
+                                        '<p class="sliderVal">安全库存为：<span>'+ data[i].min +'</span> kg</p>'+
+                                    '</div>'
+                            $(".material-main").append(str)
+                            $('.'+ data[i].id +'').slider({
+                                reversed : true
+                            })
+                            $(".material-slider").on("slide",function (slideEvt) {
+                                $(this).siblings(".sliderVal").find("span").html(slideEvt.value)
+                            })
+                            $(".material-slider").on("slideStop ",function (slideEvt) {
+                                console.log(slideEvt)
+                            })
+                        }
+                    }
+                });
+            }
         })
     </script>
 </body>
