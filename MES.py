@@ -7932,7 +7932,7 @@ def planScheduling():
 @app.route('/planSchedulingTu', methods=['GET', 'POST'])
 def planSchedulingTu():
     '''
-    计划排产柱状图
+    计划排产库存与安全库存柱状图
     :return:
     '''
     if request.method == 'GET':
@@ -7952,18 +7952,24 @@ def planSchedulingTu():
             insertSyslog("error", "计划排产柱状图报错Error：" + str(e), current_user.Name)
             return json.dumps("计划排产柱状图报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 def yselect(name, product_code):
+    '''
+    配置每个物料名下的柱状图
+    :param name:
+    :param product_code:
+    :return:
+    '''
     yc = {}
     y = db_session.query(SchedulingStock).filter(SchedulingStock.MATName == name, SchedulingStock.product_code == product_code).first()
     if y == None:
         yc["id"] = "y"
         yc["name"] = name
-        yc["max"] = ""
-        yc["min"] = ""
+        yc["total"] = ""
+        yc["safe"] = ""
     else:
         yc["id"] = "y" + str(y.ID)
         yc["name"] = name
-        yc["max"] = y.StockHouse
-        yc["min"] = y.SafetyStock
+        yc["total"] = y.StockHouse
+        yc["safe"] = y.SafetyStock
     return yc
 
 # 设置安全库存
