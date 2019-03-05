@@ -35,6 +35,10 @@
         #total .slider-handle {
             background: #00C2EE;
         }
+        #myAlert{
+            position: absolute;
+            width: 100%;
+        }
     </style>
     <script>
         $(function(){
@@ -61,8 +65,7 @@
 			</ul>
         </div>
         <div class="col-md-12 col-sm-12 text-center">
-            <div id="myAlert" class="alert alert-success">
-                <a href="#" class="close" data-dismiss="alert">&times;</a>
+            <div id="myAlert" class="alert alert-success hide">
                 <strong>成功！</strong>物料库存修改成功！
             </div>
             <form class="form-inline" style="margin-bottom: 15px;">
@@ -84,7 +87,6 @@
     </div>
     <script>
         $(function(){
-            $("#myAlert").alert("close");
             var PRName = $("#PRNameSelect").find("option").eq(0).html()
             render(PRName)
             $("#PRNameSelect").change(function(){
@@ -122,17 +124,18 @@
                         $(".material-slider").on("slideStop ",function (slideEvt) {
                             var ids = slideEvt.target.classList[1]
                             ids = ids.replace("y","")
+                            var value = slideEvt.value
                             var type = slideEvt.target.dataset.sliderId
                             var json = ""
                             if(type == "total"){
                                 json = {
                                     ID:ids,
-                                    StockHouse:type
+                                    StockHouse:value
                                 }
                             }else if(type == "safe"){
                                 json = {
                                     ID:ids,
-                                    SafetyStock:type
+                                    SafetyStock:value
                                 }
                             }
                             $.ajax({
@@ -141,7 +144,10 @@
                                 data:json,
                                 success: function (data) {
                                     if(data == "OK"){
-                                        $("#myAlert").alert();
+                                        $("#myAlert").removeClass('hide').addClass('in')
+                                        setTimeout(function() {
+                                            $("#myAlert").removeClass('in').addClass('hide')
+                                        },2000)
                                     }else{
                                         bootbox.alert(data)
                                     }
