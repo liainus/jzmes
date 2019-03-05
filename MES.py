@@ -41,7 +41,7 @@ import string
 import re
 from collections import Counter
 from Model.system import User, EquipmentRunPUID, ElectronicBatch, EquipmentRunRecord, QualityControl, PackMaterial, \
-    TypeCollection, OperationProcedure, EquipmentMaintenanceStore, Scheduling, SchedulingStock
+    TypeCollection, OperationProcedure, EquipmentMaintenanceStore, Scheduling, SchedulingStock, ERPproductcode_prname
 from Model.Global import WeightUnit
 from Model.control import ctrlPlan
 from flask_login import login_required, logout_user, login_user, current_user, LoginManager
@@ -7940,18 +7940,20 @@ def planSchedulingTu():
         try:
             dir = []
             PRName = data['PRName']
+            product_code = db_session.query(ERPproductcode_prname.product_code).filter(ERPproductcode_prname.PRName
+                                                                                       == PRName).first()[0]
             MATNames = db_session.query(Material.MATName).join(MaterialBOM, MaterialBOM.MATID == Material.ID).join(
                 ProductRule, ProductRule.ID == MaterialBOM.ProductRuleID).filter(ProductRule.PRName == PRName).all()
             for na in MATNames:
-                dir.append(yselect(na[0]))
+                dir.append(yselect(na[0], product_code))
             return json.dumps(dir, cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             logger.error(e)
             insertSyslog("error", "计划排产柱状图报错Error：" + str(e), current_user.Name)
             return json.dumps("计划排产柱状图报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
-def yselect(name):
+def yselect(name, product_code):
     yc = {}
-    y = db_session.query(SchedulingStock).filter(SchedulingStock.MATName == name).first()
+    y = db_session.query(SchedulingStock).filter(SchedulingStock.MATName == name, SchedulingStock.product_code == product_code).first()
     if y == None:
         yc["id"] = "y"
         yc["name"] = name

@@ -1285,6 +1285,16 @@ class SchedulingStock(Base):
     # 修改时间
     update_time = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
 
+# ERP产品编码与mes对应的产品名称
+class ERPproductcode_prname(Base):
+    __tablename__ = "ERPproductcode_prname"
+    # ID:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=True)
+    # 产品(即物料)编码
+    product_code = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+    # 产品名称
+    PRName = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
 # 生成表单的执行语句
 Base.metadata.create_all(engine)
 
