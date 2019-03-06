@@ -8,7 +8,7 @@ from openpyxl.compat import file
 from sqlalchemy.orm import Session, relationship, sessionmaker
 from sqlalchemy import create_engine
 import Model.Global
-from Model.core import ProcessUnit, Equipment, SysLog
+from Model.core import ProcessUnit, Equipment, SysLog, MaterialBOM, ProductRule, Material
 from flask import render_template, request, make_response
 from tools.MESLogger import MESLogger
 from Model.BSFramwork import AlchemyEncoder
@@ -27,7 +27,7 @@ from Model.system import Role, Organization, User, Menu, Role_Menu, BatchMaterie
 from sqlalchemy import create_engine, Column, ForeignKey, Table, Integer, String, and_, or_, desc,extract
 from io import StringIO
 import calendar
-from Model.system import CenterCost
+from Model.system import CenterCost, ERPproductcode_prname, SchedulingStock
 from tools.common import logger,insertSyslog,insert,delete,update,select
 import os
 import openpyxl
@@ -189,18 +189,33 @@ def ERP_productplanSynchro():
             plan_id = data['plan_id']
             plan = ERP_session.query(product_plan).filter(product_plan.plan_id == plan_id).first()
             e = product_plan()
-            e.product_code = plan.product_code
-            e.product_name = plan.product_name
-            e.plan_quantity = plan.plan_quantity
-            e.plan_type = plan.plan_type
-            e.create_time = plan.create_time
-            e.transform_time = plan.transform_time
-            e.transform_flag = plan.transform_flag
-            db_session.add(e)
+            # e.product_code = plan.product_code
+            # e.product_name = plan.product_name
+            # e.plan_quantity = plan.plan_quantity
+            # e.plan_type = plan.plan_type
+            # e.create_time = plan.create_time
+            # e.transform_time = plan.transform_time
+            # e.transform_flag = plan.transform_flag
+            db_session.add(plan)
             db_session.commit()
             plan.transform_time = datetime.datetime.now()
             plan.transform_flag = 1
             ERP_session.commit()
+            PRName = db_session.query(ERPproductcode_prname.PRName).filter(ERPproductcode_prname.product_code == plan.product_code).first()[0]
+            MATIDs = db_session(MaterialBOM.MATID).filter(MaterialBOM, MaterialBOM.ProductRuleID == ProductRule.ID).filter(
+                ProductRule.PRName == PRName).all()
+            for MATID in MATIDs:
+                MATName = db_session.query(Material.MATName).filter(Material.ID == MATID).first()[0]
+                ss = db_session.query(SchedulingStock).filter(SchedulingStock.product_code == plan.product_code).all()
+                if ss != None:
+                    for s in ss:
+                        db_session.delete(s)
+                    db_session.commit()
+                sc = SchedulingStock()
+                sc.product_code = plan.product_code
+                sc.MATName = MATName
+                db_session.add(sc)
+            db_session.commit()
             return 'OK'
         except Exception as e:
             print(e)
