@@ -41,7 +41,7 @@ import string
 import re
 from collections import Counter
 from Model.system import User, EquipmentRunPUID, ElectronicBatch, EquipmentRunRecord, QualityControl, PackMaterial, \
-    TypeCollection, OperationProcedure, EquipmentMaintenanceStore, Scheduling, SchedulingStock, ERPproductcode_prname
+    TypeCollection, OperationProcedure, EquipmentMaintenanceStore, Scheduling, SchedulingStock, ERPproductcode_prname, SchedulingStandard
 from Model.Global import WeightUnit
 from Model.control import ctrlPlan
 from flask_login import login_required, logout_user, login_user, current_user, LoginManager
@@ -8009,5 +8009,66 @@ def plantCalendarbatchNumber():
 def calendarScheduling():
     return render_template('plantCalendarScheduling.html')
 
+@app.route('/SchedulingStandardCreate', methods=['POST', 'GET'])
+def SchedulingStandardCreate():
+    '''
+    SchedulingStandardCreate添加
+    :return:
+    '''
+    if request.method == 'POST':
+        data = request.values
+        try:
+            PRName = data['PRName']
+            oclass = db_session.query(SchedulingStandard).filter(SchedulingStandard.PRName == PRName).first()
+            if oclass != None:
+                db_session.delete(oclass)
+                db_session.commit()
+            insert(SchedulingStandard,data)
+        except Exception as e:
+            db_session.rollback()
+            logger.error(e)
+            insertSyslog("error", "SchedulingStandardCreate添加报错Error：" + str(e), current_user.Name)
+            return json.dumps("SchedulingStandardCreate添加报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+@app.route('/SchedulingStandardUpdate', methods=['POST', 'GET'])
+def SchedulingStandardUpdate():
+    '''
+    修改
+    :return:
+    '''
+    if request.method == 'POST':
+        data = request.values
+        return update(SchedulingStandard, data)
+@app.route('/SchedulingStandardDelete', methods=['POST', 'GET'])
+def SchedulingStandardDelete():
+    '''
+    删除
+    :return:
+    '''
+    if request.method == 'POST':
+        data = request.values
+        return update(SchedulingStandard, data)
+@app.route('/SchedulingStandardSearch', methods=['POST', 'GET'])
+def SchedulingStandardSearch():
+    '''
+    SchedulingStandard查询
+    :return:
+    '''
+    if request.method == 'GET':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                pages = int(data['page'])  # 页数
+                rowsnumber = int(data['rows'])  # 行数
+                inipage = (pages - 1) * rowsnumber + 0  # 起始页
+                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+                total = db_session.query(SchedulingStandard).count()
+                oclass = db_session.query(SchedulingStandard).all()[inipage:endpage]
+                jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
+                return '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "SchedulingStandard查询报错Error：" + str(e), current_user.Name)
 if __name__ == '__main__':
     app.run(debug=True)
