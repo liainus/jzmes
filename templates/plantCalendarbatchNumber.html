@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="../static/css/step.css">
     <script type="text/javascript" src="../static/js/jquery-3.3.1.min.js"></script>
     <script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootstrap-table.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootstrap-table-zh-CN.min.js"></script>
     <script type="text/javascript" src="../static/js/bootbox.min.js"></script>
     <script type="text/javascript" src="../static/js/bsStep.js"></script>
     <script type="text/javascript" src="../static/js/less.js"></script>
@@ -41,45 +43,85 @@
         <div id="myAlert" class="alert alert-success hide">
             <strong>成功！</strong>批数设置成功！
         </div>
-        <div class="panel panel-default">
-            <!-- Default panel contents -->
-            <div class="panel-heading">批数设置表单</div>
-            <div class="panel-body">
-                <form class="form-horizontal">
-                    <div class="form-group">
-                        <label for="PRName" class="col-sm-2 control-label">品名</label>
-                        <div class="col-sm-10">
-                            <select class="form-control" id="PRName">
-                                {% for i in data %}
-                                    <option value="{{ i['id'] }}">{{ i['text'] }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
+        <div id="toolbar">
+            <button type="button" class="btn btn-default" id="updata">设置批数</button>
+        </div>
+        <table id="batch_Table" data-click-to-select="true" class="table table-bordered" data-page-size="20">
+          <thead>
+              <tr >
+                  <th data-sortable="true" data-field="PRName">品名</th>
+                  <th data-sortable="true" data-field="BatchNumS">批数(批/每日)</th>
+                  <th data-sortable="true" data-field="Batch_quantity">重量（kg/批）</th>
+              </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+        <div id="myModal" class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                            ×
+                        </button>
+                        <h4 class="modal-title" id="myModalLabel">
+                            产品信息
+                        </h4>
                     </div>
-                    <div class="form-group">
-                        <label for="BatchNumS" class="col-sm-2 control-label">批数(批/每日)</label>
-                        <div class="col-sm-10">
-                            <input type="number" class="form-control" id="BatchNumS" placeholder="">
-                        </div>
+                    <!-- dialog body -->
+                    <div class="modal-body">
+                        <form class="form-horizontal" action="">
+                            <div class="form-group">
+                                <label for="PRName" class="col-sm-2 control-label">品名</label>
+                                <div class="col-sm-10">
+                                    <select class="form-control" id="PRName">
+                                        {% for i in data %}
+                                            <option value="{{ i['id'] }}">{{ i['text'] }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="BatchNumS" class="col-sm-2 control-label">批数(批/每日)</label>
+                                <div class="col-sm-10">
+                                    <input type="number" class="form-control" id="BatchNumS" placeholder="">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="Batch_quantity" class="col-sm-2 control-label">重量（kg/批）</label>
+                                <div class="col-sm-10">
+                                    <input type="number" class="form-control" id="Batch_quantity" placeholder="">
+                                </div>
+                            </div>
+                        </form>
                     </div>
-                    <div class="form-group">
-                        <label for="Batch_quantity" class="col-sm-2 control-label">重量（kg/批）</label>
-                        <div class="col-sm-10">
-                            <input type="number" class="form-control" id="Batch_quantity" placeholder="">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-sm-offset-2 col-sm-10">
-                        <button type="button" class="btn btn-default" id="save">保存</button>
-                        </div>
-                    </div>
-                </form>
+                    <!-- dialog buttons -->
+                    <div class="modal-footer"><button type="button" class="btn btn-primary">保存</button></div>
+                </div>
             </div>
         </div>
     </div>
     <script>
         $(function(){
             bsStep();
+
+            $("#batch_Table").bootstrapTable({
+                url:"/SchedulingStandardSearch",
+                toolbar: '#toolbar',
+	            pagination: true,
+                pageNumber:1,
+	            pageSize: 5,
+	            pageList: [5, 10, 15, 20],
+                sidePagination: "server",
+	            showColumns: false,
+	            showRefresh: false,
+	            showToggle: true,
+	            locale: "zh-CN",
+	            striped: true
+            });
+            $("#updata").click(function(){
+                $("#myModal").modal('show')
+            })
             $("#save").on('click',function(){
                 $.ajax({
                     url: '/SchedulingStandardCreate',
@@ -90,6 +132,7 @@
                         Batch_quantity:$("#Batch_quantity").val()
                     },
                     success: function (data) {
+                        $("#myModal").modal('hide')
                         if(data == "OK"){
                             $("#myAlert").removeClass('hide').addClass('in')
                             setTimeout(function() {
