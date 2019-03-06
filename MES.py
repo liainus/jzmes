@@ -8058,12 +8058,10 @@ def SchedulingStandardSearch():
         try:
             jsonstr = json.dumps(data.to_dict())
             if len(jsonstr) > 10:
-                pages = int(data['page'])  # 页数
-                rowsnumber = int(data['rows'])  # 行数
-                inipage = (pages - 1) * rowsnumber + 0  # 起始页
-                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+                offset = int(data['offset'])  # 页数
+                limit = int(data['limit'])  # 行数
                 total = db_session.query(SchedulingStandard).count()
-                oclass = db_session.query(SchedulingStandard).all()[inipage:endpage]
+                oclass = db_session.query(SchedulingStandard).all()[offset:limit]
                 jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
                 return '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
         except Exception as e:
