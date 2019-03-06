@@ -38,6 +38,7 @@
                 method:'get'">
                 <thead>
                     <tr>
+                        <th field="ck" checkbox="true"></th>
                         <th data-options="field:'product_code',width:200,align:'center'">计划单号</th>
                         <th data-options="field:'product_name',width:100,align:'center'">计划名称</th>
                         <th data-options="field:'plan_quantity',width:100,align:'center'">计划重量</th>
@@ -137,30 +138,37 @@
     <script>
         $(function(){
             $("#synchronization").on('click',function(){
-                $.ajax({
-                    url: '/erp_model/ERP_productplanSynchro',
-                    method: 'GET',
-                    success: function (data) {
-                        if (data == "OK") {
-                            $.messager.show({
-                                title: '提示',
-                                timeout: 1000,
-                                msg: '同步成功',
-                                style: {
-                                    right: '',
-                                    top: document.body.scrollTop + document.documentElement.scrollTop,
-                                    bottom: ''
-                                }
-                            });
-                            $("#selfTab").datagrid('load')
-                        }else{
-                            $.messager.alert('提示', data, 'info');
+                var row = $("#ERPTab").datagrid('getSelected');
+                if (row) {
+                    console.log(row)
+                    $.ajax({
+                        url: '/erp_model/ERP_productplanSynchro',
+                        type: 'GET',
+                        data:{
+                            plan_id:row.plan_id
+                        },
+                        success: function (data) {
+                            if (data == "OK") {
+                                $.messager.show({
+                                    title: '提示',
+                                    timeout: 1000,
+                                    msg: '同步成功',
+                                    style: {
+                                        right: '',
+                                        top: document.body.scrollTop + document.documentElement.scrollTop,
+                                        bottom: ''
+                                    }
+                                });
+                                $("#selfTab").datagrid('load')
+                            }else{
+                                $.messager.alert('提示', data, 'info');
+                            }
+                        },
+                        error: function () {
+                            alert("请求失败，请稍后重试！")
                         }
-                    },
-                    error: function () {
-                        alert("请求失败，请稍后重试！")
-                    }
-                 });
+                     });
+                }
             })
             Toolbar = {
                 add:function(){
