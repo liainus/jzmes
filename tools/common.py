@@ -54,6 +54,7 @@ def insert(tablename, data):
                 db_session.commit()
                 return 'OK'
             except Exception as e:
+                db_session.rollback()
                 logger.error(e)
                 insertSyslog("error", "%s数据添加报错："%tablename + str(e), current_user.Name)
                 return json.dumps('数据添加失败！')
@@ -81,6 +82,7 @@ def delete(tablename, delete_data):
                         return json.dumps("删除用户报错", cls=AlchemyEncoder,ensure_ascii=False)
                 return 'OK'
         except Exception as e:
+            db_session.rollback()
             logger.error(e)
             insertSyslog("error", "%s数据删除报错："%tablename + str(e), current_user.Name)
             return json.dumps('数据删除失败！')
@@ -105,6 +107,7 @@ def update(tablename, new_data):
                 else:
                     return json.dumps('当前记录不存在！', cls=AlchemyEncoder, ensure_ascii=False)
             except Exception as e:
+                db_session.rollback()
                 logger.error(e)
                 insertSyslog("error", "%s数据更新报错："%tablename + str(e), current_user.Name)
                 return json.dumps('数据更新失败！', cls=AlchemyEncoder, ensure_ascii=False)
