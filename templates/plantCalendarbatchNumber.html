@@ -85,7 +85,9 @@
                     url: '/SchedulingStandardCreate',
                     type: 'post',
                     data:{
-
+                        PRName:$("#PRName").find("option:checked").html(),
+                        BatchNumS:$("#BatchNumS").val(),
+                        Batch_quantity:$("#Batch_quantity").val()
                     },
                     success: function (data) {
                         if(data == "OK"){
