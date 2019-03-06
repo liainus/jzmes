@@ -17,7 +17,7 @@
             margin-bottom: 20px;
         }
         .slider.slider-vertical{
-            height: 500px;
+            height: 420px;
             margin: 0 10px;
         }
         .slider.slider-vertical .slider-track{
@@ -107,19 +107,23 @@
                         for(var i in data){
                             str = '<div class="col-md-2 col-sm-2 text-center">'+
                                         '<p class="material-title">'+ data[i].name +'</p>'+
-                                        '<input type="text" class="material-slider '+ data[i].ID +'" value="" id="" data-slider-id="total" data-slider-step="100" data-slider-min="0" data-slider-max="10000"'+
+                                        '<input type="text" class="material-slider totalSlider '+ data[i].ID +'" value="" id="" data-slider-id="total" data-slider-step="100" data-slider-min="0" data-slider-max="10000"'+
                                         'data-slider-value="'+ data[i].total +'" data-slider-orientation="vertical"/>'+
-                                        '<input type="text" class="material-slider '+ data[i].ID +'" value="" id="" data-slider-id="safe" data-slider-step="50" data-slider-min="0" data-slider-max="10000"'+
+                                        '<input type="text" class="material-slider safeSlider '+ data[i].ID +'" value="" id="" data-slider-id="safe" data-slider-step="50" data-slider-min="0" data-slider-max="10000"'+
                                         'data-slider-value="'+ data[i].safe +'" data-slider-orientation="vertical"/>'+
-                                        '<p class="sliderVal">安全库存为：<span>'+ data[i].safe +'</span> kg</p>'+
+                                        '<h5 class="totalVal">剩余库存为：<span>'+ data[i].total +'</span> kg</h5>'+
+                                        '<h5 class="safeVal">安全库存为：<span>'+ data[i].safe +'</span> kg</h5>'+
                                     '</div>'
                             $(".material-main").append(str)
                             $('.'+ data[i].ID +'').slider({
                                 reversed : true
                             })
                         }
-                        $(".material-slider").on("slide",function (slideEvt) {
-                            $(this).siblings(".sliderVal").find("span").html(slideEvt.value)
+                        $(".totalSlider").on("slide",function (slideEvt) {
+                            $(this).siblings(".totalVal").find("span").html(slideEvt.value)
+                        })
+                        $(".safeSlider").on("slide",function (slideEvt) {
+                            $(this).siblings(".safeVal").find("span").html(slideEvt.value)
                         })
                         $(".material-slider").on("slideStop ",function (slideEvt) {
                             var ids = slideEvt.target.classList[1]
