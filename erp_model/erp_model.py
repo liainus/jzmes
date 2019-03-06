@@ -189,28 +189,28 @@ def ERP_productplanSynchro():
             plan_id = data['plan_id']
             plan = ERP_session.query(product_plan).filter(product_plan.plan_id == plan_id).first()
             e = product_plan()
-            # e.product_code = plan.product_code
-            # e.product_name = plan.product_name
-            # e.plan_quantity = plan.plan_quantity
-            # e.plan_type = plan.plan_type
-            # e.create_time = plan.create_time
-            # e.transform_time = plan.transform_time
-            # e.transform_flag = plan.transform_flag
-            db_session.add(plan)
+            e.product_code = plan.product_code
+            e.product_name = plan.product_name
+            e.plan_quantity = plan.plan_quantity
+            e.plan_type = plan.plan_type
+            e.create_time = plan.create_time
+            e.transform_time = plan.transform_time
+            e.transform_flag = plan.transform_flag
+            db_session.add(e)
             db_session.commit()
-            plan.transform_time = datetime.datetime.now()
+            plan.transform_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             plan.transform_flag = 1
             ERP_session.commit()
             PRName = db_session.query(ERPproductcode_prname.PRName).filter(ERPproductcode_prname.product_code == plan.product_code).first()[0]
-            MATIDs = db_session(MaterialBOM.MATID).filter(MaterialBOM, MaterialBOM.ProductRuleID == ProductRule.ID).filter(
-                ProductRule.PRName == PRName).all()
+            ProductRuleID = db_session.query(ProductRule.ID).filter(ProductRule.PRName == PRName).first()[0]
+            ss = db_session.query(SchedulingStock).filter(SchedulingStock.product_code == plan.product_code).all()
+            if ss != None:
+                for s in ss:
+                    db_session.delete(s)
+                db_session.commit()
+            MATIDs = db_session.query(MaterialBOM.MATID).filter(MaterialBOM.ProductRuleID == ProductRuleID).all()
             for MATID in MATIDs:
                 MATName = db_session.query(Material.MATName).filter(Material.ID == MATID).first()[0]
-                ss = db_session.query(SchedulingStock).filter(SchedulingStock.product_code == plan.product_code).all()
-                if ss != None:
-                    for s in ss:
-                        db_session.delete(s)
-                    db_session.commit()
                 sc = SchedulingStock()
                 sc.product_code = plan.product_code
                 sc.MATName = MATName
@@ -218,6 +218,7 @@ def ERP_productplanSynchro():
             db_session.commit()
             return 'OK'
         except Exception as e:
+            db_session.rollback()
             print(e)
             logger.error(e)
             insertSyslog("error", "同步ERP计划表报错Error：" + str(e), current_user.Name)

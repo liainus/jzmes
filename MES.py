@@ -7913,7 +7913,7 @@ def planScheduling():
     if request.method == 'GET':
         data = request.values
         try:
-            month = data['month'][0:-3]#月份
+            month = data['month'][0:-3] #月份
             count = db_session.query(plantCalendarScheduling).filter(plantCalendarScheduling.start.like("%" + month + "%")).count()
             oclass = db_session.query(plantCalendarScheduling).all()
             mou = month.split("-")
@@ -7921,8 +7921,6 @@ def planScheduling():
             monthRangeNext = calendar.monthrange(int(mou[0]), int(mou[1])+1)
             SchedulDates = monthRange[1] - count
             capacity = data['capacity']
-
-
             return 'OK'
         except Exception as e:
             logger.error(e)
@@ -7982,7 +7980,7 @@ def SchedulingStockUpdateCreate():
         data = request.values
         ID = data["ID"]
         if(ID == "" or ID == None):
-            return insert(SchedulingStock, data)
+            return "请先同步ERP计划信息再进行设置！"
         else:
             return update(SchedulingStock, data)
 
@@ -7999,7 +7997,12 @@ def plantCalendarSafeStock():
 # 设置每日批数
 @app.route('/plantCalendarbatchNumber')
 def plantCalendarbatchNumber():
-    return render_template('plantCalendarbatchNumber.html')
+    data = []
+    codenames = db_session.query(ProductRule.PRCode, ProductRule.PRName).all()
+    for i in codenames:
+        dir = {"id": i[0], "text": i[1]}
+        data.append(dir)
+    return render_template('plantCalendarbatchNumber.html', data=data)
 
 # 日历排产
 @app.route('/calendarScheduling')

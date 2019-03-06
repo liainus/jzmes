@@ -1295,6 +1295,18 @@ class ERPproductcode_prname(Base):
     # 产品名称
     PRName = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
+# 排产规范表--一天做多少批产品，一批产品等于多少公斤原材料
+class SchedulingStandard(Base):
+    __tablename__ = "SchedulingStandard"
+    # ID:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=True)
+    # 产品名称
+    PRName = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    # 批数（批/每天）
+    BatchNumS = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    # 物料重量（kg/批）
+    Batch_quantity = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
 # 生成表单的执行语句
 Base.metadata.create_all(engine)
 
