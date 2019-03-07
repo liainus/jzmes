@@ -7939,13 +7939,17 @@ def planScheduling():
             sch = db_session.query(SchedulingStandard).filter(SchedulingStandard.PRName == PRName).first()
             batchnums = float(oc.plan_quantity)/float(sch.Batch_quantity) #计划有多少批
             days = batchnums/int(sch.DayBatchNumS) #这批计划要做多少天
-            schdays = db_session.query(plantCalendarScheduling.start).filter(plantCalendarScheduling.start.like("%" + month + "%")).all()
+            re = timeChange(mou[0], mou[1], monthRange[1])
+            if int(mou[1])<10:
+                mou = mou[0]+"-0"+mou[1]
+            else:
+                mou = mou[0] + "-" + mou[1]
+            print(mou)
+            schdays = db_session.query(plantCalendarScheduling.start).filter(plantCalendarScheduling.start.like("%" + mou + "%")).all()
             undays = []
             if schdays != None:
                 for i in schdays:
                     undays.append(i[0])
-            total_days = monthRange[1]
-            re = timeChange(mou[0],mou[1],monthRange[1])
             solds = db_session.query(Scheduling).filter(Scheduling.PRName == PRName).all()
             for old in solds:
                 sql = "DELETE FROM Scheduling WHERE ID = "+str(old.ID)
@@ -7973,13 +7977,18 @@ def timeChange(year,month,days):
     while i < days:
         if i < 9:
             i = i + 1
-            date = str(year) + "-" + str(month) + "-" + str(0) + str(i)
+            date = str(year) + "-" + str(mon(month)) + "-" + str(0) + str(i)
             da.append(date)
         else:
             i = i + 1
-            date = str(year)  + "-" + str(month)  + "-" +  str(i)
+            date = str(year)  + "-" + str(mon(month))  + "-" +  str(i)
             da.append(date)
     return da
+def mon(month):
+    if int(month)<10:
+        return "0"+month
+    else:
+        return month
 
 @app.route('/planSchedulingTu', methods=['GET', 'POST'])
 def planSchedulingTu():
