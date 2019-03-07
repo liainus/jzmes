@@ -41,7 +41,8 @@ import string
 import re
 from collections import Counter
 from Model.system import User, EquipmentRunPUID, ElectronicBatch, EquipmentRunRecord, QualityControl, PackMaterial, \
-    TypeCollection, OperationProcedure, EquipmentMaintenanceStore, Scheduling, SchedulingStock, ERPproductcode_prname, SchedulingStandard
+    TypeCollection, OperationProcedure, EquipmentMaintenanceStore, Scheduling, SchedulingStock, ERPproductcode_prname, \
+    SchedulingStandard, product_plan
 from Model.Global import WeightUnit
 from Model.control import ctrlPlan
 from flask_login import login_required, logout_user, login_user, current_user, LoginManager
@@ -7913,19 +7914,57 @@ def planScheduling():
     if request.method == 'GET':
         data = request.values
         try:
-            month = data['month'][0:-3] #月份
+            plan_id = data['plan_id']
+            oc = db_session.query(product_plan).filter(product_plan.plan_id == plan_id).first()
+            month = data['month']
             count = db_session.query(plantCalendarScheduling).filter(plantCalendarScheduling.start.like("%" + month + "%")).count()
-            oclass = db_session.query(plantCalendarScheduling).all()
             mou = month.split("-")
             monthRange = calendar.monthrange(int(mou[0]), int(mou[1]))
             monthRangeNext = calendar.monthrange(int(mou[0]), int(mou[1])+1)
-            SchedulDates = monthRange[1] - count
-            capacity = data['capacity']
+            SchedulDates = monthRange[1] - count #排产月份有多少天
+            PRName = db_session.query(ERPproductcode_prname.PRName).filter(ERPproductcode_prname.product_code == oc.product_code).first()[0]
+            sch = db_session.query(SchedulingStandard).filter(SchedulingStandard.PRName == PRName).first()
+            batchnums = float(oc.plan_quantity)/float(sch.Batch_quantity) #计划有多少批
+            days = batchnums/int(sch.DayBatchNumS) #这批计划要做多少天
+            schdays = db_session.query(plantCalendarScheduling.start).filter(plantCalendarScheduling.start.like("%" + month + "%")).all()
+            undays = []
+            if schdays != None:
+                for i in schdays:
+                    undays.append(i[0])
+            total_days = monthRange[1]
+            start_time = time.time()
+            re = timeChange(mou[0],mou[1],monthRange[1])
+            print(re)
+            print(undays)
+            daySchedulings = list(set(re).difference(set(undays)))
+            for day in daySchedulings:
+                s = Scheduling()
+                s.SchedulingTime = day
+                s.PRName = PRName
+                s.BatchNumS = sch.DayBatchNumS
+                s.SchedulingNum = day.replace("-", "")
+                db_session.add(s)
+            db_session.commit()
             return 'OK'
         except Exception as e:
+            print(e)
+            db_session.rollback()
             logger.error(e)
-            insertSyslog("error", "工厂日历查询报错Error：" + str(e), current_user.Name)
-            return json.dumps("工厂日历查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+            insertSyslog("error", "计划排产报错Error：" + str(e), current_user.Name)
+            return json.dumps("计划排产报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+def timeChange(year,month,days):
+    i = 0
+    da = []
+    while i < days:
+        if i < 9:
+            i = i + 1
+            date = str(year) + "-" + str(month) + "-" + str(0) + str(i)
+            da.append(date)
+        else:
+            i = i + 1
+            date = str(year)  + "-" + str(month)  + "-" +  str(i)
+            da.append(date)
+    return da
 
 @app.route('/planSchedulingTu', methods=['GET', 'POST'])
 def planSchedulingTu():
@@ -8023,7 +8062,7 @@ def SchedulingStandardCreate():
             if oclass != None:
                 db_session.delete(oclass)
                 db_session.commit()
-            insert(SchedulingStandard,data)
+            return insert(SchedulingStandard,data)
         except Exception as e:
             db_session.rollback()
             logger.error(e)
@@ -8068,5 +8107,28 @@ def SchedulingStandardSearch():
             print(e)
             logger.error(e)
             insertSyslog("error", "SchedulingStandard查询报错Error：" + str(e), current_user.Name)
+
+@app.route('/SchedulingSearch', methods=['POST', 'GET'])
+def SchedulingSearch():
+    '''
+    Scheduling查询
+    :return:
+    '''
+    if request.method == 'GET':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                offset = int(data['offset'])  # 页数
+                limit = int(data['limit'])  # 行数
+                SchedulingTime = data['SchedulingTime']
+                total = db_session.query(Scheduling).filter(Scheduling.SchedulingTime.like(SchedulingTime)).count()
+                oclass = db_session.query(Scheduling).filter(Scheduling.SchedulingTime.like(SchedulingTime)).all()[offset:limit]
+                jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
+                return '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "Scheduling查询报错Error：" + str(e), current_user.Name)
 if __name__ == '__main__':
     app.run(debug=True)
