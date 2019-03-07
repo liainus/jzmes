@@ -3,21 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <title>日历排产</title>
+    <link href="../static/css/base.css" rel="stylesheet">
+	<link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
+	<link href="../static/css/basic_info.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
+	<link href="../static/js/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
+    <link href="../static/css/datagridpanel_customer.css" rel="stylesheet">
+    <link href="../static/css/dialogpanel.css" type="text/css" rel="stylesheet">
+    <link href="../static/css/datagrid_customer.css" type="text/css" rel="stylesheet">
     <link rel="stylesheet" href="../static/css/bootstrap.min.css">
-    <link rel="stylesheet" href="../static/css/fullcalendar.min.css">
     <link rel="stylesheet" href="../static/css/step.css">
-    <script type="text/javascript" src="../static/js/moment.min.js"></script>
     <script type="text/javascript" src="../static/js/jquery-3.3.1.min.js"></script>
-    <script type="text/javascript" src="../static/js/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
     <script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="../static/js/bootbox.min.js"></script>
-    <script type="text/javascript" src="../static/js/fullcalendar.min.js"></script>
-    <script type="text/javascript" src="../static/js/zh-cn.js"></script>
     <script type="text/javascript" src="../static/js/bsStep.js"></script>
-    <script type="text/javascript" src="../static/js/less.js"></script>
     <style>
         .step-round{
             margin-bottom: 20px;
+        }
+        .panel-body{
+            padding: 0;
         }
     </style>
 </head>
@@ -39,10 +46,120 @@
 				</li>
 			</ul>
         </div>
+        <div id="Toolbar" style="padding:0 10px;">
+            排产日期:
+            <input type="text" id="searchDate" class="easyui-datebox" editable="fasle" name="search" style="height:28px;" autocomplete="off"
+            placeholder="">
+            <a href="#" class="easyui-linkbutton" iconCls="icon-redo" id="scheduling">排产</a>
+        </div>
+        <table class="easyui-datagrid" id="selfTab" title="系统计划列表" style="width:100%;" data-options="
+            loadMsg:false,
+            rownumbers:true,
+            singleSelect:true,
+            autoRowHeight:false,
+            pagination:true,
+            pageSize:10,
+            toolbar:'#Toolbar',
+            url:'/erp_model/productplanSearch',
+            method:'get'">
+            <thead>
+                <tr>
+                    <th field="ck" checkbox="true"></th>
+                    <th data-options="field:'product_code',width:200,align:'center'">计划单号</th>
+                    <th data-options="field:'product_name',width:100,align:'center'">计划名称</th>
+                    <th data-options="field:'plan_quantity',width:100,align:'center'">计划重量</th>
+                    <th data-options="field:'plan_type',width:100,align:'center'">计划类型</th>
+                    <th data-options="field:'create_time',width:150,align:'center'">创建时间</th>
+                    <th data-options="field:'transform_time',width:150,align:'center'">更换时间</th>
+                    <th data-options="field:'transform_flag',width:100,align:'center'">更换标志</th>
+                </tr>
+            </thead>
+        </table>
     </div>
     <script>
         $(function(){
             bsStep();
+
+             $("#searchDate").datebox({
+                onShowPanel: function () {//显示日趋选择对象后再触发弹出月份层的事件，初始化时没有生成月份层
+                    span.trigger('click'); //触发click事件弹出月份层
+                    if (!tds)
+                        setTimeout(function() { //延时触发获取月份对象，因为上面的事件触发和对象生成有时间间隔
+                            tds = p.find('div.calendar-menu-month-inner td');
+                            tds.click(function(e) {
+                                e.stopPropagation(); //禁止冒泡执行easyui给月份绑定的事件
+                                var year = /\d{4}/.exec(span.html())[0] //得到年份
+                                    ,month = parseInt($(this).attr('abbr'), 10); //月份 之前是这样的month = parseInt($(this).attr('abbr'), 10) + 1;
+                                $('#searchDate').datebox('hidePanel') //隐藏日期对象
+                                    .datebox('setValue', year + '-' + month); //设置日期的值
+                            });
+                        }, 0);
+                },
+                parser: function (s) {//配置parser，返回选择的日期
+                    if (!s) return new Date();
+                    var arr = s.split('-');
+                    return new Date(parseInt(arr[0], 10), parseInt(arr[1], 10) - 1, 1);
+                },
+                formatter: function (d) {
+                    return d.getFullYear() + '-' +(d.getMonth()+1);
+                }//配置formatter，只返回年月 之前是这样的d.getFullYear() + '-' +(d.getMonth());
+            });
+            var p = $('#searchDate').datebox('panel'), //日期选择对象
+            tds = false, //日期选择对象中月份
+            span = p.find('span.calendar-text'); //显示月份层的触发控件
+            var curr_time = new Date();
+            $("#searchDate").datebox("setValue", myformatter(curr_time));//设置前当月
+
+            $("#scheduling").on('click',function(){
+                var rows = $("#selfTab").datagrid('getSelections');
+                    if(rows.length == 1) {
+                        var row = $("#selfTab").datagrid('getSelected');
+                        if (row) {
+                            $.messager.confirm("操作提示", "您确定要对此记录排产吗？", function (data) {
+                                if (data) {
+                                    $.ajax({
+                                        url: '/systemManager_model/planScheduling',
+                                        method: 'POST',
+                                        traditional: true,
+                                        data: {
+                                            plan_id:row.plan_id,
+                                            month:$("#searchDate").datebox('getValue')
+                                        },
+                                        success: function (data) {
+                                            $.messager.progress('close');
+                                            if(data = "OK"){
+                                                $.messager.show({
+                                                    title: '提示',
+                                                    msg: '排产成功',
+                                                    timeout:1000,
+                                                    style: {
+                                                        right: '',
+                                                        top: document.body.scrollTop + document.documentElement.scrollTop,
+                                                        bottom: ''
+                                                    }
+                                                });
+                                                $("#selfTab").datagrid('reload');
+                                            }
+                                        }
+                                    });
+                                } else {
+                                    $.messager.progress('close');
+                                }
+                            })
+                        }
+                    } else if (rows.length == 0) {
+                        $.messager.alert('警告操作！', '请至少选定一条数据进行排产！', 'warning');
+                    }
+            })
+            function myformatter(date){
+                var y = date.getFullYear();
+                var m = date.getMonth()+1;
+                var d = date.getDate();
+                var h = date.getHours();
+                var minutes = date.getMinutes();
+                var s = date.getSeconds();
+                return y + '-' + (m<10?('0'+m):m)
+            }
         })
     </script>
 </body>
