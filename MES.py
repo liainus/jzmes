@@ -7908,7 +7908,7 @@ def plantCalendarSchedulingSelect():
             ocl = db_session.query(plantCalendarScheduling).all()
             for o in ocl:
                 dic = {}
-                dic['start'] = str(o.start)[0:-9]
+                dic['start'] = str(o.start)
                 dic['title'] = o.title
                 dic['color'] = o.color
                 re.append(dic)
