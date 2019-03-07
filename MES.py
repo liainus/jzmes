@@ -7901,14 +7901,14 @@ def plantCalendarSchedulingSelect():
             oclass = db_session.query(Scheduling).all()
             for oc in oclass:
                 dir = {}
-                dir['start'] = str(oc.SchedulingTime)
+                dir['start'] = str(oc.SchedulingTime)[0:-9]
                 dir['title'] = oc.PRName + ":" + oc.BatchNumS + "批"
                 dir['color'] = "#9FDABF"
                 re.append(dir)
             ocl = db_session.query(plantCalendarScheduling).all()
             for o in ocl:
                 dic = {}
-                dic['start'] = str(o.start)
+                dic['start'] = str(o.start)[0:-9]
                 dic['title'] = o.title
                 dic['color'] = o.color
                 re.append(dic)
@@ -8138,7 +8138,7 @@ def SchedulingSearch():
                 oclass = db_session.query(Scheduling).all()
                 for oc in oclass:
                     dir = {}
-                    dir['start'] = str(oc.SchedulingTime)
+                    dir['start'] = str(oc.SchedulingTime)[0:-9]
                     dir['title'] = oc.PRName +":"+ oc.BatchNumS+"批"
                     re.append(dir)
                 return json.dumps(re, cls=AlchemyEncoder, ensure_ascii=False)
