@@ -7897,9 +7897,22 @@ def plantCalendarSchedulingSelect():
     if request.method == 'GET':
         data = request.values
         try:
-            count = db_session.query(plantCalendarScheduling).count()
-            oclass = db_session.query(plantCalendarScheduling).all()
-            return json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
+            re = []
+            oclass = db_session.query(Scheduling).all()
+            for oc in oclass:
+                dir = {}
+                dir['start'] = str(oc.SchedulingTime)
+                dir['title'] = oc.PRName + ":" + oc.BatchNumS + "批"
+                dir['color'] = "#9FDABF"
+                re.append(dir)
+            ocl = db_session.query(plantCalendarScheduling).all()
+            for o in ocl:
+                dic = {}
+                dic['start'] = str(o.start)
+                dic['title'] = o.title
+                dic['color'] = o.color
+                re.append(dic)
+            return json.dumps(re, cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             logger.error(e)
             insertSyslog("error", "工厂日历查询报错Error：" + str(e), current_user.Name)
@@ -7911,7 +7924,7 @@ def planScheduling():
     计划排产
     :return:
     '''
-    if request.method == 'GET':
+    if request.method == 'POST':
         data = request.values
         try:
             plan_id = data['plan_id']
@@ -7932,10 +7945,12 @@ def planScheduling():
                 for i in schdays:
                     undays.append(i[0])
             total_days = monthRange[1]
-            start_time = time.time()
             re = timeChange(mou[0],mou[1],monthRange[1])
-            print(re)
-            print(undays)
+            solds = db_session.query(Scheduling).filter(Scheduling.PRName == PRName).all()
+            for old in solds:
+                sql = "DELETE FROM Scheduling WHERE ID = "+str(old.ID)
+                db_session.execute(sql)#删除同意品名下的旧的排产计划
+            db_session.commit()
             daySchedulings = list(set(re).difference(set(undays)))
             for day in daySchedulings:
                 s = Scheduling()
@@ -8119,13 +8134,14 @@ def SchedulingSearch():
         try:
             jsonstr = json.dumps(data.to_dict())
             if len(jsonstr) > 10:
-                offset = int(data['offset'])  # 页数
-                limit = int(data['limit'])  # 行数
-                SchedulingTime = data['SchedulingTime']
-                total = db_session.query(Scheduling).filter(Scheduling.SchedulingTime.like(SchedulingTime)).count()
-                oclass = db_session.query(Scheduling).filter(Scheduling.SchedulingTime.like(SchedulingTime)).all()[offset:limit]
-                jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
-                return '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
+                re = []
+                oclass = db_session.query(Scheduling).all()
+                for oc in oclass:
+                    dir = {}
+                    dir['start'] = str(oc.SchedulingTime)
+                    dir['title'] = oc.PRName +":"+ oc.BatchNumS+"批"
+                    re.append(dir)
+                return json.dumps(re, cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
             logger.error(e)
