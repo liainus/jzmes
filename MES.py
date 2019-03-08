@@ -7946,7 +7946,6 @@ def planScheduling():
                 mou = mou[0]+"-0"+mou[1]
             else:
                 mou = mou[0] + "-" + mou[1]
-            print(mou)
             schdays = db_session.query(plantCalendarScheduling.start).filter(plantCalendarScheduling.start.like("%" + mou + "%")).all()
             undays = []
             if schdays != None:
@@ -7965,6 +7964,27 @@ def planScheduling():
                 s.BatchNumS = sch.DayBatchNumS
                 s.SchedulingNum = day.replace("-", "")
                 db_session.add(s)
+            db_session.commit()
+            #工厂日历安全库存提醒
+            sches = db_session.query(Scheduling).filter(Scheduling.PRName == PRName).order_by(("SchedulingTime")).all()
+            stan = db_session.query(SchedulingStandard).filter(SchedulingStandard.PRName == PRName).first()
+            stocks = db_session.query(SchedulingStock).filter(SchedulingStock.product_code == oc.product_code).all()
+            for st in stocks:
+                sto = int(st.StockHouse) - int(st.SafetyStock)#库存-安全库存 库存情况
+                mid = db_session.query(Material.ID).filter(Material.MATName == st.MATName).first()[0]
+                BatchPercentage = db_session.query(MaterialBOM.BatchPercentage).filter(MaterialBOM.MATID == mid).first()#此物料的百分比
+                steverydayKG = (int(stan.DayBatchNumS)*float(stan.Batch_quantity))*float(BatchPercentage[0])
+                #库存可以做多少天
+                stockdays = sto/steverydayKG
+                if "." in str(stockdays):
+                    stockdays = int(str(stockdays).split(".")[0])
+                for i in range(0,len(sches)):
+                    if i == stockdays-1:
+                        ca = plantCalendarScheduling()
+                        ca.start = sches[i].SchedulingTime
+                        ca.title = PRName + "中的物料" + st.MATName + "已到安全库存"
+                        db_session.add(ca)
+                        break
             db_session.commit()
             return 'OK'
         except Exception as e:
