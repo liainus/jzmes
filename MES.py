@@ -7903,7 +7903,7 @@ def plantCalendarSchedulingSelect():
                 dir = {}
                 dir['ID'] = ""
                 dir['start'] = str(oc.SchedulingTime)[0:-9]
-                dir['title'] = oc.PRName + ":" + oc.BatchNumS + "批"
+                dir['title'] = oc.PRName + ": 第" + oc.SchedulingNum[8:] + "批"
                 dir['color'] = "#9FDABF"
                 re.append(dir)
             ocl = db_session.query(plantCalendarScheduling).all()
@@ -7957,13 +7957,20 @@ def planScheduling():
                 db_session.execute(sql)#删除同意品名下的旧的排产计划
             db_session.commit()
             daySchedulings = list(set(re).difference(set(undays)))
+            print(daySchedulings)
+            daySchedulings = list(daySchedulings)
+            print(daySchedulings)
+            daySchedulings.sort()
+            print(daySchedulings)
+            i = 1
             for day in daySchedulings:
                 s = Scheduling()
                 s.SchedulingTime = day
                 s.PRName = PRName
                 s.BatchNumS = sch.DayBatchNumS
-                s.SchedulingNum = day.replace("-", "")
+                s.SchedulingNum = day.replace("-", "")+str(i)
                 db_session.add(s)
+                i = i+1
             db_session.commit()
             #工厂日历安全库存提醒
             sches = db_session.query(Scheduling).filter(Scheduling.PRName == PRName).order_by(("SchedulingTime")).all()
@@ -7981,8 +7988,9 @@ def planScheduling():
                 for i in range(0,len(sches)):
                     if i == stockdays-1:
                         ca = plantCalendarScheduling()
-                        ca.start = sches[i].SchedulingTime
-                        ca.title = PRName + "中的物料" + st.MATName + "已到安全库存"
+                        ca.start = (sches[i].SchedulingTime).strftime("%Y-%m-%d")
+                        ca.title = st.MATName + "已到安全库存"#PRName + "中的物料" +
+                        ca.color = "#e67d7d"
                         db_session.add(ca)
                         break
             db_session.commit()
