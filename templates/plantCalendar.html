@@ -16,6 +16,10 @@
     <script type="text/javascript" src="../static/js/bsStep.js"></script>
     <script type="text/javascript" src="../static/js/less.js"></script>
     <style>
+        .pad-per{
+            padding-top: 15px;
+            padding-bottom: 15px;
+        }
         .step-round{
             margin-bottom: 20px;
         }
@@ -47,23 +51,26 @@
           }
     </style>
 </head>
-<body style="padding: 20px 0;">
-    <div class="col-md-12">
-        <div class="row">
-            <ul class="nav nav-pills nav-justified step step-round" data-step="1">
-				<li>
-					<a href="/plantCalendar">工厂日历</a>
-				</li>
-				<li>
-					<a href="/plantCalendarSafeStock">设置安全库存</a>
-				</li>
-				<li>
-					<a href="/plantCalendarbatchNumber">设置每日生产批数</a>
-				</li>
-				<li>
-					<a href="/calendarScheduling">日历排产</a>
-				</li>
-			</ul>
+<body>
+    <div class="pad-per">
+        <div class="col-md-12">
+            <ul class="nav nav-pills nav-justified step step-round" data-step="2">
+                <li>
+                    <a href="/ERP_productplan">ERP计划信息</a>
+                </li>
+                <li>
+                    <a href="/plantCalendar">工厂日历</a>
+                </li>
+                <li>
+                    <a href="/plantCalendarSafeStock">设置安全库存</a>
+                </li>
+                <li>
+                    <a href="/plantCalendarbatchNumber">设置每日生产批数</a>
+                </li>
+                <li>
+                    <a href="/calendarScheduling">日历排产</a>
+                </li>
+            </ul>
             <div class="col-md-2 col-sm-2">
                 <div id='external-events'>
                     <h4>可拖放的事件</h4>
@@ -78,6 +85,11 @@
             </div>
             <div class="col-md-10 col-sm-10">
                 <div id='calendar' style="width: 100%;"></div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="modal-footer">
+                <a href="/plantCalendarSafeStock" class="btn btn-primary">下一步</a>
             </div>
         </div>
     </div>
@@ -103,6 +115,7 @@
                 editable: true, //支持拖动换位
                 weekNumbers: true, //是否在日历中显示第几周
                 droppable: true, // 允许将事件放在日历上
+                height:560,
                 //初始化数据
                 events:function(start,end,timezone,callback){
                     var events = []
