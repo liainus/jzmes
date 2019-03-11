@@ -13,11 +13,15 @@
     <script type="text/javascript" src="../static/js/less.js"></script>
     <script type="text/javascript" src="../static/js/bootstrap-slider.min.js"></script>
     <style>
+        .pad-per{
+            padding-top: 15px;
+            padding-bottom: 15px;
+        }
         .step-round{
             margin-bottom: 20px;
         }
         .slider.slider-vertical{
-            height: 420px;
+            height: 380px;
             margin: 0 10px;
         }
         .slider.slider-vertical .slider-track{
@@ -46,43 +50,51 @@
         })
     </script>
 </head>
-<body style="padding: 20px 0;">
-    <div class="col-md-12">
-        <div class="row">
-            <ul class="nav nav-pills nav-justified step step-round" data-step="2">
-				<li>
-					<a href="/plantCalendar">工厂日历</a>
-				</li>
-				<li>
-					<a href="/plantCalendarSafeStock">设置安全库存</a>
-				</li>
-				<li>
-					<a href="/plantCalendarbatchNumber">设置每日生产批数</a>
-				</li>
-				<li>
-					<a href="/calendarScheduling">日历排产</a>
-				</li>
-			</ul>
-        </div>
-        <div class="col-md-12 col-sm-12 text-center">
-            <div id="myAlert" class="alert alert-success hide">
-                <strong>成功！</strong>物料库存修改成功！
+<body>
+    <div class="pad-per">
+        <div class="col-md-12">
+            <ul class="nav nav-pills nav-justified step step-round" data-step="3">
+                <li>
+                    <a href="/ERP_productplan">ERP计划信息</a>
+                </li>
+                <li>
+                    <a href="/plantCalendar">工厂日历</a>
+                </li>
+                <li>
+                    <a href="/plantCalendarSafeStock">设置安全库存</a>
+                </li>
+                <li>
+                    <a href="/plantCalendarbatchNumber">设置每日生产批数</a>
+                </li>
+                <li>
+                    <a href="/calendarScheduling">日历排产</a>
+                </li>
+            </ul>
+            <div class="col-md-12 col-sm-12 text-center">
+                <div id="myAlert" class="alert alert-success hide">
+                    <strong>成功！</strong>物料库存修改成功！
+                </div>
+                <form class="form-inline" style="margin-bottom: 15px;">
+                  <div class="form-group">
+                    <p class="form-control-static">选择物料：</p>
+                  </div>
+                  <div class="form-group">
+                    <select class="form-control" id="PRNameSelect">
+                        {% for i in data %}
+                            <option value="{{ i['id'] }}">{{ i['text'] }}</option>
+                        {% endfor %}
+                    </select>
+                  </div>
+                </form>
             </div>
-            <form class="form-inline" style="margin-bottom: 15px;">
-              <div class="form-group">
-                <p class="form-control-static">选择物料：</p>
-              </div>
-              <div class="form-group">
-                <select class="form-control" id="PRNameSelect">
-                    {% for i in data %}
-                        <option value="{{ i['id'] }}">{{ i['text'] }}</option>
-                    {% endfor %}
-                </select>
-              </div>
-            </form>
-        </div>
-        <div class="col-md-12 col-sm-12 material-main">
+            <div class="col-md-12 col-sm-12 material-main">
 
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="modal-footer">
+                <a href="/plantCalendarbatchNumber" class="btn btn-primary">下一步</a>
+            </div>
         </div>
     </div>
     <script>
@@ -126,7 +138,7 @@
                             $(this).siblings(".safeVal").find("span").html(slideEvt.value)
                         })
                         $(".material-slider").on("slideStop ",function (slideEvt) {
-                            var ids = slideEvt.target.classList[1]
+                            var ids = slideEvt.target.classList[2]
                             ids = ids.replace("y","")
                             var value = slideEvt.value
                             var type = slideEvt.target.dataset.sliderId

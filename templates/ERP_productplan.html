@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>ERP计划信息</title>
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/css/step.css">
     <link href="../static/css/base.css" rel="stylesheet">
 	<link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
 	<link href="../static/css/basic_info.css" rel="stylesheet">
@@ -15,7 +17,15 @@
     <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
     <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
     <script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
+    <script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootbox.min.js"></script>
+    <script type="text/javascript" src="../static/js/bsStep.js"></script>
+    <script type="text/javascript" src="../static/js/less.js"></script>
     <style>
+        .pad-per{
+            padding-top: 15px;
+            padding-bottom: 15px;
+        }
         .ERPList .panel-header{
             background: #0D5661;
         }
@@ -25,16 +35,65 @@
     </style>
 </head>
 <body>
-    <div style="padding: 10px;">
-        <div class="ERPList">
-            <table class="easyui-datagrid" id="ERPTab" title="ERP计划列表" style="width:100%;" data-options="
+    <div class="pad-per">
+        <div class="col-md-12">
+            <ul class="nav nav-pills nav-justified step step-round" data-step="1">
+                <li>
+                    <a href="/ERP_productplan">ERP计划信息</a>
+                </li>
+                <li>
+                    <a href="/plantCalendar">工厂日历</a>
+                </li>
+                <li>
+                    <a href="/plantCalendarSafeStock">设置安全库存</a>
+                </li>
+                <li>
+                    <a href="/plantCalendarbatchNumber">设置每日生产批数</a>
+                </li>
+                <li>
+                    <a href="/calendarScheduling">日历排产</a>
+                </li>
+            </ul>
+            <div class="ERPList">
+                <table class="easyui-datagrid" id="ERPTab" title="ERP计划列表" style="width:100%;" data-options="
+                    loadMsg:false,
+                    rownumbers:true,
+                    singleSelect:true,
+                    autoRowHeight:false,
+                    pagination:true,
+                    pageSize:10,
+                    url:'/erp_model/ERP_productplanSearch',
+                    method:'get'">
+                    <thead>
+                        <tr>
+                            <th field="ck" checkbox="true"></th>
+                            <th data-options="field:'product_code',width:200,align:'center'">计划单号</th>
+                            <th data-options="field:'product_name',width:100,align:'center'">计划名称</th>
+                            <th data-options="field:'plan_quantity',width:100,align:'center'">计划重量</th>
+                            <th data-options="field:'plan_type',width:100,align:'center'">计划类型</th>
+                            <th data-options="field:'create_time',width:150,align:'center'">创建时间</th>
+                            <th data-options="field:'transform_time',width:150,align:'center'">更换时间</th>
+                            <th data-options="field:'transform_flag',width:100,align:'center'">更换标志</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <a href="#" class="easyui-linkbutton" id="synchronization" data-options="iconCls:'icon-redo'" style="margin-top: 20px">同步</a>
+            <div id="Toolbar" style="padding:0 10px;">
+                <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="Toolbar.add()">添加</a>
+                <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="Toolbar.updata()">编辑</a>
+                <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="Toolbar.delete()">删除</a>
+                <a href="#" class="easyui-linkbutton" iconCls="icon-reload" onclick="Toolbar.reload()">刷新</a>
+            </div>
+            <table class="easyui-datagrid" id="selfTab" title="系统计划列表" style="width:100%;" data-options="
                 loadMsg:false,
                 rownumbers:true,
-                singleSelect:true,
+                singleSelect:false,
                 autoRowHeight:false,
                 pagination:true,
                 pageSize:10,
-                url:'/erp_model/ERP_productplanSearch',
+                toolbar:'#Toolbar',
+                url:'/erp_model/productplanSearch',
                 method:'get'">
                 <thead>
                     <tr>
@@ -49,94 +108,71 @@
                     </tr>
                 </thead>
             </table>
+            <div id="planDialog" class="easyui-dialog" style="width:400px;height:400px;padding:10px;"
+                 data-options="closed:'true',buttons:'#planDialogButtons',modal:true">
+                <form id="planForm" method="post" class="dialog-form">
+                    <table class="kv-table">
+                        <tbody>
+                            <tr>
+                                <td class="kv-label">计划ID</td>
+                                <td class="kv-content">
+                                    <input name="plan_id" id="plan_id" type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="" disabled="disabled">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="kv-label">产品(即物料)编码</td>
+                                <td class="kv-content">
+                                    <input name="product_code" id="product_code" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="kv-label">产品(即物料)名称</td>
+                                <td class="kv-content">
+                                    <input name="product_name" id="product_name" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="kv-label">计划数量</td>
+                                <td class="kv-content">
+                                    <input name="plan_quantity" id="plan_quantity" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="kv-label">计划类型 'M' 月计划</td>
+                                <td class="kv-content">
+                                    <select name="plan_type" id="plan_type" type="text" style="width:157px;" autocomplete="off" placeholder="">
+                                        <option value="">请选择</option>
+                                        <option value="HALB">半成品</option>
+                                        <option value="FERT">成品</option>
+                                        <option value="ROH">原料</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="kv-label">插入时间</td>
+                                <td class="kv-content">
+                                    <input name="create_time" id="create_time" required="true" editable="fasle" type="text" class="easyui-datetimebox" autocomplete="off" placeholder=""  disabled="disabled" >
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div id="planDialogButtons" >
+                        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" id="saveAdd" onclick="Toolbar.save()" >保存</a>
+                        <a href="#" class="easyui-linkbutton" onclick="$('#planDialog').dialog('close')">关闭</a>
+                    </div>
+                </form>
+            </div>
         </div>
-        <a href="#" class="easyui-linkbutton" id="synchronization" data-options="iconCls:'icon-redo'" style="margin-top: 20px">同步</a>
-        <div id="Toolbar" style="padding:0 10px;">
-            <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="Toolbar.add()">添加</a>
-            <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="Toolbar.updata()">编辑</a>
-            <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="Toolbar.delete()">删除</a>
-            <a href="#" class="easyui-linkbutton" iconCls="icon-reload" onclick="Toolbar.reload()">刷新</a>
-        </div>
-        <table class="easyui-datagrid" id="selfTab" title="系统计划列表" style="width:100%;" data-options="
-            loadMsg:false,
-            rownumbers:true,
-            singleSelect:false,
-            autoRowHeight:false,
-            pagination:true,
-            pageSize:10,
-            toolbar:'#Toolbar',
-            url:'/erp_model/productplanSearch',
-            method:'get'">
-            <thead>
-                <tr>
-                    <th field="ck" checkbox="true"></th>
-                    <th data-options="field:'product_code',width:200,align:'center'">计划单号</th>
-                    <th data-options="field:'product_name',width:100,align:'center'">计划名称</th>
-                    <th data-options="field:'plan_quantity',width:100,align:'center'">计划重量</th>
-                    <th data-options="field:'plan_type',width:100,align:'center'">计划类型</th>
-                    <th data-options="field:'create_time',width:150,align:'center'">创建时间</th>
-                    <th data-options="field:'transform_time',width:150,align:'center'">更换时间</th>
-                    <th data-options="field:'transform_flag',width:100,align:'center'">更换标志</th>
-                </tr>
-            </thead>
-        </table>
-        <div id="planDialog" class="easyui-dialog" style="width:400px;height:400px;padding:10px;"
-             data-options="closed:'true',buttons:'#planDialogButtons',modal:true">
-            <form id="planForm" method="post" class="dialog-form">
-                <table class="kv-table">
-                    <tbody>
-                        <tr>
-                            <td class="kv-label">计划ID</td>
-                            <td class="kv-content">
-                                <input name="plan_id" id="plan_id" type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="" disabled="disabled">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="kv-label">产品(即物料)编码</td>
-                            <td class="kv-content">
-                                <input name="product_code" id="product_code" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="kv-label">产品(即物料)名称</td>
-                            <td class="kv-content">
-                                <input name="product_name" id="product_name" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="kv-label">计划数量</td>
-                            <td class="kv-content">
-                                <input name="plan_quantity" id="plan_quantity" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="kv-label">计划类型 'M' 月计划</td>
-                            <td class="kv-content">
-                                <select name="plan_type" id="plan_type" type="text" style="width:157px;" autocomplete="off" placeholder="">
-                                    <option value="">请选择</option>
-                                    <option value="HALB">半成品</option>
-                                    <option value="FERT">成品</option>
-                                    <option value="ROH">原料</option>
-                                </select>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="kv-label">插入时间</td>
-                            <td class="kv-content">
-                                <input name="create_time" id="create_time" required="true" editable="fasle" type="text" class="easyui-datetimebox" autocomplete="off" placeholder=""  disabled="disabled" >
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div id="planDialogButtons" >
-                    <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" id="saveAdd" onclick="Toolbar.save()" >保存</a>
-                    <a href="#" class="easyui-linkbutton" onclick="$('#planDialog').dialog('close')">关闭</a>
-                </div>
-            </form>
+        <div class="col-md-12">
+            <div class="modal-footer">
+                <a href="/plantCalendar" class="btn btn-primary">下一步</a>
+            </div>
         </div>
     </div>
     <script>
         $(function(){
+            bsStep();
+
             $("#synchronization").on('click',function(){
                 var row = $("#ERPTab").datagrid('getSelected');
                 if (row) {
