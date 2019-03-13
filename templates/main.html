@@ -132,7 +132,7 @@
                             {% endif %}
                             {% if '15' in session.get('menus') %}
                                 <li>
-                                    <a href="#" onclick="addTab('工厂日历','/ERP_productplan')">日历排产向导</a>
+                                    <a href="#" onclick="addTab('工厂日历','/plantCalendarResult')">工厂日历</a>
                                 </li>
                             {% endif %}
                         </ul>
@@ -147,6 +147,9 @@
                     <ul class="sider-nav-s">
                         <li>
                             <a href="#" onclick="addTab('ERP物料信息','/ERP_productinfo')">ERP物料信息</a>
+                        </li>
+                        <li>
+                            <a href="#" onclick="addTab('ERP物料信息','/ERP_productplan')">ERP计划排产</a>
                         </li>
                     </ul>
                 </li>
