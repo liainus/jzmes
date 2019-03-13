@@ -71,12 +71,12 @@
                     <a href="/calendarScheduling">日历排产</a>
                 </li>
                 <li>
-                    <a href="/calendarScheduling">排产结果</a>
+                    <a href="/plantCalendarResult">排产结果</a>
                 </li>
             </ul>
             <div class="col-md-2 col-sm-2">
                 <div id='external-events'>
-                    <h4>可拖放的事件</h4>
+                    <h4>可拖放的日程</h4>
                     <div class='fc-event' style="background: #00c3db;border: 1px solid #00c3db;">维保</div>
                     <div class='fc-event' style="background: #f7d013;border: 1px solid #f7d013;">休息</div>
                     <div class='fc-event' style="background: #e73b3b;border: 1px solid #e73b3b;">紧急</div>
@@ -114,8 +114,14 @@
             });
             //日历排产
             $('#calendar').fullCalendar({
+                header:{
+                    right: 'prev,next today',
+                    center: 'title',
+                    left: 'month,agendaWeek,agendaDay,listMonth'
+                },
                 locale:'zh-cn',
                 editable: true, //支持拖动换位
+                navLinks: true, //是否可以单击日/周名称来导航视图
                 weekNumbers: true, //是否在日历中显示第几周
                 droppable: true, // 允许将事件放在日历上
                 height:560,
@@ -201,7 +207,7 @@
                         }
                      });
                 },
-                //删除事件
+                //点击日程事件进行删除
                 eventClick:function(event){
                     var startDate = myformatter(event.start._d)
                     bootbox.setLocale("zh_CN");
@@ -229,6 +235,12 @@
                             }
                         }
                     })
+                },
+                dayClick:function(date, allDay, jsEvent, view){
+                    console.log(date)
+                    console.log(allDay)
+                    console.log(jsEvent)
+                    console.log(view)
                 }
             });
         })
