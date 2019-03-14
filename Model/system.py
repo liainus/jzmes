@@ -1264,6 +1264,8 @@ class Scheduling(Base):
     SchedulingNum = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
     # 批数
     BatchNumS = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    # 排产状态
+    SchedulingStatus = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
     # 创建时间
     create_time = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
     # 修改时间

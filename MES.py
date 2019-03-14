@@ -7852,7 +7852,12 @@ def plantCalendar():
     '''
     :return: 工厂日历页面跳转
     '''
-    return render_template('plantCalendar.html')
+    data = []
+    codenames = db_session.query(ProductRule.PRCode, ProductRule.PRName).all()
+    for i in codenames:
+        dir = {"id": i[0], "text": i[1]}
+        data.append(dir)
+    return render_template('plantCalendar.html',data = data)
 
 
 @app.route('/systemManager_model/plantCalendarSchedulingCreate', methods=['GET', 'POST'])
@@ -7943,12 +7948,12 @@ def planScheduling():
             batchnums = float(oc.plan_quantity)/float(sch.Batch_quantity) #计划有多少批
             days = batchnums/int(sch.DayBatchNumS) #这批计划要做多少天
             re = timeChange(mou[0], mou[1], monthRange[1])
+
+            #不能排产的时间
             if int(mou[1])<10:
                 mou = mou[0]+"-0"+mou[1]
             else:
                 mou = mou[0] + "-" + mou[1]
-
-            #不能排产的时间
             schdays = db_session.query(plantCalendarScheduling.start).filter(plantCalendarScheduling.start.like("%" + mou + "%"),
                                     ~plantCalendarScheduling.title.like("%安全库存%")).all()
             undays = []
@@ -8031,7 +8036,7 @@ def planScheduling():
 def timeChange(year,month,days):
     i = 0
     da = []
-    while i < days:
+    while i < days  or i == days:
         if i < 9:
             i = i + 1
             date = str(year) + "-" + str(mon(month)) + "-" + str(0) + str(i)
@@ -8056,206 +8061,15 @@ def plantSchedulingAddBatch():
         data = request.values
         try:
             PRName = data['PRName']
-            code = db_session.query(ERPproductcode_prname.product_code).filter(ERPproductcode_prname.PRName == PRName).first()[0]
-            plan_id = db_session.query(product_plan.plan_id).filter(product_plan.product_code == code).order_by(desc("plan_id")).first()[0]
+            code = db_session.query(ERPproductcode_prname.product_code).filter(ERPproductcode_prname.PRName ==
+                                                                               PRName).first()[0]
+            plan_id = db_session.query(product_plan.plan_id).filter(product_plan.product_code == code).order_by(
+                desc("plan_id")).first()[0]
             date = data['date']
             month = data['month']
             moua = month.split("-")
-            monthRange = calendar.monthrange(int(moua[0]), int(moua[1]))
-            monthpaichans = timeChange(moua[0], moua[1], monthRange[1])
-            print(date[0:10])
-            if date[0:10] in monthpaichans:
-                nowday = datetime.datetime.now().strftime("%Y-%m-%d")
-                oc = db_session.query(product_plan).filter(product_plan.plan_id == plan_id).first()
-                PRName = db_session.query(ERPproductcode_prname.PRName).filter(
-                    ERPproductcode_prname.product_code == oc.product_code).first()[0]
-                oclass = db_session.query(Scheduling).filter(Scheduling.PRName == PRName).order_by("SchedulingTime").all()
-                oc = db_session.query(product_plan).filter(product_plan.plan_id == plan_id).first()
-                firstDay = date[0:8]+"00"
-                lastDay = date[0:10]
-                count = db_session.query(plantCalendarScheduling).filter(
-                    plantCalendarScheduling.start.like("%" + month + "%"),
-                    ~plantCalendarScheduling.title.like("%安全库存%")).count()
-                mou = month.split("-")
-                monthRange = calendar.monthrange(int(mou[0]), int(mou[1]))
-                SchedulDates = monthRange[1] - count  # 排产月份有多少天
+            schs = db_session.query(Scheduling).filter(Scheduling.PRName == PRName).order_by(desc("SchedulingNum")).all()
 
-                sch = db_session.query(SchedulingStandard).filter(SchedulingStandard.PRName == PRName).first()
-                countnow = db_session.query(Scheduling).filter(Scheduling.SchedulingTime.between(firstDay, lastDay)).count()
-                batchnums = (float(oc.plan_quantity)+float(sch.Batch_quantity)-countnow*(float(sch.Batch_quantity))) / float(sch.Batch_quantity)  # 计划有多少批
-                days = batchnums / int(sch.DayBatchNumS)  # 这批计划要做多少天
-                re = timeChangeadd(mou[0], mou[1], monthRange[1],int(mou[2]))
-                if int(mou[1]) < 10:
-                    mou = mou[0] + "-0" + mou[1]
-                else:
-                    mou = mou[0] + "-" + mou[1]
-
-                #不能排产的时间
-                schdays = db_session.query(plantCalendarScheduling.start).filter(
-                    plantCalendarScheduling.start.between(firstDay, lastDay),
-                    ~plantCalendarScheduling.title.like("%安全库存%")).all()
-                undays = []#休息天数
-                if schdays != None:
-                    for i in schdays:
-                        undays.append(i[0])
-                # #删除上一次排产同品名的数据
-                # solds = db_session.query(Scheduling).filter(Scheduling.PRName == PRName).all()
-                # for old in solds:
-                #     sql = "DELETE FROM Scheduling WHERE ID = " + str(old.ID)
-                #     db_session.execute(sql)  # 删除同意品名下的旧的排产计划
-                # db_session.commit()
-
-                #去掉不能排产的时间，只剩可以排产的时间
-                daySchedulings = list(set(re).difference(set(undays)))
-                daySchedulings = list(daySchedulings)
-                daySchedulings.sort()
-
-                #排产数据写入数据库
-                dayBatchNum = \
-                db_session.query(SchedulingStandard.DayBatchNumS).filter(SchedulingStandard.PRName == PRName).first()[0]
-                j = countnow
-                k = 1
-                for day in daySchedulings:
-                    if k > days:  # 当这个计划所有的批次做完跳出循环
-                        break
-                    for r in range(0, int(dayBatchNum)):
-                        s = Scheduling()
-                        s.SchedulingTime = day
-                        s.PRName = PRName
-                        s.BatchNumS = sch.DayBatchNumS
-                        if j < 10:
-                            s.SchedulingNum = day.replace("-", "") + "0" + str(j)
-                        else:
-                            s.SchedulingNum = day.replace("-", "") + str(j)
-                        db_session.add(s)
-                        j = j + 1
-                    k = k + 1
-                db_session.commit()
-
-                # 工厂日历安全库存提醒
-                sches = db_session.query(Scheduling).filter(Scheduling.PRName == PRName).order_by(("SchedulingTime")).all()
-                stan = db_session.query(SchedulingStandard).filter(SchedulingStandard.PRName == PRName).first()
-                stocks = db_session.query(SchedulingStock).filter(SchedulingStock.product_code == oc.product_code).all()
-                for st in stocks:
-                    sto = int(st.StockHouse) - int(st.SafetyStock)  # 库存-安全库存 库存情况
-                    mid = db_session.query(Material.ID).filter(Material.MATName == st.MATName).first()[0]
-                    BatchPercentage = db_session.query(MaterialBOM.BatchPercentage).filter(
-                        MaterialBOM.MATID == mid).first()  # 此物料的百分比
-                    cals = db_session.query(plantCalendarScheduling).filter(
-                        plantCalendarScheduling.title.like("%" + st.MATName + "%")).all()
-                    if cals != None:
-                        for c in cals:
-                            db_session.delete(c)
-                            db_session.commit()
-                    steverydayKG = (int(stan.DayBatchNumS) * float(stan.Batch_quantity)) * float(BatchPercentage[0])
-                    # 库存可以做多少天
-                    stockdays = sto / steverydayKG
-                    if "." in str(stockdays):
-                        stockdays = int(str(stockdays).split(".")[0])
-                    for i in range(0, len(sches)):
-                        if i == stockdays - 1:
-                            ca = plantCalendarScheduling()
-                            ca.start = (sches[i].SchedulingTime).strftime("%Y-%m-%d")
-                            ca.title = st.MATName + "已到安全库存"  # PRName + "中的物料" +
-                            ca.color = "#e67d7d"
-                            db_session.add(ca)
-                            break
-                db_session.commit()
-                return 'OK'
-            else:
-                oc = db_session.query(product_plan).filter(product_plan.plan_id == plan_id).first()
-                count = db_session.query(plantCalendarScheduling).filter(
-                    plantCalendarScheduling.start.like("%" + month + "%"),
-                    ~plantCalendarScheduling.title.like("%安全库存%")).count()
-                mou = month.split("-")
-                monthRange = calendar.monthrange(int(mou[0]), int(mou[1]))
-                monthRangeNext = calendar.monthrange(int(mou[0]), int(mou[1]) + 1)
-                SchedulDates = monthRange[1] - count  # 排产月份有多少天
-                PRName = db_session.query(ERPproductcode_prname.PRName).filter(
-                    ERPproductcode_prname.product_code == oc.product_code).first()[0]
-                sch = db_session.query(SchedulingStandard).filter(SchedulingStandard.PRName == PRName).first()
-                batchnums = (float(oc.plan_quantity)+float(sch.Batch_quantity)) / float(sch.Batch_quantity)  # 计划有多少批
-                days = batchnums / int(sch.DayBatchNumS)  # 这批计划要做多少天
-                re = timeChange(mou[0], mou[1], monthRange[1])
-                if int(mou[1]) < 10:
-                    mou = mou[0] + "-0" + mou[1]
-                else:
-                    mou = mou[0] + "-" + mou[1]
-
-                # 不能排产的时间
-                schdays = db_session.query(plantCalendarScheduling.start).filter(
-                    plantCalendarScheduling.start.like("%" + mou + "%"),
-                    ~plantCalendarScheduling.title.like("%安全库存%")).all()
-                undays = []
-                if schdays != None:
-                    for i in schdays:
-                        undays.append(i[0])
-
-                # 删除上一次排产同品名的数据
-                solds = db_session.query(Scheduling).filter(Scheduling.PRName == PRName).all()
-                for old in solds:
-                    sql = "DELETE FROM Scheduling WHERE ID = " + str(old.ID)
-                    db_session.execute(sql)  # 删除同意品名下的旧的排产计划
-                db_session.commit()
-
-                # 去掉不能排产的时间，只剩可以排产的时间
-                daySchedulings = list(set(re).difference(set(undays)))
-                daySchedulings = list(daySchedulings)
-                daySchedulings.sort()
-
-                # 排产数据写入数据库
-                dayBatchNum = \
-                db_session.query(SchedulingStandard.DayBatchNumS).filter(SchedulingStandard.PRName == PRName).first()[0]
-                j = 1
-                k = 1
-                for day in daySchedulings:
-                    if k > days:  # 当这个计划所有的批次做完跳出循环
-                        break
-                    for r in range(0, int(dayBatchNum)):
-                        s = Scheduling()
-                        s.SchedulingTime = day
-                        s.PRName = PRName
-                        s.BatchNumS = sch.DayBatchNumS
-                        if j < 10:
-                            s.SchedulingNum = day.replace("-", "") + "0" + str(j)
-                        else:
-                            s.SchedulingNum = day.replace("-", "") + str(j)
-                        db_session.add(s)
-                        j = j + 1
-                    k = k + 1
-                db_session.commit()
-
-                # 工厂日历安全库存提醒
-                sches = db_session.query(Scheduling).filter(Scheduling.PRName == PRName).order_by(
-                    ("SchedulingTime")).all()
-                stan = db_session.query(SchedulingStandard).filter(SchedulingStandard.PRName == PRName).first()
-                stocks = db_session.query(SchedulingStock).filter(SchedulingStock.product_code == oc.product_code).all()
-                for st in stocks:
-                    sto = int(st.StockHouse) - int(st.SafetyStock)  # 库存-安全库存 库存情况
-                    mid = db_session.query(Material.ID).filter(Material.MATName == st.MATName).first()[0]
-                    BatchPercentage = db_session.query(MaterialBOM.BatchPercentage).filter(
-                        MaterialBOM.MATID == mid).first()  # 此物料的百分比
-                    cals = db_session.query(plantCalendarScheduling).filter(
-                        plantCalendarScheduling.title.like("%" + st.MATName + "%")).all()
-                    if cals != None:
-                        for c in cals:
-                            db_session.delete(c)
-                            db_session.commit()
-                    steverydayKG = (int(stan.DayBatchNumS) * float(stan.Batch_quantity)) * float(BatchPercentage[0])
-                    # 库存可以做多少天
-                    stockdays = sto / steverydayKG
-                    if "." in str(stockdays):
-                        stockdays = int(str(stockdays).split(".")[0])
-                    for i in range(0, len(sches)):
-                        if i == stockdays - 1:
-                            ca = plantCalendarScheduling()
-                            ca.start = (sches[i].SchedulingTime).strftime("%Y-%m-%d")
-                            ca.title = st.MATName + "已到安全库存"  # PRName + "中的物料" +
-                            ca.color = "#e67d7d"
-                            db_session.add(ca)
-                            break
-                db_session.commit()
-                return 'OK'
         except Exception as e:
             logger.error(e)
             insertSyslog("error", "工厂日历查询报错Error：" + str(e), current_user.Name)
@@ -8263,15 +8077,14 @@ def plantSchedulingAddBatch():
 def timeChangeadd(year,month,days,nowday):
     i = 0
     da = []
-    while nowday-1 < i < days:
-        if i < 9:
-            i = i + 1
+    while i < days or i == days:
+        if nowday-1 < i < 9:
             date = str(year) + "-" + str(mon(month)) + "-" + str(0) + str(i)
             da.append(date)
-        else:
-            i = i + 1
+        elif nowday-1 < i and i > 10:
             date = str(year)  + "-" + str(mon(month))  + "-" +  str(i)
             da.append(date)
+        i = i + 1
     return da
 
 @app.route('/planSchedulingTu', methods=['GET', 'POST'])

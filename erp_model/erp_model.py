@@ -188,6 +188,8 @@ def ERP_productplanSynchro():
         try:
             plan_id = data['plan_id']
             plan = ERP_session.query(product_plan).filter(product_plan.plan_id == plan_id).first()
+            if plan.transform_flag == "1":
+                return "此数据已经同步过，请选择没有同步过的数据！"
             e = product_plan()
             e.product_code = plan.product_code
             e.product_name = plan.product_name
