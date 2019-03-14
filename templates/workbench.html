@@ -556,6 +556,11 @@
 
             //日历排产
             $('#calendar').fullCalendar({
+                header:{
+                    right: 'prev,next',
+                    center: 'title',
+                    left: 'month,listMonth'
+                },
                 locale:'zh-cn',
                 weekNumbers: true, //是否在日历中显示第几周
                 eventLimit: true, // allow "more" link when too many events
