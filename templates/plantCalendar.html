@@ -54,7 +54,7 @@
 <body>
     <div class="pad-per">
         <div class="col-md-12">
-            <ul class="nav nav-pills nav-justified step step-round" data-step="3">
+            <ul class="nav nav-pills nav-justified step step-round" data-step="4">
                 <li>
                     <a href="/ERP_productplan">ERP计划信息</a>
                 </li>
@@ -62,10 +62,10 @@
                     <a href="/plantCalendarSafeStock">设置安全库存</a>
                 </li>
                 <li>
-                    <a href="/plantCalendar">工厂日历</a>
+                    <a href="/plantCalendarbatchNumber">设置每日生产批数</a>
                 </li>
                 <li>
-                    <a href="/plantCalendarbatchNumber">设置每日生产批数</a>
+                    <a href="/plantCalendar">工厂日历</a>
                 </li>
                 <li>
                     <a href="/calendarScheduling">日历排产</a>
@@ -77,9 +77,12 @@
             <div class="col-md-2 col-sm-2">
                 <div id='external-events'>
                     <h4>可拖放的日程</h4>
-                    <div class='fc-event' style="background: #00c3db;border: 1px solid #00c3db;">维保</div>
-                    <div class='fc-event' style="background: #f7d013;border: 1px solid #f7d013;">休息</div>
-                    <div class='fc-event' style="background: #e73b3b;border: 1px solid #e73b3b;">紧急</div>
+                    <a class='fc-event' style="background: #00c3db;border: 1px solid #00c3db;">维保</a>
+                    <a class='fc-event' style="background: #f7d013;border: 1px solid #f7d013;">休息</a>
+                    <a class='fc-event' style="background: #e73b3b;border: 1px solid #e73b3b;">紧急</a>
+                    {% for i in data %}
+                        <a class='fc-event' style="background: #9FDABF;border: 1px solid #9FDABF;" value="{{ i['id'] }}">{{ i['text'] }}</a>
+                    {% endfor %}
                     <p>
                         <input type='checkbox' id='drop-remove' />
                         <label for='drop-remove'>移出后删除</label>
@@ -92,7 +95,7 @@
         </div>
         <div class="col-md-12">
             <div class="modal-footer">
-                <a href="/plantCalendarSafeStock" class="btn btn-primary">下一步</a>
+                <a href="/calendarScheduling" class="btn btn-primary">下一步</a>
             </div>
         </div>
     </div>
@@ -157,23 +160,35 @@
                      });
                  },
                 drop: function(date, allDay) {
+                    var title = ""
                     var color = ""
+                    var urlStr = ''
                     if($(this).html() == "维保"){
                         color = "#00c3db"
+                        urlStr = '/systemManager_model/plantCalendarSchedulingCreate'
+                        title = $(this).html()
                     }else if($(this).html() == "休息"){
                         color = "#f7d013"
-                    }else{
+                        urlStr = '/systemManager_model/plantCalendarSchedulingCreate'
+                        title = $(this).html()
+                    }else if($(this).html() == "紧急"){
                         color = "#e73b3b"
+                        urlStr = '/systemManager_model/plantCalendarSchedulingCreate'
+                        title = $(this).html()
+                    }else{
+                        color = "#9FDABF"
+                        urlStr = '/systemManager_model/plantSchedulingAddBatch'
+                        title = $(this).val()
                     }
                     var startDate = myformatter(date._d)
                     if ($('#drop-remove').is(':checked')) {
                       $(this).remove();
                     }
                     $.ajax({
-                        url: '/systemManager_model/plantCalendarSchedulingCreate',
+                        url: urlStr,
                         type: 'post',
                         data:{
-                            title:$(this).html(),
+                            title:title,
                             start:startDate,
                             color:color
                         },
@@ -189,14 +204,26 @@
                  },
                 //拖拽换位事件
                 eventDrop:function(event,dayDelta,minuteDelta,allDay,revertFund){
-                    var startDate = myformatter(event.start._d)
-                    $.ajax({
-                        url: '/systemManager_model/plantCalendarSchedulingUpdate',
-                        type: 'post',
-                        data:{
+                    var startDate = event.start._i
+                    var urlStr = ""
+                    var data = ""
+                    if(event.title == "维保" || event.title == "休息" || event.title == "紧急"){
+                        urlStr = '/systemManager_model/plantCalendarSchedulingUpdate'
+                        data = {
                             ID:event.ID,
                             start:startDate
-                        },
+                        }
+                    }else{
+                        urlStr = '/SchedulingUpdate'
+                        data = {
+                            ID:event.ID,
+                            SchedulingTime:startDate
+                        }
+                    }
+                    $.ajax({
+                        url: urlStr,
+                        type: 'post',
+                        data:data,
                         success: function (data) {
                             if(data == "OK"){
                                 $('#calendar').fullCalendar('refetchEvents');
@@ -209,7 +236,12 @@
                 },
                 //点击日程事件进行删除
                 eventClick:function(event){
-                    var startDate = myformatter(event.start._d)
+                    var urlStr = ""
+                    if(event.title == "维保" || event.title == "休息" || event.title == "紧急"){
+                        urlStr = '/systemManager_model/plantCalendarSchedulingDelete'
+                    }else{
+                        urlStr = '/SchedulingDelete'
+                    }
                     bootbox.setLocale("zh_CN");
                     bootbox.confirm({
                         size: "small",
@@ -217,7 +249,7 @@
                         callback: function(result){ /* result is a boolean; true = OK, false = Cancel*/
                             if(result){
                                 $.ajax({
-                                    url: '/systemManager_model/plantCalendarSchedulingDelete',
+                                    url: urlStr,
                                     type: 'post',
                                     data:{
                                         ID:event.ID
@@ -237,10 +269,29 @@
                     })
                 },
                 dayClick:function(date, allDay, jsEvent, view){
-                    console.log(date)
-                    console.log(allDay)
-                    console.log(jsEvent)
-                    console.log(view)
+                    var startDate = myformatter(date._d)
+                    $.ajax({
+                        url: "/SchedulingMaterialSearch",
+                        type: 'post',
+                        data:{
+                            SchedulingTime:startDate
+                        },
+                        success: function (data) {
+                            bootbox.alert({
+                                size: "small",
+                                message: data,
+                                buttons: {
+                                    ok: {
+                                        label: '知道了'
+                                    }
+                                }
+                            })
+                        },
+                        error: function () {
+                            $("#loadingModal").modal('hide');
+                            bootbox.alert("删除时请求失败")
+                        }
+                     });
                 }
             });
         })
