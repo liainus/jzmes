@@ -160,25 +160,21 @@
                      });
                  },
                 drop: function(date, allDay) {
-                    var title = ""
+                    var title = $(this).html()
                     var color = ""
                     var urlStr = ''
-                    if($(this).html() == "维保"){
+                    if(title == "维保"){
                         color = "#00c3db"
                         urlStr = '/systemManager_model/plantCalendarSchedulingCreate'
-                        title = $(this).html()
-                    }else if($(this).html() == "休息"){
+                    }else if(title == "休息"){
                         color = "#f7d013"
                         urlStr = '/systemManager_model/plantCalendarSchedulingCreate'
-                        title = $(this).html()
-                    }else if($(this).html() == "紧急"){
+                    }else if(title == "紧急"){
                         color = "#e73b3b"
                         urlStr = '/systemManager_model/plantCalendarSchedulingCreate'
-                        title = $(this).html()
                     }else{
                         color = "#9FDABF"
                         urlStr = '/systemManager_model/plantSchedulingAddBatch'
-                        title = $(this).val()
                     }
                     var startDate = myformatter(date._d)
                     if ($('#drop-remove').is(':checked')) {
@@ -289,7 +285,7 @@
                         },
                         error: function () {
                             $("#loadingModal").modal('hide');
-                            bootbox.alert("删除时请求失败")
+                            bootbox.alert("获取物料时请求失败")
                         }
                      });
                 }
