@@ -8070,7 +8070,7 @@ def plantSchedulingAddBatch():
     计划排产增加批次
     :return:
     '''
-    if request.method == 'GET':
+    if request.method == 'POST':
         data = request.values
         try:
             PRName = data['title']
@@ -8305,14 +8305,17 @@ def SchedulingMaterialSearch():
     SchedulingMaterial查询
     :return:
     '''
-    if request.method == 'GET':
+    if request.method == 'POST':
         data = request.values  # 返回请求中的参数和form
         try:
             jsonstr = json.dumps(data.to_dict())
             if len(jsonstr) > 10:
                 SchedulingTime = data["SchedulingTime"]
                 oclass = db_session.query(SchedulingMaterial).filter(SchedulingMaterial.SchedulingTime == SchedulingTime).all()
-                return json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
+                str = ""
+                for oc in oclass:
+                    str = str + "<p>" + oc.MaterialName + "剩余物料：" + oc.Surplus_quantity + "kg</p>"
+                return str
         except Exception as e:
             print(e)
             logger.error(e)
