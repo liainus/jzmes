@@ -202,7 +202,7 @@
                  },
                 //拖拽换位事件
                 eventDrop:function(event,dayDelta,minuteDelta,allDay,revertFund){
-                    var startDate = myformatter(event._d)
+                    var startDate = myformatter(event.start._d)
                     var urlStr = ""
                     var data = ""
                     if(event.title == "维保" || event.title == "休息" || event.title == "紧急"){
