@@ -1311,6 +1311,18 @@ class SchedulingStandard(Base):
     # 物料重量（kg/批）
     Batch_quantity = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
+# 物料库存消耗表
+class SchedulingMaterial(Base):
+    __tablename__ = "SchedulingMaterial"
+    # ID:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=True)
+    # 物料名称
+    MaterialName = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    # 时间
+    SchedulingTime = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+    # 物料剩余量
+    Surplus_quantity = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
 # 生成表单的执行语句
 Base.metadata.create_all(engine)
 
