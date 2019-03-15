@@ -8311,7 +8311,7 @@ def SchedulingDelete():
     '''
     if request.method == 'POST':
         data = request.values
-        return update(Scheduling, data)
+        return delete(Scheduling, data)
 
 @app.route('/SchedulingMaterialSearch', methods=['POST', 'GET'])
 def SchedulingMaterialSearch():
