@@ -149,11 +149,13 @@
                             if(type == "total"){
                                 json = {
                                     ID:ids,
-                                    StockHouse:value
+                                    StockHouse:value,
+                                    SafetyStock:""
                                 }
                             }else if(type == "safe"){
                                 json = {
                                     ID:ids,
+                                    StockHouse:"",
                                     SafetyStock:value
                                 }
                             }
