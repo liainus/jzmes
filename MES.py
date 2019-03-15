@@ -8077,25 +8077,39 @@ def plantSchedulingAddBatch():
             code = db_session.query(ERPproductcode_prname.product_code).filter(ERPproductcode_prname.PRName ==
                                                                                PRName).first()[0]
             plan_id = db_session.query(product_plan.plan_id).filter(product_plan.product_code == code).order_by(
-                desc("plan_id")).first()[0]
+                desc("plan_id")).first()
+            if plan_id != None:
+                plan_id = plan_id[0]
+            else:
+                return "请先同步ERP计划！"
             date = data['start']
             #添加排产数据
             sch = db_session.query(Scheduling).filter(Scheduling.PRName == PRName).order_by(desc("SchedulingNum")).first()
+            if sch == None:
+                return "请先进行排产！"
             count = db_session.query(Scheduling).filter(Scheduling.SchedulingTime == sch.SchedulingTime).count()
             SchedulingTime = sch.SchedulingTime
-            if sch.BatchNumS == count or sch.BatchNumS == "1":
-                spls = sch.SchedulingTime[-2:-1]
+            if int(sch.BatchNumS) == count or sch.BatchNumS == "1":
+                spls = str(sch.SchedulingTime)[8:10]
                 spls = str(int(spls) + 1)
-                SchedulingTime = sch.SchedulingTime[0:-2] + spls
+                SchedulingTime = str(sch.SchedulingTime)[0:8] + spls
+                ishas = db_session.query(plantCalendarScheduling).filter(plantCalendarScheduling.start == SchedulingTime).first()
+                while ishas != None:
+                    i = 1
+                    spls = str(int(spls) + i)
+                    SchedulingTime = str(sch.SchedulingTime)[0:8] + spls
+                    ishas = db_session.query(plantCalendarScheduling).filter(plantCalendarScheduling.start == SchedulingTime).first()
+                    i = i + 1
             sc = Scheduling()
             sc.PRName = sch.PRName
             sc.SchedulingStatus = Model.Global.SchedulingStatus.Unlock.value
             sc.SchedulingTime = SchedulingTime
             sc.BatchNumS = sch.BatchNumS
-            sc.SchedulingNum = str(int(sch.DayBatchNumS) + 1)
+            sc.SchedulingNum = str(int(sch.SchedulingNum) + 1)
             sc.create_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             db_session.add(sc)
             db_session.commit()
+            return 'OK'
         except Exception as e:
             logger.error(e)
             insertSyslog("error", "计划排产增加批次报错Error：" + str(e), current_user.Name)
