@@ -191,6 +191,8 @@
                         success: function (data) {
                             if(data == "OK"){
                                 $('#calendar').fullCalendar('refetchEvents');
+                            }else{
+                                bootbox.alert(data)
                             }
                         },
                         error: function () {
