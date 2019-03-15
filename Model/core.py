@@ -2415,7 +2415,7 @@ class Material(Base):
 	#等级:
 	Grade = Column(Integer, primary_key = False, autoincrement = False, nullable = True)
 	
-	#物料批次号:
+	#物料标识:1为排产所常用表标识
 	MATBatchNo = Column(Unicode(64), primary_key = False, autoincrement = False, nullable = True)
 	
 class MaterialWebIFS(object):

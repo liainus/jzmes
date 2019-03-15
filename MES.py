@@ -42,7 +42,7 @@ import re
 from collections import Counter
 from Model.system import User, EquipmentRunPUID, ElectronicBatch, EquipmentRunRecord, QualityControl, PackMaterial, \
     TypeCollection, OperationProcedure, EquipmentMaintenanceStore, Scheduling, SchedulingStock, ERPproductcode_prname, \
-    SchedulingStandard, product_plan
+    SchedulingStandard, product_plan, SchedulingMaterial
 from Model.Global import WeightUnit
 from Model.control import ctrlPlan
 from flask_login import login_required, logout_user, login_user, current_user, LoginManager
@@ -7906,7 +7906,7 @@ def plantCalendarSchedulingSelect():
             oclass = db_session.query(Scheduling).all()
             for oc in oclass:
                 dir = {}
-                dir['ID'] = ""
+                dir['ID'] = oc.ID
                 dir['start'] = str(oc.SchedulingTime)[0:-9]
                 dir['title'] = oc.PRName + ": 第" + oc.SchedulingNum[8:] + "批"
                 dir['color'] = "#9FDABF"
@@ -8012,6 +8012,7 @@ def planScheduling():
                     for c in cals:
                         db_session.delete(c)
                         db_session.commit()
+                #物料N每天做多少公斤
                 steverydayKG = (int(stan.DayBatchNumS)*float(stan.Batch_quantity))*float(BatchPercentage[0])
                 #库存可以做多少天
                 stockdays = sto/steverydayKG
@@ -8025,6 +8026,18 @@ def planScheduling():
                         ca.color = "#e67d7d"
                         db_session.add(ca)
                         break
+
+                # 存库存消耗表
+                sms = db_session.query(SchedulingMaterial).filter(SchedulingMaterial.MaterialName == st.MATName).all()
+                for s in sms:
+                    db_session.delete(s)
+                db_session.commit()
+                for n in range(1,len(daySchedulings)):
+                    schm = SchedulingMaterial()
+                    schm.SchedulingTime = daySchedulings[n-1]
+                    schm.MaterialName = st.MATName
+                    schm.Surplus_quantity = float(st.StockHouse) - float(steverydayKG*n)
+                    db_session.add(schm)
             db_session.commit()
             return 'OK'
         except Exception as e:
@@ -8060,32 +8073,33 @@ def plantSchedulingAddBatch():
     if request.method == 'GET':
         data = request.values
         try:
-            PRName = data['PRName']
+            PRName = data['title']
             code = db_session.query(ERPproductcode_prname.product_code).filter(ERPproductcode_prname.PRName ==
                                                                                PRName).first()[0]
             plan_id = db_session.query(product_plan.plan_id).filter(product_plan.product_code == code).order_by(
                 desc("plan_id")).first()[0]
-            date = data['date']
-            month = data['month']
-            moua = month.split("-")
-            schs = db_session.query(Scheduling).filter(Scheduling.PRName == PRName).order_by(desc("SchedulingNum")).all()
-
+            date = data['start']
+            #添加排产数据
+            sch = db_session.query(Scheduling).filter(Scheduling.PRName == PRName).order_by(desc("SchedulingNum")).first()
+            count = db_session.query(Scheduling).filter(Scheduling.SchedulingTime == sch.SchedulingTime).count()
+            SchedulingTime = sch.SchedulingTime
+            if sch.BatchNumS == count or sch.BatchNumS == "1":
+                spls = sch.SchedulingTime[-2:-1]
+                spls = str(int(spls) + 1)
+                SchedulingTime = sch.SchedulingTime[0:-2] + spls
+            sc = Scheduling()
+            sc.PRName = sch.PRName
+            sc.SchedulingStatus = Model.Global.SchedulingStatus.Unlock.value
+            sc.SchedulingTime = SchedulingTime
+            sc.BatchNumS = sch.BatchNumS
+            sc.SchedulingNum = str(int(sch.DayBatchNumS) + 1)
+            sc.create_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            db_session.add(sc)
+            db_session.commit()
         except Exception as e:
             logger.error(e)
-            insertSyslog("error", "工厂日历查询报错Error：" + str(e), current_user.Name)
-            return json.dumps("工厂日历查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
-def timeChangeadd(year,month,days,nowday):
-    i = 0
-    da = []
-    while i < days or i == days:
-        if nowday-1 < i < 9:
-            date = str(year) + "-" + str(mon(month)) + "-" + str(0) + str(i)
-            da.append(date)
-        elif nowday-1 < i and i > 10:
-            date = str(year)  + "-" + str(mon(month))  + "-" +  str(i)
-            da.append(date)
-        i = i + 1
-    return da
+            insertSyslog("error", "计划排产增加批次报错Error：" + str(e), current_user.Name)
+            return json.dumps("计划排产增加批次报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 @app.route('/planSchedulingTu', methods=['GET', 'POST'])
 def planSchedulingTu():
@@ -8142,7 +8156,16 @@ def SchedulingStockUpdateCreate():
         if(ID == "" or ID == None):
             return "请先同步ERP计划信息再进行设置！"
         else:
-            return update(SchedulingStock, data)
+            StockHouse = data["StockHouse"]
+            if StockHouse != None:
+                ss = db_session.query(SchedulingStock).filter(SchedulingStock.ID == ID).first()
+                ssms = db_session.query(SchedulingStock).filter(SchedulingStock.MATName == ss.MATName).all()
+                for i in ssms:
+                    i.StockHouse = StockHouse
+                db_session.commit()
+                return 'OK'
+            else:
+                return update(SchedulingStock, data)
 
 # 设置安全库存
 @app.route('/plantCalendarSafeStock')
@@ -8256,6 +8279,44 @@ def SchedulingSearch():
 @app.route('/plantCalendarResult')
 def plantCalendarResult():
     return render_template('plantCalendarResult.html')
+
+@app.route('/SchedulingUpdate', methods=['POST', 'GET'])
+def SchedulingUpdate():
+    '''
+    修改
+    :return:
+    '''
+    if request.method == 'POST':
+        data = request.values
+        return update(Scheduling, data)
+@app.route('/SchedulingDelete', methods=['POST', 'GET'])
+def SchedulingDelete():
+    '''
+    删除
+    :return:
+    '''
+    if request.method == 'POST':
+        data = request.values
+        return update(Scheduling, data)
+
+@app.route('/SchedulingMaterialSearch', methods=['POST', 'GET'])
+def SchedulingMaterialSearch():
+    '''
+    SchedulingMaterial查询
+    :return:
+    '''
+    if request.method == 'GET':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                SchedulingTime = data["SchedulingTime"]
+                oclass = db_session.query(SchedulingMaterial).filter(SchedulingMaterial.SchedulingTime == SchedulingTime).all()
+                return json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "SchedulingMaterial查询报错Error：" + str(e), current_user.Name)
 
 if __name__ == '__main__':
     app.run(debug=True)
