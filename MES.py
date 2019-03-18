@@ -2566,9 +2566,7 @@ def createPlanWizardGetData():
                 dir["UnitName"] = db_session.query(Unit.UnitName).filter_by(UnitName="kg").first()[0]
                 dir["PLineName"] = db_session.query(ProductLine.PLineName).filter_by(PLineName=PRName).first()[0]
                 dir["APlanWeight"] = db_session.query(SchedulingStandard.Batch_quantity).filter_by(PRName=PRName).first()[0]
-                dic = []
-                dic.append(dir)
-                jsonolass = json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False)
+                jsonolass = json.dumps(dir, cls=AlchemyEncoder, ensure_ascii=False)
                 return jsonolass
         except Exception as e:
             print(e)
