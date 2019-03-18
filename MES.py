@@ -2462,7 +2462,7 @@ def allrolesSearch():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "擦护心角色列表报错Error：" + str(e), current_user.Name)
+            insertSyslog("error", "查询角色列表报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
@@ -2550,6 +2550,26 @@ def MyenterpriseSelect():
             logger.error(e)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
+# 加载工作台
+@app.route('/createPlanWizardGetData')
+def createPlanWizardGetData():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 2:
+                PRName = data["PRName"]
+                dir = {}
+                dir["UnitName"] = db_session.query(Unit.UnitName).filter_by(UnitName="kg").first()[0]
+                dir["PLineName"] = db_session.query(ProductLine.PLineName).filter_by(PLineName=PRName).first()[0]
+                dir["APlanWeight"] = db_session.query(SchedulingStandard.Batch_quantity).filter_by(PRName=PRName).first()[0]
+                dic = []
+                return json.dumps(dic.append(dir), cls=AlchemyEncoder, ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "擦护心角色列表报错Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error：" + string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 # 加载工作台
 @app.route('/createPlanWizard')
@@ -8265,6 +8285,36 @@ def SchedulingStandardSearch():
             print(e)
             logger.error(e)
             insertSyslog("error", "SchedulingStandard查询报错Error：" + str(e), current_user.Name)
+
+@app.route('/SchedulingSearchNew', methods=['POST', 'GET'])
+def SchedulingSearchNew():
+    '''
+    Scheduling查询
+    :return:
+    '''
+    if request.method == 'GET':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                pages = int(data['page'])  # 页数
+                rowsnumber = int(data['rows'])  # 行数
+                inipage = (pages - 1) * rowsnumber + 0  # 起始页
+                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+                SchedulingTime = data["SchedulingTime"]
+                if (SchedulingTime == ""):
+                    total = db_session.query(Scheduling).count()
+                    oclass = db_session.query(Scheduling).order_by("SchedulingTime").all()[inipage:endpage]
+                else:
+                    total = db_session.query(Scheduling).filter(Scheduling.SchedulingTime == SchedulingTime).count()
+                    oclass = db_session.query(Scheduling).filter(Scheduling.SchedulingTime == SchedulingTime).order_by("SchedulingTime").all()[inipage:endpage]
+                jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
+                jsonoclass = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
+                return jsonoclass
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "Scheduling查询报错Error：" + str(e), current_user.Name)
 
 @app.route('/SchedulingSearch', methods=['POST', 'GET'])
 def SchedulingSearch():
