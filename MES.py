@@ -2550,9 +2550,12 @@ def MyenterpriseSelect():
             logger.error(e)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
-# 加载工作台
 @app.route('/createPlanWizardGetData')
 def createPlanWizardGetData():
+    '''
+    新增计划查询数据
+    :return:
+    '''
     if request.method == 'GET':
         data = request.values
         try:
@@ -2568,7 +2571,7 @@ def createPlanWizardGetData():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "擦护心角色列表报错Error：" + str(e), current_user.Name)
+            insertSyslog("error", "新增计划查询数据报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + string(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 # 加载工作台
