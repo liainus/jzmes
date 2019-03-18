@@ -4,8 +4,8 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<title>制药生产计划向导</title>
 	<link href="../static/css/base.css" rel="stylesheet">
-	<link href="../static/custom/uimaker/easyui.css" rel="stylesheet">
     <link rel="stylesheet" href="../static/css/bootstrap.min.css" crossorigin="anonymous">
+	<link href="../static/custom/uimaker/easyui.css" rel="stylesheet">
     <link href="../static/css/smart_wizard.min.css" rel="stylesheet">
 {#	<link href="../static/css/basic_info.css" rel="stylesheet">#}
     <style>
@@ -13,9 +13,6 @@
             border-radius: 5px;
             border: 1px solid #ddd;
             margin:3px;
-        }
-        .sw-theme-arrows > .sw-container {
-            height: 400px;
         }
         .sw-theme-arrows .step-content {
             padding: 0 10px;
@@ -179,6 +176,29 @@
     <script type="text/javascript">
         $(function () {
             $("#APlanDate").datebox("setValue", myformatter(new Date()))
+
+            $("#planTab").datagrid({
+                onClickRow:function(rowIndex, rowData){
+                    $.ajax({
+                        url: '/createPlanWizardGetData',
+                        type: 'GET',
+                        data:{
+                            PRName:rowData.PRName
+                        },
+                        success: function (data) {
+                            data = JSON.parse(data)
+                            $("#ABatchID").val(rowData.SchedulingNum)
+                            $('#ABrandName option:contains('+rowData.PRName+')').prop("selected", 'selected');
+                            $("#APlanWeight").val(data.APlanWeight)
+                            $('#APLineName option:contains('+data.PLineName+')').prop("selected", 'selected');
+                            $('#AUnit option:contains('+data.UnitName+')').prop("selected", 'selected');
+                        },
+                        error: function () {
+                            alert("计划信息获取时请求失败。")
+                        }
+                     });
+                }
+            })
             // Toolbar extra buttons
             var btnCancel = $('<button></button>').text('重置')
                  .addClass('btn btn-danger')
@@ -280,6 +300,11 @@
                 }
             })
         });
+        function searchTime(){
+            $('#planTab').datagrid('load',{
+                SchedulingTime: $('#SearchTime').datebox('getValue')
+            });
+        }
         function myformatter(date){
             var y = date.getFullYear();
             var m = date.getMonth()+1;
@@ -321,7 +346,7 @@
         <div>
             <div id="step-1">
                 <h3 class="border-bottom border-gray pb-2">计划实际信息</h3>
-                <div class="content">
+                <div class="content" style="margin-bottom: 20px;">
                     <form id="orgForm" method="post" class="dialog-form">
                         <table class="kv-table">
                             <tbody>
@@ -372,6 +397,38 @@
                         </table>
                     </form>
                 </div>
+                <div id="toolbar" style="padding:0 10px;">
+                    计划排产时间:
+                    <input type="text" id="SearchTime" class="easyui-datebox" name="search" data-options="showSeconds:false" style="height:28px;" autocomplete="off"
+                    placeholder="">
+                    <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="searchTime();">查询</a>
+                </div>
+                <table class="easyui-datagrid" id="planTab" title="系统计划列表" style="width:100%;" data-options="
+                    queryParams: {
+                        SchedulingTime: ''
+                    },
+                    loadMsg:false,
+                    rownumbers:true,
+                    singleSelect:true,
+                    autoRowHeight:false,
+                    pagination:true,
+                    pageSize:5,
+                    toolbar:'#toolbar',
+                    url:'/SchedulingSearchNew',
+                    method:'get'">
+                    <thead>
+                        <tr>
+                            <th field="ck" checkbox="true"></th>
+                            <th data-options="field:'SchedulingTime',width:100,align:'center'">时间(工厂日历)</th>
+                            <th data-options="field:'PRName',width:200,align:'center'">产品名称</th>
+                            <th data-options="field:'SchedulingNum',width:100,align:'center'">排产序列号</th>
+                            <th data-options="field:'plan_type',width:100,align:'center'">批数</th>
+                            <th data-options="field:'SchedulingStatus',width:150,align:'center'">排产状态</th>
+                            <th data-options="field:'create_time',width:150,align:'center'">创建时间</th>
+                            <th data-options="field:'update_time',width:100,align:'center'">修改时间</th>
+                        </tr>
+                    </thead>
+                </table>
             </div>
             <div id="step-2">
                 <h3 class="border-bottom border-gray pb-2">生成计划信息</h3>
@@ -455,10 +512,7 @@
             </div>
             <div id="step-3">
                 <h3 class="border-bottom border-gray pb-2">计划校验结果</h3>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute
-                    irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-                    cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                <p>计划添加成功</p>
             </div>
         </div>
     </div>
