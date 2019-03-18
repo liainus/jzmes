@@ -6,6 +6,7 @@
 	<link href="../static/css/base.css" rel="stylesheet">
     <link rel="stylesheet" href="../static/css/bootstrap.min.css" crossorigin="anonymous">
 	<link href="../static/custom/uimaker/easyui.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
     <link href="../static/css/smart_wizard.min.css" rel="stylesheet">
 {#	<link href="../static/css/basic_info.css" rel="stylesheet">#}
     <style>
@@ -413,6 +414,7 @@
                     autoRowHeight:false,
                     pagination:true,
                     pageSize:5,
+                    pageList:[5,10,20,30],
                     toolbar:'#toolbar',
                     url:'/SchedulingSearchNew',
                     method:'get'">
@@ -422,7 +424,7 @@
                             <th data-options="field:'SchedulingTime',width:150,align:'center'">时间(工厂日历)</th>
                             <th data-options="field:'PRName',width:120,align:'center'">产品名称</th>
                             <th data-options="field:'SchedulingNum',width:150,align:'center'">排产序列号</th>
-                            <th data-options="field:'plan_type',width:100,align:'center'">批数</th>
+                            <th data-options="field:'BatchNumS',width:100,align:'center'">批数</th>
                             <th data-options="field:'SchedulingStatus',width:100,align:'center'">排产状态</th>
                             <th data-options="field:'create_time',width:150,align:'center'">创建时间</th>
                             <th data-options="field:'update_time',width:150,align:'center'">修改时间</th>
