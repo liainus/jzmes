@@ -8072,7 +8072,7 @@ def planScheduling():
 def timeChange(year,month,days):
     i = 0
     da = []
-    while i < days  or i == days:
+    while i < days:
         if i < 9:
             i = i + 1
             date = str(year) + "-" + str(mon(month)) + "-" + str(0) + str(i)
@@ -8194,15 +8194,19 @@ def SchedulingStockUpdateCreate():
             return "请先同步ERP计划信息再进行设置！"
         else:
             StockHouse = data["StockHouse"]
-            if StockHouse != None:
+            SafetyStock = data["SafetyStock"]
+            if StockHouse != None and StockHouse != '':
                 ss = db_session.query(SchedulingStock).filter(SchedulingStock.ID == ID).first()
                 ssms = db_session.query(SchedulingStock).filter(SchedulingStock.MATName == ss.MATName).all()
                 for i in ssms:
                     i.StockHouse = StockHouse
                 db_session.commit()
                 return 'OK'
-            else:
-                return update(SchedulingStock, data)
+            elif SafetyStock != None and SafetyStock != '':
+                ss = db_session.query(SchedulingStock).filter(SchedulingStock.ID == ID).first()
+                ss.SafetyStock = SafetyStock
+                db_session.commit()
+                return 'OK'
 
 # 设置安全库存
 @app.route('/plantCalendarSafeStock')
