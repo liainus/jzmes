@@ -54,7 +54,8 @@
                 <strong>成功！</strong>批数设置成功！
             </div>
             <div id="toolbar">
-                <button type="button" class="btn btn-default" id="updata">设置批数</button>
+                <button type="button" class="btn btn-default" id="create">添加</button>
+                <button type="button" class="btn btn-default" id="updata">设置批数重量</button>
             </div>
             <table id="batch_Table" class="table table-bordered">
               <thead>
@@ -140,6 +141,12 @@
 	            locale: "zh-CN",
 	            striped: true
             });
+            $("#create").click(function () {
+                $('#PRName option[value=""]').prop("selected", 'selected');
+                $("#DayBatchNumS").val('')
+                $("#Batch_quantity").val('')
+                $("#myModal").modal('show')
+            })
             $("#updata").click(function(){
                 var rows = $("#batch_Table").bootstrapTable('getSelections')
                 if(rows.length == 1){
