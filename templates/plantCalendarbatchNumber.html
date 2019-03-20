@@ -59,8 +59,9 @@
             <table id="batch_Table" class="table table-bordered">
               <thead>
                   <tr >
+                      <th data-checkbox="true"></th>
                       <th data-field="PRName">品名</th>
-                      <th data-field="BatchNumS">批数(批/每日)</th>
+                      <th data-field="DayBatchNumS">批数（批/每日）</th>
                       <th data-field="Batch_quantity">重量（kg/批）</th>
                   </tr>
               </thead>
@@ -92,9 +93,9 @@
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label for="BatchNumS" class="col-sm-2 control-label">批数(批/每日)</label>
+                                    <label for="DayBatchNumS" class="col-sm-2 control-label">批数(批/每日)</label>
                                     <div class="col-sm-10">
-                                        <input type="number" class="form-control" id="BatchNumS" placeholder="">
+                                        <input type="number" class="form-control" id="DayBatchNumS" placeholder="">
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -134,11 +135,21 @@
                 paginationLoop:false,
                 paginationPreText:'上一页',
                 paginationNextText:'下一页',
+                singleSelect:true,
+                clickToSelect:true,
 	            locale: "zh-CN",
 	            striped: true
             });
             $("#updata").click(function(){
-                $("#myModal").modal('show')
+                var rows = $("#batch_Table").bootstrapTable('getSelections')
+                if(rows.length == 1){
+                    $('#PRName option:contains('+rows[0].PRName+')').prop("selected", 'selected');
+                    $("#DayBatchNumS").val(rows[0].DayBatchNumS)
+                    $("#Batch_quantity").val(rows[0].Batch_quantity)
+                    $("#myModal").modal('show')
+                }else if(rows.length == 0){
+                    bootbox.alert("请选择要修改的品名")
+                }
             })
             $("#save").on('click',function(){
                 $.ajax({
@@ -146,7 +157,7 @@
                     type: 'post',
                     data:{
                         PRName:$("#PRName").find("option:checked").html(),
-                        BatchNumS:$("#BatchNumS").val(),
+                        DayBatchNumS:$("#DayBatchNumS").val(),
                         Batch_quantity:$("#Batch_quantity").val()
                     },
                     success: function (data) {
@@ -156,6 +167,7 @@
                             setTimeout(function() {
                                 $("#myAlert").removeClass('in').addClass('hide')
                             },2000)
+                            $("#batch_Table").bootstrapTable('refresh');
                         }else{
                             bootbox.alert(data)
                         }

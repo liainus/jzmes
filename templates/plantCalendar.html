@@ -275,15 +275,27 @@
                             SchedulingTime:startDate
                         },
                         success: function (data) {
-                            bootbox.alert({
-                                size: "small",
-                                message: data,
-                                buttons: {
-                                    ok: {
-                                        label: '知道了'
+                            if(data != ""){
+                                bootbox.alert({
+                                    size: "small",
+                                    message: data,
+                                    buttons: {
+                                        ok: {
+                                            label: '知道了'
+                                        }
                                     }
-                                }
-                            })
+                                })
+                            }else{
+                                bootbox.alert({
+                                    size: "small",
+                                    message: "暂无数据",
+                                    buttons: {
+                                        ok: {
+                                            label: '知道了'
+                                        }
+                                    }
+                                })
+                            }
                         },
                         error: function () {
                             $("#loadingModal").modal('hide');
