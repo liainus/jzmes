@@ -3944,6 +3944,15 @@ def makePlan():
             insertSyslog("error", "计划向导生成计划报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
+@app.route('/checkPlanManagerDelete', methods=['POST', 'GET'])
+def checkPlanManagerDelete():
+    '''
+    审核计划删除
+    :return:
+    '''
+    if request.method == 'POST':
+        data = request.values
+        return delete(PlanManager, data)
 
 # 审核计划
 @app.route('/ZYPlanGuid/checkPlanManager', methods=['POST', 'GET'])
