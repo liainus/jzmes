@@ -5064,7 +5064,7 @@ def operateConfirm():
                             Model.node.NodeCollection.name == '（备料段）任务确认').first()
                         node.status = Model.node.NodeStatus.PASSED.value
                         node.opertionTime = datetime.datetime.now()
-                        node.oddUser = current_user.Name
+                        node.oddUser = node.oddUser + " " + current_user.Name
                         db_session.commit()
                         return operateflow(ID, name, PName)
                     elif (PUName == "备料开始"):
@@ -5118,7 +5118,7 @@ def operateConfirm():
                             Model.node.NodeCollection.name == '（收粉段）任务确认').first()
                         node.status = Model.node.NodeStatus.PASSED.value
                         node.opertionTime = datetime.datetime.now()
-                        node.oddUser = current_user.Name
+                        node.oddUser = node.oddUser + " " + current_user.Name
                         db_session.commit()
                         return operateflow(ID, name, PName)
                     elif (PUName == "收粉开始"):
@@ -5183,7 +5183,7 @@ def operateflow(ID, name, PName):
             Model.node.NodeCollection.name == name).first()
         node.status = Model.node.NodeStatus.PASSED.value
         node.opertionTime = datetime.datetime.now()
-        node.oddUser = current_user.Name
+        node.oddUser = node.oddUser + " " + current_user.Name
         db_session.commit()
         return flag
     except Exception as e:
@@ -5252,7 +5252,7 @@ def checkedConfirm():
                                 Model.node.NodeCollection.name == '浓缩开始，操作按SOP执行（QA签名）').first()
                             node.status = Model.node.NodeStatus.PASSED.value
                             node.opertionTime = datetime.datetime.now()
-                            node.oddUser = current_user.Name
+                            node.oddUser = node.oddUser + " " + current_user.Name
                             db_session.commit()
                         return 'OK'
                     elif (PUName == "浓缩结束清场"):
@@ -5313,7 +5313,7 @@ def checkedConfirm():
                                 Model.node.NodeCollection.name == '浓缩开始，操作按SOP执行（QA签名）').first()
                             node.status = Model.node.NodeStatus.PASSED.value
                             node.opertionTime = datetime.datetime.now()
-                            node.oddUser = current_user.Name
+                            node.oddUser = node.oddUser + " " + current_user.Name
                             db_session.commit()
                         return 'OK'
                     elif (PUName == "单效浓缩结束清场"):
@@ -5352,7 +5352,7 @@ def checkflow(ID, statusName, name):
             Model.node.NodeCollection.name == name).first()
         node.status = Model.node.NodeStatus.PASSED.value
         node.opertionTime = datetime.datetime.now()
-        node.oddUser = current_user.Name
+        node.oddUser = node.oddUser + " " + current_user.Name
         db_session.commit()
         return flag
     except Exception as e:
@@ -5503,7 +5503,7 @@ def QAflow(ID, statusName, name):
             Model.node.NodeCollection.name == name).first()
         node.status = Model.node.NodeStatus.PASSED.value
         node.opertionTime = datetime.datetime.now()
-        node.oddUser = current_user.Name
+        node.oddUser = node.oddUser + " " + current_user.Name
         db_session.commit()
         PStatuss = db_session.query(Model.node.NodeCollection.status).filter(Model.node.NodeCollection.oddNum == ID,
                                                                              Model.node.NodeCollection.name != 'QA放行').all()
