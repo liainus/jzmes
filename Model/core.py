@@ -3059,8 +3059,6 @@ class PlanManagerWebIFS(object):
 					PlanManagerid = int(key)
 					try:
 						oclass = session.query(Model.core.PlanManager).filter_by(ID=PlanManagerid).first()
-						oclassW = session.query(WorkFlowStatus).filter_by(PlanManageID=PlanManagerid).first()
-						session.delete(oclassW)
 						session.delete(oclass)
 						oclassFs = session.query(WorkFlowEventPlan).filter_by(PlanManageID=PlanManagerid).all()
 						for oclassF in oclassFs:
