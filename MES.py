@@ -4006,7 +4006,7 @@ def RealsePlanManagersearch():
                 Name = current_user.Name
                 total = db_session.query(PlanManager.ID).filter(PlanManager.PlanStatus == "11").count()
                 oclass = db_session.query(PlanManager).filter(
-                    PlanManager.PlanStatus == "11").order_by(desc("PlanBeginTime")).all()[inipage:endpage]
+                    PlanManager.PlanStatus == "11").order_by(desc("BatchID")).all()[inipage:endpage]
                 jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
                 return '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
         except Exception as e:
@@ -5009,14 +5009,14 @@ def searchcheckplanmanager():
                 if (ABatchID == None or ABatchID == ""):
                     total = db_session.query(PlanManager.ID).filter(PlanManager.PlanStatus.in_((10, 40))).count()
                     planManagers = db_session.query(PlanManager).filter(PlanManager.PlanStatus.in_((10, 40))).order_by(
-                        desc("ID")).all()[
+                        desc("BatchID")).all()[
                                    inipage:endpage]
                 else:
                     total = db_session.query(PlanManager).filter(PlanManager.BatchID == ABatchID,
                                                                  PlanManager.PlanStatus.in_((10, 40))).count()
                     planManagers = db_session.query(PlanManager).filter(PlanManager.BatchID == ABatchID,
                                                                         PlanManager.PlanStatus.in_((10, 40))).order_by(
-                        desc("ID")).all()[
+                        desc("BatchID")).all()[
                                    inipage:endpage]
                 planManagers = json.dumps(planManagers, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonPlanManagers = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + planManagers + "}"
@@ -8022,9 +8022,9 @@ def planScheduling():
                     s.PRName = PRName
                     s.BatchNumS = sch.DayBatchNumS
                     if j < 10:
-                        s.SchedulingNum = day.replace("-", "") + "0" + str(j)
+                        s.SchedulingNum = day.replace("-", "")[2:6] + "600" + str(j)
                     else:
-                        s.SchedulingNum = day.replace("-", "") + str(j)
+                        s.SchedulingNum = day.replace("-", "")[2:6] + "60" + str(j)
                     db_session.add(s)
                     j = j+1
                 k = k + 1
@@ -8400,6 +8400,74 @@ def SchedulingMaterialSearch():
             print(e)
             logger.error(e)
             insertSyslog("error", "SchedulingMaterial查询报错Error：" + str(e), current_user.Name)
+
+@app.route('/allCheckSaveUpdate', methods=['POST', 'GET'])
+def allCheckSaveUpdate():
+    '''
+    所以检验单的保存操作
+    :return:
+    '''
+    if request.method == 'POST':
+        data = request.values
+        data = data.to_dict()
+        try:
+            for key in data.keys():
+                if key == "PUID":
+                    continue
+                if key == "BatchID":
+                    continue
+                val = data.get(key)
+                checkSaveUpdate(data.get("PUID"), data.get("BatchID"), key, val)
+            return 'OK'
+        except Exception as e:
+            db_session.rollback()
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "所以检验单的保存操作报错Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
+                              ensure_ascii=False)
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 2:
+                PUID = data['PUID']
+                BatchID = data['BatchID']
+                oclasss = db_session.query(EletronicBatchDataStore).filter(EletronicBatchDataStore.PUID == PUID,
+                                                                           EletronicBatchDataStore.BatchID == BatchID).all()
+                dic = {}
+                for oclass in oclasss:
+                    dic[oclass.Content] = oclass.OperationpValue
+            return json.dumps(dic, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+        except Exception as e:
+            db_session.rollback()
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "所以检验单的保存操作报错Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
+                              ensure_ascii=False)
+
+
+def checkSaveUpdate(PUID, BatchID, ke, val):
+    try:
+        oc = db_session.query(EletronicBatchDataStore).filter(EletronicBatchDataStore.PUID == PUID,
+                                                              EletronicBatchDataStore.BatchID == BatchID,
+                                                              EletronicBatchDataStore.Content == ke).first()
+        if oc == None:
+            db_session.add(EletronicBatchDataStore(BatchID=BatchID, PUID=PUID, Content=ke, OperationpValue=val,
+                                                   Operator=current_user.Name))
+        else:
+            oc.Content = ke
+            oc.OperationpValue = val
+            oc.Operator = current_user.Name
+        db_session.commit()
+    except Exception as e:
+        db_session.rollback()
+        print(e)
+        logger.error(e)
+        insertSyslog("error", "保存更新EletronicBatchDataStore报错：" + str(e), current_user.Name)
+        return json.dumps("保存更新EletronicBatchDataStore报错", cls=Model.BSFramwork.AlchemyEncoder,
+                          ensure_ascii=False)
 
 if __name__ == '__main__':
     app.run(debug=True)
