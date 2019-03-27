@@ -81,7 +81,12 @@
     </div>
     <script>
         $(function(){
+            if(getUrlParam('type') == 1){
+                $(".step-round").addClass("hide")
+            }
+
             bsStep();
+
             //日历排产
             $('#calendar').fullCalendar({
                 header:{
@@ -128,15 +133,11 @@
                  }
             });
         })
-        //时间格式拼接
-        function myformatter(date){
-            var y = date.getFullYear();
-            var m = date.getMonth()+1;
-            var d = date.getDate();
-            return y + "-" + getNow(m) + "-" + getNow(d);
-        }
-        function getNow(s) {
-            return s < 10 ? '0' + s: s;
+        //获取页面传参
+        function getUrlParam(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+            var r = decodeURI(window.location.search).substr(1).match(reg); //匹配目标参数
+            if (r != null) return unescape(r[2]); return null; //返回参数值
         }
     </script>
 </body>
