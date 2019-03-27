@@ -173,12 +173,12 @@ def syslogsFindByDate():
                     nowTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                     total = db_session.query(SysLog).filter(SysLog.OperationDate.between(startTime, nowTime)).count()
                     syslogs = db_session.query(SysLog).filter(
-                        SysLog.OperationDate.between(startTime, nowTime)).order_by(desc("OperationDate"))[
+                        SysLog.OperationDate.between(startTime, nowTime)).order_by(desc("OperationDate")).all()[
                               inipage:endpage]
                 else:
                     total = db_session.query(SysLog).filter(SysLog.OperationDate.between(startTime, endTime)).count()
                     syslogs = db_session.query(SysLog).filter(
-                        SysLog.OperationDate.between(startTime, endTime)).order_by(desc("OperationDate"))[
+                        SysLog.OperationDate.between(startTime, endTime)).order_by(desc("OperationDate")).all()[
                               inipage:endpage]
                 jsonsyslogs = json.dumps(syslogs, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonsyslogs = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonsyslogs + "}"
@@ -4199,7 +4199,7 @@ def isBatchNumber():
                 ABatchID = data['ABatchID']
                 BrandName = data['BrandName']
                 BatchID = db_session.query(PlanManager.BatchID).filter(PlanManager.BatchID == ABatchID,
-                                                                       PlanManager.BrandName == BrandName).first()
+                                                                       PlanManager.BrandID == BrandName).first()
                 if (BatchID == None):
                     isExist = 'OK'
                 else:
@@ -7977,6 +7977,9 @@ def planScheduling():
             SchedulDates = monthRange[1] - count #排产月份有多少天
             PRName = db_session.query(ERPproductcode_prname.PRName).filter(ERPproductcode_prname.product_code == oc.product_code).first()[0]
             sch = db_session.query(SchedulingStandard).filter(SchedulingStandard.PRName == PRName).first()
+
+            #根据成品量计算投料量
+            BatchPercentage = db_session.query(MaterialBOM.BatchPercentage).filter(MaterialBOM.MATID == mid).first()
             batchnums = float(oc.plan_quantity)/float(sch.Batch_quantity) #计划有多少批
             days = batchnums/int(sch.DayBatchNumS) #这批计划要做多少天
             re = timeChange(mou[0], mou[1], monthRange[1])
