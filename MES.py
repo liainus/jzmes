@@ -297,7 +297,8 @@ def addUser():
                 if ocal != None:
                     return "工号重复，请重新录入！"
                 user.Name = data['Name']
-                user.Password = user.password(data['Password'])
+                #user.password(data['Password'])
+                user.Password = data['Password']
                 # print(user.Password)
                 user.Status = "1"  # 登录状态先设置一个默认值1：已登录，0：未登录
                 user.Creater = data['Creater']
@@ -333,13 +334,14 @@ def UpdateUser():
                 if ocal != None:
                     if ocal.id != id:
                         return "工号重复，请重新修改！"
-                user.Password = user.password(data['Password'])
+                user.Password = data['Password']
                 # user.Status = data['Status']
                 user.Creater = data['Creater']
                 # user.CreateTime = data['CreateTime']
                 # user.LastLoginTime = data['LastLoginTime']
                 # user.IsLock = data['IsLock']
                 user.OrganizationName = data['OrganizationName']
+                user.RoleName = data["RoleName"]
                 db_session.commit()
                 return 'OK'
         except Exception as e:
@@ -7882,12 +7884,13 @@ def HomePageHistogram():
 @app.route('/plantCalendarYield')
 def plantCalendarYield():
     '''
-    :return: 得率维护页面
+    :return: 得率页面跳转
     '''
     data = []
-    codenames = {"1,太子参粉(2136)","2,无糖山药粉(2137)","3,肿节风浸膏(2120)","4,山药粉(2116)"}
+    codenames = {"太子参粉(2136)","无糖山药粉(2137)","肿节风浸膏(2120)","山药粉(2116)"}
     for i in codenames:
-        dir = {"id": i[0], "text": i[1]}
+        print(i)
+        dir = {"id": i, "text": i}
         data.append(dir)
     return render_template('plantCalendarYield.html',data = data)
 
@@ -8518,8 +8521,8 @@ def YieldMaintainSearch():
             if len(jsonstr) > 10:
                 PRName = data["PRName"]
                 oclass = db_session.query(YieldMaintain).filter(YieldMaintain.PRName == PRName).first()
-                oclass = oclass[1:0]
-                print(oclass)
+                if oclass != None:
+                    oclass = oclass[1:-1]
                 return json.dumps(oclass, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
