@@ -42,7 +42,7 @@ import re
 from collections import Counter
 from Model.system import User, EquipmentRunPUID, ElectronicBatch, EquipmentRunRecord, QualityControl, PackMaterial, \
     TypeCollection, OperationProcedure, EquipmentMaintenanceStore, Scheduling, SchedulingStock, ERPproductcode_prname, \
-    SchedulingStandard, product_plan, SchedulingMaterial
+    SchedulingStandard, product_plan, SchedulingMaterial, YieldMaintain
 from Model.Global import WeightUnit
 from Model.control import ctrlPlan
 from flask_login import login_required, logout_user, login_user, current_user, LoginManager
@@ -7990,7 +7990,8 @@ def planScheduling():
             PRName = db_session.query(ERPproductcode_prname.PRName).filter(ERPproductcode_prname.product_code == oc.product_code).first()[0]
             sch = db_session.query(SchedulingStandard).filter(SchedulingStandard.PRName == PRName).first()
 
-            #根据成品量计算投料量
+            #这批计划要做多少天
+
             batchnums = float(oc.plan_quantity)/float(sch.Batch_quantity) #计划有多少批
             days = batchnums/int(sch.DayBatchNumS) #这批计划要做多少天
             re = timeChange(mou[0], mou[1], monthRange[1])
@@ -8008,11 +8009,11 @@ def planScheduling():
                     undays.append(i[0])
 
             # 删除上一次排产同品名的数据
-            solds = db_session.query(Scheduling).filter(Scheduling.PRName == PRName).all()
+            solds = db_session.query(Scheduling).filter(Scheduling.PRName == PRName, Scheduling.SchedulingTime.like(mou)).all()
             for old in solds:
                 sql = "DELETE FROM Scheduling WHERE ID = "+str(old.ID)
                 db_session.execute(sql)#删除同意品名下的旧的排产计划
-            plans = db_session.query(plantCalendarScheduling).filter(plantCalendarScheduling.title.like(PRName)).all()
+            plans = db_session.query(plantCalendarScheduling).filter(plantCalendarScheduling.title.like(PRName), plantCalendarScheduling.start.like(mou)).all()
             for pl in plans:
                 sql = sql1 = "DELETE FROM plantCalendarScheduling WHERE ID = " + str(pl.ID)
                 db_session.execute(sql)#删除同意品名下的安全库存信息
@@ -8482,6 +8483,48 @@ def checkSaveUpdate(PUID, BatchID, ke, val):
         insertSyslog("error", "保存更新EletronicBatchDataStore报错：" + str(e), current_user.Name)
         return json.dumps("保存更新EletronicBatchDataStore报错", cls=Model.BSFramwork.AlchemyEncoder,
                           ensure_ascii=False)
+
+@app.route('/YieldMaintainUpdateCreate', methods=['POST', 'GET'])
+def YieldMaintainUpdateCreate():
+    '''
+    YieldMaintain的更新添加
+    :return:
+    '''
+    if request.method == 'POST':
+        data = request.values
+        PRName = data["PRName"]
+        Yield = data["Yield"]
+        FinishProduct = data["FinishProduct"]
+        SamplingQuantity = data["SamplingQuantity"]
+        TotalQuantity = data["TotalQuantity"]
+        oclass = db_session.query(YieldMaintain).filter(YieldMaintain.PRName == PRName).first()
+        if oclass == None and oclass == '':
+            TotalQuantity  = str((float(float(FinishProduct) + float(SamplingQuantity))/float(Yield)))*100 + "%"
+            insert(YieldMaintain,data)
+        elif oclass != None and oclass != '':
+            TotalQuantity = str((float(float(FinishProduct) + float(SamplingQuantity)) / float(Yield)))*100 + "%"
+            update(YieldMaintain,data)
+
+@app.route('/YieldMaintainSearch', methods=['POST', 'GET'])
+def YieldMaintainSearch():
+    '''
+    YieldMaintain查询
+    :return:
+    '''
+    if request.method == 'GET':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                PRName = data["PRName"]
+                oclass = db_session.query(YieldMaintain).filter(YieldMaintain.PRName == PRName).first()
+                oclass = oclass[1:0]
+                print(oclass)
+                return json.dumps(oclass, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "SchedulingMaterial查询报错Error：" + str(e), current_user.Name)
 
 if __name__ == '__main__':
     app.run(debug=True)

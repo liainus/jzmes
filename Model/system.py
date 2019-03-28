@@ -1323,6 +1323,22 @@ class SchedulingMaterial(Base):
     # 物料剩余量
     Surplus_quantity = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
+# 得率维护表
+class YieldMaintain(Base):
+    __tablename__ = "YieldMaintain"
+    # ID:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=True)
+    # 品名
+    PRName = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    # 得率PRName
+    Yield = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    # 成品总重量
+    FinishProduct = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    # 取样量
+    SamplingQuantity = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    # 药材总投料量
+    TotalQuantity = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
 # 生成表单的执行语句
 Base.metadata.create_all(engine)
 
