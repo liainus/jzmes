@@ -58,7 +58,7 @@
                 var SamplingQuantity = $("#SamplingQuantity").val()
                 var Yield = $("#Yield").val()
                 var TotalQuantity = $("#TotalQuantity").html()
-                if(Yield >= 0){
+                if(FinishProduct >= 0 || SamplingQuantity >= 0 || Yield >= 0){
                     $.ajax({
                         url: '/YieldMaintainUpdateCreate',
                         type: 'post',
@@ -83,7 +83,7 @@
                         }
                     });
                 }else{
-                    bootbox.alert("得率请输入不小于0的数字")
+                    bootbox.alert("三项均应输入不小于0的数字")
                 }
             })
         })
