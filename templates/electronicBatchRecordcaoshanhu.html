@@ -54,7 +54,7 @@
             //时间选择控件
             $('.selectDateTime').datetimepicker({
                 language:  'zh',
-                format: 'hh:ii', // 标签上可用data-date-format="hh:ii" data-link-format="hh:ii"
+                format: 'yy-mm-dd hh:ii', // 标签上可用data-date-format="hh:ii" data-link-format="hh:ii"
                 autoclose: true, //选择完成自动关闭下拉框
                 minView: 0,
                 maxView: 1,
@@ -578,7 +578,7 @@
                         <td class="equipmentName">自动投料系统</td>
                         <td>22123</td>
                         <td>
-                            <label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="beiliaoEquipmentCheckbox1"> 正常 / 不正常 </label>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="beiliaoEquipmentCheckbox1"> 正常 / 不正常 </label>
                         </td>
                         <td rowspan="2" class="middle-center">
                             <input type="hidden" id="equipmentCheckbox" value={{ dir[0]["OperationPeople_a5"] }}>
@@ -613,13 +613,13 @@
                         <td class="equipmentName">隧道式高压清洗机</td>
                         <td>22207</td>
                         <td>
-                            <label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="beiliaoEquipmentCheckbox2"> 正常 / 不正常 </label>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="beiliaoEquipmentCheckbox2"> 正常 / 不正常 </label>
                         </td>
                     </tr>
                     <tr>
                         <td colspan="3">生产过程是否符合安全管理规定</td>
                         <td colspan="2">
-                            <label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="beiliaoEquipmentCheckbox3"> 是 / 否</label>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="beiliaoEquipmentCheckbox3"> 是 / 否</label>
                         </td>
                     </tr>
                 </tbody>
@@ -940,7 +940,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>QA签名</td>
+                    <td>QA确认人</td>
                     <td colspan="6" class="middle-center">
                         {% if '82' == flag %}
                             {{ dir[0]["QAConfirmPeople_b2"] }}
@@ -1159,7 +1159,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>QA签名</td>
+                    <td>QA确认人</td>
                     <td colspan="6" class="middle-center">
                         {% if '82' == flag %}
                             {{ dir[0]["QAConfirmPeople_b3"] }}
@@ -1375,7 +1375,7 @@
                         <td>吊篮式提取罐</td>
                         <td>22054~22057</td>
                         <td>
-                            <label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="jianzhuEquipmentCheckbox1"> 正常 / 不正常 </label>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="jianzhuEquipmentCheckbox1"> 正常 / 不正常 </label>
                         </td>
                         <td rowspan="2" class="middle-center">
                             <input type="hidden" id="equipmentCheckbox" value={{ dir[0]["OperationPeople_b6"] }}>
@@ -1410,13 +1410,13 @@
                         <td>静置罐</td>
                         <td>22076~22083</td>
                         <td>
-                            <label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="jianzhuEquipmentCheckbox2"> 正常 / 不正常 </label>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="jianzhuEquipmentCheckbox2"> 正常 / 不正常 </label>
                         </td>
                     </tr>
                     <tr>
                         <td colspan="3">生产过程是否符合安全管理规定</td>
                         <td colspan="2">
-                            <label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="jianzhuEquipmentCheckbox3"> 是 / 否</label>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="jianzhuEquipmentCheckbox3"> 是 / 否</label>
                         </td>
                     </tr>
                 </tbody>
@@ -2098,7 +2098,7 @@
                         <td>MVR浓缩器</td>
                         <td>22032</td>
                         <td>
-                            <label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="MVREquipmentCheckbox1"> 正常 / 不正常</label>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="MVREquipmentCheckbox1"> 正常 / 不正常</label>
                         </td>
                         <td rowspan="2" class="middle-center">
                             <input type="hidden" id="equipmentCheckbox" value={{ dir[0]["OperationPeople_c7"] }}>
@@ -2133,13 +2133,13 @@
                         <td>MVR浓缩器</td>
                         <td>22033</td>
                         <td>
-                            <label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="MVREquipmentCheckbox2"> 正常 / 不正常</label>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="MVREquipmentCheckbox2"> 正常 / 不正常</label>
                         </td>
                     </tr>
                     <tr>
                         <td colspan="3">生产过程是否符合安全管理规定</td>
                         <td colspan="2">
-                            <label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="MVREquipmentCheckbox3"> 是 / 否</label>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="MVREquipmentCheckbox3"> 是 / 否</label>
                         </td>
                     </tr>
                 </tbody>
@@ -2403,7 +2403,7 @@
                     <tr>
                         <td>结束时间</td>
                         <td><input type="text" class="form-control batchInput" id="jzEndTime0"></td>
-                        <td>QA签名</td>
+                        <td>QA确认人</td>
                         <td class="middle-center">
                             <input type="hidden" id="QAreadycheckbox" value={{ dir[0]["QAConfirmPeople_d3"] }}>
                             {% if '82' == flag %}
@@ -2531,7 +2531,7 @@
                         <td rowspan="4">醇沉罐</td>
                         <td>22000</td>
                         <td>
-                            <label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="CCEquipmentCheckbox1"> 正常 / 不正常</label>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="CCEquipmentCheckbox1"> 正常 / 不正常</label>
                         </td>
                         <td rowspan="5" class="middle-center">
                             <input type="hidden" id="equipmentCheckbox" value={{ dir[0]["OperationPeople_d5"] }}>
@@ -2565,32 +2565,32 @@
                     <tr>
                         <td>22001</td>
                         <td>
-                            <label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="CCEquipmentCheckbox2"> 正常 / 不正常</label>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="CCEquipmentCheckbox2"> 正常 / 不正常</label>
                         </td>
                     </tr>
                     <tr>
                         <td>22002</td>
                         <td>
-                            <label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="CCEquipmentCheckbox3"> 正常 / 不正常</label>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="CCEquipmentCheckbox3"> 正常 / 不正常</label>
                         </td>
                     </tr>
                     <tr>
                         <td>22003</td>
                         <td>
-                            <label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="CCEquipmentCheckbox4"> 正常 / 不正常</label>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="CCEquipmentCheckbox4"> 正常 / 不正常</label>
                         </td>
                     </tr>
                     <tr>
                         <td>原料乙醇储罐</td>
                         <td>22006</td>
                         <td>
-                            <label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="CCEquipmentCheckbox5"> 正常 / 不正常</label>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="CCEquipmentCheckbox5"> 正常 / 不正常</label>
                         </td>
                     </tr>
                     <tr>
                         <td colspan="3">生产过程是否符合安全管理规定</td>
                         <td colspan="2">
-                            <label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="CCEquipmentCheckbox6"> 是 / 否</label>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="CCEquipmentCheckbox6"> 是 / 否</label>
                         </td>
                     </tr>
                 </tbody>
@@ -2914,7 +2914,7 @@
                     <tr>
                         <td id="dwdTime_0_5"></td>
                         <td id="dwd_0_5"></td>
-                        <td>QA签名</td>
+                        <td>QA确认人</td>
                         <td class="middle-center">
                             {% if '82' == flag %}
                                 {{ dir[0]["QAConfirmPeople_e4"] }}
@@ -3071,7 +3071,7 @@
                         <td>DN-1000单效浓缩器</td>
                         <td>22022</td>
                         <td>
-                            <label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="DXNSEquipmentCheckbox1"> 正常 / 不正常</label>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="DXNSEquipmentCheckbox1"> 正常 / 不正常</label>
                         </td>
                         <td rowspan="5" class="middle-center">
                             <input type="hidden" id="equipmentCheckbox" value={{ dir[0]["OperationPeople_e7"] }}>
@@ -3106,34 +3106,34 @@
                         <td>上清液贮存罐</td>
                         <td>22004</td>
                         <td>
-                            <label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="DXNSEquipmentCheckbox2"> 正常 / 不正常</label>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="DXNSEquipmentCheckbox2"> 正常 / 不正常</label>
                         </td>
                     </tr>
                     <tr>
                         <td>上清液贮存罐</td>
                         <td>22005</td>
                         <td>
-                            <label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="DXNSEquipmentCheckbox3"> 正常 / 不正常</label>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="DXNSEquipmentCheckbox3"> 正常 / 不正常</label>
                         </td>
                     </tr>
                     <tr>
                         <td>乙醇储罐</td>
                         <td>22008</td>
                         <td>
-                            <label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="DXNSEquipmentCheckbox4"> 正常 / 不正常</label>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="DXNSEquipmentCheckbox4"> 正常 / 不正常</label>
                         </td>
                     </tr>
                     <tr>
                         <td>乙醇储罐</td>
                         <td>22009</td>
                         <td>
-                            <label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="DXNSEquipmentCheckbox5"> 正常 / 不正常</label>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="DXNSEquipmentCheckbox5"> 正常 / 不正常</label>
                         </td>
                     </tr>
                     <tr>
                         <td colspan="3">生产过程是否符合安全管理规定</td>
                         <td colspan="2">
-                            <label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="DXNSEquipmentCheckbox6"> 是 / 否</label>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="DXNSEquipmentCheckbox6"> 是 / 否</label>
                         </td>
                     </tr>
                 </tbody>
@@ -4056,9 +4056,22 @@
                 var PUID = $("#PUID").val(),
                     BatchID = $("#batchID").html(),
                     confirm = $(this).attr("name")
+                var checkboxChecked = $("input[name=equipmentCheckbox]").length //复选框数量
                 $.messager.confirm('确定操作', '是否要进行确认？确认后不允许撤回。', function (flag) {
                     if (flag) {
-                        equipmentConfirmFun(PUID,BatchID,confirm)
+                        if(confirm == "操作人"){
+                            var number = ""
+                            $("input:checkbox[name=equipmentCheckbox]:checked").each(function(k){
+                                number = k
+                            })
+                            if(number == checkboxChecked - 1){ //判断是否全部选中设备
+                                equipmentConfirmFun(PUID,BatchID,confirm)
+                            }else{
+                                $.messager.alert('提示', "当前所有的设备正常才可以做确认操作", 'info');
+                            }
+                        }else{
+                            equipmentConfirmFun(PUID,BatchID,confirm)
+                        }
                     }
                 })
             })

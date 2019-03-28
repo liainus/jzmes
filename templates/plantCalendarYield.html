@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>设置得率</title>
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/css/bootstrap-table.min.css">
+    <link rel="stylesheet" href="../static/css/step.css">
+    <script type="text/javascript" src="../static/js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootstrap-table.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootstrap-table-zh-CN.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootbox.min.js"></script>
+    <script type="text/javascript" src="../static/js/bsStep.js"></script>
+    <script type="text/javascript" src="../static/js/less.js"></script>
+
+    <style>
+        .pad-per{
+            padding-top: 15px;
+            padding-bottom: 15px;
+        }
+        .step-round{
+            margin-bottom: 20px;
+        }
+    </style>
+    <script>
+        $(function(){
+            bsStep();
+
+            var PRName = $("#PRNameSelect").find("option").eq(0).val()
+            render(PRName)
+            $("#PRNameSelect").change(function(){
+                PRName = $(this).find("option:checked").val()
+                render(PRName)
+            })
+            function render(PRName) {
+                $.ajax({
+                    url: '/YieldMaintainSearch',
+                    type: 'GET',
+                    data: {
+                        PRName: PRName
+                    },
+                    success: function (data) {
+                        data = JSON.parse(data)
+                        $("#FinishProduct").val(data.FinishProduct)
+                        $("#SamplingQuantity").val(data.SamplingQuantity)
+                        $("#Yield").val(data.Yield)
+                        $("#TotalQuantity").html(data.TotalQuantity)
+                    },
+                    error: function () {
+                        bootbox.alert("请求失败")
+                    }
+                });
+            }
+            $("#save").on('click',function(){
+                var PRName = $("#PRNameSelect").find("option:checked").val()
+                var FinishProduct = $("#FinishProduct").val()
+                var SamplingQuantity = $("#SamplingQuantity").val()
+                var Yield = $("#Yield").val()
+                var TotalQuantity = $("#TotalQuantity").html()
+                $.ajax({
+                    url: '/YieldMaintainUpdateCreate',
+                    type: 'post',
+                    data: {
+                        PRName: PRName,
+                        FinishProduct: FinishProduct,
+                        SamplingQuantity: SamplingQuantity,
+                        Yield: Yield,
+                        TotalQuantity:TotalQuantity
+                    },
+                    success: function (data) {
+                        if(data == "OK"){
+                            $("#myAlert").removeClass('hide').addClass('in')
+                            setTimeout(function() {
+                                $("#myAlert").removeClass('in').addClass('hide')
+                            },2000)
+                            render(PRName)
+                        }
+                    },
+                    error: function () {
+                        bootbox.alert("请求失败")
+                    }
+                });
+            })
+        })
+    </script>
+</head>
+<body>
+    <div class="pad-per">
+        <div class="col-md-12">
+            <ul class="nav nav-pills nav-justified step step-round" data-step="2">
+                <li>
+                    <a href="/ERP_productplan">ERP计划信息</a>
+                </li>
+                <li>
+                    <a href="/plantCalendarYield">设置得率</a>
+                </li>
+                <li>
+                    <a href="/plantCalendarSafeStock">设置安全库存</a>
+                </li>
+                <li>
+                    <a href="/plantCalendarbatchNumber">设置每日生产批数</a>
+                </li>
+                <li>
+                    <a href="/plantCalendar">工厂日历</a>
+                </li>
+                <li>
+                    <a href="/calendarScheduling">日历排产</a>
+                </li>
+                <li>
+                    <a href="/plantCalendarResult">排产结果</a>
+                </li>
+            </ul>
+            <div class="col-md-12 col-sm-12 text-center">
+                <div id="myAlert" class="alert alert-success hide">
+                    <strong>成功！</strong>得率设置成功！
+                </div>
+                <form class="form-inline" style="margin-bottom: 15px;">
+                  <div class="form-group">
+                    <p class="form-control-static">选择品名：</p>
+                  </div>
+                  <div class="form-group">
+                    <select class="form-control" id="PRNameSelect">
+                        {% for i in data %}
+                            <option value="{{ i['id'] }}">{{ i['text'] }}</option>
+                        {% endfor %}
+                    </select>
+                  </div>
+                </form>
+            </div>
+            <div class="col-md-12 col-sm-12">
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">成品总重量B</label>
+                        <div class="col-sm-10">
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="">
+                                <div class="input-group-addon">kg</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">取样量C</label>
+                        <div class="col-sm-10">
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="">
+                                <div class="input-group-addon">kg</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">得率=(B+C)/A</label>
+                        <div class="col-sm-10">
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="">
+                                <div class="input-group-addon">%（8~13%）</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <button type="button" class="btn btn-default" id="save">确认</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">获取的药材总投料量A</label>
+                        <div class="col-sm-10">
+                            <div class="input-group">
+                                <label for="" class="control-label"><sapn id="TotalQuantity"></sapn>kg</label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="modal-footer">
+                <a href="/plantCalendarSafeStock" class="btn btn-primary">下一步</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
