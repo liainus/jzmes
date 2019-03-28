@@ -58,29 +58,33 @@
                 var SamplingQuantity = $("#SamplingQuantity").val()
                 var Yield = $("#Yield").val()
                 var TotalQuantity = $("#TotalQuantity").html()
-                $.ajax({
-                    url: '/YieldMaintainUpdateCreate',
-                    type: 'post',
-                    data: {
-                        PRName: PRName,
-                        FinishProduct: FinishProduct,
-                        SamplingQuantity: SamplingQuantity,
-                        Yield: Yield / 100,
-                        TotalQuantity:TotalQuantity
-                    },
-                    success: function (data) {
-                        if(data == "OK"){
-                            $("#myAlert").removeClass('hide').addClass('in')
-                            setTimeout(function() {
-                                $("#myAlert").removeClass('in').addClass('hide')
-                            },2000)
-                            render(PRName)
+                if(Yield >= 0){
+                    $.ajax({
+                        url: '/YieldMaintainUpdateCreate',
+                        type: 'post',
+                        data: {
+                            PRName: PRName,
+                            FinishProduct: FinishProduct,
+                            SamplingQuantity: SamplingQuantity,
+                            Yield: Yield / 100,
+                            TotalQuantity:TotalQuantity
+                        },
+                        success: function (data) {
+                            if(data == "OK"){
+                                $("#myAlert").removeClass('hide').addClass('in')
+                                setTimeout(function() {
+                                    $("#myAlert").removeClass('in').addClass('hide')
+                                },2000)
+                                render(PRName)
+                            }
+                        },
+                        error: function () {
+                            bootbox.alert("请求失败")
                         }
-                    },
-                    error: function () {
-                        bootbox.alert("请求失败")
-                    }
-                });
+                    });
+                }else{
+                    bootbox.alert("得率请输入不小于0的数字")
+                }
             })
         })
     </script>
@@ -131,28 +135,28 @@
             <div class="col-md-12 col-sm-12">
                 <form class="form-horizontal">
                     <div class="form-group">
-                        <label for="" class="col-sm-2 control-label">成品总重量B</label>
+                        <label for="FinishProduct" class="col-sm-2 control-label">成品总重量B</label>
                         <div class="col-sm-10">
                             <div class="input-group">
-                                <input type="text" class="form-control" id="">
+                                <input type="text" class="form-control" id="FinishProduct">
                                 <div class="input-group-addon">kg</div>
                             </div>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="" class="col-sm-2 control-label">取样量C</label>
+                        <label for="SamplingQuantity" class="col-sm-2 control-label">取样量C</label>
                         <div class="col-sm-10">
                             <div class="input-group">
-                                <input type="text" class="form-control" id="">
+                                <input type="text" class="form-control" id="SamplingQuantity">
                                 <div class="input-group-addon">kg</div>
                             </div>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="" class="col-sm-2 control-label">得率=(B+C)/A</label>
+                        <label for="Yield" class="col-sm-2 control-label">得率=(B+C)/A</label>
                         <div class="col-sm-10">
                             <div class="input-group">
-                                <input type="text" class="form-control" id="">
+                                <input type="text" class="form-control" id="Yield">
                                 <div class="input-group-addon">%（8~13%）</div>
                             </div>
                         </div>
