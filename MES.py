@@ -7879,6 +7879,18 @@ def HomePageHistogram():
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
+@app.route('/plantCalendarYield')
+def plantCalendarYield():
+    '''
+    :return: 得率维护页面
+    '''
+    data = []
+    codenames = {"1,太子参粉(2136)","2,无糖山药粉(2137)","3,肿节风浸膏(2120)","4,山药粉(2116)"}
+    for i in codenames:
+        dir = {"id": i[0], "text": i[1]}
+        data.append(dir)
+    return render_template('plantCalendarYield.html',data = data)
+
 @app.route('/plantCalendar')
 def plantCalendar():
     '''
@@ -7979,7 +7991,6 @@ def planScheduling():
             sch = db_session.query(SchedulingStandard).filter(SchedulingStandard.PRName == PRName).first()
 
             #根据成品量计算投料量
-            BatchPercentage = db_session.query(MaterialBOM.BatchPercentage).filter(MaterialBOM.MATID == mid).first()
             batchnums = float(oc.plan_quantity)/float(sch.Batch_quantity) #计划有多少批
             days = batchnums/int(sch.DayBatchNumS) #这批计划要做多少天
             re = timeChange(mou[0], mou[1], monthRange[1])

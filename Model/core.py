@@ -1023,8 +1023,8 @@ class ProcessUnitWebIFS(object):
 	
 #Equipment:
 class Equipment(Base):
-	__tablename__ = "Equipment" 
-	
+	__tablename__ = "Equipment"
+
 	#ID:
 	ID = Column(Integer, primary_key = True, autoincrement = True, nullable = True)
 	
@@ -1033,6 +1033,12 @@ class Equipment(Base):
 	
 	#设备名称:
 	EQPName = Column(Unicode(50), primary_key = False, autoincrement = False, nullable = True)
+
+	# OpcTag:
+	BatchOpcTag = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+	# OpcTag:
+	BrandOpcTag = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
 	# 供应商:
 	SupplierName = Column(Unicode(64), primary_key=False, autoincrement=False, nullable=True)
