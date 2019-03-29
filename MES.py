@@ -7955,7 +7955,7 @@ def plantCalendarSchedulingSelect():
                 dir = {}
                 dir['ID'] = oc.ID
                 dir['start'] = str(oc.SchedulingTime)[0:-9]
-                dir['title'] = oc.PRName + ": 第" + oc.SchedulingNum[8:] + "批"
+                dir['title'] = oc.PRName + ": 第" + oc.SchedulingNum[6:] + "批"
                 dir['color'] = "#9FDABF"
                 re.append(dir)
             ocl = db_session.query(plantCalendarScheduling).all()
