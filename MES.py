@@ -112,7 +112,7 @@ def login():
             password = data['password']
             # 验证账户与密码
             user = db_session.query(User).filter_by(WorkNumber=work_number).first()
-            if user and user.confirm_password(password):
+            if user.Password == password or (user and user.confirm_password(password)):# user and user.confirm_password(password)
                 login_user(user)  # login_user(user)调用user_loader()把用户设置到db_session中
                 # 查询用户当前菜单权限
                 roles = db_session.query(User.RoleName).filter_by(WorkNumber=work_number).all()
@@ -8500,13 +8500,13 @@ def YieldMaintainUpdateCreate():
         FinishProduct = data["FinishProduct"]
         SamplingQuantity = data["SamplingQuantity"]
         TotalQuantity = data["TotalQuantity"]
+        cp = float(FinishProduct) + float(SamplingQuantity)
+        TotalQuantity = str((cp/float(Yield)))
         oclass = db_session.query(YieldMaintain).filter(YieldMaintain.PRName == PRName).first()
-        if oclass == None and oclass == '':
-            TotalQuantity  = str((float(float(FinishProduct) + float(SamplingQuantity))/float(Yield)))*100 + "%"
-            insert(YieldMaintain,data)
-        elif oclass != None and oclass != '':
-            TotalQuantity = str((float(float(FinishProduct) + float(SamplingQuantity)) / float(Yield)))*100 + "%"
-            update(YieldMaintain,data)
+        if oclass == None or oclass == '':
+            return insert(YieldMaintain,data)
+        else :
+            return update(YieldMaintain,data)
 
 @app.route('/YieldMaintainSearch', methods=['POST', 'GET'])
 def YieldMaintainSearch():
@@ -8521,9 +8521,15 @@ def YieldMaintainSearch():
             if len(jsonstr) > 10:
                 PRName = data["PRName"]
                 oclass = db_session.query(YieldMaintain).filter(YieldMaintain.PRName == PRName).first()
+                dir = {}
                 if oclass != None:
-                    oclass = oclass[1:-1]
-                return json.dumps(oclass, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+                    dir["ID"] = oclass.ID
+                    dir["PRName"] = oclass.PRName
+                    dir["Yield"] = oclass.Yield
+                    dir["FinishProduct"] = oclass.FinishProduct
+                    dir["SamplingQuantity"] = oclass.SamplingQuantity
+                    dir["TotalQuantity"] = oclass.TotalQuantity
+                return json.dumps(dir, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
             logger.error(e)
