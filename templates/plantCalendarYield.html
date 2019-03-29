@@ -42,6 +42,7 @@
                     },
                     success: function (data) {
                         data = JSON.parse(data)
+                        $("#yid").val(data.ID)
                         $("#FinishProduct").val(data.FinishProduct)
                         $("#SamplingQuantity").val(data.SamplingQuantity)
                         $("#Yield").val(data.Yield)
@@ -54,6 +55,7 @@
             }
             $("#save").on('click',function(){
                 var PRName = $("#PRNameSelect").find("option:checked").val()
+                var yid = $("#yid").val()
                 var FinishProduct = $("#FinishProduct").val()
                 var SamplingQuantity = $("#SamplingQuantity").val()
                 var Yield = $("#Yield").val()
@@ -64,6 +66,7 @@
                         type: 'post',
                         data: {
                             PRName: PRName,
+                            ID: yid,
                             FinishProduct: FinishProduct,
                             SamplingQuantity: SamplingQuantity,
                             Yield: Yield / 100,
@@ -134,6 +137,7 @@
             </div>
             <div class="col-md-12 col-sm-12">
                 <form class="form-horizontal">
+                    <input type="hidden" value="" id="yid">
                     <div class="form-group">
                         <label for="FinishProduct" class="col-sm-2 control-label">成品总重量B</label>
                         <div class="col-sm-10">
