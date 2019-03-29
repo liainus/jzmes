@@ -1236,12 +1236,18 @@ class product_plan(Base):
     __tablename__ = "product_plan"
     # 计划ID:
     plan_id = Column(Integer, primary_key=True, autoincrement=True, nullable=True)
+    # 计划期间（YYYYMM）
+    plan_period = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
     # 产品(即物料)编码
-    product_code = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+    product_code = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
     # 产品(即物料)名称
-    product_name = Column(Unicode(100), primary_key=False, autoincrement=False, nullable=True)
+    product_name = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    # 计量单位 kg\批
+    product_unit = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    # 计量类型 'B' 批次  'W'重量
+    meter_type = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
     # 计划数量
-    plan_quantity = Column(Unicode(100), primary_key=False, autoincrement=False, nullable=True)
+    plan_quantity = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
     # 计划类型 'M' 月计划
     plan_type = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
     # 插入时间

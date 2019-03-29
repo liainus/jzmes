@@ -191,9 +191,12 @@ def ERP_productplanSynchro():
             if plan.transform_flag == "1":
                 return "此数据已经同步过，请选择没有同步过的数据！"
             e = product_plan()
+            e.plan_period = plan.plan_period
             e.product_code = plan.product_code
             e.product_name = plan.product_name
             e.plan_quantity = plan.plan_quantity
+            e.product_unit = plan.product_unit
+            e.meter_type = plan.meter_type
             e.plan_type = plan.plan_type
             e.create_time = plan.create_time
             e.transform_time = plan.transform_time
