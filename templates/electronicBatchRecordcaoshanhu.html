@@ -76,8 +76,7 @@
                 overcheckbox = $("#overcheckbox").val(), //生产结束清场 判断操作人是否有值
                 QAovercheckbox = $("#QAovercheckbox").val(), //生产结束清场 判断QA确认是否有值
                 stewingOvercheckbox = $("#stewingOvercheckbox").val(), //静置结束清场 判断操作人是否有值
-                QAstewingOvercheckbox = $("#QAstewingOvercheckbox").val(), //静置结束清场 判断操作人是否有值
-                equipmentCheckbox = $("#equipmentCheckbox").val()  //所有设备 判断操作人是否有值
+                QAstewingOvercheckbox = $("#QAstewingOvercheckbox").val() //静置结束清场 判断操作人是否有值
             if(readycheckbox != ""){
                 $("input[name=readycheckbox]").prop("checked",true).attr("disabled",true);
                 $("#allreadycheckbox").prop("checked",true).attr("disabled",true);
@@ -104,9 +103,6 @@
             }
             if(QAstewingOvercheckbox != ""){
                 $("input[name=QAstewingOvercheckbox]").prop("checked",true).attr("disabled",true);
-            }
-            if(equipmentCheckbox != ""){
-                $("input[name=equipmentCheckbox]").prop("checked",true).attr("disabled",true);
             }
 
             //复选框的全选和反选
@@ -2275,7 +2271,7 @@
                     <tr>
                         <td colspan="4">领取本批生产的物料并复核品名、批号、检验单号、数量是否无误</td>
                         <td><label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="CCFilterCheckbox1"> 是 / 否</label></td>
-                        <td rowspan="4" class="middle-center">
+                        <td rowspan="6" class="middle-center">
                             <input type="hidden" id="CCCollectMaterialCheckbox" value={{ dir[0]["OperationPeople_d2"] }}>
                             {% if '82' == flag %}
                                 {{ dir[0]["OperationPeople_d2"] }}
@@ -2288,7 +2284,7 @@
                                 {{ dir[0]["OperationPeople_d2"] }}
                             {% endif %}
                         </td>
-                        <td rowspan="4" class="middle-center">
+                        <td rowspan="6" class="middle-center">
                             {% if '82' == flag %}
                                 {{ dir[0]["CheckedPeople_d2"] }}
                             {% endif %}
@@ -2324,6 +2320,20 @@
                         <td><input type="text" class="form-control batchInput" id="bYCBatch"></td>
                         <td><input type="text" class="form-control batchInput" id="bYCTestNumber"></td>
                         <td><input type="text" class="form-control batchInput" id="bYCNumber"></td>
+                    </tr>
+                    <tr>
+                        <td>回收乙醇</td>
+                        <td><input type="text" class="form-control batchInput" id="cYCMaterNumber"></td>
+                        <td><input type="text" class="form-control batchInput" id="cYCBatch"></td>
+                        <td><input type="text" class="form-control batchInput" id="cYCTestNumber"></td>
+                        <td><input type="text" class="form-control batchInput" id="cYCNumber"></td>
+                    </tr>
+                    <tr>
+                        <td>配置乙醇</td>
+                        <td><input type="text" class="form-control batchInput" id="dYCMaterNumber"></td>
+                        <td><input type="text" class="form-control batchInput" id="dYCBatch"></td>
+                        <td><input type="text" class="form-control batchInput" id="dYCTestNumber"></td>
+                        <td><input type="text" class="form-control batchInput" id="dYCNumber"></td>
                     </tr>
                 </tbody>
             </table>
@@ -2722,9 +2732,9 @@
                 <tbody>
                     <tr>
                         <td>开始时间</td>
-                        <td id="dxStartTime_0_0"></td>
+                        <td id="dxStartTime_0_0" class="tdMinWidth100"></td>
                         <td>结束时间</td>
-                        <td id="dxEndTime_0_0"></td>
+                        <td id="dxEndTime_0_0" class="tdMinWidth100"></td>
                         <td>操作人</td>
                         <td>复核人</td>
                     </tr>
@@ -2940,8 +2950,8 @@
                     <tr>
                         <td class="tdWidth300">比重1.15（80℃）</td>
                         <td><label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="DXNSFilterCheckbox2"> 是 / 否</label></td>
-                        <td rowspan="2">QA确认人</td>
-                        <td rowspan="2" class="middle-center tdWidth100">
+                        <td rowspan="2" class="tdWidth100">QA确认人</td>
+                        <td rowspan="2" class="middle-center">
                             {% if '82' == flag %}
                                 {{ dir[0]["QAConfirmPeople_e5"] }}
                             {% endif %}
@@ -2949,11 +2959,8 @@
                                 {{ dir[0]["QAConfirmPeople_e5"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {% if None == dir[0]["OperationPeople_e5"] or None == dir[0]["CheckedPeople_e5"] or "" == dir[0]["OperationPeople_e5"] or "" == dir[0]["CheckedPeople_e5"] %}
-                                {% else %}
-                                    {{ dir[0]["QAConfirmPeople_e5"] }}
-                                    <a href="javascript:;" class="btn btn-primary QAConfirm" name="58" rel="3">确认</a>
-                                {% endif %}
+                                {{ dir[0]["QAConfirmPeople_e5"] }}
+                                <a href="javascript:;" class="btn btn-primary QAConfirm" name="58" rel="3">确认</a>
                             {% endif %}
                         </td>
                     </tr>
@@ -3692,7 +3699,7 @@
             }
             function addInputData(ids,res){
                 $("#" + ids).val(res)
-                $("input[name=FilterCheckbox]").each(function(){
+                $("input[name=FilterCheckbox],input[name=equipmentCheckbox]").each(function(){
                     if($(this).val() == 'false'){
                         $(this).prop("checked",false)
                     }else if($(this).val() == 'true'){
@@ -4240,10 +4247,21 @@
                         aYCBatch:$("#aYCBatch").val(),
                         aYCTestNumber:$("#aYCTestNumber").val(),
                         aYCNumber:$("#aYCNumber").val(),
+
                         bYCMaterNumber:$("#bYCMaterNumber").val(),
                         bYCBatch:$("#bYCBatch").val(),
                         bYCTestNumber:$("#bYCTestNumber").val(),
                         bYCNumber:$("#bYCNumber").val(),
+
+                        cYCMaterNumber:$("#cYCMaterNumber").val(),
+                        cYCBatch:$("#cYCBatch").val(),
+                        cYCTestNumber:$("#cYCTestNumber").val(),
+                        cYCNumber:$("#cYCNumber").val(),
+
+                        dYCMaterNumber:$("#dYCMaterNumber").val(),
+                        dYCBatch:$("#dYCBatch").val(),
+                        dYCTestNumber:$("#dYCTestNumber").val(),
+                        dYCNumber:$("#dYCNumber").val(),
 
                         hs_1:$("#hs_1").val(),
                         hs_2:$("#hs_2").val(),
