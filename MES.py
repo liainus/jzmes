@@ -7887,7 +7887,7 @@ def plantCalendarYield():
     :return: 得率页面跳转
     '''
     data = []
-    codenames = {"太子参粉(2136)","无糖山药粉(2137)","肿节风浸膏(2120)","山药粉(2116)"}
+    codenames = {"太子参粉","无糖山药粉","肿节风浸膏","山药粉"}
     for i in codenames:
         dir = {"id": i, "text": i}
         data.append(dir)
@@ -8430,7 +8430,7 @@ def SchedulingMaterialSearch():
 @app.route('/allCheckSaveUpdate', methods=['POST', 'GET'])
 def allCheckSaveUpdate():
     '''
-    所以检验单的保存操作
+    所有检验单的保存操作
     :return:
     '''
     if request.method == 'POST':
@@ -8502,19 +8502,34 @@ def YieldMaintainUpdateCreate():
     :return:
     '''
     if request.method == 'POST':
-        data = request.values
-        PRName = data["PRName"]
-        Yield = data["Yield"]
-        FinishProduct = data["FinishProduct"]
-        SamplingQuantity = data["SamplingQuantity"]
-        TotalQuantity = data["TotalQuantity"]
-        cp = float(FinishProduct) + float(SamplingQuantity)
-        TotalQuantity = str((cp/float(Yield)))
-        oclass = db_session.query(YieldMaintain).filter(YieldMaintain.PRName == PRName).first()
-        if oclass == None or oclass == '':
-            return insert(YieldMaintain,data)
-        else :
-            return update(YieldMaintain,data)
+        try:
+            data = request.values
+            PRName = data["PRName"]
+            Yield = data["Yield"]
+            FinishProduct = data["FinishProduct"]
+            SamplingQuantity = data["SamplingQuantity"]
+            TotalQuantity = data["TotalQuantity"]
+            cp = float(FinishProduct) + float(SamplingQuantity)
+            TotalQuantity = str((cp / float(Yield)))
+            oclass = db_session.query(YieldMaintain).filter(YieldMaintain.PRName == PRName).first()
+            if oclass == None or oclass == '':
+                db_session.add(YieldMaintain(PRName=PRName, Yield=Yield, FinishProduct=FinishProduct,
+                                             SamplingQuantity=SamplingQuantity, TotalQuantity=TotalQuantity))
+            else:
+                oclass.Yield = Yield
+                oclass.FinishProduct = FinishProduct
+                oclass.SamplingQuantity = SamplingQuantity
+                oclass.TotalQuantity = TotalQuantity
+            db_session.commit()
+            return 'OK'
+        except Exception as e:
+            db_session.rollback()
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "YieldMaintain的更新添加报错：" + str(e), current_user.Name)
+            return json.dumps("YieldMaintain的更新添加报错", cls=Model.BSFramwork.AlchemyEncoder,
+                              ensure_ascii=False)
+
 
 @app.route('/YieldMaintainSearch', methods=['POST', 'GET'])
 def YieldMaintainSearch():
