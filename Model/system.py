@@ -1264,8 +1264,8 @@ class Scheduling(Base):
     ID = Column(Integer, primary_key=True, autoincrement=True, nullable=True)
     # 产品名称
     PRName = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
-    #时间(工厂日历)
-    SchedulingTime = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+    #排产时间(工厂日历)
+    SchedulingTime = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
     # 排产序列号
     SchedulingNum = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
     # 批数
