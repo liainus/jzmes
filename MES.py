@@ -6365,7 +6365,7 @@ def addNewReadyWork():
                     oclass.CheckedPeople = current_user.Name
                     oclass.OperationDate = datetime.datetime.now()
                 elif confirm == "3":
-                    if Type == "52" or Type == "54":
+                    if Type == "52" or Type == "54" or Type == "58":
                         db_session.add(
                             NewReadyWork(
                                 BatchID=BatchID,
@@ -7889,7 +7889,6 @@ def plantCalendarYield():
     data = []
     codenames = {"太子参粉(2136)","无糖山药粉(2137)","肿节风浸膏(2120)","山药粉(2116)"}
     for i in codenames:
-        print(i)
         dir = {"id": i, "text": i}
         data.append(dir)
     return render_template('plantCalendarYield.html',data = data)
