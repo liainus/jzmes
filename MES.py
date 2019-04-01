@@ -7953,7 +7953,7 @@ def plantCalendarSchedulingSelect():
             for oc in oclass:
                 dir = {}
                 dir['ID'] = oc.ID
-                dir['start'] = str(oc.SchedulingTime)[0:-9]
+                dir['start'] = oc.SchedulingTime
                 dir['title'] = oc.PRName + ": 第" + oc.SchedulingNum[6:] + "批"
                 dir['color'] = "#9FDABF"
                 re.append(dir)
@@ -8003,7 +8003,7 @@ def planScheduling():
                 # 计划有多少批
                 batchnums = total/float(sch.Batch_quantity)
             elif oc.meter_type == "B":
-                batchnums = oc.plan_quantity
+                batchnums = int(oc.plan_quantity)
             days = batchnums/int(sch.DayBatchNumS) #这批计划要做多少天
             re = timeChange(mou[0], mou[1], monthRange[1])
 
@@ -8020,11 +8020,11 @@ def planScheduling():
                     undays.append(i[0])
 
             # 删除上一次排产同品名的数据
-            solds = db_session.query(Scheduling).filter(Scheduling.PRName == PRName, Scheduling.SchedulingTime.like(mou)).all()
+            solds = db_session.query(Scheduling).filter(Scheduling.PRName == PRName, Scheduling.SchedulingTime.like("%"+mou+"%")).all()
             for old in solds:
                 sql = "DELETE FROM Scheduling WHERE ID = "+str(old.ID)
                 db_session.execute(sql)#删除同意品名下的旧的排产计划
-            plans = db_session.query(plantCalendarScheduling).filter(plantCalendarScheduling.title.like(PRName), plantCalendarScheduling.start.like(mou)).all()
+            plans = db_session.query(plantCalendarScheduling).filter(plantCalendarScheduling.title.like(PRName), plantCalendarScheduling.start.like("%"+mou+"%")).all()
             for pl in plans:
                 sql = sql1 = "DELETE FROM plantCalendarScheduling WHERE ID = " + str(pl.ID)
                 db_session.execute(sql)#删除同意品名下的安全库存信息
@@ -8079,23 +8079,22 @@ def planScheduling():
                 for i in range(0,len(sches)):
                     if i == stockdays-1:
                         ca = plantCalendarScheduling()
-                        ca.start = (sches[i].SchedulingTime).strftime("%Y-%m-%d")
+                        ca.start = sches[i].SchedulingTime
                         ca.title = st.MATName + "已到安全库存" + ":"+ PRName#PRName + "中的物料" +
                         ca.color = "#e67d7d"
                         db_session.add(ca)
                         break
-
-                # 存库存消耗表
-                sms = db_session.query(SchedulingMaterial).filter(SchedulingMaterial.MaterialName == st.MATName).all()
-                for s in sms:
-                    db_session.delete(s)
-                db_session.commit()
-                for n in range(1,len(daySchedulings)):
-                    schm = SchedulingMaterial()
-                    schm.SchedulingTime = daySchedulings[n-1]
-                    schm.MaterialName = st.MATName
-                    schm.Surplus_quantity = float(st.StockHouse) - float(steverydayKG*n)
-                    db_session.add(schm)
+                # # 存库存消耗表
+                # sms = db_session.query(SchedulingMaterial).filter(SchedulingMaterial.MaterialName == st.MATName).all()
+                # for s in sms:
+                #     db_session.delete(s)
+                # db_session.commit()
+                # for n in range(1,len(daySchedulings)):
+                #     schm = SchedulingMaterial()
+                #     schm.SchedulingTime = daySchedulings[n-1]
+                #     schm.MaterialName = st.MATName
+                #     schm.Surplus_quantity = float(st.StockHouse) - float(steverydayKG*n)
+                #     db_session.add(schm)
             db_session.commit()
             return 'OK'
         except Exception as e:
