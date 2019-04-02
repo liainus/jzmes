@@ -6350,36 +6350,58 @@ def addNewReadyWork():
                 Type = data['type']
                 confirm = data['confirm']
                 if (confirm == "1"):
-                    db_session.add(
-                        NewReadyWork(
-                            BatchID=BatchID,
-                            PUID=PUID,
-                            Type=Type,
-                            OperationPeople=current_user.Name,
-                            OperationDate=datetime.datetime.now()
-                        ))
-                elif confirm == "2":
                     oclass = db_session.query(NewReadyWork).filter(NewReadyWork.PUID == PUID,
                                                                    NewReadyWork.BatchID == BatchID,
                                                                    NewReadyWork.Type == Type).first()
-                    oclass.CheckedPeople = current_user.Name
-                    oclass.OperationDate = datetime.datetime.now()
-                elif confirm == "3":
-                    if Type == "52" or Type == "54" or Type == "58":
+                    if oclass == None:
                         db_session.add(
                             NewReadyWork(
                                 BatchID=BatchID,
                                 PUID=PUID,
                                 Type=Type,
-                                QAConfirmPeople=current_user.Name,
+                                OperationPeople=current_user.Name,
                                 OperationDate=datetime.datetime.now()
                             ))
+                    else:
+                        oclass.OperationPeople = oclass.OperationPeople + " " + current_user.Name
+                        oclass.OperationDate = datetime.datetime.now()
+                elif confirm == "2":
+                    oclass = db_session.query(NewReadyWork).filter(NewReadyWork.PUID == PUID,
+                                                                   NewReadyWork.BatchID == BatchID,
+                                                                   NewReadyWork.Type == Type).first()
+                    if oclass.CheckedPeople == None or oclass.CheckedPeople == "":
+                        oclass.CheckedPeople = current_user.Name
+                    else:
+                        oclass.CheckedPeople = oclass.CheckedPeople + " " + current_user.Name
+                    oclass.OperationDate = datetime.datetime.now()
+                elif confirm == "3":
+                    if Type == "52" or Type == "54" or Type == "58":
+                        oclass = db_session.query(NewReadyWork).filter(NewReadyWork.PUID == PUID,
+                                                                       NewReadyWork.BatchID == BatchID,
+                                                                       NewReadyWork.Type == Type).first()
+                        if oclass != None:
+                            if oclass.QAConfirmPeople == None or oclass.QAConfirmPeople == "":
+                                oclass.QAConfirmPeople = current_user.Name
+                            else:
+                                oclass.QAConfirmPeople = oclass.QAConfirmPeople + " " + current_user.Name
+                            oclass.OperationDate = datetime.datetime.now()
+                        else:
+                            db_session.add(
+                                NewReadyWork(
+                                    BatchID=BatchID,
+                                    PUID=PUID,
+                                    Type=Type,
+                                    QAConfirmPeople=current_user.Name,
+                                    OperationDate=datetime.datetime.now()
+                                ))
                     else:
                         oclass = db_session.query(NewReadyWork).filter(NewReadyWork.PUID == PUID,
                                                                        NewReadyWork.BatchID == BatchID,
                                                                        NewReadyWork.Type == Type).first()
-
-                        oclass.QAConfirmPeople = current_user.Name
+                        if oclass.QAConfirmPeople == None or oclass.QAConfirmPeople == "":
+                            oclass.QAConfirmPeople = current_user.Name
+                        else:
+                            oclass.QAConfirmPeople = oclass.QAConfirmPeople + " " + current_user.Name
                         oclass.OperationDate = datetime.datetime.now()
                 db_session.commit()
                 return 'OK'
