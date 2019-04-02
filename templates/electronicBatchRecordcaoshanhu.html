@@ -36,7 +36,7 @@
             padding:15px;
         }
         .selectDateTime{
-            width:100px;
+            width:120px;
         }
     </style>
     <script type="text/javascript">
@@ -534,7 +534,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td colspan="2">QA对生产现场进行检查，合格后发放《生产许可证》</td>
+                        <td colspan="2">QA对生产现场进行检查，合格后发放《清场合格证》</td>
                         <td>
                             <label class="checkbox-inline"><input type="checkbox" name="QAovercheckbox"> 合格 / 不合格</label>
                         </td>
@@ -1241,7 +1241,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td colspan="2">QA对煎煮生产现场清场进行检查，合格后发放《生产许可证》</td>
+                        <td colspan="2">QA对煎煮生产现场清场进行检查，合格后发放《清场合格证》</td>
                         <td>
                             <label class="checkbox-inline"><input type="checkbox" name="QAovercheckbox"> 是 / 否</label>
                         </td>
@@ -1331,7 +1331,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td colspan="2">QA对现场清场进行检查，合格后发放《生产许可证》</td>
+                        <td colspan="2">QA对现场清场进行检查，合格后发放《清场合格证》</td>
                         <td>
                             <label class="checkbox-inline"><input type="checkbox" name="QAstewingOvercheckbox"> 合格 / 不合格</label>
                         </td>
@@ -2054,7 +2054,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td colspan="2">QA对生产现场进行检查，合格后发放《生产许可证》</td>
+                        <td colspan="2">QA对生产现场进行检查，合格后发放《清场合格证》</td>
                         <td>
                             <label class="checkbox-inline"><input type="checkbox" name="QAovercheckbox"> 合格 / 不合格</label>
                         </td>
@@ -2501,7 +2501,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td colspan="2">QA对生产现场进行检查，合格后发放《生产许可证》</td>
+                        <td colspan="2">QA对生产现场进行检查，合格后发放《清场合格证》</td>
                         <td>
                             <label class="checkbox-inline"><input type="checkbox" name="QAovercheckbox"> 合格 / 不合格</label>
                         </td>
@@ -3038,7 +3038,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td colspan="2">QA对生产现场进行检查，合格后发放《生产许可证》</td>
+                        <td colspan="2">QA对生产现场进行检查，合格后发放《清场合格证》</td>
                         <td>
                             <label class="checkbox-inline"><input type="checkbox" name="QAovercheckbox"> 合格 / 不合格</label>
                         </td>
@@ -3389,7 +3389,13 @@
                         <td><input type="text" class="form-control batchInput" id="SGWeight7"></td>
                     </tr>
                     <tr>
-                        <td colspan="8">合计：kg</td>
+                        <td colspan="8">
+                            <div class="input-group">
+                                <div class="input-group-addon">合计：</div>
+                                <input type="text" class="form-control batchInput" id="SGWeight8">
+                                <div class="input-group-addon">kg</div>
+                            </div>
+                        </td>
                         <td>QA确认人</td>
                         <td class="middle-center">
                             {% if '82' == flag %}
@@ -3546,7 +3552,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td colspan="2">QA对生产现场进行检查，合格后发放《生产许可证》</td>
+                        <td colspan="2">QA对生产现场进行检查，合格后发放《清场合格证》</td>
                         <td>
                             <label class="checkbox-inline"><input type="checkbox" name="QAovercheckbox"> 合格 / 不合格</label>
                         </td>
@@ -4308,6 +4314,7 @@
                         SGWeight5:$("#SGWeight5").val(),
                         SGWeight6:$("#SGWeight6").val(),
                         SGWeight7:$("#SGWeight7").val(),
+                        SGWeight8:$("#SGWeight8").val(),
 
                         plastic_1_1:$("#plastic_1_1").val(),
                         plastic_1_2:$("#plastic_1_2").val(),
