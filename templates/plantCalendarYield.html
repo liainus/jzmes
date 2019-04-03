@@ -45,7 +45,7 @@
                         $("#yid").val(data.ID)
                         $("#FinishProduct").val(data.FinishProduct)
                         $("#SamplingQuantity").val(data.SamplingQuantity)
-                        $("#Yield").val(data.Yield)
+                        $("#Yield").val(data.Yield * 100)
                         $("#TotalQuantity").html(data.TotalQuantity)
                     },
                     error: function () {

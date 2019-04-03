@@ -407,6 +407,24 @@
                         </ul>
                     </li>
                 {% endif %}
+                <li>
+                    <a href="javascript:;">
+                        <span class="iconfont sider-nav-icon">&#xe64c;</span>
+                        <span class="sider-nav-title">工艺质量</span>
+                        <i class="iconfont">&#xe642;</i>
+                    </a>
+                    <ul class="sider-nav-s">
+                        <li>
+                            <a href="#" onClick="addTab('原料确认流程','/ProcessqualityRawmaterial')">原料确认流程</a>
+                        </li>
+                        <li>
+                            <a href="#" onClick="addTab('过程中确认流程','/ProcessqualityInprocess')">过程中确认流程</a>
+                        </li>
+                        <li>
+                            <a href="#" onClick="addTab('成品确认流程','/ProcessqualityFinishedProduct')">成品确认流程</a>
+                        </li>
+                    </ul>
+                </li>
                 {% if isIn(['44', '45', '46', '47', '48', '49', '50', '96'], session.get('menus')) %}
                     <li>
                         <a href="javascript:;">
