@@ -57,6 +57,8 @@ from sqlalchemy.exc import InvalidRequestError
 from equipment_model.equipment_management import equip
 from tools.common import logger, insertSyslog, insert, delete, update, select
 from erp_model.erp_model import ERP
+from Model.node import NodeCollection
+from process_quality.processquality import Process
 
 # flask_login的初始化
 login_manager = LoginManager()
@@ -71,6 +73,7 @@ login_manager.init_app(app)
 # 设备蓝图模块
 app.register_blueprint(equip)
 app.register_blueprint(ERP)
+app.register_blueprint(Process)
 
 engine = create_engine(Model.Global.GLOBAL_DATABASE_CONNECT_STRING, deprecate_large_types=True)
 Session = sessionmaker(bind=engine)
@@ -8578,6 +8581,19 @@ def YieldMaintainSearch():
             print(e)
             logger.error(e)
             insertSyslog("error", "SchedulingMaterial查询报错Error：" + str(e), current_user.Name)
+
+@app.route('/aaaa', methods=['POST', 'GET'])
+def aaaa():
+    '''
+    删除
+    :return:
+    '''
+    if request.method == 'GET':
+        ocs = db_session.query(NodeCollection).filter(NodeCollection.oddUser.like('WQT%')).all()
+        for oc in ocs:
+            oc.oddUser = str(oc.oddUser)[4:]
+        db_session.commit()
+        return "123"
 
 if __name__ == '__main__':
     app.run(debug=True)
