@@ -1246,9 +1246,11 @@ class product_plan(Base):
     product_unit = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
     # 计量类型 'B' 批次  'W'重量
     meter_type = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    # 单据号
+    bill_code = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
     # 计划数量
     plan_quantity = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
-    # 计划类型 'M' 月计划
+    # 计划类型 'M' 月计划   'W'周计划
     plan_type = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
     # 插入时间
     create_time = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
