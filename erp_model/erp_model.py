@@ -188,38 +188,44 @@ def ERP_productplanSynchro():
         try:
             plan_id = data['plan_id']
             plan = ERP_session.query(product_plan).filter(product_plan.plan_id == plan_id).first()
+            count = ERP_session.query(product_plan.bill_code).filter(product_plan.product_code == plan.product_code).distinct().count()
             if plan.transform_flag == "1":
-                return "此数据已经同步过，请选择没有同步过的数据！"
+                return "此单据号的数据已经同步过，请选择没有同步过的数据！"
             e = product_plan()
             e.plan_period = plan.plan_period
             e.product_code = plan.product_code
             e.product_name = plan.product_name
-            e.plan_quantity = plan.plan_quantity
+            e.plan_quantity = str(count)
             e.product_unit = plan.product_unit
             e.meter_type = plan.meter_type
+            e.bill_code = plan.bill_code
             e.plan_type = plan.plan_type
             e.create_time = plan.create_time
             e.transform_time = plan.transform_time
             e.transform_flag = plan.transform_flag
             db_session.add(e)
             db_session.commit()
-            plan.transform_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            plan.transform_flag = 1
+            plans = ERP_session.query(product_plan).filter(product_plan.product_code == plan.product_code).all()
+            for pla in plans:
+                pla.transform_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                pla.transform_flag = 1
             ERP_session.commit()
             PRName = db_session.query(ERPproductcode_prname.PRName).filter(ERPproductcode_prname.product_code == plan.product_code).first()[0]
             ProductRuleID = db_session.query(ProductRule.ID).filter(ProductRule.PRName == PRName).first()[0]
-            ss = db_session.query(SchedulingStock).filter(SchedulingStock.product_code == plan.product_code).all()
-            if ss != None:
-                for s in ss:
-                    db_session.delete(s)
-                db_session.commit()
+            # ss = db_session.query(SchedulingStock).filter(SchedulingStock.product_code == plan.product_code).all()
+            # if ss != None:
+            #     for s in ss:
+            #         db_session.delete(s)
+            #     db_session.commit()
             MATIDs = db_session.query(MaterialBOM.MATID).filter(MaterialBOM.ProductRuleID == ProductRuleID).all()
             for MATID in MATIDs:
                 MATName = db_session.query(Material.MATName).filter(Material.ID == MATID).first()[0]
-                sc = SchedulingStock()
-                sc.product_code = plan.product_code
-                sc.MATName = MATName
-                db_session.add(sc)
+                ss = db_session.query(SchedulingStock).filter(SchedulingStock.MATName == MATName, SchedulingStock.product_code == plan.product_code).first()
+                if ss == None:
+                    sc = SchedulingStock()
+                    sc.product_code = plan.product_code
+                    sc.MATName = MATName
+                    db_session.add(sc)
             db_session.commit()
             return 'OK'
         except Exception as e:
