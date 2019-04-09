@@ -3,8 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <title>原料确认流程</title>
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/css/step.css">
+    <link href="../static/css/base.css" rel="stylesheet">
+	<link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
+	<link href="../static/css/basic_info.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
+	<link href="../static/js/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
+    <link href="../static/css/datagridpanel_customer.css" rel="stylesheet">
+    <link href="../static/css/dialogpanel.css" type="text/css" rel="stylesheet">
+    <link href="../static/css/datagrid_customer.css" type="text/css" rel="stylesheet">
+    <script type="text/javascript" src="../static/js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
+    <script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootbox.min.js"></script>
+    <script type="text/javascript" src="../static/js/bsStep.js"></script>
+    <script type="text/javascript" src="../static/js/less.js"></script>
 </head>
 <body>
-
+    <div class="pad-per">
+        <div class="col-md-12">
+            <ul class="nav nav-pills nav-justified step step-progress" data-step="1">
+                <li>
+                    <a href="#operation" data-toggle="tab">操作人确认</a>
+                </li>
+                <li>
+                    <a href="#check" data-toggle="tab">复核人确认</a>
+                </li>
+                <li>
+                    <a href="#audit" data-toggle="tab">审核</a>
+                </li>
+            </ul>
+            <div id="myTabContent" class="tab-content">
+                <div class="tab-pane fade in active" id="operation">
+                    操作
+                </div>
+                <div class="tab-pane fade" id="check">
+                    复核
+                </div>
+                <div class="tab-pane fade" id="audit">
+                    审核
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $(function() {
+            bsStep();
+            {#$(".step li").on('click',function(){#}
+            {#    if($(this).find('a').html() == "操作人确认"){#}
+            {#        bsStep(1);#}
+            {#    }else if($(this).find('a').html() == "复核人确认"){#}
+            {#        bsStep(2);#}
+            {#    }else if($(this).find('a').html() == "审核"){#}
+            {#        bsStep(3);#}
+            {#    }#}
+            {# })#}
+        })
+    </script>
 </body>
 </html>
