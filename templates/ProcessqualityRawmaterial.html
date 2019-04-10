@@ -17,9 +17,9 @@
     <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
     <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
     <script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
+    <script type="text/javascript" src="../static/js/bsStep.js"></script>
     <script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="../static/js/bootbox.min.js"></script>
-    <script type="text/javascript" src="../static/js/bsStep.js"></script>
     <script type="text/javascript" src="../static/js/less.js"></script>
 </head>
 <body>
@@ -52,15 +52,18 @@
     <script>
         $(function() {
             bsStep();
-            {#$(".step li").on('click',function(){#}
-            {#    if($(this).find('a').html() == "操作人确认"){#}
-            {#        bsStep(1);#}
-            {#    }else if($(this).find('a').html() == "复核人确认"){#}
-            {#        bsStep(2);#}
-            {#    }else if($(this).find('a').html() == "审核"){#}
-            {#        bsStep(3);#}
-            {#    }#}
-            {# })#}
+            $(".step li a").on('click',function(e){
+                if($(this).html() == "操作人确认"){
+                    bsStep(1);
+                    $("#operation").addClass("active in").siblings().removeClass("active in")
+                }else if($(this).html() == "复核人确认"){
+                    bsStep(2);
+                    $("#check").addClass("active in").siblings().removeClass("active in")
+                }else if($(this).html() == "审核"){
+                    bsStep(3);
+                    $("#audit").addClass("active in").siblings().removeClass("active in")
+                }
+             })
         })
     </script>
 </body>
