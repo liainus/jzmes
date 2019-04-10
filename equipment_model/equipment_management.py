@@ -1746,105 +1746,58 @@ def EquipmentManualIndex():
 
         return render_template('EquipmentManual.html')
 
-@equip.route('/EquipmentManagementManual/ManualUpload', methods=['GET', 'POST'])
+# post方法：上传文件的
+@equip.route('/EquipmentManagementManual/ManualUpload', methods=['post'])
 def ManualUpload():
-    """
-    Upload the instructions for Equipment.
-    url: /EquipmentManagementManual/ManualUpload
-    request method: POST
-    params: Word document
-    :return: Json-data
-    """
-
-    if request.method == "POST":
-        try:
-            # first、obtain the word document from front-end transmissed
-            file = request.files.get('file')
-            if not file:
-                return json.dumps("error！", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
-
-            # second、save the word document
-            file_dir = os.getcwd() + r"\files"
-            if not file_dir:
-                return json.dumps("error！", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
-            file.save(os.path.join(file_dir, file.filename))
-
-            # third、Write file information to the database
-            data_dict = {"Name": file.filename,
-                         "Path": os.path.join(file_dir, file.filename),
-                         "Author": current_user.Name,
-                         "UploadTime": datetime.datetime.now()}
-            message = insert(EquipmentManagementManua, data_dict)
-
-            # forth、return json-data to front-end
-            return json.dumps(message, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
-        except Exception as e:
-            print(e)
-            logger.error(e)
-            insertSyslog("error", "路由：/EquipmentManagementManual/ManualUpload，文件上传Error：" + str(e), current_user.Name)
-
-@equip.route('/EquipmentManagementManual/ManualDownload',)
-def ManualDownload():
-    """
-    Download the instructions for Equipment.
-    url: /EquipmentManagementManual/ManualDownload
-    request method: GET
-    params: Word document
-    :return: the path of document
-    """
-    if request.method == "GET":
-        try:
-            recv_data = request.values.to_dict()
-            filename = recv_data.get('Name')
-            file_path = db_session.query(EquipmentManagementManua.Path).filter_by(Name=filename).first()[0]
-            if file_path:
-                return json.dumps(file_path, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
-            return 'NO'
-        except Exception as e:
-            print(e)
-            logger.error(e)
-            insertSyslog("error", "路由：/EquipmentManagementManual/ManualDownload，返回文件路径Error：" + str(e), current_user.Name)
-
-
-
-
-@equip.route('/EquipmentManagementManual/ManualShow')
+    fname = request.files.get('file')  #获取上传的文件
+    if fname:
+        new_fname = r'equipment_model/upload/' + fname.filename
+        fname.save(new_fname)  #保存文件到指定路径
+        data_dict = {"Name": fname.filename,
+                     "Path": new_fname,
+                     "Author": current_user.Name,
+                     "UploadTime": datetime.datetime.now()}
+        message = insert(EquipmentManagementManua, data_dict)
+        return 'OK'
+    else:
+        return '{"msg": "请上传文件！"}'
+# get方法：查询当前路径下的所有文件
+@equip.route('/EquipmentManagementManual/ManualShow', methods=['get'])
 def ManualShow():
-    """
-    Display documents in tables
-    url: /EquipmentManagementManual/ManualShow
-    request method: GET
-    params：filename
-    :return: info of word document
-    """
-    if request.method == "GET":
-        try:
-            recv_data = request.values.to_dict()
-            filename = recv_data.get('Name')
+    data = request.values
+    try:
+        json_str = json.dumps(data.to_dict())
+        if len(json_str) > 10:
+            pages = int(data['page'])
+            rowsnumber = int(data['rows'])
+            inipage = (pages - 1) * rowsnumber + 0
+            endpage = (pages - 1) * rowsnumber + rowsnumber
+            filename = data.get('Name')
             if not filename:
-                if len(recv_data) > 0:
-                    pages = int(recv_data['page'])
-                    rowsnumber = int(recv_data['rows'])
-                    inipage = (pages - 1) * rowsnumber + 0
-                    endpage = (pages - 1) * rowsnumber + rowsnumber
-                    total = db_session.query(EquipmentManagementManua.ID).count()
-                    if total > 0:
-                        oclass = db_session.query(EquipmentManagementManua).all()[inipage:endpage]
-                        jsondata = json.dumps(oclass, cls=Model.BSFramwork.AlchemyEncoder,ensure_ascii=False)
-                        Data = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsondata + "}"
-                        return Data
-                    return '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + '' + "}"
-
+                total = db_session.query(EquipmentManagementManua).count()
+                oclass = db_session.query(EquipmentManagementManua).all()[inipage:endpage]
             else:
-                all = db_session.query(EquipmentManagementManua).filter(EquipmentManagementManua.Name.like(filename)).all()
-                total = Counter(all)
-                jsondata = json.dumps(all, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
-                jsondata = '{"total"' + ":" + str(total.__len__()) + ',"rows"' + ":\n" + jsondata + "}"
-                return jsondata
-        except Exception as e:
-            print(e)
-            logger.error(e)
-            insertSyslog("error", "路由：/EquipmentManagementManual/ManualShow，说明书信息获取Error：" + str(e), current_user.Name)
+                total = db_session.query(EquipmentManagementManua).filter(EquipmentManagementManua.Name.like("%" + filename + "%")).count()
+                oclass = db_session.query(EquipmentManagementManua).filter(EquipmentManagementManua.Name.like("%" + filename + "%")).all()[
+                              inipage:endpage]
+            jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
+            jsonoclass = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
+            return jsonoclass
+    except Exception as e:
+        print(e)
+        logger.error(e)
+        insertSyslog("error", "路由：/EquipmentManagementManual/ManualShow，说明书信息获取Error：" + str(e), current_user.Name)
+dirpath = os.path.join(equip.root_path,'upload')
+#get方法：指定目录下载文件
+@equip.route('/EquipmentManagementManual/ManualDownload', methods=['get'])
+def ManualDownloadaa():
+    fname = request.values.get('Name', '')
+    if os.path.isfile(os.path.join(dirpath, fname)):
+        response = make_response(send_from_directory(dirpath, fname, as_attachment=True))
+        response.headers["Content-Disposition"] = "attachment; filename={}".format(fname.encode().decode('latin-1'))
+        return response
+    else:
+        return '{"msg":"参数不正确"}'
 
 @equip.route('/EquipmentManagementManual/ManualDelete', methods=['GET', 'POST'])
 def ManualDelete():
@@ -1855,16 +1808,31 @@ def ManualDelete():
     params：filename
     :return: json-data
     """
-    if request.method == "POST":
+    if request.method == 'POST':
+        data = request.values  # 返回请求中的参数和form
         try:
-            recv_data = request.values
-            delete(EquipmentManagementManua,recv_data)
-            return 'OK'
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
+                for key in jsonnumber:
+                    # for subkey in list(key):
+                    id = int(key)
+                    try:
+                        oclass = db_session.query(EquipmentManagementManua).filter(
+                            EquipmentManagementManua.ID == id).first()
+                        delete(EquipmentManagementManua, data)
+                        os.remove(oclass.Path)
+                    except Exception as ee:
+                        db_session.rollback()
+                        print(ee)
+                        logger.error(ee)
+                        return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
+                                          ensure_ascii=False)
+                return 'OK'
         except Exception as e:
             print(e)
             logger.error(e)
             insertSyslog("error", "路由：/EquipmentManagementManual/ManualDelete，说明书删除Error：" + str(e), current_user.Name)
-
 
 
 #设备保养标准查询
