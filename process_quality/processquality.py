@@ -141,9 +141,9 @@ def ProcessQualityPDFDelete():
                     # for subkey in list(key):
                     id = int(key)
                     try:
-                        oclass = db_session.query(EquipmentManagementManua).filter(
-                            EquipmentManagementManua.ID == id).first()
-                        delete(EquipmentManagementManua, data)
+                        oclass = db_session.query(ProcessQualityPDF).filter(
+                            ProcessQualityPDF.ID == id).first()
+                        delete(ProcessQualityPDF, data)
                         os.remove(oclass.Path)
                     except Exception as ee:
                         db_session.rollback()
