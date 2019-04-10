@@ -1347,6 +1347,44 @@ class YieldMaintain(Base):
     # 药材总投料量
     TotalQuantity = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
+# 工艺质量pdf保存表
+class ProcessQualityPDF(Base):
+    __tablename__ = "ProcessQualityPDF"
+    # ID:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=True)
+    # PDF名称
+    Name = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+    # 存储路径
+    Path = Column(Unicode(100), primary_key=False, autoincrement=False, nullable=True)
+    # 上传人
+    Author = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+    # 上传时间
+    UploadTime = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+
+# 工艺质量确认流程表
+class ProcessQuality(Base):
+    __tablename__ = 'ProcessQuality'
+    # id:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+    # 批次号:
+    BatchID = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 操作人:
+    OperationPeople = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
+
+    # 复核人:
+    CheckedPeople = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
+
+    # 审核人:
+    Reviewer = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
+
+    # 描述:
+    Description = Column(String(60), primary_key=False, autoincrement=False, nullable=True)
+
+    # 操作时间:
+    OperationDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+
 # 生成表单的执行语句
 Base.metadata.create_all(engine)
 

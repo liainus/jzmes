@@ -188,7 +188,12 @@ def ERP_productplanSynchro():
         try:
             plan_id = data['plan_id']
             plan = ERP_session.query(product_plan).filter(product_plan.plan_id == plan_id).first()
-            count = ERP_session.query(product_plan.bill_code).filter(product_plan.product_code == plan.product_code).distinct().count()
+            # plans = ERP_session.query(product_plan).filter(product_plan.product_code == plan.product_code).all()
+            # for pla in plans:
+            #     pla.transform_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            #     pla.transform_flag = '0'
+            # ERP_session.commit()
+            count = ERP_session.query(product_plan.bill_code).distinct().filter(product_plan.product_code == plan.product_code, product_plan.transform_flag == '0').count()
             if plan.transform_flag == "1":
                 return "此单据号的数据已经同步过，请选择没有同步过的数据！"
             e = product_plan()
@@ -205,10 +210,10 @@ def ERP_productplanSynchro():
             e.transform_flag = plan.transform_flag
             db_session.add(e)
             db_session.commit()
-            plans = ERP_session.query(product_plan).filter(product_plan.product_code == plan.product_code).all()
+            plans = ERP_session.query(product_plan).filter(product_plan.product_code == plan.product_code, product_plan.transform_flag == '0').all()
             for pla in plans:
                 pla.transform_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                pla.transform_flag = 1
+                pla.transform_flag = '1'
             ERP_session.commit()
             PRName = db_session.query(ERPproductcode_prname.PRName).filter(ERPproductcode_prname.product_code == plan.product_code).first()[0]
             ProductRuleID = db_session.query(ProductRule.ID).filter(ProductRule.PRName == PRName).first()[0]
