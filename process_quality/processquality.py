@@ -27,7 +27,7 @@ from Model.system import Role, Organization, User, Menu, Role_Menu, BatchMaterie
 from sqlalchemy import create_engine, Column, ForeignKey, Table, Integer, String, and_, or_, desc,extract
 from io import StringIO
 import calendar
-from Model.system import CenterCost, ERPproductcode_prname, SchedulingStock, ProcessQualityPDF
+from Model.system import CenterCost, ERPproductcode_prname, SchedulingStock, ProcessQualityPDF, ProcessQuality
 from tools.common import logger,insertSyslog,insert,delete,update,select
 import os
 import openpyxl
@@ -66,12 +66,41 @@ def ProcessqualityFinishedProduct():
     '''
     return render_template('ProcessqualityFinishedProduct.html')
 
-@Process.route('/ProcessqualityConfirm')
+@Process.route('/process_quality/ProcessqualityConfirm', methods=['GET', 'POST'])
 def ProcessqualityConfirm():
     '''
     工艺质量操作人确认流程
     :return:
     '''
+    if request.method == 'POST':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            data_dict = {"BatchID": data['BatchID'],
+                         "content": data['content'],
+                         "OperationPeople": current_user.Name,
+                         "Description": data['Description'],
+                         "OperationDate":datetime.datetime.now()}
+            return insert(ProcessQuality, data_dict)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "路由：/process_quality/ProcessqualityConfirm，工艺质量操作人确认流程Error：" + str(e), current_user.Name)
+
+
+@Process.route('/process_quality/ProcessqualityCheck', methods=['GET', 'POST'])
+def ProcessqualityCheck():
+    '''
+    工艺质量复核人确认流程
+    :return:
+    '''
+
+@Process.route('/process_quality/ProcessqualityReview', methods=['GET', 'POST'])
+def ProcessqualityReview():
+    '''
+    工艺质量审核人确认流程
+    :return:
+    '''
+
 # post方法：上传文件的
 @Process.route('/process_quality/ProcessQualityPDFUpload', methods=['post'])
 def ProcessQualityPDFUpload():

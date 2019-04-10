@@ -1370,6 +1370,9 @@ class ProcessQuality(Base):
     # 批次号:
     BatchID = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
+    # 含量
+    content = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
+
     # 操作人:
     OperationPeople = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
 
