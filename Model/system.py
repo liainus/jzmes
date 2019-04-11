@@ -1185,11 +1185,11 @@ class EquipmentManagementManua(Base):
     # ID:
     ID = Column(Integer, primary_key=True, autoincrement=True, nullable=True)
     # 说明书名称
-    Name = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+    Name = Column(Unicode(500), primary_key=False, autoincrement=False, nullable=True)
     # 存储路径
-    Path = Column(Unicode(100), primary_key=False, autoincrement=False, nullable=True)
+    Path = Column(Unicode(500), primary_key=False, autoincrement=False, nullable=True)
     # 作者
-    Author = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+    Author = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
     # 上传时间
     UploadTime = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
 

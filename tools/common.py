@@ -54,6 +54,7 @@ def insert(tablename, data):
                 db_session.commit()
                 return 'OK'
             except Exception as e:
+                print(e)
                 db_session.rollback()
                 logger.error(e)
                 insertSyslog("error", "%s数据添加报错："%tablename + str(e), current_user.Name)
