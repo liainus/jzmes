@@ -106,7 +106,7 @@ def ProcessqualityReview():
 def ProcessQualityPDFUpload():
     fname = request.files.get('file')  #获取上传的文件
     if fname:
-        new_fname = r'process_quality/upload/' + fname.filename
+        new_fname = r'static/generic/web/' + fname.filename
         fname.save(new_fname)  #保存文件到指定路径
         data_dict = {"Name": fname.filename,
                      "Path": new_fname,
@@ -142,7 +142,7 @@ def ProcessQualityPDFSearch():
         print(e)
         logger.error(e)
         insertSyslog("error", "路由：/process_quality/ProcessQualityPDFSearch，PDF获取Error：" + str(e), current_user.Name)
-dirpath = os.path.join(Process.root_path,'upload')
+dirpath = os.path.join(str(Process.root_path)[0:-15],'static\generic\web')
 #get方法：指定目录下载文件
 @Process.route('/process_quality/ProcessQualityPDFDownload', methods=['get'])
 def ProcessQualityPDFDownload():
@@ -153,6 +153,28 @@ def ProcessQualityPDFDownload():
         return response
     else:
         return '{"msg":"参数不正确"}'
+# #文件预览
+# basedir = os.path.abspath(os.path.dirname(__file__))
+# @Process.route('/process_quality/preview', methods=['get'])
+# def preview():
+#     print(dirpath)
+#     filename = request.values.get('Name', '')
+#     file_dir = os.path.join(dirpath, filename)
+#     if request.method == 'GET':
+#         if filename is None:
+#             pass
+#         else:
+#             # response = make_response(send_from_directory(dirpath, filename, as_attachment=True))
+#             # response.headers["Content-Disposition"] = "attachment; filename={}".format(filename.encode().decode('latin-1'))
+#             image_data = open(file_dir, "rb").read()
+#             response = make_response(image_data)
+#             response.headers["Content-Disposition"] = "attachment; filename={}".format(
+#                 filename.encode().decode('utf-8'))
+#             response.headers['Content-Type'] = 'image/png'
+#             return response
+#         return render_template('viewer.html')
+#     else:
+#         pass
 
 @Process.route('/process_quality/ProcessQualityPDFDelete', methods=['GET', 'POST'])
 def ProcessQualityPDFDelete():

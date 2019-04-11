@@ -1353,9 +1353,9 @@ class ProcessQualityPDF(Base):
     # ID:
     ID = Column(Integer, primary_key=True, autoincrement=True, nullable=True)
     # PDF名称
-    Name = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+    Name = Column(Unicode(500), primary_key=False, autoincrement=False, nullable=True)
     # 存储路径
-    Path = Column(Unicode(100), primary_key=False, autoincrement=False, nullable=True)
+    Path = Column(Unicode(500), primary_key=False, autoincrement=False, nullable=True)
     # 上传人
     Author = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
     # 上传时间
