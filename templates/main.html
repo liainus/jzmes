@@ -153,52 +153,6 @@
                         </li>
                     </ul>
                 </li>
-{#                {% if isIn(['17', '18', '19', '20', '21', '22', '23'], session.get('menus')) %}#}
-{#                    <li>#}
-{#                        <a href="javascript:;">#}
-{#                            <span class="iconfont sider-nav-icon">&#xe6ea;</span>#}
-{#                            <span class="sider-nav-title">生产建模</span>#}
-{#                            <i class="iconfont">&#xe642;</i>#}
-{#                        </a>#}
-{#                        <ul class="sider-nav-s">#}
-{#                            {% if '17' in session.get('menus') %}#}
-{#                                <li>#}
-{#                                    <a href="#" onclick="addTab('企业建模','Enterprise')">企业建模</a>#}
-{#                                </li>#}
-{#                            {% endif %}#}
-{#                            {% if '18' in session.get('menus') %}#}
-{#                                <li>#}
-{#                                    <a href="#" onclick="addTab('工厂建模','Factory')">工厂建模</a>#}
-{#                                </li>#}
-{#                            {% endif %}#}
-{#                            {% if '19' in session.get('menus') %}#}
-{#                                <li>#}
-{#                                    <a href="#" onclick="addTab('区域建模','Area')">区域建模</a>#}
-{#                                </li>#}
-{#                            {% endif %}#}
-{#                            {% if '20' in session.get('menus') %}#}
-{#                                <li>#}
-{#                                    <a href="#" onclick="addTab('生产线建模','ProductLine')">生产线建模</a>#}
-{#                                </li>#}
-{#                            {% endif %}#}
-{#                            {% if '21' in session.get('menus') %}#}
-{#                                <li>#}
-{#                                    <a href="#" onclick="addTab('工艺段建模','ProcessUnit')">工艺段建模</a>#}
-{#                                </li>#}
-{#                            {% endif %}#}
-{#                            {% if '22' in session.get('menus') %}#}
-{#                                <li>#}
-{#                                    <a href="#" onclick="addTab('设备建模','Pequipment')">设备建模</a>#}
-{#                                </li>#}
-{#                            {% endif %}#}
-{#                            {% if '23' in session.get('menus') %}#}
-{#                                <li>#}
-{#                                    <a href="#" onclick="addTab('单位维护','Unit')">单位维护</a>#}
-{#                                </li>#}
-{#                            {% endif %}#}
-{#                        </ul>#}
-{#                    </li>#}
-{#                {% endif %}#}
                 {% if isIn(['25', '26', '27', '28', '29', '30'], session.get('menus')) %}
                     <li>
                         <a href="javascript:;">
@@ -212,36 +166,6 @@
                                     <a href="#" onclick="addTab('制药计划管理','/ZYPlanManage')">制药计划管理</a>
                                 </li>
                             {% endif %}
-{#                            {% if '25' in session.get('menus') %}#}
-{#                                <li>#}
-{#                                    <a href="#" onclick="addTab('计划执行进度','/PlanExecutionProgress')">计划执行进度</a>#}
-{#                                </li>#}
-{#                            {% endif %}#}
-{#                            {% if '26' in session.get('menus') %}#}
-{#                                <li>#}
-{#                                    <a href="#" onclick="addTab('生产计划管理','/ZYPlanGuid/planmanager')">生产计划管理</a>#}
-{#                                </li>#}
-{#                            {% endif %}#}
-{#                            {% if '25' in session.get('menus') %}#}
-{#                                <li>#}
-{#                                    <a href="#" onclick="addTab('生产计划审核','/ZYPlanGuid/checkplanmanager')">生产计划审核</a>#}
-{#                                </li>#}
-{#                            {% endif %}#}
-{#                            {% if '25' in session.get('menus') %}#}
-{#                                <li>#}
-{#                                    <a href="#" onclick="addTab('中控计划确认','/MiddleControl/PlanConfirm')">中控计划确认</a>#}
-{#                                </li>#}
-{#                            {% endif %}#}
-{#                            {% if '25' in session.get('menus') %}#}
-{#                                <li>#}
-{#                                    <a href="#" onclick="addTab('中控计划复核','/MiddleControl/PlanConfirmChecked')">中控计划复核</a>#}
-{#                                </li>#}
-{#                            {% endif %}#}
-{#                            {% if '25' in session.get('menus') %}#}
-{#                                <li>#}
-{#                                    <a href="#" onclick="addTab('QA计划确认','QAPlanConfirm')">QA计划确认</a>#}
-{#                                </li>#}
-{#                            {% endif %}#}
                             {% if '26' in session.get('menus') %}
                                 <li>
                                     <a href="#" onclick="addTab('计划明细','/ZYPlan')">计划明细</a>
@@ -252,61 +176,11 @@
                                     <a href="#" onclick="addTab('制药任务','ZYTask')">制药任务</a>
                                 </li>
                             {% endif %}
-{#                            {% if '83' in session.get('menus') %}#}
-{#                                <li>#}
-{#                                    <a href="#" onclick="addTab('任务确认','/taskConfirm ')">任务确认</a>#}
-{#                                </li>#}
-{#                            {% endif %}#}
                             {% if '28' in session.get('menus') %}
                                 <li>
                                     <a href="#" onclick="addTab('调度日计划','SchedulePlan')">调度日计划</a>
                                 </li>
                             {% endif %}
-{#                            {% if '29' in session.get('menus') %}#}
-{#                                <li>#}
-{#                                    <a href="#" onclick="addTab('制药计划物料','ZYPlanMaterial')">制药计划物料</a>#}
-{#                                </li>#}
-{#                            {% endif %}#}
-{#                            {% if '29' in session.get('menus') %}#}
-{#                                <li>#}
-{#                                    <a href="#" onclick="addTab('批次管理','batchmanager')">批次管理</a>#}
-{#                                </li>#}
-{#                            {% endif %}#}
-{#                            {% if '30' in session.get('menus') %}#}
-{#                                <li>#}
-{#                                    <a href="#" onclick="addTab('查询全天计划','PlanManager')">查询全天计划</a>#}
-{#                                </li>#}
-{#                            {% endif %}#}
-{#                            {% if '32' in session.get('menus') %}#}
-{#                                <li>#}
-{#                                    <a href="#" onclick="addTab('出入库操作','')">出入库操作</a>#}
-{#                                </li>#}
-{#                            {% endif %}#}
-{#                            {% if '33' in session.get('menus') %}#}
-{#                                <li>#}
-{#                                    <a href="#">信息维护</a>#}
-{#                                </li>#}
-{#                            {% endif %}#}
-{#                            {% if '34' in session.get('menus') %}#}
-{#                                <li>#}
-{#                                    <a href="#">作业任务排程</a>#}
-{#                                </li>#}
-{#                            {% endif %}#}
-{#                            {% if '35' in session.get('menus') %}#}
-{#                                <li>#}
-{#                                    <a href="#">作业任务调度</a>#}
-{#                                </li>#}
-{#                            {% endif %}#}
-{#                            {% if '36' in session.get('menus') %}#}
-{#                                <li>#}
-{#                                    <a href="#">作业任务执行</a>#}
-{#                                </li>#}
-{#                            {% endif %}#}
-{#                            {% if '37' in session.get['menus'] %}#}
-{#                                <li>#}
-{#                                    <a href="#">生产路径管理</a>#}
-{#                                </li>#}
-{#                            {% endif %}#}
                         </ul>
                     </li>
                 {% endif %}
@@ -348,16 +222,6 @@
                                     <a href="#" onClick="addTab('工艺路线','ProductUnitRoute')">工艺路线</a>
                                 </li>
                             {% endif %}
-{#                            {% if '45' in session.get('menus') %}#}
-{#                                <li>#}
-{#                                    <a href="#">配方管理</a>#}
-{#                                </li>#}
-{#                            {% endif %}#}
-{#                            {% if '46' in session.get('menus') %}#}
-{#                                <li>#}
-{#                                    <a href="#">配方下达</a>#}
-{#                                </li>#}
-{#                            {% endif %}#}
                         </ul>
                     </li>
                 {% endif %}
@@ -384,26 +248,6 @@
                                     <a href="#" onClick="addTab('批物料追溯','/ProductDataManage/BatchMaterialTracing')">批物料追溯</a>
                                 </li>
                             {% endif %}
-{#                            {% if '41' in session.get('menus') %}#}
-{#                                <li>#}
-{#                                    <a href="#">作业数据管理</a>#}
-{#                                </li>#}
-{#                            {% endif %}#}
-{#                            {% if '42' in session.get('menus') %}#}
-{#                                <li>#}
-{#                                    <a href="#">产量数据管理</a>#}
-{#                                </li>#}
-{#                            {% endif %}#}
-{#                            {% if '52' in session.get('menus') %}#}
-{#                                <li>#}
-{#                                    <a href="#">原/辅料数据管理</a>#}
-{#                                </li>#}
-{#                            {% endif %}#}
-{#                            {% if '53' in session.get('menus') %}#}
-{#                                <li>#}
-{#                                    <a href="#">批次故障统计</a>#}
-{#                                </li>#}
-{#                            {% endif %}#}
                         </ul>
                     </li>
                 {% endif %}
@@ -443,36 +287,6 @@
                                     <a href="#" onClick="addTab('投入产出数据','/QualityControl/YieldCompare.html')">投入产出数据</a>
                                 </li>
                             {% endif %}
-{#                            {% if '45' in session.get('menus') %}#}
-{#                                <li>#}
-{#                                    <a href="#" onClick="addTab('离散数据录入','/DiscreteDataEntry')">离散数据录入</a>#}
-{#                                </li>#}
-{#                            {% endif %}#}
-{#                            {% if '46' in session.get('menus') %}#}
-{#                                <li>#}
-{#                                    <a href="#" onClick="addTab('统计-数据点','/StatisticDataSpot')">统计-数据点</a>#}
-{#                                </li>#}
-{#                            {% endif %}#}
-{#                            {% if '47' in session.get('menus') %}#}
-{#                                <li>#}
-{#                                    <a href="#" onClick="addTab('质量标准管理','/QualityStandardManagement')">质量标准管理</a>#}
-{#                                </li>#}
-{#                            {% endif %}#}
-{#                            {% if '48' in session.get('menus') %}#}
-{#                                <li>#}
-{#                                    <a href="#">质量统计分析</a>#}
-{#                                </li>#}
-{#                            {% endif %}#}
-{#                            {% if '49' in session.get('menus') %}#}
-{#                                <li>#}
-{#                                    <a href="#">质量考核统计过程控制</a>#}
-{#                                </li>#}
-{#                            {% endif %}#}
-{#                            {% if '50' in session.get('menus') %}#}
-{#                                <li>#}
-{#                                    <a href="#">SPC控制</a>#}
-{#                                </li>#}
-{#                            {% endif %}#}
                         </ul>
                     </li>
                 {% endif %}
@@ -529,16 +343,6 @@
                                     <a href="#" onclick="addTab('设备说明书管理','/EquipmentManagementManual/ManualIndex')">设备说明书管理</a>
                                 </li>
                             {% endif %}
-{#                            {% if '57' in session.get('menus') %}#}
-{#                                <li>#}
-{#                                    <a href="#">原/设备维护记录</a>#}
-{#                                </li>#}
-{#                            {% endif %}#}
-{#                            {% if '58' in session.get('menus') %}#}
-{#                                <li>#}
-{#                                    <a href="#">设备润滑管理</a>#}
-{#                                </li>#}
-{#                            {% endif %}#}
                         </ul>
                     </li>
                 {% endif %}
@@ -560,76 +364,29 @@
                                     <a href="#" onClick="addTab('物料信息','Material')">物料信息</a>
                                 </li>
                             {% endif %}
-{#                            {% if '62' in session.get('menus') %}#}
-{#                                <li>#}
-{#                                    <a href="#">物料投料管理</a>#}
-{#                                </li>#}
-{#                            {% endif %}#}
-{#                            {% if '63' in session.get('menus') %}#}
-{#                                <li>#}
-{#                                    <a href="#">在制品管理</a>#}
-{#                                </li>#}
-{#                            {% endif %}#}
-                            {% if '64' in session.get('menus') %}
-                                <li>
-                                    <a href="#">物料追踪</a>
-                                </li>
-                            {% endif %}
-                            {% if '65' in session.get['menus'] %}
-                                <li>
-                                    <a href="#">物料追溯</a>
-                                </li>
-                            {% endif %}
                         </ul>
                     </li>
                 {% endif %}
                 {% if isIn(['67', '68'], session.get('menus')) %}
                     <li>
-                        <a href="javascript:;">
+                        <a href="http://192.168.10.215:233/home/overview" target="_blank">
                             <span class="iconfont sider-nav-icon">&#xe65f;</span>
-                            <span class="sider-nav-title">能耗管理</span>
-                            <i class="iconfont">&#xe642;</i>
+                            <span class="sider-nav-title">能源智能管理系统</span>
                         </a>
-                        <ul class="sider-nav-s">
-                            {% if '67' in session.get('menus') %}
-                                <li>
-                                    <a href="#">能耗数据采集配置</a>
-                                </li>
-                            {% endif %}
-                            {% if '68' in session.get('menus') %}
-                                <li>
-                                    <a href="#">能耗数据分析</a>
-                                </li>
-                            {% endif %}
-                        </ul>
-                    </li>
-                {% endif %}
-{#                {% if isIn(['70', '71', '72'], session.get('menus')) %}#}
-{#                    <li>#}
-{#                        <a href="javascript:;">#}
-{#                            <span class="iconfont sider-nav-icon">&#xe6ec;</span>#}
-{#                            <span class="sider-nav-title">文档管理</span>#}
-{#                            <i class="iconfont">&#xe642;</i>#}
-{#                        </a>#}
 {#                        <ul class="sider-nav-s">#}
-{#                            {% if '70' in session.get('menus') %}#}
+{#                            {% if '67' in session.get('menus') %}#}
 {#                                <li>#}
-{#                                    <a href="#" onclick="addTab('文档分类维护','/document_classManager')">文档分类维护</a>#}
+{#                                    <a href="#">能耗数据采集配置</a>#}
 {#                                </li>#}
 {#                            {% endif %}#}
-{#                            {% if '71' in session.get('menus') %}#}
+{#                            {% if '68' in session.get('menus') %}#}
 {#                                <li>#}
-{#                                    <a href="#" onclick="addTab('文档管理','/document_Manager')">文档管理</a>#}
-{#                                </li>#}
-{#                            {% endif %}#}
-{#                            {% if '72' in session.get('menus') %}#}
-{#                                <li>#}
-{#                                    <a href="#" onclick="addTab('文档查询','/document_query')">文档查询</a>#}
+{#                                    <a href="#">能耗数据分析</a>#}
 {#                                </li>#}
 {#                            {% endif %}#}
 {#                        </ul>#}
-{#                    </li>#}
-{#                {% endif %}#}
+                    </li>
+                {% endif %}
 {#                {% if isIn(['74', '75', '76', '77', '78', '79', '80', '81'], session.get('menus')) %}#}
 {#                    <li>#}
 {#                        <a href="javascript:;">#}

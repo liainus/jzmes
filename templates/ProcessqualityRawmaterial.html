@@ -21,9 +21,17 @@
     <script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="../static/js/bootbox.min.js"></script>
     <script type="text/javascript" src="../static/js/less.js"></script>
-    <script type="text/javascript" src="../static/js/pdfobject.js"></script>
+    <script type="text/javascript" src="../static/generic/build/pdf.js"></script>
 </head>
 <body>
+    <div class="modal" id="loadingModal" data-backdrop="static" data-keyboard="false">
+        <div style="width: 200px;height:20px; z-index: 20000; position: absolute; text-align: center; left: 50%; top: 50%;margin-left:-100px;margin-top:-10px">
+            <div class="progress progress-striped active" style="margin-bottom: 0;">
+                <div class="progress-bar" style="width: 100%;"></div>
+            </div>
+            <h5>正在请求中...</h5>
+        </div>
+    </div>
     <div class="pad-per">
         <div class="col-md-12">
             <ul class="nav nav-pills nav-justified step step-progress" data-step="1">
@@ -134,7 +142,12 @@
                         cache:false,
                         processData: false,// 告诉jQuery不要去处理发送的数据
                         contentType: false,// 告诉jQuery不要去设置Content-Type请求头
+                        beforeSend:function(){
+                            $("#loadingModal").modal("show");
+                            $("#fileClassDialog").dialog('close');
+                        },
                         success:function(data){
+                            $("#loadingModal").modal('hide');
                             if(data = "OK"){
                                 $.messager.show({
                                     title: '提示',
@@ -146,8 +159,7 @@
                                         bottom: ''
                                     }
                                 });
-                                $("#fileClassDialog").dialog('close');
-                                $('#tab').datagrid('reload');
+                                $('#tab').datagrid('load');
                             }else{
                                 $.messager.alert('上传失败！', data, 'warning');
                             }
@@ -164,7 +176,7 @@
                     } else if (rows.length == 1) {
                         var row = $('#tab').datagrid('getSelected');
                         if (row) {
-                            window.open('../static/generic/web/viewer.html?file=http://http://192.168.100.150/process_quality/upload/' + row.Name)
+                            window.open('../static/generic/web/viewer.html?file=' + encodeURIComponent(row.Name))
                         };
                     } else if (rows.length == 0) {
                         $.messager.alert('警告操作！', '请至少选定一条数据进行编辑！', 'warning');
@@ -185,7 +197,11 @@
                                     url: '/process_quality/ProcessQualityPDFDelete',
                                     method: 'POST',
                                     data: a,
+                                    beforeSend:function(){
+                                        $("#loadingModal").modal("show");
+                                    },
                                     success: function (data) {
+                                        $("#loadingModal").modal('hide');
                                         if(data == "OK"){
                                             $.messager.show({
                                                 title: '提示',
