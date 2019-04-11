@@ -21,6 +21,7 @@
     <script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="../static/js/bootbox.min.js"></script>
     <script type="text/javascript" src="../static/js/less.js"></script>
+    <script type="text/javascript" src="../static/js/pdfobject.js"></script>
 </head>
 <body>
     <div class="pad-per">
@@ -38,7 +39,55 @@
             </ul>
             <div id="myTabContent" class="tab-content">
                 <div class="tab-pane fade in active" id="operation">
-                    操作
+                    <div id="Toolbar" style="padding:0 10px;">
+                        PDF名称:
+                        <input type="text" id="searchName" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
+                        placeholder="">
+                        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="toolbar.search()">查询</a>
+                        <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="toolbar.create()">上传</a>
+                        <a href="#" class="easyui-linkbutton" iconCls="icon-tip" onclick="toolbar.see()">预览</a>
+                        <a href="#" class="easyui-linkbutton" iconCls="icon-print" onclick="toolbar.download()">下载</a>
+                        <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="toolbar.delete()">删除</a>
+                        <a href="#" class="easyui-linkbutton" iconCls="icon-reload" onclick="toolbar.refresh()">刷新</a>
+                    </div>
+                    <table class="easyui-datagrid" id="tab" title="" style="width:100%;" data-options="
+                        loadMsg:false,
+                        rownumbers:true,
+                        singleSelect:false,
+                        autoRowHeight:false,
+                        pagination:true,
+                        pageSize:10,
+                        toolbar:'#Toolbar',
+                        url:'/process_quality/ProcessQualityPDFSearch',
+                        method:'get'">
+                        <thead>
+                            <tr>
+                                <th field="ck" checkbox="true"></th>
+                                <th data-options="field:'Name',width:300,align:'center'">PDF名称</th>
+                                <th data-options="field:'Author',width:150,align:'center'">上传人</th>
+                                <th data-options="field:'UploadTime',width:200,align:'center'">上传时间</th>
+                            </tr>
+                        </thead>
+                    </table>
+                    <div id="fileClassDialog" class="easyui-dialog" style="width:400px;height:300px;padding:10px;"
+                         data-options="closed:'true',buttons:'#fileClassDialogButtons',modal:true">
+                        <form id="fileClassDialogForm" method="post" class="dialog-form" enctype="multipart/form-data">
+                            <table class="kv-table">
+                                <tbody>
+                                    <tr>
+                                        <td class="kv-label">文件名</td>
+                                        <td class="kv-content">
+                                            <input class="" type="file" name="file" id="file" style="width: 100%;">
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div id="fileClassDialogButtons">
+                                <a href="#" class="easyui-linkbutton"  data-options="iconCls:'icon-save'" onclick="toolbar.fileSave()">保存</a>
+                                <a href="#" class="easyui-linkbutton" onclick="$('#fileClassDialog').dialog('close')">关闭</a>
+                            </div>
+                        </form>
+                    </div>
                 </div>
                 <div class="tab-pane fade" id="check">
                     复核
@@ -64,7 +113,123 @@
                     $("#audit").addClass("active in").siblings().removeClass("active in")
                 }
              })
+
+            toolbar = {
+                search:function(){
+                    $('#tab').datagrid('load',{
+                        Name: $("#searchName").val()
+                    });
+                },
+                create:function(){
+                    $("#fileClassDialog").dialog('open').dialog('setTitle','上传PDF文件');
+                },
+                fileSave:function(){
+                    var fileObj = $("#file").prop("files")[0]
+                    var form = new FormData();
+                    form.append("file", fileObj);
+                    $.ajax({
+                        url:'/process_quality/ProcessQualityPDFUpload',
+                        type:"post",
+                        data:form,
+                        cache:false,
+                        processData: false,// 告诉jQuery不要去处理发送的数据
+                        contentType: false,// 告诉jQuery不要去设置Content-Type请求头
+                        success:function(data){
+                            if(data = "OK"){
+                                $.messager.show({
+                                    title: '提示',
+                                    msg: '上传成功',
+                                    timeout:1000,
+                                    style: {
+                                        right: '',
+                                        top: document.body.scrollTop + document.documentElement.scrollTop,
+                                        bottom: ''
+                                    }
+                                });
+                                $("#fileClassDialog").dialog('close');
+                                $('#tab').datagrid('reload');
+                            }else{
+                                $.messager.alert('上传失败！', data, 'warning');
+                            }
+                        },
+                        error:function(data){
+                            alert("上传失败")
+                        }
+                    })
+                },
+                see:function(){
+                    var rows = $('#tab').datagrid('getSelections');
+                    if (rows.length > 1) {
+                        $.messager.alert('警告操作！', '预览时只能选定一条数据！', 'warning');
+                    } else if (rows.length == 1) {
+                        var row = $('#tab').datagrid('getSelected');
+                        if (row) {
+                            window.open('../static/generic/web/viewer.html?file=http://http://192.168.100.150/process_quality/upload/' + row.Name)
+                        };
+                    } else if (rows.length == 0) {
+                        $.messager.alert('警告操作！', '请至少选定一条数据进行编辑！', 'warning');
+                    }
+                },
+                delete:function(){
+                    var rows = $("#tab").datagrid('getSelections');
+                    if (rows.length > 0) {
+                        var jsonarray=[];
+                        $.messager.confirm('确定操作', '您正在删除所选的记录吗？', function (flag) {
+                            if (flag) {
+                                for (var i = 0; i < rows.length; i++) {
+                                    var obj=createKeyIDObj(parseInt(rows[i].ID));
+                                    jsonarray.push(obj);
+                                }
+                                var a = JSON.stringify(jsonarray);
+                                $.ajax({
+                                    url: '/process_quality/ProcessQualityPDFDelete',
+                                    method: 'POST',
+                                    data: a,
+                                    success: function (data) {
+                                        if(data == "OK"){
+                                            $.messager.show({
+                                                title: '提示',
+                                                msg: '删除成功',
+                                                timeout:1000,
+                                                style: {
+                                                    right: '',
+                                                    top: document.body.scrollTop + document.documentElement.scrollTop,
+                                                    bottom: ''
+                                                }
+                                            });
+                                            $("#tab").datagrid('reload');
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                    } else {
+                        $.messager.alert('提示', '请选择要删除的记录！', 'info');
+                    }
+                },
+                download:function(){
+                    var rows = $('#tab').datagrid('getSelections');
+                    if (rows.length > 1) {
+                        $.messager.alert('警告操作！', '下载记录只能选定一条数据！', 'warning');
+                    } else if (rows.length == 1) {
+                        var row = $('#tab').datagrid('getSelected');
+                        if (row) {
+                            window.open("/process_quality/ProcessQualityPDFDownload?Name=" + row.Name);
+                        };
+                    } else if (rows.length == 0) {
+                        $.messager.alert('警告操作！', '请至少选定一条数据进行编辑！', 'warning');
+                    }
+                },
+                refresh:function(){
+                    $('#tab').datagrid('reload');
+                }
+            }
         })
+        function createKeyIDObj(keyID){
+            return {
+                id:keyID
+            }
+        }
     </script>
 </body>
 </html>
