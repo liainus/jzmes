@@ -73,10 +73,9 @@ def ProcessqualityConfirm():
     :return:
     '''
     if request.method == 'POST':
-        data = request.values  # 返回请求中的参数和form
+        data = request.values
         try:
-            data_dict = {"BatchID": data['BatchID'],
-                         "content": data['content'],
+            data_dict = {"content": data['content'],
                          "OperationPeople": current_user.Name,
                          "Description": data['Description'],
                          "OperationDate":datetime.datetime.now()}
@@ -93,6 +92,16 @@ def ProcessqualityCheck():
     工艺质量复核人确认流程
     :return:
     '''
+    if request.method == 'POST':
+        data = request.values
+        try:
+            data_dict = {"CheckedPeople": current_user.Name,
+                         "OperationDate":datetime.datetime.now()}
+            return insert(ProcessQuality, data_dict)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "路由：/process_quality/ProcessqualityCheck，工艺质量复核人确认流程Error：" + str(e), current_user.Name)
 
 @Process.route('/process_quality/ProcessqualityReview', methods=['GET', 'POST'])
 def ProcessqualityReview():
@@ -100,6 +109,16 @@ def ProcessqualityReview():
     工艺质量审核人确认流程
     :return:
     '''
+    if request.method == 'POST':
+        data = request.values
+        try:
+            data_dict = {"Reviewer": current_user.Name,
+                         "OperationDate":datetime.datetime.now()}
+            return insert(ProcessQuality, data_dict)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "路由：/process_quality/ProcessqualityReview，工艺质量审核人确认流程Error：" + str(e), current_user.Name)
 
 # post方法：上传文件的
 @Process.route('/process_quality/ProcessQualityPDFUpload', methods=['post'])
@@ -207,4 +226,54 @@ def ProcessQualityPDFDelete():
             print(e)
             logger.error(e)
             insertSyslog("error", "路由：/process_quality/ProcessQualityPDFDelete，PDF删除Error：" + str(e), current_user.Name)
+
+@Process.route('/process_quality/ProcessQualityUpdate', methods=['POST', 'GET'])
+def ProcessQualityUpdate():
+    if request.method == 'POST':
+        data = request.values
+        return update(ProcessQuality, data)
+
+@Process.route('/process_quality/ProcessQualityDelete', methods=['POST', 'GET'])
+def ProcessQualityDelete():
+    if request.method == 'POST':
+        data = request.values
+        return delete(ProcessQuality, data)
+
+@Process.route('/process_quality/ProcessQualityCreate', methods=['POST', 'GET'])
+def ProcessQualityCreate():
+    if request.method == 'POST':
+        data = request.values
+        return insert(ProcessQuality, data)
+
+@Process.route('/process_quality/ProcessQualitySearch', methods=['POST', 'GET'])
+def ProcessQualitySearch():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                pages = int(data['page'])
+                rowsnumber = int(data['rows'])
+                inipage = (pages - 1) * rowsnumber + 0
+                endpage = (pages - 1) * rowsnumber + rowsnumber
+                BatchID = data.get('BatchID')
+                if not BatchID:
+                    total = db_session.query(ProcessQuality).count()
+                    oclass = db_session.query(ProcessQuality).all()[inipage:endpage]
+                else:
+                    total = db_session.query(ProcessQuality).filter(
+                        ProcessQualityPDF.BatchID == BatchID).count()
+                    oclass = db_session.query(ProcessQuality).filter(
+                    ProcessQualityPDF.BatchID == BatchID).all()[inipage:endpage]
+                jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
+                jsonoclass = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
+                return jsonoclass
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "工艺质量确认流程表查询报错Error：" + str(e), current_user.Name)
+            return json.dumps("工艺质量确认流程表查询报错", cls=Model.BSFramwork.AlchemyEncoder,ensure_ascii=False)
+
+
+
 
