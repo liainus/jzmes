@@ -36,36 +36,123 @@
         <div class="col-md-12">
             <ul class="nav nav-pills nav-justified step step-progress" data-step="1">
                 <li>
-                    <a href="#operation" data-toggle="tab">操作人确认</a>
+                    <a href="#operation" data-toggle="tab">操作确认记录</a>
                 </li>
                 <li>
-                    <a href="#check" data-toggle="tab">复核人确认</a>
+                    <a href="#check" data-toggle="tab">复核确认记录</a>
                 </li>
                 <li>
-                    <a href="#audit" data-toggle="tab">审核</a>
+                    <a href="#audit" data-toggle="tab">审核确认记录</a>
                 </li>
             </ul>
             <div id="myTabContent" class="tab-content">
                 <div class="tab-pane fade in active" id="operation">
-                    <div id="Toolbar" style="padding:0 10px;">
-                        PDF名称:
-                        <input type="text" id="searchName" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
-                        placeholder="">
-                        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="toolbar.search()">查询</a>
-                        <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="toolbar.create()">上传</a>
-                        <a href="#" class="easyui-linkbutton" iconCls="icon-tip" onclick="toolbar.see()">预览</a>
-                        <a href="#" class="easyui-linkbutton" iconCls="icon-print" onclick="toolbar.download()">下载</a>
-                        <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="toolbar.delete()">删除</a>
-                        <a href="#" class="easyui-linkbutton" iconCls="icon-reload" onclick="toolbar.refresh()">刷新</a>
+                    <div id="BatchClassDialog" class="easyui-dialog" style="width:400px;height:200px;padding:10px;"
+                         data-options="closed:'true',buttons:'#BatchClassDialogButtons',modal:true">
+                        <form id="BatchClassDialogForm" method="post" class="dialog-form" enctype="multipart/form-data">
+                            <table class="kv-table">
+                                <tbody>
+                                    <tr>
+                                        <td class="kv-label">ID</td>
+                                        <td class="kv-content">
+                                             <input name="ID" id="ID" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder="" disabled="disabled" >
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="kv-label">批次号</td>
+                                        <td class="kv-content">
+                                             <input name="BatchID" id="BatchID" type="text" required="true" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder="">
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div id="BatchClassDialogButtons">
+                                <a href="#" class="easyui-linkbutton"  data-options="iconCls:'icon-save'" onclick="toolbar.BatchSave()">保存</a>
+                                <a href="#" class="easyui-linkbutton" onclick="$('#BatchClassDialog').dialog('close')">关闭</a>
+                            </div>
+                        </form>
                     </div>
-                    <table class="easyui-datagrid" id="tab" title="" style="width:100%;" data-options="
+                    <div id="contentClassDialog" class="easyui-dialog" style="width:400px;height:200px;padding:10px;"
+                         data-options="closed:'true',buttons:'#contentClassDialogButtons',modal:true">
+                        <form id="contentClassDialogForm" method="post" class="dialog-form" enctype="multipart/form-data">
+                            <table class="kv-table">
+                                <tbody>
+                                    <tr>
+                                        <td class="kv-label">含量</td>
+                                        <td class="kv-content">
+                                             <input name="content" id="content" type="text" required="true" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder="">
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div id="contentClassDialogButtons">
+                                <a href="#" class="easyui-linkbutton"  data-options="iconCls:'icon-save'" onclick="toolbar.contentSave()">保存</a>
+                                <a href="#" class="easyui-linkbutton" onclick="$('#contentClassDialog').dialog('close')">关闭</a>
+                            </div>
+                        </form>
+                    </div>
+                    <div id="BatchToolbar" style="padding:0 10px;">
+                        批次号:
+                        <input type="text" id="searchBatch" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
+                        placeholder="">
+                        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="toolbar.searchBatch()">查询</a>
+                        <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="toolbar.addBatch()">添加</a>
+                        <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="toolbar.editBatch()">修改</a>
+                        <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="toolbar.deleteBatch()">删除</a>
+                        <a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="toolbar.Confirm()">操作人确认</a>
+                        <a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="toolbar.Check()">复核人确认</a>
+                        <a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="toolbar.Review()">审核人确认</a>
+                        <a href="#" class="easyui-linkbutton" iconCls="icon-reload" onclick="toolbar.reloadBatch()">刷新</a>
+                    </div>
+                    <table class="easyui-datagrid" id="tabBatch" title="" style="width:100%;" data-options="
+                        queryParams: {
+                            BatchID:''
+                        },
                         loadMsg:false,
                         rownumbers:true,
-                        singleSelect:false,
+                        singleSelect:true,
                         autoRowHeight:false,
                         pagination:true,
                         pageSize:10,
-                        toolbar:'#Toolbar',
+                        toolbar:'#BatchToolbar',
+                        url:'/process_quality/ProcessQualitySearch',
+                        method:'get'">
+                        <thead>
+                            <tr>
+                                <th field="ck" checkbox="true"></th>
+                                <th data-options="field:'BatchID',width:200,align:'center'">批次号</th>
+                                <th data-options="field:'content',width:150,align:'center'">含量</th>
+                                <th data-options="field:'OperationPeople',width:150,align:'center'">操作人</th>
+                                <th data-options="field:'CheckedPeople',width:150,align:'center'">复核人</th>
+                                <th data-options="field:'Reviewer',width:150,align:'center'">审核人</th>
+                                <th data-options="field:'Description',width:150,align:'center'">描述</th>
+                                <th data-options="field:'OperationDate',width:150,align:'center'">操作时间</th>
+                            </tr>
+                        </thead>
+                    </table>
+                    <div id="PDFToolbar" style="padding:0 10px;">
+                        PDF名称:
+                        <input type="text" id="searchName" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
+                        placeholder="">
+                        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="toolbar.searchName()">查询</a>
+                        <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="toolbar.upload()">上传</a>
+                        <a href="#" class="easyui-linkbutton" iconCls="icon-tip" onclick="toolbar.see()">预览</a>
+                        <a href="#" class="easyui-linkbutton" iconCls="icon-print" onclick="toolbar.download()">下载</a>
+                        <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="toolbar.deletePDF()">删除</a>
+                        <a href="#" class="easyui-linkbutton" iconCls="icon-reload" onclick="toolbar.refresh()">刷新</a>
+                    </div>
+                    <table class="easyui-datagrid" id="tabPDF" title="" style="width:100%;margin-top: 20px;" data-options="
+                        queryParams: {
+                            Name: '',
+                            BatchID:''
+                        },
+                        loadMsg:false,
+                        rownumbers:true,
+                        singleSelect:true,
+                        autoRowHeight:false,
+                        pagination:true,
+                        pageSize:10,
+                        toolbar:'#PDFToolbar',
                         url:'/process_quality/ProcessQualityPDFSearch',
                         method:'get'">
                         <thead>
@@ -110,25 +197,278 @@
         $(function() {
             bsStep();
             $(".step li a").on('click',function(e){
-                if($(this).html() == "操作人确认"){
+                if($(this).html() == "操作确认记录"){
                     bsStep(1);
                     $("#operation").addClass("active in").siblings().removeClass("active in")
-                }else if($(this).html() == "复核人确认"){
+                }else if($(this).html() == "复核确认记录"){
                     bsStep(2);
                     $("#check").addClass("active in").siblings().removeClass("active in")
-                }else if($(this).html() == "审核"){
+                }else if($(this).html() == "审核确认记录"){
                     bsStep(3);
                     $("#audit").addClass("active in").siblings().removeClass("active in")
                 }
              })
 
+            $("#tabBatch").datagrid({
+                onSelect:function(rowIndex, rowData){
+                    $('#tabPDF').datagrid('load',{
+                        Name:"",
+                        BatchID: rowData.BatchID
+                    });
+                }
+            })
             toolbar = {
-                search:function(){
-                    $('#tab').datagrid('load',{
+                searchBatch:function(){
+                    $("#tabBatch").datagrid('load',{
+                        BatchID:$("#searchBatch").val()
+                    })
+                },
+                addBatch:function(){
+                    $("#BatchClassDialog").dialog('open').dialog('setTitle','添加新批次');
+                    $("#ID").val("")
+                    $("#BatchID").val("")
+                },
+                editBatch:function(){
+                    var rows = $('#tabBatch').datagrid('getSelections');
+                    if (rows.length > 1) {
+                        $.messager.alert('警告操作！', '编辑只能选定一条数据！', 'warning');
+                    } else if (rows.length == 1) {
+                        var row = $('#tabBatch').datagrid('getSelected');
+                        if (row) {
+                            $("#BatchClassDialog").dialog('open').dialog('setTitle','修改批次号');
+                            $("#ID").val(row.ID)
+                            $("#BatchID").val(row.BatchID)
+                        };
+                    } else if (rows.length == 0) {
+                        $.messager.alert('警告操作！', '请至少选定一条数据进行编辑！', 'warning');
+                    }
+                },
+                BatchSave:function(){
+                    var strID = $('input[name="ID"]').val();
+                    var urlAddr = ""
+                    var stmp = $('input[name="BatchID"]').val();
+                    if(Bee.StringUtils.isEmpty(stmp)) {
+                       alert('Warning：批次号不能为空！');
+                       return false;
+                    }
+                    if (strID.length >= 1){
+                        urlAddr = '/process_quality/ProcessQualityUpdate'
+                    }
+                    else {
+                        urlAddr = '/process_quality/ProcessQualityCreate'
+                    }
+                    $.ajax({
+                        url: urlAddr,
+                        method: 'POST',
+                        traditional: true,
+                        data: {
+                            ID:strID,
+                            BatchID:$('#BatchID').val()
+                        },
+                        cache: false,
+                        error: function(data){
+                           console.log(data.responseText)
+                        },
+                        success: function (data,response,status) {
+                            $.messager.progress('close');
+                            if(data == "OK"){
+                                $.messager.show({
+                                    title: '提示',
+                                    msg: '操作成功',
+                                    timeout:1000,
+                                    style: {
+                                        right: '',
+                                        top: document.body.scrollTop + document.documentElement.scrollTop,
+                                        bottom: ''
+                                    }
+                                });
+                                $("#BatchClassDialog").dialog('close');
+                                $("#tabBatch").datagrid('reload');
+                            } else {
+                                $.messager.alert('失败！', '未知错误导致失败，请重试！', 'warning');
+                            }
+                        }
+                    });
+                },
+                deleteBatch:function(){
+                    var rows = $("#tabBatch").datagrid('getSelections');
+                    if (rows.length > 0) {
+                        var jsonarray=[];
+                        $.messager.confirm('确定操作', '您正在删除所选的记录吗？', function (flag) {
+                            if (flag) {
+                                for (var i = 0; i < rows.length; i++) {
+                                    var obj=createKeyIDObj(parseInt(rows[i].ID));
+                                    jsonarray.push(obj);
+                                }
+                                var a = JSON.stringify(jsonarray);
+                                $.ajax({
+                                    url: '/process_quality/ProcessQualityDelete',
+                                    method: 'POST',
+                                    data: a,
+                                    beforeSend:function(){
+                                        $("#loadingModal").modal("show");
+                                    },
+                                    success: function (data) {
+                                        $("#loadingModal").modal('hide');
+                                        if(data == "OK"){
+                                            $.messager.show({
+                                                title: '提示',
+                                                msg: '删除成功',
+                                                timeout:1000,
+                                                style: {
+                                                    right: '',
+                                                    top: document.body.scrollTop + document.documentElement.scrollTop,
+                                                    bottom: ''
+                                                }
+                                            });
+                                            $("#tabBatch").datagrid('reload');
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                    } else {
+                        $.messager.alert('提示', '请选择要删除的记录！', 'info');
+                    }
+                },
+                Confirm:function(){
+                    var rows = $('#tabBatch').datagrid('getSelections');
+                    if (rows.length > 1) {
+                        $.messager.alert('警告操作！', '编辑只能选定一条数据！', 'warning');
+                    } else if (rows.length == 1) {
+                        var row = $('#tabBatch').datagrid('getSelected');
+                        if (row) {
+                            $("#contentClassDialog").dialog('open').dialog('setTitle','操作人确认');
+                            $("#content").val(row.content)
+                        };
+                    } else if (rows.length == 0) {
+                        $.messager.alert('警告操作！', '请至少选定一条数据进行编辑！', 'warning');
+                    }
+                },
+                contentSave:function(){
+                    var row = $('#tabBatch').datagrid('getSelected');
+                    $.ajax({
+                        url: '/process_quality/ProcessqualityConfirm',
+                        method: 'POST',
+                        traditional: true,
+                        data: {
+                            ID:row.ID,
+                            content:$('#content').val()
+                        },
+                        cache: false,
+                        error: function(data){
+                           console.log(data.responseText)
+                        },
+                        success: function (data,response,status) {
+                            $.messager.progress('close');
+                            if(data == "OK"){
+                                $.messager.show({
+                                    title: '提示',
+                                    msg: '操作成功',
+                                    timeout:1000,
+                                    style: {
+                                        right: '',
+                                        top: document.body.scrollTop + document.documentElement.scrollTop,
+                                        bottom: ''
+                                    }
+                                });
+                                $("#contentClassDialog").dialog('close');
+                                $("#tabBatch").datagrid('reload');
+                            } else {
+                                $.messager.alert('失败！', '未知错误导致失败，请重试！', 'warning');
+                            }
+                        }
+                    });
+                },
+                Check:function(){
+                    var rows = $("#tabBatch").datagrid('getSelections');
+                    if (rows.length > 0) {
+                        var jsonarray=[];
+                        $.messager.confirm('确定操作', '您正在复核所选的记录吗？', function (flag) {
+                            if (flag) {
+                                var a = "";
+                                for (var i = 0; i < rows.length; i++) {
+                                    var obj=createKeyIDObj(parseInt(rows[i].ID));
+                                    jsonarray.push(obj);
+                                }
+                                a = JSON.stringify(jsonarray);
+                                $.ajax({
+                                    url: '/process_quality/ProcessqualityCheck',
+                                    method: 'POST',
+                                    traditional: true,
+                                    data: a,
+                                    success: function (data) {
+                                        $.messager.progress('close');
+                                        if(data == "OK"){
+                                            $.messager.show({
+                                                title: '提示',
+                                                msg: '复核成功',
+                                                timeout:1000,
+                                                style: {
+                                                    right: '',
+                                                    top: document.body.scrollTop + document.documentElement.scrollTop,
+                                                    bottom: ''
+                                                }
+                                            });
+                                            $("#tabBatch").datagrid('load');
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                    } else {
+                        $.messager.alert('提示', '请选择要复核的记录！', 'info');
+                    }
+                },
+                Review:function(){
+                    var rows = $("#tabBatch").datagrid('getSelections');
+                    if (rows.length > 0) {
+                        var jsonarray=[];
+                        $.messager.confirm('确定操作', '您正在审核所选的记录吗？', function (flag) {
+                            if (flag) {
+                                var a = "";
+                                for (var i = 0; i < rows.length; i++) {
+                                    var obj=createKeyIDObj(parseInt(rows[i].ID));
+                                    jsonarray.push(obj);
+                                }
+                                a = JSON.stringify(jsonarray);
+                                $.ajax({
+                                    url: '/process_quality/ProcessqualityCheck',
+                                    method: 'POST',
+                                    traditional: true,
+                                    data: a,
+                                    success: function (data) {
+                                        $.messager.progress('close');
+                                        if(data == "OK"){
+                                            $.messager.show({
+                                                title: '提示',
+                                                msg: '审核成功',
+                                                timeout:1000,
+                                                style: {
+                                                    right: '',
+                                                    top: document.body.scrollTop + document.documentElement.scrollTop,
+                                                    bottom: ''
+                                                }
+                                            });
+                                            $("#tabBatch").datagrid('load');
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                    } else {
+                        $.messager.alert('提示', '请选择要审核的记录！', 'info');
+                    }
+                },
+                reloadBatch:function(){
+                    $('#tabBatch').datagrid('reload');
+                },
+                searchName:function(){
+                    $('#tabPDF').datagrid('load',{
                         Name: $("#searchName").val()
                     });
                 },
-                create:function(){
+                upload:function(){
                     $("#fileClassDialog").dialog('open').dialog('setTitle','上传PDF文件');
                 },
                 fileSave:function(){
@@ -159,7 +499,7 @@
                                         bottom: ''
                                     }
                                 });
-                                $('#tab').datagrid('load');
+                                $('#tabPDF').datagrid('load');
                             }else{
                                 $.messager.alert('上传失败！', data, 'warning');
                             }
@@ -170,20 +510,20 @@
                     })
                 },
                 see:function(){
-                    var rows = $('#tab').datagrid('getSelections');
+                    var rows = $('#tabPDF').datagrid('getSelections');
                     if (rows.length > 1) {
                         $.messager.alert('警告操作！', '预览时只能选定一条数据！', 'warning');
                     } else if (rows.length == 1) {
-                        var row = $('#tab').datagrid('getSelected');
+                        var row = $('#tabPDF').datagrid('getSelected');
                         if (row) {
                             window.open('../static/generic/web/viewer.html?file=' + encodeURIComponent(row.Name))
                         };
                     } else if (rows.length == 0) {
-                        $.messager.alert('警告操作！', '请至少选定一条数据进行编辑！', 'warning');
+                        $.messager.alert('警告操作！', '请至少选定一条数据进行预览！', 'warning');
                     }
                 },
-                delete:function(){
-                    var rows = $("#tab").datagrid('getSelections');
+                deletePDF:function(){
+                    var rows = $("#tabPDF").datagrid('getSelections');
                     if (rows.length > 0) {
                         var jsonarray=[];
                         $.messager.confirm('确定操作', '您正在删除所选的记录吗？', function (flag) {
@@ -213,7 +553,7 @@
                                                     bottom: ''
                                                 }
                                             });
-                                            $("#tab").datagrid('reload');
+                                            $("#tabPDF").datagrid('reload');
                                         }
                                     }
                                 });
@@ -224,11 +564,11 @@
                     }
                 },
                 download:function(){
-                    var rows = $('#tab').datagrid('getSelections');
+                    var rows = $('#tabPDF').datagrid('getSelections');
                     if (rows.length > 1) {
                         $.messager.alert('警告操作！', '下载记录只能选定一条数据！', 'warning');
                     } else if (rows.length == 1) {
-                        var row = $('#tab').datagrid('getSelected');
+                        var row = $('#tabPDF').datagrid('getSelected');
                         if (row) {
                             window.open("/process_quality/ProcessQualityPDFDownload?Name=" + row.Name);
                         };
@@ -237,7 +577,7 @@
                     }
                 },
                 refresh:function(){
-                    $('#tab').datagrid('reload');
+                    $('#tabPDF').datagrid('reload');
                 }
             }
         })
