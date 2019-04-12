@@ -102,7 +102,7 @@
                         <a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="toolbar.Confirm()">操作人确认</a>
                         <a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="toolbar.Check()">复核人确认</a>
                         <a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="toolbar.Review()">审核人确认</a>
-                        <a href="#" class="easyui-linkbutton" iconCls="icon-reload" onclick="toolbar.refresh()">刷新</a>
+                        <a href="#" class="easyui-linkbutton" iconCls="icon-reload" onclick="toolbar.reloadBatch()">刷新</a>
                     </div>
                     <table class="easyui-datagrid" id="tabBatch" title="" style="width:100%;" data-options="
                         queryParams: {
@@ -141,7 +141,7 @@
                         <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="toolbar.deletePDF()">删除</a>
                         <a href="#" class="easyui-linkbutton" iconCls="icon-reload" onclick="toolbar.refresh()">刷新</a>
                     </div>
-                    <table class="easyui-datagrid" id="tabPDF" title="" style="width:100%;" data-options="
+                    <table class="easyui-datagrid" id="tabPDF" title="" style="width:100%;margin-top: 20px;" data-options="
                         queryParams: {
                             Name: '',
                             BatchID:''
@@ -459,6 +459,9 @@
                     } else {
                         $.messager.alert('提示', '请选择要审核的记录！', 'info');
                     }
+                },
+                reloadBatch:function(){
+                    $('#tabBatch').datagrid('reload');
                 },
                 searchName:function(){
                     $('#tabPDF').datagrid('load',{
