@@ -77,7 +77,6 @@ def ProcessqualityConfirm():
         try:
             data_dict = {"content": data['content'],
                          "OperationPeople": current_user.Name,
-                         "Description": data['Description'],
                          "OperationDate":datetime.datetime.now()}
             return insert(ProcessQuality, data_dict)
         except Exception as e:
@@ -262,9 +261,9 @@ def ProcessQualitySearch():
                     oclass = db_session.query(ProcessQuality).all()[inipage:endpage]
                 else:
                     total = db_session.query(ProcessQuality).filter(
-                        ProcessQualityPDF.BatchID == BatchID).count()
+                        ProcessQuality.BatchID == BatchID).count()
                     oclass = db_session.query(ProcessQuality).filter(
-                    ProcessQualityPDF.BatchID == BatchID).all()[inipage:endpage]
+                        ProcessQuality.BatchID == BatchID).all()[inipage:endpage]
                 jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonoclass = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
                 return jsonoclass
