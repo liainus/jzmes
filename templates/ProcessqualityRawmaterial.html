@@ -107,7 +107,8 @@
                         </div>
                         <table class="easyui-datagrid" id="tabBatch" title="原料确认流程表" style="width:100%;margin-bottom: 20px;" data-options="
                             queryParams: {
-                                BatchID:''
+                                BatchID:'',
+                                Description:'原料确认流程'
                             },
                             loadMsg:false,
                             rownumbers:true,
@@ -230,7 +231,8 @@
             toolbar = {
                 searchBatch:function(){
                     $("#tabBatch").datagrid('load',{
-                        BatchID:$("#searchBatch").val()
+                        BatchID:$("#searchBatch").val(),
+                        Description:'原料确认流程'
                     })
                 },
                 addBatch:function(){
@@ -273,7 +275,8 @@
                         traditional: true,
                         data: {
                             ID:strID,
-                            BatchID:$('#BatchID').val()
+                            BatchID:$('#BatchID').val(),
+                            Description:'原料确认流程'
                         },
                         cache: false,
                         error: function(data){
