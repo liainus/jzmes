@@ -34,186 +34,190 @@
     </div>
     <div class="pad-per">
         <div class="col-md-12">
-            <ul class="nav nav-pills nav-justified step step-progress" data-step="1">
-                <li>
-                    <a href="#operation" data-toggle="tab">操作确认记录</a>
-                </li>
-                <li>
-                    <a href="#check" data-toggle="tab">复核确认记录</a>
-                </li>
-                <li>
-                    <a href="#audit" data-toggle="tab">审核确认记录</a>
-                </li>
-            </ul>
-            <div id="myTabContent" class="tab-content">
-                <div class="tab-pane fade in active" id="operation">
-                    <div id="BatchClassDialog" class="easyui-dialog" style="width:400px;height:200px;padding:10px;"
-                         data-options="closed:'true',buttons:'#BatchClassDialogButtons',modal:true">
-                        <form id="BatchClassDialogForm" method="post" class="dialog-form" enctype="multipart/form-data">
-                            <table class="kv-table">
-                                <tbody>
-                                    <tr>
-                                        <td class="kv-label">ID</td>
-                                        <td class="kv-content">
-                                             <input name="ID" id="ID" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder="" disabled="disabled" >
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="kv-label">批次号</td>
-                                        <td class="kv-content">
-                                             <input name="BatchID" id="BatchID" type="text" required="true" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder="">
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <div id="BatchClassDialogButtons">
-                                <a href="#" class="easyui-linkbutton"  data-options="iconCls:'icon-save'" onclick="toolbar.BatchSave()">保存</a>
-                                <a href="#" class="easyui-linkbutton" onclick="$('#BatchClassDialog').dialog('close')">关闭</a>
-                            </div>
-                        </form>
+{#            <ul class="nav nav-pills nav-justified step step-progress" data-step="1">#}
+{#                <li>#}
+{#                    <a href="#operation" data-toggle="tab">操作确认记录</a>#}
+{#                </li>#}
+{#                <li>#}
+{#                    <a href="#check" data-toggle="tab">复核确认记录</a>#}
+{#                </li>#}
+{#                <li>#}
+{#                    <a href="#audit" data-toggle="tab">审核确认记录</a>#}
+{#                </li>#}
+{#            </ul>#}
+{#            <div id="myTabContent" class="tab-content">#}
+{#                <div class="tab-pane fade in active" id="operation">#}
+                    <div style="margin: 20px 0;">
+                        <div id="BatchClassDialog" class="easyui-dialog" style="width:400px;height:200px;padding:10px;"
+                             data-options="closed:'true',buttons:'#BatchClassDialogButtons',modal:true">
+                            <form id="BatchClassDialogForm" method="post" class="dialog-form" enctype="multipart/form-data">
+                                <table class="kv-table">
+                                    <tbody>
+                                        <tr>
+                                            <td class="kv-label">ID</td>
+                                            <td class="kv-content">
+                                                 <input name="ID" id="ID" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder="" disabled="disabled" >
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="kv-label">批次号</td>
+                                            <td class="kv-content">
+                                                 <input name="BatchID" id="BatchID" type="text" required="true" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder="">
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <div id="BatchClassDialogButtons">
+                                    <a href="#" class="easyui-linkbutton"  data-options="iconCls:'icon-save'" onclick="toolbar.BatchSave()">保存</a>
+                                    <a href="#" class="easyui-linkbutton" onclick="$('#BatchClassDialog').dialog('close')">关闭</a>
+                                </div>
+                            </form>
+                        </div>
+                        <div id="contentClassDialog" class="easyui-dialog" style="width:400px;height:200px;padding:10px;"
+                             data-options="closed:'true',buttons:'#contentClassDialogButtons',modal:true">
+                            <form id="contentClassDialogForm" method="post" class="dialog-form" enctype="multipart/form-data">
+                                <table class="kv-table">
+                                    <tbody>
+                                        <tr>
+                                            <td class="kv-label">含量</td>
+                                            <td class="kv-content">
+                                                 <input name="content" id="content" type="text" required="true" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder="">
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <div id="contentClassDialogButtons">
+                                    <a href="#" class="easyui-linkbutton"  data-options="iconCls:'icon-save'" onclick="toolbar.contentSave()">保存</a>
+                                    <a href="#" class="easyui-linkbutton" onclick="$('#contentClassDialog').dialog('close')">关闭</a>
+                                </div>
+                            </form>
+                        </div>
+                        <div id="BatchToolbar" style="padding:0 10px;">
+                            批次号:
+                            <input type="text" id="searchBatch" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
+                            placeholder="">
+                            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="toolbar.searchBatch()">查询</a>
+                            <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="toolbar.addBatch()">添加</a>
+                            <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="toolbar.editBatch()">修改</a>
+                            <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="toolbar.deleteBatch()">删除</a>
+                            <a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="toolbar.Confirm()">操作人确认</a>
+                            <a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="toolbar.Check()">复核人确认</a>
+                            <a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="toolbar.Review()">审核人确认</a>
+                            <a href="#" class="easyui-linkbutton" iconCls="icon-reload" onclick="toolbar.reloadBatch()">刷新</a>
+                        </div>
+                        <table class="easyui-datagrid" id="tabBatch" title="原料确认流程表" style="width:100%;margin-bottom: 20px;" data-options="
+                            queryParams: {
+                                BatchID:''
+                            },
+                            loadMsg:false,
+                            rownumbers:true,
+                            singleSelect:true,
+                            autoRowHeight:false,
+                            pagination:true,
+                            pageSize:10,
+                            toolbar:'#BatchToolbar',
+                            url:'/process_quality/ProcessQualitySearch',
+                            method:'get'">
+                            <thead>
+                                <tr>
+                                    <th field="ck" checkbox="true"></th>
+                                    <th data-options="field:'BatchID',width:200,align:'center'">批次号</th>
+                                    <th data-options="field:'content',width:150,align:'center'">含量</th>
+                                    <th data-options="field:'OperationPeople',width:150,align:'center'">操作人</th>
+                                    <th data-options="field:'CheckedPeople',width:150,align:'center'">复核人</th>
+                                    <th data-options="field:'Reviewer',width:150,align:'center'">审核人</th>
+                                    <th data-options="field:'Description',width:150,align:'center'">描述</th>
+                                    <th data-options="field:'OperationDate',width:150,align:'center'">操作时间</th>
+                                </tr>
+                            </thead>
+                        </table>
                     </div>
-                    <div id="contentClassDialog" class="easyui-dialog" style="width:400px;height:200px;padding:10px;"
-                         data-options="closed:'true',buttons:'#contentClassDialogButtons',modal:true">
-                        <form id="contentClassDialogForm" method="post" class="dialog-form" enctype="multipart/form-data">
-                            <table class="kv-table">
-                                <tbody>
-                                    <tr>
-                                        <td class="kv-label">含量</td>
-                                        <td class="kv-content">
-                                             <input name="content" id="content" type="text" required="true" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder="">
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <div id="contentClassDialogButtons">
-                                <a href="#" class="easyui-linkbutton"  data-options="iconCls:'icon-save'" onclick="toolbar.contentSave()">保存</a>
-                                <a href="#" class="easyui-linkbutton" onclick="$('#contentClassDialog').dialog('close')">关闭</a>
-                            </div>
-                        </form>
+                    <div>
+                        <div id="PDFToolbar" style="padding:0 10px;">
+                            PDF名称:
+                            <input type="text" id="searchName" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
+                            placeholder="">
+                            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="toolbar.searchName()">查询</a>
+                            <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="toolbar.upload()">上传</a>
+                            <a href="#" class="easyui-linkbutton" iconCls="icon-tip" onclick="toolbar.see()">预览</a>
+                            <a href="#" class="easyui-linkbutton" iconCls="icon-print" onclick="toolbar.download()">下载</a>
+                            <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="toolbar.deletePDF()">删除</a>
+                            <a href="#" class="easyui-linkbutton" iconCls="icon-reload" onclick="toolbar.refresh()">刷新</a>
+                        </div>
+                        <table class="easyui-datagrid" id="tabPDF" title="批次下的PDF表" style="width:100%;" data-options="
+                            queryParams: {
+                                Name: '',
+                                BatchID:''
+                            },
+                            loadMsg:false,
+                            rownumbers:true,
+                            singleSelect:true,
+                            autoRowHeight:false,
+                            pagination:true,
+                            pageSize:10,
+                            toolbar:'#PDFToolbar',
+                            url:'/process_quality/ProcessQualityPDFSearch',
+                            method:'get'">
+                            <thead>
+                                <tr>
+                                    <th field="ck" checkbox="true"></th>
+                                    <th data-options="field:'Name',width:300,align:'center'">PDF名称</th>
+                                    <th data-options="field:'Author',width:150,align:'center'">上传人</th>
+                                    <th data-options="field:'UploadTime',width:200,align:'center'">上传时间</th>
+                                </tr>
+                            </thead>
+                        </table>
+                        <div id="fileClassDialog" class="easyui-dialog" style="width:400px;height:300px;padding:10px;"
+                             data-options="closed:'true',buttons:'#fileClassDialogButtons',modal:true">
+                            <form id="fileClassDialogForm" method="post" class="dialog-form" enctype="multipart/form-data">
+                                <table class="kv-table">
+                                    <tbody>
+                                        <tr>
+                                            <td class="kv-label">所属批次</td>
+                                            <td class="kv-content">
+                                                <input name="beBatchID" id="beBatchID" type="text" required="true" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder="" disabled="disabled">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="kv-label">文件名</td>
+                                            <td class="kv-content">
+                                                <input class="" type="file" name="file" id="file" style="width: 100%;">
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <div id="fileClassDialogButtons">
+                                    <a href="#" class="easyui-linkbutton"  data-options="iconCls:'icon-save'" onclick="toolbar.fileSave()">保存</a>
+                                    <a href="#" class="easyui-linkbutton" onclick="$('#fileClassDialog').dialog('close')">关闭</a>
+                                </div>
+                            </form>
+                        </div>
                     </div>
-                    <div id="BatchToolbar" style="padding:0 10px;">
-                        批次号:
-                        <input type="text" id="searchBatch" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
-                        placeholder="">
-                        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="toolbar.searchBatch()">查询</a>
-                        <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="toolbar.addBatch()">添加</a>
-                        <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="toolbar.editBatch()">修改</a>
-                        <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="toolbar.deleteBatch()">删除</a>
-                        <a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="toolbar.Confirm()">操作人确认</a>
-                        <a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="toolbar.Check()">复核人确认</a>
-                        <a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="toolbar.Review()">审核人确认</a>
-                        <a href="#" class="easyui-linkbutton" iconCls="icon-reload" onclick="toolbar.reloadBatch()">刷新</a>
-                    </div>
-                    <table class="easyui-datagrid" id="tabBatch" title="" style="width:100%;margin-bottom: 20px;" data-options="
-                        queryParams: {
-                            BatchID:''
-                        },
-                        loadMsg:false,
-                        rownumbers:true,
-                        singleSelect:true,
-                        autoRowHeight:false,
-                        pagination:true,
-                        pageSize:10,
-                        toolbar:'#BatchToolbar',
-                        url:'/process_quality/ProcessQualitySearch',
-                        method:'get'">
-                        <thead>
-                            <tr>
-                                <th field="ck" checkbox="true"></th>
-                                <th data-options="field:'BatchID',width:200,align:'center'">批次号</th>
-                                <th data-options="field:'content',width:150,align:'center'">含量</th>
-                                <th data-options="field:'OperationPeople',width:150,align:'center'">操作人</th>
-                                <th data-options="field:'CheckedPeople',width:150,align:'center'">复核人</th>
-                                <th data-options="field:'Reviewer',width:150,align:'center'">审核人</th>
-                                <th data-options="field:'Description',width:150,align:'center'">描述</th>
-                                <th data-options="field:'OperationDate',width:150,align:'center'">操作时间</th>
-                            </tr>
-                        </thead>
-                    </table>
-                    <div id="PDFToolbar" style="padding:0 10px;">
-                        PDF名称:
-                        <input type="text" id="searchName" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
-                        placeholder="">
-                        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="toolbar.searchName()">查询</a>
-                        <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="toolbar.upload()">上传</a>
-                        <a href="#" class="easyui-linkbutton" iconCls="icon-tip" onclick="toolbar.see()">预览</a>
-                        <a href="#" class="easyui-linkbutton" iconCls="icon-print" onclick="toolbar.download()">下载</a>
-                        <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="toolbar.deletePDF()">删除</a>
-                        <a href="#" class="easyui-linkbutton" iconCls="icon-reload" onclick="toolbar.refresh()">刷新</a>
-                    </div>
-                    <table class="easyui-datagrid" id="tabPDF" title="" style="width:100%;" data-options="
-                        queryParams: {
-                            Name: '',
-                            BatchID:''
-                        },
-                        loadMsg:false,
-                        rownumbers:true,
-                        singleSelect:true,
-                        autoRowHeight:false,
-                        pagination:true,
-                        pageSize:10,
-                        toolbar:'#PDFToolbar',
-                        url:'/process_quality/ProcessQualityPDFSearch',
-                        method:'get'">
-                        <thead>
-                            <tr>
-                                <th field="ck" checkbox="true"></th>
-                                <th data-options="field:'Name',width:300,align:'center'">PDF名称</th>
-                                <th data-options="field:'Author',width:150,align:'center'">上传人</th>
-                                <th data-options="field:'UploadTime',width:200,align:'center'">上传时间</th>
-                            </tr>
-                        </thead>
-                    </table>
-                    <div id="fileClassDialog" class="easyui-dialog" style="width:400px;height:300px;padding:10px;"
-                         data-options="closed:'true',buttons:'#fileClassDialogButtons',modal:true">
-                        <form id="fileClassDialogForm" method="post" class="dialog-form" enctype="multipart/form-data">
-                            <table class="kv-table">
-                                <tbody>
-                                    <tr>
-                                        <td class="kv-label">所属批次</td>
-                                        <td class="kv-content">
-                                            <input name="beBatchID" id="beBatchID" type="text" required="true" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder="" disabled="disabled">
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="kv-label">文件名</td>
-                                        <td class="kv-content">
-                                            <input class="" type="file" name="file" id="file" style="width: 100%;">
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <div id="fileClassDialogButtons">
-                                <a href="#" class="easyui-linkbutton"  data-options="iconCls:'icon-save'" onclick="toolbar.fileSave()">保存</a>
-                                <a href="#" class="easyui-linkbutton" onclick="$('#fileClassDialog').dialog('close')">关闭</a>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-                <div class="tab-pane fade" id="check">
-                    复核
-                </div>
-                <div class="tab-pane fade" id="audit">
-                    审核
-                </div>
-            </div>
+{#                </div>#}
+{#                <div class="tab-pane fade" id="check">#}
+{#                    复核#}
+{#                </div>#}
+{#                <div class="tab-pane fade" id="audit">#}
+{#                    审核#}
+{#                </div>#}
+{#            </div>#}
         </div>
     </div>
     <script>
         $(function() {
-            bsStep();
-            $(".step li a").on('click',function(e){
-                if($(this).html() == "操作确认记录"){
-                    bsStep(1);
-                    $("#operation").addClass("active in").siblings().removeClass("active in")
-                }else if($(this).html() == "复核确认记录"){
-                    bsStep(2);
-                    $("#check").addClass("active in").siblings().removeClass("active in")
-                }else if($(this).html() == "审核确认记录"){
-                    bsStep(3);
-                    $("#audit").addClass("active in").siblings().removeClass("active in")
-                }
-             })
+            {#bsStep();#}
+            {#$(".step li a").on('click',function(e){#}
+            {#    if($(this).html() == "操作确认记录"){#}
+            {#        bsStep(1);#}
+            {#        $("#operation").addClass("active in").siblings().removeClass("active in")#}
+            {#    }else if($(this).html() == "复核确认记录"){#}
+            {#        bsStep(2);#}
+            {#        $("#check").addClass("active in").siblings().removeClass("active in")#}
+            {#    }else if($(this).html() == "审核确认记录"){#}
+            {#        bsStep(3);#}
+            {#        $("#audit").addClass("active in").siblings().removeClass("active in")#}
+            {#    }#}
+            {# })#}
 
             $("#tabBatch").datagrid({
                 onSelect:function(rowIndex, rowData){
@@ -394,7 +398,7 @@
                             if (flag) {
                                 var a = "";
                                 for (var i = 0; i < rows.length; i++) {
-                                    var obj=createKeyIDObj(parseInt(rows[i].ID));
+                                    var obj=createKeyIDObj(rows[i].ID);
                                     jsonarray.push(obj);
                                 }
                                 a = JSON.stringify(jsonarray);
@@ -434,7 +438,7 @@
                             if (flag) {
                                 var a = "";
                                 for (var i = 0; i < rows.length; i++) {
-                                    var obj=createKeyIDObj(parseInt(rows[i].ID));
+                                    var obj=createKeyIDObj(rows[i].ID);
                                     jsonarray.push(obj);
                                 }
                                 a = JSON.stringify(jsonarray);
