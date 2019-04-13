@@ -104,7 +104,7 @@
                         <a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="toolbar.Review()">审核人确认</a>
                         <a href="#" class="easyui-linkbutton" iconCls="icon-reload" onclick="toolbar.reloadBatch()">刷新</a>
                     </div>
-                    <table class="easyui-datagrid" id="tabBatch" title="" style="width:100%;" data-options="
+                    <table class="easyui-datagrid" id="tabBatch" title="" style="width:100%;margin-bottom: 20px;" data-options="
                         queryParams: {
                             BatchID:''
                         },
@@ -141,7 +141,7 @@
                         <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="toolbar.deletePDF()">删除</a>
                         <a href="#" class="easyui-linkbutton" iconCls="icon-reload" onclick="toolbar.refresh()">刷新</a>
                     </div>
-                    <table class="easyui-datagrid" id="tabPDF" title="" style="width:100%;margin-top: 20px;" data-options="
+                    <table class="easyui-datagrid" id="tabPDF" title="" style="width:100%;" data-options="
                         queryParams: {
                             Name: '',
                             BatchID:''
@@ -169,6 +169,12 @@
                         <form id="fileClassDialogForm" method="post" class="dialog-form" enctype="multipart/form-data">
                             <table class="kv-table">
                                 <tbody>
+                                    <tr>
+                                        <td class="kv-label">所属批次</td>
+                                        <td class="kv-content">
+                                            <input name="beBatchID" id="beBatchID" type="text" required="true" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder="" disabled="disabled">
+                                        </td>
+                                    </tr>
                                     <tr>
                                         <td class="kv-label">文件名</td>
                                         <td class="kv-content">
@@ -469,7 +475,18 @@
                     });
                 },
                 upload:function(){
-                    $("#fileClassDialog").dialog('open').dialog('setTitle','上传PDF文件');
+                    var rows = $('#tabBatch').datagrid('getSelections');
+                    if (rows.length > 1) {
+                        $.messager.alert('警告操作！', '只能选定一条批次号！', 'warning');
+                    } else if (rows.length == 1) {
+                        var row = $('#tabBatch').datagrid('getSelected');
+                        if (row) {
+                            $("#fileClassDialog").dialog('open').dialog('setTitle','上传PDF文件');
+                            $("#beBatchID").val(row.BatchID)
+                        };
+                    } else if (rows.length == 0) {
+                        $.messager.alert('警告操作！', '请选定一条批次进再上传！', 'warning');
+                    }
                 },
                 fileSave:function(){
                     var fileObj = $("#file").prop("files")[0]
@@ -478,7 +495,10 @@
                     $.ajax({
                         url:'/process_quality/ProcessQualityPDFUpload',
                         type:"post",
-                        data:form,
+                        data:{
+                            file:form,
+                            BatchID:$("#beBatchID").val()
+                        },
                         cache:false,
                         processData: false,// 告诉jQuery不要去处理发送的数据
                         contentType: false,// 告诉jQuery不要去设置Content-Type请求头
