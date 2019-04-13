@@ -493,7 +493,6 @@
                     var form = new FormData();
                     form.append("file", fileObj);
                     form.append("BatchID", $("#beBatchID").val());
-                    console.log(form)
                     $.ajax({
                         url:'/process_quality/ProcessQualityPDFUpload',
                         type:"post",
