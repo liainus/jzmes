@@ -492,13 +492,12 @@
                     var fileObj = $("#file").prop("files")[0]
                     var form = new FormData();
                     form.append("file", fileObj);
+                    form.append("BatchID", $("#beBatchID").val());
+                    console.log(form)
                     $.ajax({
                         url:'/process_quality/ProcessQualityPDFUpload',
                         type:"post",
-                        data:{
-                            file:form,
-                            BatchID:$("#beBatchID").val()
-                        },
+                        data:form,
                         cache:false,
                         processData: false,// 告诉jQuery不要去处理发送的数据
                         contentType: false,// 告诉jQuery不要去设置Content-Type请求头
