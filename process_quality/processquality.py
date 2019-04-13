@@ -75,10 +75,12 @@ def ProcessqualityConfirm():
     if request.method == 'POST':
         data = request.values
         try:
-            data_dict = {"content": data['content'],
+            data_dict = {
+                         "ID":data['ID'],
+                         "content": data['content'],
                          "OperationPeople": current_user.Name,
                          "OperationDate":datetime.datetime.now()}
-            return insert(ProcessQuality, data_dict)
+            return update(ProcessQuality, data_dict)
         except Exception as e:
             print(e)
             logger.error(e)
@@ -94,9 +96,13 @@ def ProcessqualityCheck():
     if request.method == 'POST':
         data = request.values
         try:
-            data_dict = {"CheckedPeople": current_user.Name,
+            jsonstr = json.dumps(data.to_dict())
+            jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
+            data_dict = {
+                         "ID": jsonnumber[0],
+                         "CheckedPeople": current_user.Name,
                          "OperationDate":datetime.datetime.now()}
-            return insert(ProcessQuality, data_dict)
+            return update(ProcessQuality, data_dict)
         except Exception as e:
             print(e)
             logger.error(e)
@@ -111,9 +117,13 @@ def ProcessqualityReview():
     if request.method == 'POST':
         data = request.values
         try:
-            data_dict = {"Reviewer": current_user.Name,
-                         "OperationDate":datetime.datetime.now()}
-            return insert(ProcessQuality, data_dict)
+            jsonstr = json.dumps(data.to_dict())
+            jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
+            data_dict = {
+                "ID": jsonnumber[0],
+                "Reviewer": current_user.Name,
+                "OperationDate": datetime.datetime.now()}
+            return update(ProcessQuality, data_dict)
         except Exception as e:
             print(e)
             logger.error(e)
@@ -123,10 +133,12 @@ def ProcessqualityReview():
 @Process.route('/process_quality/ProcessQualityPDFUpload', methods=['post'])
 def ProcessQualityPDFUpload():
     fname = request.files.get('file')  #获取上传的文件
+    print(request.values)
     if fname:
-        new_fname = r'static/generic/web/' + fname.filename
+        BatchID = request.values.get('BatchID')
+        new_fname = r'static/generic/web/' +BatchID+"-"+ fname.filename
         fname.save(new_fname)  #保存文件到指定路径
-        data_dict = {"Name": fname.filename,
+        data_dict = {"Name": BatchID+"-"+fname.filename,
                      "Path": new_fname,
                      "Author": current_user.Name,
                      "UploadTime": datetime.datetime.now()}
