@@ -269,8 +269,9 @@ def ProcessQualitySearch():
                 endpage = (pages - 1) * rowsnumber + rowsnumber
                 BatchID = data.get('BatchID')
                 if not BatchID:
-                    total = db_session.query(ProcessQuality).count()
-                    oclass = db_session.query(ProcessQuality).all()[inipage:endpage]
+                    Description = data.get('Description')
+                    total = db_session.query(ProcessQuality).filter(ProcessQuality.Description == Description).count()
+                    oclass = db_session.query(ProcessQuality).filter(ProcessQuality.Description == Description).all()[inipage:endpage]
                 else:
                     total = db_session.query(ProcessQuality).filter(
                         ProcessQuality.BatchID == BatchID).count()
@@ -285,6 +286,20 @@ def ProcessQualitySearch():
             insertSyslog("error", "工艺质量确认流程表查询报错Error：" + str(e), current_user.Name)
             return json.dumps("工艺质量确认流程表查询报错", cls=Model.BSFramwork.AlchemyEncoder,ensure_ascii=False)
 
+@Process.route('/CrefractometerHistoryData')
+def CrefractometerHistoryData():
+    '''
+    折光仪历史数据
+    :return:
+    '''
+    return render_template('CrefractometerHistoryData.html')
 
+@Process.route('/refractometerRealTimeData')
+def refractometerRealTimeData():
+    '''
+    折光仪实时数据
+    :return:
+    '''
+    return render_template('refractometerRealTimeData.html')
 
 
