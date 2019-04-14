@@ -286,13 +286,13 @@ def ProcessQualitySearch():
             insertSyslog("error", "工艺质量确认流程表查询报错Error：" + str(e), current_user.Name)
             return json.dumps("工艺质量确认流程表查询报错", cls=Model.BSFramwork.AlchemyEncoder,ensure_ascii=False)
 
-@Process.route('/CrefractometerHistoryData')
+@Process.route('/refractometerHistoryData')
 def CrefractometerHistoryData():
     '''
     折光仪历史数据
     :return:
     '''
-    return render_template('CrefractometerHistoryData.html')
+    return render_template('refractometerHistoryData.html')
 
 @Process.route('/refractometerRealTimeData')
 def refractometerRealTimeData():
