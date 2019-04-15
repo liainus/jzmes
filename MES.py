@@ -8607,12 +8607,11 @@ def refractometerRedis():
         try:
             jsonstr = json.dumps(data.to_dict())
             if len(jsonstr) > 10:
-                data_dict = dict()
+                data_dict = {}
                 redis_conn = redis.Redis(connection_pool=pool)
                 for key in data:
-                    data_dict[key] = redis_conn.hget(constant.REDIS_TABLENAME, key.decode('utf-8'))
-                print(data_dict)
-                return data_dict
+                    data_dict[key] = redis_conn.hget(constant.REDIS_TABLENAME, key).decode('utf-8')
+                return json.dumps(data_dict, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
             logger.error(e)
