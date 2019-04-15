@@ -12,7 +12,7 @@
             function getNewData(){
                 $.ajax({
                     url:'/refractometerRedis',
-                    type:'post',
+                    type:'get',
                     data:{
                         ZGY_Temp: 'ZGY_Temp',
                         ZGY_ZGL: 'ZGY_ZGL'
@@ -22,11 +22,10 @@
                         console.log(xhr)
                     },
                     success:function(data){
-                        console.log('1')
                         console.log(data)
                     },
                     error:function(result){
-                        console.log('2')
+                        console.log(result)
                     }
                 })
             }
