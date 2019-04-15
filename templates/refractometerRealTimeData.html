@@ -7,6 +7,32 @@
     <script type="text/javascript" src="../static/js/jquery-3.3.1.min.js"></script>
     <script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="../static/js/bootbox.min.js"></script>
+    <script>
+        $(function(){
+            function getNewData(){
+                $.ajax({
+                    url:'',
+                    type:'post',
+                    data:{
+                        
+                    },
+                    async: false,
+                    complete:function(xhr){
+                        console.log(xhr)
+                    },
+                    success:function(data){
+                        console.log('1')
+                        console.log(data)
+                    },
+                    error:function(result){
+                        console.log('2')
+                    }
+                })
+            }
+            getNewData();
+            setInterval(getNewData, 2000);
+        })
+    </script>
 </head>
 <body style="background: #e3e5e4;">
     <div class="container">
@@ -32,7 +58,7 @@
                             °C
                         </div>
                         <div id="temp" style="text-align: right;font-weight: bold;font-size: 55px;margin-right: 20px;float: right;">
-                            26.2
+                            0
                         </div>
                     </div>
                 </div>
