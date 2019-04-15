@@ -18,11 +18,10 @@
                         ZGY_ZGL: 'ZGY_ZGL'
                     },
                     async: true,
-                    complete:function(xhr){
-                        console.log(xhr)
-                    },
                     success:function(data){
-                        console.log(data)
+                        data = JSON.parse(data)
+                        $("#conc").html(data.ZGY_ZGL)
+                        $("#temp").html(data.ZGY_Temp)
                     },
                     error:function(result){
                         console.log(result)
