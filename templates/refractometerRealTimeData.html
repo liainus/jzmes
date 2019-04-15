@@ -11,12 +11,13 @@
         $(function(){
             function getNewData(){
                 $.ajax({
-                    url:'',
+                    url:'/refractometerRedis',
                     type:'post',
                     data:{
-                        
+                        ZGY_Temp: 'ZGY_Temp',
+                        ZGY_ZGL: 'ZGY_ZGL'
                     },
-                    async: false,
+                    async: true,
                     complete:function(xhr){
                         console.log(xhr)
                     },
