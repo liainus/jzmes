@@ -1383,7 +1383,7 @@ class ProcessQuality(Base):
     Reviewer = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
 
     # 描述:
-    Description = Column(String(60), primary_key=False, autoincrement=False, nullable=True)
+    Description = Column(Unicode(60), primary_key=False, autoincrement=False, nullable=True)
 
     # 操作时间:
     OperationDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)

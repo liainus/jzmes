@@ -59,6 +59,7 @@ from tools.common import logger, insertSyslog, insert, delete, update, select
 from erp_model.erp_model import ERP
 from Model.node import NodeCollection
 from process_quality.processquality import Process
+import config
 
 # flask_login的初始化
 login_manager = LoginManager()
@@ -8594,6 +8595,29 @@ def aaaa():
             oc.oddUser = str(oc.oddUser)[4:]
         db_session.commit()
         return "123"
+
+@app.route('/refractometerRedis', methods=['POST', 'GET'])
+def refractometerRedis():
+    '''
+    折光仪实时数据
+    :return:
+    '''
+    if request.method == 'GET':
+        data = request.values
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                data_dict = dict()
+                redis_conn = redis.Redis(connection_pool=pool)
+                for key in data:
+                    data_dict[key] = redis_conn.hget(constant.REDIS_TABLENAME, key.decode('utf-8'))
+                print(data_dict)
+                return data_dict
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "折光仪实时数据查询报错Error：" + str(e), current_user.Name)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
