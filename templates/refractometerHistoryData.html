@@ -47,6 +47,126 @@
                     }
                 })
             });
+            $("#LeftTree").tree({
+                url:'',
+                checkbox:true,
+                animate:true,
+                loadFilter:function(data){
+                    return data;
+                },
+                onCheck:function(node,checked){
+                    console.log(node)
+                    getNewData()
+                }
+            })
+            function getNewData(tag){
+                var myChart = echarts.init(document.getElementById("main"))
+                myChart.showLoading();
+                $.ajax({
+                    url: "/QualityControl/BatchDataCompare",
+                    type: "post",
+                    data: {
+                        batch: batch
+                    },
+                    traditional:true,
+                    success: function (data) {
+                        myChart.hideLoading();
+                        myChart.setOption(option = {
+                            tooltip: {
+                                trigger: 'axis',
+                                axisPointer: {
+                                    type: 'shadow'
+                                }
+                            },
+                            legend: {
+                                data: ['投入量', '产出量', '得率']
+                            },
+                            toolbox: {
+                                feature: {
+                                    dataView: {show: true, readOnly: false},
+                                    magicType: {show: true, type: ['line', 'bar']},
+                                    restore: {show: true},
+                                    saveAsImage: {show: true}
+                                }
+                            },
+                            xAxis: {
+                                type: 'category',
+                                data: []
+                            },
+                            yAxis: [
+                                {
+                                    type: 'value',
+                                    name: '重量',
+                                    min: 0,
+                                    interval: 500,
+                                    axisLabel: {
+                                        formatter: '{value} kg'
+                                    }
+                                }, {
+                                    type: 'value',
+                                    name: '百分比',
+                                    min: 0,
+                                    max: 100,
+                                    interval: 10,
+                                    axisLabel: {
+                                        formatter: '{value} %'
+                                    }
+                                }
+                            ],
+                            series: [{
+                                name: "投入量",
+                                type: 'bar',
+                                label: {
+                                    normal: {
+                                        show: true,
+                                        position: 'top'
+                                    }
+                                },
+                                itemStyle:{
+                                    normal:{
+                                        color:'#90ed7d'
+                                    }
+                                },
+                                data: []
+                            }, {
+                                name: "产出量",
+                                type: 'bar',
+                                label: {
+                                    normal: {
+                                        show: true,
+                                        position: 'top'
+                                    }
+                                },
+                                itemStyle:{
+                                    normal:{
+                                        color:'#f7a35c'
+                                    }
+                                },
+                                data: []
+                            }, {
+                                name: "得率",
+                                type: 'bar',
+                                yAxisIndex: 1,
+                                label: {
+                                    normal: {
+                                        show: true,
+                                        position: 'top',
+                                        formatter: '{c} %'
+                                    }
+                                },
+                                itemStyle:{
+                                    normal:{
+                                        color:'#7cb5ec'
+                                    }
+                                },
+                                data: []
+                            }]
+                        });
+                        myChart.setOption(option);
+                    }
+
+                })
+            }
             function Appendzero(obj){
                 if(obj < 10){
                     return "0" + obj
@@ -63,7 +183,7 @@
                 var s = date.getSeconds()
                 return Appendzero(y) + '-' + Appendzero(m) + '-' + Appendzero(d) + ' ' + Appendzero(h) + ':' + Appendzero(minutes) + ':' + Appendzero(s);
             }
-            })
+        })
     </script>
 </head>
 <body>
