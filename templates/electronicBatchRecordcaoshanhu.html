@@ -52,14 +52,11 @@
                 today:       "今天"
             };
             //时间选择控件
-            $('.selectDateTime').datetimepicker({
+            $('.selectDateTime,.selectTime').datetimepicker({
                 language:  'zh',
                 format: 'yy-mm-dd hh:ii', // 标签上可用data-date-format="hh:ii" data-link-format="hh:ii"
                 autoclose: true, //选择完成自动关闭下拉框
-                minView: 0,
-                maxView: 1,
-                minuteStep:1, //分钟间隔1
-                startView: 1 //从小时开始选
+                minuteStep:1 //分钟间隔1
             });
             //生产日期
             $('#PNameProDate,.ProDate').datetimepicker({
@@ -147,6 +144,24 @@
                     $("#allstewingovercheckbox").prop("checked",true)
                 }else{
                     $("#allstewingovercheckbox").prop("checked",false)
+                }
+            })
+
+            var clickNum = 1
+            $("input[name=equipmentCheckbox]").click(function(){
+                clickNum++
+                if(clickNum == 1){
+                    $(this).prop("checked",true)
+                    $(this).val(1)
+                }else if(clickNum == 2){
+                    $(this).prop("indeterminate",true)
+                    $(this).val(2)
+                }else if(clickNum == 3){
+                    $(this).prop("checked",false)
+                    $(this).val(3)
+                }else{
+                    clickNum = 1
+                    $(this).val(1)
                 }
             })
         })
@@ -574,7 +589,8 @@
                         <td class="equipmentName">自动投料系统</td>
                         <td>22123</td>
                         <td>
-                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="beiliaoEquipmentCheckbox1"> 正常 / 不正常 </label>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="beiliaoEquipmentCheckbox1"> 正常 </label>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="beiliaoEquipmentUnCheckbox1"> 不正常 </label>
                         </td>
                         <td rowspan="2" class="middle-center">
                             <input type="hidden" id="equipmentCheckbox" value={{ dir[0]["OperationPeople_a5"] }}>
@@ -609,13 +625,14 @@
                         <td class="equipmentName">隧道式高压清洗机</td>
                         <td>22207</td>
                         <td>
-                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="beiliaoEquipmentCheckbox2"> 正常 / 不正常 </label>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="beiliaoEquipmentCheckbox2"> 正常 </label>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="beiliaoEquipmentUnCheckbox2"> 不正常 </label>
                         </td>
                     </tr>
                     <tr>
                         <td colspan="3">生产过程是否符合安全管理规定</td>
                         <td colspan="2">
-                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="beiliaoEquipmentCheckbox3"> 是 / 否</label>
+                            <label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="beiliaoEquipmentCheckbox3"> 是 / 否</label>
                         </td>
                     </tr>
                 </tbody>
@@ -1116,10 +1133,26 @@
                 </tr>
                 <tr>
                     <td>提取罐清场时间</td>
-                    <td><input type="text" class="form-control batchInput" id="EqclearDete1"></td>
-                    <td><input type="text" class="form-control batchInput" id="EqclearDete2"></td>
-                    <td><input type="text" class="form-control batchInput" id="EqclearDete3"></td>
-                    <td><input type="text" class="form-control batchInput" id="EqclearDete4"></td>
+                    <td class="text-center">
+                        <input type="text" class="datetimepicker selectTime" id="EqclearDete1">
+                        <p class="text-center">~</p>
+                        <input type="text" class="datetimepicker selectTime" id="EqclearOverDete1">
+                    </td>
+                    <td class="text-center">
+                        <input type="text" class="datetimepicker selectTime" id="EqclearDete2">
+                        <p class="text-center">~</p>
+                        <input type="text" class="datetimepicker selectTime" id="EqclearOverDete2">
+                    </td>
+                    <td class="text-center">
+                        <input type="text" class="datetimepicker selectTime" id="EqclearDete3">
+                        <p class="text-center">~</p>
+                        <input type="text" class="datetimepicker selectTime" id="EqclearOverDete3">
+                    </td>
+                    <td class="text-center">
+                        <input type="text" class="datetimepicker selectTime" id="EqclearDete4">
+                        <p class="text-center">~</p>
+                        <input type="text" class="datetimepicker selectTime" id="EqclearOverDete4">
+                    </td>
                 </tr>
                 <tr>
                     <td>操作人</td>
@@ -1371,7 +1404,8 @@
                         <td>吊篮式提取罐</td>
                         <td>22054~22057</td>
                         <td>
-                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="jianzhuEquipmentCheckbox1"> 正常 / 不正常 </label>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="jianzhuEquipmentCheckbox1"> 正常 </label>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="jianzhuEquipmentUnCheckbox1"> 不正常 </label>
                         </td>
                         <td rowspan="2" class="middle-center">
                             <input type="hidden" id="equipmentCheckbox" value={{ dir[0]["OperationPeople_b6"] }}>
@@ -1406,13 +1440,14 @@
                         <td>静置罐</td>
                         <td>22076~22083</td>
                         <td>
-                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="jianzhuEquipmentCheckbox2"> 正常 / 不正常 </label>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="jianzhuEquipmentCheckbox2"> 正常 </label>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="jianzhuEquipmentUnCheckbox2"> 不正常 </label>
                         </td>
                     </tr>
                     <tr>
                         <td colspan="3">生产过程是否符合安全管理规定</td>
                         <td colspan="2">
-                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="jianzhuEquipmentCheckbox3"> 是 / 否</label>
+                            <label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="jianzhuEquipmentCheckbox3"> 是 / 否</label>
                         </td>
                     </tr>
                 </tbody>
@@ -2094,7 +2129,8 @@
                         <td>MVR浓缩器</td>
                         <td>22032</td>
                         <td>
-                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="MVREquipmentCheckbox1"> 正常 / 不正常</label>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="MVREquipmentCheckbox1"> 正常 </label>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="MVREquipmentUnCheckbox1"> 不正常</label>
                         </td>
                         <td rowspan="2" class="middle-center">
                             <input type="hidden" id="equipmentCheckbox" value={{ dir[0]["OperationPeople_c7"] }}>
@@ -2129,13 +2165,14 @@
                         <td>MVR浓缩器</td>
                         <td>22033</td>
                         <td>
-                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="MVREquipmentCheckbox2"> 正常 / 不正常</label>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="MVREquipmentCheckbox2"> 正常 </label>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="MVREquipmentUnCheckbox2"> 不正常</label>
                         </td>
                     </tr>
                     <tr>
                         <td colspan="3">生产过程是否符合安全管理规定</td>
                         <td colspan="2">
-                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="MVREquipmentCheckbox3"> 是 / 否</label>
+                            <label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="MVREquipmentCheckbox3"> 是 / 否</label>
                         </td>
                     </tr>
                 </tbody>
@@ -2541,7 +2578,8 @@
                         <td rowspan="4">醇沉罐</td>
                         <td>22000</td>
                         <td>
-                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="CCEquipmentCheckbox1"> 正常 / 不正常</label>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="CCEquipmentCheckbox1"> 正常 </label>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="CCEquipmentUnCheckbox1"> 不正常</label>
                         </td>
                         <td rowspan="5" class="middle-center">
                             <input type="hidden" id="equipmentCheckbox" value={{ dir[0]["OperationPeople_d5"] }}>
@@ -2575,32 +2613,36 @@
                     <tr>
                         <td>22001</td>
                         <td>
-                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="CCEquipmentCheckbox2"> 正常 / 不正常</label>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="CCEquipmentCheckbox2"> 正常 </label>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="CCEquipmentUnCheckbox2"> 不正常</label>
                         </td>
                     </tr>
                     <tr>
                         <td>22002</td>
                         <td>
-                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="CCEquipmentCheckbox3"> 正常 / 不正常</label>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="CCEquipmentCheckbox3"> 正常 </label>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="CCEquipmentUnCheckbox3"> 不正常</label>
                         </td>
                     </tr>
                     <tr>
                         <td>22003</td>
                         <td>
-                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="CCEquipmentCheckbox4"> 正常 / 不正常</label>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="CCEquipmentCheckbox4"> 正常 </label>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="CCEquipmentUnCheckbox4"> 不正常</label>
                         </td>
                     </tr>
                     <tr>
                         <td>原料乙醇储罐</td>
                         <td>22006</td>
                         <td>
-                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="CCEquipmentCheckbox5"> 正常 / 不正常</label>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="CCEquipmentCheckbox5"> 正常 </label>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="CCEquipmentUnCheckbox5"> 不正常</label>
                         </td>
                     </tr>
                     <tr>
                         <td colspan="3">生产过程是否符合安全管理规定</td>
                         <td colspan="2">
-                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="CCEquipmentCheckbox6"> 是 / 否</label>
+                            <label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="CCEquipmentCheckbox6"> 是 / 否</label>
                         </td>
                     </tr>
                 </tbody>
@@ -3078,7 +3120,8 @@
                         <td>DN-1000单效浓缩器</td>
                         <td>22022</td>
                         <td>
-                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="DXNSEquipmentCheckbox1"> 正常 / 不正常</label>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="DXNSEquipmentCheckbox1"> 正常 </label>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="DXNSEquipmentUnCheckbox1"> 不正常</label>
                         </td>
                         <td rowspan="5" class="middle-center">
                             <input type="hidden" id="equipmentCheckbox" value={{ dir[0]["OperationPeople_e7"] }}>
@@ -3113,34 +3156,38 @@
                         <td>上清液贮存罐</td>
                         <td>22004</td>
                         <td>
-                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="DXNSEquipmentCheckbox2"> 正常 / 不正常</label>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="DXNSEquipmentCheckbox2"> 正常 </label>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="DXNSEquipmentUnCheckbox2"> 不正常</label>
                         </td>
                     </tr>
                     <tr>
                         <td>上清液贮存罐</td>
                         <td>22005</td>
                         <td>
-                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="DXNSEquipmentCheckbox3"> 正常 / 不正常</label>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="DXNSEquipmentCheckbox3"> 正常 </label>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="DXNSEquipmentUnCheckbox3"> 不正常</label>
                         </td>
                     </tr>
                     <tr>
                         <td>乙醇储罐</td>
                         <td>22008</td>
                         <td>
-                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="DXNSEquipmentCheckbox4"> 正常 / 不正常</label>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="DXNSEquipmentCheckbox4"> 正常 </label>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="DXNSEquipmentUnCheckbox4"> 不正常</label>
                         </td>
                     </tr>
                     <tr>
                         <td>乙醇储罐</td>
                         <td>22009</td>
                         <td>
-                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="DXNSEquipmentCheckbox5"> 正常 / 不正常</label>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="DXNSEquipmentCheckbox5"> 正常 </label>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="DXNSEquipmentUnCheckbox5"> 不正常</label>
                         </td>
                     </tr>
                     <tr>
                         <td colspan="3">生产过程是否符合安全管理规定</td>
                         <td colspan="2">
-                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="DXNSEquipmentCheckbox6"> 是 / 否</label>
+                            <label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="DXNSEquipmentCheckbox6"> 是 / 否</label>
                         </td>
                     </tr>
                 </tbody>
@@ -3705,11 +3752,20 @@
             }
             function addInputData(ids,res){
                 $("#" + ids).val(res)
-                $("input[name=FilterCheckbox],input[name=equipmentCheckbox]").each(function(){
+                $("input[name=FilterCheckbox]").each(function(){
                     if($(this).val() == 'false'){
                         $(this).prop("checked",false)
                     }else if($(this).val() == 'true'){
                         $(this).prop("checked",true)
+                    }
+                })
+                $("input[name=equipmentCheckbox]").each(function(){
+                    if($(this).val() == 1){
+                        $(this).prop("checked",true)
+                    }else if($(this).val() == 2){
+                        $(this).prop("indeterminate",true)
+                    }else if($(this).val() == 3){
+                        $(this).prop("checked",false)
                     }
                 })
             }
@@ -4181,8 +4237,10 @@
                         endDate7:$("#endDate6").val(),
                         endDate8:$("#endDate6").val(),
 
-                        beiliaoEquipmentCheckbox1:$("#beiliaoEquipmentCheckbox1").prop("checked"),
-                        beiliaoEquipmentCheckbox2:$("#beiliaoEquipmentCheckbox2").prop("checked"),
+                        beiliaoEquipmentCheckbox1:$("#beiliaoEquipmentCheckbox1").val(),
+                        beiliaoEquipmentUnCheckbox1:$("#beiliaoEquipmentUnCheckbox1").val(),
+                        beiliaoEquipmentCheckbox2:$("#beiliaoEquipmentCheckbox2").val(),
+                        beiliaoEquipmentUnCheckbox2:$("#beiliaoEquipmentUnCheckbox2").val(),
                         beiliaoEquipmentCheckbox3:$("#beiliaoEquipmentCheckbox3").prop("checked"),
                         //煎煮表单
                         pot1:$("#pot1").val(),
@@ -4225,12 +4283,18 @@
                         EqclearDete2:$("#EqclearDete2").val(),
                         EqclearDete3:$("#EqclearDete3").val(),
                         EqclearDete4:$("#EqclearDete4").val(),
+                        EqclearOverDete1:$("#EqclearOverDete1").val(),
+                        EqclearOverDete2:$("#EqclearOverDete2").val(),
+                        EqclearOverDete3:$("#EqclearOverDete3").val(),
+                        EqclearOverDete4:$("#EqclearOverDete4").val(),
 
                         NCFilterCheckbox1:$("#NCFilterCheckbox1").prop("checked"),
                         NCFilterCheckbox2:$("#NCFilterCheckbox2").prop("checked"),
 
-                        jianzhuEquipmentCheckbox1:$("#jianzhuEquipmentCheckbox1").prop("checked"),
-                        jianzhuEquipmentCheckbox2:$("#jianzhuEquipmentCheckbox2").prop("checked"),
+                        jianzhuEquipmentCheckbox1:$("#jianzhuEquipmentCheckbox1").val(),
+                        jianzhuEquipmentUnCheckbox1:$("#jianzhuEquipmentUnCheckbox1").val(),
+                        jianzhuEquipmentCheckbox2:$("#jianzhuEquipmentCheckbox2").val(),
+                        jianzhuEquipmentUnCheckbox2:$("#jianzhuEquipmentUnCheckbox2").val(),
                         jianzhuEquipmentCheckbox3:$("#jianzhuEquipmentCheckbox3").prop("checked"),
 
                         //浓缩表单
@@ -4239,8 +4303,10 @@
                         NCTemp1:$("#NCTemp1").val(),
                         NCTemp2:$("#NCTemp2").val(),
 
-                        MVREquipmentCheckbox1:$("#MVREquipmentCheckbox1").prop("checked"),
-                        MVREquipmentCheckbox2:$("#MVREquipmentCheckbox2").prop("checked"),
+                        MVREquipmentCheckbox1:$("#MVREquipmentCheckbox1").val(),
+                        MVREquipmentUnCheckbox1:$("#MVREquipmentUnCheckbox1").val(),
+                        MVREquipmentCheckbox2:$("#MVREquipmentCheckbox2").val(),
+                        MVREquipmentUnCheckbox2:$("#MVREquipmentUnCheckbox2").val(),
                         MVREquipmentCheckbox3:$("#MVREquipmentCheckbox3").prop("checked"),
                         //醇沉表单
                         CCEQPName0:$("#CCEQPName0").val(),
@@ -4275,11 +4341,16 @@
                         CCFilterCheckbox2:$("#CCFilterCheckbox2").prop("checked"),
                         CCFilterCheckbox3:$("#CCFilterCheckbox3").prop("checked"),
 
-                        CCEquipmentCheckbox1:$("#CCEquipmentCheckbox1").prop("checked"),
-                        CCEquipmentCheckbox2:$("#CCEquipmentCheckbox2").prop("checked"),
-                        CCEquipmentCheckbox3:$("#CCEquipmentCheckbox3").prop("checked"),
-                        CCEquipmentCheckbox4:$("#CCEquipmentCheckbox4").prop("checked"),
-                        CCEquipmentCheckbox5:$("#CCEquipmentCheckbox5").prop("checked"),
+                        CCEquipmentCheckbox1:$("#CCEquipmentCheckbox1").val(),
+                        CCEquipmentUCheckbox1:$("#CCEquipmentUCheckbox1").val(),
+                        CCEquipmentCheckbox2:$("#CCEquipmentCheckbox2").val(),
+                        CCEquipmentUnCheckbox2:$("#CCEquipmentUnCheckbox2").val(),
+                        CCEquipmentCheckbox3:$("#CCEquipmentCheckbox3").val(),
+                        CCEquipmentUnCheckbox3:$("#CCEquipmentUnCheckbox3").val(),
+                        CCEquipmentCheckbox4:$("#CCEquipmentCheckbox4").val(),
+                        CCEquipmentUnCheckbox4:$("#CCEquipmentUnCheckbox4").val(),
+                        CCEquipmentCheckbox5:$("#CCEquipmentCheckbox5").val(),
+                        CCEquipmentUnCheckbox5:$("#CCEquipmentUnCheckbox5").val(),
                         CCEquipmentCheckbox6:$("#CCEquipmentCheckbox6").prop("checked"),
                         //单效浓缩表单
                         DXNSFilterCheckbox1:$("#DXNSFilterCheckbox1").prop("checked"),
@@ -4287,11 +4358,16 @@
 
                         DXNSprop:$("#DXNSprop").val(),
 
-                        DXNSEquipmentCheckbox1:$("#DXNSEquipmentCheckbox1").prop("checked"),
-                        DXNSEquipmentCheckbox2:$("#DXNSEquipmentCheckbox2").prop("checked"),
-                        DXNSEquipmentCheckbox3:$("#DXNSEquipmentCheckbox3").prop("checked"),
-                        DXNSEquipmentCheckbox4:$("#DXNSEquipmentCheckbox4").prop("checked"),
-                        DXNSEquipmentCheckbox5:$("#DXNSEquipmentCheckbox5").prop("checked"),
+                        DXNSEquipmentCheckbox1:$("#DXNSEquipmentCheckbox1").val(),
+                        DXNSEquipmentUnCheckbox1:$("#DXNSEquipmentUnCheckbox1").val(),
+                        DXNSEquipmentCheckbox2:$("#DXNSEquipmentCheckbox2").val(),
+                        DXNSEquipmentUnCheckbox2:$("#DXNSEquipmentUnCheckbox2").val(),
+                        DXNSEquipmentCheckbox3:$("#DXNSEquipmentCheckbox3").val(),
+                        DXNSEquipmentUnCheckbox3:$("#DXNSEquipmentUnCheckbox3").val(),
+                        DXNSEquipmentCheckbox4:$("#DXNSEquipmentCheckbox4").val(),
+                        DXNSEquipmentUnCheckbox4:$("#DXNSEquipmentUnCheckbox4").val(),
+                        DXNSEquipmentCheckbox5:$("#DXNSEquipmentCheckbox5").val(),
+                        DXNSEquipmentUnCheckbox5:$("#DXNSEquipmentUnCheckbox5").val(),
                         DXNSEquipmentCheckbox6:$("#DXNSEquipmentCheckbox6").prop("checked"),
                         //收膏表单
                         plasticBatch1:$("#plasticBatch1").val(),
