@@ -6312,24 +6312,29 @@ def addEquipmentWork():
                 # IsStandard = data['IsStandard']# 生产过程是否符合安全管理规定
                 confirm = data['confirm']
                 if (confirm == "操作人"):
-                    db_session.add(
-                        EquipmentWork(
-                            BatchID=BatchID,
-                            PUID=int(PUID),
-                            # EQPName=EQPName,
-                            # EQPCode=EQPCode,
-                            # ISNormal=ISNormal,
-                            OperationPeople=current_user.Name,
-                            # CheckedPeople="",
-                            # IsStandard=IsStandard,
-                            # QAConfirmPeople="",
-                            OperationDate=datetime.datetime.now()
-                        ))
+                    oclass = db_session.query(EquipmentWork).filter(EquipmentWork.BatchID == BatchID,EquipmentWork.PUID == PUID).first()
+                    if not oclass:
+                        db_session.add(
+                            EquipmentWork(
+                                BatchID=BatchID,
+                                PUID=int(PUID),
+                                # EQPName=EQPName,
+                                # EQPCode=EQPCode,
+                                # ISNormal=ISNormal,
+                                OperationPeople=current_user.Name,
+                                # CheckedPeople="",
+                                # IsStandard=IsStandard,
+                                # QAConfirmPeople="",
+                                OperationDate=datetime.datetime.now()
+                            ))
+                    else:
+                        oclass.OperationPeople = oclass.OperationPeople + " " + current_user.Name
+                        OperationDate = datetime.datetime.now()
                 else:
                     oclasss = db_session.query(EquipmentWork).filter(EquipmentWork.PUID == PUID,
                                                                      EquipmentWork.BatchID == BatchID).all()
                     for oc in oclasss:
-                        oc.CheckedPeople = current_user.Name
+                        oc.CheckedPeople = oc.CheckedPeople + " " + current_user.Name
                         oc.OperationDate = datetime.datetime.now()
                 db_session.commit()
                 return 'OK'
