@@ -1661,34 +1661,34 @@ def EquipmentTimeStatisticsGetData():
 
 def read_Excel(file_dir):
     workbook = xlrd.open_workbook(file_dir)
-    wb = openpyxl.load_workbook(file_dir)
+    # wb = openpyxl.load_workbook(file_dir)
     if workbook:
-        for i in range(0,len(wb.sheetnames)):
+        for i in range(0,len(workbook._sheet_names)):
             table = workbook.sheet_by_index(i)
             if table:
                 PNamelist = []
                 for row in range(2, table.nrows):
                     row_value = table.row_values(row)
-                    if len(row_value)==12:
+                    if len(row_value)==11:
                         if (row_value[2] == "" or row_value[2] == None) and (row_value[3] == "" or row_value[3] == None):
                             continue
-                        val1 = row_value[1]
+                        val1 = row_value[0]
                         if val1 != "" and val1 != None:
-                            PNamelist.append(row_value[1])
+                            PNamelist.append(row_value[0])
                         else:
                             val1 = PNamelist[-1]
                         db_session.add(EquipmentReportingRecord(
                             PUIDName=val1,
-                            FailureDate=row_value[2],
-                            Shift=row_value[3],
-                            EQPName=row_value[4],
-                            FailureReportingDesc=row_value[5],
-                            AnalysisFailure=row_value[6],
-                            Precautions=row_value[7],
-                            UnAffectingProduction=row_value[8],
-                            AffectingProduction=row_value[9],
-                            Repairman=row_value[10],
-                            ReplacementOfSpareParts = row_value[11]
+                            FailureDate=row_value[1],
+                            Shift=row_value[2],
+                            EQPName=row_value[3],
+                            FailureReportingDesc=row_value[4],
+                            AnalysisFailure=row_value[5],
+                            Precautions=row_value[6],
+                            UnAffectingProduction=row_value[7],
+                            AffectingProduction=row_value[8],
+                            Repairman=row_value[9],
+                            ReplacementOfSpareParts = row_value[10]
                         ))
                     if len(row_value)==10:
                         db_session.add(EquipmentReportingRecord(
