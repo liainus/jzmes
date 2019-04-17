@@ -8638,6 +8638,7 @@ def refractometerDataHistory():
                     sql = "SELECT  [SampleTime] AS SampleTime,[t|ZGY_ZGL] AS ZGY_ZGL FROM [MES].[dbo].[DataHistory] WHERE SampleTime BETWEEN '" + begin + "' AND '" + end +"'"
                     re = db_session.execute(sql).fetchall()
                     db_session.close()
+                    div = {}
                     dic = []
                     for i in re:
                         t = str(i[0].strftime("%Y-%m-%d %H:%M:%S"))
@@ -8646,8 +8647,8 @@ def refractometerDataHistory():
                             v = ""
                         dir = [t,v]
                         dic.append(dir)
-                    print(dic)
-                    return json.dumps(str(dic), cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+                    div["ZGL"] = dic
+                    return json.dumps(div, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
             logger.error(e)
