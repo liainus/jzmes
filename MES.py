@@ -8647,7 +8647,7 @@ def refractometerDataHistory():
                         dir = [t,v]
                         dic.append(dir)
                     print(dic)
-                    return str(dic)
+                    return json.dumps(str(dic), cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
             logger.error(e)
