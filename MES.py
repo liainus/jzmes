@@ -6306,10 +6306,6 @@ def addEquipmentWork():
             if len(json_str) > 2:
                 PUID = data['PUID']
                 BatchID = data['BatchID']
-                # EQPName = data['EQPName']# 设备名称
-                # EQPCode = data['EQPCode']# 设备编码
-                # ISNormal = data['ISNormal']# 设备运转情况
-                # IsStandard = data['IsStandard']# 生产过程是否符合安全管理规定
                 confirm = data['confirm']
                 if (confirm == "操作人"):
                     oclass = db_session.query(EquipmentWork).filter(EquipmentWork.BatchID == BatchID,EquipmentWork.PUID == PUID).first()
@@ -6334,7 +6330,10 @@ def addEquipmentWork():
                     oclasss = db_session.query(EquipmentWork).filter(EquipmentWork.PUID == PUID,
                                                                      EquipmentWork.BatchID == BatchID).all()
                     for oc in oclasss:
-                        oc.CheckedPeople = oc.CheckedPeople + " " + current_user.Name
+                        if not oc.CheckedPeople:
+                            oc.CheckedPeople = current_user.Name
+                        else:
+                            oc.CheckedPeople = oc.CheckedPeople + " " + current_user.Name
                         oc.OperationDate = datetime.datetime.now()
                 db_session.commit()
                 return 'OK'
