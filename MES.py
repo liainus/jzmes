@@ -8640,7 +8640,11 @@ def refractometerDataHistory():
                     db_session.close()
                     dic = []
                     for i in re:
-                        dir = [str(i)[1:-1]]
+                        t = str(i[0].strftime("%Y-%m-%d %H:%M:%S"))
+                        v = i[1]
+                        if not v:
+                            v = ""
+                        dir = [t,v]
                         dic.append(dir)
                     print(dic)
                     return str(dic)
