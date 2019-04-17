@@ -8621,6 +8621,33 @@ def refractometerRedis():
             logger.error(e)
             insertSyslog("error", "折光仪实时数据查询报错Error：" + str(e), current_user.Name)
 
+@app.route('/refractometerDataHistory', methods=['POST', 'GET'])
+def refractometerDataHistory():
+    '''
+    折光仪历史数据
+    :return:
+    '''
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                begin = data.get('begin')
+                end = data.get('end')
+                if begin and end:#[t|ZGY_Temp] AS ZGY_Temp
+                    sql = "SELECT  [SampleTime] AS SampleTime,[t|ZGY_ZGL] AS ZGY_ZGL FROM [MES].[dbo].[DataHistory] WHERE SampleTime BETWEEN '" + begin + "' AND '" + end +"'"
+                    re = db_session.execute(sql).fetchall()
+                    db_session.close()
+                    dic = []
+                    for i in re:
+                        dir = [str(i)[1:-1]]
+                        dic.append(dir)
+                    print(dic)
+                    return str(dic)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "路由：/EquipmentManagementManual/ManualShow，说明书信息获取Error：" + str(e), current_user.Name)
 
 if __name__ == '__main__':
     app.run(debug=True)
