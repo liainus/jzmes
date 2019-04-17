@@ -4128,19 +4128,19 @@
                 var checkboxChecked = $("input[name=equipmentCheckbox]").length //复选框数量
                 $.messager.confirm('确定操作', '是否要进行确认？确认后不允许撤回。', function (flag) {
                     if (flag) {
-                        if(confirm == "操作人"){
-                            var number = ""
-                            $("input:checkbox[name=equipmentCheckbox]:checked").each(function(k){
-                                number = k
-                            })
-                            if(number == checkboxChecked - 1){ //判断是否全部选中设备
-                                equipmentConfirmFun(PUID,BatchID,confirm)
-                            }else{
-                                $.messager.alert('提示', "当前所有的设备正常才可以做确认操作", 'info');
-                            }
-                        }else{
+                        {#if(confirm == "操作人"){#}
+                        {#    var number = ""#}
+                        {#    $("input:checkbox[name=equipmentCheckbox]:checked").each(function(k){#}
+                        {#        number = k#}
+                        {#    })#}
+                        {#    if(number == checkboxChecked - 1){ //判断是否全部选中设备#}
+                        {#        equipmentConfirmFun(PUID,BatchID,confirm)#}
+                        {#    }else{#}
+                        {#        $.messager.alert('提示', "当前所有的设备正常才可以做确认操作", 'info');#}
+                        {#    }#}
+                        {# }else{#}
                             equipmentConfirmFun(PUID,BatchID,confirm)
-                        }
+                        {# }#}
                     }
                 })
             })
