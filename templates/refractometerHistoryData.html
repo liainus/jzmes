@@ -19,33 +19,16 @@
             $("#beginTime").datetimebox("setValue", myformatter(new Date()))
             $("#endTime").datetimebox("setValue", myformatter(new Date()))
             $('#searchBatchBtn').on('click', function(){
-                var result = ''
-                $.ajax({
-                    url: '/QualityControl/YieldCompare/getBatch',
-                    type: 'post',
-                    data: {
-                        beginTime:$('#beginTime').datebox('getValue'),
-                        endTime:$('#endTime').datebox('getValue')
-                    },
-                    success: function (data) {
-                        if (data != "NO") {
-                            $.messager.show({
-                                title: '提示',
-                                timeout: 500,
-                                msg: '查询成功',
-                                style: {
-                                    right: '',
-                                    top: document.body.scrollTop + document.documentElement.scrollTop,
-                                    bottom: ''
-                                }
-                            });
-                            result = JSON.parse(data)
-
-                        }else{
-                            $.messager.alert('提示', '当前时间段无数据！', 'info');
-                        }
-                    }
-                })
+                var date1 = $('#beginTime').datebox('getValue')
+                var date2 = $('#endTime').datebox('getValue')
+                var date3 = (new Date(date2)).getTime() -  (new Date(date1)).getTime()
+                if(date3 > 7200000){
+                    $.messager.alert('提醒！', '您选择的时间段数据量较大，为保证系统流畅性，起止时间相差不能大于2小时', 'warning');
+                }else if(date3 <= 0){
+                    $.messager.alert('提醒！', '截止时间不能小于开始时间', 'warning');
+                }else{
+                    getNewData()
+                }
             });
             $("#LeftTree").tree({
                 url:'',
@@ -59,112 +42,86 @@
                     getNewData()
                 }
             })
-            function getNewData(tag){
+            function getNewData(){
                 var myChart = echarts.init(document.getElementById("main"))
                 myChart.showLoading();
                 $.ajax({
-                    url: "/QualityControl/BatchDataCompare",
-                    type: "post",
+                    url: '/refractometerDataHistory',
+                    type: 'get',
                     data: {
-                        batch: batch
+                        begin:$('#beginTime').datebox('getValue'),
+                        end:$('#endTime').datebox('getValue')
                     },
-                    traditional:true,
                     success: function (data) {
+                        data = JSON.parse(data)
                         myChart.hideLoading();
                         myChart.setOption(option = {
                             tooltip: {
-                                trigger: 'axis',
-                                axisPointer: {
-                                    type: 'shadow'
-                                }
+                                trigger: 'item',
+                                formatter : function (params) {
+                                    var date = new Date(params.value[0]);
+                                    data = date.getFullYear() + '-'
+                                       + (date.getMonth() + 1) + '-'
+                                       + date.getDate() + ' '
+                                       + date.getHours() + ':'
+                                       + date.getMinutes();
+                                    return data + '<br/>'
+                                        + params.seriesName + ":" + params.value[1]
+                                 }
                             },
                             legend: {
-                                data: ['投入量', '产出量', '得率']
+                                data: ["折光率","温度"]
                             },
                             toolbox: {
                                 feature: {
+                                    mark : {show: true},
                                     dataView: {show: true, readOnly: false},
-                                    magicType: {show: true, type: ['line', 'bar']},
                                     restore: {show: true},
                                     saveAsImage: {show: true}
                                 }
                             },
+                            dataZoom: {
+                                show: true,
+                                start : 0
+                            },
+                            grid: {
+                                y2: 80
+                            },
                             xAxis: {
-                                type: 'category',
-                                data: []
+                                type : 'time',
+                                splitNumber:10
                             },
                             yAxis: [
                                 {
-                                    type: 'value',
-                                    name: '重量',
-                                    min: 0,
-                                    interval: 500,
+                                    type : 'value',
+                                    name: '折光率',
                                     axisLabel: {
-                                        formatter: '{value} kg'
+                                        formatter: '{value} Brix'
                                     }
                                 }, {
                                     type: 'value',
-                                    name: '百分比',
-                                    min: 0,
-                                    max: 100,
-                                    interval: 10,
+                                    name: '温度',
                                     axisLabel: {
-                                        formatter: '{value} %'
+                                        formatter: '{value} °C'
                                     }
                                 }
                             ],
                             series: [{
-                                name: "投入量",
-                                type: 'bar',
-                                label: {
-                                    normal: {
-                                        show: true,
-                                        position: 'top'
-                                    }
-                                },
-                                itemStyle:{
-                                    normal:{
-                                        color:'#90ed7d'
-                                    }
-                                },
-                                data: []
-                            }, {
-                                name: "产出量",
-                                type: 'bar',
-                                label: {
-                                    normal: {
-                                        show: true,
-                                        position: 'top'
-                                    }
-                                },
-                                itemStyle:{
-                                    normal:{
-                                        color:'#f7a35c'
-                                    }
-                                },
-                                data: []
-                            }, {
-                                name: "得率",
-                                type: 'bar',
-                                yAxisIndex: 1,
-                                label: {
-                                    normal: {
-                                        show: true,
-                                        position: 'top',
-                                        formatter: '{c} %'
-                                    }
-                                },
-                                itemStyle:{
-                                    normal:{
-                                        color:'#7cb5ec'
-                                    }
-                                },
-                                data: []
+                                name: "折光率",
+                                type: 'line',
+                                yAxisIndex:0,
+                                showAllSymbol: true,
+                                data: data.ZGL
+                            },{
+                                name: "温度",
+                                type: 'line',
+                                yAxisIndex:1,
+                                showAllSymbol: true,
+                                data: data.Temp
                             }]
                         });
                         myChart.setOption(option);
                     }
-
                 })
             }
             function Appendzero(obj){
@@ -187,10 +144,10 @@
     </script>
 </head>
 <body>
-    <div class="left-tree" style="width: 15%;float: left;vertical-align: top;border: 1px solid #ccc;margin: 1%;padding: 1%;">
-        <ul id="LeftTree" class="easyui-tree"></ul>
-    </div>
-    <div id="container" style="width: 80%;float: left;vertical-align: top;">
+{#    <div class="left-tree" style="width: 15%;float: left;vertical-align: top;border: 1px solid #ccc;margin: 1%;padding: 1%;">#}
+{#        <ul id="LeftTree" class="easyui-tree"></ul>#}
+{#    </div>#}
+    <div id="container" style="width: 100%;float: left;vertical-align: top;">
         <div style="padding:10px 0px 5px 10px;">
             <a>  起止日期:  </a>
             <input class="easyui-datetimebox" id="beginTime" data-options="required:true,showSeconds:false,editable:false" style="width:166px;height:35px;line-height:35px;">
