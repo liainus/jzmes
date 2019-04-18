@@ -8635,19 +8635,29 @@ def refractometerDataHistory():
                 begin = data.get('begin')
                 end = data.get('end')
                 if begin and end:#[t|ZGY_Temp] AS ZGY_Temp
-                    sql = "SELECT  [SampleTime] AS SampleTime,[t|ZGY_ZGL] AS ZGY_ZGL FROM [MES].[dbo].[DataHistory] WHERE SampleTime BETWEEN '" + begin + "' AND '" + end +"'"
-                    re = db_session.execute(sql).fetchall()
+                    sql1 = "SELECT  [SampleTime] AS SampleTime,[t|ZGY_ZGL] AS ZGY_ZGL FROM [MES].[dbo].[DataHistory] WHERE SampleTime BETWEEN '" + begin + "' AND '" + end +"'"
+                    re1 = db_session.execute(sql1).fetchall()
+                    sql2 = "SELECT  [SampleTime] AS SampleTime,[t|ZGY_Temp] AS ZGY_Temp FROM [MES].[dbo].[DataHistory] WHERE SampleTime BETWEEN '" + begin + "' AND '" + end + "'"
+                    re2 = db_session.execute(sql2).fetchall()
                     db_session.close()
                     div = {}
                     dic = []
-                    for i in re:
+                    for i in re1:
                         t = str(i[0].strftime("%Y-%m-%d %H:%M:%S"))
                         v = i[1]
                         if not v:
                             v = ""
                         dir = [t,v]
                         dic.append(dir)
-                    div["ZGL"] = dic
+                    diy = []
+                    for i in re2:
+                        t = str(i[0].strftime("%Y-%m-%d %H:%M:%S"))
+                        v = i[1]
+                        if not v:
+                            v = ""
+                        diy = [t, v]
+                        dic.append(diy)
+                    div["Temp"] = diy
                     return json.dumps(div, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
