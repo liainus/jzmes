@@ -2386,8 +2386,13 @@
                     </tr>
                     <tr>
                         <td colspan="2">浓缩液体积</td>
-                        <td><input type="text" class="form-control batchInput" id="nsy_0_0"></td>
-                        <td rowspan="7" class="middle-center">
+                        <td>
+                            <div class="input-group">
+                                <input type="text" class="form-control batchInput" id="nsy_0_0">
+                                <div class="input-group-addon">L</div>
+                            </div>
+                        </td>
+                        <td rowspan="10" class="middle-center">
                             {% if '82' == flag %}
                                 {{ dir[0]["OperationPeople_d3"] }}
                                 <a href="javascript:;" class="btn btn-primary OperationConfirm" name="醇沉开始">确认</a>
@@ -2399,7 +2404,7 @@
                                 {{ dir[0]["OperationPeople_d3"] }}
                             {% endif %}
                         </td>
-                        <td rowspan="7" class="middle-center">
+                        <td rowspan="10" class="middle-center">
                             {% if '82' == flag %}
                                 {{ dir[0]["CheckedPeople_d3"] }}
                             {% endif %}
@@ -2417,7 +2422,12 @@
                     </tr>
                     <tr>
                         <td colspan="2">95%乙醇用量</td>
-                        <td><input type="text" class="form-control batchInput" id="yc_0_0"></td>
+                        <td>
+                            <div class="input-group">
+                                <input type="text" class="form-control batchInput" id="yc_0_0">
+                                <div class="input-group-addon">L</div>
+                            </div>
+                        </td>
                     </tr>
                     <tr>
                         <td colspan="2">回收乙醇用量、浓度</td>
@@ -2426,6 +2436,28 @@
                                 <input type="text" class="form-control batchInput" id="hs_1">
                                 <div class="input-group-addon">L</div>
                                 <input type="text" class="form-control batchInput" id="hs_2">
+                                <div class="input-group-addon">%</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">回收乙醇用量、浓度</td>
+                        <td>
+                            <div class="input-group">
+                                <input type="text" class="form-control batchInput" id="hs_3">
+                                <div class="input-group-addon">L</div>
+                                <input type="text" class="form-control batchInput" id="hs_4">
+                                <div class="input-group-addon">%</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">配制乙醇</td>
+                        <td>
+                            <div class="input-group">
+                                <input type="text" class="form-control batchInput" id="hs_5">
+                                <div class="input-group-addon">L</div>
+                                <input type="text" class="form-control batchInput" id="hs_6">
                                 <div class="input-group-addon">%</div>
                             </div>
                         </td>
@@ -2445,11 +2477,15 @@
                     <tr>
                         <td rowspan="2">静置24h</td>
                         <td>开始时间</td>
-                        <td><input type="text" class="form-control batchInput" id="jzStartTime0"></td>
+                        <td><input type="text" class="form-control ProDate" id="jzStartTime0"></td>
                     </tr>
                     <tr>
                         <td>结束时间</td>
-                        <td><input type="text" class="form-control batchInput" id="jzEndTime0"></td>
+                        <td><input type="text" class="form-control ProDate" id="jzEndTime0"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">醇沉上清液过筛</td>
+                        <td><label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="CCFilterCheckbox4"> 是 / 否</label></td>
                         <td>QA确认人</td>
                         <td class="middle-center">
                             <input type="hidden" id="QAreadycheckbox" value={{ dir[0]["QAConfirmPeople_d3"] }}>
@@ -2990,7 +3026,7 @@
             <table class="table table-bordered">
                 <tbody>
                     <tr>
-                        <td class="tdWidth300">比重1.15（80℃）</td>
+                        <td class="tdWidth300">本品为棕红色至褐色的清膏</td>
                         <td><label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="DXNSFilterCheckbox2"> 是 / 否</label></td>
                         <td rowspan="2" class="tdWidth100">QA确认人</td>
                         <td rowspan="2" class="middle-center">
@@ -3007,7 +3043,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td>比重：1.24~1.26</td>
+                        <td>比重：1.24~1.26（20℃）</td>
                         <td><input type="text" class="form-control batchInput" id="DXNSprop"></td>
                     </tr>
                 </tbody>
@@ -4337,9 +4373,14 @@
 
                         hs_1:$("#hs_1").val(),
                         hs_2:$("#hs_2").val(),
+                        hs_3:$("#hs_3").val(),
+                        hs_4:$("#hs_4").val(),
+                        hs_5:$("#hs_5").val(),
+                        hs_6:$("#hs_6").val(),
 
                         CCFilterCheckbox2:$("#CCFilterCheckbox2").prop("checked"),
                         CCFilterCheckbox3:$("#CCFilterCheckbox3").prop("checked"),
+                        CCFilterCheckbox4:$("#CCFilterCheckbox4").prop("checked"),
 
                         CCEquipmentCheckbox1:$("#CCEquipmentCheckbox1").val(),
                         CCEquipmentUCheckbox1:$("#CCEquipmentUCheckbox1").val(),
