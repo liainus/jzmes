@@ -16,8 +16,9 @@
     <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
     <script>
         $(function(){
-            $("#beginTime").datetimebox("setValue", myformatter(new Date()))
+            $("#beginTime").datetimebox("setValue", myformatter(new Date(new Date().getTime() - 1*60*60*1000)))
             $("#endTime").datetimebox("setValue", myformatter(new Date()))
+            $("#searchBatchBtn").click();
             $('#searchBatchBtn').on('click', function(){
                 var date1 = $('#beginTime').datebox('getValue')
                 var date2 = $('#endTime').datebox('getValue')
@@ -30,18 +31,18 @@
                     getNewData()
                 }
             });
-            $("#LeftTree").tree({
-                url:'',
-                checkbox:true,
-                animate:true,
-                loadFilter:function(data){
-                    return data;
-                },
-                onCheck:function(node,checked){
-                    console.log(node)
-                    getNewData()
-                }
-            })
+            {#$("#LeftTree").tree({#}
+            {#    url:'',#}
+            {#    checkbox:true,#}
+            {#    animate:true,#}
+            {#    loadFilter:function(data){#}
+            {#        return data;#}
+            {#    },#}
+            {#    onCheck:function(node,checked){#}
+            {#        console.log(node)#}
+            {#        getNewData()#}
+            {#    }#}
+            {# })#}
             function getNewData(){
                 var myChart = echarts.init(document.getElementById("main"))
                 myChart.showLoading();
