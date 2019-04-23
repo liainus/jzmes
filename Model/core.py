@@ -2550,6 +2550,9 @@ class MaterialBOM(Base):
 	#物料ID:
 	MATID =Column(Integer, nullable=False, primary_key=False)
 
+	# 物料名称:
+	MaterialName = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
 	#投料批总重量:
 	BatchTotalWeight = Column(Integer, primary_key = False, autoincrement = False, nullable = True)
 	
@@ -2588,6 +2591,7 @@ class MaterialBOMWebIFS(object):
 				session.add(
 					Model.core.MaterialBOM(
 						MATID=odata['MATID'],
+						MaterialName = odata['MaterialName'],
 						BatchTotalWeight=odata['BatchTotalWeight'],
 						BatchSingleMATWeight=odata['BatchSingleMATWeight'],
 						Unit=odata['Unit'],
@@ -2664,6 +2668,7 @@ class MaterialBOMWebIFS(object):
 				MaterialBOMid = int(odata['ID'])
 				oclass = session.query(Model.core.MaterialBOM).filter_by(ID=MaterialBOMid).first()
 				oclass.MATID = odata['MATID']
+				oclass.MaterialName = odata['MaterialName']
 				oclass.BatchTotalWeight = odata['BatchTotalWeight']
 				oclass.BatchSingleMATWeight = odata['BatchSingleMATWeight']
 				oclass.Unit = odata['Unit']

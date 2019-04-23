@@ -31,6 +31,18 @@ from Model.system import CenterCost, ERPproductcode_prname, SchedulingStock, Pro
 from tools.common import logger,insertSyslog,insert,delete,update,select
 import os
 import openpyxl
+from spyne import Application
+from spyne import rpc
+from spyne import ServiceBase
+from spyne import Iterable, Integer, Unicode, Array, util, AnyDict, ModelBase
+from spyne.protocol.soap import Soap11
+from spyne.protocol.soap import Soap11
+from spyne.server.wsgi import WsgiApplication
+from wsgiref.simple_server import make_server
+import logging
+import suds
+from suds.client import Client
+from spyne import Application
 
 engine = create_engine(Model.Global.GLOBAL_DATABASE_CONNECT_STRING, deprecate_large_types=True)
 Session = sessionmaker(bind=engine)
@@ -302,4 +314,42 @@ def refractometerRealTimeData():
     '''
     return render_template('refractometerRealTimeData.html')
 
+def appendStr(i):
+    dir = {}
+    dir["a"] = str(i)
+    dir["b"] = str(i)
+    return dir
+class WMS_Interface(ServiceBase):
+    '''
+    接口服务端
+    '''
+    logging.basicConfig(level=logging.DEBUG)
+    @rpc(Unicode, Integer, _returns=Unicode())
+    def WMS_Order_Download(self, name, times):
+        '''
+        采购订单同步给WMS
+        :param name:
+        :param times:
+        :return:
+        '''
+        dic = []
+        for i in range(0, 3):
+            dic.append(appendStr(i))
+        return json.dumps(dic)
+    @rpc(Unicode, Integer, _returns=Iterable(Unicode))
+    def WMS_Order_Do_Action(self, name, times):
+        for i in range(times):
+            yield u'Hello, %s' % name
 
+wsdl_url = "http://127.0.0.1:5001/?wsdl"
+def say_hello_test(url,name):
+    client = Client(url)  # 创建一个webservice接口对象
+    re = client.service.WMS_Order_Download(name, 1) # 调用这个接口下的getMobileCodeInfo方法，并传入参数
+    print(re)
+    return re
+
+@Process.route('/aaaa', methods=['POST', 'GET'])
+def aaaa():
+    if request.method == 'GET':
+        re = say_hello_test(wsdl_url,"aa")
+        return re

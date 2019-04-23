@@ -58,7 +58,7 @@ from equipment_model.equipment_management import equip
 from tools.common import logger, insertSyslog, insert, delete, update, select
 from erp_model.erp_model import ERP
 from Model.node import NodeCollection
-from process_quality.processquality import Process
+from process_quality.processquality import Process, WMS_Interface
 import config
 
 # flask_login的初始化
@@ -8659,5 +8659,9 @@ def refractometerDataHistory():
             logger.error(e)
             insertSyslog("error", "路由：/EquipmentManagementManual/ManualShow，说明书信息获取Error：" + str(e), current_user.Name)
 
+
+
 if __name__ == '__main__':
     app.run(debug=True)
+
+
