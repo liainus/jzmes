@@ -81,11 +81,17 @@ $(function () {
                 field: 'MaterialName',
                 title: '物料名称',
                 align: 'center',
-                width: 100
+                width: 200
             },
             {
                 field: 'BatchTotalWeight',
                 title: '批物料重量',
+                align: 'center',
+                width: 100
+            },
+            {
+                field: 'ProductRuleID',
+                title: '产品定义ID',
                 align: 'center',
                 width: 100
             },
@@ -150,14 +156,14 @@ $(function () {
             $('input[name="iID"]').val();
             //$('input[name="iMATID"]').val();
             $('#iMATID option[value=""]').prop("selected", 'selected');//ID默认空
-            //$('input[name="iBatchTotalWeight"]').val();
+            $('input[name="iBatchTotalWeight"]').val();
             //$('input[name="iBatchSingleMATWeight"]').val();
             //$('input[name="iUnit"]').val();
             $('input[name="iBatchPercentage"]').val();
             //$('input[name="iProductRuleID"]').val();
             $('#iProductRuleID option[value=""]').prop("selected", 'selected');//ID默认空
             //$('input[name="iPUID"]').val();
-            $('#iPUID option[value=""]').prop("selected", 'selected');//ID默认空
+            //$('#iPUID option[value=""]').prop("selected", 'selected');//ID默认空
             //$('input[name="iMATTypeID"]').val();
             $('#iMATTypeID option[value=""]').prop("selected", 'selected');//ID默认空
             //$('input[name="iSeq"]').val();
@@ -181,12 +187,12 @@ $(function () {
                     $('input[name="iID"]').attr("disabled", "disabled");
                     $('input[name="iID"]').val(row.ID);
                     $('#iMATID option:contains('+row.MATID+')').prop("selected", 'selected');//区域ID赋值
-                    //$('input[name="iBatchTotalWeight"]').val(row.BatchTotalWeight);
+                    $('input[name="iBatchTotalWeight"]').val(row.BatchTotalWeight);
                     //$('input[name="iBatchSingleMATWeight"]').val(row.BatchSingleMATWeight);
                     //$('input[name="iUnit"]').val(row.Unit);
                     $('input[name="iBatchPercentage"]').val(row.BatchPercentage);
                     $('#iProductRuleID option:contains('+row.ProductRuleID+')').prop("selected", 'selected');//区域ID赋值
-                    $('#iPUID option:contains('+row.PUID+')').prop("selected", 'selected');//区域ID赋值
+                    //$('#iPUID option:contains('+row.PUID+')').prop("selected", 'selected');//区域ID赋值
                     $('#iMATTypeID option:contains('+row.MATTypeID+')').prop("selected", 'selected');//区域ID赋值
                     //$('input[name="iSeq"]').val(row.Seq);
                     //$('input[name="iGrade"]').val(row.Grade);
@@ -269,11 +275,6 @@ $(function () {
                alert('Warning：产品定义名称不能为空！');
                return false;
             }
-            stmp = $('#iPUID').find("option:selected").val();
-            if(Bee.StringUtils.isEmpty(stmp)) {
-               alert('Warning：工艺段名称不能为空！');
-               return false;
-            }
             stmp = $('#iMATTypeID').find("option:selected").val();
             if(Bee.StringUtils.isEmpty(stmp)) {
                alert('Warning：物料类型不能为空！');
@@ -299,15 +300,15 @@ $(function () {
                     ID:$('input[name="iID"]').val(),
                     MATID:$('#iMATID').find("option:selected").val(),
                     MaterialName:$('#iMATID').find("option:selected").html(),
-                    //BatchTotalWeight:$('input[name="iBatchTotalWeight"]').val(),
-                    //BatchSingleMATWeight:$('input[name="iBatchSingleMATWeight"]').val(),
-                    //Unit:$('input[name="iUnit"]').val(),
+                    BatchTotalWeight:$('input[name="iBatchTotalWeight"]').val(),
+                    BatchSingleMATWeight:'',
+                    Unit:'',
                     BatchPercentage:$('input[name="iBatchPercentage"]').val(),
                     ProductRuleID:$('#iProductRuleID').find("option:selected").val(),
-                    PUID:$('#iPUID').find("option:selected").val(),
+                    PUID:'',
                     MATTypeID:$('#iMATTypeID').find("option:selected").val(),
-                    //Seq:$('input[name="iSeq"]').val(),
-                    //Grade:$('input[name="iGrade"]').val()
+                    Seq:'',
+                    Grade:''
                 };
                 $.ajax({
                     url: urlAddr,
@@ -387,11 +388,17 @@ $(function () {
                 field: 'MaterialName',
                 title: '物料名称',
                 align: 'center',
-                width: 100
+                width: 200
             },
             {
                 field: 'BatchTotalWeight',
                 title: '批物料重量',
+                align: 'center',
+                width: 100
+            },
+            {
+                field: 'ProductRuleID',
+                title: '产品定义ID',
                 align: 'center',
                 width: 100
             },
