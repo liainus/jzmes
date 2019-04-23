@@ -331,8 +331,6 @@ $(function () {
                              },
                     success: function (data,response,status) {
                         $.messager.progress('close');
-                        {
-                }
                         var obj1 = eval(data);
                         if(obj1[0].status == "OK"){
                             $.messager.show({
@@ -348,7 +346,7 @@ $(function () {
 
                             $(formId).form('reset');
                             $(dialogId).dialog('close');
-                            $(tableId).datagrid('reload',{ url: "/allMaterialBOMs/Find?_t=" + new Date().getTime() });
+                            $(tableId).datagrid('reload');
                             //$(tableid).datagrid('clearSelections');
                         } else {
                             $.messager.alert(obj1[0].status + '失败！', '未知错误导致失败，请重试！', 'warning');
