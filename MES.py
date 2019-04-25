@@ -7601,7 +7601,7 @@ def BatchDataCompare():
                 input_data.append(int(input[0]))
                 output_data.append(int(output[0]))
                 sampling_data.append(float(sampling_quantity[0]))
-                data_list.append({'input': input_data, 'output': output_data, 'sampling_quantity': sampling_data})
+                data_list.append({'input': input_data, 'output': output_data, 'sampling_quantity': sampling_data, 'BatchID': batch})
             if len(data_error_list) >= 1:
                 return json.dumps(data_error_list, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
             json_data = json.dumps(data_list, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
