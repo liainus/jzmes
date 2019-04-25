@@ -18,15 +18,19 @@
         $(function(){
             $("#beginTime").datebox("setValue", myformatter(new Date(new Date().getTime() - 1*24*60*60*1000)))
             $("#endTime").datebox("setValue", myformatter(new Date()))
+            var beginTime = $('#beginTime').datebox('getValue')
+            var endTime = $('#endTime').datebox('getValue')
+            var brandName = $("#brandName").find("option:checked").html()
+            toJson(beginTime,endTime,brandName)
             $('#searchData').on('click', function(){
-                var beginTime = $('#beginTime').datebox('getValue')
-                var endTime = $('#endTime').datebox('getValue')
-                var brandName = $("#brandName").find("option:checked").html()
+                beginTime = $('#beginTime').datebox('getValue')
+                endTime = $('#endTime').datebox('getValue')
+                brandName = $("#brandName").find("option:checked").html()
                 toJson(beginTime,endTime,brandName)
             });
         })
         function toJson(beginTime,endTime,brandName){
-            var myChart = echarts.init($("#main"))
+            var myChart = echarts.init(document.getElementById("main"))
             myChart.showLoading();
             $.ajax({
                 url: "/QualityControl/BatchDataCompare",
@@ -37,109 +41,111 @@
                     BrandName:brandName
                 },
                 success: function (data) {
-                    if (data[0].input != "NO" || data[0].output != "NO" || data[0].sampling_quantity != "NO") {
-                        var input = ''
-                        var output = ''
-                        var sampling_quantity = ''
-                        for (var i = 0; i < data.length; i++) {
-                            input = data[i].input
-                            output = data[i].output
-                            sampling_quantity = data[i].sampling_quantity
-                        }
-                        myChart.hideLoading();
-                        myChart.setOption(option = {
-                            tooltip: {
-                                trigger: 'axis',
-                                axisPointer: {
-                                    type: 'shadow'
-                                }
-                            },
-                            legend: {
-                                data: ['投入量', '产出量', '得率']
-                            },
-                            toolbox: {
-                                feature: {
-                                    dataView: {show: true, readOnly: false},
-                                    magicType: {show: true, type: ['line', 'bar']},
-                                    restore: {show: true},
-                                    saveAsImage: {show: true}
-                                }
-                            },
-                            xAxis: {
-                                type: 'category',
-                                data: objBatch
-                            },
-                            yAxis: [
-                                {
-                                    type: 'value',
-                                    name: '重量',
-                                    min: 0,
-                                    interval: 500,
-                                    axisLabel: {
-                                        formatter: '{value} kg'
-                                    }
-                                }, {
-                                    type: 'value',
-                                    name: '百分比',
-                                    min: 0,
-                                    max: 100,
-                                    interval: 10,
-                                    axisLabel: {
-                                        formatter: '{value} %'
-                                    }
-                                }
-                            ],
-                            series: [{
-                                name: "投入量",
-                                type: 'bar',
-                                label: {
-                                    normal: {
-                                        show: true,
-                                        position: 'top'
-                                    }
-                                },
-                                itemStyle: {
-                                    normal: {
-                                        color: '#90ed7d'
-                                    }
-                                },
-                                data: input
-                            }, {
-                                name: "产出量",
-                                type: 'bar',
-                                label: {
-                                    normal: {
-                                        show: true,
-                                        position: 'top'
-                                    }
-                                },
-                                itemStyle: {
-                                    normal: {
-                                        color: '#f7a35c'
-                                    }
-                                },
-                                data: output
-                            }, {
-                                name: "得率",
-                                type: 'bar',
-                                yAxisIndex: 1,
-                                label: {
-                                    normal: {
-                                        show: true,
-                                        position: 'top',
-                                        formatter: '{c} %'
-                                    }
-                                },
-                                itemStyle: {
-                                    normal: {
-                                        color: '#7cb5ec'
-                                    }
-                                },
-                                data: sampling_quantity
-                            }]
-                        });
-                        myChart.setOption(option);
+                    var input = ''
+                    var output = ''
+                    var sampling_quantity = ''
+                    var BatchID = ''
+                    data = JSON.parse(data)
+                    console.log(data)
+                    for (var i = 0; i < data.length; i++) {
+                        input = data[i].input
+                        output = data[i].output
+                        sampling_quantity = data[i].sampling_quantity
+                        BatchID = data[i].BatchID
                     }
+                    myChart.hideLoading();
+                    myChart.setOption(option = {
+                        tooltip: {
+                            trigger: 'axis',
+                            axisPointer: {
+                                type: 'shadow'
+                            }
+                        },
+                        legend: {
+                            data: ['投入量', '产出量', '得率']
+                        },
+                        toolbox: {
+                            feature: {
+                                dataView: {show: true, readOnly: false},
+                                magicType: {show: true, type: ['line', 'bar']},
+                                restore: {show: true},
+                                saveAsImage: {show: true}
+                            }
+                        },
+                        xAxis: {
+                            type: 'category',
+                            data: BatchID
+                        },
+                        yAxis: [
+                            {
+                                type: 'value',
+                                name: '重量',
+                                min: 0,
+                                interval: 500,
+                                axisLabel: {
+                                    formatter: '{value} kg'
+                                }
+                            }, {
+                                type: 'value',
+                                name: '百分比',
+                                min: 0,
+                                max: 100,
+                                interval: 10,
+                                axisLabel: {
+                                    formatter: '{value} %'
+                                }
+                            }
+                        ],
+                        series: [{
+                            name: "投入量",
+                            type: 'bar',
+                            label: {
+                                normal: {
+                                    show: true,
+                                    position: 'top'
+                                }
+                            },
+                            itemStyle: {
+                                normal: {
+                                    color: '#90ed7d'
+                                }
+                            },
+                            data: input
+                        }, {
+                            name: "产出量",
+                            type: 'bar',
+                            label: {
+                                normal: {
+                                    show: true,
+                                    position: 'top'
+                                }
+                            },
+                            itemStyle: {
+                                normal: {
+                                    color: '#f7a35c'
+                                }
+                            },
+                            data: output
+                        }, {
+                            name: "得率",
+                            type: 'bar',
+                            yAxisIndex: 1,
+                            label: {
+                                normal: {
+                                    show: true,
+                                    position: 'top',
+                                    formatter: '{c} %'
+                                }
+                            },
+                            itemStyle: {
+                                normal: {
+                                    color: '#7cb5ec'
+                                }
+                            },
+                            data: sampling_quantity
+                        }]
+                    });
+                    myChart.setOption(option);
                 }
 
             })
