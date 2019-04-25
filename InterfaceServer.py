@@ -24,8 +24,8 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
     logging.getLogger('spyne.protocol.xml').setLevel(logging.DEBUG)
 
-    logging.info("listening to http://127.0.0.1:8000")
-    logging.info("wsdl is at: http://localhost:8000/?wsdl")
+    logging.info("listening to http://127.0.0.1:5001")
+    logging.info("wsdl is at: http://localhost:5001/?wsdl")
 
     # step4:Deploying the service using Soap via Wsgi
     # register the WSGI application as the handler to the wsgi server, and run the http server

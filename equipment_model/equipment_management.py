@@ -1642,12 +1642,6 @@ def EquipmentTimeStatisticsGetData():
             unit = dict_data.get('unit')
             select_time = dict_data.get('select_time')
             interval = dict_data.get('interval')
-        except Exception as e:
-            print(e)
-            logger.error(e)
-            insertSyslog("error", "路由：/RequipmentRunData/GetBatch，获取前端参数Error：" + str(e), current_user.Name)
-
-        try:
             # second、call the EquipmentRunRecordGet of methods to Obtain data
             data = EquipmentRunRecordGet(unit, brand, select_time, interval=interval)
             # third、return data to front end

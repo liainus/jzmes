@@ -7553,32 +7553,6 @@ def CPKCapture():
 def YieldCompare():
     return render_template('QualityControlYieldCompare.html')
 
-
-@app.route('/QualityControl/YieldCompare/getBatch', methods=['POST', 'GET'])
-def YieldCompareGetBatch():
-    if request.method == 'POST':
-        try:
-            data = request.values
-            beginTime = data['beginTime']
-            endTime = data['endTime']
-            if beginTime is None or endTime is None:
-                return 'NO'
-            batchs = set(db_session.query(ZYTask.BatchID).filter(ZYTask.PlanDate.between(beginTime, endTime)).all())
-            if batchs:
-                count = 0
-                batch_data = list()
-                for batch in batchs:
-                    batch_data.append({"id": count, "text": batch[0]})
-                    count += 1
-                json_data = json.dumps(batch_data, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
-                return json_data
-            return 'NO'
-        except Exception as e:
-            print(e)
-            insertSyslog("error", "路由: /QualityControl/YieldCompare/getBatch报错Error：" + str(e), current_user.Name)
-            return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
-
-
 @app.route('/QualityControl/BatchDataCompare', methods=['POST', 'GET'])
 def BatchDataCompare():
     '''
@@ -7590,16 +7564,27 @@ def BatchDataCompare():
     if request.method == 'POST':
         try:
             data = request.values
-            batchs = eval(data['batch'])
-            if not batchs:
-                return 'NO'
+            beginTime = data.get("beginTime")
+            endTime = data.get("endTime")
+            BrandName = data.get("BrandName")
+            batchs = db_session.query(PlanManager.BatchID).filter(PlanManager.BrandName == BrandName, PlanManager.PlanBeginTime.between(beginTime, endTime)).all()
             input_data = list()
             output_data = list()
             sampling_data = list()
             data_list = list()
             data_error_list = list()
             for batch in batchs:
-
+                cin = ""  # 净药材总投料量
+                cout = ""  # 浸膏总重量
+                samp = ""  # 得率
+                if BrandName == '健胃消食片浸膏粉':
+                    cin = "count1"  # 净药材总投料量
+                    cout = "count2"  # 浸膏总重量
+                    samp = "count4"  # 得率
+                elif BrandName == '肿节风浸膏':
+                    cin = "count7"  # 净药材总投料量
+                    cout = "count8"  # 浸膏总重量
+                    samp = "count10"  # 得率
                 input = db_session.query(EletronicBatchDataStore.OperationpValue).filter(
                     and_(EletronicBatchDataStore.BatchID == batch,
                          EletronicBatchDataStore.Content == constant.OUTPUT_COMPARE_INPUT)).first()
@@ -7859,7 +7844,6 @@ def HomePageHistogram():
     '''
     purpose：通过前台传入的批次查询响应的批次的投入量、产出量、得率
     url:/QualityControl/BatchDataCompare
-
     return: data_list,一个包含突入量、产出量、得率、批次的数据列表extract("year", ZYPlan.ActEndTime == current_year),
                 extract("month", ZYPlan.ActEndTime == current_month)
     '''
@@ -7868,38 +7852,47 @@ def HomePageHistogram():
             current_time = datetime.datetime.now()
             current_year = current_time.year
             current_month = current_time.month
-            batch_set = db_session.query(ZYPlan.BatchID).filter(and_(
-                extract("year", ZYPlan.EnterTime) == int(current_year),
-                extract("month", ZYPlan.EnterTime) == int(current_month)
+            ocalsss = db_session.query(PlanManager).filter(and_(
+                extract("year", PlanManager.PlanBeginTime) == int(current_year),
+                extract("month", PlanManager.PlanBeginTime) == int(current_month)
             )).all()
-            if batch_set:
-                batchs = set(batch_set)
-            else:
+            if not ocalsss:
                 current_month = int(current_month) - 1
-                batchs = set(db_session.query(ZYPlan.BatchID).filter(and_(
-                    extract("year", ZYPlan.ActEndTime) == int(current_year),
-                    extract("month", ZYPlan.ActEndTime) == int(current_month)
+                ocalsss = set(db_session.query(PlanManager).filter(and_(
+                    extract("year", PlanManager.PlanBeginTime) == int(current_year),
+                    extract("month", PlanManager.PlanBeginTime) == int(current_month)
                 )).all())
             input_data = list()
             output_data = list()
             sampling_data = list()
             batch_list = list()
             data_list = list()
-            for batch in batchs:
+            for oc in ocalsss:
+                cin = ""#净药材总投料量
+                cout = ""#浸膏总重量
+                samp = ""#得率
+                if oc.BrandName == '健胃消食片浸膏粉':
+                    cin = "count1"  # 净药材总投料量
+                    cout = "count2"  # 浸膏总重量
+                    samp = "count4"  # 得率
+                elif oc.BrandName == '肿节风浸膏':
+                    cin = "count7"  # 净药材总投料量
+                    cout = "count8"  # 浸膏总重量
+                    samp = "count10"  # 得率
                 input = db_session.query(EletronicBatchDataStore.OperationpValue).filter(
-                    and_(EletronicBatchDataStore.BatchID == batch[0],
-                         EletronicBatchDataStore.Content == constant.OUTPUT_COMPARE_INPUT)).first()
+                    and_(EletronicBatchDataStore.BatchID == oc.BatchID,
+                         EletronicBatchDataStore.Content == cin)).first()
                 output = db_session.query(EletronicBatchDataStore.OperationpValue).filter(
-                    and_(EletronicBatchDataStore.BatchID == batch[0],
-                         EletronicBatchDataStore.Content == constant.OUTPUT_COMPARE_OUTPUT)).first()
+                    and_(EletronicBatchDataStore.BatchID == oc.BatchID,
+                         EletronicBatchDataStore.Content == cout)).first()
                 sampling_quantity = db_session.query(EletronicBatchDataStore.OperationpValue).filter(
-                    and_(EletronicBatchDataStore.BatchID == batch[0],
-                         EletronicBatchDataStore.Content == constant.OUTPUT_COMPARE_SAMPLE)).first()
+                    and_(EletronicBatchDataStore.BatchID == oc.BatchID,
+                         EletronicBatchDataStore.Content == samp)).first()
                 input_data.append(int(input[0] if input != None and input != ('',) else 0))
                 output_data.append(int(output[0] if output != None and output != ('',) else 0))
                 sampling_data.append(
                     float(sampling_quantity[0] if sampling_quantity != None and sampling_quantity != ('',) else 0))
-                batch_list.append(batch[0])
+                batch_list.append(oc.BatchID)
             data_list.append({'time': str(current_year) + '-' + str(current_month),
                               'input': input_data, 'output': output_data,
                               'sampling_quantity': sampling_data, "batch": batch_list})
@@ -7909,8 +7902,6 @@ def HomePageHistogram():
             print(e)
             insertSyslog("error", "产量对比报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
-
-
 @app.route('/plantCalendarYield')
 def plantCalendarYield():
     '''
