@@ -7569,6 +7569,10 @@ def BatchDataCompare():
             BrandName = data.get("BrandName")
             batchs = db_session.query(PlanManager.BatchID).filter(PlanManager.BrandName == BrandName, PlanManager.PlanBeginTime.between(beginTime, endTime)).all()
             data_list = list()
+            input_list = list()
+            output_list = list()
+            sampling_list = list()
+            batch_list = list()
             for batch in batchs:
                 cin = ""  # 净药材总投料量
                 cout = ""  # 浸膏总重量
@@ -7591,9 +7595,17 @@ def BatchDataCompare():
                     and_(EletronicBatchDataStore.BatchID == batch,
                          EletronicBatchDataStore.Content == samp)).first()
                 if input == output == sampling_quantity == None:
-                    data_list.append({'input': 'NO', 'output': 'NO', 'sampling_quantity': 'NO', 'BatchID': batch})
+                    input_list.append('NO')
+                    output_list.append('NO')
+                    sampling_list.append('NO')
+                    batch_list.append(batch[0])
                 else:
-                    data_list.append({'input': input[0], 'output': output[0], 'sampling_quantity': sampling_quantity[0], 'BatchID': batch[0]})
+                    input_list.append(input[0])
+                    output_list.append(output[0])
+                    sampling_list.append(sampling_quantity[0])
+                    batch_list.append(batch[0])
+            data_list.append({'input': input_list, 'output': output_list, 'sampling_quantity': sampling_list, 'BatchID': batch_list})
+            print(data_list)
             return json.dumps(data_list, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
