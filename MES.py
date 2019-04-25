@@ -7587,16 +7587,16 @@ def BatchDataCompare():
                     samp = "count10"  # 得率
                 input = db_session.query(EletronicBatchDataStore.OperationpValue).filter(
                     and_(EletronicBatchDataStore.BatchID == batch,
-                         EletronicBatchDataStore.Content == constant.OUTPUT_COMPARE_INPUT)).first()
+                         EletronicBatchDataStore.Content == cin)).first()
                 output = db_session.query(EletronicBatchDataStore.OperationpValue).filter(
                     and_(EletronicBatchDataStore.BatchID == batch,
-                         EletronicBatchDataStore.Content == constant.OUTPUT_COMPARE_OUTPUT)).first()
+                         EletronicBatchDataStore.Content == cout)).first()
                 sampling_quantity = db_session.query(EletronicBatchDataStore.OperationpValue).filter(
                     and_(EletronicBatchDataStore.BatchID == batch,
-                         EletronicBatchDataStore.Content == constant.OUTPUT_COMPARE_SAMPLE)).first()
+                         EletronicBatchDataStore.Content == samp)).first()
 
                 if input == output == sampling_quantity == None:
-                    data_error_list.append({'input': 'NO', 'output': 'NO', 'sampling_quantity': 'NO', 'batch': batch})
+                    data_error_list.append({'input': 'NO', 'output': 'NO', 'sampling_quantity': 'NO', 'BatchID': batch})
                     continue
                 input_data.append(int(input[0]))
                 output_data.append(int(output[0]))
