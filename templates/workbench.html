@@ -366,7 +366,7 @@
                     myChart.hideLoading();
                     myChart.setOption(option = {
                         title:{
-                            text: data[0].time + "-数据对比"
+                            text: data[0].time + "-生产数据"
                         },
                         tooltip: {
                             trigger: 'axis',
@@ -377,15 +377,7 @@
                         legend: {
                             data: ['投入量', '产出量', '得率']
                         },
-                        toolbox: {
-                            feature: {
-                                dataView: {show: true, readOnly: false},
-                                magicType: {show: true, type: ['line', 'bar']},
-                                restore: {show: true},
-                                saveAsImage: {show: true}
-                            }
-                        },
-                        dataZoom : {
+                        Zoom : {
                             show : true,
                             realtime : true,
                             start : 50,

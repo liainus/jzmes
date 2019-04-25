@@ -16,199 +16,133 @@
     <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
     <script>
         $(function(){
-            $("#beginTime").datebox("setValue", myformatter(new Date()))
+            $("#beginTime").datebox("setValue", myformatter(new Date(new Date().getTime() - 1*24*60*60*1000)))
             $("#endTime").datebox("setValue", myformatter(new Date()))
-            $('#searchBatchBtn').on('click', function(){
-                var result = ''
-                $.ajax({
-                    url: '/QualityControl/YieldCompare/getBatch',
-                    type: 'post',
-                    data: {
-                        beginTime:$('#beginTime').datebox('getValue'),
-                        endTime:$('#endTime').datebox('getValue')
-                    },
-                    success: function (data) {
-                        if (data != "NO") {
-                            $.messager.show({
-                                title: '提示',
-                                timeout: 500,
-                                msg: '查询成功',
-                                style: {
-                                    right: '',
-                                    top: document.body.scrollTop + document.documentElement.scrollTop,
-                                    bottom: ''
-                                }
-                            });
-                            result = JSON.parse(data)
-                            $("#LeftTree").tree({
-                                data:result
-                            })
-
-                        }else{
-                            $.messager.alert('提示', '当前时间段暂无批次！', 'info');
-                        }
-                    }
-                })
+            $('#searchData').on('click', function(){
+                var beginTime = $('#beginTime').datebox('getValue')
+                var endTime = $('#endTime').datebox('getValue')
+                var brandName = $("#brandName").find("option:checked").html()
+                toJson(beginTime,endTime,brandName)
             });
-            $("#LeftTree").tree({
-                checkbox:true,
-                animate:true,
-                loadFilter:function(data){
-                    return data;
-                },
-                onCheck:function(node,checked){
-                    var jsonarray = []
-                    var ckNodes = $('#LeftTree').tree("getChecked");
-                    for (var i = 0; i < ckNodes.length; i++) {
-                        jsonarray.push(ckNodes[i].text);
-                    }
-                    jsonarray = JSON.stringify(jsonarray)
-                    toJson(jsonarray)
-                },
-                onSelect:function(node){
-                    if(node.checkState == "checked"){
-                        $('#LeftTree').tree('uncheck', node.target);
-                    }else if(node.checkState == "unchecked"){
-                        $('#LeftTree').tree('check', node.target);
-                    }
-
-                }
-            })
         })
-        function toJson(batch){
-            var batch = batch
-            var objBatch = JSON.parse(batch)
-            var myChart = echarts.init(document.getElementById("main"))
-            if(objBatch.length == 0){
-                myChart.hideLoading();
-            }else {
-                myChart.showLoading();
-                $.ajax({
-                    url: "/QualityControl/BatchDataCompare",
-                    type: "post",
-                    data: {
-                        batch: batch
-                    },
-                    dataType: "json",
-                    traditional:true,
-                    success: function (data) {
-                        if (data[0].input != "NO" || data[0].output != "NO" || data[0].sampling_quantity != "NO") {
-                            var input = ''
-                            var output = ''
-                            var sampling_quantity = ''
-                            for(var i = 0;i < data.length;i++){
-                                input = data[i].input
-                                output = data[i].output
-                                sampling_quantity = data[i].sampling_quantity
-                            }
-                            myChart.hideLoading();
-                            myChart.setOption(option = {
-                                tooltip: {
-                                    trigger: 'axis',
-                                    axisPointer: {
-                                        type: 'shadow'
-                                    }
-                                },
-                                legend: {
-                                    data: ['投入量', '产出量', '得率']
-                                },
-                                toolbox: {
-                                    feature: {
-                                        dataView: {show: true, readOnly: false},
-                                        magicType: {show: true, type: ['line', 'bar']},
-                                        restore: {show: true},
-                                        saveAsImage: {show: true}
-                                    }
-                                },
-                                xAxis: {
-                                    type: 'category',
-                                    data: objBatch
-                                },
-                                yAxis: [
-                                    {
-                                        type: 'value',
-                                        name: '重量',
-                                        min: 0,
-                                        interval: 500,
-                                        axisLabel: {
-                                            formatter: '{value} kg'
-                                        }
-                                    }, {
-                                        type: 'value',
-                                        name: '百分比',
-                                        min: 0,
-                                        max: 100,
-                                        interval: 10,
-                                        axisLabel: {
-                                            formatter: '{value} %'
-                                        }
-                                    }
-                                ],
-                                series: [{
-                                    name: "投入量",
-                                    type: 'bar',
-                                    label: {
-                                        normal: {
-                                            show: true,
-                                            position: 'top'
-                                        }
-                                    },
-                                    itemStyle:{
-                                        normal:{
-                                            color:'#90ed7d'
-                                        }
-                                    },
-                                    data: input
-                                }, {
-                                    name: "产出量",
-                                    type: 'bar',
-                                    label: {
-                                        normal: {
-                                            show: true,
-                                            position: 'top'
-                                        }
-                                    },
-                                    itemStyle:{
-                                        normal:{
-                                            color:'#f7a35c'
-                                        }
-                                    },
-                                    data: output
-                                }, {
-                                    name: "得率",
-                                    type: 'bar',
-                                    yAxisIndex: 1,
-                                    label: {
-                                        normal: {
-                                            show: true,
-                                            position: 'top',
-                                            formatter: '{c} %'
-                                        }
-                                    },
-                                    itemStyle:{
-                                        normal:{
-                                            color:'#7cb5ec'
-                                        }
-                                    },
-                                    data: sampling_quantity
-                                }]
-                            });
-                            myChart.setOption(option);
-                        } else {
-                            $.messager.alert({
-                                title: '提示',
-                                msg: data[0].batch + "批次暂无完整数据，请查看其它批次。",
-                                icon: 'info',
-                                width: 300,
-                                top: 200,
-                                left: 500
-                            })
-                            myChart.hideLoading();
+        function toJson(beginTime,endTime,brandName){
+            var myChart = echarts.init($("#main"))
+            myChart.showLoading();
+            $.ajax({
+                url: "/QualityControl/BatchDataCompare",
+                type: "post",
+                data: {
+                    beginTime:beginTime,
+                    endTime:endTime,
+                    BrandName:brandName
+                },
+                success: function (data) {
+                    if (data[0].input != "NO" || data[0].output != "NO" || data[0].sampling_quantity != "NO") {
+                        var input = ''
+                        var output = ''
+                        var sampling_quantity = ''
+                        for (var i = 0; i < data.length; i++) {
+                            input = data[i].input
+                            output = data[i].output
+                            sampling_quantity = data[i].sampling_quantity
                         }
+                        myChart.hideLoading();
+                        myChart.setOption(option = {
+                            tooltip: {
+                                trigger: 'axis',
+                                axisPointer: {
+                                    type: 'shadow'
+                                }
+                            },
+                            legend: {
+                                data: ['投入量', '产出量', '得率']
+                            },
+                            toolbox: {
+                                feature: {
+                                    dataView: {show: true, readOnly: false},
+                                    magicType: {show: true, type: ['line', 'bar']},
+                                    restore: {show: true},
+                                    saveAsImage: {show: true}
+                                }
+                            },
+                            xAxis: {
+                                type: 'category',
+                                data: objBatch
+                            },
+                            yAxis: [
+                                {
+                                    type: 'value',
+                                    name: '重量',
+                                    min: 0,
+                                    interval: 500,
+                                    axisLabel: {
+                                        formatter: '{value} kg'
+                                    }
+                                }, {
+                                    type: 'value',
+                                    name: '百分比',
+                                    min: 0,
+                                    max: 100,
+                                    interval: 10,
+                                    axisLabel: {
+                                        formatter: '{value} %'
+                                    }
+                                }
+                            ],
+                            series: [{
+                                name: "投入量",
+                                type: 'bar',
+                                label: {
+                                    normal: {
+                                        show: true,
+                                        position: 'top'
+                                    }
+                                },
+                                itemStyle: {
+                                    normal: {
+                                        color: '#90ed7d'
+                                    }
+                                },
+                                data: input
+                            }, {
+                                name: "产出量",
+                                type: 'bar',
+                                label: {
+                                    normal: {
+                                        show: true,
+                                        position: 'top'
+                                    }
+                                },
+                                itemStyle: {
+                                    normal: {
+                                        color: '#f7a35c'
+                                    }
+                                },
+                                data: output
+                            }, {
+                                name: "得率",
+                                type: 'bar',
+                                yAxisIndex: 1,
+                                label: {
+                                    normal: {
+                                        show: true,
+                                        position: 'top',
+                                        formatter: '{c} %'
+                                    }
+                                },
+                                itemStyle: {
+                                    normal: {
+                                        color: '#7cb5ec'
+                                    }
+                                },
+                                data: sampling_quantity
+                            }]
+                        });
+                        myChart.setOption(option);
                     }
+                }
 
-                })
-            }
+            })
         }
         function myformatter(date){
             var y = date.getFullYear();
@@ -223,12 +157,14 @@
 	    <a>  起止日期:  </a>
         <input class="easyui-datebox" id="beginTime" data-options="required:true,showSeconds:false,editable:false" style="width:166px;height:35px;line-height:35px;">
         <input class="easyui-datebox" id="endTime" data-options="required:true,showSeconds:false,editable:false" style="width:166px;height:35px;line-height:35px;">
-        <a id="searchBatchBtn" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'">查询批次号</a>
+        <a>  品名:  </a>
+        <select name="brandName" id="brandName" type="text" style="width:157px;" autocomplete="off" placeholder="">
+            <option value="健胃消食片浸膏粉">健胃消食片浸膏粉</option>
+            <option value="肿节风浸膏">肿节风浸膏</option>
+        </select>
+        <a id="searchData" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'">查询数据</a>
 	</div>
-    <div class="left-tree" style="width: 15%;float: left;vertical-align: top;border: 1px solid #ccc;margin: 1%;padding: 1%;">
-        <ul id="LeftTree" class="easyui-tree"></ul>
-    </div>
-    <div id="container" style="width: 80%;float: left;vertical-align: top;">
+    <div id="container" style="margin: 0 20px;vertical-align: top;">
         <div id="tt" class="easyui-tabs" style="width:100%;height:600px;margin-top:10px; scrolling:'false'">
             <div title="投入产出数据-统计图">
                 <div id="main" style="width: 1000px; height: 560px; margin: 10px auto;"></div>
