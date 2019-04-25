@@ -7568,11 +7568,7 @@ def BatchDataCompare():
             endTime = data.get("endTime")
             BrandName = data.get("BrandName")
             batchs = db_session.query(PlanManager.BatchID).filter(PlanManager.BrandName == BrandName, PlanManager.PlanBeginTime.between(beginTime, endTime)).all()
-            input_data = list()
-            output_data = list()
-            sampling_data = list()
             data_list = list()
-            data_error_list = list()
             for batch in batchs:
                 cin = ""  # 净药材总投料量
                 cout = ""  # 浸膏总重量
@@ -7594,18 +7590,11 @@ def BatchDataCompare():
                 sampling_quantity = db_session.query(EletronicBatchDataStore.OperationpValue).filter(
                     and_(EletronicBatchDataStore.BatchID == batch,
                          EletronicBatchDataStore.Content == samp)).first()
-
                 if input == output == sampling_quantity == None:
-                    data_error_list.append({'input': 'NO', 'output': 'NO', 'sampling_quantity': 'NO', 'BatchID': batch})
-                    continue
-                input_data.append(int(input[0]))
-                output_data.append(int(output[0]))
-                sampling_data.append(float(sampling_quantity[0]))
-                data_list.append({'input': input_data, 'output': output_data, 'sampling_quantity': sampling_data, 'BatchID': batch})
-            if len(data_error_list) >= 1:
-                return json.dumps(data_error_list, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
-            json_data = json.dumps(data_list, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
-            return json_data
+                    data_list.append({'input': 'NO', 'output': 'NO', 'sampling_quantity': 'NO', 'BatchID': batch})
+                else:
+                    data_list.append({'input': input[0], 'output': output[0], 'sampling_quantity': sampling_quantity[0], 'BatchID': batch[0]})
+            return json.dumps(data_list, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
             insertSyslog("error", "产量对比报错Error：" + str(e), current_user.Name)
