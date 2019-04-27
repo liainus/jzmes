@@ -186,14 +186,14 @@ $(function () {
                     //$(formId).form('load', row);
                     $('input[name="iID"]').attr("disabled", "disabled");
                     $('input[name="iID"]').val(row.ID);
-                    $('#iMATID option:contains('+row.MATID+')').prop("selected", 'selected');//区域ID赋值
+                    $('#iMATID option[value='+row.MATID+']').prop("selected", 'selected');
                     $('input[name="iBatchTotalWeight"]').val(row.BatchTotalWeight);
                     //$('input[name="iBatchSingleMATWeight"]').val(row.BatchSingleMATWeight);
                     //$('input[name="iUnit"]').val(row.Unit);
                     $('input[name="iBatchPercentage"]').val(row.BatchPercentage);
-                    $('#iProductRuleID option:contains('+row.ProductRuleID+')').prop("selected", 'selected');//区域ID赋值
+                    $('#iProductRuleID option[value='+row.ProductRuleID+ ']').prop("selected", 'selected');
                     //$('#iPUID option:contains('+row.PUID+')').prop("selected", 'selected');//区域ID赋值
-                    $('#iMATTypeID option:contains('+row.MATTypeID+')').prop("selected", 'selected');//区域ID赋值
+                    $('#iMATTypeID option[value=' +row.MATTypeID+ ']').prop("selected", 'selected');
                     //$('input[name="iSeq"]').val(row.Seq);
                     //$('input[name="iGrade"]').val(row.Grade);
                     //var thisSwitchbuttonObj = $(".switchstatus").find("[switchbuttonName='IsEnable']");//获取switchbutton对象  
