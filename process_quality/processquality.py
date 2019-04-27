@@ -313,7 +313,14 @@ def refractometerRealTimeData():
     :return:
     '''
     return render_template('refractometerRealTimeData.html')
-
+class ADS_test(ServiceBase):
+    logging.basicConfig(level=logging.DEBUG)
+    @rpc(Unicode, Integer, _returns=Unicode())
+    def ADS_Order_Download(self, name, times):
+        dic = []
+        for i in range(0, 3):
+            dic.append(appendStr(i))
+        return json.dumps(dic)
 def appendStr(i):
     dir = {}
     dir["a"] = str(i)
