@@ -41,12 +41,20 @@
                         PRName: PRName
                     },
                     success: function (data) {
-                        data = JSON.parse(data)
-                        $("#yid").val(data.ID)
-                        $("#FinishProduct").val(data.FinishProduct)
-                        $("#SamplingQuantity").val(data.SamplingQuantity)
-                        $("#Yield").val(data.Yield )
-                        $("#TotalQuantity").html(data.TotalQuantity)
+                        if(data == ""){
+                            $("#yid").val('')
+                            $("#FinishProduct").val('')
+                            $("#SamplingQuantity").val('')
+                            $("#Yield").val('')
+                            $("#TotalQuantity").html('')
+                        }else{
+                            data = JSON.parse(data)
+                            $("#yid").val(data.ID)
+                            $("#FinishProduct").val(data.FinishProduct)
+                            $("#SamplingQuantity").val(data.SamplingQuantity)
+                            $("#Yield").val(data.Yield )
+                            $("#TotalQuantity").html(data.TotalQuantity)
+                        }
                     },
                     error: function () {
                         bootbox.alert("请求失败")
