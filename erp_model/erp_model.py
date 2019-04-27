@@ -341,7 +341,9 @@ def YieldMaintainSearch():
                     dir["FinishProduct"] = oclass.FinishProduct
                     dir["SamplingQuantity"] = oclass.SamplingQuantity
                     dir["TotalQuantity"] = oclass.TotalQuantity
-                return json.dumps(dir, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+                    return json.dumps(dir, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+                else:
+                    return ''
         except Exception as e:
             print(e)
             logger.error(e)
