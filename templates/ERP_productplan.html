@@ -42,6 +42,9 @@
                     <a href="/ERP_productplan">ERP计划信息</a>
                 </li>
                 <li>
+                    <a href="/plantCalendarYield">设置得率</a>
+                </li>
+                <li>
                     <a href="/plantCalendarSafeStock">设置安全库存</a>
                 </li>
                 <li>
@@ -70,13 +73,17 @@
                     <thead>
                         <tr>
                             <th field="ck" checkbox="true"></th>
-                            <th data-options="field:'product_code',width:200,align:'center'">计划单号</th>
-                            <th data-options="field:'product_name',width:100,align:'center'">计划名称</th>
-                            <th data-options="field:'plan_quantity',width:100,align:'center'">计划重量</th>
-                            <th data-options="field:'plan_type',width:100,align:'center'">计划类型</th>
-                            <th data-options="field:'create_time',width:150,align:'center'">创建时间</th>
-                            <th data-options="field:'transform_time',width:150,align:'center'">更换时间</th>
-                            <th data-options="field:'transform_flag',width:100,align:'center'">更换标志</th>
+                            <th data-options="field:'plan_period',width:150,align:'center'">计划期间</th>
+                            <th data-options="field:'product_code',width:200,align:'center'">产品(即物料)编码</th>
+                            <th data-options="field:'product_name',width:100,align:'center'">产品(即物料)名称</th>
+                            <th data-options="field:'product_unit',width:100,align:'center'">计量单位 kg\批</th>
+                            <th data-options="field:'meter_type',width:100,align:'center'">计量类型 'B' 批次  'W'重量</th>
+                            <th data-options="field:'bill_code',width:120,align:'center'">单据号</th>
+                            <th data-options="field:'plan_quantity',width:100,align:'center'">计划数量</th>
+                            <th data-options="field:'plan_type',width:100,align:'center'">计划类型 'M' 月计划</th>
+                            <th data-options="field:'create_time',width:150,align:'center'">插入时间</th>
+                            <th data-options="field:'transform_time',width:150,align:'center'">数据对接时间</th>
+                            <th data-options="field:'transform_flag',width:150,align:'center'">数据对接MES 1 已对接 0 未对接</th>
                         </tr>
                     </thead>
                 </table>
@@ -101,13 +108,17 @@
                 <thead>
                     <tr>
                         <th field="ck" checkbox="true"></th>
-                        <th data-options="field:'product_code',width:200,align:'center'">计划单号</th>
-                        <th data-options="field:'product_name',width:100,align:'center'">计划名称</th>
-                        <th data-options="field:'plan_quantity',width:100,align:'center'">计划重量</th>
-                        <th data-options="field:'plan_type',width:100,align:'center'">计划类型</th>
-                        <th data-options="field:'create_time',width:150,align:'center'">创建时间</th>
-                        <th data-options="field:'transform_time',width:150,align:'center'">更换时间</th>
-                        <th data-options="field:'transform_flag',width:100,align:'center'">更换标志</th>
+                        <th data-options="field:'plan_period',width:150,align:'center'">计划期间</th>
+                        <th data-options="field:'product_code',width:200,align:'center'">产品(即物料)编码</th>
+                        <th data-options="field:'product_name',width:100,align:'center'">产品(即物料)名称</th>
+                        <th data-options="field:'product_unit',width:100,align:'center'">计量单位 kg\批</th>
+                        <th data-options="field:'meter_type',width:100,align:'center'">计量类型 'B' 批次  'W'重量</th>
+                        <th data-options="field:'bill_code',width:120,align:'center'">单据号</th>
+                        <th data-options="field:'plan_quantity',width:100,align:'center'">计划数量</th>
+                        <th data-options="field:'plan_type',width:100,align:'center'">计划类型 'M' 月计划</th>
+                        <th data-options="field:'create_time',width:150,align:'center'">插入时间</th>
+                        <th data-options="field:'transform_time',width:150,align:'center'">数据对接时间</th>
+                        <th data-options="field:'transform_flag',width:150,align:'center'">数据对接MES 1 已对接 0 未对接</th>
                     </tr>
                 </thead>
             </table>
@@ -123,6 +134,12 @@
                                 </td>
                             </tr>
                             <tr>
+                                <td class="kv-label">计划期间</td>
+                                <td class="kv-content">
+                                    <input name="plan_period" id="plan_period" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                                </td>
+                            </tr>
+                            <tr>
                                 <td class="kv-label">产品(即物料)编码</td>
                                 <td class="kv-content">
                                     <input name="product_code" id="product_code" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
@@ -132,6 +149,28 @@
                                 <td class="kv-label">产品(即物料)名称</td>
                                 <td class="kv-content">
                                     <input name="product_name" id="product_name" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="kv-label">计量单位 kg\批</td>
+                                <td class="kv-content">
+                                    <input name="product_unit" id="product_unit" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="kv-label">计量类型 'B' 批次  'W'重量</td>
+                                <td class="kv-content">
+                                    <select name="meter_type" id="meter_type" type="text" style="width:157px;" autocomplete="off" placeholder="">
+                                        <option value="">请选择</option>
+                                        <option value="B">批次</option>
+                                        <option value="W">重量</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="kv-label">单据号</td>
+                                <td class="kv-content">
+                                    <input name="bill_code" id="bill_code" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
                                 </td>
                             </tr>
                             <tr>
@@ -168,7 +207,7 @@
         </div>
         <div class="col-md-12">
             <div class="modal-footer">
-                <a href="/plantCalendarSafeStock" class="btn btn-primary">下一步</a>
+                <a href="/plantCalendarYield" class="btn btn-primary">下一步</a>
             </div>
         </div>
     </div>
@@ -179,7 +218,6 @@
             $("#synchronization").on('click',function(){
                 var row = $("#ERPTab").datagrid('getSelected');
                 if (row) {
-                    console.log(row)
                     $.ajax({
                         url: '/erp_model/ERP_productplanSynchro',
                         type: 'GET',
@@ -211,13 +249,17 @@
             })
             Toolbar = {
                 add:function(){
-                    $("#planDialog").dialog('open').dialog('setTitle','添加计划');
+                    $("#planDialog").dialog('open').dialog('setTitle', '添加计划');
                     $("#plan_id").val('')
+                    $("#plan_period").val('')
                     $("#product_code").val('')
                     $("#product_name").val('')
+                    $("#product_unit").val('')
+                    $("#bill_code").val('')
                     $("#plan_quantity").val('')
-                    $("#plan_type option[value='']").prop("selected", 'selected');
-                    $("#create_time").datetimebox("setValue", myformatter(new Date()))
+                    $('#meter_type option[value=""]').prop("selected", 'selected');
+                    $('#plan_type option[value=""]').prop("selected", 'selected');
+                    $("#create_time").datetimebox("setValue", new Date())
                 },
                 updata:function(){
                     var rows = $("#selfTab").datagrid('getSelections');
@@ -228,9 +270,13 @@
                         if (row) {
                             $("#planDialog").dialog('open').dialog('setTitle', '修改计划');
                             $("#plan_id").val(row.plan_id)
+                            $("#plan_period").val(row.plan_period)
                             $("#product_code").val(row.product_code)
                             $("#product_name").val(row.product_name)
+                            $("#product_unit").val(row.product_unit)
+                            $("#bill_code").val(row.bill_code)
                             $("#plan_quantity").val(row.plan_quantity)
+                            $('#meter_type option:contains('+row.meter_type+')').prop("selected", 'selected');
                             $('#plan_type option:contains('+row.plan_type+')').prop("selected", 'selected');
                             $("#create_time").datetimebox("setValue", row.create_time)
                         }
@@ -241,7 +287,12 @@
                 save:function(){
                     var strID = $('input[name="plan_id"]').val();
                     var urlAddr = ""
-                    var stmp = $('input[name="product_code"]').val();
+                    var stmp = $('input[name="plan_period"]').val();
+                    if(Bee.StringUtils.isEmpty(stmp)) {
+                       alert('Warning：计划期间不能为空！');
+                       return false;
+                    }
+                    stmp = $('input[name="product_code"]').val();
                     if(Bee.StringUtils.isEmpty(stmp)) {
                        alert('Warning：产品(即物料)编码不能为空！');
                        return false;
@@ -251,14 +302,29 @@
                        alert('Warning：产品(即物料)名称不能为空！');
                        return false;
                     }
+                    stmp = $('input[name="product_unit"]').val();
+                    if(Bee.StringUtils.isEmpty(stmp)) {
+                       alert('Warning：计量单位不能为空！');
+                       return false;
+                    }
+                    stmp = $('input[name="bill_code"]').val();
+                    if(Bee.StringUtils.isEmpty(stmp)) {
+                       alert('Warning：单据号不能为空！');
+                       return false;
+                    }
                     stmp = $('input[name="plan_quantity"]').val();
                     if(Bee.StringUtils.isEmpty(stmp)) {
                        alert('Warning：计划数量不能为空！');
                        return false;
                     }
+                    stmp = $('#meter_type').find("option:selected").val();
+                    if(Bee.StringUtils.isEmpty(stmp)) {
+                       alert('Warning：计量类型不能为空！');
+                       return false;
+                    }
                     stmp = $('#plan_type').find("option:selected").val();
                     if(Bee.StringUtils.isEmpty(stmp)) {
-                       alert('Warning：计划类型 \'M\' 月计划不能为空！');
+                       alert('Warning：计划类型不能为空！');
                        return false;
                     }
                     if (strID.length >= 1){
@@ -272,9 +338,13 @@
                         method: 'POST',
                         traditional: true,
                         data: {
+                            plan_period:$('#plan_period').val(),
                             product_code:$('#product_code').val(),
                             product_name:$('#product_name').val(),
+                            product_unit:$('#product_unit').val(),
+                            bill_code:$('#bill_code').val(),
                             plan_quantity:$('#plan_quantity').val(),
+                            meter_type:$('#meter_type').find("option:selected").val(),
                             plan_type:$('#plan_type').find("option:selected").val(),
                             create_time:$('#create_time').datetimebox('getValue')
                         },

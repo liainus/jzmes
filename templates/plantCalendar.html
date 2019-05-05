@@ -54,9 +54,12 @@
 <body>
     <div class="pad-per">
         <div class="col-md-12">
-            <ul class="nav nav-pills nav-justified step step-round" data-step="4">
+            <ul class="nav nav-pills nav-justified step step-round" data-step="5">
                 <li>
                     <a href="/ERP_productplan">ERP计划信息</a>
+                </li>
+                <li>
+                    <a href="/plantCalendarYield">设置得率</a>
                 </li>
                 <li>
                     <a href="/plantCalendarSafeStock">设置安全库存</a>
@@ -79,7 +82,7 @@
                     <h4>可拖放的日程</h4>
                     <a class='fc-event' style="background: #00c3db;border: 1px solid #00c3db;">维保</a>
                     <a class='fc-event' style="background: #f7d013;border: 1px solid #f7d013;">休息</a>
-                    <a class='fc-event' style="background: #e73b3b;border: 1px solid #e73b3b;">紧急</a>
+                    <a class='fc-event' style="background: #e73b3b;border: 1px solid #e73b3b;">其他</a>
                     {% for i in data %}
                         <a class='fc-event' style="background: #9FDABF;border: 1px solid #9FDABF;" value="{{ i['id'] }}">{{ i['text'] }}</a>
                     {% endfor %}
@@ -169,7 +172,7 @@
                     }else if(title == "休息"){
                         color = "#f7d013"
                         urlStr = '/systemManager_model/plantCalendarSchedulingCreate'
-                    }else if(title == "紧急"){
+                    }else if(title == "其他"){
                         color = "#e73b3b"
                         urlStr = '/systemManager_model/plantCalendarSchedulingCreate'
                     }else{
@@ -205,7 +208,7 @@
                     var startDate = myformatter(event.start._d)
                     var urlStr = ""
                     var data = ""
-                    if(event.title == "维保" || event.title == "休息" || event.title == "紧急"){
+                    if(event.title == "维保" || event.title == "休息" || event.title == "其他"){
                         urlStr = '/systemManager_model/plantCalendarSchedulingUpdate'
                         data = {
                             ID:event.ID,
@@ -235,7 +238,7 @@
                 //点击日程事件进行删除
                 eventClick:function(event){
                     var urlStr = ""
-                    if(event.title == "维保" || event.title == "休息" || event.title == "紧急"){
+                    if(event.title == "维保" || event.title == "休息" || event.title == "其他"){
                         urlStr = '/systemManager_model/plantCalendarSchedulingDelete'
                     }else{
                         urlStr = '/SchedulingDelete'
@@ -275,15 +278,27 @@
                             SchedulingTime:startDate
                         },
                         success: function (data) {
-                            bootbox.alert({
-                                size: "small",
-                                message: data,
-                                buttons: {
-                                    ok: {
-                                        label: '知道了'
+                            if(data != ""){
+                                bootbox.alert({
+                                    size: "small",
+                                    message: data,
+                                    buttons: {
+                                        ok: {
+                                            label: '知道了'
+                                        }
                                     }
-                                }
-                            })
+                                })
+                            }else{
+                                bootbox.alert({
+                                    size: "small",
+                                    message: "暂无数据",
+                                    buttons: {
+                                        ok: {
+                                            label: '知道了'
+                                        }
+                                    }
+                                })
+                            }
                         },
                         error: function () {
                             $("#loadingModal").modal('hide');

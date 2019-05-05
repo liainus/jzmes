@@ -42,7 +42,7 @@ import re
 from collections import Counter
 from Model.system import User, EquipmentRunPUID, ElectronicBatch, EquipmentRunRecord, QualityControl, PackMaterial, \
     TypeCollection, OperationProcedure, EquipmentMaintenanceStore, Scheduling, SchedulingStock, ERPproductcode_prname, \
-    SchedulingStandard, product_plan, SchedulingMaterial
+    SchedulingStandard, product_plan, SchedulingMaterial, YieldMaintain
 from Model.Global import WeightUnit
 from Model.control import ctrlPlan
 from flask_login import login_required, logout_user, login_user, current_user, LoginManager
@@ -57,6 +57,9 @@ from sqlalchemy.exc import InvalidRequestError
 from equipment_model.equipment_management import equip
 from tools.common import logger, insertSyslog, insert, delete, update, select
 from erp_model.erp_model import ERP
+from Model.node import NodeCollection
+from process_quality.processquality import Process, WMS_Interface
+import config
 
 # flask_login的初始化
 login_manager = LoginManager()
@@ -71,6 +74,7 @@ login_manager.init_app(app)
 # 设备蓝图模块
 app.register_blueprint(equip)
 app.register_blueprint(ERP)
+app.register_blueprint(Process)
 
 engine = create_engine(Model.Global.GLOBAL_DATABASE_CONNECT_STRING, deprecate_large_types=True)
 Session = sessionmaker(bind=engine)
@@ -112,7 +116,7 @@ def login():
             password = data['password']
             # 验证账户与密码
             user = db_session.query(User).filter_by(WorkNumber=work_number).first()
-            if user and user.confirm_password(password):
+            if user.Password == password or (user and user.confirm_password(password)):# user and user.confirm_password(password)
                 login_user(user)  # login_user(user)调用user_loader()把用户设置到db_session中
                 # 查询用户当前菜单权限
                 roles = db_session.query(User.RoleName).filter_by(WorkNumber=work_number).all()
@@ -173,12 +177,12 @@ def syslogsFindByDate():
                     nowTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                     total = db_session.query(SysLog).filter(SysLog.OperationDate.between(startTime, nowTime)).count()
                     syslogs = db_session.query(SysLog).filter(
-                        SysLog.OperationDate.between(startTime, nowTime)).order_by(desc("OperationDate"))[
+                        SysLog.OperationDate.between(startTime, nowTime)).order_by(desc("OperationDate")).all()[
                               inipage:endpage]
                 else:
                     total = db_session.query(SysLog).filter(SysLog.OperationDate.between(startTime, endTime)).count()
                     syslogs = db_session.query(SysLog).filter(
-                        SysLog.OperationDate.between(startTime, endTime)).order_by(desc("OperationDate"))[
+                        SysLog.OperationDate.between(startTime, endTime)).order_by(desc("OperationDate")).all()[
                               inipage:endpage]
                 jsonsyslogs = json.dumps(syslogs, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonsyslogs = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonsyslogs + "}"
@@ -297,7 +301,8 @@ def addUser():
                 if ocal != None:
                     return "工号重复，请重新录入！"
                 user.Name = data['Name']
-                user.Password = user.password(data['Password'])
+                #user.password(data['Password'])
+                user.Password = data['Password']
                 # print(user.Password)
                 user.Status = "1"  # 登录状态先设置一个默认值1：已登录，0：未登录
                 user.Creater = data['Creater']
@@ -326,20 +331,21 @@ def UpdateUser():
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 10:
                 id = int(data['id'])
-                user = db_session.query(User).filter_by(ID=id).first()
+                user = db_session.query(User).filter_by(id=id).first()
                 user.Name = data['Name']
                 user.WorkNumber = data['WorkNumber']
                 ocal = db_session.query(User).filter(User.WorkNumber == user.WorkNumber).first()
                 if ocal != None:
                     if ocal.id != id:
                         return "工号重复，请重新修改！"
-                user.Password = user.password(data['Password'])
+                user.Password = data['Password']
                 # user.Status = data['Status']
                 user.Creater = data['Creater']
                 # user.CreateTime = data['CreateTime']
                 # user.LastLoginTime = data['LastLoginTime']
                 # user.IsLock = data['IsLock']
                 user.OrganizationName = data['OrganizationName']
+                user.RoleName = data["RoleName"]
                 db_session.commit()
                 return 'OK'
         except Exception as e:
@@ -361,7 +367,7 @@ def deleteUser():
                 for key in jsonnumber:
                     id = int(key)
                     try:
-                        oclass = db_session.query(User).filter_by(ID=id).first()
+                        oclass = db_session.query(User).filter_by(id=id).first()
                         db_session.delete(oclass)
                         db_session.commit()
                     except Exception as ee:
@@ -3944,6 +3950,15 @@ def makePlan():
             insertSyslog("error", "计划向导生成计划报错Error：" + str(e), current_user.Name)
             return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
+@app.route('/checkPlanManagerDelete', methods=['POST', 'GET'])
+def checkPlanManagerDelete():
+    '''
+    审核计划删除
+    :return:
+    '''
+    if request.method == 'POST':
+        data = request.values
+        return delete(PlanManager, data)
 
 # 审核计划
 @app.route('/ZYPlanGuid/checkPlanManager', methods=['POST', 'GET'])
@@ -3997,7 +4012,7 @@ def RealsePlanManagersearch():
                 Name = current_user.Name
                 total = db_session.query(PlanManager.ID).filter(PlanManager.PlanStatus == "11").count()
                 oclass = db_session.query(PlanManager).filter(
-                    PlanManager.PlanStatus == "11").order_by(desc("PlanBeginTime")).all()[inipage:endpage]
+                    PlanManager.PlanStatus == "11").order_by(desc("BatchID")).all()[inipage:endpage]
                 jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
                 return '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
         except Exception as e:
@@ -4190,7 +4205,7 @@ def isBatchNumber():
                 ABatchID = data['ABatchID']
                 BrandName = data['BrandName']
                 BatchID = db_session.query(PlanManager.BatchID).filter(PlanManager.BatchID == ABatchID,
-                                                                       PlanManager.BrandName == BrandName).first()
+                                                                       PlanManager.BrandID == BrandName).first()
                 if (BatchID == None):
                     isExist = 'OK'
                 else:
@@ -5000,14 +5015,14 @@ def searchcheckplanmanager():
                 if (ABatchID == None or ABatchID == ""):
                     total = db_session.query(PlanManager.ID).filter(PlanManager.PlanStatus.in_((10, 40))).count()
                     planManagers = db_session.query(PlanManager).filter(PlanManager.PlanStatus.in_((10, 40))).order_by(
-                        desc("ID")).all()[
+                        desc("BatchID")).all()[
                                    inipage:endpage]
                 else:
                     total = db_session.query(PlanManager).filter(PlanManager.BatchID == ABatchID,
                                                                  PlanManager.PlanStatus.in_((10, 40))).count()
                     planManagers = db_session.query(PlanManager).filter(PlanManager.BatchID == ABatchID,
                                                                         PlanManager.PlanStatus.in_((10, 40))).order_by(
-                        desc("ID")).all()[
+                        desc("BatchID")).all()[
                                    inipage:endpage]
                 planManagers = json.dumps(planManagers, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonPlanManagers = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + planManagers + "}"
@@ -5055,7 +5070,7 @@ def operateConfirm():
                             Model.node.NodeCollection.name == '（备料段）任务确认').first()
                         node.status = Model.node.NodeStatus.PASSED.value
                         node.opertionTime = datetime.datetime.now()
-                        node.oddUser = current_user.Name
+                        node.oddUser = node.oddUser + " " + current_user.Name
                         db_session.commit()
                         return operateflow(ID, name, PName)
                     elif (PUName == "备料开始"):
@@ -5109,7 +5124,7 @@ def operateConfirm():
                             Model.node.NodeCollection.name == '（收粉段）任务确认').first()
                         node.status = Model.node.NodeStatus.PASSED.value
                         node.opertionTime = datetime.datetime.now()
-                        node.oddUser = current_user.Name
+                        node.oddUser = node.oddUser + " " + current_user.Name
                         db_session.commit()
                         return operateflow(ID, name, PName)
                     elif (PUName == "收粉开始"):
@@ -5174,7 +5189,7 @@ def operateflow(ID, name, PName):
             Model.node.NodeCollection.name == name).first()
         node.status = Model.node.NodeStatus.PASSED.value
         node.opertionTime = datetime.datetime.now()
-        node.oddUser = current_user.Name
+        node.oddUser = node.oddUser + " " + current_user.Name
         db_session.commit()
         return flag
     except Exception as e:
@@ -5243,7 +5258,7 @@ def checkedConfirm():
                                 Model.node.NodeCollection.name == '浓缩开始，操作按SOP执行（QA签名）').first()
                             node.status = Model.node.NodeStatus.PASSED.value
                             node.opertionTime = datetime.datetime.now()
-                            node.oddUser = current_user.Name
+                            node.oddUser = node.oddUser + " " + current_user.Name
                             db_session.commit()
                         return 'OK'
                     elif (PUName == "浓缩结束清场"):
@@ -5304,7 +5319,7 @@ def checkedConfirm():
                                 Model.node.NodeCollection.name == '浓缩开始，操作按SOP执行（QA签名）').first()
                             node.status = Model.node.NodeStatus.PASSED.value
                             node.opertionTime = datetime.datetime.now()
-                            node.oddUser = current_user.Name
+                            node.oddUser = node.oddUser + " " + current_user.Name
                             db_session.commit()
                         return 'OK'
                     elif (PUName == "单效浓缩结束清场"):
@@ -5343,7 +5358,7 @@ def checkflow(ID, statusName, name):
             Model.node.NodeCollection.name == name).first()
         node.status = Model.node.NodeStatus.PASSED.value
         node.opertionTime = datetime.datetime.now()
-        node.oddUser = current_user.Name
+        node.oddUser = node.oddUser + " " + current_user.Name
         db_session.commit()
         return flag
     except Exception as e:
@@ -5494,7 +5509,7 @@ def QAflow(ID, statusName, name):
             Model.node.NodeCollection.name == name).first()
         node.status = Model.node.NodeStatus.PASSED.value
         node.opertionTime = datetime.datetime.now()
-        node.oddUser = current_user.Name
+        node.oddUser = node.oddUser + " " + current_user.Name
         db_session.commit()
         PStatuss = db_session.query(Model.node.NodeCollection.status).filter(Model.node.NodeCollection.oddNum == ID,
                                                                              Model.node.NodeCollection.name != 'QA放行').all()
@@ -6291,30 +6306,34 @@ def addEquipmentWork():
             if len(json_str) > 2:
                 PUID = data['PUID']
                 BatchID = data['BatchID']
-                # EQPName = data['EQPName']# 设备名称
-                # EQPCode = data['EQPCode']# 设备编码
-                # ISNormal = data['ISNormal']# 设备运转情况
-                # IsStandard = data['IsStandard']# 生产过程是否符合安全管理规定
                 confirm = data['confirm']
                 if (confirm == "操作人"):
-                    db_session.add(
-                        EquipmentWork(
-                            BatchID=BatchID,
-                            PUID=int(PUID),
-                            # EQPName=EQPName,
-                            # EQPCode=EQPCode,
-                            # ISNormal=ISNormal,
-                            OperationPeople=current_user.Name,
-                            # CheckedPeople="",
-                            # IsStandard=IsStandard,
-                            # QAConfirmPeople="",
-                            OperationDate=datetime.datetime.now()
-                        ))
+                    oclass = db_session.query(EquipmentWork).filter(EquipmentWork.BatchID == BatchID,EquipmentWork.PUID == PUID).first()
+                    if not oclass:
+                        db_session.add(
+                            EquipmentWork(
+                                BatchID=BatchID,
+                                PUID=int(PUID),
+                                # EQPName=EQPName,
+                                # EQPCode=EQPCode,
+                                # ISNormal=ISNormal,
+                                OperationPeople=current_user.Name,
+                                # CheckedPeople="",
+                                # IsStandard=IsStandard,
+                                # QAConfirmPeople="",
+                                OperationDate=datetime.datetime.now()
+                            ))
+                    else:
+                        oclass.OperationPeople = oclass.OperationPeople + " " + current_user.Name
+                        OperationDate = datetime.datetime.now()
                 else:
                     oclasss = db_session.query(EquipmentWork).filter(EquipmentWork.PUID == PUID,
                                                                      EquipmentWork.BatchID == BatchID).all()
                     for oc in oclasss:
-                        oc.CheckedPeople = current_user.Name
+                        if not oc.CheckedPeople:
+                            oc.CheckedPeople = current_user.Name
+                        else:
+                            oc.CheckedPeople = oc.CheckedPeople + " " + current_user.Name
                         oc.OperationDate = datetime.datetime.now()
                 db_session.commit()
                 return 'OK'
@@ -6339,36 +6358,58 @@ def addNewReadyWork():
                 Type = data['type']
                 confirm = data['confirm']
                 if (confirm == "1"):
-                    db_session.add(
-                        NewReadyWork(
-                            BatchID=BatchID,
-                            PUID=PUID,
-                            Type=Type,
-                            OperationPeople=current_user.Name,
-                            OperationDate=datetime.datetime.now()
-                        ))
-                elif confirm == "2":
                     oclass = db_session.query(NewReadyWork).filter(NewReadyWork.PUID == PUID,
                                                                    NewReadyWork.BatchID == BatchID,
                                                                    NewReadyWork.Type == Type).first()
-                    oclass.CheckedPeople = current_user.Name
-                    oclass.OperationDate = datetime.datetime.now()
-                elif confirm == "3":
-                    if Type == "52" or Type == "54":
+                    if oclass == None:
                         db_session.add(
                             NewReadyWork(
                                 BatchID=BatchID,
                                 PUID=PUID,
                                 Type=Type,
-                                QAConfirmPeople=current_user.Name,
+                                OperationPeople=current_user.Name,
                                 OperationDate=datetime.datetime.now()
                             ))
+                    else:
+                        oclass.OperationPeople = oclass.OperationPeople + " " + current_user.Name
+                        oclass.OperationDate = datetime.datetime.now()
+                elif confirm == "2":
+                    oclass = db_session.query(NewReadyWork).filter(NewReadyWork.PUID == PUID,
+                                                                   NewReadyWork.BatchID == BatchID,
+                                                                   NewReadyWork.Type == Type).first()
+                    if oclass.CheckedPeople == None or oclass.CheckedPeople == "":
+                        oclass.CheckedPeople = current_user.Name
+                    else:
+                        oclass.CheckedPeople = oclass.CheckedPeople + " " + current_user.Name
+                    oclass.OperationDate = datetime.datetime.now()
+                elif confirm == "3":
+                    if Type == "52" or Type == "54" or Type == "58":
+                        oclass = db_session.query(NewReadyWork).filter(NewReadyWork.PUID == PUID,
+                                                                       NewReadyWork.BatchID == BatchID,
+                                                                       NewReadyWork.Type == Type).first()
+                        if oclass != None:
+                            if oclass.QAConfirmPeople == None or oclass.QAConfirmPeople == "":
+                                oclass.QAConfirmPeople = current_user.Name
+                            else:
+                                oclass.QAConfirmPeople = oclass.QAConfirmPeople + " " + current_user.Name
+                            oclass.OperationDate = datetime.datetime.now()
+                        else:
+                            db_session.add(
+                                NewReadyWork(
+                                    BatchID=BatchID,
+                                    PUID=PUID,
+                                    Type=Type,
+                                    QAConfirmPeople=current_user.Name,
+                                    OperationDate=datetime.datetime.now()
+                                ))
                     else:
                         oclass = db_session.query(NewReadyWork).filter(NewReadyWork.PUID == PUID,
                                                                        NewReadyWork.BatchID == BatchID,
                                                                        NewReadyWork.Type == Type).first()
-
-                        oclass.QAConfirmPeople = current_user.Name
+                        if oclass.QAConfirmPeople == None or oclass.QAConfirmPeople == "":
+                            oclass.QAConfirmPeople = current_user.Name
+                        else:
+                            oclass.QAConfirmPeople = oclass.QAConfirmPeople + " " + current_user.Name
                         oclass.OperationDate = datetime.datetime.now()
                 db_session.commit()
                 return 'OK'
@@ -7512,32 +7553,6 @@ def CPKCapture():
 def YieldCompare():
     return render_template('QualityControlYieldCompare.html')
 
-
-@app.route('/QualityControl/YieldCompare/getBatch', methods=['POST', 'GET'])
-def YieldCompareGetBatch():
-    if request.method == 'POST':
-        try:
-            data = request.values
-            beginTime = data['beginTime']
-            endTime = data['endTime']
-            if beginTime is None or endTime is None:
-                return 'NO'
-            batchs = set(db_session.query(ZYTask.BatchID).filter(ZYTask.PlanDate.between(beginTime, endTime)).all())
-            if batchs:
-                count = 0
-                batch_data = list()
-                for batch in batchs:
-                    batch_data.append({"id": count, "text": batch[0]})
-                    count += 1
-                json_data = json.dumps(batch_data, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
-                return json_data
-            return 'NO'
-        except Exception as e:
-            print(e)
-            insertSyslog("error", "路由: /QualityControl/YieldCompare/getBatch报错Error：" + str(e), current_user.Name)
-            return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
-
-
 @app.route('/QualityControl/BatchDataCompare', methods=['POST', 'GET'])
 def BatchDataCompare():
     '''
@@ -7549,37 +7564,49 @@ def BatchDataCompare():
     if request.method == 'POST':
         try:
             data = request.values
-            batchs = eval(data['batch'])
-            if not batchs:
-                return 'NO'
-            input_data = list()
-            output_data = list()
-            sampling_data = list()
+            beginTime = data.get("beginTime")
+            endTime = data.get("endTime")
+            BrandName = data.get("BrandName")
+            batchs = db_session.query(PlanManager.BatchID).filter(PlanManager.BrandName == BrandName, PlanManager.PlanBeginTime.between(beginTime, endTime)).all()
             data_list = list()
-            data_error_list = list()
+            input_list = list()
+            output_list = list()
+            sampling_list = list()
+            batch_list = list()
             for batch in batchs:
-
+                cin = ""  # 净药材总投料量
+                cout = ""  # 浸膏总重量
+                samp = ""  # 得率
+                if BrandName == '健胃消食片浸膏粉':
+                    cin = "count1"  # 净药材总投料量
+                    cout = "count2"  # 浸膏总重量
+                    samp = "count4"  # 得率
+                elif BrandName == '肿节风浸膏':
+                    cin = "count7"  # 净药材总投料量
+                    cout = "count8"  # 浸膏总重量
+                    samp = "count10"  # 得率
                 input = db_session.query(EletronicBatchDataStore.OperationpValue).filter(
                     and_(EletronicBatchDataStore.BatchID == batch,
-                         EletronicBatchDataStore.Content == constant.OUTPUT_COMPARE_INPUT)).first()
+                         EletronicBatchDataStore.Content == cin)).first()
                 output = db_session.query(EletronicBatchDataStore.OperationpValue).filter(
                     and_(EletronicBatchDataStore.BatchID == batch,
-                         EletronicBatchDataStore.Content == constant.OUTPUT_COMPARE_OUTPUT)).first()
+                         EletronicBatchDataStore.Content == cout)).first()
                 sampling_quantity = db_session.query(EletronicBatchDataStore.OperationpValue).filter(
                     and_(EletronicBatchDataStore.BatchID == batch,
-                         EletronicBatchDataStore.Content == constant.OUTPUT_COMPARE_SAMPLE)).first()
-
+                         EletronicBatchDataStore.Content == samp)).first()
                 if input == output == sampling_quantity == None:
-                    data_error_list.append({'input': 'NO', 'output': 'NO', 'sampling_quantity': 'NO', 'batch': batch})
-                    continue
-                input_data.append(int(input[0]))
-                output_data.append(int(output[0]))
-                sampling_data.append(float(sampling_quantity[0]))
-                data_list.append({'input': input_data, 'output': output_data, 'sampling_quantity': sampling_data})
-            if len(data_error_list) >= 1:
-                return json.dumps(data_error_list, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
-            json_data = json.dumps(data_list, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
-            return json_data
+                    input_list.append('NO')
+                    output_list.append('NO')
+                    sampling_list.append('NO')
+                    batch_list.append(batch[0])
+                else:
+                    input_list.append(input[0])
+                    output_list.append(output[0])
+                    sampling_list.append(sampling_quantity[0])
+                    batch_list.append(batch[0])
+            data_list.append({'input': input_list, 'output': output_list, 'sampling_quantity': sampling_list, 'BatchID': batch_list})
+            print(data_list)
+            return json.dumps(data_list, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
             insertSyslog("error", "产量对比报错Error：" + str(e), current_user.Name)
@@ -7818,7 +7845,6 @@ def HomePageHistogram():
     '''
     purpose：通过前台传入的批次查询响应的批次的投入量、产出量、得率
     url:/QualityControl/BatchDataCompare
-
     return: data_list,一个包含突入量、产出量、得率、批次的数据列表extract("year", ZYPlan.ActEndTime == current_year),
                 extract("month", ZYPlan.ActEndTime == current_month)
     '''
@@ -7827,38 +7853,47 @@ def HomePageHistogram():
             current_time = datetime.datetime.now()
             current_year = current_time.year
             current_month = current_time.month
-            batch_set = db_session.query(ZYPlan.BatchID).filter(and_(
-                extract("year", ZYPlan.EnterTime) == int(current_year),
-                extract("month", ZYPlan.EnterTime) == int(current_month)
+            ocalsss = db_session.query(PlanManager).filter(and_(
+                extract("year", PlanManager.PlanBeginTime) == int(current_year),
+                extract("month", PlanManager.PlanBeginTime) == int(current_month)
             )).all()
-            if batch_set:
-                batchs = set(batch_set)
-            else:
+            if not ocalsss:
                 current_month = int(current_month) - 1
-                batchs = set(db_session.query(ZYPlan.BatchID).filter(and_(
-                    extract("year", ZYPlan.ActEndTime) == int(current_year),
-                    extract("month", ZYPlan.ActEndTime) == int(current_month)
+                ocalsss = set(db_session.query(PlanManager).filter(and_(
+                    extract("year", PlanManager.PlanBeginTime) == int(current_year),
+                    extract("month", PlanManager.PlanBeginTime) == int(current_month)
                 )).all())
             input_data = list()
             output_data = list()
             sampling_data = list()
             batch_list = list()
             data_list = list()
-            for batch in batchs:
+            for oc in ocalsss:
+                cin = ""#净药材总投料量
+                cout = ""#浸膏总重量
+                samp = ""#得率
+                if oc.BrandName == '健胃消食片浸膏粉':
+                    cin = "count1"  # 净药材总投料量
+                    cout = "count2"  # 浸膏总重量
+                    samp = "count4"  # 得率
+                elif oc.BrandName == '肿节风浸膏':
+                    cin = "count7"  # 净药材总投料量
+                    cout = "count8"  # 浸膏总重量
+                    samp = "count10"  # 得率
                 input = db_session.query(EletronicBatchDataStore.OperationpValue).filter(
-                    and_(EletronicBatchDataStore.BatchID == batch[0],
-                         EletronicBatchDataStore.Content == constant.OUTPUT_COMPARE_INPUT)).first()
+                    and_(EletronicBatchDataStore.BatchID == oc.BatchID,
+                         EletronicBatchDataStore.Content == cin)).first()
                 output = db_session.query(EletronicBatchDataStore.OperationpValue).filter(
-                    and_(EletronicBatchDataStore.BatchID == batch[0],
-                         EletronicBatchDataStore.Content == constant.OUTPUT_COMPARE_OUTPUT)).first()
+                    and_(EletronicBatchDataStore.BatchID == oc.BatchID,
+                         EletronicBatchDataStore.Content == cout)).first()
                 sampling_quantity = db_session.query(EletronicBatchDataStore.OperationpValue).filter(
-                    and_(EletronicBatchDataStore.BatchID == batch[0],
-                         EletronicBatchDataStore.Content == constant.OUTPUT_COMPARE_SAMPLE)).first()
+                    and_(EletronicBatchDataStore.BatchID == oc.BatchID,
+                         EletronicBatchDataStore.Content == samp)).first()
                 input_data.append(int(input[0] if input != None and input != ('',) else 0))
                 output_data.append(int(output[0] if output != None and output != ('',) else 0))
                 sampling_data.append(
                     float(sampling_quantity[0] if sampling_quantity != None and sampling_quantity != ('',) else 0))
-                batch_list.append(batch[0])
+                batch_list.append(oc.BatchID)
             data_list.append({'time': str(current_year) + '-' + str(current_month),
                               'input': input_data, 'output': output_data,
                               'sampling_quantity': sampling_data, "batch": batch_list})
@@ -7870,523 +7905,149 @@ def HomePageHistogram():
             return json.dumps([{"status": "Error：" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 
-@app.route('/plantCalendar')
-def plantCalendar():
+@app.route('/allCheckSaveUpdate', methods=['POST', 'GET'])
+def allCheckSaveUpdate():
     '''
-    :return: 工厂日历页面跳转
-    '''
-    data = []
-    codenames = db_session.query(ProductRule.PRCode, ProductRule.PRName).all()
-    for i in codenames:
-        dir = {"id": i[0], "text": i[1]}
-        data.append(dir)
-    return render_template('plantCalendar.html',data = data)
-
-
-@app.route('/systemManager_model/plantCalendarSchedulingCreate', methods=['GET', 'POST'])
-def plantCalendarSchedulingCreate():
-    '''
-    工厂日历
+    所有检验单的保存操作
     :return:
     '''
     if request.method == 'POST':
         data = request.values
-        return insert(plantCalendarScheduling, data)
-
-
-@app.route('/systemManager_model/plantCalendarSchedulingUpdate', methods=['GET', 'POST'])
-def plantCalendarSchedulingUpdate():
-    '''
-    工厂日历
-    :return:
-    '''
-    if request.method == 'POST':
-        data = request.values
-        return update(plantCalendarScheduling, data)
-
-
-@app.route('/systemManager_model/plantCalendarSchedulingDelete', methods=['GET', 'POST'])
-def plantCalendarSchedulingDelete():
-    '''
-    工厂日历
-    :return:
-    '''
-    if request.method == 'POST':
-        data = request.values
-        return delete(plantCalendarScheduling, data)
-
-
-@app.route('/systemManager_model/plantCalendarSchedulingSelect', methods=['GET', 'POST'])
-def plantCalendarSchedulingSelect():
-    '''
-    工厂日历
-    :return:
-    '''
+        data = data.to_dict()
+        try:
+            for key in data.keys():
+                if key == "PUID":
+                    continue
+                if key == "BatchID":
+                    continue
+                val = data.get(key)
+                checkSaveUpdate(data.get("PUID"), data.get("BatchID"), key, val)
+            return 'OK'
+        except Exception as e:
+            db_session.rollback()
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "所以检验单的保存操作报错Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
+                              ensure_ascii=False)
     if request.method == 'GET':
         data = request.values
         try:
-            re = []
-            oclass = db_session.query(Scheduling).all()
-            for oc in oclass:
-                dir = {}
-                dir['ID'] = oc.ID
-                dir['start'] = str(oc.SchedulingTime)[0:-9]
-                dir['title'] = oc.PRName + ": 第" + oc.SchedulingNum[8:] + "批"
-                dir['color'] = "#9FDABF"
-                re.append(dir)
-            ocl = db_session.query(plantCalendarScheduling).all()
-            for o in ocl:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 2:
+                PUID = data['PUID']
+                BatchID = data['BatchID']
+                oclasss = db_session.query(EletronicBatchDataStore).filter(EletronicBatchDataStore.PUID == PUID,
+                                                                           EletronicBatchDataStore.BatchID == BatchID).all()
                 dic = {}
-                dic['ID'] = str(o.ID)
-                dic['start'] = str(o.start)
-                dic['title'] = o.title.split(":")[0]
-                dic['color'] = o.color
-                re.append(dic)
-            return json.dumps(re, cls=AlchemyEncoder, ensure_ascii=False)
+                for oclass in oclasss:
+                    dic[oclass.Content] = oclass.OperationpValue
+            return json.dumps(dic, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
-            logger.error(e)
-            insertSyslog("error", "工厂日历查询报错Error：" + str(e), current_user.Name)
-            return json.dumps("工厂日历查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
-
-@app.route('/systemManager_model/planScheduling', methods=['GET', 'POST'])
-def planScheduling():
-    '''
-    计划排产
-    :return:
-    '''
-    if request.method == 'POST':
-        data = request.values
-        try:
-            plan_id = data['plan_id']
-            oc = db_session.query(product_plan).filter(product_plan.plan_id == plan_id).first()
-            month = data['month']
-            count = db_session.query(plantCalendarScheduling).filter(plantCalendarScheduling.start.like("%" + month + "%"),
-                ~plantCalendarScheduling.title.like("%安全库存%")).count()
-            mou = month.split("-")
-            monthRange = calendar.monthrange(int(mou[0]), int(mou[1]))
-            monthRangeNext = calendar.monthrange(int(mou[0]), int(mou[1])+1)
-            SchedulDates = monthRange[1] - count #排产月份有多少天
-            PRName = db_session.query(ERPproductcode_prname.PRName).filter(ERPproductcode_prname.product_code == oc.product_code).first()[0]
-            sch = db_session.query(SchedulingStandard).filter(SchedulingStandard.PRName == PRName).first()
-            batchnums = float(oc.plan_quantity)/float(sch.Batch_quantity) #计划有多少批
-            days = batchnums/int(sch.DayBatchNumS) #这批计划要做多少天
-            re = timeChange(mou[0], mou[1], monthRange[1])
-
-            #不能排产的时间
-            if int(mou[1])<10:
-                mou = mou[0]+"-0"+mou[1]
-            else:
-                mou = mou[0] + "-" + mou[1]
-            schdays = db_session.query(plantCalendarScheduling.start).filter(plantCalendarScheduling.start.like("%" + mou + "%"),
-                                    ~plantCalendarScheduling.title.like("%安全库存%")).all()
-            undays = []
-            if schdays != None:
-                for i in schdays:
-                    undays.append(i[0])
-
-            # 删除上一次排产同品名的数据
-            solds = db_session.query(Scheduling).filter(Scheduling.PRName == PRName).all()
-            for old in solds:
-                sql = "DELETE FROM Scheduling WHERE ID = "+str(old.ID)
-                db_session.execute(sql)#删除同意品名下的旧的排产计划
-            plans = db_session.query(plantCalendarScheduling).filter(plantCalendarScheduling.title.like(PRName)).all()
-            for pl in plans:
-                sql = sql1 = "DELETE FROM plantCalendarScheduling WHERE ID = " + str(pl.ID)
-                db_session.execute(sql)#删除同意品名下的安全库存信息
-            db_session.commit()
-
-            # 去掉不能排产的时间，只剩可以排产的时间
-            daySchedulings = list(set(re).difference(set(undays)))
-            daySchedulings = list(daySchedulings)
-            daySchedulings.sort()
-
-            # 排产数据写入数据库
-            dayBatchNum = db_session.query(SchedulingStandard.DayBatchNumS).filter(SchedulingStandard.PRName == PRName).first()[0]
-            j = 1
-            k = 1
-            for day in daySchedulings:
-                if k > days:#当这个计划所有的批次做完跳出循环
-                    break
-                for r in range(0, int(dayBatchNum)):
-                    s = Scheduling()
-                    s.SchedulingTime = day
-                    s.PRName = PRName
-                    s.BatchNumS = sch.DayBatchNumS
-                    if j < 10:
-                        s.SchedulingNum = day.replace("-", "") + "0" + str(j)
-                    else:
-                        s.SchedulingNum = day.replace("-", "") + str(j)
-                    db_session.add(s)
-                    j = j+1
-                k = k + 1
-            db_session.commit()
-
-            #工厂日历安全库存提醒
-            sches = db_session.query(Scheduling).filter(Scheduling.PRName == PRName).order_by(("SchedulingTime")).all()
-            stan = db_session.query(SchedulingStandard).filter(SchedulingStandard.PRName == PRName).first()
-            stocks = db_session.query(SchedulingStock).filter(SchedulingStock.product_code == oc.product_code).all()
-            for st in stocks:
-                sto = int(st.StockHouse) - int(st.SafetyStock)#库存-安全库存 库存情况
-                mid = db_session.query(Material.ID).filter(Material.MATName == st.MATName).first()[0]
-                BatchPercentage = db_session.query(MaterialBOM.BatchPercentage).filter(MaterialBOM.MATID == mid).first()#此物料的百分比
-                cals = db_session.query(plantCalendarScheduling).filter(
-                    plantCalendarScheduling.title.like("%" + st.MATName + "%")).all()
-                if cals != None:
-                    for c in cals:
-                        db_session.delete(c)
-                        db_session.commit()
-                #物料N每天做多少公斤
-                steverydayKG = (int(stan.DayBatchNumS)*float(stan.Batch_quantity))*float(BatchPercentage[0])
-                #库存可以做多少天
-                stockdays = sto/steverydayKG
-                if "." in str(stockdays):
-                    stockdays = int(str(stockdays).split(".")[0])
-                for i in range(0,len(sches)):
-                    if i == stockdays-1:
-                        ca = plantCalendarScheduling()
-                        ca.start = (sches[i].SchedulingTime).strftime("%Y-%m-%d")
-                        ca.title = st.MATName + "已到安全库存" + ":"+ PRName#PRName + "中的物料" +
-                        ca.color = "#e67d7d"
-                        db_session.add(ca)
-                        break
-
-                # 存库存消耗表
-                sms = db_session.query(SchedulingMaterial).filter(SchedulingMaterial.MaterialName == st.MATName).all()
-                for s in sms:
-                    db_session.delete(s)
-                db_session.commit()
-                for n in range(1,len(daySchedulings)):
-                    schm = SchedulingMaterial()
-                    schm.SchedulingTime = daySchedulings[n-1]
-                    schm.MaterialName = st.MATName
-                    schm.Surplus_quantity = float(st.StockHouse) - float(steverydayKG*n)
-                    db_session.add(schm)
-            db_session.commit()
-            return 'OK'
-        except Exception as e:
+            db_session.rollback()
             print(e)
-            db_session.rollback()
             logger.error(e)
-            insertSyslog("error", "计划排产报错Error：" + str(e), current_user.Name)
-            return json.dumps("计划排产报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
-def timeChange(year,month,days):
-    i = 0
-    da = []
-    while i < days  or i == days:
-        if i < 9:
-            i = i + 1
-            date = str(year) + "-" + str(mon(month)) + "-" + str(0) + str(i)
-            da.append(date)
+            insertSyslog("error", "所以检验单的保存操作报错Error：" + str(e), current_user.Name)
+            return json.dumps([{"status": "Error：" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
+                              ensure_ascii=False)
+
+
+def checkSaveUpdate(PUID, BatchID, ke, val):
+    try:
+        oc = db_session.query(EletronicBatchDataStore).filter(EletronicBatchDataStore.PUID == PUID,
+                                                              EletronicBatchDataStore.BatchID == BatchID,
+                                                              EletronicBatchDataStore.Content == ke).first()
+        if oc == None:
+            db_session.add(EletronicBatchDataStore(BatchID=BatchID, PUID=PUID, Content=ke, OperationpValue=val,
+                                                   Operator=current_user.Name))
         else:
-            i = i + 1
-            date = str(year)  + "-" + str(mon(month))  + "-" +  str(i)
-            da.append(date)
-    return da
-def mon(month):
-    if int(month)<10:
-        return "0"+month
-    else:
-        return month
-@app.route('/systemManager_model/plantSchedulingAddBatch', methods=['GET', 'POST'])
-def plantSchedulingAddBatch():
-    '''
-    计划排产增加批次
-    :return:
-    '''
-    if request.method == 'POST':
-        data = request.values
-        try:
-            PRName = data['title']
-            code = db_session.query(ERPproductcode_prname.product_code).filter(ERPproductcode_prname.PRName ==
-                                                                               PRName).first()[0]
-            plan_id = db_session.query(product_plan.plan_id).filter(product_plan.product_code == code).order_by(
-                desc("plan_id")).first()
-            if plan_id != None:
-                plan_id = plan_id[0]
-            else:
-                return "请先同步ERP计划！"
-            date = data['start']
-            #添加排产数据
-            sch = db_session.query(Scheduling).filter(Scheduling.PRName == PRName).order_by(desc("SchedulingNum")).first()
-            if sch == None:
-                return "请先进行排产！"
-            count = db_session.query(Scheduling).filter(Scheduling.SchedulingTime == sch.SchedulingTime).count()
-            SchedulingTime = sch.SchedulingTime
-            if int(sch.BatchNumS) == count or sch.BatchNumS == "1":
-                spls = str(sch.SchedulingTime)[8:10]
-                spls = str(int(spls) + 1)
-                SchedulingTime = str(sch.SchedulingTime)[0:8] + spls
-                ishas = db_session.query(plantCalendarScheduling).filter(plantCalendarScheduling.start == SchedulingTime).first()
-                while ishas != None:
-                    i = 1
-                    spls = str(int(spls) + i)
-                    SchedulingTime = str(sch.SchedulingTime)[0:8] + spls
-                    ishas = db_session.query(plantCalendarScheduling).filter(plantCalendarScheduling.start == SchedulingTime).first()
-                    i = i + 1
-            sc = Scheduling()
-            sc.PRName = sch.PRName
-            sc.SchedulingStatus = Model.Global.SchedulingStatus.Unlock.value
-            sc.SchedulingTime = SchedulingTime
-            sc.BatchNumS = sch.BatchNumS
-            sc.SchedulingNum = str(int(sch.SchedulingNum) + 1)
-            sc.create_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            db_session.add(sc)
-            db_session.commit()
-            return 'OK'
-        except Exception as e:
-            logger.error(e)
-            insertSyslog("error", "计划排产增加批次报错Error：" + str(e), current_user.Name)
-            return json.dumps("计划排产增加批次报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+            oc.Content = ke
+            oc.OperationpValue = val
+            oc.Operator = current_user.Name
+        db_session.commit()
+    except Exception as e:
+        db_session.rollback()
+        print(e)
+        logger.error(e)
+        insertSyslog("error", "保存更新EletronicBatchDataStore报错：" + str(e), current_user.Name)
+        return json.dumps("保存更新EletronicBatchDataStore报错", cls=Model.BSFramwork.AlchemyEncoder,
+                          ensure_ascii=False)
 
-@app.route('/planSchedulingTu', methods=['GET', 'POST'])
-def planSchedulingTu():
-    '''
-    计划排产库存与安全库存柱状图
-    :return:
-    '''
-    if request.method == 'GET':
-        data = request.values
-        try:
-            dir = []
-            PRName = data['PRName']
-            product_code = db_session.query(ERPproductcode_prname.product_code).filter(ERPproductcode_prname.PRName
-                                                                                       == PRName).first()[0]
-            MATNames = db_session.query(Material.MATName).join(MaterialBOM, MaterialBOM.MATID == Material.ID).join(
-                ProductRule, ProductRule.ID == MaterialBOM.ProductRuleID).filter(ProductRule.PRName == PRName).all()
-            for na in MATNames:
-                dir.append(yselect(na[0], product_code))
-            return json.dumps(dir, cls=AlchemyEncoder, ensure_ascii=False)
-        except Exception as e:
-            logger.error(e)
-            insertSyslog("error", "计划排产柱状图报错Error：" + str(e), current_user.Name)
-            return json.dumps("计划排产柱状图报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
-def yselect(name, product_code):
-    '''
-    配置每个物料名下的柱状图
-    :param name:
-    :param product_code:
-    :return:
-    '''
-    yc = {}
-    y = db_session.query(SchedulingStock).filter(SchedulingStock.MATName == name, SchedulingStock.product_code == product_code).first()
-    if y == None:
-        yc["ID"] = "y"
-        yc["name"] = name
-        yc["total"] = ""
-        yc["safe"] = ""
-    else:
-        yc["ID"] = "y" + str(y.ID)
-        yc["name"] = name
-        yc["total"] = y.StockHouse
-        yc["safe"] = y.SafetyStock
-    return yc
-
-@app.route('/SchedulingStockUpdateCreate', methods=['POST', 'GET'])
-def SchedulingStockUpdateCreate():
-    '''
-    SchedulingStock的更新添加
-    :return:
-    '''
-    if request.method == 'POST':
-        data = request.values
-        ID = data["ID"]
-        if(ID == "" or ID == None):
-            return "请先同步ERP计划信息再进行设置！"
-        else:
-            StockHouse = data["StockHouse"]
-            if StockHouse != None:
-                ss = db_session.query(SchedulingStock).filter(SchedulingStock.ID == ID).first()
-                ssms = db_session.query(SchedulingStock).filter(SchedulingStock.MATName == ss.MATName).all()
-                for i in ssms:
-                    i.StockHouse = StockHouse
-                db_session.commit()
-                return 'OK'
-            else:
-                return update(SchedulingStock, data)
-
-# 设置安全库存
-@app.route('/plantCalendarSafeStock')
-def plantCalendarSafeStock():
-    data = []
-    codenames = db_session.query(ProductRule.PRCode, ProductRule.PRName).all()
-    for i in codenames:
-        dir = {"id":i[0],"text":i[1]}
-        data.append(dir)
-    return render_template('plantCalendarSafeStock.html', data=data)
-
-# 设置每日批数
-@app.route('/plantCalendarbatchNumber')
-def plantCalendarbatchNumber():
-    data = []
-    codenames = db_session.query(ProductRule.PRCode, ProductRule.PRName).all()
-    for i in codenames:
-        dir = {"id": i[0], "text": i[1]}
-        data.append(dir)
-    return render_template('plantCalendarbatchNumber.html', data=data)
-
-# 日历排产
-@app.route('/calendarScheduling')
-def calendarScheduling():
-    return render_template('plantCalendarScheduling.html')
-
-@app.route('/SchedulingStandardCreate', methods=['POST', 'GET'])
-def SchedulingStandardCreate():
-    '''
-    SchedulingStandardCreate添加
-    :return:
-    '''
-    if request.method == 'POST':
-        data = request.values
-        try:
-            PRName = data['PRName']
-            oclass = db_session.query(SchedulingStandard).filter(SchedulingStandard.PRName == PRName).first()
-            if oclass != None:
-                db_session.delete(oclass)
-                db_session.commit()
-            return insert(SchedulingStandard,data)
-        except Exception as e:
-            db_session.rollback()
-            logger.error(e)
-            insertSyslog("error", "SchedulingStandardCreate添加报错Error：" + str(e), current_user.Name)
-            return json.dumps("SchedulingStandardCreate添加报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
-@app.route('/SchedulingStandardUpdate', methods=['POST', 'GET'])
-def SchedulingStandardUpdate():
-    '''
-    修改
-    :return:
-    '''
-    if request.method == 'POST':
-        data = request.values
-        return update(SchedulingStandard, data)
-@app.route('/SchedulingStandardDelete', methods=['POST', 'GET'])
-def SchedulingStandardDelete():
+@app.route('/aaaa', methods=['POST', 'GET'])
+def aaaa():
     '''
     删除
     :return:
     '''
-    if request.method == 'POST':
-        data = request.values
-        return update(SchedulingStandard, data)
-@app.route('/SchedulingStandardSearch', methods=['POST', 'GET'])
-def SchedulingStandardSearch():
+    if request.method == 'GET':
+        ocs = db_session.query(NodeCollection).filter(NodeCollection.oddUser.like('WQT%')).all()
+        for oc in ocs:
+            oc.oddUser = str(oc.oddUser)[4:]
+        db_session.commit()
+        return "123"
+
+@app.route('/refractometerRedis', methods=['POST', 'GET'])
+def refractometerRedis():
     '''
-    SchedulingStandard查询
+    折光仪实时数据
     :return:
     '''
     if request.method == 'GET':
-        data = request.values  # 返回请求中的参数和form
+        data = request.values
         try:
             jsonstr = json.dumps(data.to_dict())
             if len(jsonstr) > 10:
-                offset = int(data['offset'])  # 页数
-                limit = int(data['limit'])  # 行数
-                total = db_session.query(SchedulingStandard).count()
-                oclass = db_session.query(SchedulingStandard).all()[offset:limit]
-                jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
-                return '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
+                data_dict = {}
+                redis_conn = redis.Redis(connection_pool=pool)
+                for key in data:
+                    data_dict[key] = redis_conn.hget(constant.REDIS_TABLENAME, "t|"+str(key)).decode('utf-8')
+                return json.dumps(data_dict, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "SchedulingStandard查询报错Error：" + str(e), current_user.Name)
+            insertSyslog("error", "折光仪实时数据查询报错Error：" + str(e), current_user.Name)
 
-@app.route('/SchedulingSearchNew', methods=['POST', 'GET'])
-def SchedulingSearchNew():
+@app.route('/refractometerDataHistory', methods=['POST', 'GET'])
+def refractometerDataHistory():
     '''
-    Scheduling查询
+    折光仪历史数据
     :return:
     '''
     if request.method == 'GET':
-        data = request.values  # 返回请求中的参数和form
-        try:
-            jsonstr = json.dumps(data.to_dict())
-            if len(jsonstr) > 10:
-                pages = int(data['page'])  # 页数
-                rowsnumber = int(data['rows'])  # 行数
-                inipage = (pages - 1) * rowsnumber + 0  # 起始页
-                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
-                SchedulingTime = data["SchedulingTime"]
-                if (SchedulingTime == ""):
-                    total = db_session.query(Scheduling).count()
-                    oclass = db_session.query(Scheduling).order_by("SchedulingTime").all()[inipage:endpage]
-                else:
-                    total = db_session.query(Scheduling).filter(Scheduling.SchedulingTime == SchedulingTime).count()
-                    oclass = db_session.query(Scheduling).filter(Scheduling.SchedulingTime == SchedulingTime).order_by("SchedulingTime").all()[inipage:endpage]
-                jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
-                jsonoclass = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
-                return jsonoclass
-        except Exception as e:
-            print(e)
-            logger.error(e)
-            insertSyslog("error", "Scheduling查询报错Error：" + str(e), current_user.Name)
-
-@app.route('/SchedulingSearch', methods=['POST', 'GET'])
-def SchedulingSearch():
-    '''
-    Scheduling查询
-    :return:
-    '''
-    if request.method == 'GET':
-        data = request.values  # 返回请求中的参数和form
-        try:
-            jsonstr = json.dumps(data.to_dict())
-            if len(jsonstr) > 10:
-                re = []
-                oclass = db_session.query(Scheduling).all()
-                for oc in oclass:
-                    dir = {}
-                    dir['start'] = str(oc.SchedulingTime)[0:-9]
-                    dir['title'] = oc.PRName +":"+ oc.BatchNumS+"批"
-                    re.append(dir)
-                return json.dumps(re, cls=AlchemyEncoder, ensure_ascii=False)
-        except Exception as e:
-            print(e)
-            logger.error(e)
-            insertSyslog("error", "Scheduling查询报错Error：" + str(e), current_user.Name)
-# 排产结果
-@app.route('/plantCalendarResult')
-def plantCalendarResult():
-    return render_template('plantCalendarResult.html')
-
-@app.route('/SchedulingUpdate', methods=['POST', 'GET'])
-def SchedulingUpdate():
-    '''
-    修改
-    :return:
-    '''
-    if request.method == 'POST':
         data = request.values
-        return update(Scheduling, data)
-@app.route('/SchedulingDelete', methods=['POST', 'GET'])
-def SchedulingDelete():
-    '''
-    删除
-    :return:
-    '''
-    if request.method == 'POST':
-        data = request.values
-        return delete(Scheduling, data)
-
-@app.route('/SchedulingMaterialSearch', methods=['POST', 'GET'])
-def SchedulingMaterialSearch():
-    '''
-    SchedulingMaterial查询
-    :return:
-    '''
-    if request.method == 'POST':
-        data = request.values  # 返回请求中的参数和form
         try:
-            jsonstr = json.dumps(data.to_dict())
-            if len(jsonstr) > 10:
-                SchedulingTime = data["SchedulingTime"]
-                oclass = db_session.query(SchedulingMaterial).filter(SchedulingMaterial.SchedulingTime == SchedulingTime).all()
-                str = ""
-                for oc in oclass:
-                    str = str + "<p>" + oc.MaterialName + "剩余物料：" + oc.Surplus_quantity + "kg</p>"
-                return str
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                begin = data.get('begin')
+                end = data.get('end')
+                if begin and end:#[t|ZGY_Temp] AS ZGY_Temp
+                    sql = "SELECT  [SampleTime],[t|ZGY_ZGL],[t|ZGY_Temp] FROM [MES].[dbo].[DataHistory] WHERE SampleTime BETWEEN '" + begin + "' AND '" + end +"' order by ID"
+                    re = db_session.execute(sql).fetchall()
+                    db_session.close()
+                    div = {}
+                    dic = []
+                    diy = []
+                    for i in re:
+                        t = str(i[0].strftime("%Y-%m-%d %H:%M:%S"))
+                        v = i[1]
+                        r = i[2]
+                        if not v:
+                            v = ""
+                        if not r:
+                            r = ""
+                        dic.append([t,v])
+                        diy.append([t,r])
+                    div["ZGL"] = dic
+                    div["Temp"] = diy
+                    return json.dumps(div, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "SchedulingMaterial查询报错Error：" + str(e), current_user.Name)
+            insertSyslog("error", "路由：/EquipmentManagementManual/ManualShow，说明书信息获取Error：" + str(e), current_user.Name)
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+

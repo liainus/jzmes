@@ -1185,11 +1185,11 @@ class EquipmentManagementManua(Base):
     # ID:
     ID = Column(Integer, primary_key=True, autoincrement=True, nullable=True)
     # 说明书名称
-    Name = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+    Name = Column(Unicode(500), primary_key=False, autoincrement=False, nullable=True)
     # 存储路径
-    Path = Column(Unicode(100), primary_key=False, autoincrement=False, nullable=True)
+    Path = Column(Unicode(500), primary_key=False, autoincrement=False, nullable=True)
     # 作者
-    Author = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+    Author = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
     # 上传时间
     UploadTime = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
 
@@ -1236,13 +1236,21 @@ class product_plan(Base):
     __tablename__ = "product_plan"
     # 计划ID:
     plan_id = Column(Integer, primary_key=True, autoincrement=True, nullable=True)
+    # 计划期间（YYYYMM）
+    plan_period = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
     # 产品(即物料)编码
-    product_code = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+    product_code = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
     # 产品(即物料)名称
-    product_name = Column(Unicode(100), primary_key=False, autoincrement=False, nullable=True)
+    product_name = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    # 计量单位 kg\批
+    product_unit = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    # 计量类型 'B' 批次  'W'重量
+    meter_type = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    # 单据号
+    bill_code = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
     # 计划数量
-    plan_quantity = Column(Unicode(100), primary_key=False, autoincrement=False, nullable=True)
-    # 计划类型 'M' 月计划
+    plan_quantity = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    # 计划类型 'M' 月计划   'W'周计划
     plan_type = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
     # 插入时间
     create_time = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
@@ -1258,8 +1266,8 @@ class Scheduling(Base):
     ID = Column(Integer, primary_key=True, autoincrement=True, nullable=True)
     # 产品名称
     PRName = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
-    #时间(工厂日历)
-    SchedulingTime = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+    #排产时间(工厂日历)
+    SchedulingTime = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
     # 排产序列号
     SchedulingNum = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
     # 批数
@@ -1322,6 +1330,63 @@ class SchedulingMaterial(Base):
     SchedulingTime = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
     # 物料剩余量
     Surplus_quantity = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+# 得率维护表
+class YieldMaintain(Base):
+    __tablename__ = "YieldMaintain"
+    # ID:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=True)
+    # 品名
+    PRName = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    # 得率PRName
+    Yield = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    # 成品总重量
+    FinishProduct = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    # 取样量
+    SamplingQuantity = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    # 药材总投料量
+    TotalQuantity = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+# 工艺质量pdf保存表
+class ProcessQualityPDF(Base):
+    __tablename__ = "ProcessQualityPDF"
+    # ID:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=True)
+    # PDF名称
+    Name = Column(Unicode(500), primary_key=False, autoincrement=False, nullable=True)
+    # 存储路径
+    Path = Column(Unicode(500), primary_key=False, autoincrement=False, nullable=True)
+    # 上传人
+    Author = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+    # 上传时间
+    UploadTime = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+
+# 工艺质量确认流程表
+class ProcessQuality(Base):
+    __tablename__ = 'ProcessQuality'
+    # id:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+    # 批次号:
+    BatchID = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 含量
+    content = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
+
+    # 操作人:
+    OperationPeople = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
+
+    # 复核人:
+    CheckedPeople = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
+
+    # 审核人:
+    Reviewer = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
+
+    # 描述:
+    Description = Column(Unicode(60), primary_key=False, autoincrement=False, nullable=True)
+
+    # 操作时间:
+    OperationDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
 
 # 生成表单的执行语句
 Base.metadata.create_all(engine)

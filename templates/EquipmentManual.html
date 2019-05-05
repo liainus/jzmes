@@ -99,7 +99,7 @@
                 download:function(){
                     var rows = $('#tab').datagrid('getSelections');
                     if (rows.length > 1) {
-                        $.messager.alert('警告操作！', '编辑记录只能选定一条数据！', 'warning');
+                        $.messager.alert('警告操作！', '下载记录只能选定一条数据！', 'warning');
                     } else if (rows.length == 1) {
                         var row = $('#tab').datagrid('getSelected');
                         if (row) {
@@ -129,8 +129,8 @@
                 placeholder="">
             <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="toolbar.search()">查询</a>
             <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="toolbar.create()">导入</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-print" onclick="toolbar.download()">下载</a>
             <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="toolbar.delete()">删除</a>
-            <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="toolbar.download()">下载</a>
             <a href="#" class="easyui-linkbutton" iconCls="icon-reload" onclick="toolbar.refresh()">刷新</a>
         </div>
         <div id="fileClassDialog" class="easyui-dialog" style="width:400px;height:300px;padding:10px;"
@@ -167,9 +167,9 @@
             <thead>
                 <tr>
                     <th field="ck" checkbox="true"></th>
-                    <th data-options="field:'Name',width:150,align:'center'">说明书名称</th>
-                    <th data-options="field:'Author',width:120,align:'center'">上传人</th>
-                    <th data-options="field:'UploadTime',width:150,align:'center'">上传时间</th>
+                    <th data-options="field:'Name',width:300,align:'center'">说明书名称</th>
+                    <th data-options="field:'Author',width:150,align:'center'">上传人</th>
+                    <th data-options="field:'UploadTime',width:200,align:'center'">上传时间</th>
                 </tr>
             </thead>
         </table>

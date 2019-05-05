@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>折光仪历史数据</title>
+    <link href="../static/css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
+    <link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
+    <link rel="stylesheet" href="../static/css/providers.css">
+    <style>
+        .panel-body{overflow: hidden;}
+    </style>
+    <script type="text/javascript" src="../static/js/echarts.common.min.js"></script>
+    <script type="text/javascript" src="../static/js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
+    <script>
+        $(function(){
+            $("#beginTime").datetimebox("setValue", myformatter(new Date(new Date().getTime() - 1*60*60*1000)))
+            $("#endTime").datetimebox("setValue", myformatter(new Date()))
+            $("#searchBatchBtn").click();
+            $('#searchBatchBtn').on('click', function(){
+                var date1 = $('#beginTime').datebox('getValue')
+                var date2 = $('#endTime').datebox('getValue')
+                var date3 = (new Date(date2)).getTime() -  (new Date(date1)).getTime()
+                if(date3 > 7200000){
+                    $.messager.alert('提醒！', '您选择的时间段数据量较大，为保证系统流畅性，起止时间相差不能大于2小时', 'warning');
+                }else if(date3 <= 0){
+                    $.messager.alert('提醒！', '截止时间不能小于开始时间', 'warning');
+                }else{
+                    getNewData()
+                }
+            });
+            {#$("#LeftTree").tree({#}
+            {#    url:'',#}
+            {#    checkbox:true,#}
+            {#    animate:true,#}
+            {#    loadFilter:function(data){#}
+            {#        return data;#}
+            {#    },#}
+            {#    onCheck:function(node,checked){#}
+            {#        console.log(node)#}
+            {#        getNewData()#}
+            {#    }#}
+            {# })#}
+            function getNewData(){
+                var myChart = echarts.init(document.getElementById("main"))
+                myChart.showLoading();
+                $.ajax({
+                    url: '/refractometerDataHistory',
+                    type: 'get',
+                    data: {
+                        begin:$('#beginTime').datebox('getValue'),
+                        end:$('#endTime').datebox('getValue')
+                    },
+                    success: function (data) {
+                        data = JSON.parse(data)
+                        myChart.hideLoading();
+                        myChart.setOption(option = {
+                            tooltip: {
+                                trigger: 'item',
+                                formatter : function (params) {
+                                    var date = new Date(params.value[0]);
+                                    data = date.getFullYear() + '-'
+                                       + (date.getMonth() + 1) + '-'
+                                       + date.getDate() + ' '
+                                       + date.getHours() + ':'
+                                       + date.getMinutes();
+                                    return data + '<br/>'
+                                        + params.seriesName + ":" + params.value[1]
+                                 }
+                            },
+                            legend: {
+                                data: ["折光率","温度"]
+                            },
+                            toolbox: {
+                                feature: {
+                                    mark : {show: true},
+                                    dataView: {show: true, readOnly: false},
+                                    restore: {show: true},
+                                    saveAsImage: {show: true}
+                                }
+                            },
+                            dataZoom: {
+                                show: true,
+                                start : 0
+                            },
+                            grid: {
+                                y2: 80
+                            },
+                            xAxis: {
+                                type : 'time',
+                                splitNumber:10
+                            },
+                            yAxis: [
+                                {
+                                    type : 'value',
+                                    name: '折光率',
+                                    axisLabel: {
+                                        formatter: '{value} Brix'
+                                    }
+                                }, {
+                                    type: 'value',
+                                    name: '温度',
+                                    axisLabel: {
+                                        formatter: '{value} °C'
+                                    }
+                                }
+                            ],
+                            series: [{
+                                name: "折光率",
+                                type: 'line',
+                                yAxisIndex:0,
+                                showAllSymbol: true,
+                                smooth:true,
+                                data: data.ZGL
+                            },{
+                                name: "温度",
+                                type: 'line',
+                                yAxisIndex:1,
+                                showAllSymbol: true,
+                                smooth:true,
+                                data: data.Temp
+                            }]
+                        });
+                        myChart.setOption(option);
+                    }
+                })
+            }
+            function Appendzero(obj){
+                if(obj < 10){
+                    return "0" + obj
+                }else{
+                    return obj
+                }
+            }
+            function myformatter(date){
+                var y = date.getFullYear();
+                var m = date.getMonth()+1;
+                var d = date.getDate();
+                var h = date.getHours()
+                var minutes = date.getMinutes()
+                var s = date.getSeconds()
+                return Appendzero(y) + '-' + Appendzero(m) + '-' + Appendzero(d) + ' ' + Appendzero(h) + ':' + Appendzero(minutes) + ':' + Appendzero(s);
+            }
+        })
+    </script>
+</head>
+<body>
+{#    <div class="left-tree" style="width: 15%;float: left;vertical-align: top;border: 1px solid #ccc;margin: 1%;padding: 1%;">#}
+{#        <ul id="LeftTree" class="easyui-tree"></ul>#}
+{#    </div>#}
+    <div id="container" style="width: 100%;float: left;vertical-align: top;">
+        <div style="padding:10px 0px 5px 10px;">
+            <a>  起止时间:  </a>
+            <input class="easyui-datetimebox" id="beginTime" data-options="required:true,showSeconds:false,editable:false" style="width:166px;height:35px;line-height:35px;">
+            <input class="easyui-datetimebox" id="endTime" data-options="required:true,showSeconds:false,editable:false" style="width:166px;height:35px;line-height:35px;">
+            <a id="searchBatchBtn" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'">查询数据</a>
+        </div>
+        <div id="tt" class="easyui-tabs" style="height:600px;margin: 15px; scrolling:'false'">
+            <div title="折光仪历史数据-统计图">
+                <div id="main" style="width: 960px; height: 560px; margin: 10px auto;"></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

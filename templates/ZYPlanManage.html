@@ -32,7 +32,7 @@
             //tab-pane 自适应页面高度
             var height = $(window).height();   // 浏览器的高度
             var menuHeight = $(".nav-tabs").height()
-			$(".tab-content").height(height + menuHeight + 40)
+			$(".tab-content").height(height + menuHeight + 450)
         })
     </script>
 </head>
@@ -45,10 +45,10 @@
             </ul>
             <div class="tab-content tabs">
                 <div role="tabpanel" class="tab-pane active" id="Section1" style="height: 100%;">
-                    <iframe src="/ZYPlanGuid/jwxspflowtu" frameborder="0" border="no" height="100%" width="100%"></iframe>
+                    <iframe class="page-iframe" src="/ZYPlanGuid/jwxspflowtu" frameborder="0" border="no" width="100%" height="100%" scrolling="no"></iframe>
                 </div>
                 <div role="tabpanel" class="tab-pane" id="Section2" style="height: 100%;">
-                    <iframe src="/ZYPlanGuid/cshflowtu" frameborder="0" border="no" height="100%" width="100%"></iframe>
+                    <iframe class="page-iframe" src="/ZYPlanGuid/cshflowtu" frameborder="0" border="no" width="100%" height="100%" scrolling="no"></iframe>
                 </div>
             </div>
         </div>

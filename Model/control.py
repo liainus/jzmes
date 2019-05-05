@@ -484,7 +484,7 @@ class ctrlPlan:
             session.add(Model.node.NodeCollection(
                 name=name,
                 oddNum=APlanManageID,
-                oddUser=userName))
+                oddUser=""))
             session.commit()
             return bReturn
         except Exception as e:

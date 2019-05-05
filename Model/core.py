@@ -1023,8 +1023,8 @@ class ProcessUnitWebIFS(object):
 	
 #Equipment:
 class Equipment(Base):
-	__tablename__ = "Equipment" 
-	
+	__tablename__ = "Equipment"
+
 	#ID:
 	ID = Column(Integer, primary_key = True, autoincrement = True, nullable = True)
 	
@@ -1033,6 +1033,12 @@ class Equipment(Base):
 	
 	#设备名称:
 	EQPName = Column(Unicode(50), primary_key = False, autoincrement = False, nullable = True)
+
+	# OpcTag:
+	BatchOpcTag = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+	# OpcTag:
+	BrandOpcTag = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
 	# 供应商:
 	SupplierName = Column(Unicode(64), primary_key=False, autoincrement=False, nullable=True)
@@ -2544,6 +2550,9 @@ class MaterialBOM(Base):
 	#物料ID:
 	MATID =Column(Integer, nullable=False, primary_key=False)
 
+	# 物料名称:
+	MaterialName = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
 	#投料批总重量:
 	BatchTotalWeight = Column(Integer, primary_key = False, autoincrement = False, nullable = True)
 	
@@ -2582,6 +2591,7 @@ class MaterialBOMWebIFS(object):
 				session.add(
 					Model.core.MaterialBOM(
 						MATID=odata['MATID'],
+						MaterialName = odata['MaterialName'],
 						BatchTotalWeight=odata['BatchTotalWeight'],
 						BatchSingleMATWeight=odata['BatchSingleMATWeight'],
 						Unit=odata['Unit'],
@@ -2658,6 +2668,7 @@ class MaterialBOMWebIFS(object):
 				MaterialBOMid = int(odata['ID'])
 				oclass = session.query(Model.core.MaterialBOM).filter_by(ID=MaterialBOMid).first()
 				oclass.MATID = odata['MATID']
+				oclass.MaterialName = odata['MaterialName']
 				oclass.BatchTotalWeight = odata['BatchTotalWeight']
 				oclass.BatchSingleMATWeight = odata['BatchSingleMATWeight']
 				oclass.Unit = odata['Unit']
@@ -3059,8 +3070,6 @@ class PlanManagerWebIFS(object):
 					PlanManagerid = int(key)
 					try:
 						oclass = session.query(Model.core.PlanManager).filter_by(ID=PlanManagerid).first()
-						oclassW = session.query(WorkFlowStatus).filter_by(PlanManageID=PlanManagerid).first()
-						session.delete(oclassW)
 						session.delete(oclass)
 						oclassFs = session.query(WorkFlowEventPlan).filter_by(PlanManageID=PlanManagerid).all()
 						for oclassF in oclassFs:
