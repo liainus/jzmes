@@ -7578,13 +7578,13 @@ def BatchDataCompare():
                 cout = ""  # 浸膏总重量
                 samp = ""  # 得率
                 if BrandName == '健胃消食片浸膏粉':
-                    cin = "count1"  # 净药材总投料量
-                    cout = "count2"  # 浸膏总重量
-                    samp = "count4"  # 得率
-                elif BrandName == '肿节风浸膏':
                     cin = "count7"  # 净药材总投料量
                     cout = "count8"  # 浸膏总重量
                     samp = "count10"  # 得率
+                elif BrandName == '肿节风浸膏':
+                    cin = "count1"  # 净药材总投料量
+                    cout = "count2"  # 浸膏总重量
+                    samp = "count4"  # 得率
                 input = db_session.query(EletronicBatchDataStore.OperationpValue).filter(
                     and_(EletronicBatchDataStore.BatchID == batch,
                          EletronicBatchDataStore.Content == cin)).first()
@@ -7873,13 +7873,13 @@ def HomePageHistogram():
                 cout = ""#浸膏总重量
                 samp = ""#得率
                 if oc.BrandName == '健胃消食片浸膏粉':
-                    cin = "count1"  # 净药材总投料量
-                    cout = "count2"  # 浸膏总重量
-                    samp = "count4"  # 得率
-                elif oc.BrandName == '肿节风浸膏':
                     cin = "count7"  # 净药材总投料量
                     cout = "count8"  # 浸膏总重量
                     samp = "count10"  # 得率
+                elif oc.BrandName == '肿节风浸膏':
+                    cin = "count1"  # 净药材总投料量
+                    cout = "count2"  # 浸膏总重量
+                    samp = "count4"  # 得率
                 input = db_session.query(EletronicBatchDataStore.OperationpValue).filter(
                     and_(EletronicBatchDataStore.BatchID == oc.BatchID,
                          EletronicBatchDataStore.Content == cin)).first()
@@ -7889,8 +7889,8 @@ def HomePageHistogram():
                 sampling_quantity = db_session.query(EletronicBatchDataStore.OperationpValue).filter(
                     and_(EletronicBatchDataStore.BatchID == oc.BatchID,
                          EletronicBatchDataStore.Content == samp)).first()
-                input_data.append(int(input[0] if input != None and input != ('',) else 0))
-                output_data.append(int(output[0] if output != None and output != ('',) else 0))
+                input_data.append(float(input[0] if input != None and input != ('',) else 0))
+                output_data.append(float(output[0] if output != None and output != ('',) else 0))
                 sampling_data.append(
                     float(sampling_quantity[0] if sampling_quantity != None and sampling_quantity != ('',) else 0))
                 batch_list.append(oc.BatchID)

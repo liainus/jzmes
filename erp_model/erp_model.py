@@ -205,7 +205,7 @@ def ERP_productplanSynchro():
             e.plan_quantity = str(count)
             e.product_unit = plan.product_unit
             e.meter_type = plan.meter_type
-            e.bill_code = plan.bill_code
+            e.bill_code = plan.bill_codef
             e.plan_type = plan.plan_type
             e.create_time = plan.create_time
             e.transform_time = plan.transform_time
@@ -463,17 +463,18 @@ def planScheduling():
             sch = db_session.query(SchedulingStandard).filter(SchedulingStandard.PRName == PRName).first()
 
             #这批计划要做多少天
-            batchnums = ""
-            if oc.meter_type == "W":
-                yc = db_session.query(YieldMaintain).filter(YieldMaintain.PRName == PRName).first()
-                #计划做多少批
-                batchnums = float(oc.plan_quantity)/float(yc.FinishProduct)
-                #计划要用到多少原材料
-                total = float(yc.TotalQuantity)*batchnums
-                # 计划有多少批
-                batchnums = total/float(sch.Batch_quantity)
-            elif oc.meter_type == "B":
-                batchnums = int(oc.plan_quantity)
+            # batchnums = ""
+            # if oc.meter_type == "W":
+            #     yc = db_session.query(YieldMaintain).filter(YieldMaintain.PRName == PRName).first()
+            #     #计划做多少批
+            #     batchnums = float(oc.plan_quantity)/float(yc.FinishProduct)
+            #     #计划要用到多少原材料
+            #     total = float(yc.TotalQuantity)*batchnums
+            #     # 计划有多少批
+            #     batchnums = total/float(sch.Batch_quantity)
+            # elif oc.meter_type == "B":
+            #     batchnums = int(oc.plan_quantity)
+            batchnums = int(oc.plan_quantity)
             days = batchnums/int(sch.DayBatchNumS) #这批计划要做多少天
             re = timeChange(mou[0], mou[1], monthRange[1])
 

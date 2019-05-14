@@ -331,7 +331,7 @@ class WMS_Interface(ServiceBase):
     接口服务端
     '''
     logging.basicConfig(level=logging.DEBUG)
-    @rpc(Unicode, Integer, _returns=Unicode())
+    @rpc(Unicode, Unicode, _returns=Unicode())
     def WMS_Order_Download(self, name, times):
         '''
         采购订单同步给WMS
@@ -343,10 +343,49 @@ class WMS_Interface(ServiceBase):
         for i in range(0, 3):
             dic.append(appendStr(i))
         return json.dumps(dic)
-    @rpc(Unicode, Integer, _returns=Iterable(Unicode))
+    @rpc(Unicode, Unicode, _returns=Iterable(Unicode))
     def WMS_Order_Do_Action(self, name, times):
         for i in range(times):
             yield u'Hello, %s' % name
+
+    @rpc(Unicode, Integer, _returns=Iterable(Unicode))
+    def say_hello(self, name, times):
+        for i in range(times):
+            yield u'Hello, %s' % name
+
+class SAP_Interface(ServiceBase):
+    logging.basicConfig(level=logging.DEBUG)
+    @rpc(Unicode, Unicode, _returns=Unicode())
+    def SAP_Order_Download(self, name, json_data):
+        '''
+        SAP同步采购订单
+        :param data:
+        :return:
+        '''
+        dic = []
+        dict_data = json.loads(json_data)
+        for oc in dict_data:
+            print(oc['a'])
+        for i in range(0, 3):
+            dic.append(appendStr(i))
+        return json.dumps(dic)
+
+class NH_Interface(ServiceBase):
+    logging.basicConfig(level=logging.DEBUG)
+    @rpc(Unicode, Unicode, _returns=Unicode())
+    def NH_GetTime(self, name, json_data):
+        '''
+        SAP同步采购订单
+        :param data:
+        :return:
+        '''
+        dic = []
+        dict_data = json.loads(json_data)
+        for oc in dict_data:
+            print(oc['a'])
+        for i in range(0, 3):
+            dic.append(appendStr(i))
+        return json.dumps(dic)
 
 wsdl_url = "http://127.0.0.1:5001/?wsdl"
 def say_hello_test(url,name):

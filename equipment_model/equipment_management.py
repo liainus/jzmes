@@ -1575,11 +1575,11 @@ def EquipmentRunRecordGet(unit, brand, date, interval=None):
             beginTime = firstDay
             endTime = lastDay
 
-        # second、 Obtain runtime, failure time, downtime from table EquipmentStatusCount according to time interval
-        equip_codes = db_session.query(SystemEQPCode.EquipCode).filter(
-            and_(SystemEQPCode.Unit == unit,
-                 SystemEQPCode.Brand == brand)
-        ).all()
+        if unit == '煎煮':
+            unit = '提取'
+        if unit == 'MVR':
+            unit = '浓缩'
+        equip_codes = db_session.query(EquipmentRunPUID.EQPCode).filter(EquipmentRunPUID.PUIDName == unit).all()
 
         equip_run_time = list()
         equip_failure_time = list()
