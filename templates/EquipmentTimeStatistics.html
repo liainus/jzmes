@@ -68,7 +68,7 @@
                                     }
                                 },
                                 legend: {
-                                    data: ['运行时间', '故障时间', '停机时间','清场时间']
+                                    data: ['运行时间', '故障时间', '停机时间']
                                 },
                                 toolbox: {
                                     feature: {
@@ -120,15 +120,6 @@
                                         }
                                     },
                                     data: data.equip_downtime
-                                },{
-                                    name: "清场时间",
-                                    type: 'bar',
-                                    itemStyle:{
-                                        normal:{
-                                            color:'#7cb5ec'
-                                        }
-                                    },
-                                    data: data.clear_time
                                 }]
                             });
                             myChart.setOption(option);
