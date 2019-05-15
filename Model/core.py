@@ -3165,9 +3165,9 @@ class PlanManagerWebIFS(object):
 				strconditon = "%" + odata['BatchID'] + "%"
 				PName = odata['name']
 				total = session.query(Model.core.PlanManager.ID).filter(
-					PlanManager.BatchID.like(strconditon), PlanManager.BrandName.like(PName)).order_by(desc("PlanBeginTime")).count()
+					PlanManager.BatchID.like(strconditon), PlanManager.BrandName.like(PName)).order_by(desc("BatchID")).count()
 				PlanManagers = session.query(Model.core.PlanManager).filter(
-					PlanManager.BatchID.like(strconditon), PlanManager.BrandName.like(PName)).order_by(desc("PlanBeginTime")).all()[inipage:endpage]
+					PlanManager.BatchID.like(strconditon), PlanManager.BrandName.like(PName)).order_by(desc("BatchID")).all()[inipage:endpage]
 				jsonPlanManagers = json.dumps(PlanManagers, cls=Model.BSFramwork.AlchemyEncoder,
 											   ensure_ascii=False)
 				jsonPlanManagers = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonPlanManagers + "}"
