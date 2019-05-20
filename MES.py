@@ -8103,7 +8103,7 @@ def JHYDataHistory():
                         w = i[2]
                         if not w:
                             w = ""
-                        t = i[3]
+                        t = str(i[3].strftime("%Y-%m-%d %H:%M:%S"))
                         dic.append([t,v])
                         diy.append([t,s])
                         wli.append([t,w])
