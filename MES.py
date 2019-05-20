@@ -8050,7 +8050,7 @@ def refractometerDataHistory():
 def JHYdatahistorypage():
     return render_template('JHYdatahistorypage.html')
 @app.route('/JHYRedis', methods=['POST', 'GET'])
-def refractometerRedis():
+def JHYRedis():
     '''
     折光仪实时数据
     :return:
@@ -8070,7 +8070,7 @@ def refractometerRedis():
             insertSyslog("error", "进红外实时数据报错Error：" + str(e), current_user.Name)
 
 @app.route('/JHYDataHistory', methods=['POST', 'GET'])
-def refractometerDataHistory():
+def JHYDataHistory():
     '''
     进红外历史数据
     :return:
