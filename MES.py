@@ -8085,7 +8085,7 @@ def JHYDataHistory():
                 begin = data.get('begin')
                 end = data.get('end')
                 if begin and end:#[t|ZGY_Temp] AS ZGY_Temp
-                    sql = "SELECT  [Item01],[Item01Result],[Item02],[Item02Result],[Item03],[Item03Result] FROM [MES].[dbo].[JHYDataHistory] WHERE SampleTime BETWEEN '" + begin + "' AND '" + end +"' order by ID"
+                    sql = "SELECT  [Item01Result],[Item02Result],[Item03Result] FROM [MES].[dbo].[JHYDataHistory] WHERE SampleTime BETWEEN '" + begin + "' AND '" + end +"' order by ID"
                     re = db_session.execute(sql).fetchall()
                     db_session.close()
                     div = {}
