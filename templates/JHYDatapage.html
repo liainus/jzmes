@@ -80,32 +80,27 @@
                                 type : 'time',
                                 splitNumber:10
                             },
-                            yAxis: [
-                                {
-                                    type : 'value',
-                                    axisLabel: {
-                                        formatter: '{value}'
-                                    }
+                            yAxis: {
+                                type : 'value',
+                                axisLabel: {
+                                    formatter: '{value}'
                                 }
-                            ],
+                            },
                             series: [{
                                 name: "橙皮苷",
                                 type: 'line',
-                                yAxisIndex:0,
                                 showAllSymbol: true,
                                 smooth:true,
                                 data: data.CPG
                             },{
                                 name: "水分",
                                 type: 'line',
-                                yAxisIndex:1,
                                 showAllSymbol: true,
                                 smooth:true,
                                 data: data.SF
                             },{
                                 name: "粒径",
                                 type: 'line',
-                                yAxisIndex:1,
                                 showAllSymbol: true,
                                 smooth:true,
                                 data: data.LJ
