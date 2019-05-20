@@ -8097,16 +8097,12 @@ def JHYDataHistory():
                         v = i[0]
                         if not v:
                             v = ""
-                        if not r:
-                            r = ""
                         s = i[1]
                         if not s:
                             s = ""
                         w = i[2]
                         if not w:
                             w = ""
-                        if not wd:
-                            wd = ""
                         t = i[3]
                         dic.append([t,v])
                         diy.append([t,s])
