@@ -8068,7 +8068,9 @@ def JHYRedis():
             print(e)
             logger.error(e)
             insertSyslog("error", "进红外实时数据报错Error：" + str(e), current_user.Name)
-
+@app.route('/JHYDatapage')
+def JHYDataHistorypage():
+    return render_template('JHYDatapage.html')
 @app.route('/JHYDataHistory', methods=['POST', 'GET'])
 def JHYDataHistory():
     '''
