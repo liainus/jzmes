@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>进红外实时数据</title>
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css">
+    <script type="text/javascript" src="../static/js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootbox.min.js"></script>
+    <script>
+        $(function(){
+            function getNewData(){
+                $.ajax({
+                    url:'/JHYRedis',
+                    type:'get',
+                    async: true,
+                    success:function(data){
+                        data = JSON.parse(data)
+                        $("#CPG").html(data.CPG)
+                        $("#SF").html(data.SF)
+                        $("#LJ").html(data.LJ)
+                    },
+                    error:function(result){
+                        console.log(result)
+                    }
+                })
+            }
+            getNewData();
+            setInterval(getNewData, 2000);
+        })
+    </script>
+</head>
+<body style="background: #e3e5e4;">
+    <div class="container">
+        <div style="margin: 28px 0 auto;position: relative;background-color: #e3e5e4;">
+            <div style="min-height: 380px;border-width: 0 0 0 0px;background-color: #f8f8f8;border-radius: 0 0 17px 0;padding: 15px;">
+                <div style="padding-bottom: 5px;border-bottom: 1px solid #e3e5e4;font-size: 25px;font-weight: bold;">
+                    <span class="text-left">进红外</span>
+                    <label class="pull-right" style="font-weight: 500;font-size: 16px;">参数：</label>
+                </div>
+                <div class="clearfix" style="padding: 25px 0;">
+                    <div style="width: 50%;float: left;color: #7C7D7D;">
+                        <div style="text-align: right;font-weight: bold;font-size: 24px;margin-right: 20px;margin-top: 10px;">
+                            橙皮苷
+                        </div>
+                    </div>
+                    <div style="width: 50%;float: left;color: #7C7D7D;">
+                        <div id="CPG" style="text-align: left;font-weight: bold;font-size: 38px;margin-right: 20px;">
+                            0
+                        </div>
+                    </div>
+                </div>
+                <div class="clearfix" style="border-top:1px solid #e3e5e4;padding: 25px 0;">
+                    <div style="width: 50%;float: left;color: #7C7D7D;">
+                        <div style="text-align: right;font-weight: bold;font-size: 24px;margin-right: 20px;margin-top: 10px;">
+                            水分
+                        </div>
+                    </div>
+                    <div style="width: 50%;float: left;color: #7C7D7D;">
+                        <div id="SF" style="text-align: left;font-weight: bold;font-size: 38px;margin-right: 20px;">
+                            0
+                        </div>
+                    </div>
+                </div>
+                <div class="clearfix" style="border-top:1px solid #e3e5e4;padding: 25px 0;">
+                    <div style="width: 50%;float: left;color: #7C7D7D;">
+                        <div style="text-align: right;font-weight: bold;font-size: 24px;margin-right: 20px;margin-top: 10px;">
+                            粒径
+                        </div>
+                    </div>
+                    <div style="width: 50%;float: left;color: #7C7D7D;">
+                        <div id="LJ" style="text-align: left;font-weight: bold;font-size: 38px;margin-right: 20px;">
+                            0
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
