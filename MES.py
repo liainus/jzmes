@@ -8045,6 +8045,81 @@ def refractometerDataHistory():
             logger.error(e)
             insertSyslog("error", "路由：/EquipmentManagementManual/ManualShow，说明书信息获取Error：" + str(e), current_user.Name)
 
+# 进红外页面跳转
+@app.route('/JHYdatahistorypage')
+def JHYdatahistorypage():
+    return render_template('JHYdatahistorypage.html')
+@app.route('/JHYRedis', methods=['POST', 'GET'])
+def refractometerRedis():
+    '''
+    折光仪实时数据
+    :return:
+    '''
+    if request.method == 'GET':
+        data = request.values
+        try:
+            redis_conn = redis.Redis(connection_pool=pool)
+            data_dict['CPG'] = redis_conn.hget(constant.REDIS_TABLENAME, 't|JHY_Item01Result').decode('utf-8')
+            data_dict['SF'] = redis_conn.hget(constant.REDIS_TABLENAME, 't|JHY_Item02Result').decode('utf-8')
+            data_dict['LJ'] = redis_conn.hget(constant.REDIS_TABLENAME, 't|JHY_Item03Result').decode('utf-8')
+            return json.dumps(data_dict, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "进红外实时数据报错Error：" + str(e), current_user.Name)
+
+@app.route('/JHYDataHistory', methods=['POST', 'GET'])
+def refractometerDataHistory():
+    '''
+    进红外历史数据
+    :return:
+    '''
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                begin = data.get('begin')
+                end = data.get('end')
+                if begin and end:#[t|ZGY_Temp] AS ZGY_Temp
+                    sql = "SELECT  [Item01],[Item01Result],[Item02],[Item02Result],[Item03],[Item03Result] FROM [MES].[dbo].[JHYDataHistory] WHERE SampleTime BETWEEN '" + begin + "' AND '" + end +"' order by ID"
+                    re = db_session.execute(sql).fetchall()
+                    db_session.close()
+                    div = {}
+                    dic = []
+                    diy = []
+                    wli = []
+                    for i in re:
+                        # t = str(i[0].strftime("%Y-%m-%d %H:%M:%S"))
+                        v = i[0]
+                        r = i[1]
+                        if not v:
+                            v = ""
+                        if not r:
+                            r = ""
+                        s = i[2]
+                        d = i[3]
+                        if not s:
+                            s = ""
+                        if not d:
+                            d = ""
+                        w = i[4]
+                        wd = i[5]
+                        if not w:
+                            w = ""
+                        if not wd:
+                            wd = ""
+                        dic.append([v,r])
+                        diy.append([s,d])
+                        wli.append([w,wli])
+                    div["CPG"] = dic
+                    div["SF"] = diy
+                    div["LJ"] = wli
+                    return json.dumps(div, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "路由：/JHYDataHistory，进红外历史数据获取Error：" + str(e), current_user.Name)
 
 
 if __name__ == '__main__':
