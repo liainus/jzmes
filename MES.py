@@ -8059,6 +8059,7 @@ def refractometerRedis():
         data = request.values
         try:
             redis_conn = redis.Redis(connection_pool=pool)
+            data_dict = {}
             data_dict['CPG'] = redis_conn.hget(constant.REDIS_TABLENAME, 't|JHY_Item01Result').decode('utf-8')
             data_dict['SF'] = redis_conn.hget(constant.REDIS_TABLENAME, 't|JHY_Item02Result').decode('utf-8')
             data_dict['LJ'] = redis_conn.hget(constant.REDIS_TABLENAME, 't|JHY_Item03Result').decode('utf-8')
