@@ -8085,7 +8085,7 @@ def JHYDataHistory():
                 begin = data.get('begin')
                 end = data.get('end')
                 if begin and end:#[t|ZGY_Temp] AS ZGY_Temp
-                    sql = "SELECT  [Item01Result],[Item02Result],[Item03Result] FROM [MES].[dbo].[JHYDataHistory] WHERE SampleTime BETWEEN '" + begin + "' AND '" + end +"' order by ID"
+                    sql = "SELECT  [Item01Result],[Item02Result],[Item03Result],[SampleTime] FROM [MES].[dbo].[JHYDataHistory] WHERE SampleTime BETWEEN '" + begin + "' AND '" + end +"' order by ID"
                     re = db_session.execute(sql).fetchall()
                     db_session.close()
                     div = {}
@@ -8095,26 +8095,22 @@ def JHYDataHistory():
                     for i in re:
                         # t = str(i[0].strftime("%Y-%m-%d %H:%M:%S"))
                         v = i[0]
-                        r = i[1]
                         if not v:
                             v = ""
                         if not r:
                             r = ""
-                        s = i[2]
-                        d = i[3]
+                        s = i[1]
                         if not s:
                             s = ""
-                        if not d:
-                            d = ""
-                        w = i[4]
-                        wd = i[5]
+                        w = i[2]
                         if not w:
                             w = ""
                         if not wd:
                             wd = ""
-                        dic.append([v,r])
-                        diy.append([s,d])
-                        wli.append([w,wli])
+                        t = i[3]
+                        dic.append([t,v])
+                        diy.append([t,s])
+                        wli.append([t,w])
                     div["CPG"] = dic
                     div["SF"] = diy
                     div["LJ"] = wli
