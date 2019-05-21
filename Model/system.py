@@ -1415,6 +1415,33 @@ class OrderPurchase(Base):
     # 操作时间:
     OperationDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
 
+# 与WMS计划管理
+class ZYPlanWMS(Base):
+    __tablename__ = 'ZYPlanWMS'
+    # id:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+    # 批次号:
+    BatchID = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 品名ID:
+    BrandID = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 品名:
+    BrandName = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 工艺段
+    PUIDName = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
+
+    # 操作人:
+    OperationPeople = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
+
+    # 描述:
+    Description = Column(Unicode(60), primary_key=False, autoincrement=False, nullable=True)
+
+    # 操作时间:
+    OperationDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+
 # 生成表单的执行语句
 Base.metadata.create_all(engine)
 
