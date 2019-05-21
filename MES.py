@@ -42,7 +42,7 @@ import re
 from collections import Counter
 from Model.system import User, EquipmentRunPUID, ElectronicBatch, EquipmentRunRecord, QualityControl, PackMaterial, \
     TypeCollection, OperationProcedure, EquipmentMaintenanceStore, Scheduling, SchedulingStock, ERPproductcode_prname, \
-    SchedulingStandard, product_plan, SchedulingMaterial, YieldMaintain
+    SchedulingStandard, product_plan, SchedulingMaterial, YieldMaintain, ZYPlanWMS
 from Model.Global import WeightUnit
 from Model.control import ctrlPlan
 from flask_login import login_required, logout_user, login_user, current_user, LoginManager
@@ -4054,6 +4054,17 @@ def createZYPlanZYtask():
                         oclassNodeColl.oddUser = userName
                         oclassNodeColl.opertionTime = datetime.datetime.now()
                         oclassNodeColl.seq = 2
+
+                        #新加WMS仓库工艺段
+                        wms = ZYPlanWMS()
+                        wms.BatchID = oclassplan.BatchID
+                        wms.BrandName = oclassplan.BrandName
+                        wms.BrandID = oclassplan.BrandID
+                        wms.PUIDName = 'WMS'
+                        wms.OperationDate = datetime.datetime.now()
+                        wms.OperationPeople = userName
+                        db_session.add(wms)
+
                         db_session.commit()
                     except Exception as ee:
                         db_session.rollback()
@@ -8115,6 +8126,79 @@ def JHYDataHistory():
             print(e)
             logger.error(e)
             insertSyslog("error", "路由：/JHYDataHistory，进红外历史数据获取Error：" + str(e), current_user.Name)
+
+# 微波页面跳转
+@app.route('/WBdatahistorypage')
+def WBdatahistorypage():
+    return render_template('WBdatahistorypage.html')
+@app.route('/WBDatapage')
+def WBDatapage():
+    return render_template('WBDatapage.html')
+@app.route('/WBRedis', methods=['POST', 'GET'])
+def WBRedis():
+    '''
+    微波实时数据
+    :return:
+    '''
+    if request.method == 'GET':
+        data = request.values
+        try:
+            redis_conn = redis.Redis(connection_pool=pool)
+            data_dict = {}
+            data_dict['MD'] = redis_conn.hget(constant.REDIS_TABLENAME, 't|WB_MD').decode('utf-8')
+            data_dict['WD'] = redis_conn.hget(constant.REDIS_TABLENAME, 't|WB_Temp').decode('utf-8')
+            data_dict['SF'] = redis_conn.hget(constant.REDIS_TABLENAME, 't|WB_Temp').decode('utf-8')
+            return json.dumps(data_dict, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "进红外实时数据报错Error：" + str(e), current_user.Name)
+
+@app.route('/WBDataHistory', methods=['POST', 'GET'])
+def WBDataHistory():
+    '''
+    微波历史数据
+    :return:
+    '''
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                begin = data.get('begin')
+                end = data.get('end')
+                if begin and end:#[t|ZGY_Temp] AS ZGY_Temp
+                    sql = "SELECT  [Item01Result],[Item02Result],[Item03Result],[SampleTime] FROM [MES].[dbo].[JHYDataHistory] WHERE SampleTime BETWEEN '" + begin + "' AND '" + end +"' order by ID"
+                    re = db_session.execute(sql).fetchall()
+                    db_session.close()
+                    div = {}
+                    dic = []
+                    diy = []
+                    wli = []
+                    for i in re:
+                        # t = str(i[0].strftime("%Y-%m-%d %H:%M:%S"))
+                        v = i[0]
+                        if not v:
+                            v = ""
+                        s = i[1]
+                        if not s:
+                            s = ""
+                        w = i[2]
+                        if not w:
+                            w = ""
+                        t = str(i[3].strftime("%Y-%m-%d %H:%M:%S"))
+                        dic.append([t,v])
+                        diy.append([t,s])
+                        wli.append([t,w])
+                    div["MD"] = dic
+                    div["WD"] = diy
+                    div["SF"] = wli
+                    return json.dumps(div, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "路由：/JHYDataHistory，进红外历史数据获取Error：" + str(e), current_user.Name)
+
 
 
 if __name__ == '__main__':
