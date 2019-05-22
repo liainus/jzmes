@@ -323,8 +323,12 @@ class ADS_test(ServiceBase):
         return json.dumps(dic)
 def appendStr(i):
     dir = {}
-    dir["a"] = str(i)
-    dir["b"] = str(i)
+    dir['btype'] = "aa"
+    dir['mid'] = "aa"
+    dir['Num'] = "aa"
+    dir['BatchNo'] = "aa"
+    dir['BillNo'] = "aa"
+    dir['StoreDef_ID'] = "aa"
     return dir
 class WMS_Interface(ServiceBase):
     '''
@@ -343,10 +347,15 @@ class WMS_Interface(ServiceBase):
         for i in range(0, 3):
             dic.append(appendStr(i))
         return json.dumps(dic)
-    @rpc(Unicode, Unicode, _returns=Iterable(Unicode))
-    def WMS_Order_Do_Action(self, name, times):
-        for i in range(times):
-            yield u'Hello, %s' % name
+    @rpc(Unicode, Unicode, _returns=Unicode())
+    def WMS_Order_Do_Action(self, name, json_data):
+        print(ServiceBase)
+        dic = []
+        for i in range(0, 2):
+            dic.append(appendStr(i))
+        aa = json.dumps(dic)
+        print(aa)
+        return aa
 
     @rpc(Unicode, Integer, _returns=Iterable(Unicode))
     def say_hello(self, name, times):

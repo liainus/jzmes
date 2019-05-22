@@ -8199,7 +8199,9 @@ def WBDataHistory():
             logger.error(e)
             insertSyslog("error", "路由：/JHYDataHistory，进红外历史数据获取Error：" + str(e), current_user.Name)
 
-
+@app.route('/FSWMSpage')
+def FSWMSpage():
+    return render_template('FSWMSpage.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
