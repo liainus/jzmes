@@ -349,7 +349,6 @@ class WMS_Interface(ServiceBase):
         return json.dumps(dic)
     @rpc(Unicode, Unicode, _returns=Unicode())
     def WMS_Order_Do_Action(self, name, json_data):
-        print(ServiceBase)
         dic = []
         for i in range(0, 2):
             dic.append(appendStr(i))
@@ -371,13 +370,19 @@ class SAP_Interface(ServiceBase):
         :param data:
         :return:
         '''
-        dic = []
-        dict_data = json.loads(json_data)
-        for oc in dict_data:
-            print(oc['a'])
-        for i in range(0, 3):
-            dic.append(appendStr(i))
-        return json.dumps(dic)
+        try:
+            dic = []
+            dict_data = json.loads(json_data)
+            for oc in dict_data:
+                print(oc['a'])
+            for i in range(0, 3):
+                dic.append(appendStr(i))
+            return json.dumps('SUCCESS')
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "SAP同步采购订单报错：" + str(e), current_user.Name)
+            return json.dumps(e)
 
 class NH_Interface(ServiceBase):
     logging.basicConfig(level=logging.DEBUG)
@@ -399,7 +404,7 @@ class NH_Interface(ServiceBase):
 wsdl_url = "http://127.0.0.1:5001/?wsdl"
 def say_hello_test(url,name):
     client = Client(url)  # 创建一个webservice接口对象
-    re = client.service.WMS_Order_Download(name, 1) # 调用这个接口下的getMobileCodeInfo方法，并传入参数
+    re = client.service.WMS_Order_Download(name, 'abc') # 调用这个接口下的getMobileCodeInfo方法，并传入参数
     print(re)
     return re
 

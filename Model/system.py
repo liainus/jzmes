@@ -410,6 +410,51 @@ class ElectronicBatch(Base):
     # 单位:
     Unit = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
+# 电子批记录
+class ElectronicBatchTwo(Base):
+    __tablename__ = 'ElectronicBatchTwo'
+    # id:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+    # id:
+    TaskID = Column(Integer, primary_key=False, autoincrement=True, nullable=False)
+
+    # 批次号:
+    BatchID = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 工艺段编码:
+    PDUnitRouteID = Column(Integer, nullable=False, primary_key=False)
+
+    # 设备编码
+    EQPID = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
+
+    # 类型:
+    OpcTagID = Column(Unicode(100), primary_key=False, autoincrement=False, nullable=True)
+
+    # 类型:
+    BrandID = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
+
+    # 类型:
+    BrandName = Column(Unicode(100), primary_key=False, autoincrement=False, nullable=True)
+
+    # 采样值:
+    SampleValue = Column(Unicode(64), primary_key=False, autoincrement=False, nullable=True)
+
+    # 采样时间:
+    SampleDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+
+    # 重复次数：
+    RepeatCount = Column(Integer, primary_key=False, autoincrement=False, nullable=True, default=0)
+
+    # 描述:
+    Description = Column(Unicode(200), primary_key=False, autoincrement=False, nullable=True)
+
+    # 描述:
+    Type = Column(Unicode(200), primary_key=False, autoincrement=False, nullable=True)
+
+    # 单位:
+    Unit = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
 # 质量控制
 class QualityControl(Base):
     __tablename__ = 'QualityControl'

@@ -42,7 +42,7 @@ import re
 from collections import Counter
 from Model.system import User, EquipmentRunPUID, ElectronicBatch, EquipmentRunRecord, QualityControl, PackMaterial, \
     TypeCollection, OperationProcedure, EquipmentMaintenanceStore, Scheduling, SchedulingStock, ERPproductcode_prname, \
-    SchedulingStandard, product_plan, SchedulingMaterial, YieldMaintain, ZYPlanWMS
+    SchedulingStandard, product_plan, SchedulingMaterial, YieldMaintain, ZYPlanWMS, ElectronicBatchTwo
 from Model.Global import WeightUnit
 from Model.control import ctrlPlan
 from flask_login import login_required, logout_user, login_user, current_user, LoginManager
@@ -4534,7 +4534,7 @@ def standing_consentrate_collect(a, b, c, d, e, f, g, h, j):
     Equips_data.update(equip4_data)
 
     Batch, Brand, TankOver, Status = get_data_from_realtime_Standing(name=e, Unit='Decocting')
-    equip5_data = {'e1': Batch, 'e2': Brand, 'e3': '提取罐%s' % a[-1], 'e5': TankOver, 'e6': Status}
+    equip5_data = {'e1': Batch, 'e2': Brand, 'e3': '提取罐%s' % e[-1], 'e5': TankOver, 'e6': Status}
     Equips_data.update(equip5_data)
 
     Batch, Brand, Status, Feed_time, Volume = get_data_from_realtime_Standing(name=f)
@@ -6556,7 +6556,7 @@ def electionBatchSearch():
                         EQPName = db_session.query(Equipment.EQPName).filter(Equipment.ID == EQPID).first()
                         dic["NSEQPName" + str(i)] = EQPName[0]
                         count = 0
-                        for j in range(1, 34, 3):
+                        for j in range(1, 34, 2):
                             zkd = searO(BrandID, BatchID, Pclass.ID, EQPID, "浓缩真空度采集" + str(j))
                             dic["zkd" + "_" + str(i) + "_" + str(count)] = changef(zkd.SampleValue) + zkd.Unit
                             dic["zkdTime" + "_" + str(i) + "_" + str(count)] = strchange(zkd.SampleDate)
@@ -6588,7 +6588,7 @@ def electionBatchSearch():
                         dic["pwEndTime" + str(i)] = strch(
                             searO(BrandID, BatchID, Pclass.ID, EQPID, "干燥结束时间").SampleValue)
                         cc = 0
-                        for j in range(1, 34, 3):
+                        for j in range(1, 34, 2):
                             hff = searO(BrandID, BatchID, Pclass.ID, EQPID, "混风温度采集" + str(j))
                             dic["hfTemp_" + str(i) + "_" + str(cc)] = changef(hff.SampleValue) + hff.Unit
                             dic["hfTime_" + str(i) + "_" + str(cc)] = strchange(hff.SampleDate)
@@ -6628,7 +6628,7 @@ def electionBatchSearch():
                         dic["dxEndTime" + str(i)] = strch(
                             searO(BrandID, BatchID, Pclass.ID, EQPID, "单效浓缩结束时间").SampleValue)
                         yy = 0
-                        for j in range(1, 34, 3):
+                        for j in range(1, 34, 2):
                             zqyl = searO(BrandID, BatchID, Pclass.ID, EQPID, "单效浓缩蒸汽压力采集" + str(j))
                             dic["zqyl_" + str(i) + "_" + str(yy)] = changef(zqyl.SampleValue) + zqyl.Unit
                             dic["zqylTime_" + str(i) + "_" + str(yy)] = strchange(zqyl.SampleDate)
@@ -6689,12 +6689,12 @@ def getmin(args):
 
 
 def searO(BrandID, BatchID, PID, EQPID, Type):
-    re = db_session.query(ElectronicBatch).filter(ElectronicBatch.BrandID == BrandID,
-                                                  ElectronicBatch.BatchID == BatchID,
-                                                  ElectronicBatch.PDUnitRouteID == PID,
-                                                  ElectronicBatch.EQPID == EQPID, ElectronicBatch.Type == Type).first()
+    re = db_session.query(ElectronicBatchTwo).filter(ElectronicBatchTwo.BrandID == BrandID,
+                                                     ElectronicBatchTwo.BatchID == BatchID,
+                                                     ElectronicBatchTwo.PDUnitRouteID == PID,
+                                                     ElectronicBatchTwo.EQPID == EQPID, ElectronicBatchTwo.Type == Type).first()
     if re == None:
-        electronicBatch = ElectronicBatch()
+        electronicBatch = ElectronicBatchTwo()
         electronicBatch.SampleValue = ""
         electronicBatch.Unit = ""
         electronicBatch.SampleDate = ""
@@ -6706,9 +6706,9 @@ def searO(BrandID, BatchID, PID, EQPID, Type):
 def searchEqpID(BrandID, BatchID, PID, name):
     EQPIDs = db_session.query(Equipment.ID).filter(Equipment.PUID == PID,
                                                    Equipment.EQPName.like("%" + name + "%")).all()
-    EQPS = db_session.query(ElectronicBatch.EQPID).distinct().filter(ElectronicBatch.PDUnitRouteID == PID,
-                                                                     ElectronicBatch.BrandID == BrandID,
-                                                                     ElectronicBatch.BatchID == BatchID).all()
+    EQPS = db_session.query(ElectronicBatchTwo.EQPID).distinct().filter(ElectronicBatchTwo.PDUnitRouteID == PID,
+                                                                        ElectronicBatchTwo.BrandID == BrandID,
+                                                                        ElectronicBatchTwo.BatchID == BatchID).all()
     tmp = [val for val in EQPIDs if val in EQPS]
     return tmp
 
@@ -7334,8 +7334,8 @@ def QualityControlGetBatch():
             endTime = data['endTime']
             if beginTime is None or endTime is None:
                 return 'NO'
-            batchs = set(db_session.query(ElectronicBatch.BatchID).filter(
-                ElectronicBatch.SampleDate.between(beginTime, endTime)).all())
+            batchs = set(db_session.query(ElectronicBatchTwo.BatchID).filter(
+                ElectronicBatchTwo.SampleDate.between(beginTime, endTime)).all())
             if batchs:
                 count = 0
                 batch_list = []
@@ -7799,19 +7799,19 @@ def BatchMaterialTracingBatch():
                         tag.append(x + y)
                     alcho_tags.append(tag)
                 for tag in alcho_tags:
-                    ns_y = db_session.query(ElectronicBatch.SampleValue).filter(and_(
-                        ElectronicBatch.BatchID == batch,
-                        ElectronicBatch.EQPID == constant.AlcoholEquipID[alcho_tags.index(tag)],
-                        ElectronicBatch.Type == "醇沉浓缩液体积")).first()
+                    ns_y = db_session.query(ElectronicBatchTwo.SampleValue).filter(and_(
+                        ElectronicBatchTwo.BatchID == batch,
+                        ElectronicBatchTwo.EQPID == constant.AlcoholEquipID[alcho_tags.index(tag)],
+                        ElectronicBatchTwo.Type == "醇沉浓缩液体积")).first()
                     if ns_y:
                         material_data[tag[0]] = ns_y[0] + "L"
                     else:
                         material_data[tag[0]] = nothing
 
-                    ns_a = db_session.query(ElectronicBatch.SampleValue).filter(and_(
-                        ElectronicBatch.BatchID == batch,
-                        ElectronicBatch.EQPID == constant.AlcoholEquipID[alcho_tags.index(tag)],
-                        ElectronicBatch.Type == "醇沉乙醇用量")).first()
+                    ns_a = db_session.query(ElectronicBatchTwo.SampleValue).filter(and_(
+                        ElectronicBatchTwo.BatchID == batch,
+                        ElectronicBatchTwo.EQPID == constant.AlcoholEquipID[alcho_tags.index(tag)],
+                        ElectronicBatchTwo.Type == "醇沉乙醇用量")).first()
                     if ns_a:
                         material_data[tag[1]] = ns_a[0] + "L"
                     else:
@@ -7826,19 +7826,19 @@ def BatchMaterialTracingBatch():
                 else:
                     material_data[tank[0]] = nothing
 
-                water_1 = db_session.query(ElectronicBatch.SampleValue).filter(and_(
-                    ElectronicBatch.BatchID == batch,
-                    ElectronicBatch.EQPID == Equip_ID[tank_tags.index(tank)],
-                    ElectronicBatch.Type == "提取第一次加水量设定值")).first()
+                water_1 = db_session.query(ElectronicBatchTwo.SampleValue).filter(and_(
+                    ElectronicBatchTwo.BatchID == batch,
+                    ElectronicBatchTwo.EQPID == Equip_ID[tank_tags.index(tank)],
+                    ElectronicBatchTwo.Type == "提取第一次加水量设定值")).first()
                 if water_1:
                     material_data[tank[1]] = water_1[0] + "L"
                 else:
                     material_data[tank[1]] = nothing
 
-                water_2 = db_session.query(ElectronicBatch.SampleValue).filter(and_(
-                    ElectronicBatch.BatchID == batch,
-                    ElectronicBatch.EQPID == Equip_ID[tank_tags.index(tank)],
-                    ElectronicBatch.Type == "提取第二次加水量设定值")).first()
+                water_2 = db_session.query(ElectronicBatchTwo.SampleValue).filter(and_(
+                    ElectronicBatchTwo.BatchID == batch,
+                    ElectronicBatchTwo.EQPID == Equip_ID[tank_tags.index(tank)],
+                    ElectronicBatchTwo.Type == "提取第二次加水量设定值")).first()
                 if water_2:
                     material_data[tank[2]] = water_2[0] + "L"
                 else:
@@ -8202,6 +8202,31 @@ def WBDataHistory():
 @app.route('/FSWMSpage')
 def FSWMSpage():
     return render_template('FSWMSpage.html')
+@equip.route('/ZYPlanWMSSelect', methods=['GET', 'POST'])
+def MaintenanceStandardSelect():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                pages = int(data['page'])
+                rowsnumber = int(data['rows'])
+                inipage = (pages - 1) * rowsnumber + 0
+                endpage = (pages - 1) * rowsnumber + rowsnumber
+                BatchID = data["BatchID"]
+                if BatchID == "":
+                    return '未传入批次号！'
+                else:
+                    BrandID = data["BrandID"]
+                    count = db_session.query(ZYPlanWMS).filter(ZYPlanWMS.BrandID == BatchID, ZYPlanWMS.BrandID == BrandID).count()
+                    oclass = db_session.query(ZYPlanWMS).filter(ZYPlanWMS.BrandID == BatchID, ZYPlanWMS.BrandID == BrandID).all()[inipage:endpage]
+                jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
+                return '{"total"' + ":" + str(count) + ',"rows"' + ":\n" + jsonoclass + "}"
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "/ZYPlanWMSSelect报错Error：" + str(e), current_user.Name)
+            return json.dumps("ZYPlanWMS查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 if __name__ == '__main__':
     app.run(debug=True)
