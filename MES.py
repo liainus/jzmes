@@ -8202,6 +8202,31 @@ def WBDataHistory():
 @app.route('/FSWMSpage')
 def FSWMSpage():
     return render_template('FSWMSpage.html')
+@equip.route('/ZYPlanWMSSelect', methods=['GET', 'POST'])
+def MaintenanceStandardSelect():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                pages = int(data['page'])
+                rowsnumber = int(data['rows'])
+                inipage = (pages - 1) * rowsnumber + 0
+                endpage = (pages - 1) * rowsnumber + rowsnumber
+                BatchID = data["BatchID"]
+                if BatchID == "":
+                    return '未传入批次号！'
+                else:
+                    BrandID = data["BrandID"]
+                    count = db_session.query(ZYPlanWMS).filter(ZYPlanWMS.BrandID == BatchID, ZYPlanWMS.BrandID == BrandID).count()
+                    oclass = db_session.query(ZYPlanWMS).filter(ZYPlanWMS.BrandID == BatchID, ZYPlanWMS.BrandID == BrandID).all()[inipage:endpage]
+                jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
+                return '{"total"' + ":" + str(count) + ',"rows"' + ":\n" + jsonoclass + "}"
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "/ZYPlanWMSSelect报错Error：" + str(e), current_user.Name)
+            return json.dumps("ZYPlanWMS查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 if __name__ == '__main__':
     app.run(debug=True)
