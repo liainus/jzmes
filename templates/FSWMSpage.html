@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>发送WMS</title>
+    <link href="../static/css/base.css" rel="stylesheet">
+	<link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
+	<link href="../static/css/basic_info.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
+	<link href="../static/js/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
+    <link href="../static/css/datagridpanel_customer.css" rel="stylesheet">
+    <link href="../static/css/dialogpanel.css" type="text/css" rel="stylesheet">
+    <link href="../static/css/datagrid_customer.css" type="text/css" rel="stylesheet">
+    <script type="text/javascript" src="../static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
+</head>
+<body>
+    <div style="padding: 10px;">
+        <div class="ERPList">
+            <table class="easyui-datagrid" id="tab" title="" style="width:100%;" data-options="
+                loadMsg:false,
+                rownumbers:true,
+                singleSelect:true,
+                autoRowHeight:false,
+                pagination:true,
+                pageSize:10,
+                url:'/ZYPlanWMSSelect',
+                method:'get'">
+                <thead>
+                    <tr>
+                        <th data-options="field:'BatchID',width:200,align:'center'">批次号</th>
+                        <th data-options="field:'BrandName',width:250,align:'center'">品名</th>
+                        <th data-options="field:'PUIDName',width:200,align:'center'">工艺段</th>
+                        <th data-options="field:'OperationPeople',width:200,align:'center'">操作人</th>
+                        <th data-options="field:'Description',width:200,align:'center'">描述</th>
+                        <th data-options="field:'OperationDate',width:200,align:'center'">操作时间</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+        <a href="#" class="easyui-linkbutton" id="send" data-options="iconCls:'icon-redo'" style="margin-top: 20px">下发</a>
+        <table class="easyui-datagrid" id="selfTab" title="" style="width:100%;" data-options="
+            loadMsg:false,
+            rownumbers:true,
+            singleSelect:true,
+            autoRowHeight:false,
+            pagination:true,
+            pageSize:10,
+            url:'/erp_model/productinfoSearch',
+            method:'get'">
+            <thead>
+                <tr>
+{#                    <th data-options="field:'product_code',width:200,align:'center'">计划单号</th>#}
+{#                    <th data-options="field:'product_name',width:250,align:'center'">计划名称</th>#}
+{#                    <th data-options="field:'product_unit',width:200,align:'center'">计划单位</th>#}
+{#                    <th data-options="field:'product_type',width:200,align:'center'">计划类型</th>#}
+                </tr>
+            </thead>
+        </table>
+    </div>
+    <script>
+        $(function(){
+            $('#tab').datagrid({
+                queryParams:{
+                    BatchID:getUrlParam('BatchID'),
+                    BrandID:getUrlParam('BrandID')
+                }
+            });
+            //获取页面传参
+            function getUrlParam(name) {
+                var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+                var r = decodeURI(window.location.search).substr(1).match(reg); //匹配目标参数
+                if (r != null) return unescape(r[2]); return null; //返回参数值
+            }
+        })
+    </script>
+</body>
+</html>
