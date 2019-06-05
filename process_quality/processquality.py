@@ -361,6 +361,15 @@ class WMS_Interface(ServiceBase):
         for i in range(times):
             yield u'Hello, %s' % name
 
+    @rpc(Unicode, Unicode, _returns=Unicode())
+    def WMS_StockInfo(self, name, json_data):
+        dic = []
+        for i in range(0, 2):
+            dic.append(appendStr(i))
+        aa = json.dumps(dic)
+        print(aa)
+        return aa
+
 class SAP_Interface(ServiceBase):
     logging.basicConfig(level=logging.DEBUG)
     @rpc(Unicode, Unicode, _returns=Unicode())
@@ -401,10 +410,10 @@ class NH_Interface(ServiceBase):
             dic.append(appendStr(i))
         return json.dumps(dic)
 
-wsdl_url = "http://127.0.0.1:5001/?wsdl"
+wsdl_url = "http://192.168.20.1:8088/Carrier_Loading.asmx?wsdl"
 def say_hello_test(url,name):
     client = Client(url)  # 创建一个webservice接口对象
-    re = client.service.WMS_Order_Download(name, 'abc') # 调用这个接口下的getMobileCodeInfo方法，并传入参数
+    re = client.service.revice() # 调用这个接口下的getMobileCodeInfo方法，并传入参数
     print(re)
     return re
 
