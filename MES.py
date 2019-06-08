@@ -6542,13 +6542,15 @@ def electionBatchSearch():
                             searO(BrandID, BatchID, Pclass.ID, EQPID, "提取第二次煎煮开始时间").SampleValue)
                         dic["secondDevotingEndTime" + str(i)] = strchange(
                             searO(BrandID, BatchID, Pclass.ID, EQPID, "提取第二次煎煮结束时间").SampleValue)
-                    JEQPIDs = searchEqpID(BrandID, BatchID, PUID, "静置罐")
+
+                    BrandName = db_session.query(ProductRule.PRName).filter(ProductRule.ID == BrandID).first()[0]
+                    JEQPIDs = searchEqpZJ(BrandName, BatchID, PUID, "静置罐")
                     for i in range(0, len(JEQPIDs)):
                         EQPID = JEQPIDs[i]
                         dic["jStartTime" + str(i)] = strch(
-                            searO(BrandID, BatchID, Pclass.ID, EQPID, "静置开始时间").SampleValue)
+                            searJZ(BrandName, BatchID, Pclass.ID, EQPID, "静置开始时间").SampleValue)
                         dic["jEndTime" + str(i)] = strch(
-                            searO(BrandID, BatchID, Pclass.ID, EQPID, "静置结束时间").SampleValue)
+                            searJZ(BrandName, BatchID, Pclass.ID, EQPID, "静置结束时间").SampleValue)
                 elif (Pclass.PDUnitRouteName == "浓缩段"):
                     NEQPIDs = searchEqpID(BrandID, BatchID, PUID, "MVR")
                     for i in range(len(NEQPIDs)):
@@ -6701,6 +6703,19 @@ def searO(BrandID, BatchID, PID, EQPID, Type):
         return electronicBatch
     else:
         return re
+def searJZ(BrandName, BatchID, PID, EQPID, Type):
+    re = db_session.query(ElectronicBatchTwo).filter(ElectronicBatchTwo.BrandName == BrandName,
+                                                     ElectronicBatchTwo.BatchID == BatchID,
+                                                     ElectronicBatchTwo.PDUnitRouteID == PID,
+                                                     ElectronicBatchTwo.EQPID == EQPID, ElectronicBatchTwo.Type == Type).first()
+    if re == None:
+        electronicBatch = ElectronicBatchTwo()
+        electronicBatch.SampleValue = ""
+        electronicBatch.Unit = ""
+        electronicBatch.SampleDate = ""
+        return electronicBatch
+    else:
+        return re
 
 
 def searchEqpID(BrandID, BatchID, PID, name):
@@ -6711,7 +6726,14 @@ def searchEqpID(BrandID, BatchID, PID, name):
                                                                         ElectronicBatchTwo.BatchID == BatchID).all()
     tmp = [val for val in EQPIDs if val in EQPS]
     return tmp
-
+def searchEqpZJ(BrandName, BatchID, PID, name):
+    EQPIDs = db_session.query(Equipment.ID).filter(Equipment.PUID == PID,
+                                                   Equipment.EQPName.like("%" + name + "%")).all()
+    EQPS = db_session.query(ElectronicBatchTwo.EQPID).distinct().filter(ElectronicBatchTwo.PDUnitRouteID == PID,
+                                                                        ElectronicBatchTwo.BrandName == BrandName,
+                                                                        ElectronicBatchTwo.BatchID == BatchID).all()
+    tmp = [val for val in EQPIDs if val in EQPS]
+    return tmp
 
 # QA放行
 @app.route('/QAauthPass')

@@ -43,6 +43,7 @@ import logging
 import suds
 from suds.client import Client
 from spyne import Application
+from suds.xsd.doctor import ImportDoctor, Import
 
 engine = create_engine(Model.Global.GLOBAL_DATABASE_CONNECT_STRING, deprecate_large_types=True)
 Session = sessionmaker(bind=engine)
@@ -410,15 +411,47 @@ class NH_Interface(ServiceBase):
             dic.append(appendStr(i))
         return json.dumps(dic)
 
-wsdl_url = "http://192.168.20.1:8088/Carrier_Loading.asmx?wsdl"
+wsdl_url = "http://192.168.200.70:8088/?wsdl"
 def say_hello_test(url,name):
-    client = Client(url)  # 创建一个webservice接口对象
+    imp = Import('http://www.w3.org/2001/XMLSchema', location = 'http://www.w3.org/2001/XMLSchema.xsd')
+    imp.filter.add('http://WebXml.com.cn/')
+    doctor = ImportDoctor(imp)
+    client = Client('http://192.168.200.70:8088/?wsdl', doctor = doctor)  # 创建一个webservice接口对象
+    print("aa")
     re = client.service.revice() # 调用这个接口下的getMobileCodeInfo方法，并传入参数
     print(re)
-    return re
+    return "http://192.168.100.103:9100/?wsdl"
 
-@Process.route('/aaaa', methods=['POST', 'GET'])
-def aaaa():
+@Process.route('/aaaaa', methods=['POST', 'GET'])
+def c():
     if request.method == 'GET':
-        re = say_hello_test(wsdl_url,"aa")
-        return re
+        re = say_hello_test1(wsdl_url,"aa")
+        aa = json.dumps(re, cls=AlchemyEncoder, ensure_ascii=False)
+        return aa
+def say_hello_test1(url,name):
+    imp = Import('http://www.w3.org/2001/XMLSchema', location = 'http://www.w3.org/2001/XMLSchema.xsd')
+    imp.filter.add('http://WebXml.com.cn/')
+    doctor = ImportDoctor(imp)
+    client = Client('http://192.168.100.103:9100/?wsdl', doctor = doctor)  # 创建一个webservice接口对象
+    print("aa")
+    re = client.service.GetEmpowerProject("","") # 调用这个接口下的getMobileCodeInfo方法，并传入参数
+    print(re)
+    if re[0] == "0":
+        ret = re[1]
+        re = r"Training;Training\hsr;Training\wkr;成品组;成品组\2017健胃消食片浸膏粉橙皮苷含量;成品组\2017肿节风浸膏异嗪皮啶含量;成品组\2018-健胃消食片(无糖型)浸膏-橙;成品组\2018-健胃消食片浸膏粉-橙皮苷;成品组\2018-肿节风浸膏-异嗪皮啶;成品组\2019-大黄粉-总蒽醌和游离蒽醌;成品组\2019-健胃消食片(无糖型)浸膏-橙;成品组\2019-健胃消食片浸膏粉-橙皮苷;成品组\2019-痔康片清膏-芦丁;成品组\2019-肿节风浸膏-异嗪皮啶;计算机化系统验证;气相实验;液相实验;原辅组;原辅组\2017陈皮橙皮苷;原辅组\2017陈皮黄曲霉毒素;原辅组\2017回收乙醇异嗪皮啶残留;原辅组\2017乙醇挥发性杂质;原辅组\2017肿节风异嗪皮啶迷迭香酸;原辅组\2018-陈皮-黄曲霉毒素;原辅组\2018-回收乙醇-异嗪皮啶;原辅组\2018-乙醇-挥发性杂质;原辅组\2018-肿节风-异嗪皮啶及迷迭香酸;原辅组\2018陈皮橙皮苷;原辅组\2019-陈皮-橙皮苷;原辅组\2019-陈皮-黄曲霉毒素;原辅组\2019-大黄-总蒽醌和游离蒽醌;原辅组\2019-地榆炭-没食子酸;原辅组\2019-槐花-芦丁;原辅组\2019-黄芩-黄芩苷;原辅组\2019-回收乙醇-异嗪皮啶;原辅组\2019-金银花-绿原酸和木犀草苷;原辅组\2019-乙醇-挥发性杂质;原辅组\2019-肿节风-异嗪皮啶及迷迭香酸;原辅组\2019-豨莶草-奇壬醇;正确4Q验证;智能制造实验;质谱实验;"
+        sz = []
+        child = []
+        i = 0
+        orgs = re.strip().split(";")
+        for obj in orgs:
+            if "\\" in obj:
+                ch = obj.split("\\")
+                print(ch[1])
+                listi.append({"id": i, "text": ch[1], "children": []})
+            else:
+                listi = []
+                sz.append({"id": i, "text": obj, "children": listi})
+            i = i + 1
+        return sz
+    else:
+        return re[1]
