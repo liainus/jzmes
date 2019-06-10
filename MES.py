@@ -8167,9 +8167,9 @@ def WBRedis():
         try:
             redis_conn = redis.Redis(connection_pool=pool)
             data_dict = {}
-            data_dict['MD'] = redis_conn.hget(constant.REDIS_TABLENAME, 't|WB_MD').decode('utf-8')
+            data_dict['SF'] = redis_conn.hget(constant.REDIS_TABLENAME, 't|WB_Water').decode('utf-8')
             data_dict['WD'] = redis_conn.hget(constant.REDIS_TABLENAME, 't|WB_Temp').decode('utf-8')
-            data_dict['SF'] = redis_conn.hget(constant.REDIS_TABLENAME, 't|WB_Temp').decode('utf-8')
+            data_dict['MD'] = redis_conn.hget(constant.REDIS_TABLENAME, 't|WB_MD').decode('utf-8')
             return json.dumps(data_dict, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
@@ -8190,7 +8190,7 @@ def WBDataHistory():
                 begin = data.get('begin')
                 end = data.get('end')
                 if begin and end:#[t|ZGY_Temp] AS ZGY_Temp
-                    sql = "SELECT  [Item01Result],[Item02Result],[Item03Result],[SampleTime] FROM [MES].[dbo].[JHYDataHistory] WHERE SampleTime BETWEEN '" + begin + "' AND '" + end +"' order by ID"
+                    sql = "SELECT  [Item01Result],[Item02Result],[Item03Result],[SampleTime] FROM [MES].[dbo].[WBDataHistory] WHERE SampleTime BETWEEN '" + begin + "' AND '" + end +"' order by ID"
                     re = db_session.execute(sql).fetchall()
                     db_session.close()
                     div = {}
@@ -8249,6 +8249,10 @@ def MaintenanceStandardSelect():
             logger.error(e)
             insertSyslog("error", "/ZYPlanWMSSelect报错Error：" + str(e), current_user.Name)
             return json.dumps("ZYPlanWMS查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+@app.route('/impowerSpage')
+def impowerSpage():
+    return render_template('impowerSpage.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
