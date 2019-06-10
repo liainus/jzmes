@@ -27,6 +27,24 @@
             }
             getNewData();
             setInterval(getNewData, 2000);
+
+            $(".pull-right").on('click',function(){
+                addTab("进红外历史数据","/JHYDatapage")
+            })
+            //按钮点击后添加选项卡
+            function addTab(title, url) {
+                if (parent.parent.$('.easyui-tabs1').tabs('exists', title)) {
+                    parent.parent.$('.easyui-tabs1').tabs('select', title);
+                }
+                else {
+                    var content = '<iframe class="page-iframe" src="' + url + '" frameborder="no" border="no" height="100%" width="100%" scrolling="auto"></iframe>';
+                    parent.parent.$('.easyui-tabs1').tabs('add', {
+                        title: title,
+                        content: content,
+                        closable: true
+                    });
+                }
+            }
         })
     </script>
 </head>
@@ -36,7 +54,7 @@
             <div style="min-height: 380px;border-width: 0 0 0 0px;background-color: #f8f8f8;border-radius: 0 0 17px 0;padding: 15px;">
                 <div style="padding-bottom: 5px;border-bottom: 1px solid #e3e5e4;font-size: 25px;font-weight: bold;">
                     <span class="text-left">进红外</span>
-                    <label class="pull-right" style="font-weight: 500;font-size: 16px;">参数：</label>
+                    <a class="pull-right" style="font-weight: 500;font-size: 18px;" href="javascript:;">进红外历史数据</a>
                 </div>
                 <div class="clearfix" style="padding: 25px 0;">
                     <div style="width: 50%;float: left;color: #7C7D7D;">

@@ -30,6 +30,24 @@
             }
             getNewData();
             setInterval(getNewData, 2000);
+
+            $(".pull-right").on('click',function(){
+                addTab("折光仪历史数据","/refractometerHistoryData")
+            })
+            //按钮点击后添加选项卡
+            function addTab(title, url) {
+                if (parent.parent.$('.easyui-tabs1').tabs('exists', title)) {
+                    parent.parent.$('.easyui-tabs1').tabs('select', title);
+                }
+                else {
+                    var content = '<iframe class="page-iframe" src="' + url + '" frameborder="no" border="no" height="100%" width="100%" scrolling="auto"></iframe>';
+                    parent.parent.$('.easyui-tabs1').tabs('add', {
+                        title: title,
+                        content: content,
+                        closable: true
+                    });
+                }
+            }
         })
     </script>
 </head>
@@ -38,8 +56,8 @@
         <div style="margin: 28px 0 auto;position: relative;background-color: #e3e5e4;">
             <div style="min-height: 380px;border-width: 0 0 0 0px;background-color: #f8f8f8;border-radius: 0 0 17px 0;padding: 15px;">
                 <div style="padding-bottom: 5px;border-bottom: 1px solid #e3e5e4;font-size: 25px;font-weight: bold;">
-                    <span class="text-left">折光仪</span>
-                    <a href="http://192.168.200.88/main.html" class="pull-right" style="font-weight: 500;font-size: 18px;" target="_blank">工艺折光仪原始地址</a>
+                    <a class="text-left" href="http://192.168.200.88/main.html" target="_blank">折光仪</a>
+                    <a class="pull-right" style="font-weight: 500;font-size: 18px;" href="javascript:;">折光仪历史数据</a>
                 </div>
                 <div style="margin: 70px 20px 70px 0;font-weight: bold;height: 113px;text-align: right;">
                     <div style="min-width: 30px;float: right;height: 113px;font-size: 12px;margin-left: 10px;">
