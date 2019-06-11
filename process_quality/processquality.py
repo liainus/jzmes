@@ -472,30 +472,33 @@ def impowerSelectData():
             client = Client(URL, doctor=doctor)  # 创建一个webservice接口对象
             userzj = db_session.query(User).filter(User.Name == "tly042").first()
             re = client.service.GetEmpowerProjectItem(userzj.Name, userzj.Password, projectName, "*")
-            orgs = re.strip().split(";")
-            datadir = []
-            data = [{"total":len(orgs),"rows":datadir}]
-            a = 0
-            for i in orgs:
-                igs = i.split(",")
-                if len(igs) == 9 and a > 0:
-                    imp = ImpowerInterface()
-                    imp.ID = a
-                    imp.SampleName = igs[0]
-                    imp.SampleBottle = igs[1]
-                    imp.Sampling = igs[2]
-                    imp.SampleType = igs[3]
-                    imp.ProcessingChannel = igs[4]
-                    imp.CollectionDate = igs[5]
-                    imp.OperationDate = igs[6]
-                    imp.ProcessingMethod = igs[7]
-                    imp.ResultID = igs[8]
-                    datadir.append(imp)
-                    a = a + 1
-                else:
-                    a = a + 1
-                    continue
-            return json.dumps(data, cls=AlchemyEncoder, ensure_ascii=False)
+            if re[2] == 'OK':
+                orgs = re[0].strip().split(";")
+                datadir = []
+                data = [{"total":len(orgs),"rows":datadir}]
+                a = 0
+                for i in orgs:
+                    igs = i.split(",")
+                    if len(igs) == 9 and a > 0:
+                        imp = ImpowerInterface()
+                        imp.ID = a
+                        imp.SampleName = igs[0]
+                        imp.SampleBottle = igs[1]
+                        imp.Sampling = igs[2]
+                        imp.SampleType = igs[3]
+                        imp.ProcessingChannel = igs[4]
+                        imp.CollectionDate = igs[5]
+                        imp.OperationDate = igs[6]
+                        imp.ProcessingMethod = igs[7]
+                        imp.ResultID = igs[8]
+                        datadir.append(imp)
+                        a = a + 1
+                    else:
+                        a = a + 1
+                        continue
+                return json.dumps(data, cls=AlchemyEncoder, ensure_ascii=False)
+            else:
+                return json.dumps(re[1], cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
             logger.error(e)
