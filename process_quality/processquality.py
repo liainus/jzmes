@@ -506,15 +506,15 @@ def impowerPeakItemSelect():
     if request.method == 'GET':
         data = request.values
         try:
-            projectName = data.get("projectName")
-            ConditonFiled = data.get("ConditonFiled")
-            ConditionValue = data.get("ConditionValue")
+            SampleName = data.get("SampleName")
+            SampleBottle = data.get("SampleBottle")
+            Sampling = data.get("Sampling")
             imp = Import('http://www.w3.org/2001/XMLSchema', location='http://www.w3.org/2001/XMLSchema.xsd')
             imp.filter.add('http://WebXml.com.cn/')
             doctor = ImportDoctor(imp)
             client = Client(URL, doctor=doctor)  # 创建一个webservice接口对象
             userzj = db_session.query(User).filter(User.Name == "tly042").first()
-            re = client.service.GetEmpowerPeakItemTest()#userzj.Name, userzj.Password, projectName, ConditonFiled, ConditionValue
+            re = client.service.GetEmpowerPeakItemTest(userzj.Name, userzj.Password, SampleName, SampleBottle, Sampling)#userzj.Name, userzj.Password, projectName, ConditonFiled, ConditionValue
             print(re)
             orgs = re.strip().split(";")
             datadir = []
