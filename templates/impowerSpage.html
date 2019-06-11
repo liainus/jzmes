@@ -32,20 +32,24 @@
                             queryParams: {
                                 projectName: parentText.text + '\\' + node
                             },
-
+                            onCheck:function(rowIndex,rowData){
+                                console.log(rowData.SampleName + "-" + rowData.SampleBottle + "-" + rowData.Sampling)
+                                //getNewData(rowData.SampleName,rowData.SampleBottle,rowData.Sampling)
+                            }
                         })
                     }
                 }
             })
-            function getNewData(){
+            function getNewData(SampleName,SampleBottle,Sampling){
                 var myChart = echarts.init(document.getElementById("main"))
                 myChart.showLoading();
                 $.ajax({
-                    url: '/WBDataHistory',
+                    url: '',
                     type: 'get',
                     data: {
-                        begin:$('#beginTime').datebox('getValue'),
-                        end:$('#endTime').datebox('getValue')
+                        SampleName:SampleName,
+                        SampleBottle:SampleBottle,
+                        Sampling:Sampling
                     },
                     success: function (data) {
                         data = JSON.parse(data)
@@ -65,7 +69,7 @@
                                  }
                             },
                             legend: {
-                                data: ["密度","温度","水分"]
+                                data: ["密度"]
                             },
                             toolbox: {
                                 feature: {
