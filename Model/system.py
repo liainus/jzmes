@@ -1487,6 +1487,39 @@ class ZYPlanWMS(Base):
     # 操作时间:
     OperationDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
 
+# 与impower接口
+class ImpowerInterface(Base):
+    __tablename__ = 'ImpowerInterface'
+    # id:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+    # 样品名称:
+    SampleName = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 样品瓶:
+    SampleBottle = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 进样:
+    Sampling = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 样品类型
+    SampleType = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 处理通道说明:
+    ProcessingChannel = Column(Unicode(60), primary_key=False, autoincrement=False, nullable=True)
+
+    # 采集日期:
+    CollectionDate = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 处理日期:
+    OperationDate = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 处理方法:
+    ProcessingMethod = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 结果ID:
+    ResultID = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
+
 # 生成表单的执行语句
 Base.metadata.create_all(engine)
 

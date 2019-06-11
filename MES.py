@@ -60,6 +60,9 @@ from erp_model.erp_model import ERP
 from Model.node import NodeCollection
 from process_quality.processquality import Process, WMS_Interface
 import config
+from suds.client import Client
+from spyne import Application
+from suds.xsd.doctor import ImportDoctor, Import
 
 # flask_login的初始化
 login_manager = LoginManager()
@@ -8250,9 +8253,6 @@ def MaintenanceStandardSelect():
             insertSyslog("error", "/ZYPlanWMSSelect报错Error：" + str(e), current_user.Name)
             return json.dumps("ZYPlanWMS查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
-@app.route('/impowerSpage')
-def impowerSpage():
-    return render_template('impowerSpage.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
