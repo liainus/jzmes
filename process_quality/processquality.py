@@ -475,7 +475,6 @@ def impowerSelectData():
             if re[2] == 'OK':
                 orgs = re[0].strip().split(";")
                 datadir = []
-                data = [{"total":len(orgs),"rows":datadir}]
                 a = 0
                 for i in orgs:
                     igs = i.split(",")
@@ -496,8 +495,8 @@ def impowerSelectData():
                     else:
                         a = a + 1
                         continue
-                print(data)
-                return json.dumps(data, cls=AlchemyEncoder, ensure_ascii=False)
+                jsonoclass = json.dumps(datadir, cls=AlchemyEncoder, ensure_ascii=False)
+                return '{"total"' + ":" + str(len(orgs)) + ',"rows"' + ":\n" + jsonoclass + "}"
             else:
                 return json.dumps(re[1], cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
