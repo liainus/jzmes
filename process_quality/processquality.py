@@ -496,6 +496,7 @@ def impowerSelectData():
                     else:
                         a = a + 1
                         continue
+                print(data)
                 return json.dumps(data, cls=AlchemyEncoder, ensure_ascii=False)
             else:
                 return json.dumps(re[1], cls=AlchemyEncoder, ensure_ascii=False)
