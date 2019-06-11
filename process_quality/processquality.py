@@ -433,11 +433,9 @@ def impowerSelect():
             imp = Import('http://www.w3.org/2001/XMLSchema', location='http://www.w3.org/2001/XMLSchema.xsd')
             imp.filter.add('http://WebXml.com.cn/')
             doctor = ImportDoctor(imp)
-            client = Client(URL, doctor=doctor)  # 创建一个webservice接口对象
-            print("aa")
+            client = Client(URL, doctor=doctor)
             userzj = db_session.query(User).filter(User.Name == "tly042").first()
-            re = client.service.GetAllEmpowerProject(userzj.Name, userzj.Password)  # 调用这个接口下的getMobileCodeInfo方法，并传入参数
-            print(re)
+            re = client.service.GetAllEmpowerProject(userzj.Name, userzj.Password)
             if re[2] == 'OK':
                 ret = re[0]
                 # re = r"Training;Training\hsr;Training\wkr;成品组;成品组\2017健胃消食片浸膏粉橙皮苷含量;成品组\2017肿节风浸膏异嗪皮啶含量;成品组\2018-健胃消食片(无糖型)浸膏-橙;成品组\2018-健胃消食片浸膏粉-橙皮苷;成品组\2018-肿节风浸膏-异嗪皮啶;成品组\2019-大黄粉-总蒽醌和游离蒽醌;成品组\2019-健胃消食片(无糖型)浸膏-橙;成品组\2019-健胃消食片浸膏粉-橙皮苷;成品组\2019-痔康片清膏-芦丁;成品组\2019-肿节风浸膏-异嗪皮啶;计算机化系统验证;气相实验;液相实验;原辅组;原辅组\2017陈皮橙皮苷;原辅组\2017陈皮黄曲霉毒素;原辅组\2017回收乙醇异嗪皮啶残留;原辅组\2017乙醇挥发性杂质;原辅组\2017肿节风异嗪皮啶迷迭香酸;原辅组\2018-陈皮-黄曲霉毒素;原辅组\2018-回收乙醇-异嗪皮啶;原辅组\2018-乙醇-挥发性杂质;原辅组\2018-肿节风-异嗪皮啶及迷迭香酸;原辅组\2018陈皮橙皮苷;原辅组\2019-陈皮-橙皮苷;原辅组\2019-陈皮-黄曲霉毒素;原辅组\2019-大黄-总蒽醌和游离蒽醌;原辅组\2019-地榆炭-没食子酸;原辅组\2019-槐花-芦丁;原辅组\2019-黄芩-黄芩苷;原辅组\2019-回收乙醇-异嗪皮啶;原辅组\2019-金银花-绿原酸和木犀草苷;原辅组\2019-乙醇-挥发性杂质;原辅组\2019-肿节风-异嗪皮啶及迷迭香酸;原辅组\2019-豨莶草-奇壬醇;正确4Q验证;智能制造实验;质谱实验;"
@@ -472,9 +470,51 @@ def impowerSelectData():
             imp.filter.add('http://WebXml.com.cn/')
             doctor = ImportDoctor(imp)
             client = Client(URL, doctor=doctor)  # 创建一个webservice接口对象
-            print("aa")
             userzj = db_session.query(User).filter(User.Name == "tly042").first()
-            re = client.service.GetEmpowerProjectItem(userzj.Name, userzj.Password, projectName)  # 调用这个接口下的getMobileCodeInfo方法，并传入参数
+            re = client.service.GetEmpowerProjectItem(userzj.Name, userzj.Password, projectName)
+            orgs = re.strip().split(";")
+            datadir = []
+            data = [{"total":len(orgs),"rows":datadir}]
+            a = 0
+            for i in orgs:
+                igs = i.split(",")
+                if len(igs) == 9 and a > 0:
+                    imp = ImpowerInterface()
+                    imp.ID = a
+                    imp.SampleName = igs[0]
+                    imp.SampleBottle = igs[1]
+                    imp.Sampling = igs[2]
+                    imp.SampleType = igs[3]
+                    imp.ProcessingChannel = igs[4]
+                    imp.CollectionDate = igs[5]
+                    imp.OperationDate = igs[6]
+                    imp.ProcessingMethod = igs[7]
+                    imp.ResultID = igs[8]
+                    datadir.append(imp)
+                    a = a + 1
+                else:
+                    a = a + 1
+                    continue
+            return json.dumps(data, cls=AlchemyEncoder, ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "/impowerSelectData报错Error：" + str(e), current_user.Name)
+            return json.dumps("impowerSelectData查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+@Process.route('/impowerPeakItemSelect', methods=['POST', 'GET'])
+def impowerPeakItemSelect():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            projectName = data.get("projectName")
+            ConditonFiled = data.get("ConditonFiled")
+            ConditionValue = data.get("ConditionValue")
+            imp = Import('http://www.w3.org/2001/XMLSchema', location='http://www.w3.org/2001/XMLSchema.xsd')
+            imp.filter.add('http://WebXml.com.cn/')
+            doctor = ImportDoctor(imp)
+            client = Client(URL, doctor=doctor)  # 创建一个webservice接口对象
+            userzj = db_session.query(User).filter(User.Name == "tly042").first()
+            re = client.service.GetEmpowerPeakItemTest()#userzj.Name, userzj.Password, projectName, ConditonFiled, ConditionValue
             print(re)
             orgs = re.strip().split(";")
             datadir = []
@@ -503,5 +543,5 @@ def impowerSelectData():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "/impowerSelect报错Error：" + str(e), current_user.Name)
-            return json.dumps("impower查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+            insertSyslog("error", "/impowerSelectData报错Error：" + str(e), current_user.Name)
+            return json.dumps("impowerSelectData查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
