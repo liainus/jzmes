@@ -28,7 +28,7 @@
                     if($('#LeftTree').tree('isLeaf',node.target)){
                         var parentText = $('#LeftTree').tree('getParent', node.target)
                         $("#tab").datagrid({
-                            url:'/impowerPeakItemSelect',
+                            url:'/impowerSelectData',
                             queryParams: {
                                 projectName: parentText.text + '\\' + node
                             },
@@ -149,7 +149,21 @@
             <div id="chart" style="width: 960px; height: 300px; margin: 10px auto;"></div>
         </div>
         <div data-options="region:'east',split:true" title="数据" style="width:25%">
-
+            <table class="easyui-datagrid" id="tab" title="" style="width:100%;" data-options="
+                loadMsg:false,
+                rownumbers:true,
+                singleSelect:true,
+                autoRowHeight:false,
+                pagination:true,
+                pageSize:10,
+                method:'get'">
+                <thead>
+                    <tr>
+                        <th field="ck" checkbox="true"></th>
+                        <th data-options="field:'SampleName',width:150,align:'center'">样品名称</th>
+                    </tr>
+                </thead>
+            </table>
         </div>
 	</div>
 </body>
