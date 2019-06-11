@@ -471,7 +471,7 @@ def impowerSelectData():
             doctor = ImportDoctor(imp)
             client = Client(URL, doctor=doctor)  # 创建一个webservice接口对象
             userzj = db_session.query(User).filter(User.Name == "tly042").first()
-            re = client.service.GetEmpowerProjectItem(userzj.Name, userzj.Password, projectName)
+            re = client.service.GetEmpowerProjectItem(userzj.Name, userzj.Password, projectName, "*")
             orgs = re.strip().split(";")
             datadir = []
             data = [{"total":len(orgs),"rows":datadir}]
