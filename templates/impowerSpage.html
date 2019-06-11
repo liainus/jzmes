@@ -2,9 +2,87 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>$Title$</title>
+    <title>impower</title>
+    <link href="../static/css/base.css" rel="stylesheet">
+	<link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
+	<link href="../static/css/basic_info.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
+	<link href="../static/js/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
+    <link href="../static/css/datagridpanel_customer.css" rel="stylesheet">
+    <link href="../static/css/dialogpanel.css" type="text/css" rel="stylesheet">
+    <link href="../static/css/datagrid_customer.css" type="text/css" rel="stylesheet">
+    <script type="text/javascript" src="../static/js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
+    <script>
+        $(function(){
+            $('#LeftTree').tree({
+                url:'/impowerSelect',
+                method: 'get',
+                animate:true,
+                loadFilter:function(data){
+                    return data
+                },
+                onLoadSuccess:function(node,data){
+                    console.log(node)
+                    console.log(data)
+                },
+                onClick: function (node) {
+                    if($('#LeftTree').tree('isLeaf',node.target)){
+                        console.log(node)
+                        $("#tab").datagrid({
+                            url:'/erp_model/productplanSearch',
+                            queryParams: {
+                                projectName: ''
+                            },
+                        })
+                    }
+                }
+            })
+        })
+    </script>
 </head>
-<body>
-$END$
+<body style="padding: 15px;">
+    <div class="easyui-layout" style="width:100%;height:350px;">
+        <div data-options="region:'west',split:true" title="项目" style="width:25%">
+            <div class="left-tree">
+                <ul id="LeftTree" class="easyui-tree"></ul>
+            </div>
+        </div>
+        <div data-options="region:'center',title:'结果'">
+            <table class="easyui-datagrid" id="tab" title="" style="width:100%;" data-options="
+                loadMsg:false,
+                rownumbers:true,
+                singleSelect:false,
+                autoRowHeight:false,
+                pagination:true,
+                pageSize:10,
+                method:'get'">
+                <thead>
+                    <tr>
+                        <th field="ck" checkbox="true"></th>
+                        <th data-options="field:'SampleName',width:150,align:'center'">样品名称</th>
+                        <th data-options="field:'SampleBottle',width:150,align:'center'">样品瓶</th>
+                        <th data-options="field:'Sampling',width:150,align:'center'">进样</th>
+                        <th data-options="field:'SampleType',width:150,align:'center'">样品类型</th>
+                        <th data-options="field:'ProcessingChannel',width:150,align:'center'">处理通道说明</th>
+                        <th data-options="field:'CollectionDate',width:200,align:'center'">采集日期</th>
+                        <th data-options="field:'OperationDate',width:200,align:'center'">处理日期</th>
+                        <th data-options="field:'ProcessingMethod',width:150,align:'center'">处理方法</th>
+                        <th data-options="field:'ResultID',width:150,align:'center'">结果ID</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+	</div>
+    <div class="easyui-layout" style="width:100%;height:350px;">
+        <div data-options="region:'center',title:'峰值'">
+            <div id="chart"></div>
+        </div>
+        <div data-options="region:'east',split:true" title="数据" style="width:25%">
+
+        </div>
+	</div>
 </body>
 </html>
