@@ -38,6 +38,7 @@
                     if($('#LeftTree').tree('isLeaf',node.target)){
                         var parentText = $('#LeftTree').tree('getParent', node.target)
                         var projectName = parentText.text + '\\' + node.text
+                        $("#tab").bootstrapTable("destroy")
                         $("#tab").bootstrapTable({
                             method : 'get',
                             url:'/impowerSelectData',
@@ -84,6 +85,7 @@
                             }],
                             onCheck:function(rowData,rowIndex){
                                 //峰值
+                                $("#peakItemTab").bootstrapTable("destroy")
                                 $("#peakItemTab").bootstrapTable({
                                     method : 'get',
                                     url:'impowerPeakItemSelect',
@@ -94,9 +96,8 @@
                                     pageSize : 5,//单页记录数
                                     pageList : [5, 10, 20, 30, 40, 50 ],//可选择单页记录数
                                     queryParams: {
-                                        SampleName: rowData.SampleName,
-                                        SampleBottle: rowData.SampleBottle,
-                                        Sampling: rowData.Sampling
+                                        projectName: projectName,
+                                        ResultID: rowData.ResultID
                                     },
                                     columns: [{
                                         field: 'Name',
@@ -149,11 +150,7 @@
                         myChart.hideLoading();
                         myChart.setOption(option = {
                             tooltip: {
-                                trigger: 'item',
-                                formatter : function (params) {
-                                    console.log(params)
-                                    return
-                                 }
+                                trigger: 'axis'
                             },
                             toolbox: {
                                 feature: {
@@ -168,21 +165,23 @@
                                 start : 0
                             },
                             xAxis: {
-                                type : 'value',
-                                splitNumber:10
+                                type : 'category',
+                                name : '分钟',
+                                min:0,
+                                interval:1, //横轴间隔
+                                data:data.X
                             },
                             yAxis: {
                                 type : 'value',
+                                name : 'AU',
                                 axisLabel: {
-                                    formatter: '{value} AU'
+                                    formatter: '{value}'
                                 }
                             },
                             series: [{
                                 name: "AU",
                                 type: 'line',
-                                showAllSymbol: true,
-                                smooth:true,
-                                data: data.x
+                                data: data.Y
                             }]
                         });
                         myChart.setOption(option);
