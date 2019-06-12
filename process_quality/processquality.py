@@ -568,7 +568,6 @@ def impowerIniDataSelect():
             list2 = []
             if re[2] == 'OK':
                 ch = re[0].split("\n")
-                print(ch)
                 for i in range(0,len(ch)):
                     print(ch[i])
                     if i > 2:
@@ -587,5 +586,5 @@ def impowerIniDataSelect():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "/impowerPeakItemSelect报错Error：" + str(e), current_user.Name)
-            return json.dumps("impowerPeakItemSelect查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+            insertSyslog("error", "/impowerIniDataSelect报错Error：" + str(e), current_user.Name)
+            return json.dumps("impowerIniDataSelect查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
