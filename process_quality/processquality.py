@@ -411,12 +411,11 @@ class NH_Interface(ServiceBase):
             dic.append(appendStr(i))
         return json.dumps(dic)
 
-wsdl_url = "http://192.168.200.70:8088/?wsdl"
 def say_hello_test(url,name):
     imp = Import('http://www.w3.org/2001/XMLSchema', location = 'http://www.w3.org/2001/XMLSchema.xsd')
     imp.filter.add('http://WebXml.com.cn/')
     doctor = ImportDoctor(imp)
-    client = Client('http://192.168.200.70:8088/?wsdl', doctor = doctor)  # 创建一个webservice接口对象
+    client = Client(Model.Global.WMSurl, doctor = doctor)  # 创建一个webservice接口对象
     print("aa")
     re = client.service.revice() # 调用这个接口下的getMobileCodeInfo方法，并传入参数
     print(re)
@@ -425,7 +424,7 @@ def say_hello_test(url,name):
 @Process.route('/impowerSpage')
 def impowerSpage():
     return render_template('impowerSpage.html')
-URL = 'http://192.168.100.103:9100/?wsdl'
+
 @Process.route('/impowerSelect', methods=['POST', 'GET'])
 def impowerSelect():
     if request.method == 'GET':
@@ -433,7 +432,7 @@ def impowerSelect():
             imp = Import('http://www.w3.org/2001/XMLSchema', location='http://www.w3.org/2001/XMLSchema.xsd')
             imp.filter.add('http://WebXml.com.cn/')
             doctor = ImportDoctor(imp)
-            client = Client(URL, doctor=doctor)
+            client = Client(Model.Global.EmpowerURL, doctor=doctor)
             userzj = db_session.query(User).filter(User.Name == "tly042").first()
             re = client.service.GetAllEmpowerProject(userzj.Name, userzj.Password)
             if re[2] == 'OK':
@@ -469,7 +468,7 @@ def impowerSelectData():
             imp = Import('http://www.w3.org/2001/XMLSchema', location='http://www.w3.org/2001/XMLSchema.xsd')
             imp.filter.add('http://WebXml.com.cn/')
             doctor = ImportDoctor(imp)
-            client = Client(URL, doctor=doctor)  # 创建一个webservice接口对象
+            client = Client(Model.Global.EmpowerURL, doctor=doctor)  # 创建一个webservice接口对象
             userzj = db_session.query(User).filter(User.Name == "tly042").first()
             re = client.service.GetEmpowerProjectItem(userzj.Name, userzj.Password, projectName, "*")
             if re[2] == 'OK':
@@ -498,7 +497,7 @@ def impowerSelectData():
                 newdatadir = datadir.sort(key=lambda ImpowerInterface: ImpowerInterface.ResultID, reverse=True)
                 print(newdatadir)
                 jsonoclass = json.dumps(newdatadir, cls=AlchemyEncoder, ensure_ascii=False)
-                return '{"total"' + ":" + str(len(orgs)) + ',"rows"' + ":\n" + jsonoclass + "}"
+                return jsonoclass
             else:
                 return json.dumps(re[1], cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
@@ -517,9 +516,50 @@ def impowerPeakItemSelect():
             imp = Import('http://www.w3.org/2001/XMLSchema', location='http://www.w3.org/2001/XMLSchema.xsd')
             imp.filter.add('http://WebXml.com.cn/')
             doctor = ImportDoctor(imp)
-            client = Client(URL, doctor=doctor)  # 创建一个webservice接口对象
+            client = Client(Model.Global.EmpowerURL, doctor=doctor)  # 创建一个webservice接口对象
             userzj = db_session.query(User).filter(User.Name == "tly042").first()
             re = client.service.GetEmpowerPeakItem(userzj.Name, userzj.Password, SampleName, SampleBottle, Sampling)
+            if re[2] == 'OK':
+                orgs = re[0].strip().split(";")
+                datadir = []
+                a = 0
+                for i in orgs:
+                    igs = i.split(",")
+                    if len(igs) == 5 and a > 0:
+                        imp = EmpowerPeakItem()
+                        imp.ID = a
+                        imp.Name = igs[0]
+                        imp.RetentionTime = igs[1]
+                        imp.Area = igs[2]
+                        imp.PercentileArea = igs[3]
+                        imp.Height = igs[4]
+                        datadir.append(imp)
+                        a = a + 1
+                    else:
+                        a = a + 1
+                        continue
+                newdatadir = datadir.sort(key=lambda ImpowerInterface: ImpowerInterface.ResultID, reverse=True)
+                jsonoclass = json.dumps(newdatadir, cls=AlchemyEncoder, ensure_ascii=False)
+                return jsonoclass
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "/impowerPeakItemSelect报错Error：" + str(e), current_user.Name)
+            return json.dumps("impowerPeakItemSelect查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+@Process.route('/impowerIniDataSelect', methods=['POST', 'GET'])
+def impowerIniDataSelect():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            SampleName = data.get("SampleName")
+            SampleBottle = data.get("SampleBottle")
+            Sampling = data.get("Sampling")
+            imp = Import('http://www.w3.org/2001/XMLSchema', location='http://www.w3.org/2001/XMLSchema.xsd')
+            imp.filter.add('http://WebXml.com.cn/')
+            doctor = ImportDoctor(imp)
+            client = Client(Model.Global.EmpowerURL, doctor=doctor)  # 创建一个webservice接口对象
+            userzj = db_session.query(User).filter(User.Name == "tly042").first()
+            re = client.service.GetEmpowerIniData(userzj.Name, userzj.Password, SampleName, SampleBottle, Sampling)
             if re[2] == 'OK':
                 orgs = re[0].strip().split(";")
                 datadir = []
@@ -545,5 +585,5 @@ def impowerPeakItemSelect():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "/impowerSelectData报错Error：" + str(e), current_user.Name)
-            return json.dumps("impowerSelectData查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+            insertSyslog("error", "/impowerPeakItemSelect报错Error：" + str(e), current_user.Name)
+            return json.dumps("impowerPeakItemSelect查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
