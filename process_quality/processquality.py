@@ -519,7 +519,6 @@ def impowerPeakItemSelect():
             userzj = db_session.query(User).filter(User.Name == "tly042").first()
             re = client.service.GetEmpowerPeakItem(userzj.Name, userzj.Password, projectName, "结果ID", ResultID)
             datadir = []
-            newdatadir = []
             if re[2] == 'OK':
                 orgs = re[0].strip().split(";")
                 a = 0
@@ -538,10 +537,9 @@ def impowerPeakItemSelect():
                     else:
                         a = a + 1
                         continue
-                newdatadir = sorted(datadir, key=lambda student: student[8], reverse=True)
             else:
-                newdatadir = datadir.append(re[1])
-            jsonoclass = json.dumps(newdatadir, cls=AlchemyEncoder, ensure_ascii=False)
+                datadir = datadir.append(re[1])
+            jsonoclass = json.dumps(datadir, cls=AlchemyEncoder, ensure_ascii=False)
             return jsonoclass
         except Exception as e:
             print(e)
