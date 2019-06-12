@@ -583,7 +583,8 @@ def impowerIniDataSelect():
                         continue
             dir["X"] = list1
             dir["Y"] = list2
-            return json.dumps(dir)
+            jsonobject = json.dumps(dir, cls=AlchemyEncoder, ensure_ascii=False)
+            return jsonobject
         except Exception as e:
             print(e)
             logger.error(e)
