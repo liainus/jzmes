@@ -495,7 +495,9 @@ def impowerSelectData():
                     else:
                         a = a + 1
                         continue
-                jsonoclass = json.dumps(datadir, cls=AlchemyEncoder, ensure_ascii=False)
+                newdatadir = datadir.sort(key=lambda ImpowerInterface: ImpowerInterface.ResultID, reverse=True)
+                print(newdatadir)
+                jsonoclass = json.dumps(newdatadir, cls=AlchemyEncoder, ensure_ascii=False)
                 return '{"total"' + ":" + str(len(orgs)) + ',"rows"' + ":\n" + jsonoclass + "}"
             else:
                 return json.dumps(re[1], cls=AlchemyEncoder, ensure_ascii=False)
