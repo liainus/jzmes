@@ -1520,6 +1520,27 @@ class ImpowerInterface(Base):
     # 结果ID:
     ResultID = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
 
+# 与impower接口
+class EmpowerPeakItem(Base):
+    __tablename__ = 'EmpowerPeakItem'
+    # id:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+    # 名称:
+    Name = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 保留时间:
+    RetentionTime = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 面积:
+    Area = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # %面积:
+    PercentileArea = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 高度
+    Height = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
 # 生成表单的执行语句
 Base.metadata.create_all(engine)
 

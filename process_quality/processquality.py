@@ -27,7 +27,7 @@ from Model.system import Role, Organization, User, Menu, Role_Menu, BatchMaterie
 from sqlalchemy import create_engine, Column, ForeignKey, Table, Integer, String, and_, or_, desc,extract
 from io import StringIO
 import calendar
-from Model.system import CenterCost, ERPproductcode_prname, SchedulingStock, ProcessQualityPDF, ProcessQuality, ImpowerInterface
+from Model.system import CenterCost, ERPproductcode_prname, SchedulingStock, ProcessQualityPDF, ProcessQuality, ImpowerInterface, EmpowerPeakItem
 from tools.common import logger,insertSyslog,insert,delete,update,select
 import os
 import openpyxl
@@ -519,32 +519,29 @@ def impowerPeakItemSelect():
             doctor = ImportDoctor(imp)
             client = Client(URL, doctor=doctor)  # 创建一个webservice接口对象
             userzj = db_session.query(User).filter(User.Name == "tly042").first()
-            re = client.service.GetEmpowerPeakItemTest(userzj.Name, userzj.Password, SampleName, SampleBottle, Sampling)#userzj.Name, userzj.Password, projectName, ConditonFiled, ConditionValue
-            print(re)
-            orgs = re.strip().split(";")
-            datadir = []
-            data = [{"total":len(orgs),"rows":datadir}]
-            a = 0
-            for i in orgs:
-                igs = i.split(",")
-                if len(igs) == 9 and a > 0:
-                    imp = ImpowerInterface()
-                    imp.ID = a
-                    imp.SampleName = igs[0]
-                    imp.SampleBottle = igs[1]
-                    imp.Sampling = igs[2]
-                    imp.SampleType = igs[3]
-                    imp.ProcessingChannel = igs[4]
-                    imp.CollectionDate = igs[5]
-                    imp.OperationDate = igs[6]
-                    imp.ProcessingMethod = igs[7]
-                    imp.ResultID = igs[8]
-                    datadir.append(imp)
-                    a = a + 1
-                else:
-                    a = a + 1
-                    continue
-            return json.dumps(data, cls=AlchemyEncoder, ensure_ascii=False)
+            re = client.service.GetEmpowerPeakItem(userzj.Name, userzj.Password, SampleName, SampleBottle, Sampling)
+            if re[2] == 'OK':
+                orgs = re[0].strip().split(";")
+                datadir = []
+                a = 0
+                for i in orgs:
+                    igs = i.split(",")
+                    if len(igs) == 5 and a > 0:
+                        imp = EmpowerPeakItem()
+                        imp.ID = a
+                        imp.Name = igs[0]
+                        imp.RetentionTime = igs[1]
+                        imp.Area = igs[2]
+                        imp.PercentileArea = igs[3]
+                        imp.Height = igs[4]
+                        datadir.append(imp)
+                        a = a + 1
+                    else:
+                        a = a + 1
+                        continue
+                newdatadir = datadir.sort(key=lambda ImpowerInterface: ImpowerInterface.ResultID, reverse=True)
+                jsonoclass = json.dumps(newdatadir, cls=AlchemyEncoder, ensure_ascii=False)
+                return '{"total"' + ":" + str(len(orgs)) + ',"rows"' + ":\n" + jsonoclass + "}"
         except Exception as e:
             print(e)
             logger.error(e)
