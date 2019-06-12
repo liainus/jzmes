@@ -83,11 +83,10 @@
                                 title: '结果ID'
                             }],
                             onCheck:function(rowData,rowIndex){
-                                getNewData(projectName,rowData.SampleName,rowData.SampleBottle,rowData.Sampling)
-
+                                //峰值
                                 $("#peakItemTab").bootstrapTable({
                                     method : 'get',
-                                    url:'/impowerSelectData',
+                                    url:'impowerPeakItemSelect',
                                     striped : true,
                                     pageNumber : 1, //初始化加载第一页
                                     pagination : true,//是否分页
@@ -119,13 +118,21 @@
                                         console.log(data)
                                     }
                                 })
+                                //图谱
+                                getNewData(projectName,rowData.SampleName,rowData.SampleBottle,rowData.Sampling)
                             }
                          })
                     }
                 }
             })
             function getNewData(projectName,SampleName,SampleBottle,Sampling){
-                var myChart = echarts.init(document.getElementById("chart"))
+                var myDiv = document.getElementById("chart")
+                var myChartContainer = function () {
+                    var width = $("#chartBox").width()
+                    myDiv.style.width = width +'px';
+                };
+                myChartContainer();
+                var myChart = echarts.init(myDiv)
                 myChart.showLoading();
                 $.ajax({
                     url: '/impowerIniDataSelect',
@@ -181,6 +188,10 @@
                         myChart.setOption(option);
                     }
                 })
+                parent.$(window).resize(function(){
+                    myChartContainer();
+                    myChart.resize();
+                })
             }
         })
     </script>
@@ -205,10 +216,10 @@
         </div>
 	</div>
     <div class="easyui-layout" style="width:100%;height:350px;margin-top: 15px;">
-        <div data-options="region:'center',title:'峰值图'">
-            <div id="chart" style="width: 960px; height: 285px; margin: 10px"></div>
+        <div data-options="region:'center',title:'图谱'" style="width: 100%;" id="chartBox">
+            <div id="chart" style="width: 960px; height: 285px;"></div>
         </div>
-        <div data-options="region:'east',split:true" title="峰值数据" style="width:25%">
+        <div data-options="region:'east',split:true" title="峰值" style="width:25%">
             <table class="table table-bordered" id="peakItemTab"></table>
         </div>
 	</div>
