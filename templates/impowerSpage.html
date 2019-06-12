@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title>Empower</title>
     <link href="../static/css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/css/bootstrap-table.min.css">
 	<link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
 	<link href="../static/css/basic_info.css" rel="stylesheet">
 	<link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
@@ -12,6 +14,8 @@
     <link href="../static/css/dialogpanel.css" type="text/css" rel="stylesheet">
     <link href="../static/css/datagrid_customer.css" type="text/css" rel="stylesheet">
     <script type="text/javascript" src="../static/js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootstrap-table.min.js"></script>
     <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
     <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
     <script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
@@ -27,16 +31,66 @@
                 onClick: function (node) {
                     if($('#LeftTree').tree('isLeaf',node.target)){
                         var parentText = $('#LeftTree').tree('getParent', node.target)
-                        $("#tab").datagrid({
+                        {#$.ajax({#}
+                        {#    url: '/impowerSelectData',#}
+                        {#    type: 'get',#}
+                        {#    data: {#}
+                        {#        projectName: parentText.text + '\\' + node.text#}
+                        {#    },#}
+                        {#    success: function (data) {#}
+                        {#        console.log(data)#}
+                        {#    }#}
+                        {# })#}
+                        $("#tab").bootstrapTable({
+                            method : 'get',
                             url:'/impowerSelectData',
+                            striped : true,
+                            pageNumber : 1, //初始化加载第一页
+                            pagination : true,//是否分页
+                            sidePagination : 'client',//server:服务器端分页|client：前端分页
+                            pageSize : 5,//单页记录数
+                            pageList : [ 5, 10, 20, 30 ],//可选择单页记录数
                             queryParams: {
                                 projectName: parentText.text + '\\' + node.text
+                            },
+                            columns: [{
+                                checkbox: true
+                            },{
+                                field: 'SampleName',
+                                title: '样品名称'
+                            }, {
+                                field: 'SampleBottle',
+                                title: '样品瓶'
+                            }, {
+                                field: 'Sampling',
+                                title: '进样'
+                            }, {
+                                field: 'SampleType',
+                                title: '样品类型'
+                            }, {
+                                field: 'ProcessingChannel',
+                                title: '处理通道说明'
+                            }, {
+                                field: 'CollectionDate',
+                                title: '采集日期'
+                            }, {
+                                field: 'OperationDate',
+                                title: '处理日期'
+                            }, {
+                                field: 'ProcessingMethod',
+                                title: '处理方法'
+                            }, {
+                                field: 'ResultID',
+                                title: '结果ID'
+                            }],
+                            onLoadSuccess:function(data){
+                                console.log(data)
                             },
                             onCheck:function(rowIndex,rowData){
                                 console.log(rowData.SampleName + "-" + rowData.SampleBottle + "-" + rowData.Sampling)
                                 //getNewData(rowData.SampleName,rowData.SampleBottle,rowData.Sampling)
                             }
-                        })
+                         })
                     }
                 }
             })
@@ -114,34 +168,12 @@
 <body style="padding: 15px;">
     <div class="easyui-layout" style="width:100%;height:350px;">
         <div data-options="region:'west',split:true" title="项目" style="width:25%">
-            <div class="left-tree">
+            <div class="left-tree" style="padding: 15px;">
                 <ul id="LeftTree" class="easyui-tree"></ul>
             </div>
         </div>
         <div data-options="region:'center',title:'结果'">
-            <table class="easyui-datagrid" id="tab" title="" style="width:100%;" data-options="
-                loadMsg:false,
-                rownumbers:true,
-                singleSelect:true,
-                autoRowHeight:false,
-                pagination:true,
-                pageSize:10,
-                method:'get'">
-                <thead>
-                    <tr>
-                        <th field="ck" checkbox="true"></th>
-                        <th data-options="field:'SampleName',width:150,align:'center'">样品名称</th>
-                        <th data-options="field:'SampleBottle',width:150,align:'center'">样品瓶</th>
-                        <th data-options="field:'Sampling',width:150,align:'center'">进样</th>
-                        <th data-options="field:'SampleType',width:150,align:'center'">样品类型</th>
-                        <th data-options="field:'ProcessingChannel',width:150,align:'center'">处理通道说明</th>
-                        <th data-options="field:'CollectionDate',width:200,align:'center'">采集日期</th>
-                        <th data-options="field:'OperationDate',width:200,align:'center'">处理日期</th>
-                        <th data-options="field:'ProcessingMethod',width:150,align:'center'">处理方法</th>
-                        <th data-options="field:'ResultID',width:150,align:'center'">结果ID</th>
-                    </tr>
-                </thead>
-            </table>
+            <table class="table table-bordered" id="tab"></table>
         </div>
 	</div>
     <div class="easyui-layout" style="width:100%;height:350px;">
@@ -150,17 +182,17 @@
         </div>
         <div data-options="region:'east',split:true" title="峰值数据" style="width:25%">
             <table class="easyui-datagrid" id="tab" title="" style="width:100%;" data-options="
-                loadMsg:false,
+                striped:true,
                 rownumbers:true,
-                singleSelect:true,
                 autoRowHeight:false,
-                pagination:true,
-                pageSize:10,
                 method:'get'">
                 <thead>
                     <tr>
-                        <th field="ck" checkbox="true"></th>
-                        <th data-options="field:'SampleName',width:150,align:'center'">样品名称</th>
+                        <th data-options="field:'Name',width:150,align:'center'">名称</th>
+                        <th data-options="field:'RetentionTime',width:150,align:'center'">保留时间</th>
+                        <th data-options="field:'Area',width:150,align:'center'">面积</th>
+                        <th data-options="field:'PercentileArea',width:150,align:'center'">%面积</th>
+                        <th data-options="field:'Height',width:150,align:'center'">高度</th>
                     </tr>
                 </thead>
             </table>
