@@ -519,9 +519,10 @@ def impowerPeakItemSelect():
             client = Client(Model.Global.EmpowerURL, doctor=doctor)  # 创建一个webservice接口对象
             userzj = db_session.query(User).filter(User.Name == "tly042").first()
             re = client.service.GetEmpowerPeakItem(userzj.Name, userzj.Password, SampleName, SampleBottle, Sampling)
+            datadir = []
+            newdatadir = []
             if re[2] == 'OK':
                 orgs = re[0].strip().split(";")
-                datadir = []
                 a = 0
                 for i in orgs:
                     igs = i.split(",")
@@ -539,8 +540,10 @@ def impowerPeakItemSelect():
                         a = a + 1
                         continue
                 newdatadir = sorted(datadir, key=lambda student: student[8], reverse=True)
-                jsonoclass = json.dumps(newdatadir, cls=AlchemyEncoder, ensure_ascii=False)
-                return jsonoclass
+            else:
+                newdatadir = datadir.append(re[1])
+            jsonoclass = json.dumps(newdatadir, cls=AlchemyEncoder, ensure_ascii=False)
+            return jsonoclass
         except Exception as e:
             print(e)
             logger.error(e)
@@ -551,6 +554,7 @@ def impowerIniDataSelect():
     if request.method == 'GET':
         data = request.values
         try:
+            projectName = data.get("projectName")
             SampleName = data.get("SampleName")
             SampleBottle = data.get("SampleBottle")
             Sampling = data.get("Sampling")
@@ -558,30 +562,28 @@ def impowerIniDataSelect():
             imp.filter.add('http://WebXml.com.cn/')
             doctor = ImportDoctor(imp)
             client = Client(Model.Global.EmpowerURL, doctor=doctor)  # 创建一个webservice接口对象
-            userzj = db_session.query(User).filter(User.Name == "tly042").first()
-            re = client.service.GetEmpowerIniData(userzj.Name, userzj.Password, SampleName, SampleBottle, Sampling)
+            userzj = db_session.query(User).filter(User.Name == "tly042").first()#userzj.Name, userzj.Password, "成品组\\2017健胃消食片浸膏粉橙皮苷含量", "样品名称", "17116003-2", "样品瓶", "	67", "进样", "2"
+            re = client.service.GetEmpowerIniData(userzj.Name, userzj.Password, projectName, "样品名称", SampleName, "样品瓶", SampleBottle, "进样", Sampling)
+            dir = {}
+            list1 = []
+            list2 = []
             if re[2] == 'OK':
-                orgs = re[0].strip().split(";")
-                datadir = []
-                a = 0
-                for i in orgs:
-                    igs = i.split(",")
-                    if len(igs) == 5 and a > 0:
-                        imp = EmpowerPeakItem()
-                        imp.ID = a
-                        imp.Name = igs[0]
-                        imp.RetentionTime = igs[1]
-                        imp.Area = igs[2]
-                        imp.PercentileArea = igs[3]
-                        imp.Height = igs[4]
-                        datadir.append(imp)
-                        a = a + 1
+                ch = re[0].split("\n")
+                print(ch)
+                for i in range(0,len(ch)):
+                    print(ch[i])
+                    if i > 2:
+                        if ch[i] == "":
+                            continue
+                        else:
+                            chs = ch[i].split("\t")
+                            list1.append(chs[0])
+                            list2.append(chs[1])
                     else:
-                        a = a + 1
                         continue
-                newdatadir = datadir.sort(key=lambda ImpowerInterface: ImpowerInterface.ResultID, reverse=True)
-                jsonoclass = json.dumps(newdatadir, cls=AlchemyEncoder, ensure_ascii=False)
-                return '{"total"' + ":" + str(len(orgs)) + ',"rows"' + ":\n" + jsonoclass + "}"
+            dir["X"] = list1
+            dir["Y"] = list2
+            return json.dumps(dir)
         except Exception as e:
             print(e)
             logger.error(e)
