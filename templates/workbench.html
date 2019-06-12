@@ -154,61 +154,15 @@
 {#                            </div>#}
 {#                        </div>#}
                     </div>
-                    <div id="compareBox" style="width: 100%;width: 100%;margin-bottom:20px;padding: 10px;background: #fff;border-radius: 5px;">
-                        <div id="CompareMain" style="width: 760px; height: 360px;"></div>
+                    <div class="col-md-12" style="margin-bottom:20px;padding: 10px;background: #fff;border-radius: 5px;">
+                        <div id="compareBox" style="width: 100%;">
+                            <div id="CompareMain" style="width: 760px; height: 360px;"></div>
+                        </div>
                     </div>
-                    <div class="col-md-12" style="margin-bottom: 20px;">
+                    <div class="col-md-12">
                         <div class="row">
-                            <div class="col-md-8 col-sm-8" style="padding-left: 0">
-                                <div class="" style="background: #fff;height: 130px;margin-bottom: 15px;border-radius: 5px;padding: 15px 0;">
-                                    <div class="col-md-9">
-                                        <p style="margin-bottom: 40px;">生产数据</p>
-                                        <form class="form-inline">
-                                            <div class="form-group" style="white-space: nowrap;">
-                                                <div class="input-group input-append date col-sm-4">
-                                                    <input type="text" value="" id="start_date" class="form-control" readonly>
-                                                    <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
-                                                </div>
-                                                <div class="input-group input-append date col-sm-4">
-                                                    <input type="text" value="" id="over_date" class="form-control" readonly>
-                                                    <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
-                                                </div>
-                                                <button type="button" class="btn btn-primary">查询</button>
-                                                <button type="button" class="btn btn-primary">重置</button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <p class="text-right" style="margin-top: 50px;color: #00bbee;font-size: 22px;">0</p>
-                                    </div>
-                                </div>
-                                <div class="" style="background: #fff;height: 130px;border-radius: 5px;padding: 15px 0;">
-                                    <div class="col-md-9">
-                                        <p style="margin-bottom: 40px;">生产成本</p>
-                                        <form class="form-inline">
-                                            <div class="form-group" style="white-space: nowrap;">
-                                                <div class="input-group input-append date col-sm-4">
-                                                    <input type="text" value="" id="" class="form-control" readonly>
-                                                    <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
-                                                </div>
-                                                <div class="input-group input-append date col-sm-4">
-                                                    <input type="text" value="" id="" class="form-control" readonly>
-                                                    <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
-                                                </div>
-                                                <button type="button" class="btn btn-primary">查询</button>
-                                                <button type="button" class="btn btn-primary">重置</button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <p class="text-right" style="margin-top: 50px;color: #00bbee;font-size: 22px;">0</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4 col-sm-4" style="background:#fff;height: 275px;border-radius: 5px;padding: 15px;">
-                                <div id="pieBox" style="width: 100%;height: 100%;">
-                                    <div id="pie" style="width: 250px;height: 250px;"></div>
-                                </div>
+                            <div class="" style="background: #fff;height: 276px;border-radius: 5px;">
+
                             </div>
                         </div>
                     </div>
@@ -462,88 +416,6 @@
             parent.$(window).resize(function(){
                 myChartContainer();
                 myChart.resize();
-            })
-
-            //饼图
-            var myPie = document.getElementById("pie")
-            var myPieChartContainer = function () {
-                var width = $("#pieBox").width()
-                myPie.style.width = width +'px';
-            };
-            myPieChartContainer();
-            myPieChart = echarts.init(myPie)
-            myPieChart.hideLoading();
-            myPieChart.setOption(option = {
-                tooltip : {
-                    trigger: 'item',
-                    formatter: "{a} <br/>{b} : {c} ({d}%)"
-                },
-                legend: {
-                    orient : 'vertical',
-                    x : 'left',
-                    data:['something1','something2','something3','something4','something5']
-                },
-                toolbox: {
-                    show : true,
-                    feature : {
-                        mark : {show: true},
-                        dataView : {show: true, readOnly: false},
-                        magicType : {
-                            show: true,
-                            type: ['pie', 'funnel'],
-                            option: {
-                                funnel: {
-                                    x: '25%',
-                                    width: '50%',
-                                    funnelAlign: 'center',
-                                    max: 1548
-                                }
-                            }
-                        },
-                        restore : {show: true},
-                        saveAsImage : {show: true}
-                    }
-                },
-                calculable : true,
-                series : [
-                    {
-                        name:'something',
-                        type:'pie',
-                        radius : ['50%', '70%'],
-                        itemStyle : {
-                            normal : {
-                                label : {
-                                    show : false
-                                },
-                                labelLine : {
-                                    show : false
-                                }
-                            },
-                            emphasis : {
-                                label : {
-                                    show : true,
-                                    position : 'center',
-                                    textStyle : {
-                                        fontSize : '14',
-                                        fontWeight : 'bold'
-                                    }
-                                }
-                            }
-                        },
-                        data:[
-                            {value:335, name:'something1'},
-                            {value:310, name:'something2'},
-                            {value:234, name:'something3'},
-                            {value:135, name:'something4'},
-                            {value:1548, name:'somethin5'}
-                        ]
-                    }
-                ]
-            });
-            myPieChart.setOption(option);
-            parent.$(window).resize(function(){
-                myPieChartContainer();
-                myPieChart.resize();
             })
 
             //日历排产

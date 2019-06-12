@@ -13,14 +13,17 @@
     <link href="../static/css/datagridpanel_customer.css" rel="stylesheet">
     <link href="../static/css/dialogpanel.css" type="text/css" rel="stylesheet">
     <link href="../static/css/datagrid_customer.css" type="text/css" rel="stylesheet">
+    <script type="text/javascript" src="../static/js/echarts.common.min.js"></script>
     <script type="text/javascript" src="../static/js/jquery-3.3.1.min.js"></script>
     <script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="../static/js/bootstrap-table.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootstrap-table-zh-CN.min.js"></script>
     <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
     <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
     <script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
     <script>
         $(function(){
+            $("#loadingModal").modal('show');
             $('#LeftTree').tree({
                 url:'/impowerSelect',
                 method: 'get',
@@ -28,19 +31,13 @@
                 loadFilter:function(data){
                     return data
                 },
+                onLoadSuccess:function(data){
+                    $("#loadingModal").modal('hide');
+                },
                 onClick: function (node) {
                     if($('#LeftTree').tree('isLeaf',node.target)){
                         var parentText = $('#LeftTree').tree('getParent', node.target)
-                        {#$.ajax({#}
-                        {#    url: '/impowerSelectData',#}
-                        {#    type: 'get',#}
-                        {#    data: {#}
-                        {#        projectName: parentText.text + '\\' + node.text#}
-                        {#    },#}
-                        {#    success: function (data) {#}
-                        {#        console.log(data)#}
-                        {#    }#}
-                        {# })#}
+                        var projectName = parentText.text + '\\' + node.text
                         $("#tab").bootstrapTable({
                             method : 'get',
                             url:'/impowerSelectData',
@@ -48,10 +45,12 @@
                             pageNumber : 1, //初始化加载第一页
                             pagination : true,//是否分页
                             sidePagination : 'client',//server:服务器端分页|client：前端分页
-                            pageSize : 5,//单页记录数
-                            pageList : [ 5, 10, 20, 30 ],//可选择单页记录数
+                            pageSize : 10,//单页记录数
+                            pageList : [10, 20, 30, 40, 50 ],//可选择单页记录数
+                            singleSelect:true, //单选
+                            clickToSelect: true, //点击行选中复选框
                             queryParams: {
-                                projectName: parentText.text + '\\' + node.text
+                                projectName: projectName
                             },
                             columns: [{
                                 checkbox: true
@@ -83,47 +82,71 @@
                                 field: 'ResultID',
                                 title: '结果ID'
                             }],
-                            onLoadSuccess:function(data){
-                                console.log(data)
-                            },
-                            onCheck:function(rowIndex,rowData){
-                                console.log(rowData.SampleName + "-" + rowData.SampleBottle + "-" + rowData.Sampling)
-                                //getNewData(rowData.SampleName,rowData.SampleBottle,rowData.Sampling)
+                            onCheck:function(rowData,rowIndex){
+                                getNewData(projectName,rowData.SampleName,rowData.SampleBottle,rowData.Sampling)
+
+                                $("#peakItemTab").bootstrapTable({
+                                    method : 'get',
+                                    url:'/impowerSelectData',
+                                    striped : true,
+                                    pageNumber : 1, //初始化加载第一页
+                                    pagination : true,//是否分页
+                                    sidePagination : 'client',//server:服务器端分页|client：前端分页
+                                    pageSize : 5,//单页记录数
+                                    pageList : [5, 10, 20, 30, 40, 50 ],//可选择单页记录数
+                                    queryParams: {
+                                        SampleName: rowData.SampleName,
+                                        SampleBottle: rowData.SampleBottle,
+                                        Sampling: rowData.Sampling
+                                    },
+                                    columns: [{
+                                        field: 'Name',
+                                        title: '名称'
+                                    }, {
+                                        field: 'RetentionTime',
+                                        title: '保留时间'
+                                    }, {
+                                        field: 'Area',
+                                        title: '面积'
+                                    }, {
+                                        field: 'PercentileArea',
+                                        title: '%面积'
+                                    }, {
+                                        field: 'Height',
+                                        title: '高度'
+                                    }],
+                                    onLoadSuccess:function(data){
+                                        console.log(data)
+                                    }
+                                })
                             }
                          })
                     }
                 }
             })
-            function getNewData(SampleName,SampleBottle,Sampling){
-                var myChart = echarts.init(document.getElementById("main"))
+            function getNewData(projectName,SampleName,SampleBottle,Sampling){
+                var myChart = echarts.init(document.getElementById("chart"))
                 myChart.showLoading();
                 $.ajax({
-                    url: '',
+                    url: '/impowerIniDataSelect',
                     type: 'get',
                     data: {
+                        projectName: projectName,
                         SampleName:SampleName,
                         SampleBottle:SampleBottle,
                         Sampling:Sampling
                     },
                     success: function (data) {
                         data = JSON.parse(data)
+                        console.log(data)
                         myChart.hideLoading();
                         myChart.setOption(option = {
                             tooltip: {
                                 trigger: 'item',
                                 formatter : function (params) {
-                                    var date = new Date(params.value[0]);
-                                    data = date.getFullYear() + '-'
-                                       + (date.getMonth() + 1) + '-'
-                                       + date.getDate() + ' '
-                                       + date.getHours() + ':'
-                                       + date.getMinutes();
-                                    return data + '<br/>'
-                                        + params.seriesName + ":" + params.value[1]
+                                    console.log(params)
+                                    return
                                  }
-                            },
-                            legend: {
-                                data: ["密度"]
                             },
                             toolbox: {
                                 feature: {
@@ -137,9 +160,6 @@
                                 show: true,
                                 start : 0
                             },
-                            grid: {
-                                y2: 80
-                            },
                             xAxis: {
                                 type : 'value',
                                 splitNumber:10
@@ -147,15 +167,15 @@
                             yAxis: {
                                 type : 'value',
                                 axisLabel: {
-                                    formatter: '{value}'
+                                    formatter: '{value} AU'
                                 }
                             },
                             series: [{
-                                name: "密度",
+                                name: "AU",
                                 type: 'line',
                                 showAllSymbol: true,
                                 smooth:true,
-                                data: data.MD
+                                data: data.x
                             }]
                         });
                         myChart.setOption(option);
@@ -166,7 +186,15 @@
     </script>
 </head>
 <body style="padding: 15px;">
-    <div class="easyui-layout" style="width:100%;height:350px;">
+    <div class="modal" id="loadingModal" data-backdrop="static" data-keyboard="false">
+        <div style="width: 200px;height:20px; z-index: 20000; position: absolute; text-align: center; left: 50%; top: 50%;margin-left:-100px;margin-top:-10px">
+            <div class="progress progress-striped active" style="margin-bottom: 0;">
+                <div class="progress-bar" style="width: 100%;"></div>
+            </div>
+            <h5>正在加载...</h5>
+        </div>
+    </div>
+    <div class="easyui-layout" style="width:100%;height:510px;">
         <div data-options="region:'west',split:true" title="项目" style="width:25%">
             <div class="left-tree" style="padding: 15px;">
                 <ul id="LeftTree" class="easyui-tree"></ul>
@@ -176,26 +204,12 @@
             <table class="table table-bordered" id="tab"></table>
         </div>
 	</div>
-    <div class="easyui-layout" style="width:100%;height:350px;">
+    <div class="easyui-layout" style="width:100%;height:350px;margin-top: 15px;">
         <div data-options="region:'center',title:'峰值图'">
-            <div id="chart" style="width: 960px; height: 300px; margin: 10px auto;"></div>
+            <div id="chart" style="width: 960px; height: 285px; margin: 10px"></div>
         </div>
         <div data-options="region:'east',split:true" title="峰值数据" style="width:25%">
-            <table class="easyui-datagrid" id="tab" title="" style="width:100%;" data-options="
-                striped:true,
-                rownumbers:true,
-                autoRowHeight:false,
-                method:'get'">
-                <thead>
-                    <tr>
-                        <th data-options="field:'Name',width:150,align:'center'">名称</th>
-                        <th data-options="field:'RetentionTime',width:150,align:'center'">保留时间</th>
-                        <th data-options="field:'Area',width:150,align:'center'">面积</th>
-                        <th data-options="field:'PercentileArea',width:150,align:'center'">%面积</th>
-                        <th data-options="field:'Height',width:150,align:'center'">高度</th>
-                    </tr>
-                </thead>
-            </table>
+            <table class="table table-bordered" id="peakItemTab"></table>
         </div>
 	</div>
 </body>
