@@ -118,7 +118,7 @@ def ERP_productplanSearch():
                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
                 total = ERP_session.query(product_plan).count()
-                oclass = ERP_session.query(product_plan).all()[inipage:endpage]
+                oclass = ERP_session.query(product_plan).order_by(desc("plan_period")).all()[inipage:endpage]
                 jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonpequipments = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
                 return jsonpequipments
@@ -205,7 +205,7 @@ def ERP_productplanSynchro():
             e.plan_quantity = str(count)
             e.product_unit = plan.product_unit
             e.meter_type = plan.meter_type
-            e.bill_code = plan.bill_codef
+            e.bill_code = plan.bill_code
             e.plan_type = plan.plan_type
             e.create_time = plan.create_time
             e.transform_time = plan.transform_time

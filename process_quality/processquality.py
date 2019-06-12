@@ -44,6 +44,7 @@ import suds
 from suds.client import Client
 from spyne import Application
 from suds.xsd.doctor import ImportDoctor, Import
+from operator import itemgetter, attrgetter
 
 engine = create_engine(Model.Global.GLOBAL_DATABASE_CONNECT_STRING, deprecate_large_types=True)
 Session = sessionmaker(bind=engine)
@@ -445,7 +446,6 @@ def impowerSelect():
                 for obj in orgs:
                     if "\\" in obj:
                         ch = obj.split("\\")
-                        print(ch[1])
                         listi.append({"id": i, "text": ch[1], "children": []})
                     else:
                         listi = []
@@ -471,9 +471,9 @@ def impowerSelectData():
             client = Client(Model.Global.EmpowerURL, doctor=doctor)  # 创建一个webservice接口对象
             userzj = db_session.query(User).filter(User.Name == "tly042").first()
             re = client.service.GetEmpowerProjectItem(userzj.Name, userzj.Password, projectName, "*")
+            datadir = []
             if re[2] == 'OK':
                 orgs = re[0].strip().split(";")
-                datadir = []
                 a = 0
                 for i in orgs:
                     igs = i.split(",")
@@ -494,8 +494,8 @@ def impowerSelectData():
                     else:
                         a = a + 1
                         continue
-                newdatadir = datadir.sort(key=lambda ImpowerInterface: ImpowerInterface.ResultID, reverse=True)
-                print(newdatadir)
+                s = sorted(datadir, key=attrgetter('ResultID'))
+                newdatadir = sorted(s, key=attrgetter('ResultID'), reverse=True)
                 jsonoclass = json.dumps(newdatadir, cls=AlchemyEncoder, ensure_ascii=False)
                 return jsonoclass
             else:
@@ -538,7 +538,7 @@ def impowerPeakItemSelect():
                     else:
                         a = a + 1
                         continue
-                newdatadir = datadir.sort(key=lambda ImpowerInterface: ImpowerInterface.ResultID, reverse=True)
+                newdatadir = sorted(datadir, key=lambda student: student[8], reverse=True)
                 jsonoclass = json.dumps(newdatadir, cls=AlchemyEncoder, ensure_ascii=False)
                 return jsonoclass
         except Exception as e:
