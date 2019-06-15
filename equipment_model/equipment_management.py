@@ -1937,3 +1937,29 @@ def Equipment_StateUpdate():
     if request.method == 'POST':
         data = request.values
         return update(Equipment, data)
+
+@equip.route('/EquipmentFailureRunXTSearch', methods=['GET', 'POST'])
+def EquipmentFailureRunXTSearch():
+    """
+    设备故障运行统计（系统采集）
+    :return:
+    """
+    if request.method == 'POST':
+        try:
+            # first、Getting parameters for front-end transmission
+            recv_data = request.values
+            if not recv_data:
+                return json.dumps("NO！", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+            dict_data = recv_data.to_dict()
+            brand = dict_data.get('brand')
+            unit = dict_data.get('unit')
+            select_time = dict_data.get('select_time')
+            interval = dict_data.get('interval')
+            # second、call the EquipmentRunRecordGet of methods to Obtain data
+            data = EquipmentRunRecordGet(unit, brand, select_time, interval=interval)
+            # third、return data to front end
+            return json.dumps(data, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "路由：/EquipmentFailureRunXTSearch，设备故障运行统计Error：" + str(e), current_user.Name)
