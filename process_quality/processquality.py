@@ -593,13 +593,11 @@ def EmpowerContentSelect():
     if request.method == 'GET':
         data = request.values
         try:
-            json_str = json.dumps(data.to_dict())
-            if len(json_str) > 10:
-                ResultID = data.get("ResultID ")
-                if not ResultID:
-                    return ""
-                Content = db_session.query(EmpowerContent).filter(EmpowerContent.ResultID == ResultID).first()
-                return json.dumps(Content, cls=AlchemyEncoder, ensure_ascii=False)
+            ResultID = data.get("ResultID")
+            if not ResultID:
+                return ""
+            Content = db_session.query(EmpowerContent).filter(EmpowerContent.ResultID == ResultID).first()
+            return json.dumps(Content, cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
             logger.error(e)
@@ -612,19 +610,22 @@ def EmpowerContentSelect():
 def EmpowerContentCostUpdate():
     if request.method == 'POST':
         data = request.values
+        ID = data.get("ID")
         Content = data.get("Content")
-        ResultID = data.get("ResultID ")
+        ResultID = data.get("ResultID")
         jour = EmpowerContentJournal()
         jour.OperationDate = datetime.datetime.now()
         jour.Other = ResultID
-        if not Content:
+        if not ID:
             jour.DetailedInformation = "用户"+current_user.Name+"增加含量"
             jour.Operation = "增加含量"
             db_session.add(jour)
+            db_session.commit()
             return insert(EmpowerContent, data)
         jour.DetailedInformation = "用户" + current_user.Name + "修改含量"
         jour.Operation = "修改含量"
         db_session.add(jour)
+        db_session.commit()
         return update(EmpowerContent, data)
 #操作日志查询
 @Process.route('/EmpowerContentJournalSelect', methods=['GET', 'POST'])
