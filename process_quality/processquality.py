@@ -27,7 +27,8 @@ from Model.system import Role, Organization, User, Menu, Role_Menu, BatchMaterie
 from sqlalchemy import create_engine, Column, ForeignKey, Table, Integer, String, and_, or_, desc,extract
 from io import StringIO
 import calendar
-from Model.system import CenterCost, ERPproductcode_prname, SchedulingStock, ProcessQualityPDF, ProcessQuality, ImpowerInterface, EmpowerPeakItem
+from Model.system import CenterCost, ERPproductcode_prname, SchedulingStock, ProcessQualityPDF, ProcessQuality, ImpowerInterface, EmpowerPeakItem,\
+    EmpowerContent, EmpowerContentJournal
 from tools.common import logger,insertSyslog,insert,delete,update,select
 import os
 import openpyxl
@@ -586,3 +587,66 @@ def impowerIniDataSelect():
             logger.error(e)
             insertSyslog("error", "/impowerIniDataSelect报错Error：" + str(e), current_user.Name)
             return json.dumps("impowerIniDataSelect查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+#含量查询
+@Process.route('/EmpowerContentSelect', methods=['GET', 'POST'])
+def EmpowerContentSelect():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                ResultID = data.get("ResultID ")
+                if not ResultID:
+                    return ""
+                Content = db_session.query(EmpowerContent).filter(EmpowerContent.ResultID == ResultID).first()
+                return json.dumps(Content, cls=AlchemyEncoder, ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "EmpowerContentSelect查询报错Error：" + str(e), current_user.Name)
+            return json.dumps("EmpowerContentSelect查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+
+#含量修改
+@Process.route('/EmpowerContentUpdate', methods=['GET', 'POST'])
+def EmpowerContentCostUpdate():
+    if request.method == 'POST':
+        data = request.values
+        Content = data.get("Content")
+        ResultID = data.get("ResultID ")
+        jour = EmpowerContentJournal()
+        jour.OperationDate = datetime.datetime.now()
+        jour.Other = ResultID
+        if not Content:
+            jour.DetailedInformation = "用户"+current_user.Name+"增加含量"
+            jour.Operation = "增加含量"
+            db_session.add(jour)
+            return insert(EmpowerContent, data)
+        jour.DetailedInformation = "用户" + current_user.Name + "修改含量"
+        jour.Operation = "修改含量"
+        db_session.add(jour)
+        return update(EmpowerContent, data)
+#操作日志查询
+@Process.route('/EmpowerContentJournalSelect', methods=['GET', 'POST'])
+def EmpowerContentJournalSelect():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                pages = int(data['page'])
+                rowsnumber = int(data['rows'])
+                inipage = (pages - 1) * rowsnumber + 0
+                endpage = (pages - 1) * rowsnumber + rowsnumber
+                ResultID = data["ResultID "]
+                if not ResultID:
+                    return ""
+                total = db_session.query(EquipmentManagementManua).count()
+                oclass = db_session.query(EmpowerContentJournal).filter(EmpowerContentJournal.ResultID == ResultID).order_by(desc("OperationDate")).all()[inipage:endpage]
+                jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
+                return '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "EmpowerContentJournalSelect查询报错Error：" + str(e), current_user.Name)
+            return json.dumps("EmpowerContentJournalSelect查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)

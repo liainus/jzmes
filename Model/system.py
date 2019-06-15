@@ -1541,6 +1541,37 @@ class EmpowerPeakItem(Base):
     # 高度
     Height = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
+# 与impower接口
+class EmpowerContent(Base):
+    __tablename__ = 'EmpowerContent'
+    # id:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+    # 结果ID:
+    ResultID = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 含量:
+    Content = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+# 与impower接口
+class EmpowerContentJournal(Base):
+    __tablename__ = 'EmpowerContentJournal'
+    # id:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+    # 操作:
+    Operation = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 详细信息:
+    DetailedInformation = Column(Unicode(80), primary_key=False, autoincrement=False, nullable=True)
+
+    # 操作日期:
+    OperationDate = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 其他:
+    Other = Column(Unicode(60), primary_key=False, autoincrement=False, nullable=True)
+
+
 # 生成表单的执行语句
 Base.metadata.create_all(engine)
 
