@@ -235,6 +235,7 @@
                     type: 'post',
                     data:{
                         ID:$("#contentID").val(),
+                        ResultID:ResultID,
                         Content:$("#contentIpt").val()
                     },
                     success: function (data) {
@@ -382,7 +383,7 @@
                     <div class="col-sm-8">
                         <label class="control-label">
                             <span id="contentText"></span>
-                            <input type="hidden" id="contentID">
+                            <input type="hidden" id="contentID" value="">
                             <a href="javascript:;" id="edit" style="margin-left: 15px;">编辑</a>
                         </label>
                     </div>
@@ -407,7 +408,7 @@
                         <div class="form-group">
                             <label for="" class="col-sm-2 control-label">含量</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" id="contentIpt" placeholder="">
+                                <input type="text" class="form-control" id="contentIpt">
                             </div>
                         </div>
                     </form>
