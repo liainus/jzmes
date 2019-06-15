@@ -101,6 +101,7 @@
     <script>
         $(function(){
             $("#loadingModal").modal('show');
+            var ResultID = "" //结果ID
             $('#LeftTree').tree({
                 url:'/impowerSelect',
                 method: 'get',
@@ -115,7 +116,11 @@
                     if($('#LeftTree').tree('isLeaf',node.target)){
                         $("#loadingModal").modal('show');
                         var parentText = $('#LeftTree').tree('getParent', node.target)
-                        var projectName = parentText.text + '\\' + node.text
+                        if(parentText != null){
+                            var projectName = parentText.text + '\\' + node.text
+                        }else{
+                            var projectName = node.text
+                        }
                         $("#tab").bootstrapTable("destroy")
                         $("#tab").bootstrapTable({
                             method : 'get',
@@ -162,6 +167,7 @@
                                 title: '结果ID'
                             }],
                             onCheck:function(rowData,rowIndex){
+                                ResultID = rowData.ResultID
                                 //峰值
                                 $("#peakItemTab").bootstrapTable("destroy")
                                 $("#peakItemTab").bootstrapTable({
@@ -175,7 +181,7 @@
                                     pageList : [5, 10, 20, 30, 40, 50 ],//可选择单页记录数
                                     queryParams: {
                                         projectName: projectName,
-                                        ResultID: rowData.ResultID
+                                        ResultID: ResultID
                                     },
                                     columns: [{
                                         field: 'Name',
@@ -194,6 +200,18 @@
                                         title: '高度'
                                     }]
                                 })
+                                $.ajax({
+                                    url: '/EmpowerContentSelect',
+                                    type: 'post',
+                                    data: {
+                                        ResultID: ResultID
+                                    },
+                                    success: function (data) {
+                                        console.log(data)
+                                        $("#contentID").val()
+                                        $("#contentText").html()
+                                    }
+                                })
                                 //图谱
                                 getNewData(projectName,rowData.SampleName,rowData.SampleBottle,rowData.Sampling)
                             },
@@ -203,6 +221,27 @@
                          })
                     }
                 }
+            })
+            //修改含量
+            $("#edit").on('click',function(){
+                if(ResultID != "") {
+                    $("#myModal").modal('show')
+                }
+            })
+            //保存含量
+            $("#save").on('click',function(){
+                $.ajax({
+                    url: '/EmpowerContentUpdate',
+                    type: 'post',
+                    data:{
+                        ID:$("#contentID").val(),
+                        Content:$("#contentIpt").val()
+                    },
+                    success: function (data) {
+                        $("#myModal").modal('hide')
+                        console.log(data)
+                    }
+                });
             })
             function getNewData(projectName,SampleName,SampleBottle,Sampling){
                 var myDiv = document.getElementById("chart")
@@ -337,8 +376,47 @@
         </div>
         <div data-options="region:'east',split:true" title="峰值" style="width:25%">
             <table class="table table-bordered" id="peakItemTab"></table>
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <label for="content" class="col-sm-4 control-label">含量：</label>
+                    <div class="col-sm-8">
+                        <label class="control-label">
+                            <span id="contentText"></span>
+                            <input type="hidden" id="contentID">
+                            <a href="javascript:;" id="edit" style="margin-left: 15px;">编辑</a>
+                        </label>
+                    </div>
+                </div>
+            </form>
         </div>
 	</div>
+    <div id="myModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        ×
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">
+                        编辑
+                    </h4>
+                </div>
+                <!-- dialog body -->
+                <div class="modal-body">
+                    <form class="form-horizontal" action="">
+                        <div class="form-group">
+                            <label for="" class="col-sm-2 control-label">含量</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="contentIpt" placeholder="">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <!-- dialog buttons -->
+                <div class="modal-footer"><button type="button" class="btn btn-primary" id="save">保存</button></div>
+            </div>
+        </div>
+    </div>
     <script>
         //监听div大小变化
         (function($, h, c) {
