@@ -473,7 +473,7 @@ def impowerSelectData():
             re = client.service.GetEmpowerProjectItem(userzj.Name, userzj.Password, projectName, "*")
             datadir = []
             if re[2] == 'OK':
-                orgs = re[0].strip().split(";")
+                orgs = re[0].strip().split("\n")
                 a = 0
                 for i in orgs:
                     igs = i.split(",")
