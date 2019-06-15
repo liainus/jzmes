@@ -1953,12 +1953,10 @@ def EquipmentFailureRunXTSearch():
             dict_data = recv_data.to_dict()
             brand = dict_data.get('brand')
             unit = dict_data.get('unit')
-            select_time = dict_data.get('select_time')
-            interval = dict_data.get('interval')
-            # second、call the EquipmentRunRecordGet of methods to Obtain data
-            data = EquipmentRunRecordGet(unit, brand, select_time, interval=interval)
-            # third、return data to front end
-            return json.dumps(data, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+            year = dict_data.get('year')
+            month = dict_data.get('month')
+            getMonthFirstDayAndLastDay(year,month)
+            return json.dumps("", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
             logger.error(e)
