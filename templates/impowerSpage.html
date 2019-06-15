@@ -207,9 +207,9 @@
                                         ResultID: ResultID
                                     },
                                     success: function (data) {
-                                        console.log(data)
-                                        $("#contentID").val()
-                                        $("#contentText").html()
+                                        data = JSON.parse(data)
+                                        $("#contentID").val(data.ID)
+                                        $("#contentText").html(data.Content)
                                     }
                                 })
                                 //图谱
@@ -240,7 +240,9 @@
                     },
                     success: function (data) {
                         $("#myModal").modal('hide')
-                        console.log(data)
+                        if(data != "OK"){
+                            alert("未知错误")
+                        }
                     }
                 });
             })
