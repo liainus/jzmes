@@ -15,6 +15,83 @@
     <link href="../static/css/datagrid_customer.css" type="text/css" rel="stylesheet">
     <script type="text/javascript" src="../static/js/echarts.common.min.js"></script>
     <script type="text/javascript" src="../static/js/jquery-3.3.1.min.js"></script>
+    <script>
+        //监听div大小变化
+        (function($, h, c) {
+            var a = $([]),
+            e = $.resize = $.extend($.resize, {}),
+            i,
+            k = "setTimeout",
+            j = "resize",
+            d = j + "-special-event",
+            b = "delay",
+            f = "throttleWindow";
+            e[b] = 250;
+            e[f] = true;
+            $.event.special[j] = {
+                setup: function() {
+                    if (!e[f] && this[k]) {
+                        return false;
+                    }
+                    var l = $(this);
+                    a = a.add(l);
+                    $.data(this, d, {
+                        w: l.width(),
+                        h: l.height()
+                    });
+                    if (a.length === 1) {
+                        g();
+                    }
+                },
+                teardown: function() {
+                    if (!e[f] && this[k]) {
+                        return false;
+                    }
+                    var l = $(this);
+                    a = a.not(l);
+                    l.removeData(d);
+                    if (!a.length) {
+                        clearTimeout(i);
+                    }
+                },
+                add: function(l) {
+                    if (!e[f] && this[k]) {
+                        return false;
+                    }
+                    var n;
+                    function m(s, o, p) {
+                        var q = $(this),
+                        r = $.data(this, d);
+                        r.w = o !== c ? o: q.width();
+                        r.h = p !== c ? p: q.height();
+                        n.apply(this, arguments);
+                    }
+                    if ($.isFunction(l)) {
+                        n = l;
+                        return m;
+                    } else {
+                        n = l.handler;
+                        l.handler = m;
+                    }
+                }
+            };
+            function g() {
+                i = h[k](function() {
+                    a.each(function() {
+                        var n = $(this),
+                        m = n.width(),
+                        l = n.height(),
+                        o = $.data(this, d);
+                        if (m !== o.w || l !== o.h) {
+                            n.trigger(j, [o.w = m, o.h = l]);
+                        }
+                    });
+                    g();
+                },
+                e[b]);
+            }
+        })(jQuery, this);
+    </script>
     <script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="../static/js/bootstrap-table.min.js"></script>
     <script type="text/javascript" src="../static/js/bootstrap-table-zh-CN.min.js"></script>
@@ -36,6 +113,7 @@
                 },
                 onClick: function (node) {
                     if($('#LeftTree').tree('isLeaf',node.target)){
+                        $("#loadingModal").modal('show');
                         var parentText = $('#LeftTree').tree('getParent', node.target)
                         var projectName = parentText.text + '\\' + node.text
                         $("#tab").bootstrapTable("destroy")
@@ -114,14 +192,14 @@
                                     }, {
                                         field: 'Height',
                                         title: '高度'
-                                    }],
-                                    onLoadSuccess:function(data){
-                                        console.log(data)
-                                    }
+                                    }]
                                 })
                                 //图谱
                                 getNewData(projectName,rowData.SampleName,rowData.SampleBottle,rowData.Sampling)
-                            }
+                            },
+                            onLoadSuccess:function(data){
+                                $("#loadingModal").modal('hide');
+                            },
                          })
                     }
                 }
@@ -146,7 +224,7 @@
                     },
                     success: function (data) {
                         data = JSON.parse(data)
-                        console.log(data)
+                        var tabData = $("#peakItemTab").bootstrapTable("getData")
                         myChart.hideLoading();
                         myChart.setOption(option = {
                             tooltip: {
@@ -168,8 +246,10 @@
                                 type : 'category',
                                 name : '分钟',
                                 min:0,
-                                interval:1, //横轴间隔
-                                data:data.X
+                                axisLabel : {
+                                    //rotate:"45"
+                                },
+                                data:data.X.map(Number)
                             },
                             yAxis: {
                                 type : 'value',
@@ -181,18 +261,55 @@
                             series: [{
                                 name: "AU",
                                 type: 'line',
+                                itemStyle:{
+                                    normal : {
+                                        lineStyle:{
+                                            color:'#333333'
+                                        }
+                                    }
+                                },
+                                markPoint: {
+                                    data: markPointData(data.X,tabData)
+                                },
                                 data: data.Y
                             }]
                         });
                         myChart.setOption(option);
                     }
                 })
-                parent.$(window).resize(function(){
+                $("#chartBox").resize(function(){
                     myChartContainer();
                     myChart.resize();
                 })
             }
         })
+        function findCloseNum(arr, num) {
+            var index = 0; // 保存最接近数值在数组中的索引
+            var d_value = Number.MAX_VALUE; // 保存差值绝对值，默认为最大数值
+            for (var i = 0; i < arr.length; i++) {
+                var new_d_value = Math.abs(arr[i] - num); // 新差值
+                if (new_d_value <= d_value) { // 如果新差值绝对值小于等于旧差值绝对值，保存新差值绝对值和索引
+                    if (new_d_value === d_value && arr[i] < arr[index]) { // 如果数组中两个数值跟目标数值差值一样，取大
+                        continue;
+                    }
+                    index = i;
+                    d_value = new_d_value;
+                }
+            }
+            return arr[index] // 返回最接近的数值
+        }
+        function markPointData(dataX,tabData){
+            var tabDataArr = []
+            for (var i = 0; i < tabData.length; i++) {
+                var obj = {}
+                obj.value = tabData[i].Name
+                obj.yAxis = tabData[i].Height / 1000000
+                obj.xAxis = parseFloat(tabData[i].RetentionTime)
+                obj.xAxis = String(findCloseNum(dataX.map(Number), obj.xAxis))
+                tabDataArr.push(obj)
+            }
+            return tabDataArr
+        }
     </script>
 </head>
 <body style="padding: 15px;">
@@ -214,13 +331,101 @@
             <table class="table table-bordered" id="tab"></table>
         </div>
 	</div>
-    <div class="easyui-layout" style="width:100%;height:350px;margin-top: 15px;">
+    <div class="easyui-layout" style="width:100%;height:500px;margin-top: 15px;">
         <div data-options="region:'center',title:'图谱'" style="width: 100%;" id="chartBox">
-            <div id="chart" style="width: 960px; height: 285px;"></div>
+            <div id="chart" style="width: 960px; height: 450px;"></div>
         </div>
         <div data-options="region:'east',split:true" title="峰值" style="width:25%">
             <table class="table table-bordered" id="peakItemTab"></table>
         </div>
 	</div>
+    <script>
+        //监听div大小变化
+        (function($, h, c) {
+            var a = $([]),
+            e = $.resize = $.extend($.resize, {}),
+            i,
+            k = "setTimeout",
+            j = "resize",
+            d = j + "-special-event",
+            b = "delay",
+            f = "throttleWindow";
+            e[b] = 250;
+            e[f] = true;
+            $.event.special[j] = {
+                setup: function() {
+                    if (!e[f] && this[k]) {
+                        return false;
+                    }
+                    var l = $(this);
+                    a = a.add(l);
+                    $.data(this, d, {
+                        w: l.width(),
+                        h: l.height()
+                    });
+                    if (a.length === 1) {
+                        g();
+                    }
+                },
+                teardown: function() {
+                    if (!e[f] && this[k]) {
+                        return false;
+                    }
+                    var l = $(this);
+                    a = a.not(l);
+                    l.removeData(d);
+                    if (!a.length) {
+                        clearTimeout(i);
+                    }
+                },
+                add: function(l) {
+                    if (!e[f] && this[k]) {
+                        return false;
+                    }
+                    var n;
+                    function m(s, o, p) {
+                        var q = $(this),
+                        r = $.data(this, d);
+                        r.w = o !== c ? o: q.width();
+                        r.h = p !== c ? p: q.height();
+                        n.apply(this, arguments);
+                    }
+                    if ($.isFunction(l)) {
+                        n = l;
+                        return m;
+                    } else {
+                        n = l.handler;
+                        l.handler = m;
+                    }
+                }
+            };
+            function g() {
+                i = h[k](function() {
+                    a.each(function() {
+                        var n = $(this),
+                        m = n.width(),
+                        l = n.height(),
+                        o = $.data(this, d);
+                        if (m !== o.w || l !== o.h) {
+                            n.trigger(j, [o.w = m, o.h = l]);
+                        }
+                    });
+                    g();
+                },
+                e[b]);
+            }
+        })(jQuery, this);
+        function unique(arr){
+            for(var i=0;i<arr.length;i++){
+                for(var j=i+1;j<arr.length;j++){
+                    if(arr[i] == arr[j]){
+                        arr.splice(j,1)
+                        j--
+                    }
+                }
+            }
+            return arr
+        }
+    </script>
 </body>
 </html>
