@@ -16,9 +16,22 @@
                     async: true,
                     success:function(data){
                         data = JSON.parse(data)
-                        $("#MD").html(data.MD)
-                        $("#WD").html(data.WD)
-                        $("#SF").html(data.SF)
+                        if(data.MD == "init" || data.WD == "init" || data.SF == "init"){
+                             $.messager.show({
+                                title: '提示',
+                                msg: '数据连接中断',
+                                timeout:500,
+                                style: {
+                                    right: '',
+                                    top: document.body.scrollTop + document.documentElement.scrollTop,
+                                    bottom: ''
+                                }
+                            });
+                        }else{
+                            $("#MD").html(data.MD)
+                            $("#WD").html(data.WD)
+                            $("#SF").html(data.SF)
+                        }
                     },
                     error:function(result){
                         console.log(result)
