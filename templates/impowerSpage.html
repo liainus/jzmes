@@ -208,8 +208,13 @@
                                     },
                                     success: function (data) {
                                         data = JSON.parse(data)
-                                        $("#contentID").val(data.ID)
-                                        $("#contentText").html(data.Content)
+                                        if(data != null){
+                                            $("#contentID").val(data.ID)
+                                            $("#contentText").html(data.Content)
+                                        }else{
+                                            $("#contentID").val("")
+                                            $("#contentText").html("")
+                                        }
                                     }
                                 })
                                 //图谱
