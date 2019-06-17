@@ -208,7 +208,7 @@
                                     },
                                     success: function (data) {
                                         data = JSON.parse(data)
-                                        if(data != null){
+                                        if(data != ""){
                                             $("#contentID").val(data.ID)
                                             $("#contentText").html(data.Content)
                                         }else{
