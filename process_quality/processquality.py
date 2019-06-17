@@ -375,6 +375,15 @@ class WMS_Interface(ServiceBase):
         print(aa)
         return aa
 
+    @rpc(Unicode, Unicode, _returns=Unicode())
+    def WMS_OrderStatus(self, name, json_data):
+        dic = []
+        for i in range(0, 2):
+            dic.append(appendStr(i))
+        aa = json.dumps(dic)
+        print(aa)
+        return aa
+
 class SAP_Interface(ServiceBase):
     logging.basicConfig(level=logging.DEBUG)
     @rpc(Unicode, Unicode, _returns=Unicode())
@@ -645,15 +654,11 @@ def EmpowerContentJournalSelect():
         try:
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 10:
-                pages = int(data['page'])
-                rowsnumber = int(data['rows'])
-                inipage = (pages - 1) * rowsnumber + 0
-                endpage = (pages - 1) * rowsnumber + rowsnumber
-                ResultID = data["ResultID "]
+                ResultID = data.get("ResultID")
                 if not ResultID:
                     return ""
                 total = db_session.query(EquipmentManagementManua).count()
-                oclass = db_session.query(EmpowerContentJournal).filter(EmpowerContentJournal.ResultID == ResultID).order_by(desc("OperationDate")).all()[inipage:endpage]
+                oclass = db_session.query(EmpowerContentJournal).filter(EmpowerContentJournal.Other == ResultID).order_by(desc("OperationDate")).all()
                 jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
                 return '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
         except Exception as e:
