@@ -46,6 +46,7 @@ from suds.client import Client
 from spyne import Application
 from suds.xsd.doctor import ImportDoctor, Import
 from operator import itemgetter, attrgetter
+import random
 
 engine = create_engine(Model.Global.GLOBAL_DATABASE_CONNECT_STRING, deprecate_large_types=True)
 Session = sessionmaker(bind=engine)
@@ -328,10 +329,11 @@ def appendStr(i):
     dir = {}
     dir['btype'] = "aa"
     dir['mid'] = "aa"
-    dir['Num'] = "aa"
+    dir['Num'] = "12"
     dir['BatchNo'] = "aa"
     dir['BillNo'] = "aa"
     dir['StoreDef_ID'] = "aa"
+    dir['LineNumber'] = random.randint(0,100)
     return dir
 class WMS_Interface(ServiceBase):
     '''
@@ -413,15 +415,23 @@ class NH_Interface(ServiceBase):
             dic.append(appendStr(i))
         return json.dumps(dic)
 
-def say_hello_test(url,name):
+def say_hello_test():
     imp = Import('http://www.w3.org/2001/XMLSchema', location = 'http://www.w3.org/2001/XMLSchema.xsd')
     imp.filter.add('http://WebXml.com.cn/')
     doctor = ImportDoctor(imp)
     client = Client(Model.Global.WMSurl, doctor = doctor)  # 创建一个webservice接口对象
     print("aa")
-    re = client.service.revice() # 调用这个接口下的getMobileCodeInfo方法，并传入参数
+    dic = []
+    for i in range(0,2):
+        dic.append(appendStr(i))
+    print(json.dumps(dic))
+    re = client.service.Mes_Interface("billload",json.dumps(dic)) # 调用这个接口下的getMobileCodeInfo方法，并传入参数
     print(re)
-    return "http://192.168.100.103:9100/?wsdl"
+    return 'OK'
+
+@Process.route('/aa')
+def aa():
+    say_hello_test()
 
 @Process.route('/impowerSpage')
 def impowerSpage():

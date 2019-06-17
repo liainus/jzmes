@@ -1154,15 +1154,19 @@ class EquipmentStatusCount(Base):
     #采集时间
     SampleTime = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
     # 系统内部设备编码:
-    SYSEQPCode = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+    BatchNo = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
     # 状态
-    Status =  Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+    SYSEQPCode = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    # 状态
+    Status =  Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
     # 状态类型
-    StatusType = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+    StatusType = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
     # 是否停机
     IsStop = Column(Unicode(10), primary_key=False, autoincrement=False, nullable=True)
     #持续时间
     Duration = Column(Float, primary_key=False, autoincrement=False, nullable=True)
+    # 状态
+    StatusChangeCount = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
 # 班次
 class Shifts(Base):

@@ -1944,20 +1944,44 @@ def EquipmentFailureRunXTSearch():
     设备故障运行统计（系统采集）
     :return:
     """
-    if request.method == 'POST':
+    if request.method == 'GET':
         try:
             # first、Getting parameters for front-end transmission
             recv_data = request.values
             if not recv_data:
                 return json.dumps("NO！", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
             dict_data = recv_data.to_dict()
-            brand = dict_data.get('brand')
-            unit = dict_data.get('unit')
-            year = dict_data.get('year')
-            month = dict_data.get('month')
-            getMonthFirstDayAndLastDay(year,month)
-            return json.dumps("", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+            mon = dict_data.get('month')
+            if not mon:
+                return '请输入月份！'
+            mont = mon.split("-")
+            year = mont[0]
+            month = mont[1]
+            re = getMonthFirstDayAndLastDay(year,month)
+            BatchNoS = db_session.query(EquipmentStatusCount.BatchNo).distinct().filter(EquipmentStatusCount.SampleTime.between(re[0],re[1])).all()
+            equip_run_time = list()
+            equip_failure_time = list()
+            equip_downtime = list()
+            equipment_batchnos = list()
+            for BatchNo in BatchNoS:
+                if BatchNo[0] == None or "备料" in BatchNo[0]:
+                    continue
+                gz = db_session.query(EquipmentStatusCount.Duration).filter(EquipmentStatusCount.BatchNo == BatchNo, EquipmentStatusCount.Status == '设备故障').first()
+                stop = db_session.query(EquipmentStatusCount.Duration).filter(EquipmentStatusCount.BatchNo == BatchNo,
+                                                                              EquipmentStatusCount.Status == '设备停机').first()
+                run = db_session.query(EquipmentStatusCount.Duration).filter(EquipmentStatusCount.BatchNo == BatchNo,
+                                                                              EquipmentStatusCount.Status == '设备运行').first()
+                equipment_batchnos.append(BatchNo)
+                equip_run_time.append(run[0] if run != None  else '0')
+                equip_failure_time.append(gz[0] if run != None  else '0')
+                equip_downtime.append(stop[0] if run != None  else '0')
+            dir = {}
+            dir["equip_run_time"] = equip_run_time
+            dir["equip_failure_time"] = equip_failure_time
+            dir["equip_downtime"] = equip_downtime
+            dir["equipment_batchnos"] = equipment_batchnos
+            return json.dumps(dir, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "路由：/EquipmentFailureRunXTSearch，设备故障运行统计Error：" + str(e), current_user.Name)
+            insertSyslog("error", "路由：/EquipmentFailureRunXTSearch，设备故障运行统计（系统采集）Error：" + str(e), current_user.Name)
