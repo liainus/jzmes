@@ -616,6 +616,10 @@ def EmpowerContentSelect():
             if not ResultID:
                 return ""
             Content = db_session.query(EmpowerContent).filter(EmpowerContent.ResultID == ResultID).first()
+            if not Content:
+                Content.ID = ""
+                Content.ResultID = ""
+                Content.Content = ""
             return json.dumps(Content, cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
@@ -633,7 +637,7 @@ def EmpowerContentCostUpdate():
         Content = data.get("Content")
         ResultID = data.get("ResultID")
         jour = EmpowerContentJournal()
-        jour.OperationDate = datetime.datetime.now()
+        jour.OperationDate = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         jour.Other = ResultID
         if not ID:
             jour.DetailedInformation = "用户"+current_user.Name+"增加含量"
