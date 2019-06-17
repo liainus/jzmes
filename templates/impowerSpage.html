@@ -242,10 +242,44 @@
                         $("#myModal").modal('hide')
                         if(data != "OK"){
                             alert("未知错误")
+                        }else{
+                            $("#contentText").html($("#contentIpt").val())
                         }
                     }
                 });
             })
+            //查看明细
+            $("#details").on('click',function(){
+                if(ResultID != "") {
+                    $("#detailsModal").modal('show')
+                    $("#detailsTab").bootstrapTable({
+                        method : 'get',
+                        url:'/EmpowerContentJournalSelect',
+                        striped : true,
+                        pageNumber : 1, //初始化加载第一页
+                        pagination : true,//是否分页
+                        sidePagination : 'server',//server:服务器端分页|client：前端分页
+                        pageSize : 10,//单页记录数
+                        pageList : [10, 20, 30, 40, 50 ],//可选择单页记录数
+                        queryParams: {
+                            ResultID: ResultID
+                        },
+                        columns: [{
+                            field: 'Operation',
+                            title: '操作'
+                        }, {
+                            field: 'DetailedInformation',
+                            title: '详细信息'
+                        }, {
+                            field: 'OperationDate',
+                            title: '操作日期'
+                        }, {
+                            field: 'Other',
+                            title: '其他'
+                        }]
+                    })
+                }
+             })
             function getNewData(projectName,SampleName,SampleBottle,Sampling){
                 var myDiv = document.getElementById("chart")
                 var myChartContainer = function () {
@@ -344,7 +378,7 @@
             var tabDataArr = []
             for (var i = 0; i < tabData.length; i++) {
                 var obj = {}
-                obj.value = tabData[i].Name
+                obj.value = tabData[i].Height
                 obj.yAxis = tabData[i].Height / 1000000
                 obj.xAxis = parseFloat(tabData[i].RetentionTime)
                 obj.xAxis = String(findCloseNum(dataX.map(Number), obj.xAxis))
@@ -387,12 +421,14 @@
                             <span id="contentText"></span>
                             <input type="hidden" id="contentID" value="">
                             <a href="javascript:;" id="edit" style="margin-left: 15px;">编辑</a>
+                            <a href="javascript:;" id="details" style="margin-left: 15px;">明细</a>
                         </label>
                     </div>
                 </div>
             </form>
         </div>
 	</div>
+    {#  编辑含量 模态框  #}
     <div id="myModal" class="modal fade">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -417,6 +453,20 @@
                 </div>
                 <!-- dialog buttons -->
                 <div class="modal-footer"><button type="button" class="btn btn-primary" id="save">保存</button></div>
+            </div>
+        </div>
+    </div>
+    {#  明细 模态框  #}
+    <div id="detailsModal" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="gridSystemModalLabel">日志明细</h4>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-bordered" id="detailsTab"></table>
+                </div>
             </div>
         </div>
     </div>
