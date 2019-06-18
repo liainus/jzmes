@@ -1,3 +1,4 @@
+import re
 from typing import Optional, Any
 from collections import Counter
 import time
@@ -47,6 +48,7 @@ from spyne import Application
 from suds.xsd.doctor import ImportDoctor, Import
 from operator import itemgetter, attrgetter
 import random
+
 
 engine = create_engine(Model.Global.GLOBAL_DATABASE_CONNECT_STRING, deprecate_large_types=True)
 Session = sessionmaker(bind=engine)
@@ -343,16 +345,16 @@ class WMS_Interface(ServiceBase):
     def WMS_Order_Download(self, name, times):
         '''
         采购订单同步给WMS
-        :param name:
-        :param times:
-        :return:
         '''
         dic = []
         for i in range(0, 3):
             dic.append(appendStr(i))
         return json.dumps(dic)
     @rpc(Unicode, Unicode, _returns=Unicode())
-    def WMS_Order_Do_Action(self, name, json_data):
+    def MStatusLoad(self, name, json_data):
+        '''
+        产品状态转换下发
+        '''
         dic = []
         for i in range(0, 2):
             dic.append(appendStr(i))
@@ -368,14 +370,17 @@ class WMS_Interface(ServiceBase):
     @rpc(Unicode, Unicode, _returns=Unicode())
     def WMS_StockInfo(self, name, json_data):
         dic = []
-        for i in range(0, 2):
-            dic.append(appendStr(i))
-        aa = json.dumps(dic)
-        print(aa)
-        return aa
+        for data in json_data:
+            oclass = db_session.query(SchedulingStock).filter(SchedulingStock.product_code == data.product_code).first()
+            oclass.StockHouse = data.StockHouse
+            db_session.commit()
+        return json.dumps("SUCCESS")
 
     @rpc(Unicode, Unicode, _returns=Unicode())
     def WMS_OrderStatus(self, name, json_data):
+        '''
+        单据状态变更
+        '''
         try:
             dic = []
             print(json_data)
@@ -386,22 +391,58 @@ class WMS_Interface(ServiceBase):
             print("WMS调用WMS_OrderStatus接口报错！")
             return json.dumps(e)
 
+    @rpc(Unicode, Unicode, _returns=Unicode())
+    def WorkFlowLoad(self, name, json_data):
+        '''
+        工单完成反馈业务数据
+        '''
+        try:
+            dic = []
+            print(json_data)
+            for i in range(0, 2):
+                dic.append(appendStr(i))
+            return json.dumps("SUCCESS")
+        except Exception as e:
+            print("WMS调用WMS_OrderStatus接口报错！")
+            return json.dumps(e)
 @Process.route('/WMS_SendPlan', methods=['GET', 'POST'])
 def WMS_SendPlan():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
+                for key in jsonnumber:
+                    id = int(key)
+                    try:
+                        client = Client(Model.Global.WMSurl)
+                        dic = []
+                        oclass = db_session.query(ZYPlanWMS).filter(ZYPlanWMS.ID == id).first()
+                        oclss = db_session.query(MaterialBOM).filter(MaterialBOM.ProductRuleID == oclass.BrandID).all()
+                        for ocl in oclss:
+                            product_code = db_session.query(product_infoERP.product_code).filter(product_infoERP.product_mark == ocl.MaterialName).first()[0]
+                            dic.append({"BillNo":str(oclass.BatchID)+str(oclass.BrandID),"btype":"2003","MaterialName":ocl.MaterialName,"product_code":product_code})
+                        jsondic = json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False)
+                        ret = client.service.Mes_Interface("billload", jsondic)
+                        print(re)
+                        oclass.IsSend = "10"
+                        db_session.commit()
+                    except Exception as ee:
+                        return ""
+        except Exception as e:
+            print("调用WMS_SendPlan接口报错！")
+            return json.dumps("调用WMS_SendPlan接口报错！")
+@Process.route('/WMS_SendSAPMatil', methods=['GET', 'POST'])
+def WMS_SendSAPMatil():
     if request.method == 'GET':
         data = request.values
         try:
             client = Client(Model.Global.WMSurl)
             dic = []
-            BrandID = data.get("BrandID")
-            BatchID = data.get("BatchID")
-            oclass = db_session.query(ZYPlanWMS).filter(ZYPlanWMS.BrandID == BrandID,ZYPlanWMS.BatchID == BatchID).first()
-            oclss = db_session.query(MaterialBOM).filter(MaterialBOM.ProductRuleID == BrandID).all()
-            for ocl in oclss:
-                product_code = db_session.query(product_infoERP.product_code).filter(product_infoERP.product_mark == ocl.MaterialName).first()[0]
-                dic.append({"BillNo":str(oclass.BatchID)+str(oclass.BrandID),"btype":"2003","MaterialName":ocl.MaterialName,"product_code":product_code})
-            jsondic = json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False)
-            re = client.service.Mes_Interface("billload", jsondic)
+            oclass = db_session.query(product_infoERP).filter(product_infoERP.product_type == "ROH").all()
+            jsondic = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
+            re = client.service.Mes_Interface("MatDetLoad", jsondic)
             print(re)
             return 'OK'
         except Exception as e:

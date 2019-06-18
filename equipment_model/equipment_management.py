@@ -1962,7 +1962,7 @@ def EquipmentFailureRunXTSearch():
                                                                               EquipmentStatusCount.Status == '设备停机').first()
                 run = db_session.query(EquipmentStatusCount.Duration).filter(EquipmentStatusCount.BatchNo == BatchNo,
                                                                               EquipmentStatusCount.Status == '设备运行').first()
-                equipment_batchnos.append(BatchNo)
+                equipment_batchnos.append(BatchNo[0])
                 equip_run_time.append(run[0] if run != None  else '0')
                 equip_failure_time.append(gz[0] if run != None  else '0')
                 equip_downtime.append(stop[0] if run != None  else '0')
