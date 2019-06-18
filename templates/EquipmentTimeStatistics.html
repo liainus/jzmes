@@ -13,7 +13,6 @@
     <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
     <script>
         $(function(){
-            $('#beginTime').datebox("setValue", myformatter(new Date()))
             var brand = ""
             var unit = ""
             $('#LeftTree').tree({
@@ -28,19 +27,21 @@
                         brand = node.Brand
                         unit = node.text
                         var select_time = $('#beginTime').datebox('getValue')
-                        var interval = $("#Shift").find("option:selected").val()
-                        toJson(brand,unit,select_time,interval)
+                        toJson(brand,unit,getPeriodTime(new Date(select_time))[0],getPeriodTime(new Date(select_time))[1])
                     }
 
                 }
+             })
+            $("#beginTime").datebox({
+                onSelect: function(date){
+                    $("#weekTime").html(getPeriodTime(date)[0]+" 至 "+ getPeriodTime(date)[1])
+                    toJson(brand,unit,getPeriodTime(date)[0],getPeriodTime(date)[1])
+                }
             })
-            $("#searchDate").on("click",function(){
-                var select_time = $('#beginTime').datebox('getValue')
-                var interval = $("#Shift").find("option:selected").val()
-                toJson(brand,unit,select_time,interval)
-            })
+            $('#beginTime').datebox("setValue", myformatter(new Date()))
+            $("#weekTime").html(getPeriodTime(new Date())[0]+" 至 "+ getPeriodTime(new Date())[1])
         })
-        function toJson(brand,unit,select_time,interval){
+        function toJson(brand,unit,startDate,endDate){
             var myChart = echarts.init(document.getElementById("main"))
             if(unit == ""){
                 myChart.hideLoading();
@@ -52,8 +53,8 @@
                     data: {
                         brand: brand,
                         unit: unit,
-                        select_time: select_time,
-                        interval: interval
+                        startDate: startDate,
+                        endDate:endDate
                     },
                     dataType: "json",
                     traditional:true,
@@ -149,6 +150,33 @@
                 })
             }
         }
+        //获取指定日期的周一和周天
+        function getPeriodTime(date){
+            var arr = myformatter(date).split("-")
+            //月份-1 因为月份从0开始 构造一个Date对象
+            var date = new Date(arr[0],arr[1]-1,arr[2]);
+            var dateOfWeek = date.getDay();//返回当前日期的在当前周的某一天（0～6--周日到周一）
+            var dateOfWeekInt = parseInt(dateOfWeek,10);//转换为整型
+
+            if(dateOfWeekInt==0){//如果是周日
+                dateOfWeekInt=7;
+            }
+            var aa = 7-dateOfWeekInt;//当前于周末相差的天数
+            var temp2 = parseInt(arr[2],10);//按10进制转换，以免遇到08和09的时候转换成0
+            var sunDay = temp2+aa;//当前日期的周日的日期
+            var monDay = sunDay-6//当前日期的周一的日期
+            var startDate = new Date(arr[0],arr[1]-1,monDay);
+            var endDate = new Date(arr[0],arr[1]-1,sunDay);
+            var sm = parseInt(startDate.getMonth())+1;//月份+1 因为月份从0开始
+            var em = parseInt(endDate.getMonth())+1;
+            var start = startDate.getFullYear()+"-"+sm+"-"+startDate.getDate()
+            var end = endDate.getFullYear()+"-"+em+"-"+endDate.getDate()
+            var array = new Array()
+            array.push(start)
+            array.push(end)
+
+            return array
+        }
         //时间格式拼接
         function myformatter(date){
             var y = date.getFullYear();
@@ -167,16 +195,10 @@
     </div>
     <div id="container" style="width: 80%;float: left;vertical-align: top;">
         <div style="padding:10px 0px 5px 10px;">
-            <a>  设备运行日期:  </a>
+            <a>  选择日期:  </a>
             <input class="easyui-datebox" id="beginTime" editable="fasle" style="width:166px;height:35px;line-height:35px;">
-            <a>  数据范围:  </a>
-            <select name="Shift" id="Shift" type="text" style="width:157px;" autocomplete="off" placeholder="">
-                <option value="早班">早班</option>
-                <option value="晚班">晚班</option>
-                <option value="全天">全天</option>
-                <option value="当月">当月</option>
-            </select>
-            <a id="searchDate" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'">查看</a>
+            <a>  数据范围周期:  </a>
+            <a id="weekTime"></a>
         </div>
         <div id="tt" class="easyui-tabs" style="width:100%;height:600px;margin-top:10px; scrolling:'false'">
             <div title="设备运行数据">
