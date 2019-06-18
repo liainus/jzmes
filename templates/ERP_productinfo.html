@@ -30,7 +30,6 @@
             <table class="easyui-datagrid" id="ERPTab" title="ERP物料列表" style="width:100%;" data-options="
                 loadMsg:false,
                 rownumbers:true,
-                singleSelect:true,
                 autoRowHeight:false,
                 pagination:true,
                 pageSize:10,
@@ -38,7 +37,6 @@
                 method:'get'">
                 <thead>
                     <tr>
-                        <th field="ck" checkbox="true"></th>
                         <th data-options="field:'product_code',width:200,align:'center'">物料编码</th>
                         <th data-options="field:'product_name',width:250,align:'center'">物料名称</th>
                         <th data-options="field:'product_unit',width:200,align:'center'">计量单位</th>
@@ -47,7 +45,7 @@
                 </thead>
             </table>
         </div>
-        <a href="#" class="easyui-linkbutton" id="synchronization" data-options="iconCls:'icon-redo'" style="margin-top: 20px">同步</a>
+        <a href="#" class="easyui-linkbutton" id="synchronization" data-options="iconCls:'icon-redo'" style="margin-top: 20px">同步原料到WMS</a>
         <table class="easyui-datagrid" id="selfTab" title="系统物料列表" style="width:100%;" data-options="
             loadMsg:false,
             rownumbers:true,

@@ -22,7 +22,6 @@
             <table class="easyui-datagrid" id="tab" title="" style="width:100%;" data-options="
                 loadMsg:false,
                 rownumbers:true,
-                singleSelect:true,
                 autoRowHeight:false,
                 pagination:true,
                 pageSize:10,
@@ -41,11 +40,10 @@
                 </thead>
             </table>
         </div>
-        <a href="#" class="easyui-linkbutton" id="send" data-options="iconCls:'icon-redo'" style="margin-top: 20px">下发</a>
+        <a href="#" class="easyui-linkbutton" id="send" data-options="iconCls:'icon-redo'" style="margin-top: 20px">发送WMS</a>
         <table class="easyui-datagrid" id="selfTab" title="" style="width:100%;" data-options="
             loadMsg:false,
             rownumbers:true,
-            singleSelect:true,
             autoRowHeight:false,
             pagination:true,
             pageSize:10,
@@ -69,6 +67,36 @@
                     BrandID:getUrlParam('BrandID')
                 }
             });
+            $("#send").on('click',function(){
+                $.ajax({
+                    url: '/WMS_SendPlan',
+                    method: 'GET',
+                    data:{
+                        BrandName:BrandName,
+                        BatchID:BatchID
+                    },
+                    success: function (data) {
+                        if (data == "OK") {
+                            $.messager.show({
+                                title: '提示',
+                                timeout: 1000,
+                                msg: '发送成功',
+                                style: {
+                                    right: '',
+                                    top: document.body.scrollTop + document.documentElement.scrollTop,
+                                    bottom: ''
+                                }
+                            });
+                            $("#selfTab").datagrid('load')
+                        }else{
+                            $.messager.alert('提示', data, 'info');
+                        }
+                    },
+                    error: function () {
+                        alert("请求失败，请稍后重试！")
+                    }
+                 });
+            })
             //获取页面传参
             function getUrlParam(name) {
                 var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
