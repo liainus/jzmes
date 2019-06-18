@@ -389,18 +389,24 @@ class WMS_Interface(ServiceBase):
 @Process.route('/WMS_SendPlan', methods=['GET', 'POST'])
 def WMS_SendPlan():
     if request.method == 'GET':
-        client = Client(Model.Global.WMSurl)
-        dic = []
-        oclass = db_session.query(ZYPlanWMS).filter(ZYPlanWMS.BrandID == "1",ZYPlanWMS.BatchID == "19056045").all()
-        #单据号（批次+品名ID），每种物料，单据类型
-        db_session.query()
-        for ocl in oclass:
-            dic.append(ocl)
-        print(dic)
-        aa = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
-        re = client.service.Mes_Interface("billload", aa)
-        print(re)
-        return 'OK'
+        data = request.values
+        try:
+            client = Client(Model.Global.WMSurl)
+            dic = []
+            BrandID = data.get("BrandID")
+            BatchID = data.get("BatchID")
+            oclass = db_session.query(ZYPlanWMS).filter(ZYPlanWMS.BrandID == BrandID,ZYPlanWMS.BatchID == BatchID).first()
+            oclss = db_session.query(MaterialBOM).filter(MaterialBOM.ProductRuleID == BrandID).all()
+            for ocl in oclss:
+                product_code = db_session.query(product_infoERP.product_code).filter(product_infoERP.product_mark == ocl.MaterialName).first()[0]
+                dic.append({"BillNo":str(oclass.BatchID)+str(oclass.BrandID),"btype":"2003","MaterialName":ocl.MaterialName,"product_code":product_code})
+            jsondic = json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False)
+            re = client.service.Mes_Interface("billload", jsondic)
+            print(re)
+            return 'OK'
+        except Exception as e:
+            print("调用WMS_SendPlan接口报错！")
+            return json.dumps("调用WMS_SendPlan接口报错！")
 
 class SAP_Interface(ServiceBase):
     logging.basicConfig(level=logging.DEBUG)
