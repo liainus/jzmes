@@ -1945,20 +1945,11 @@ def EquipmentFailureRunXTSearch():
     :return:
     """
     if request.method == 'GET':
+        data = request.values
         try:
-            # first、Getting parameters for front-end transmission
-            recv_data = request.values
-            if not recv_data:
-                return json.dumps("NO！", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
-            dict_data = recv_data.to_dict()
-            mon = dict_data.get('month')
-            if not mon:
-                return '请输入月份！'
-            mont = mon.split("-")
-            year = mont[0]
-            month = mont[1]
-            re = getMonthFirstDayAndLastDay(year,month)
-            BatchNoS = db_session.query(EquipmentStatusCount.BatchNo).distinct().filter(EquipmentStatusCount.SampleTime.between(re[0],re[1])).all()
+            startDate = data.get("startDate")+" 00:00"
+            endDate = data.get("endDate")+" 23:59:59"
+            BatchNoS = db_session.query(EquipmentStatusCount.BatchNo).distinct().filter(EquipmentStatusCount.SampleTime.between(startDate,endDate)).all()
             equip_run_time = list()
             equip_failure_time = list()
             equip_downtime = list()
