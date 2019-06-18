@@ -13,132 +13,96 @@
     <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
     <script>
         $(function(){
-            var brand = ""
-            var unit = ""
-            $('#LeftTree').tree({
-                url:"/EquipmentTimeStatistics/DataTree",
-                method: 'get',
-                animate:true,
-                loadFilter:function(data){
-                    return data
-                },
-                onClick: function (node) {
-                    if($('#LeftTree').tree('isLeaf',node.target)){
-                        brand = node.Brand
-                        unit = node.text
-                        var select_time = $('#beginTime').datebox('getValue')
-                        toJson(brand,unit,getPeriodTime(new Date(select_time))[0],getPeriodTime(new Date(select_time))[1])
-                    }
-
-                }
-             })
             $("#beginTime").datebox({
                 onSelect: function(date){
                     $("#weekTime").html(getPeriodTime(date)[0]+" 至 "+ getPeriodTime(date)[1])
-                    toJson(brand,unit,getPeriodTime(date)[0],getPeriodTime(date)[1])
+                    toJson(getPeriodTime(date)[0],getPeriodTime(date)[1])
                 }
             })
             $('#beginTime').datebox("setValue", myformatter(new Date()))
             $("#weekTime").html(getPeriodTime(new Date())[0]+" 至 "+ getPeriodTime(new Date())[1])
         })
-        function toJson(brand,unit,startDate,endDate){
+        function toJson(startDate,endDate){
             var myChart = echarts.init(document.getElementById("main"))
-            if(unit == ""){
-                myChart.hideLoading();
-            }else {
-                myChart.showLoading();
-                $.ajax({
-                    url: "/EquipmentTimeStatistics/GetData",
-                    type: "post",
-                    data: {
-                        brand: brand,
-                        unit: unit,
-                        startDate: startDate,
-                        endDate:endDate
-                    },
-                    dataType: "json",
-                    traditional:true,
-                    success: function (data) {
-                        if (data !=  "NO") {
-                            myChart.hideLoading();
-                            myChart.setOption(option = {
-                                tooltip: {
-                                    trigger: 'axis',
-                                    axisPointer: {
-                                        type: 'shadow'
+            myChart.showLoading();
+            $.ajax({
+                url: "/EquipmentTimeStatistics/GetData",
+                type: "post",
+                data: {
+                    startDate: startDate,
+                    endDate:endDate
+                },
+                dataType: "json",
+                traditional:true,
+                success: function (data) {
+                    if (data !=  "NO") {
+                        myChart.hideLoading();
+                        myChart.setOption(option = {
+                            tooltip: {
+                                trigger: 'axis',
+                                axisPointer: {
+                                    type: 'shadow'
+                                }
+                            },
+                            legend: {
+                                data: ['运行时间', '故障时间', '停机时间']
+                            },
+                            toolbox: {
+                                feature: {
+                                    dataView: {show: true, readOnly: false},
+                                    magicType: {show: true, type: ['line', 'bar']},
+                                    restore: {show: true},
+                                    saveAsImage: {show: true}
+                                }
+                            },
+                            xAxis: {
+                                type: 'category',
+                                data: data.equip_codes
+                            },
+                            yAxis: [
+                                {
+                                    type: 'value',
+                                    name: '时间',
+                                    min: 0,
+                                    axisLabel: {
+                                        formatter: '{value} 分钟'
+                                    }
+                                }
+                            ],
+                            series: [{
+                                name: "运行时间",
+                                type: 'bar',
+                                itemStyle:{
+                                    normal:{
+                                        color:'#90ed7d'
                                     }
                                 },
-                                legend: {
-                                    data: ['运行时间', '故障时间', '停机时间']
-                                },
-                                toolbox: {
-                                    feature: {
-                                        dataView: {show: true, readOnly: false},
-                                        magicType: {show: true, type: ['line', 'bar']},
-                                        restore: {show: true},
-                                        saveAsImage: {show: true}
+                                data: data.equip_run_time
+                            },{
+                                name: "故障时间",
+                                type: 'bar',
+                                itemStyle:{
+                                    normal:{
+                                        color:'#f15c80'
                                     }
                                 },
-                                xAxis: {
-                                    type: 'category',
-                                    data: data.equip_codes
-                                },
-                                yAxis: [
-                                    {
-                                        type: 'value',
-                                        name: '时间',
-                                        min: 0,
-                                        axisLabel: {
-                                            formatter: '{value} 分钟'
-                                        }
+                                data: data.equip_failure_time
+                            },{
+                                name: "停机时间",
+                                type: 'bar',
+                                itemStyle:{
+                                    normal:{
+                                        color:'#858585'
                                     }
-                                ],
-                                series: [{
-                                    name: "运行时间",
-                                    type: 'bar',
-                                    itemStyle:{
-                                        normal:{
-                                            color:'#90ed7d'
-                                        }
-                                    },
-                                    data: data.equip_run_time
-                                },{
-                                    name: "故障时间",
-                                    type: 'bar',
-                                    itemStyle:{
-                                        normal:{
-                                            color:'#f15c80'
-                                        }
-                                    },
-                                    data: data.equip_failure_time
-                                },{
-                                    name: "停机时间",
-                                    type: 'bar',
-                                    itemStyle:{
-                                        normal:{
-                                            color:'#858585'
-                                        }
-                                    },
-                                    data: data.equip_downtime
-                                }]
-                            });
-                            myChart.setOption(option);
-                        } else {
-                            $.messager.alert({
-                                title: '提示',
-                                msg: "暂无数据",
-                                icon: 'info',
-                                width: 300,
-                                top: 200,
-                                left: 500
-                            })
-                            myChart.hideLoading();
-                        }
-                    },
-                    error:function(data){
+                                },
+                                data: data.equip_downtime
+                            }]
+                        });
+                        myChart.setOption(option);
+                    } else {
                         $.messager.alert({
                             title: '提示',
-                            msg: "请求失败",
+                            msg: "暂无数据",
                             icon: 'info',
                             width: 300,
                             top: 200,
@@ -146,9 +110,19 @@
                         })
                         myChart.hideLoading();
                     }
-
-                })
-            }
+                },
+                error:function(data){
+                    $.messager.alert({
+                        title: '提示',
+                        msg: "请求失败",
+                        icon: 'info',
+                        width: 300,
+                        top: 200,
+                        left: 500
+                    })
+                    myChart.hideLoading();
+                }
+            })
         }
         //获取指定日期的周一和周天
         function getPeriodTime(date){
@@ -190,9 +164,6 @@
     </script>
 </head>
 <body>
-    <div class="left-tree" style="width: 15%;float: left;vertical-align: top;border: 1px solid #ccc;margin: 1%;padding: 1%;">
-        <ul id="LeftTree" class="easyui-tree"></ul>
-    </div>
     <div id="container" style="width: 80%;float: left;vertical-align: top;">
         <div style="padding:10px 0px 5px 10px;">
             <a>  选择日期:  </a>
