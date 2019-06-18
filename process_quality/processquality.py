@@ -416,20 +416,23 @@ def WMS_SendPlan():
                 for key in jsonnumber:
                     id = int(key)
                     try:
-                        client = Client(Model.Global.WMSurl)
                         dic = []
                         oclass = db_session.query(ZYPlanWMS).filter(ZYPlanWMS.ID == id).first()
+                        if oclass.IsSend == "10":
+                            return "数据已发送过WMS！"
                         oclss = db_session.query(MaterialBOM).filter(MaterialBOM.ProductRuleID == oclass.BrandID).all()
                         for ocl in oclss:
-                            product_code = db_session.query(product_infoERP.product_code).filter(product_infoERP.product_mark == ocl.MaterialName).first()[0]
-                            dic.append({"BillNo":str(oclass.BatchID)+str(oclass.BrandID),"btype":"2003","MaterialName":ocl.MaterialName,"product_code":product_code})
+                            num = str(float(ocl.BatchTotalWeight)*float(ocl.BatchPercentage))
+                            dic.append({"BillNo":str(oclass.BatchID)+str(oclass.BrandID),"btype":"2003","StoreDef_ID":"1","mid":ocl.MATID,"num":str(num)})
                         jsondic = json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False)
+                        client = Client(Model.Global.WMSurl)
                         ret = client.service.Mes_Interface("billload", jsondic)
                         print(re)
                         oclass.IsSend = "10"
                         db_session.commit()
+                        return 'OK'
                     except Exception as ee:
-                        return ""
+                        return json.dumps("调用WMS_SendPlan接口报错！")
         except Exception as e:
             print("调用WMS_SendPlan接口报错！")
             return json.dumps("调用WMS_SendPlan接口报错！")
@@ -440,10 +443,27 @@ def WMS_SendSAPMatil():
         try:
             client = Client(Model.Global.WMSurl)
             dic = []
-            oclass = db_session.query(product_infoERP).filter(product_infoERP.product_type == "ROH").all()
+            oclass = db_session.query(ZYPlanWMS).filter(product_infoERP.product_type == "ROH").all()
             jsondic = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
             re = client.service.Mes_Interface("MatDetLoad", jsondic)
             print(re)
+            return 'OK'
+        except Exception as e:
+            print("调用WMS_SendPlan接口报错！")
+            return json.dumps("调用WMS_SendPlan接口报错！")
+@Process.route('/WMS_ReceiveDetail', methods=['GET', 'POST'])
+def WMS_ReceiveDetail():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            client = Client(Model.Global.WMSurl)
+            dic = []
+            ID = data.get("ID")
+            zyw = db_session.query(ZYPlanWMS).filter(ZYPlanWMS.ID == ID).first()
+            dic.append({"BillNo":zyw.BatchID+zyw.BrandID})
+            jsondic = json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False)
+            re = client.service.Mes_Interface("WorkFlowLoad", jsondic)
+            print(re)#WMSDetail
             return 'OK'
         except Exception as e:
             print("调用WMS_SendPlan接口报错！")

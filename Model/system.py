@@ -1580,7 +1580,32 @@ class EmpowerContentJournal(Base):
 
     # 其他:
     Other = Column(Unicode(60), primary_key=False, autoincrement=False, nullable=True)
+# 与WMS计划管理
+class WMSDetail(Base):
+    __tablename__ = 'WMSDetail'
+    # id:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
 
+    # 批次号:
+    BatchNo = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 计划单号:
+    BillNo = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 总数量:
+    Num = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 物料编码
+    mid = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
+
+    # 物料名称
+    MatName = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
+
+    # 单据类型（采购入库101，成品入库102，生产计划203）:
+    btype = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
+
+    # 库房号（缺省值为1）:
+    StoreDef_id = Column(Unicode(60), primary_key=False, autoincrement=False, nullable=True)
 
 # 生成表单的执行语句
 Base.metadata.create_all(engine)
