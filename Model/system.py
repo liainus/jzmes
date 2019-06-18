@@ -1279,6 +1279,8 @@ class product_infoERP(Base):
     product_unit = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
     # 物料类型
     product_type = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    # 物料备注
+    product_mark = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
 # 生产计划表
 class product_plan(Base):
