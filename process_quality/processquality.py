@@ -28,7 +28,7 @@ from sqlalchemy import create_engine, Column, ForeignKey, Table, Integer, String
 from io import StringIO
 import calendar
 from Model.system import CenterCost, ERPproductcode_prname, SchedulingStock, ProcessQualityPDF, ProcessQuality, ImpowerInterface, EmpowerPeakItem,\
-    EmpowerContent, EmpowerContentJournal
+    EmpowerContent, EmpowerContentJournal, ZYPlanWMS
 from tools.common import logger,insertSyslog,insert,delete,update,select
 import os
 import openpyxl
@@ -333,7 +333,6 @@ def appendStr(i):
     dir['BatchNo'] = "aa"
     dir['BillNo'] = "aa"
     dir['StoreDef_ID'] = "aa"
-    dir['LineNumber'] = random.randint(0,100)
     return dir
 class WMS_Interface(ServiceBase):
     '''
@@ -377,12 +376,31 @@ class WMS_Interface(ServiceBase):
 
     @rpc(Unicode, Unicode, _returns=Unicode())
     def WMS_OrderStatus(self, name, json_data):
+        try:
+            dic = []
+            print(json_data)
+            for i in range(0, 2):
+                dic.append(appendStr(i))
+            return json.dumps("SUCCESS")
+        except Exception as e:
+            print("WMS调用WMS_OrderStatus接口报错！")
+            return json.dumps(e)
+
+@Process.route('/WMS_SendPlan', methods=['GET', 'POST'])
+def WMS_SendPlan():
+    if request.method == 'GET':
+        client = Client(Model.Global.WMSurl)
         dic = []
-        for i in range(0, 2):
-            dic.append(appendStr(i))
-        aa = json.dumps(dic)
-        print(aa)
-        return aa
+        oclass = db_session.query(ZYPlanWMS).filter(ZYPlanWMS.BrandID == "1",ZYPlanWMS.BatchID == "19056045").all()
+        #单据号（批次+品名ID），每种物料，单据类型
+        db_session.query()
+        for ocl in oclass:
+            dic.append(ocl)
+        print(dic)
+        aa = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
+        re = client.service.Mes_Interface("billload", aa)
+        print(re)
+        return 'OK'
 
 class SAP_Interface(ServiceBase):
     logging.basicConfig(level=logging.DEBUG)
@@ -423,24 +441,6 @@ class NH_Interface(ServiceBase):
         for i in range(0, 3):
             dic.append(appendStr(i))
         return json.dumps(dic)
-
-def say_hello_test():
-    imp = Import('http://www.w3.org/2001/XMLSchema', location = 'http://www.w3.org/2001/XMLSchema.xsd')
-    imp.filter.add('http://WebXml.com.cn/')
-    doctor = ImportDoctor(imp)
-    client = Client(Model.Global.WMSurl, doctor = doctor)  # 创建一个webservice接口对象
-    print("aa")
-    dic = []
-    for i in range(0,2):
-        dic.append(appendStr(i))
-    print(json.dumps(dic))
-    re = client.service.Mes_Interface("billload",json.dumps(dic)) # 调用这个接口下的getMobileCodeInfo方法，并传入参数
-    print(re)
-    return 'OK'
-
-@Process.route('/aa')
-def aa():
-    say_hello_test()
 
 @Process.route('/impowerSpage')
 def impowerSpage():
