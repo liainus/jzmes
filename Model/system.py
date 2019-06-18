@@ -1279,8 +1279,6 @@ class product_infoERP(Base):
     product_unit = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
     # 物料类型
     product_type = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
-    # 物料备注
-    product_mark = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
 # 生产计划表
 class product_plan(Base):
@@ -1484,6 +1482,9 @@ class ZYPlanWMS(Base):
     # 工艺段
     PUIDName = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
 
+    # 执行状态
+    ExcuteStatus = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
+
     # 操作人:
     OperationPeople = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
 
@@ -1492,6 +1493,9 @@ class ZYPlanWMS(Base):
 
     # 操作时间:
     OperationDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
+
+    #是否发送
+    IsSend = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
 
 # 与impower接口
 class ImpowerInterface(Base):
