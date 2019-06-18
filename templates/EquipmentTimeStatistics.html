@@ -4,35 +4,132 @@
     <meta charset="UTF-8">
     <title>设备运行采集数据</title>
     <link href="../static/css/base.css" rel="stylesheet">
-    <link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
-    <link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
-    <link rel="stylesheet" href="../static/css/providers.css">
     <script type="text/javascript" src="../static/js/echarts.common.min.js"></script>
     <script type="text/javascript" src="../static/js/jquery-3.3.1.min.js"></script>
-    <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
-    <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css" crossorigin="anonymous">
+    <script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="../static/css/bootstrap-datetimepicker.min.css" crossorigin="anonymous">
+    <script type="text/javascript" src="../static/js/bootstrap-datetimepicker.min.js"></script>
+    <script>
+        //监听div大小变化
+        (function($, h, c) {
+            var a = $([]),
+            e = $.resize = $.extend($.resize, {}),
+            i,
+            k = "setTimeout",
+            j = "resize",
+            d = j + "-special-event",
+            b = "delay",
+            f = "throttleWindow";
+            e[b] = 250;
+            e[f] = true;
+            $.event.special[j] = {
+                setup: function() {
+                    if (!e[f] && this[k]) {
+                        return false;
+                    }
+                    var l = $(this);
+                    a = a.add(l);
+                    $.data(this, d, {
+                        w: l.width(),
+                        h: l.height()
+                    });
+                    if (a.length === 1) {
+                        g();
+                    }
+                },
+                teardown: function() {
+                    if (!e[f] && this[k]) {
+                        return false;
+                    }
+                    var l = $(this);
+                    a = a.not(l);
+                    l.removeData(d);
+                    if (!a.length) {
+                        clearTimeout(i);
+                    }
+                },
+                add: function(l) {
+                    if (!e[f] && this[k]) {
+                        return false;
+                    }
+                    var n;
+                    function m(s, o, p) {
+                        var q = $(this),
+                        r = $.data(this, d);
+                        r.w = o !== c ? o: q.width();
+                        r.h = p !== c ? p: q.height();
+                        n.apply(this, arguments);
+                    }
+                    if ($.isFunction(l)) {
+                        n = l;
+                        return m;
+                    } else {
+                        n = l.handler;
+                        l.handler = m;
+                    }
+                }
+            };
+            function g() {
+                i = h[k](function() {
+                    a.each(function() {
+                        var n = $(this),
+                        m = n.width(),
+                        l = n.height(),
+                        o = $.data(this, d);
+                        if (m !== o.w || l !== o.h) {
+                            n.trigger(j, [o.w = m, o.h = l]);
+                        }
+                    });
+                    g();
+                },
+                e[b]);
+            }
+        })(jQuery, this);
+    </script>
     <script>
         $(function(){
-            $("#beginTime").datebox({
-                onSelect: function(date){
-                    $("#weekTime").html(getPeriodTime(date)[0]+" 至 "+ getPeriodTime(date)[1])
-                    toJson(getPeriodTime(date)[0],getPeriodTime(date)[1])
-                }
-            })
-            $('#beginTime').datebox("setValue", myformatter(new Date()))
+            //时间选择控件
+            $.fn.datetimepicker.dates['zh'] = {
+                days:       ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六","星期日"],
+                daysShort:  ["日", "一", "二", "三", "四", "五", "六","日"],
+                daysMin:    ["日", "一", "二", "三", "四", "五", "六","日"],
+                months:     ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月","十二月"],
+                monthsShort:  ["一", "二", "三", "四", "五", "六", "七", "八", "九", "十", "十一", "十二"],
+                meridiem:    ["上午", "下午"],
+                //suffix:      ["st", "nd", "rd", "th"],
+                today:       "今天"
+            };
+            $('#beginTime').datetimepicker({
+                format: 'yyyy-mm-dd', // 标签上可用data-date-format="hh:ii" data-link-format="hh:ii"
+                autoclose: true, //选择完成自动关闭下拉框
+                startView : 2,
+                minView:2, //0到分钟结束，1到小时，2到日
+                language: 'zh-CN'
+            }).on('changeDate',function(ev){
+                $("#weekTime").html(getPeriodTime(ev.date)[0]+" 至 "+ getPeriodTime(ev.date)[1])
+                toJson(getPeriodTime(ev.date)[0],getPeriodTime(ev.date)[1])
+            });
+            $('#beginTime').val(myformatter(new Date()));
             $("#weekTime").html(getPeriodTime(new Date())[0]+" 至 "+ getPeriodTime(new Date())[1])
+            toJson(getPeriodTime(new Date())[0],getPeriodTime(new Date())[1])
         })
         function toJson(startDate,endDate){
-            var myChart = echarts.init(document.getElementById("main"))
+            var myDiv = document.getElementById("main")
+            var myChartContainer = function () {
+                var width = $("#chartBox").width()
+                myDiv.style.width = width +'px';
+            };
+            myChartContainer();
+            var myChart = echarts.init(myDiv)
             myChart.showLoading();
             $.ajax({
-                url: "/EquipmentTimeStatistics/GetData",
-                type: "post",
+                url: "/EquipmentFailureRunXTSearch",
+                type: "get",
                 data: {
                     startDate: startDate,
                     endDate:endDate
                 },
-                dataType: "json",
                 traditional:true,
                 success: function (data) {
                     if (data !=  "NO") {
@@ -123,6 +220,10 @@
                     myChart.hideLoading();
                 }
             })
+            $("#chartBox").resize(function(){
+                myChartContainer();
+                myChart.resize();
+            })
         }
         //获取指定日期的周一和周天
         function getPeriodTime(date){
@@ -164,16 +265,21 @@
     </script>
 </head>
 <body>
-    <div id="container" style="width: 80%;float: left;vertical-align: top;">
-        <div style="padding:10px 0px 5px 10px;">
-            <a>  选择日期:  </a>
-            <input class="easyui-datebox" id="beginTime" editable="fasle" style="width:166px;height:35px;line-height:35px;">
-            <a>  数据范围周期:  </a>
-            <a id="weekTime"></a>
-        </div>
-        <div id="tt" class="easyui-tabs" style="width:100%;height:600px;margin-top:10px; scrolling:'false'">
-            <div title="设备运行数据">
-                <div id="main" style="width: 1000px; height: 560px; margin: 10px auto;"></div>
+    <div class="col-md-12">
+        <form class="form-inline modal-body">
+            <div class="form-group">
+                <label for="exampleInputName2">选择日期</label>
+                <input type="text" class="datetimepicker" id="beginTime" readonly>
+                <label for="exampleInputName2">数据范围周期：</label>
+                <label id="weekTime"></label>
+            </div>
+        </form>
+        <div class="panel panel-default clearfix">
+            <div class="panel-heading">设备运行数据</div>
+            <div class="panel-body">
+                <div title="设备运行数据" id="chartBox">
+                    <div id="main" style="width: 1000px; height: 540px; margin: 10px auto;"></div>
+                </div>
             </div>
         </div>
     </div>
