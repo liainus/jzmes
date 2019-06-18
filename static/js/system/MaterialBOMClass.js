@@ -84,6 +84,12 @@ $(function () {
                 width: 200
             },
             {
+                field: 'MATID',
+                title: '物料编码',
+                align: 'center',
+                width: 100
+            },
+            {
                 field: 'BatchTotalWeight',
                 title: '批物料重量',
                 align: 'center',
@@ -387,6 +393,12 @@ $(function () {
                 title: '物料名称',
                 align: 'center',
                 width: 200
+            },
+            {
+                field: 'MATID',
+                title: '物料编码',
+                align: 'center',
+                width: 100
             },
             {
                 field: 'BatchTotalWeight',
