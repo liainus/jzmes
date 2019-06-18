@@ -132,6 +132,7 @@
                 },
                 traditional:true,
                 success: function (data) {
+                    data = JSON.parse(data)
                     if (data !=  "NO") {
                         myChart.hideLoading();
                         myChart.setOption(option = {
@@ -154,7 +155,7 @@
                             },
                             xAxis: {
                                 type: 'category',
-                                data: data.equip_codes
+                                data: data.equipment_batchnos
                             },
                             yAxis: [
                                 {
@@ -197,26 +198,10 @@
                         });
                         myChart.setOption(option);
                     } else {
-                        $.messager.alert({
-                            title: '提示',
-                            msg: "暂无数据",
-                            icon: 'info',
-                            width: 300,
-                            top: 200,
-                            left: 500
-                        })
                         myChart.hideLoading();
                     }
                 },
                 error:function(data){
-                    $.messager.alert({
-                        title: '提示',
-                        msg: "请求失败",
-                        icon: 'info',
-                        width: 300,
-                        top: 200,
-                        left: 500
-                    })
                     myChart.hideLoading();
                 }
             })
