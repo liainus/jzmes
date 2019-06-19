@@ -30,142 +30,164 @@
                 })
             }
             getNewData();
-            getNewChart();
-            setInterval(getNewData, 2000);
-            setInterval(getNewChart, 2000);
+            setInterval(function(){
+                getNewData();
+                getNewChart();
+            }, 2000);
 
             $(".pull-right").on('click',function(){
                 addTab("折光仪历史数据","/refractometerHistoryData")
             })
-            function getNewChart(){
-                var myDiv = document.getElementById("main")
-                var myChartContainer = function () {
-                    var width = $("#chartBox").width()
-                    myDiv.style.width = width +'px';
-                };
+            var myDiv = document.getElementById("main")
+            var myChartContainer = function () {
+                var width = $("#chartBox").width()
+                myDiv.style.width = width +'px';
+            };
+            myChartContainer();
+            var myChart = echarts.init(myDiv)
+            $.ajax({
+                url: '/refractometerDataHistory',
+                type: 'get',
+                data: {
+                    begin:myformatter(new Date(new Date().getTime() - 5*60*1000)),
+                    end:myformatter(new Date())
+                },
+                success: function (data) {
+                    data = JSON.parse(data)
+                    myChart.setOption(option = {
+                        tooltip: {
+                            trigger: 'axis'
+                        },
+                        legend: {
+                            data: ["折光率","温度"]
+                        },
+                        toolbox: {
+                            feature: {
+                                mark : {show: true},
+                                dataView: {show: true, readOnly: false},
+                                restore: {show: true},
+                                saveAsImage: {show: true}
+                            }
+                        },
+                        grid: {
+                            y2: 80
+                        },
+                        xAxis: {
+                            type : 'time',
+                            splitNumber:10
+                        },
+                        yAxis: [
+                            {
+                                type : 'value',
+                                name: '折光率',
+                                axisLabel: {
+                                    formatter: '{value} Brix'
+                                }
+                            }, {
+                                type: 'value',
+                                name: '温度',
+                                axisLabel: {
+                                    formatter: '{value} °C'
+                                }
+                            }
+                        ],
+                        series: [{
+                            name: "折光率",
+                            type: 'line',
+                            yAxisIndex:0,
+                            symbol: 'none', //拐点
+                            showAllSymbol: true,
+                            smooth:true, //曲线
+                            data: data.ZGL,
+                            markLine : {
+                                itemStyle: {
+                                    normal: {
+                                        borderWidth: 1,
+                                        lineStyle: {
+                                            type: 'solid',
+                                            width: 2,
+                                            color:"#ffd85c"
+                                        },
+                                        label: {
+                                            formatter: '',
+                                            textStyle: {
+                                                fontSize: 16,
+                                                fontWeight: "bolder",
+                                            },
+                                        }
+                                    },
+                                },
+                                data : [
+                                    {name : '折光率上限',yAxis:0.03},
+                                    {name : '折光率下限',yAxis:3}
+                                ]
+                            }
+                        },{
+                            name: "温度",
+                            type: 'line',
+                            yAxisIndex:1,
+                            symbol: 'none', //拐点
+                            showAllSymbol: true,
+                            smooth:true,
+                            data: data.Temp,
+                            markLine : {
+                                itemStyle: {
+                                    normal: {
+                                        borderWidth: 1,
+                                        lineStyle: {
+                                            type: 'solid',
+                                            width: 2,
+                                            color:"#37A2DA"
+                                        },
+                                        label: {
+                                            formatter: '',
+                                            textStyle: {
+                                                fontSize: 16,
+                                                fontWeight: "bolder",
+                                            },
+                                        }
+                                    },
+                                },
+                                data : [
+                                    {name : '温度上限',yAxis:90},
+                                    {name : '温度下限',yAxis:10}
+                                ]
+                            }
+                        }]
+                    });
+                    myChart.setOption(option);
+                }
+            })
+            $("#chartBox").resize(function(){
                 myChartContainer();
-                var myChart = echarts.init(myDiv)
+                myChart.resize();
+            })
+            $(".markLineFlg").on('blur',function(){
+                var zglTop = $("#zglTop").val()
+                var zglBottom = $("#zglBottom").val()
+                var wdTop = $("#wdTop").val()
+                var wdBottom = $("#wdBottom").val()
+                option.series[0].markLine.data[0].yAxis = zglTop
+                option.series[0].markLine.data[1].yAxis = zglBottom
+                option.series[1].markLine.data[0].yAxis = wdTop
+                option.series[1].markLine.data[1].yAxis = wdBottom
+
+                myChart.setOption(option);
+            })
+            function getNewChart(){
                 $.ajax({
                     url: '/refractometerDataHistory',
                     type: 'get',
                     data: {
-                        begin:myformatter(new Date(new Date().getTime() - 1*60*1000)),
+                        begin:myformatter(new Date(new Date().getTime() - 5*60*1000)),
                         end:myformatter(new Date())
                     },
                     success: function (data) {
                         data = JSON.parse(data)
-                        console.log(data)
-                        myChart.setOption(option = {
-                            tooltip: {
-                                trigger: 'axis'
-                            },
-                            legend: {
-                                data: ["折光率","温度"]
-                            },
-                            toolbox: {
-                                feature: {
-                                    mark : {show: true},
-                                    dataView: {show: true, readOnly: false},
-                                    restore: {show: true},
-                                    saveAsImage: {show: true}
-                                }
-                            },
-                            dataZoom: {
-                                show: true,
-                                start : 0
-                            },
-                            grid: {
-                                y2: 80
-                            },
-                            xAxis: {
-                                type : 'time',
-                                splitNumber:10
-                            },
-                            yAxis: [
-                                {
-                                    type : 'value',
-                                    name: '折光率',
-                                    axisLabel: {
-                                        formatter: '{value} Brix'
-                                    }
-                                }, {
-                                    type: 'value',
-                                    name: '温度',
-                                    axisLabel: {
-                                        formatter: '{value} °C'
-                                    }
-                                }
-                            ],
-                            series: [{
-                                name: "折光率",
-                                type: 'line',
-                                yAxisIndex:0,
-                                symbol: 'none', //拐点
-                                showAllSymbol: true,
-                                smooth:true, //曲线
-                                data: data.ZGL,
-                                markLine : {
-                                    itemStyle: {
-                                        normal: {
-                                            borderWidth: 1,
-                                            lineStyle: {
-                                                type: 'solid',
-                                                width: 2,
-                                                color:"#ffd85c"
-                                            },
-                                            label: {
-                                                formatter: '',
-                                                textStyle: {
-                                                    fontSize: 16,
-                                                    fontWeight: "bolder",
-                                                },
-                                            }
-                                        },
-                                    },
-                                    data : [
-                                        {name : '最大标准值',yAxis:2.2},
-                                        {name : '最小标准值',yAxis:4.5}
-                                    ]
-                                }
-                            },{
-                                name: "温度",
-                                type: 'line',
-                                yAxisIndex:1,
-                                symbol: 'none', //拐点
-                                showAllSymbol: true,
-                                smooth:true,
-                                data: data.Temp,
-                                markLine : {
-                                    itemStyle: {
-                                        normal: {
-                                            borderWidth: 1,
-                                            lineStyle: {
-                                                type: 'solid',
-                                                width: 2,
-                                                color:"#37A2DA"
-                                            },
-                                            label: {
-                                                formatter: '',
-                                                textStyle: {
-                                                    fontSize: 16,
-                                                    fontWeight: "bolder",
-                                                },
-                                            }
-                                        },
-                                    },
-                                    data : [
-                                        {name : '最大标准值',yAxis:82},
-                                        {name : '最小标准值',yAxis:97}
-                                    ]
-                                }
-                            }]
-                        });
+                        option.series[0].data = data.ZGL
+                        option.series[1].data = data.Temp
                         myChart.setOption(option);
                     }
-                })
-                $("#chartBox").resize(function(){
-                    myChartContainer();
-                    myChart.resize();
                 })
             }
             //按钮点击后添加选项卡
@@ -197,7 +219,7 @@
                 var h = date.getHours()
                 var minutes = date.getMinutes()
                 var s = date.getSeconds()
-                return Appendzero(y) + '-' + Appendzero(m) + '-' + Appendzero(d) + ' ' + Appendzero(h) + ':' + Appendzero(minutes) + ':' + Appendzero(s);
+                return Appendzero(y) + '-' + Appendzero(m) + '-' + Appendzero(d) + ' ' + Appendzero(h) + ':' + Appendzero(minutes);
             }
         })
     </script>
@@ -232,8 +254,40 @@
                 </div>
                 <div class="clearfix" style="border-top:1px solid #e3e5e4;padding-top: 10px;">
                     <div title="折光仪实时数据" id="chartBox">
-                        <div id="main" style="width: 1000px; height: 540px; margin: 10px auto;"></div>
+                        <div id="main" style="width: 1000px; height: 400px; margin: 10px auto;"></div>
                     </div>
+                    <form class="col-sm-6">
+                      <div class="form-group">
+                        <label for="">
+                            折光率上限
+                            <span style="display: inline-block;margin-bottom:3px;width: 50px;height: 3px;background: #ffd85c;"></span>
+                        </label>
+                        <input type="number" class="form-control markLineFlg" id="zglTop" value="0.03"/>
+                      </div>
+                      <div class="form-group">
+                        <label for="">
+                            折光率下限
+                            <span style="display: inline-block;margin-bottom:3px;width: 50px;height: 3px;background: #ffd85c;"></span>
+                        </label>
+                        <input type="number" class="form-control markLineFlg" id="zglBottom" value="3"/>
+                      </div>
+                    </form>
+                    <form class="col-sm-6">
+                      <div class="form-group">
+                        <label for="">
+                            温度上限
+                            <span style="display: inline-block;margin-bottom:3px;width: 50px;height: 3px;background: #37A2DA;"></span>
+                        </label>
+                        <input type="number" class="form-control markLineFlg" id="wdTop" value="90"/>
+                      </div>
+                      <div class="form-group">
+                        <label for="">
+                            温度下限
+                            <span style="display: inline-block;margin-bottom:3px;width: 50px;height: 3px;background: #37A2DA;"></span>
+                        </label>
+                        <input type="number" class="form-control markLineFlg" id="wdBottom" value="10"/>
+                      </div>
+                    </form>
                 </div>
             </div>
         </div>
