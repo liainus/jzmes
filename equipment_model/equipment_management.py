@@ -1963,9 +1963,9 @@ def EquipmentFailureRunXTSearch():
                 run = db_session.query(EquipmentStatusCount.Duration).filter(EquipmentStatusCount.BatchNo == BatchNo,
                                                                               EquipmentStatusCount.Status == '设备运行').first()
                 equipment_batchnos.append(BatchNo[0])
-                equip_run_time.append(run[0] if run != None  else '0')
-                equip_failure_time.append(gz[0] if run != None  else '0')
-                equip_downtime.append(stop[0] if run != None  else '0')
+                equip_run_time.append(round(run[0]/60) if run != None  else '0')
+                equip_failure_time.append(round(gz[0]/60) if run != None  else '0')
+                equip_downtime.append(round(stop[0]/60) if run != None  else '0')
             dir = {}
             dir["equip_run_time"] = equip_run_time
             dir["equip_failure_time"] = equip_failure_time
