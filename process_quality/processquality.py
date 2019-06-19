@@ -384,7 +384,7 @@ class WMS_Interface(ServiceBase):
 @Process.route('/WMS_SendPlan', methods=['GET', 'POST'])
 def WMS_SendPlan():
     '''发送备料计划到WMS'''
-    if request.method == 'GET':
+    if request.method == 'POST':
         data = request.values
         try:
             jsonstr = json.dumps(data.to_dict())
