@@ -8090,7 +8090,7 @@ def JHYdatahistorypage():
 @app.route('/JHYRedis', methods=['POST', 'GET'])
 def JHYRedis():
     '''
-    折光仪实时数据
+    进红外实时数据
     :return:
     '''
     if request.method == 'GET':
