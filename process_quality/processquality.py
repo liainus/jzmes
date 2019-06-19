@@ -351,17 +351,6 @@ class WMS_Interface(ServiceBase):
         for i in range(0, 3):
             dic.append(appendStr(i))
         return json.dumps(dic)
-    @rpc(Unicode, Unicode, _returns=Unicode())
-    def MStatusLoad(self, name, json_data):
-        '''
-        产品状态转换下发
-        '''
-        dic = []
-        for i in range(0, 2):
-            dic.append(appendStr(i))
-        aa = json.dumps(dic)
-        print(aa)
-        return aa
 
     @rpc(Unicode, Integer, _returns=Iterable(Unicode))
     def say_hello(self, name, times):
@@ -376,23 +365,18 @@ class WMS_Interface(ServiceBase):
         try:
             dic = []
             print(json_data)
-            for i in range(0, 2):
-                dic.append(appendStr(i))
-            return json.dumps("SUCCESS")
-        except Exception as e:
-            print("WMS调用WMS_OrderStatus接口报错！")
-            return json.dumps(e)
-
-    @rpc(Unicode, Unicode, _returns=Unicode())
-    def WorkFlowLoad(self, name, json_data):
-        '''
-        工单完成反馈业务数据
-        '''
-        try:
-            dic = []
-            print(json_data)
-            for i in range(0, 2):
-                dic.append(appendStr(i))
+            jso = json.loads(json_data)
+            for i in jso:
+                if i[0] != None:
+                    BillNo = i[0]
+                    BatchID = BillNo[0:-1]
+                    BrandID = BillNo[-1:0]
+                    status = i[1]
+                    zy = db_session.query(ZYPlanWMS).filter(ZYPlanWMS.BatchID == BatchID ,ZYPlanWMS.BrandID == BrandID).first()
+                    zy.ExcuteStatus = status
+                    db_session.commit()
+                else:
+                    continue
             return json.dumps("SUCCESS")
         except Exception as e:
             print("WMS调用WMS_OrderStatus接口报错！")
