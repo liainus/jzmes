@@ -24,7 +24,8 @@ from Model.system import Role, Organization, User, Menu, Role_Menu, BatchMaterie
     SchedulePlan, SparePartInStockManagement, SparePartStock, Area, Instruments, MaintenanceStatus, MaintenanceCycle, \
     EquipmentRunRecord, \
     EquipmentRunPUID, EquipmentMaintenanceStore, SpareTypeStore, ElectronicBatch, EquipmentStatusCount, Shifts, \
-    EquipmentTimeStatisticTree, SystemEQPCode, EquipmentManagementManua, EquipmentMaintenanceStandard, product_info, product_plan, product_infoERP
+    EquipmentTimeStatisticTree, SystemEQPCode, EquipmentManagementManua, EquipmentMaintenanceStandard, product_info, \
+    product_plan, product_infoERP, WMSDetail
 from sqlalchemy import create_engine, Column, ForeignKey, Table, Integer, String, and_, or_, desc,extract
 from io import StringIO
 import calendar
@@ -368,15 +369,6 @@ class WMS_Interface(ServiceBase):
             yield u'Hello, %s' % name
 
     @rpc(Unicode, Unicode, _returns=Unicode())
-    def WMS_StockInfo(self, name, json_data):
-        dic = []
-        for data in json_data:
-            oclass = db_session.query(SchedulingStock).filter(SchedulingStock.product_code == data.product_code).first()
-            oclass.StockHouse = data.StockHouse
-            db_session.commit()
-        return json.dumps("SUCCESS")
-
-    @rpc(Unicode, Unicode, _returns=Unicode())
     def WMS_OrderStatus(self, name, json_data):
         '''
         单据状态变更
@@ -407,7 +399,8 @@ class WMS_Interface(ServiceBase):
             return json.dumps(e)
 @Process.route('/WMS_SendPlan', methods=['GET', 'POST'])
 def WMS_SendPlan():
-    if request.method == 'POST':
+    '''发送备料计划到WMS'''
+    if request.method == 'GET':
         data = request.values
         try:
             jsonstr = json.dumps(data.to_dict())
@@ -418,16 +411,17 @@ def WMS_SendPlan():
                     try:
                         dic = []
                         oclass = db_session.query(ZYPlanWMS).filter(ZYPlanWMS.ID == id).first()
-                        if oclass.IsSend == "10":
-                            return "数据已发送过WMS！"
+                        # if oclass.IsSend == "10":
+                        #     return "数据已发送过WMS！"
                         oclss = db_session.query(MaterialBOM).filter(MaterialBOM.ProductRuleID == oclass.BrandID).all()
                         for ocl in oclss:
                             num = str(float(ocl.BatchTotalWeight)*float(ocl.BatchPercentage))
-                            dic.append({"BillNo":str(oclass.BatchID)+str(oclass.BrandID),"btype":"2003","StoreDef_ID":"1","mid":ocl.MATID,"num":str(num)})
+                            dic.append({"BillNo":str(oclass.BatchID)+str(oclass.BrandID),"btype":"203","StoreDef_ID":"1","mid":ocl.MATID,"num":num})
                         jsondic = json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False)
                         client = Client(Model.Global.WMSurl)
                         ret = client.service.Mes_Interface("billload", jsondic)
-                        print(re)
+                        if ret[0] != "SUCCESS":
+                            return json.dumps("调用WMS_SendPlan接口报错！"+ret[1])
                         oclass.IsSend = "10"
                         db_session.commit()
                         return 'OK'
@@ -438,13 +432,14 @@ def WMS_SendPlan():
             return json.dumps("调用WMS_SendPlan接口报错！")
 @Process.route('/WMS_SendSAPMatil', methods=['GET', 'POST'])
 def WMS_SendSAPMatil():
+    '''发送SAP物料信息到WMS'''
     if request.method == 'GET':
         data = request.values
         try:
-            client = Client(Model.Global.WMSurl)
             dic = []
-            oclass = db_session.query(ZYPlanWMS).filter(product_infoERP.product_type == "ROH").all()
+            oclass = db_session.query(product_infoERP).filter(product_infoERP.product_type == "ROH").all()
             jsondic = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
+            client = Client(Model.Global.WMSurl)
             re = client.service.Mes_Interface("MatDetLoad", jsondic)
             print(re)
             return 'OK'
@@ -453,21 +448,73 @@ def WMS_SendSAPMatil():
             return json.dumps("调用WMS_SendPlan接口报错！")
 @Process.route('/WMS_ReceiveDetail', methods=['GET', 'POST'])
 def WMS_ReceiveDetail():
+    '''获取备料计划WMS的流水'''
     if request.method == 'GET':
         data = request.values
         try:
-            client = Client(Model.Global.WMSurl)
             dic = []
             ID = data.get("ID")
             zyw = db_session.query(ZYPlanWMS).filter(ZYPlanWMS.ID == ID).first()
             dic.append({"BillNo":zyw.BatchID+zyw.BrandID})
             jsondic = json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False)
+            client = Client(Model.Global.WMSurl)
             re = client.service.Mes_Interface("WorkFlowLoad", jsondic)
-            print(re)#WMSDetail
-            return 'OK'
+            if re[0] == 'SUCCESS':
+                print(re[2])
+                return json.dumps(re[2])
+            else:
+                return json.dumps(re[1])
         except Exception as e:
             print("调用WMS_SendPlan接口报错！")
             return json.dumps("调用WMS_SendPlan接口报错！")
+
+@Process.route('/WMS_StockInfo', methods=['GET', 'POST'])
+def WMS_StockInfo():
+    '''获取WMS库存信息'''
+    if request.method == 'GET':
+        data = request.values
+        try:
+            ic = []
+            client = Client(Model.Global.WMSurl)
+            re = client.service.Mes_Interface("StoreLoad")
+            if re[0] == "SUCCESS":
+                for data in re[2]:
+                    print(re[2])
+                    oclass = db_session.query(SchedulingStock).filter(
+                        SchedulingStock.product_code == data.product_code).first()
+                    oclass.StockHouse = data.StockHouse
+                    db_session.commit()
+            else:
+                json.dumps(re[1])
+        except Exception as e:
+            print("调用WMS_StockInfo接口报错！")
+            return json.dumps("调用WMS_StockInfo接口报错！")
+
+@Process.route('/MStatusLoad', methods=['GET', 'POST'])
+def MStatusLoad():
+    '''检验单状态同步给WMS'''
+    if request.method == 'GET':
+        data = request.values
+        try:
+            dic = []
+            client = Client(Model.Global.WMSurl)
+            dic.append({"BillNo": "123", "mid":"132","BatchNo": "203", "StoreDef_ID": "1",
+                        "OldStatus": "123", "NewStatus": "132"})
+            dic.append({"BillNo": "123", "mid": "132", "BatchNo": "203", "StoreDef_ID": "1",
+                        "OldStatus": "123", "NewStatus": "132"})
+            re = client.service.Mes_Interface("MStatusLoad",json.dumps(dic))
+            if re[0] == "SUCCESS":
+                for data in re[2]:
+                    print(re[2])
+                    oclass = db_session.query(SchedulingStock).filter(
+                        SchedulingStock.product_code == data.product_code).first()
+                    oclass.StockHouse = data.StockHouse
+                    db_session.commit()
+            else:
+                json.dumps(re[1])
+        except Exception as e:
+            print("调用WMS_StockInfo接口报错！")
+            return json.dumps("调用WMS_StockInfo接口报错！")
 
 class SAP_Interface(ServiceBase):
     logging.basicConfig(level=logging.DEBUG)

@@ -8229,8 +8229,8 @@ def WBDataHistory():
 @app.route('/FSWMSpage')
 def FSWMSpage():
     return render_template('FSWMSpage.html')
-@equip.route('/ZYPlanWMSSelect', methods=['GET', 'POST'])
-def MaintenanceStandardSelect():
+@app.route('/ZYPlanWMSSelect', methods=['GET', 'POST'])
+def ZYPlanWMSSelect():
     if request.method == 'GET':
         data = request.values
         try:
@@ -8240,13 +8240,8 @@ def MaintenanceStandardSelect():
                 rowsnumber = int(data['rows'])
                 inipage = (pages - 1) * rowsnumber + 0
                 endpage = (pages - 1) * rowsnumber + rowsnumber
-                BatchID = data["BatchID"]
-                if BatchID == "":
-                    return '未传入批次号！'
-                else:
-                    BrandID = data["BrandID"]
-                    count = db_session.query(ZYPlanWMS).filter(ZYPlanWMS.BrandID == BatchID, ZYPlanWMS.BrandID == BrandID).count()
-                    oclass = db_session.query(ZYPlanWMS).filter(ZYPlanWMS.BrandID == BatchID, ZYPlanWMS.BrandID == BrandID).all()[inipage:endpage]
+                count = db_session.query(ZYPlanWMS).count()
+                oclass = db_session.query(ZYPlanWMS).order_by(("BatchID")).all()[inipage:endpage]
                 jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
                 return '{"total"' + ":" + str(count) + ',"rows"' + ":\n" + jsonoclass + "}"
         except Exception as e:
