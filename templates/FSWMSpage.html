@@ -4,79 +4,104 @@
     <meta charset="UTF-8">
     <title>发送WMS</title>
     <link href="../static/css/base.css" rel="stylesheet">
-	<link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
-	<link href="../static/css/basic_info.css" rel="stylesheet">
-	<link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
-	<link href="../static/js/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
-    <link href="../static/css/datagridpanel_customer.css" rel="stylesheet">
-    <link href="../static/css/dialogpanel.css" type="text/css" rel="stylesheet">
-    <link href="../static/css/datagrid_customer.css" type="text/css" rel="stylesheet">
-    <script type="text/javascript" src="../static/js/jquery.min.js"></script>
-    <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
-    <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
-    <script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
+    <script type="text/javascript" src="../static/js/jquery-3.3.1.min.js"></script>
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css" crossorigin="anonymous">
+    <script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootstrap-table.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootstrap-table-zh-CN.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootbox.min.js"></script>
 </head>
 <body>
-    <div style="padding: 10px;">
-        <div class="ERPList">
-            <table class="easyui-datagrid" id="tab" title="" style="width:100%;" data-options="
-                loadMsg:false,
-                rownumbers:true,
-                singleSelect:false,
-                autoRowHeight:false,
-                pagination:true,
-                pageSize:10,
-                url:'/ZYPlanWMSSelect',
-                method:'get'">
-                <thead>
-                    <tr>
-                        <th field="ck" checkbox="true"></th>
-                        <th data-options="field:'BatchID',width:200,align:'center'">批次号</th>
-                        <th data-options="field:'BrandName',width:250,align:'center'">品名</th>
-                        <th data-options="field:'PUIDName',width:200,align:'center'">工艺段</th>
-                        <th data-options="field:'ExcuteStatus',width:200,align:'center'">执行状态</th>
-                        <th data-options="field:'OperationPeople',width:200,align:'center'">操作人</th>
-                        <th data-options="field:'Description',width:200,align:'center'">描述</th>
-                        <th data-options="field:'OperationDate',width:200,align:'center'">操作时间</th>
-                    </tr>
-                </thead>
-            </table>
+    <div class="col-sm-12">
+        <div class="modal-body">
+            <div id="toolbar">
+                <a href="#" class="btn btn-primary" id="send">发送WMS</a>
+                <a href="#" class="btn btn-success" id="getLib">获取库存</a>
+            </div>
         </div>
-        <a href="#" class="easyui-linkbutton" id="send" data-options="iconCls:'icon-redo'" style="margin-top: 20px">发送WMS</a>
-        <table class="easyui-datagrid" id="selfTab" title="" style="width:100%;" data-options="
-            loadMsg:false,
-            rownumbers:true,
-            autoRowHeight:false,
-            pagination:true,
-            pageSize:10,
-            url:'/WMS_ReceiveDetail',
-            method:'get'">
+        <table class="table table-bordered" id="tab">
             <thead>
                 <tr>
-                    <th data-options="field:'BatchNo',width:200,align:'center'">批次号</th>
-                    <th data-options="field:'BillNo',width:250,align:'center'">计划单号</th>
-                    <th data-options="field:'Num',width:200,align:'center'">总数量</th>
-                    <th data-options="field:'mid',width:200,align:'center'">物料编码</th>
-                    <th data-options="field:'MatName',width:200,align:'center'">物料名称</th>
-                    <th data-options="field:'btype',width:200,align:'center'">单据类型</th>
-                    <th data-options="field:'StoreDef_id',width:200,align:'center'">库房号</th>
+                    <th data-checkbox="true"></th>
+                    <th data-field="BatchID">批次号</th>
+                    <th data-field="BrandName">品名</th>
+                    <th data-field="PUIDName">工艺段</th>
+                    <th data-field="ExcuteStatus">执行状态</th>
+                    <th data-field="OperationPeople">操作人</th>
+                    <th data-field="Description">描述</th>
+                    <th data-field="OperationDate">操作时间</th>
                 </tr>
             </thead>
         </table>
+        <table class="table table-bordered" id="selfTab"></table>
     </div>
     <script>
         $(function(){
-            $('#tab').datagrid({
-                queryParams:{
-                    BatchID:getUrlParam('BatchID'),
-                    BrandID:getUrlParam('BrandID')
+            $('#tab').bootstrapTable({
+                url: '/ZYPlanWMSSelect',
+                method: 'get',
+                toolbar: '#toolbar',
+                contentType: "application/x-www-form-urlencoded",
+	            pagination: true,
+                pageNumber:1,
+	            pageSize: 5,
+	            pageList: [5, 10, 15, 20],
+                sidePagination: "server",
+                paginationLoop:false,
+                paginationPreText:'上一页',
+                paginationNextText:'下一页',
+                singleSelect:false,
+                clickToSelect:true,
+	            locale: "zh-CN",
+	            striped: true,
+                onCheck:function(row,$element){
+                    console.log(row)
+                    $('#selfTab').bootstrapTable({
+                        url: '/WMS_ReceiveDetail',
+                        method: 'get',
+                        contentType: "application/x-www-form-urlencoded",
+                        pagination: true,
+                        pageNumber: 1,
+                        pageSize: 5,
+                        pageList: [5, 10, 15, 20],
+                        sidePagination: "server",
+                        paginationLoop: false,
+                        paginationPreText: '上一页',
+                        paginationNextText: '下一页',
+                        singleSelect: false,
+                        clickToSelect: true,
+                        locale: "zh-CN",
+                        striped: true,
+                        columns:[{
+                            field:'BatchNo',
+                            title:'批次号'
+                        },{
+                            field:'BillNo',
+                            title:'计划单号'
+                        },{
+                            field:'Num',
+                            title:'总数量'
+                        },{
+                            field:'mid',
+                            title:'物料编码'
+                        },{
+                            field:'MatName',
+                            title:'物料名称'
+                        },{
+                            field:'btype',
+                            title:'单据类型'
+                        },{
+                            field:'StoreDef_id',
+                            title:'库房号'
+                        }]
+                    })
                 }
             });
             $("#send").on('click',function(){
-                var rows = $("#tab").datagrid('getSelections');
+                var rows = $("#tab").bootstrapTable('getSelections')
                 if (rows.length > 0) {
                     var jsonarray=[];
-                    $.messager.confirm('确定操作', '您要发送所选的记录吗？', function (flag) {
+                    bootbox.confirm('您要发送所选的记录吗？', function (flag) {
                         if (flag) {
                             for (var i = 0; i < rows.length; i++) {
                                 var obj=createKeyIDObj(parseInt(rows[i].id));
@@ -91,27 +116,17 @@
                                 dataType: 'json',
                                 success: function (data) {
                                     if (data == "OK") {
-                                        $.messager.progress('close');
-                                        $.messager.show({
-                                            title: '提示',
-                                            timeout: 1000,
-                                            msg: '发送成功',
-                                            style: {
-                                                right: '',
-                                                top: document.body.scrollTop + document.documentElement.scrollTop,
-                                                bottom: ''
-                                            }
-                                        });
+                                        bootbox.alert("发送成功！")
                                         $("#selfTab").datagrid('load')
                                     }else{
-                                        $.messager.alert('提示', data, 'info');
+                                        bootbox.alert(data)
                                     }
                                 }
                             });
                         }
                     });
                 } else {
-                    $.messager.alert('提示', '请选择要发送的记录！', 'info');
+                    bootbox.alert("请选择要发送的记录")
                 }
             })
             //获取页面传参
