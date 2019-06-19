@@ -60,7 +60,7 @@
                     bootbox.confirm('您要发送所选的记录吗？', function (flag) {
                         if (flag) {
                             for (var i = 0; i < rows.length; i++) {
-                                var obj=createKeyIDObj(parseInt(rows[i].id));
+                                var obj=createKeyIDObj(parseInt(rows[i].ID));
                                 jsonarray.push(obj);
                             }
                             var a = JSON.stringify(jsonarray);
