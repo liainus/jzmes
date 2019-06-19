@@ -393,10 +393,16 @@
                     myChart.hideLoading();
                     myChart.setOption(option = {
                         title:{
-                            text: data[0].time + "-生产数据"
+                            text: "本月生产数据"
                         },
                         tooltip: {
                             trigger: 'axis'
+                        },
+                        toolbox: {
+                            feature: {
+                                magicType: {show: true, type: ['line', 'bar']},
+                                restore: {show: true}
+                            }
                         },
                         legend: {
                             data: ['投入量', '产出量', '得率']
@@ -494,13 +500,11 @@
             var myChart1 = echarts.init(myDiv1)
             myChart1.showLoading();
             $.ajax({
-                url: "/EquipmentTimeStatistics/GetData",
-                type: "post",
+                url: "/EquipmentFailureRunXTSearch",
+                type: "get",
                 data: {
-                    brand: "健胃消食片",
-                    unit: "煎煮",
-                    select_time: myformatter(new Date()),
-                    interval: "当月"
+                    startDate: getPeriodTime(new Date())[0],
+                    endDate:getPeriodTime(new Date())[1]
                 },
                 dataType: "json",
                 traditional:true,
@@ -509,7 +513,7 @@
                         myChart1.hideLoading();
                         myChart1.setOption(option = {
                             title:{
-                                text: myMonthformatter(new Date()) + "-煎煮-" + "设备运行数据"
+                                text: "本周设备运行数据"
                             },
                             tooltip: {
                                 trigger: 'axis',
@@ -520,9 +524,15 @@
                             legend: {
                                 data: ['运行时间', '故障时间', '停机时间']
                             },
+                            toolbox: {
+                                feature: {
+                                    magicType: {show: true, type: ['line', 'bar']},
+                                    restore: {show: true}
+                                }
+                            },
                             xAxis: {
                                 type: 'category',
-                                data: data.equip_codes
+                                data: data.equipment_batchnos
                             },
                             yAxis: [
                                 {
@@ -638,6 +648,33 @@
                 });
             }
         }
+        //获取指定日期的周一和周天
+        function getPeriodTime(date){
+            var arr = myformatter(date).split("-")
+            //月份-1 因为月份从0开始 构造一个Date对象
+            var date = new Date(arr[0],arr[1]-1,arr[2]);
+            var dateOfWeek = date.getDay();//返回当前日期的在当前周的某一天（0～6--周日到周一）
+            var dateOfWeekInt = parseInt(dateOfWeek,10);//转换为整型
+
+            if(dateOfWeekInt==0){//如果是周日
+                dateOfWeekInt=7;
+            }
+            var aa = 7-dateOfWeekInt;//当前于周末相差的天数
+            var temp2 = parseInt(arr[2],10);//按10进制转换，以免遇到08和09的时候转换成0
+            var sunDay = temp2+aa;//当前日期的周日的日期
+            var monDay = sunDay-6//当前日期的周一的日期
+            var startDate = new Date(arr[0],arr[1]-1,monDay);
+            var endDate = new Date(arr[0],arr[1]-1,sunDay);
+            var sm = parseInt(startDate.getMonth())+1;//月份+1 因为月份从0开始
+            var em = parseInt(endDate.getMonth())+1;
+            var start = startDate.getFullYear()+"-"+sm+"-"+startDate.getDate()
+            var end = endDate.getFullYear()+"-"+em+"-"+endDate.getDate()
+            var array = new Array()
+            array.push(start)
+            array.push(end)
+
+            return array
+        }
         //时间格式拼接
         function myformatter(date){
             var y = date.getFullYear();
@@ -647,12 +684,6 @@
         }
         function getNow(s) {
             return s < 10 ? '0' + s: s;
-        }
-        function myMonthformatter(date){
-            var y = date.getFullYear();
-            var m = date.getMonth()+1;
-            var d = date.getDate();
-            return y + "-" + getNow(m);
         }
     </script>
 </body>
