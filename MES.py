@@ -8236,12 +8236,8 @@ def ZYPlanWMSSelect():
         try:
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 10:
-                pages = int(data['page'])
-                rowsnumber = int(data['rows'])
-                inipage = (pages - 1) * rowsnumber + 0
-                endpage = (pages - 1) * rowsnumber + rowsnumber
                 count = db_session.query(ZYPlanWMS).count()
-                oclass = db_session.query(ZYPlanWMS).order_by(("BatchID")).all()[inipage:endpage]
+                oclass = db_session.query(ZYPlanWMS).order_by(("BatchID")).all()
                 jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
                 return '{"total"' + ":" + str(count) + ',"rows"' + ":\n" + jsonoclass + "}"
         except Exception as e:
