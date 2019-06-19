@@ -1607,6 +1607,30 @@ class WMSDetail(Base):
     # 库房号（缺省值为1）:
     StoreDef_id = Column(Unicode(60), primary_key=False, autoincrement=False, nullable=True)
 
+# 与WMS计划管理
+class WMStatusLoad(Base):
+    __tablename__ = 'WMStatusLoad'
+    # id:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+    # 工单号:
+    BillNo = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 物料编码:
+    mid = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 批次号:
+    BatchNo = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 库房号（缺省值为1）
+    StoreDef_ID = Column(Unicode(25), default="1",primary_key=False, autoincrement=False, nullable=True)
+
+    # 原状态
+    OldStatus = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
+
+    # 新状态
+    NewStatus = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
+
 # 生成表单的执行语句
 Base.metadata.create_all(engine)
 

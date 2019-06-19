@@ -30,7 +30,7 @@ from sqlalchemy import create_engine, Column, ForeignKey, Table, Integer, String
 from io import StringIO
 import calendar
 from Model.system import CenterCost, ERPproductcode_prname, SchedulingStock, ProcessQualityPDF, ProcessQuality, ImpowerInterface, EmpowerPeakItem,\
-    EmpowerContent, EmpowerContentJournal, ZYPlanWMS
+    EmpowerContent, EmpowerContentJournal, ZYPlanWMS, WMStatusLoad
 from tools.common import logger,insertSyslog,insert,delete,update,select
 import os
 import openpyxl
@@ -367,11 +367,11 @@ class WMS_Interface(ServiceBase):
             print(json_data)
             jso = json.loads(json_data)
             for i in jso:
-                if i[0] != None:
-                    BillNo = i[0]
+                BillNo = i.get("BillNo")
+                status = i.get("status")
+                if BillNo != None:
                     BatchID = BillNo[0:-1]
-                    BrandID = BillNo[-1:0]
-                    status = i[1]
+                    BrandID = BillNo[-1:]
                     zy = db_session.query(ZYPlanWMS).filter(ZYPlanWMS.BatchID == BatchID ,ZYPlanWMS.BrandID == BrandID).first()
                     zy.ExcuteStatus = status
                     db_session.commit()
@@ -421,11 +421,11 @@ def WMS_SendSAPMatil():
         data = request.values
         try:
             dic = []
-            oclass = db_session.query(product_infoERP).filter(product_infoERP.product_type == "ROH").all()
+            product_code = data.get("product_code")
+            oclass = db_session.query(product_infoERP).filter(product_infoERP.product_code.like("%"+product_code+"%")).all()
             jsondic = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
             client = Client(Model.Global.WMSurl)
             re = client.service.Mes_Interface("MatDetLoad", jsondic)
-            print(re)
             return 'OK'
         except Exception as e:
             print("调用WMS_SendPlan接口报错！")
@@ -462,12 +462,15 @@ def WMS_StockInfo():
             client = Client(Model.Global.WMSurl)
             re = client.service.Mes_Interface("StoreLoad")
             if re[0] == "SUCCESS":
-                for data in re[2]:
-                    print(re[2])
+                jsondata = json.loads(re[2])
+                for data in jsondata:
+                    product_code = data.get("MID")
+                    num = data.get("num")
                     oclass = db_session.query(SchedulingStock).filter(
-                        SchedulingStock.product_code == data.product_code).first()
-                    oclass.StockHouse = data.StockHouse
-                    db_session.commit()
+                        SchedulingStock.product_code == product_code).first()
+                    if oclass != None:
+                        oclass.StockHouse = num
+                        db_session.commit()
             else:
                 json.dumps(re[1])
         except Exception as e:
@@ -480,26 +483,28 @@ def MStatusLoad():
     if request.method == 'GET':
         data = request.values
         try:
-            dic = []
-            client = Client(Model.Global.WMSurl)
-            dic.append({"BillNo": "123", "mid":"132","BatchNo": "203", "StoreDef_ID": "1",
-                        "OldStatus": "123", "NewStatus": "132"})
-            dic.append({"BillNo": "123", "mid": "132", "BatchNo": "203", "StoreDef_ID": "1",
-                        "OldStatus": "123", "NewStatus": "132"})
-            re = client.service.Mes_Interface("MStatusLoad",json.dumps(dic))
-            if re[0] == "SUCCESS":
-                for data in re[2]:
-                    print(re[2])
-                    oclass = db_session.query(SchedulingStock).filter(
-                        SchedulingStock.product_code == data.product_code).first()
-                    oclass.StockHouse = data.StockHouse
-                    db_session.commit()
-            else:
-                json.dumps(re[1])
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
+                for key in jsonnumber:
+                    id = int(key)
+                    try:
+                        dic = []
+                        oclass = db_session.query(WMStatusLoad).filter(WMStatusLoad.ID == id).first()
+                        client = Client(Model.Global.WMSurl)
+                        ret = client.service.Mes_Interface("MStatusLoad",json.dumps(dic))
+                        if ret[0] == "SUCCESS":
+                            return 'OK'
+                        else:
+                            return json.dumps(ret[1])
+                    except Exception as ee:
+                        return json.dumps("调用MStatusLoad接口报错！")
         except Exception as e:
-            print("调用WMS_StockInfo接口报错！")
-            return json.dumps("调用WMS_StockInfo接口报错！")
+            print("调用MStatusLoad接口报错！")
+            return json.dumps("调用MStatusLoad接口报错！")
 
+
+@Process.route('/WMS_SendSAPMatil', methods=['GET', 'POST'])
 class SAP_Interface(ServiceBase):
     logging.basicConfig(level=logging.DEBUG)
     @rpc(Unicode, Unicode, _returns=Unicode())
