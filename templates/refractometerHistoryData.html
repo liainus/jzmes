@@ -207,8 +207,8 @@
                                         },
                                     },
                                     data : [
-                                        {name : '最大标准值',yAxis:2.2},
-                                        {name : '最小标准值',yAxis:4.5}
+                                        {name : '折光率上限',yAxis:0.03},
+                                        {name : '折光率下限',yAxis:3}
                                     ]
                                 }
                             },{
@@ -238,8 +238,8 @@
                                         },
                                     },
                                     data : [
-                                        {name : '最大标准值',yAxis:82},
-                                        {name : '最小标准值',yAxis:97}
+                                        {name : '温度上限',yAxis:90},
+                                        {name : '温度下限',yAxis:10}
                                     ]
                                 }
                             }]
@@ -250,6 +250,18 @@
                 $("#chartBox").resize(function(){
                     myChartContainer();
                     myChart.resize();
+                })
+                $(".markLineFlg").on('blur',function(){
+                    var zglTop = $("#zglTop").val()
+                    var zglBottom = $("#zglBottom").val()
+                    var wdTop = $("#wdTop").val()
+                    var wdBottom = $("#wdBottom").val()
+                    option.series[0].markLine.data[0].yAxis = zglTop
+                    option.series[0].markLine.data[1].yAxis = zglBottom
+                    option.series[1].markLine.data[0].yAxis = wdTop
+                    option.series[1].markLine.data[1].yAxis = wdBottom
+
+                    myChart.setOption(option);
                 })
             }
             function Appendzero(obj){
@@ -286,6 +298,38 @@
                 <div title="折光仪历史数据" id="chartBox">
                     <div id="main" style="width: 1000px; height: 540px; margin: 10px auto;"></div>
                 </div>
+                <form class="col-sm-6">
+                  <div class="form-group">
+                    <label for="">
+                        折光率上限
+                        <span style="display: inline-block;margin-bottom:3px;width: 50px;height: 3px;background: #ffd85c;"></span>
+                    </label>
+                    <input type="number" class="form-control markLineFlg" id="zglTop" value="0.03"/>
+                  </div>
+                  <div class="form-group">
+                    <label for="">
+                        折光率下限
+                        <span style="display: inline-block;margin-bottom:3px;width: 50px;height: 3px;background: #ffd85c;"></span>
+                    </label>
+                    <input type="number" class="form-control markLineFlg" id="zglBottom" value="3"/>
+                  </div>
+                </form>
+                <form class="col-sm-6">
+                  <div class="form-group">
+                    <label for="">
+                        温度上限
+                        <span style="display: inline-block;margin-bottom:3px;width: 50px;height: 3px;background: #37A2DA;"></span>
+                    </label>
+                    <input type="number" class="form-control markLineFlg" id="wdTop" value="90"/>
+                  </div>
+                  <div class="form-group">
+                    <label for="">
+                        温度下限
+                        <span style="display: inline-block;margin-bottom:3px;width: 50px;height: 3px;background: #37A2DA;"></span>
+                    </label>
+                    <input type="number" class="form-control markLineFlg" id="wdBottom" value="10"/>
+                  </div>
+                </form>
             </div>
         </div>
     </div>

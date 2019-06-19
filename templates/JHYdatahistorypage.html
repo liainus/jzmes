@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>进红外实时数据</title>
     <link rel="stylesheet" href="../static/css/bootstrap.min.css">
+    <script type="text/javascript" src="../static/js/echarts.common.min.js"></script>
     <script type="text/javascript" src="../static/js/jquery-3.3.1.min.js"></script>
     <script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="../static/js/bootbox.min.js"></script>
@@ -26,11 +27,196 @@
                 })
             }
             getNewData();
-            setInterval(getNewData, 2000);
+            setInterval(function(){
+                getNewData();
+                getNewChart();
+            }, 2000);
 
             $(".pull-right").on('click',function(){
                 addTab("进红外历史数据","/JHYDatapage")
             })
+            var myDiv = document.getElementById("main")
+            var myChartContainer = function () {
+                var width = $("#chartBox").width()
+                myDiv.style.width = width +'px';
+            };
+            myChartContainer();
+            var myChart = echarts.init(myDiv)
+            myChart.showLoading();
+            $.ajax({
+                url: '/JHYDataHistory',
+                type: 'get',
+                data: {
+                    begin:myformatter(new Date(new Date().getTime() - 5*60*1000)),
+                    end:myformatter(new Date())
+                },
+                success: function (data) {
+                    data = JSON.parse(data)
+                    myChart.hideLoading();
+                    myChart.setOption(option = {
+                        tooltip: {
+                            trigger: 'axis'
+                        },
+                        legend: {
+                            data: ["橙皮苷","水分","粒径"]
+                        },
+                        toolbox: {
+                            feature: {
+                                mark : {show: true},
+                                dataView: {show: true, readOnly: false},
+                                restore: {show: true},
+                                saveAsImage: {show: true}
+                            }
+                        },
+                        dataZoom: {
+                            show: true,
+                            start : 0
+                        },
+                        grid: {
+                            y2: 80
+                        },
+                        xAxis: {
+                            type : 'time',
+                            splitNumber:10
+                        },
+                        yAxis: {
+                            type : 'value',
+                            axisLabel: {
+                                formatter: '{value}'
+                            }
+                        },
+                        series: [{
+                            name: "橙皮苷",
+                            type: 'line',
+                            symbol: 'none', //拐点
+                            showAllSymbol: true,
+                            smooth:true,
+                            data: data.CPG,
+                            markLine : {
+                                itemStyle: {
+                                    normal: {
+                                        borderWidth: 1,
+                                        lineStyle: {
+                                            type: 'solid',
+                                            width: 2,
+                                            color:"#ffd85c"
+                                        },
+                                        label: {
+                                            formatter: '',
+                                            textStyle: {
+                                                fontSize: 16,
+                                                fontWeight: "bolder",
+                                            },
+                                        }
+                                    },
+                                },
+                                data : [
+                                    {name : '橙皮苷上限',yAxis:3},
+                                    {name : '橙皮苷下限',yAxis:1}
+                                ]
+                            }
+                        },{
+                            name: "水分",
+                            type: 'line',
+                            symbol: 'none', //拐点
+                            showAllSymbol: true,
+                            smooth:true,
+                            data: data.SF,
+                            markLine : {
+                                itemStyle: {
+                                    normal: {
+                                        borderWidth: 1,
+                                        lineStyle: {
+                                            type: 'solid',
+                                            width: 2,
+                                            color:"#37A2DA"
+                                        },
+                                        label: {
+                                            formatter: '',
+                                            textStyle: {
+                                                fontSize: 16,
+                                                fontWeight: "bolder",
+                                            },
+                                        }
+                                    },
+                                },
+                                data : [
+                                    {name : '水分上限',yAxis:10},
+                                    {name : '水分下限',yAxis:1}
+                                ]
+                            }
+                        },{
+                            name: "粒径",
+                            type: 'line',
+                            symbol: 'none', //拐点
+                            showAllSymbol: true,
+                            smooth:true,
+                            data: data.LJ,
+                            markLine : {
+                                itemStyle: {
+                                    normal: {
+                                        borderWidth: 1,
+                                        lineStyle: {
+                                            type: 'solid',
+                                            width: 2,
+                                            color:"#008000"
+                                        },
+                                        label: {
+                                            formatter: '',
+                                            textStyle: {
+                                                fontSize: 16,
+                                                fontWeight: "bolder",
+                                            },
+                                        }
+                                    },
+                                },
+                                data : [
+                                    {name : '粒径上限',yAxis:90},
+                                    {name : '粒径下限',yAxis:10}
+                                ]
+                            }
+                        }]
+                    });
+                    myChart.setOption(option);
+                }
+            })
+            $("#chartBox").resize(function(){
+                myChartContainer();
+                myChart.resize();
+            })
+            $(".markLineFlg").on('blur',function(){
+                var cpgTop = $("#cpgTop").val()
+                var cpgBottom = $("#cpgBottom").val()
+                var sfTop = $("#sfTop").val()
+                var sfBottom = $("#sfBottom").val()
+                var ljTop = $("#ljTop").val()
+                var ljBottom = $("#ljBottom").val()
+                option.series[0].markLine.data[0].yAxis = cpgTop
+                option.series[0].markLine.data[1].yAxis = cpgBottom
+                option.series[1].markLine.data[0].yAxis = sfTop
+                option.series[1].markLine.data[1].yAxis = sfBottom
+                option.series[2].markLine.data[0].yAxis = ljTop
+                option.series[2].markLine.data[1].yAxis = ljBottom
+
+                myChart.setOption(option);
+            })
+            function getNewChart(){
+                $.ajax({
+                    url: '/JHYDataHistory',
+                    type: 'get',
+                    data: {
+                        begin:myformatter(new Date(new Date().getTime() - 5*60*1000)),
+                        end:myformatter(new Date())
+                    },
+                    success: function (data) {
+                        data = JSON.parse(data)
+                        option.series[0].data = data.CPG
+                        option.series[1].data = data.SF
+                        option.series[2].data = data.LJ
+                        myChart.setOption(option);
+                    }
+                })
+            }
             //按钮点击后添加选项卡
             function addTab(title, url) {
                 if (parent.parent.$('.easyui-tabs1').tabs('exists', title)) {
@@ -44,6 +230,23 @@
                         closable: true
                     });
                 }
+            }
+            //时间格式转换
+            function Appendzero(obj){
+                if(obj < 10){
+                    return "0" + obj
+                }else{
+                    return obj
+                }
+            }
+            function myformatter(date){
+                var y = date.getFullYear();
+                var m = date.getMonth()+1;
+                var d = date.getDate();
+                var h = date.getHours()
+                var minutes = date.getMinutes()
+                var s = date.getSeconds()
+                return Appendzero(y) + '-' + Appendzero(m) + '-' + Appendzero(d) + ' ' + Appendzero(h) + ':' + Appendzero(minutes);
             }
         })
     </script>
@@ -91,6 +294,59 @@
                             0
                         </div>
                     </div>
+                </div>
+                <div class="clearfix" style="border-top:1px solid #e3e5e4;padding: 25px 0;">
+                    <div title="进红外历史数据" id="chartBox">
+                        <div id="main" style="width: 1000px; height: 540px; margin: 10px auto;"></div>
+                    </div>
+                    <form class="col-sm-6">
+                      <div class="form-group">
+                        <label for="">
+                            橙皮苷上限
+                            <span style="display: inline-block;margin-bottom:3px;width: 50px;height: 3px;background: #ffd85c;"></span>
+                        </label>
+                        <input type="number" class="form-control markLineFlg" id="cpgTop" value="3"/>
+                      </div>
+                      <div class="form-group">
+                        <label for="">
+                            橙皮苷下限
+                            <span style="display: inline-block;margin-bottom:3px;width: 50px;height: 3px;background: #ffd85c;"></span>
+                        </label>
+                        <input type="number" class="form-control markLineFlg" id="cpgBottom" value="1"/>
+                      </div>
+                    </form>
+                    <form class="col-sm-6">
+                      <div class="form-group">
+                        <label for="">
+                            水分上限
+                            <span style="display: inline-block;margin-bottom:3px;width: 50px;height: 3px;background: #37A2DA;"></span>
+                        </label>
+                        <input type="number" class="form-control markLineFlg" id="sfTop" value="10"/>
+                      </div>
+                      <div class="form-group">
+                        <label for="">
+                            水分下限
+                            <span style="display: inline-block;margin-bottom:3px;width: 50px;height: 3px;background: #37A2DA;"></span>
+                        </label>
+                        <input type="number" class="form-control markLineFlg" id="sfBottom" value="1"/>
+                      </div>
+                    </form>
+                    <form class="col-sm-6">
+                      <div class="form-group">
+                        <label for="">
+                            粒径上限
+                            <span style="display: inline-block;margin-bottom:3px;width: 50px;height: 3px;background: #008000;"></span>
+                        </label>
+                        <input type="number" class="form-control markLineFlg" id="ljTop" value="90"/>
+                      </div>
+                      <div class="form-group">
+                        <label for="">
+                            粒径下限
+                            <span style="display: inline-block;margin-bottom:3px;width: 50px;height: 3px;background: #008000;"></span>
+                        </label>
+                        <input type="number" class="form-control markLineFlg" id="ljBottom" value="10"/>
+                      </div>
+                    </form>
                 </div>
             </div>
         </div>

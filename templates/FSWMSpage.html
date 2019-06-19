@@ -28,6 +28,7 @@
                     <th data-field="OperationPeople">操作人</th>
                     <th data-field="Description">描述</th>
                     <th data-field="OperationDate">操作时间</th>
+                    <th data-field="IsSend">是否发送</th>
                 </tr>
             </thead>
         </table>
@@ -73,7 +74,7 @@
                                 success: function (data) {
                                     if (data == "OK") {
                                         bootbox.alert("发送成功！")
-                                        $("#selfTab").datagrid('load')
+                                        $("#tab").datagrid('load')
                                     }else{
                                         bootbox.alert(data)
                                     }
