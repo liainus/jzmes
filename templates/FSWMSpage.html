@@ -15,7 +15,7 @@
     <div class="col-sm-12">
         <div class="modal-body" id="toolbar">
             <a href="#" class="btn btn-primary" id="send">发送WMS</a>
-            <a href="#" class="btn btn-success" id="getLib">获取库存</a>
+            <a href="#" class="btn btn-success" id="getLib">获取库存流水</a>
         </div>
         <table class="table table-bordered" id="tab">
             <thead>
@@ -51,49 +51,7 @@
                 singleSelect:false,
                 clickToSelect:true,
 	            locale: "zh-CN",
-	            striped: true,
-                onCheck:function(row,$element){
-                    console.log(row)
-                    $('#selfTab').bootstrapTable({
-                        url: '/WMS_ReceiveDetail',
-                        method: 'get',
-                        contentType: "application/x-www-form-urlencoded",
-                        pagination: true,
-                        pageNumber: 1,
-                        pageSize: 5,
-                        pageList: [5, 10, 15, 20],
-                        sidePagination: "server",
-                        paginationLoop: false,
-                        paginationPreText: '上一页',
-                        paginationNextText: '下一页',
-                        singleSelect: false,
-                        clickToSelect: true,
-                        locale: "zh-CN",
-                        striped: true,
-                        columns:[{
-                            field:'BatchNo',
-                            title:'批次号'
-                        },{
-                            field:'BillNo',
-                            title:'计划单号'
-                        },{
-                            field:'Num',
-                            title:'总数量'
-                        },{
-                            field:'mid',
-                            title:'物料编码'
-                        },{
-                            field:'MatName',
-                            title:'物料名称'
-                        },{
-                            field:'btype',
-                            title:'单据类型'
-                        },{
-                            field:'StoreDef_id',
-                            title:'库房号'
-                        }]
-                    })
-                }
+	            striped: true
             });
             $("#send").on('click',function(){
                 var rows = $("#tab").bootstrapTable('getSelections')
@@ -102,7 +60,7 @@
                     bootbox.confirm('您要发送所选的记录吗？', function (flag) {
                         if (flag) {
                             for (var i = 0; i < rows.length; i++) {
-                                var obj=createKeyIDObj(parseInt(rows[i].id));
+                                var obj=createKeyIDObj(parseInt(rows[i].ID));
                                 jsonarray.push(obj);
                             }
                             var a = JSON.stringify(jsonarray);
@@ -125,6 +83,55 @@
                     });
                 } else {
                     bootbox.alert("请选择要发送的记录")
+                }
+            })
+            $("#getLib").on('click',function(){
+                var rows = $("#tab").bootstrapTable('getSelections')
+                if (rows.length == 1) {
+                    $('#selfTab').bootstrapTable({
+                        url: '/WMS_ReceiveDetail',
+                        queryParams: {
+                            ID:rows[0].ID
+                        },
+                        method: 'get',
+                        contentType: "application/x-www-form-urlencoded",
+                        pagination: true,
+                        pageNumber: 1,
+                        pageSize: 5,
+                        pageList: [5, 10, 15, 20],
+                        sidePagination: "server",
+                        paginationLoop: false,
+                        paginationPreText: '上一页',
+                        paginationNextText: '下一页',
+                        singleSelect: false,
+                        clickToSelect: true,
+                        locale: "zh-CN",
+                        striped: true,
+                        columns: [{
+                            field: 'BatchNo',
+                            title: '批次号'
+                        }, {
+                            field: 'BillNo',
+                            title: '计划单号'
+                        }, {
+                            field: 'Num',
+                            title: '总数量'
+                        }, {
+                            field: 'mid',
+                            title: '物料编码'
+                        }, {
+                            field: 'MatName',
+                            title: '物料名称'
+                        }, {
+                            field: 'btype',
+                            title: '单据类型'
+                        }, {
+                            field: 'StoreDef_id',
+                            title: '库房号'
+                        }]
+                    })
+                }else{
+                    bootbox.alert("请单选一条数据进行查询")
                 }
             })
             //获取页面传参
