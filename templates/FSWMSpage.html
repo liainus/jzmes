@@ -58,28 +58,33 @@
                 var rows = $("#tab").bootstrapTable('getSelections')
                 if (rows.length > 0) {
                     var jsonarray=[];
-                    bootbox.confirm('您要发送所选的记录吗？', function (flag) {
-                        if (flag) {
-                            for (var i = 0; i < rows.length; i++) {
-                                var obj=createKeyIDObj(parseInt(rows[i].ID));
-                                jsonarray.push(obj);
-                            }
-                            var a = JSON.stringify(jsonarray);
-                            $.ajax({
-                                url: '/WMS_SendPlan',
-                                method: 'post',
-                                traditional: true,
-                                data: a,
-                                dataType: 'json',
-                                success: function (data) {
-                                    if (data == "OK") {
-                                        bootbox.alert("发送成功！")
-                                        $("#tab").datagrid('load')
-                                    }else{
-                                        bootbox.alert(data)
-                                    }
+                    bootbox.confirm({
+                        message:'您要发送所选的记录吗？',
+                        callback:function (result) {
+                            if (result) {
+                                for (var i = 0; i < rows.length; i++) {
+                                    var obj = createKeyIDObj(parseInt(rows[i].ID));
+                                    jsonarray.push(obj);
                                 }
-                            });
+                                var a = JSON.stringify(jsonarray);
+                                $.ajax({
+                                    url: '/WMS_SendPlan',
+                                    method: 'post',
+                                    traditional: true,
+                                    data: a,
+                                    success: function (data) {
+                                        if (data == "OK") {
+                                            bootbox.alert("发送成功！")
+                                            $("#tab").bootstrapTable('refresh');
+                                        } else {
+                                            bootbox.alert(data)
+                                        }
+                                    },
+                                    error:function(){
+                                        bootbox.alert("请求失败")
+                                    }
+                                });
+                            }
                         }
                     });
                 } else {
@@ -89,6 +94,7 @@
             $("#getLib").on('click',function(){
                 var rows = $("#tab").bootstrapTable('getSelections')
                 if (rows.length == 1) {
+                    $('#selfTab').bootstrapTable("destroy")
                     $('#selfTab').bootstrapTable({
                         url: '/WMS_ReceiveDetail',
                         queryParams: {
