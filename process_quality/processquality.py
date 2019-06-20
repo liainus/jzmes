@@ -525,7 +525,7 @@ class SAP_Interface(ServiceBase):
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "SAP同步采购订单报错：" + str(e), current_user.Name)
+            insertSyslog("error", "WMS_SendSAPMatil报错：" + str(e), current_user.Name)
             return json.dumps(e)
 
 class NH_Interface(ServiceBase):
@@ -783,14 +783,14 @@ def WMStatusLoadCreate():
 
 #备件类型修改
 @Process.route('/WMStatusLoadUpdate', methods=['GET', 'POST'])
-def WMStatusLoadCreate():
+def WMStatusLoadUpdate():
     if request.method == 'POST':
         data = request.values
         return update(WMStatusLoad, data)
 
 #备件类型删除
 @Process.route('/WMStatusLoadDetele', methods=['GET', 'POST'])
-def WMStatusLoadCreate():
+def WMStatusLoadDetele():
     if request.method == 'POST':
         data = request.values
         return delete(WMStatusLoad, data)
@@ -823,3 +823,31 @@ def WMStatusLoadSelect():
             logger.error(e)
             insertSyslog("error", "WMStatusLoadSelect查询报错Error：" + str(e), current_user.Name)
             return json.dumps("WMStatusLoadSelect查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+@Process.route('/WMStatusLoadConfirm', methods=['GET', 'POST'])
+def WMStatusLoadConfirm():
+    """原料质检确认"""
+    if request.method == 'POST':
+        data = request.values
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                NewStatus = data.get("NewStatus")
+                ID = data.get("ID")
+                oclass = db_session.query(WMStatusLoad).filter(
+                    WMStatusLoad.ID == ID).first()
+                oclass.NewStatus = NewStatus
+                db_session.commit()
+                dic = db_session.query(WMStatusLoad).filter(
+                    WMStatusLoad.ID == ID).first()
+                client = Client(Model.Global.WMSurl)
+                ret = client.service.Mes_Interface("MStatusLoad", json.dumps(dic))
+                if ret[0] == "SUCCESS":
+                    return 'OK'
+                else:
+                    return json.dumps("调用接口MStatusLoad报错："+ret[1])
+                return 'OK'
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "路由：/WMStatusLoadConfirm,Error：" + str(e), current_user.Name)
