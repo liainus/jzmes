@@ -2638,7 +2638,6 @@ class MaterialBOMWebIFS(object):
 		odata = rcvdata
 		try:
 			json_str = json.dumps(odata.to_dict())
-			print(json_str)
 			if len(json_str) > 10:
 				pages = int(odata['page'])
 				rowsnumber = int(odata['rows'])

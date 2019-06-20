@@ -6516,39 +6516,39 @@ def electionBatchSearch():
                 PName = data['PName']
                 BatchID = data['batchID']
                 Pclass = db_session.query(ProductUnitRoute).filter(ProductUnitRoute.PDUnitRouteName == PName).first()
+                BrandName = db_session.query(ProductRule.PRName).filter(ProductRule.ID == BrandID).first()
                 PUID = Pclass.PUID
                 dic = {}
                 if (Pclass.PDUnitRouteName == "煎煮段"):
-                    TEQPIDs = searchEqpID(BrandID, BatchID, PUID, "吊篮提取罐")
+                    TEQPIDs = searchEqpID(BrandName, BatchID, PUID, "吊篮提取罐")
                     for i in range(0, len(TEQPIDs)):
                         EQPID = TEQPIDs[i]
                         EQPName = db_session.query(Equipment.EQPName).filter(Equipment.ID == EQPID).first()
                         dic["TQEQPName" + str(i)] = EQPName[0]
                         dic["tqstartTime" + str(i)] = strch(
-                            searO(BrandID, BatchID, Pclass.ID, EQPID, "提取开始时间").SampleValue)
+                            searO(BrandName, BatchID, Pclass.ID, EQPID, "提取开始时间").SampleValue)
                         dic["tqendTime" + str(i)] = strch(
-                            searO(BrandID, BatchID, Pclass.ID, EQPID, "提取结束时间").SampleValue)
-                        firstAddWater = searO(BrandID, BatchID, Pclass.ID, EQPID, "提取第一次加水量设定值")
+                            searO(BrandName, BatchID, Pclass.ID, EQPID, "提取结束时间").SampleValue)
+                        firstAddWater = searO(BrandName, BatchID, Pclass.ID, EQPID, "提取第一次加水量设定值")
                         dic["firstAddWater" + str(i)] = firstAddWater.SampleValue + firstAddWater.Unit
-                        secondAddWater = searO(BrandID, BatchID, Pclass.ID, EQPID, "提取第二次加水量设定值")
+                        secondAddWater = searO(BrandName, BatchID, Pclass.ID, EQPID, "提取第二次加水量设定值")
                         dic["secondAddWater" + str(i)] = secondAddWater.SampleValue + secondAddWater.Unit
                         for j in range(1, 6, 2):
-                            temp = searO(BrandID, BatchID, Pclass.ID, EQPID, "提取第一次煎煮温度采集" + str(j))
+                            temp = searO(BrandName, BatchID, Pclass.ID, EQPID, "提取第一次煎煮温度采集" + str(j))
                             dic["firstTemp" + "_" + str(i) + "_" + str(j)] = changef(temp.SampleValue) + temp.Unit
                             dic["firstTempTime" + "_" + str(i) + "_" + str(j)] = strchange(temp.SampleDate)
-                            stemp = searO(BrandID, BatchID, Pclass.ID, EQPID, "提取第二次煎煮温度采集" + str(j))
+                            stemp = searO(BrandName, BatchID, Pclass.ID, EQPID, "提取第二次煎煮温度采集" + str(j))
                             dic["secondTemp" + "_" + str(i) + "_" + str(j)] = changef(stemp.SampleValue) + stemp.Unit
                             dic["secondTempTime" + "_" + str(i) + "_" + str(j)] = strchange(stemp.SampleDate)
                         dic["firstDevotingTime" + str(i)] = strchange(
-                            searO(BrandID, BatchID, Pclass.ID, EQPID, "提取第一次煎煮开始时间").SampleValue)
+                            searO(BrandName, BatchID, Pclass.ID, EQPID, "提取第一次煎煮开始时间").SampleValue)
                         dic["firstDevotingEndTime" + str(i)] = strchange(
-                            searO(BrandID, BatchID, Pclass.ID, EQPID, "提取第一次煎煮结束时间").SampleValue)
+                            searO(BrandName, BatchID, Pclass.ID, EQPID, "提取第一次煎煮结束时间").SampleValue)
                         dic["secondDevotingTime" + str(i)] = strchange(
-                            searO(BrandID, BatchID, Pclass.ID, EQPID, "提取第二次煎煮开始时间").SampleValue)
+                            searO(BrandName, BatchID, Pclass.ID, EQPID, "提取第二次煎煮开始时间").SampleValue)
                         dic["secondDevotingEndTime" + str(i)] = strchange(
-                            searO(BrandID, BatchID, Pclass.ID, EQPID, "提取第二次煎煮结束时间").SampleValue)
+                            searO(BrandName, BatchID, Pclass.ID, EQPID, "提取第二次煎煮结束时间").SampleValue)
 
-                    BrandName = db_session.query(ProductRule.PRName).filter(ProductRule.ID == BrandID).first()[0]
                     JEQPIDs = searchEqpZJ(BrandName, BatchID, PUID, "静置罐")
                     for i in range(0, len(JEQPIDs)):
                         EQPID = JEQPIDs[i]
@@ -6557,92 +6557,92 @@ def electionBatchSearch():
                         dic["jEndTime" + str(i)] = strch(
                             searJZ(BrandName, BatchID, Pclass.ID, EQPID, "静置结束时间").SampleValue)
                 elif (Pclass.PDUnitRouteName == "浓缩段"):
-                    NEQPIDs = searchEqpID(BrandID, BatchID, PUID, "MVR")
+                    NEQPIDs = searchEqpID(BrandName, BatchID, PUID, "MVR")
                     for i in range(len(NEQPIDs)):
                         EQPID = NEQPIDs[i]
                         EQPName = db_session.query(Equipment.EQPName).filter(Equipment.ID == EQPID).first()
                         dic["NSEQPName" + str(i)] = EQPName[0]
                         count = 0
                         for j in range(1, 34, 2):
-                            zkd = searO(BrandID, BatchID, Pclass.ID, EQPID, "浓缩真空度采集" + str(j))
+                            zkd = searO(BrandName, BatchID, Pclass.ID, EQPID, "浓缩真空度采集" + str(j))
                             dic["zkd" + "_" + str(i) + "_" + str(count)] = changef(zkd.SampleValue) + zkd.Unit
                             dic["zkdTime" + "_" + str(i) + "_" + str(count)] = strchange(zkd.SampleDate)
-                            wd = searO(BrandID, BatchID, Pclass.ID, EQPID, "浓缩温度采集" + str(j))
+                            wd = searO(BrandName, BatchID, Pclass.ID, EQPID, "浓缩温度采集" + str(j))
                             dic["wd" + "_" + str(i) + "_" + str(count)] = changef(wd.SampleValue) + wd.Unit
                             dic["wdTime" + "_" + str(i) + "_" + str(count)] = strchange(wd.SampleDate)
                             count = count + 1
                         dic["nsstartTime" + str(i)] = strch(
-                            searO(BrandID, BatchID, Pclass.ID, EQPID, "浓缩开始时间").SampleValue)
+                            searO(BrandName, BatchID, Pclass.ID, EQPID, "浓缩开始时间").SampleValue)
                         dic["nsendTime" + str(i)] = strch(
-                            searO(BrandID, BatchID, Pclass.ID, EQPID, "浓缩结束时间").SampleValue)
+                            searO(BrandName, BatchID, Pclass.ID, EQPID, "浓缩结束时间").SampleValue)
                 elif (Pclass.PDUnitRouteName == "喷雾干燥段"):
-                    HEQPIDs = searchEqpID(BrandID, BatchID, PUID, "总混罐")
+                    HEQPIDs = searchEqpID(BrandName, BatchID, PUID, "总混罐")
                     for i in range(len(HEQPIDs)):
                         EQPID = HEQPIDs[i]
                         EQPName = db_session.query(Equipment.EQPName).filter(Equipment.ID == EQPID).first()
                         dic["ZHEQPName" + str(i)] = EQPName[0]
                         dic["zhStartTime" + str(i)] = strch(
-                            searO(BrandID, BatchID, Pclass.ID, EQPID, "总混搅拌开始时间").SampleValue)
+                            searO(BrandName, BatchID, Pclass.ID, EQPID, "总混搅拌开始时间").SampleValue)
                         dic["zhEndTime" + str(i)] = strch(
-                            searO(BrandID, BatchID, Pclass.ID, EQPID, "总混搅拌结束时间").SampleValue)
-                    PEQPIDs = searchEqpID(BrandID, BatchID, PUID, "喷雾塔")
+                            searO(BrandName, BatchID, Pclass.ID, EQPID, "总混搅拌结束时间").SampleValue)
+                    PEQPIDs = searchEqpID(BrandName, BatchID, PUID, "喷雾塔")
                     for i in range(len(PEQPIDs)):
                         EQPID = PEQPIDs[i]
                         EQPName = db_session.query(Equipment.EQPName).filter(Equipment.ID == EQPID).first()
                         dic["PWEQPName" + str(i)] = EQPName[0]
                         dic["pwStartTime" + str(i)] = strch(
-                            searO(BrandID, BatchID, Pclass.ID, EQPID, "干燥开始时间").SampleValue)
+                            searO(BrandName, BatchID, Pclass.ID, EQPID, "干燥开始时间").SampleValue)
                         dic["pwEndTime" + str(i)] = strch(
-                            searO(BrandID, BatchID, Pclass.ID, EQPID, "干燥结束时间").SampleValue)
+                            searO(BrandName, BatchID, Pclass.ID, EQPID, "干燥结束时间").SampleValue)
                         cc = 0
                         for j in range(1, 34, 2):
-                            hff = searO(BrandID, BatchID, Pclass.ID, EQPID, "混风温度采集" + str(j))
+                            hff = searO(BrandName, BatchID, Pclass.ID, EQPID, "混风温度采集" + str(j))
                             dic["hfTemp_" + str(i) + "_" + str(cc)] = changef(hff.SampleValue) + hff.Unit
                             dic["hfTime_" + str(i) + "_" + str(cc)] = strchange(hff.SampleDate)
-                            zjf = searO(BrandID, BatchID, Pclass.ID, EQPID, "进风温度采集" + str(j))
+                            zjf = searO(BrandName, BatchID, Pclass.ID, EQPID, "进风温度采集" + str(j))
                             dic["zjfTemp_" + str(i) + "_" + str(cc)] = changef(zjf.SampleValue) + zjf.Unit
                             dic["zjfTime_" + str(i) + "_" + str(cc)] = strchange(zjf.SampleDate)
-                            zjf = searO(BrandID, BatchID, Pclass.ID, EQPID, "出风温度采集" + str(j))
+                            zjf = searO(BrandName, BatchID, Pclass.ID, EQPID, "出风温度采集" + str(j))
                             dic["cfTemp_" + str(i) + "_" + str(cc)] = changef(zjf.SampleValue) + zjf.Unit
                             dic["cfTime_" + str(i) + "_" + str(cc)] = strchange(zjf.SampleDate)
                             cc = cc + 1
                 elif (Pclass.PDUnitRouteName == "醇沉段"):
-                    CEQPIDs = searchEqpID(BrandID, BatchID, PUID, "醇沉罐")
+                    CEQPIDs = searchEqpID(BrandName, BatchID, PUID, "醇沉罐")
                     for i in range(len(CEQPIDs)):
                         EQPID = CEQPIDs[i]
                         EQPName = db_session.query(Equipment.EQPName).filter(Equipment.ID == EQPID).first()
                         dic["CCEQPName" + str(i)] = EQPName[0]
                         dic["secondDevotingTime" + str(i)] = strchange(
-                            searO(BrandID, BatchID, Pclass.ID, EQPID, "醇沉浓缩液体积").SampleValue)
-                        nsy = searO(BrandID, BatchID, Pclass.ID, EQPID, "醇沉浓缩液体积")
+                            searO(BrandName, BatchID, Pclass.ID, EQPID, "醇沉浓缩液体积").SampleValue)
+                        nsy = searO(BrandName, BatchID, Pclass.ID, EQPID, "醇沉浓缩液体积")
                         dic["nsy_" + str(i) + "_" + str(0)] = nsy.SampleValue + nsy.Unit
-                        ycc = searO(BrandID, BatchID, Pclass.ID, EQPID, "醇沉乙醇用量")
+                        ycc = searO(BrandName, BatchID, Pclass.ID, EQPID, "醇沉乙醇用量")
                         dic["yc_" + str(i) + "_" + str(0)] = ycc.SampleValue + ycc.Unit
                         dic["jzStartTime" + str(i)] = strch(
-                            searO(BrandID, BatchID, Pclass.ID, EQPID, "醇沉静置开始时间").SampleValue)
+                            searO(BrandName, BatchID, Pclass.ID, EQPID, "醇沉静置开始时间").SampleValue)
                         dic["jzEndTime" + str(i)] = strch(
-                            searO(BrandID, BatchID, Pclass.ID, EQPID, "醇沉静置结束时间").SampleValue)
+                            searO(BrandName, BatchID, Pclass.ID, EQPID, "醇沉静置结束时间").SampleValue)
                         dic["scStartTime" + str(i)] = strch(
-                            searO(BrandID, BatchID, Pclass.ID, EQPID, "醇沉开始时间").SampleValue)
+                            searO(BrandName, BatchID, Pclass.ID, EQPID, "醇沉开始时间").SampleValue)
                 elif (Pclass.PDUnitRouteName == "单效浓缩段"):
-                    DIDs = searchEqpID(BrandID, BatchID, PUID, "单效浓缩")
+                    DIDs = searchEqpID(BrandName, BatchID, PUID, "单效浓缩")
                     for i in range(len(DIDs)):
                         EQPID = DIDs[i]
                         EQPName = db_session.query(Equipment.EQPName).filter(Equipment.ID == EQPID).first()
                         dic["DXNSEQPName" + str(i)] = EQPName[0]
                         dic["dxStartTime" + str(i)] = strch(
-                            searO(BrandID, BatchID, Pclass.ID, EQPID, "单效浓缩开始时间").SampleValue)
+                            searO(BrandName, BatchID, Pclass.ID, EQPID, "单效浓缩开始时间").SampleValue)
                         dic["dxEndTime" + str(i)] = strch(
-                            searO(BrandID, BatchID, Pclass.ID, EQPID, "单效浓缩结束时间").SampleValue)
+                            searO(BrandName, BatchID, Pclass.ID, EQPID, "单效浓缩结束时间").SampleValue)
                         yy = 0
                         for j in range(1, 34, 2):
-                            zqyl = searO(BrandID, BatchID, Pclass.ID, EQPID, "单效浓缩蒸汽压力采集" + str(j))
+                            zqyl = searO(BrandName, BatchID, Pclass.ID, EQPID, "单效浓缩蒸汽压力采集" + str(j))
                             dic["zqyl_" + str(i) + "_" + str(yy)] = changef(zqyl.SampleValue) + zqyl.Unit
                             dic["zqylTime_" + str(i) + "_" + str(yy)] = strchange(zqyl.SampleDate)
-                            dzkd = searO(BrandID, BatchID, Pclass.ID, EQPID, "单效浓缩真空度采集" + str(j))
+                            dzkd = searO(BrandName, BatchID, Pclass.ID, EQPID, "单效浓缩真空度采集" + str(j))
                             dic["dzkd_" + str(i) + "_" + str(yy)] = changef(dzkd.SampleValue) + dzkd.Unit
                             dic["dzkdTime_" + str(i) + "_" + str(yy)] = strchange(dzkd.SampleDate)
-                            dwd = searO(BrandID, BatchID, Pclass.ID, EQPID, "单效浓缩温度采集" + str(j))
+                            dwd = searO(BrandName, BatchID, Pclass.ID, EQPID, "单效浓缩温度采集" + str(j))
                             dic["dwd_" + str(i) + "_" + str(yy)] = changef(dwd.SampleValue) + dwd.Unit
                             dic["dwdTime_" + str(i) + "_" + str(yy)] = strchange(dwd.SampleDate)
                 return json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False)
@@ -6695,8 +6695,8 @@ def getmin(args):
     return changef(min(num1)) + unit
 
 
-def searO(BrandID, BatchID, PID, EQPID, Type):
-    re = db_session.query(ElectronicBatchTwo).filter(ElectronicBatchTwo.BrandID == BrandID,
+def searO(BrandName, BatchID, PID, EQPID, Type):
+    re = db_session.query(ElectronicBatchTwo).filter(ElectronicBatchTwo.BrandName == BrandName,
                                                      ElectronicBatchTwo.BatchID == BatchID,
                                                      ElectronicBatchTwo.PDUnitRouteID == PID,
                                                      ElectronicBatchTwo.EQPID == EQPID, ElectronicBatchTwo.Type == Type).first()
@@ -6723,11 +6723,11 @@ def searJZ(BrandName, BatchID, PID, EQPID, Type):
         return re
 
 
-def searchEqpID(BrandID, BatchID, PID, name):
+def searchEqpID(BrandName, BatchID, PID, name):
     EQPIDs = db_session.query(Equipment.ID).filter(Equipment.PUID == PID,
                                                    Equipment.EQPName.like("%" + name + "%")).all()
     EQPS = db_session.query(ElectronicBatchTwo.EQPID).distinct().filter(ElectronicBatchTwo.PDUnitRouteID == PID,
-                                                                        ElectronicBatchTwo.BrandID == BrandID,
+                                                                        ElectronicBatchTwo.BrandName == BrandName,
                                                                         ElectronicBatchTwo.BatchID == BatchID).all()
     tmp = [val for val in EQPIDs if val in EQPS]
     return tmp
@@ -8090,7 +8090,7 @@ def JHYdatahistorypage():
 @app.route('/JHYRedis', methods=['POST', 'GET'])
 def JHYRedis():
     '''
-    折光仪实时数据
+    进红外实时数据
     :return:
     '''
     if request.method == 'GET':
