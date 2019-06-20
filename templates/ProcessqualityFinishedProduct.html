@@ -19,7 +19,7 @@
 {#    <script type="text/javascript" src="../static/generic/build/pdf.js"></script>#}
 </head>
 <body>
-    <div style="margin: 20px 0;">
+    <div style="padding: 15px">
         <div id="BatchClassDialog" class="easyui-dialog" style="width:400px;height:400px;padding:10px;"
              data-options="closed:'true',buttons:'#BatchClassDialogButtons',modal:true">
             <form id="BatchClassDialogForm" method="post" class="dialog-form" enctype="multipart/form-data">
@@ -72,7 +72,7 @@
             <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="toolbar.editBatch()">修改</a>
             <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="toolbar.deleteBatch()">删除</a>
             <a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="toolbar.ConfirmOK()">确认合格</a>
-            <a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="toolbar.ConfirmNO()">确认不合格</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-back" onclick="toolbar.ConfirmNO()">确认不合格</a>
             <a href="#" class="easyui-linkbutton" iconCls="icon-reload" onclick="toolbar.reloadBatch()">刷新</a>
         </div>
         <table class="easyui-datagrid" id="tabBatch" title="成品确认流程" style="width:100%;margin-bottom: 20px;" data-options="
