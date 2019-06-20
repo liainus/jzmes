@@ -1954,23 +1954,23 @@ def EquipmentFailureRunXTSearch():
             equip_failure_time = list()
             equip_downtime = list()
             equipment_batchnos = list()
-            for i in range(0,7):
-                # if BatchNo[0] == None or "备料" in BatchNo[0]:
-                #     continue
-                gz = db_session.query(EquipmentStatusCount.Duration).filter(EquipmentStatusCount.BatchNo == BatchNoS[i], EquipmentStatusCount.Status == '设备故障').first()
-                stop = db_session.query(EquipmentStatusCount.Duration).filter(EquipmentStatusCount.BatchNo == BatchNoS[i],
+            for BatchNo in BatchNoS:
+                if BatchNo[0] == None or "备料" in BatchNo[0]:
+                    continue
+                gz = db_session.query(EquipmentStatusCount.Duration).filter(EquipmentStatusCount.BatchNo == BatchNo, EquipmentStatusCount.Status == '设备故障').first()
+                stop = db_session.query(EquipmentStatusCount.Duration).filter(EquipmentStatusCount.BatchNo == BatchNo,
                                                                               EquipmentStatusCount.Status == '设备停机').first()
-                run = db_session.query(EquipmentStatusCount.Duration).filter(EquipmentStatusCount.BatchNo == BatchNoS[i],
+                run = db_session.query(EquipmentStatusCount.Duration).filter(EquipmentStatusCount.BatchNo == BatchNo,
                                                                               EquipmentStatusCount.Status == '设备运行').first()
-                # equipment_batchnos.append(BatchNo[0])
+                equipment_batchnos.append(BatchNo[0])
                 equip_run_time.append(round(run[0]/60) if run != None  else '0')
-                equip_failure_time.append('0' if run != None  else '0')
+                equip_failure_time.append(round(gz[0]/60) if run != None  else '0')
                 equip_downtime.append(round(stop[0]/60) if run != None  else '0')
             dir = {}
             dir["equip_run_time"] = equip_run_time
             dir["equip_failure_time"] = equip_failure_time
             dir["equip_downtime"] = equip_downtime
-            dir["equipment_batchnos"] = ["R1101-1","R1101-2","R1101-3","R1101-4","R1101-5","R1101-6"]
+            dir["equipment_batchnos"] = equipment_batchnos
             return json.dumps(dir, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
