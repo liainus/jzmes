@@ -187,10 +187,10 @@
                         if (row) {
                             $("#BatchClassDialog").dialog('open').dialog('setTitle','修改');
                             $("#ID").val(row.ID)
-                            $("#BillNo").val("")
-                            $("#mid").val("")
-                            $("#BatchNo").val("")
-                            $("#StoreDef_ID").val("")
+                            $("#BillNo").val(row.BillNo)
+                            $("#mid").val(row.mid)
+                            $("#BatchNo").val(row.BatchNo)
+                            $("#StoreDef_ID").val(row.StoreDef_ID)
                         };
                     } else if (rows.length == 0) {
                         $.messager.alert('警告操作！', '请至少选定一条数据进行编辑！', 'warning');
@@ -229,7 +229,8 @@
                             BillNo:$('#BillNo').val(),
                             mid:$('#mid').val(),
                             BatchNo:$('#BatchNo').val(),
-                            StoreDef_ID:$('#StoreDef_ID').val()
+                            StoreDef_ID:$('#StoreDef_ID').val(),
+                            NewStatus:"3"
                         },
                         cache: false,
                         error: function(data){
@@ -303,7 +304,7 @@
                                     method: 'POST',
                                     data: {
                                         ID:rows[0].ID,
-                                        NewStatus:"5"
+                                        NewStatus:"1"
                                     },
                                     success: function (data) {
                                         if(data == "OK"){
@@ -337,7 +338,7 @@
                                     method: 'POST',
                                     data: {
                                         ID:rows[0].ID,
-                                        NewStatus:"10"
+                                        NewStatus:"2"
                                     },
                                     success: function (data) {
                                         if(data == "OK"){
