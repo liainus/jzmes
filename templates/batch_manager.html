@@ -54,67 +54,81 @@
             </thead>
         </table>
         <div id="tab" class="easyui-tabs" style="width:100%;height:250px;margin-top: 10px;">
-            <div title="批次任务明细" data-options="closable:false"  style="padding:0px;display:none;">
-                <table id="TasksTab" class="easyui-datagrid" style="width:100%;"  data-options="url:
-                '/batchManager/SearchBatchZYTask', method: 'get', rownumbers:true, singleSelect:false, autoRowHeight:false, pagination:true, striped:true, checkOnSelect:false,
-                selectOnCheck:false, collapsible:true, pageSize:10 " >
-                <thead>
-                    <tr>
-                        <th data-options="field: 'PlanDate',align: 'center' ">计划日期</th>
-                        <th data-options="field: 'TaskID',align: 'center' ">制药计划单号</th>
-                        <th data-options="field: 'BatchID',align: 'center' ">批次号</th>
-                        <th data-options="field: 'PlanSeq',align: 'center' ">顺序号</th>
-                        <th data-options="field: 'PUID',align: 'center' ">工艺段</th>
-                        <th data-options="field: 'PDUnitRouteName',align: 'center' ">工艺路线名称</th>
-                        <th data-options="field: 'PlanType',align: 'center' ">计划类型</th>
-                        <th data-options="field: 'BrandID',align: 'center' ">牌号编码</th>
-                        <th data-options="field: 'BrandName',align: 'center' ">牌号名称</th>
-                        <th data-options="field: 'MaterialID',align: 'center' ">物料ID</th>
-                        <th data-options="field: 'MaterialName',align: 'center' ">物料名称名称</th>
-                        <th data-options="field: 'PlanQuantity',align: 'center' ">计划重量</th>
-                        <th data-options="field: 'ActQuantity',align: 'center' ">实际重量</th>
-                        <th data-options="field: 'Unit',align: 'center' ">单位</th>
-                        <th data-options="field: 'EnterTime',align: 'center' ">录入时间</th>
-                        <th data-options="field: 'ActBeginTime',align: 'center' ">实际开始时间</th>
-                        <th data-options="field: 'ActEndTime',align: 'center' ">实际完成时间</th>
-                        <th data-options="field: 'SetRepeatCount',align: 'center' ">设定重复次数</th>
-                        <th data-options="field: 'CurretnRepeatCount',align: 'center' ">当前重复次数</th>
-                        <th data-options="field: 'ActTank',align: 'center' ">实际罐号</th>
-                        <th data-options="field: 'TaskStatus',align: 'center' " formatter="formatterStatus">任务状态</th>
-                        <th data-options="field: 'LockStatus',align: 'center' " formatter="formatterLockStatus">任务锁定状态</th>
-                    </tr>
-                </thead>
-            </table>
+            <div title="库存信息" data-options="closable:false"  style="padding:0px;display:none;">
+                <table id="StoreTab" class="easyui-datagrid" style="width:100%;"  data-options="
+                    url:'/WMSStoreSelect',
+                    method: 'get',
+                    rownumbers:true,
+                    singleSelect:false,
+                    autoRowHeight:false,
+                    pagination:true,
+                    striped:true,
+                    checkOnSelect:false,
+                    selectOnCheck:false,
+                    collapsible:true,
+                    pageSize:10 " >
+                    <thead>
+                        <tr>
+                            <th data-options="field: 'BrandName',width:200,align: 'center' ">品名</th>
+                            <th data-options="field: 'PalletID',width:200,align: 'center' ">托盘号</th>
+                            <th data-options="field: 'BatchNo',width:200,align: 'center' ">批次</th>
+                            <th data-options="field: 'CID',width:100,align: 'center' ">货位号</th>
+                            <th data-options="field: 'StoreWeight',width:100,align: 'center' ">重量</th>
+                            <th data-options="field: 'MID',width:200,align: 'center' ">物料编码</th>
+                            <th data-options="field: 'MATNAME',width:200,align: 'center' ">物料名称</th>
+                            <th data-options="field: 'FormulaID',width:200,align: 'center' ">配方号</th>
+                            <th data-options="field: 'FirstInTime',width:200,align: 'center' ">入库时间</th>
+                        </tr>
+                    </thead>
+                </table>
             </div>
-            <div title="批次物料明细" data-options="closable:false" style="overflow:auto;padding:0px;display:none;">
-                <table id="MaterialsTab" class="easyui-datagrid" style="width:100%;" data-options="url:
-                '/ZYPlanGuid/CriticalMaterials', method: 'get', rownumbers:true, singleSelect:false, autoRowHeight:false, pagination:true, striped:true, checkOnSelect:false,
-                selectOnCheck:false, collapsible:true, pageSize:10 " >
-                <thead>
-                    <tr>
-                        <th data-options="field: 'PlanDate',align: 'center' ">计划日期</th>
-                        <th data-options="field: 'TaskID',align: 'center' ">制药计划单号</th>
-                        <th data-options="field: 'BatchID',align: 'center' ">批次号</th>
-                        <th data-options="field: 'PlanSeq',align: 'center' ">顺序号</th>
-                        <th data-options="field: 'PUID',align: 'center' ">工艺段</th>
-                        <th data-options="field: 'PDUnitRouteName',align: 'center' ">工艺路线名称</th>
-                        <th data-options="field: 'PlanType',align: 'center' ">计划类型</th>
-                        <th data-options="field: 'BrandID',align: 'center' ">牌号编码</th>
-                        <th data-options="field: 'BrandName',align: 'center' ">牌号名称</th>
-                        <th data-options="field: 'PlanQuantity',align: 'center' ">计划重量</th>
-                        <th data-options="field: 'ActQuantity',align: 'center' ">实际重量</th>
-                        <th data-options="field: 'Unit',align: 'center' ">单位</th>
-                        <th data-options="field: 'EnterTime',align: 'center' ">录入时间</th>
-                        <th data-options="field: 'ActBeginTime',align: 'center' ">实际开始时间</th>
-                        <th data-options="field: 'ActEndTime',align: 'center' ">实际完成时间</th>
-                        <th data-options="field: 'SetRepeatCount',align: 'center' ">设定重复次数</th>
-                        <th data-options="field: 'CurretnRepeatCount',align: 'center' ">当前重复次数</th>
-                        <th data-options="field: 'ActTank',align: 'center' ">实际罐号</th>
-                        <th data-options="field: 'TaskStatus',align: 'center' " formatter="formatterStatus">任务状态</th>
-                        <th data-options="field: 'LockStatus',align: 'center' " formatter="formatterLockStatus">任务锁定状态</th>
-                    </tr>
-                </thead>
-            </table>
+            <div title="流水信息" data-options="closable:false" style="overflow:auto;padding:0px;display:none;">
+                <table id="DetailedTab" class="easyui-datagrid" style="width:100%;" data-options="
+                    url:'/WMSDetailedSelect',
+                    method: 'get',
+                    rownumbers:true,
+                    singleSelect:false,
+                    autoRowHeight:false,
+                    pagination:true,
+                    striped:true,
+                    checkOnSelect:false,
+                    selectOnCheck:false,
+                    collapsible:true,
+                    pageSize:10 " >
+                    <thead>
+                        <tr>
+                            <th data-options="field: 'BrandName',width:200,align: 'center' ">品名</th>
+                            <th data-options="field: 'BatchNo',width:200,align: 'center' ">批次</th>
+                            <th data-options="field: 'Weight',width:100,align: 'center' ">重量</th>
+                            <th data-options="field: 'MID',width:200,align: 'center' ">物料编码</th>
+                            <th data-options="field: 'MATNAME',width:200,align: 'center' ">物料名称</th>
+                            <th data-options="field: 'WorkFlowType',width:100,lign: 'center' ">流水类别</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div title="物料信息" data-options="closable:false" style="overflow:auto;padding:0px;display:none;">
+                <table id="MaterialsTab" class="easyui-datagrid" style="width:100%;" data-options="
+                    url:'/WMSMailSelect',
+                    method: 'get',
+                    rownumbers:true,
+                    singleSelect:false,
+                    autoRowHeight:false,
+                    pagination:true,
+                    striped:true,
+                    checkOnSelect:false,
+                    selectOnCheck:false,
+                    collapsible:true,
+                    pageSize:10 " >
+                    <thead>
+                        <tr>
+                            <th data-options="field: 'product_code',width:200,align: 'center' ">物料编码</th>
+                            <th data-options="field: 'product_name',width:200,align: 'center' ">物料名称</th>
+                            <th data-options="field: 'product_unit',width:200,align: 'center' ">计量单位</th>
+                            <th data-options="field: 'product_type',width:200,align: 'center' ">物料类型</th>
+                        </tr>
+                    </thead>
+                </table>
             </div>
         </div>
     </div>
@@ -126,9 +140,9 @@
                     PName: getUrlParam('name')+"段"
                 },
                 onClickRow:function(rowIndex,rowData){
-                    //传参到批次任务明细
-                    $("#TasksTab").datagrid('load',{
-                        ID:rowData.ID
+                    $("#DetailedTab").datagrid('load',{
+                        BatchID:rowData.BatchID,
+                        BrandName:rowData.BrandName
                     })
                 }
             })
@@ -138,30 +152,6 @@
             var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
             var r = decodeURI(window.location.search).substr(1).match(reg); //匹配目标参数
             if (r != null) return unescape(r[2]); return null; //返回参数值
-        }
-        function formatterStatus(value, row, index){
-            if (value == 10){
-                return '新增计划'
-            }else if(value == 20){
-                return '审核计划'
-            }else if(value == 21){
-                return '下发计划'
-            }else if(value == 40){
-                return '撤回'
-            }else if(value == 50){
-                return '执行'
-            }else if(value == 60){
-                return '已完成'
-            }else if(value == 70){
-                return 'QA入库'
-            }
-        }
-        function formatterLockStatus(value, row, index){
-            if (value == 10){
-                return '锁定'
-            }else if(value == 0){
-                return '解锁'
-            }
         }
     </script>
 </body>

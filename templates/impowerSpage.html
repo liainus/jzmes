@@ -126,6 +126,7 @@
                             method : 'get',
                             url:'/impowerSelectData',
                             striped : true,
+                            search:true, //搜素
                             pageNumber : 1, //初始化加载第一页
                             pagination : true,//是否分页
                             sidePagination : 'client',//server:服务器端分页|client：前端分页
@@ -166,7 +167,11 @@
                                 field: 'ResultID',
                                 title: '结果ID'
                             }],
-                            onCheck:function(rowData,rowIndex){
+                            onClickRow:function (row,$element) {
+                                $('.info').removeClass('info');//移除class
+                                $($element).addClass('info');//添加class
+                            },
+                            onCheck:function(rowData,$element){
                                 ResultID = rowData.ResultID
                                 //峰值
                                 $("#peakItemTab").bootstrapTable("destroy")
