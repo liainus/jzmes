@@ -9,7 +9,7 @@ from openpyxl.compat import file
 from sqlalchemy.orm import Session, relationship, sessionmaker
 from sqlalchemy import create_engine
 import Model.Global
-from Model.core import ProcessUnit, Equipment, SysLog, MaterialBOM, ProductRule, Material
+from Model.core import ProcessUnit, Equipment, SysLog, MaterialBOM, ProductRule, Material, ZYPlan
 from flask import render_template, request, make_response
 from tools.MESLogger import MESLogger
 from Model.BSFramwork import AlchemyEncoder
@@ -30,7 +30,7 @@ from sqlalchemy import create_engine, Column, ForeignKey, Table, Integer, String
 from io import StringIO
 import calendar
 from Model.system import CenterCost, ERPproductcode_prname, SchedulingStock, ProcessQualityPDF, ProcessQuality, ImpowerInterface, EmpowerPeakItem,\
-    EmpowerContent, EmpowerContentJournal, ZYPlanWMS, WMStatusLoad
+    EmpowerContent, EmpowerContentJournal, ZYPlanWMS, WMStatusLoad, PartiallyProducts
 from tools.common import logger,insertSyslog,insert,delete,update,select
 import os
 import openpyxl
@@ -364,7 +364,6 @@ class WMS_Interface(ServiceBase):
         '''
         try:
             dic = []
-            print(json_data)
             jso = json.loads(json_data)
             for i in jso:
                 BillNo = i.get("BillNo")
@@ -380,6 +379,34 @@ class WMS_Interface(ServiceBase):
             return json.dumps("SUCCESS")
         except Exception as e:
             print("WMS调用WMS_OrderStatus接口报错！")
+            return json.dumps(e)
+
+    @rpc(Unicode, Unicode, _returns=Unicode())
+    def WMS_ZYPlanStatus(self, name, json_data):
+        '''
+        备料段计划开始结束状态WMS回传
+        '''
+        try:
+            dic = []
+            jso = json.loads(json_data)
+            for i in jso:
+                BatchID = i.get("BatchID")
+                BrandName = i.get("BrandName")
+                status = i.get("status")
+                if BatchID != None:
+                    zy = db_session.query(ZYPlan).filter(ZYPlan.BatchID == BatchID,
+                                                         ZYPlan.BrandName == BrandName,ZYPlan.PUID == 1).first()
+                    if zy != None:
+                        if status == "1":
+                            zy.ActBeginTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                        elif status == "3":
+                            zy.ActEndTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                    db_session.commit()
+                else:
+                    continue
+            return json.dumps("SUCCESS")
+        except Exception as e:
+            print("WMS调用WMS_ZYPlanStatus接口报错！")
             return json.dumps(e)
 @Process.route('/WMS_SendPlan', methods=['GET', 'POST'])
 def WMS_SendPlan():
@@ -851,3 +878,152 @@ def WMStatusLoadConfirm():
             print(e)
             logger.error(e)
             insertSyslog("error", "路由：/WMStatusLoadConfirm,Error：" + str(e), current_user.Name)
+
+#半成品库增加
+@Process.route('/PartiallyProductsCreate', methods=['GET', 'POST'])
+def PartiallyProductsCreate():
+    if request.method == 'POST':
+        data = request.values
+        return insert(PartiallyProducts, data)
+
+#半成品库修改
+@Process.route('/PartiallyProductsUpdate', methods=['GET', 'POST'])
+def PartiallyProductsUpdate():
+    if request.method == 'POST':
+        data = request.values
+        return update(PartiallyProducts, data)
+
+#半成品库删除
+@Process.route('/PartiallyProductsDetele', methods=['GET', 'POST'])
+def PartiallyProductsDetele():
+    if request.method == 'POST':
+        data = request.values
+        return delete(PartiallyProducts, data)
+
+#半成品库查询
+@Process.route('/PartiallyProductsSelect', methods=['GET', 'POST'])
+def PartiallyProductsSelect():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                pages = int(data['page'])
+                rowsnumber = int(data['rows'])
+                inipage = (pages - 1) * rowsnumber + 0
+                endpage = (pages - 1) * rowsnumber + rowsnumber
+                BatchID = data["BatchID"]
+                if BatchID == "":
+                    Count = db_session.query(PartiallyProducts).filter_by().count()
+                    Class = db_session.query(PartiallyProducts).filter_by().all()[inipage:endpage]
+                else:
+                    Count = db_session.query(PartiallyProducts).filter(
+                        PartiallyProducts.BatchID == BatchID).count()
+                    Class = db_session.query(PartiallyProducts).filter(
+                        PartiallyProducts.BatchID == BatchID).all()[inipage:endpage]
+                jsonoclass = json.dumps(Class, cls=AlchemyEncoder, ensure_ascii=False)
+                return '{"total"' + ":" + str(Count) + ',"rows"' + ":\n" + jsonoclass + "}"
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "WMStatusLoadSelect查询报错Error：" + str(e), current_user.Name)
+            return json.dumps("WMStatusLoadSelect查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+#半成品复核审核
+@Process.route('/PartiallyProductsChecked', methods=['GET', 'POST'])
+def PartiallyProductsChecked():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                ID = data.get("ID")
+                CheckedStatus = data.get("CheckedStatus")
+                ReviewStatus = data.get("ReviewStatus")
+                if ID == "":
+                    cla = db_session.query(PartiallyProducts).filter_by(ID = ID).first()
+                    if CheckedStatus != None:
+                        cla.CheckedStatus = CheckedStatus
+                    elif ReviewStatus != None:
+                        cla.ReviewStatus = ReviewStatus
+                    db_session.commit()
+                    return 'OK'
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "/PartiallyProductsChecked半成品复核审核报错Error：" + str(e), current_user.Name)
+            return json.dumps("/PartiallyProductsChecked半成品复核审核报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+#WMS备料库存信息查询
+@Process.route('/WMSStoreSelect', methods=['GET', 'POST'])
+def WMSStoreSelect():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                client = Client(Model.Global.WMSurl)
+                ret = client.service.Mes_Interface_TL("StoreLoad")
+                if re[0] == "SUCCESS":
+                    jsondata = json.loads(re[2])
+                    return '{"total"' + ":" + str(len(jsondata)) + ',"rows"' + ":\n" + re[2] + "}"
+                else:
+                    return json.dumps(re[1])
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "WMSStoreSelect查询报错Error：" + str(e), current_user.Name)
+            return json.dumps("WMSStoreSelect查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+#WMS流水信息查询
+@Process.route('/WMSDetailedSelect', methods=['GET', 'POST'])
+def WMSDetailedSelect():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                dic = []
+                BatchID = data.get("BatchID")
+                BrandName = data.get("BrandName")
+                zyw = db_session.query(ZYPlanWMS).filter(ZYPlanWMS.ID == ID).first()
+                dic.append({"BatchID":BatchID,"BrandName":BrandName})
+                jsondic = json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False)
+                client = Client(Model.Global.WMSurl)
+                ret = client.service.Mes_Interface_TL(" WorkFlowLoad", jsondic)
+                if re[0] == "SUCCESS":
+                    jsondata = json.loads(re[2])
+                    return '{"total"' + ":" + str(len(jsondata)) + ',"rows"' + ":\n" + re[2] + "}"
+                else:
+                    return json.dumps(re[1])
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "WMSDetailedSelect查询报错Error：" + str(e), current_user.Name)
+            return json.dumps("WMSDetailedSelect查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+#WMS物料同步
+@Process.route('/WMSMailSelect', methods=['GET', 'POST'])
+def WMSMailSelect():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                dic = []
+                BatchID = data.get("BatchID")
+                BrandName = data.get("BrandName")
+                zyw = db_session.query(ZYPlanWMS).filter(ZYPlanWMS.ID == ID).first()
+                dic.append({"BatchID":BatchID,"BrandName":BrandName})
+                jsondic = json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False)
+                client = Client(Model.Global.WMSurl)
+                ret = client.service.Mes_Interface_TL("MatDetLoad", jsondic)
+                if re[0] == "SUCCESS":
+                    jsondata = json.loads(re[2])
+                    return '{"total"' + ":" + str(len(jsondata)) + ',"rows"' + ":\n" + re[2] + "}"
+                else:
+                    return json.dumps(re[1])
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "WMSMailSelect查询报错Error：" + str(e), current_user.Name)
+            return json.dumps("WMSMailSelect查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)

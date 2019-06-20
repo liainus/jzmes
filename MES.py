@@ -42,7 +42,7 @@ import re
 from collections import Counter
 from Model.system import User, EquipmentRunPUID, ElectronicBatch, EquipmentRunRecord, QualityControl, PackMaterial, \
     TypeCollection, OperationProcedure, EquipmentMaintenanceStore, Scheduling, SchedulingStock, ERPproductcode_prname, \
-    SchedulingStandard, product_plan, SchedulingMaterial, YieldMaintain, ZYPlanWMS, ElectronicBatchTwo
+    SchedulingStandard, product_plan, SchedulingMaterial, YieldMaintain, ZYPlanWMS, ElectronicBatchTwo, PartiallyProducts
 from Model.Global import WeightUnit
 from Model.control import ctrlPlan
 from flask_login import login_required, logout_user, login_user, current_user, LoginManager
@@ -5536,6 +5536,22 @@ def QAflow(ID, statusName, name):
         if (fl == "TRUE"):
             planaMStatus = db_session.query(PlanManager).filter(PlanManager.ID == ID).first()
             planaMStatus.PlanStatus = Model.Global.PlanStatus.FINISH.value
+            TotalInvestment = \
+            pa = PartiallyProducts()
+            pa.BrandID = planaMStatus.BrandID
+            pa.BatchID = planaMStatus.BatchID
+            pa.BrandName = planaMStatus.BrandName
+            if planaMStatus.BrandID == 1:
+                pa.TotalInvestment = EletronicBatchDataStoreAllSelect(planaMStatus.BatchID,"count7")
+                pa.Produce = EletronicBatchDataStoreAllSelect(planaMStatus.BatchID,"count8")
+                pa.Sampling = EletronicBatchDataStoreAllSelect(planaMStatus.BatchID,"count9")
+                pa.Yield = EletronicBatchDataStoreAllSelect(planaMStatus.BatchID,"count10")
+            else:
+                pa.TotalInvestment = EletronicBatchDataStoreAllSelect(planaMStatus.BatchID, "count1")
+                pa.Produce = EletronicBatchDataStoreAllSelect(planaMStatus.BatchID, "count2")
+                pa.Sampling = EletronicBatchDataStoreAllSelect(planaMStatus.BatchID, "count3")
+                pa.Yield = EletronicBatchDataStoreAllSelect(planaMStatus.BatchID, "count4")
+            db_session.add(pa)
             db_session.commit()
         return flag
     except Exception as e:
@@ -5544,7 +5560,14 @@ def QAflow(ID, statusName, name):
         logger.error(e)
         insertSyslog("error", "QA签名报错Error：" + str(e), current_user.Name)
         return "QA签名报错Error：" + str(e), current_user.Name
-
+def EletronicBatchDataStoreAllSelect(BatchID, Content):
+    OperationpValue = db_session.query(EletronicBatchDataStore.OperationpValue).filter(EletronicBatchDataStore.BatchID == BatchID,
+                                                     EletronicBatchDataStore.Content == Content,
+                                                     EletronicBatchDataStore.PUID.in_((5, 11))).first()
+    if OperationpValue == None or OperationpValue == "":
+        return ""
+    else:
+        return OperationpValue[0]
 
 # QA放行查询
 @app.route('/ZYPlanGuid/QAPassSearch', methods=['POST', 'GET'])
