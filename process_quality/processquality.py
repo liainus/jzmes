@@ -773,3 +773,53 @@ def EmpowerContentJournalSelect():
             logger.error(e)
             insertSyslog("error", "EmpowerContentJournalSelect查询报错Error：" + str(e), current_user.Name)
             return json.dumps("EmpowerContentJournalSelect查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+#备件类型增加
+@Process.route('/WMStatusLoadCreate', methods=['GET', 'POST'])
+def WMStatusLoadCreate():
+    if request.method == 'POST':
+        data = request.values
+        return insert(WMStatusLoad, data)
+
+#备件类型修改
+@Process.route('/WMStatusLoadUpdate', methods=['GET', 'POST'])
+def WMStatusLoadCreate():
+    if request.method == 'POST':
+        data = request.values
+        return update(WMStatusLoad, data)
+
+#备件类型删除
+@Process.route('/WMStatusLoadDetele', methods=['GET', 'POST'])
+def WMStatusLoadCreate():
+    if request.method == 'POST':
+        data = request.values
+        return delete(WMStatusLoad, data)
+
+#操作日志查询
+@Process.route('/WMStatusLoadSelect', methods=['GET', 'POST'])
+def WMStatusLoadSelect():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                pages = int(data['page'])
+                rowsnumber = int(data['rows'])
+                inipage = (pages - 1) * rowsnumber + 0
+                endpage = (pages - 1) * rowsnumber + rowsnumber
+                BillNo = data["BillNo"]
+                if BillNo == "":
+                    Count = db_session.query(WMStatusLoad).filter_by().count()
+                    Class = db_session.query(WMStatusLoad).filter_by().all()[inipage:endpage]
+                else:
+                    Count = db_session.query(WMStatusLoad).filter(
+                        WMStatusLoad.BillNo == BillNo).count()
+                    Class = db_session.query(WMStatusLoad).filter(
+                        WMStatusLoad.BillNo == BillNo).all()[inipage:endpage]
+                jsonoclass = json.dumps(Class, cls=AlchemyEncoder, ensure_ascii=False)
+                return '{"total"' + ":" + str(Count) + ',"rows"' + ":\n" + jsonoclass + "}"
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "WMStatusLoadSelect查询报错Error：" + str(e), current_user.Name)
+            return json.dumps("WMStatusLoadSelect查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
