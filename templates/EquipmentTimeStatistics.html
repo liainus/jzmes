@@ -4,11 +4,15 @@
     <meta charset="UTF-8">
     <title>设备运行采集数据</title>
     <link href="../static/css/base.css" rel="stylesheet">
+	<link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="../static/css/bootstrap-datetimepicker.min.css" crossorigin="anonymous">
+	<link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
     <script type="text/javascript" src="../static/js/echarts.common.min.js"></script>
     <script type="text/javascript" src="../static/js/jquery-3.3.1.min.js"></script>
-    <link rel="stylesheet" href="../static/css/bootstrap.min.css" crossorigin="anonymous">
+    <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
     <script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" href="../static/css/bootstrap-datetimepicker.min.css" crossorigin="anonymous">
     <script type="text/javascript" src="../static/js/bootstrap-datetimepicker.min.js"></script>
     <script>
         //监听div大小变化
@@ -89,6 +93,45 @@
     </script>
     <script>
         $(function(){
+            var process = ""
+            var batch = ""
+            var startDate = getPeriodTime(new Date())[0]
+            var endDate = getPeriodTime(new Date())[1]
+            //初始化加载时间  并获取批次
+            $('#beginTime').val(myformatter(new Date()));
+            $("#weekTime").html(getPeriodTime(new Date())[0]+" 至 "+ getPeriodTime(new Date())[1])
+            $.ajax({
+                url: "/FailureRunBatchIDsSearch",
+                type: "get",
+                data: {
+                    startDate: startDate,
+                    endDate:endDate
+                },
+                success: function (data) {
+                    data = JSON.parse(data)
+                    var option = ""
+                    $.each(data,function(i,value){
+                        option += '<option>' + data[i] + '</option>'
+                    })
+                    $("#selectBatch").append(option)
+                    batch = $("#selectBatch").find("option:eq(0)").html()
+                    toJson(startDate,endDate,batch,process)
+                }
+            })
+            $("#tree").tree({
+                url:"/EquipmentTimeStatistics/DataTree",
+                method: 'get',
+                animate:true,
+                loadFilter:function(data){
+                    return data
+                },
+                onClick: function (node) {
+                    if($('#LeftTree').tree('isLeaf',node.target)){
+                        process = node.text
+                        toJson(startDate,endDate,batch,process)
+                    }
+                }
+            })
             //时间选择控件
             $.fn.datetimepicker.dates['zh'] = {
                 days:       ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六","星期日"],
@@ -107,14 +150,35 @@
                 minView:2, //0到分钟结束，1到小时，2到日
                 language: 'zh-CN'
             }).on('changeDate',function(ev){
-                $("#weekTime").html(getPeriodTime(ev.date)[0]+" 至 "+ getPeriodTime(ev.date)[1])
-                toJson(getPeriodTime(ev.date)[0],getPeriodTime(ev.date)[1])
+                startDate = getPeriodTime(ev.date)[0]
+                endDate = getPeriodTime(ev.date)[1]
+                $("#weekTime").html(startDate+" 至 "+ endDate)
+                $.ajax({
+                    url: "/FailureRunBatchIDsSearch",
+                    type: "get",
+                    data: {
+                        startDate: startDate,
+                        endDate:endDate
+                    },
+                    success: function (data) {
+                        data = JSON.parse(data)
+                        $("#selectBatch").append("")
+                        var option = ""
+                        $.each(data,function(i,value){
+                            option += '<option>' + data[i] + '</option>'
+                        })
+                        $("#selectBatch").append(option)
+                        batch = $("#selectBatch").find("option:eq(0)").html()
+                        toJson(startDate,endDate,batch,process)
+                    }
+                })
             });
-            $('#beginTime').val(myformatter(new Date()));
-            $("#weekTime").html(getPeriodTime(new Date())[0]+" 至 "+ getPeriodTime(new Date())[1])
-            toJson(getPeriodTime(new Date())[0],getPeriodTime(new Date())[1])
+            $("#selectBatch").on('change',function(){
+                batch = $(this).val()
+                toJson(startDate,endDate,batch,process)
+            })
         })
-        function toJson(startDate,endDate){
+        function toJson(startDate,endDate,batch,process){
             var myDiv = document.getElementById("main")
             var myChartContainer = function () {
                 var width = $("#chartBox").width()
@@ -128,7 +192,9 @@
                 type: "get",
                 data: {
                     startDate: startDate,
-                    endDate:endDate
+                    endDate:endDate,
+                    process:process,
+                    BatchID: batch
                 },
                 traditional:true,
                 success: function (data) {
@@ -250,20 +316,31 @@
     </script>
 </head>
 <body>
-    <div class="col-md-12">
+    <div class="col-md-4" style="padding-top:15px;">
+        <div class="panel panel-default clearfix">
+            <div class="panel-heading">选择工艺段</div>
+            <div class="panel-body">
+                <div class="left-tree" style="height: 610px">
+                    <ul class="easyui-tree" id="tree"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
         <form class="form-inline modal-body">
             <div class="form-group">
                 <label for="exampleInputName2">选择日期</label>
                 <input type="text" class="datetimepicker" id="beginTime" readonly>
                 <label for="exampleInputName2">数据范围周期：</label>
                 <label id="weekTime"></label>
+                <select class="form-control" id="selectBatch"></select>
             </div>
         </form>
         <div class="panel panel-default clearfix">
             <div class="panel-heading">设备运行数据</div>
             <div class="panel-body">
                 <div title="设备运行数据" id="chartBox">
-                    <div id="main" style="width: 1000px; height: 540px; margin: 10px auto;"></div>
+                    <div id="main" style="width: 100px; height: 540px; margin: 10px auto;"></div>
                 </div>
             </div>
         </div>
