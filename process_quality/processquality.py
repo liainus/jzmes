@@ -486,20 +486,29 @@ def WMS_StockInfo():
         data = request.values
         try:
             ic = []
-            client = Client(Model.Global.WMSurl)
-            re = client.service.Mes_Interface("StoreLoad")
-            if re[0] == "SUCCESS":
-                jsondata = json.loads(re[2])
-                for data in jsondata:
-                    product_code = data.get("MID")
-                    num = data.get("num")
-                    oclass = db_session.query(SchedulingStock).filter(
-                        SchedulingStock.product_code == product_code).first()
-                    if oclass != None:
-                        oclass.StockHouse = num
-                        db_session.commit()
-            else:
-                json.dumps(re[1])
+            pages = int(data.get("offset"))  # 页数
+            rowsnumber = int(data.get("limit"))  # 行数
+            inipage = pages * rowsnumber + 0  # 起始页
+            endpage = pages * rowsnumber + rowsnumber  # 截止页
+            if pages == 1:
+                client = Client(Model.Global.WMSurl)
+                re = client.service.Mes_Interface("StoreLoad")
+                if re[0] == "SUCCESS":
+                    jsondata = json.loads(re[2])
+                    for i in jsondata:
+                        product_code = i.get("MID")
+                        num = i.get("num")
+                        oclass = db_session.query(SchedulingStock).filter(
+                            SchedulingStock.product_code == product_code).first()
+                        if oclass != None:
+                            oclass.StockHouse = num
+                            db_session.commit()
+                else:
+                    return json.dumps(re[1])
+            count = db_session.query(SchedulingStock).count()[inipage:endpage]
+            oclass = db_session.query(SchedulingStock).all()[inipage:endpage]
+            jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
+            return '{"total"' + ":" + str(count) + ',"rows"' + ":\n" + jsonoclass + "}"
         except Exception as e:
             print("调用WMS_StockInfo接口报错！")
             return json.dumps("调用WMS_StockInfo接口报错！")
@@ -985,7 +994,6 @@ def WMSDetailedSelect():
                 dic = []
                 BatchID = data.get("BatchID")
                 BrandName = data.get("BrandName")
-                zyw = db_session.query(ZYPlanWMS).filter(ZYPlanWMS.ID == ID).first()
                 dic.append({"BatchID":BatchID,"BrandName":BrandName})
                 jsondic = json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False)
                 client = Client(Model.Global.WMSurl)
@@ -1012,7 +1020,6 @@ def WMSMailSelect():
                 dic = []
                 BatchID = data.get("BatchID")
                 BrandName = data.get("BrandName")
-                zyw = db_session.query(ZYPlanWMS).filter(ZYPlanWMS.ID == ID).first()
                 dic.append({"BatchID":BatchID,"BrandName":BrandName})
                 jsondic = json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False)
                 client = Client(Model.Global.WMSurl)
