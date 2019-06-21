@@ -45,7 +45,27 @@
                 </thead>
             </table>
         </div>
-        <a href="#" class="easyui-linkbutton" id="synchronization" data-options="iconCls:'icon-redo'" style="margin-top: 20px">同步原料到WMS</a>
+        <a href="#" class="easyui-linkbutton" id="synchronization" data-options="iconCls:'icon-redo'" style="margin-top: 20px">同步到系统</a>
+        <a href="#" class="easyui-linkbutton" id="synchronizationToWMS" data-options="iconCls:'icon-redo'" style="margin-top: 20px">同步物料到WMS</a>
+        <div id="WMSClassDialog" class="easyui-dialog" style="width:400px;height:200px;padding:10px;"
+             data-options="closed:'true',buttons:'#WMSClassDialogButtons',modal:true">
+            <form id="WMSClassForm" method="post" class="dialog-form">
+                <table class="kv-table">
+                    <tbody>
+                        <tr>
+                            <td class="kv-label">物料编码</td>
+                            <td class="kv-content">
+                                <input name="product_code" id="product_code" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div id="WMSClassDialogButtons" >
+                    <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" id="save" >保存</a>
+                    <a href="#" class="easyui-linkbutton" onclick="$('#WMSClassDialog').dialog('close')">关闭</a>
+                </div>
+            </form>
+        </div>
         <table class="easyui-datagrid" id="selfTab" title="系统物料列表" style="width:100%;" data-options="
             loadMsg:false,
             rownumbers:true,
@@ -83,6 +103,39 @@
                                 }
                             });
                             $("#selfTab").datagrid('load')
+                        }else{
+                            $.messager.alert('提示', data, 'info');
+                        }
+                    },
+                    error: function () {
+                        alert("请求失败，请稍后重试！")
+                    }
+                 });
+            })
+            $("#synchronizationToWMS").on('click',function(){
+                $("#WMSClassDialog").dialog('open').dialog('setTitle','请输入物料编码');
+                $("#product_code").val("")
+            })
+            $("#save").on('click',function(){
+                $.ajax({
+                    url: '/WMS_SendSAPMatil',
+                    method: 'GET',
+                    data:{
+                        product_code:$("#product_code").val()
+                    },
+                    success: function (data) {
+                        if (data == "OK") {
+                            $.messager.show({
+                                title: '提示',
+                                timeout: 1000,
+                                msg: '同步成功',
+                                style: {
+                                    right: '',
+                                    top: document.body.scrollTop + document.documentElement.scrollTop,
+                                    bottom: ''
+                                }
+                            });
+                            $('#userClassDialog').dialog('close');
                         }else{
                             $.messager.alert('提示', data, 'info');
                         }

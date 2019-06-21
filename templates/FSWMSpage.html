@@ -16,6 +16,7 @@
         <div class="modal-body" id="toolbar">
             <a href="#" class="btn btn-primary" id="send">发送WMS</a>
             <a href="#" class="btn btn-success" id="getLib">获取库存流水</a>
+            <a href="#" class="btn btn-success" id="getWMSinfo">获取WMS库存</a>
         </div>
         <table class="table table-bordered" id="tab">
             <thead>
@@ -33,6 +34,7 @@
             </thead>
         </table>
         <table class="table table-bordered" id="selfTab"></table>
+        <table class="table table-bordered" id="StoreTab"></table>
     </div>
     <script>
         $(function(){
@@ -140,6 +142,45 @@
                 }else{
                     bootbox.alert("请单选一条数据进行查询")
                 }
+            })
+            $("#getWMSinfo").on('click',function(){
+                $('#StoreTab').bootstrapTable("destroy")
+                $('#StoreTab').bootstrapTable({
+                    url: '/WMS_StockInfo',
+                    method: 'get',
+                    contentType: "application/x-www-form-urlencoded",
+                    pagination: true,
+                    pageNumber: 1,
+                    pageSize: 5,
+                    pageList: [5, 10, 15, 20],
+                    sidePagination: "server",
+                    paginationLoop: false,
+                    paginationPreText: '上一页',
+                    paginationNextText: '下一页',
+                    singleSelect: false,
+                    clickToSelect: true,
+                    locale: "zh-CN",
+                    striped: true,
+                    columns: [{
+                        field: 'product_code',
+                        title: '产品(即物料)编码'
+                    }, {
+                        field: 'MATName',
+                        title: '物料名称'
+                    }, {
+                        field: 'StockHouse',
+                        title: '仓库库存'
+                    }, {
+                        field: 'SafetyStock',
+                        title: '安全库存'
+                    }, {
+                        field: 'create_time',
+                        title: '创建时间'
+                    }, {
+                        field: 'update_time',
+                        title: '修改时间'
+                    }]
+                })
             })
             //获取页面传参
             function getUrlParam(name) {
