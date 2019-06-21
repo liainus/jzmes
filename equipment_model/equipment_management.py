@@ -1976,3 +1976,24 @@ def EquipmentFailureRunXTSearch():
             print(e)
             logger.error(e)
             insertSyslog("error", "路由：/EquipmentFailureRunXTSearch，设备故障运行统计（系统采集）Error：" + str(e), current_user.Name)
+#设备故障统计获取批次号
+@equip.route('/FailureRunBatchIDsSearch', methods=['GET', 'POST'])
+def FailureRunBatchIDsSearch():
+    """
+    设备故障统计获取批次号
+    :return:
+    """
+    if request.method == 'GET':
+        data = request.values
+        try:
+            startDate = data.get("startDate")+" 00:00"
+            endDate = data.get("endDate")+" 23:59:59"
+            BatchNoS = db_session.query(EquipmentStatusCount.BatchNo).distinct().filter(EquipmentStatusCount.SampleTime.between(startDate,endDate)).all()
+            dir = []
+            for i in BatchNoS:
+                dir.append(i[0])
+            return json.dumps(dir, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "路由：/FailureRunBatchIDsSearch，设备故障统计获取批次号（系统采集）Error：" + str(e), current_user.Name)
