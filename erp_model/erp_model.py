@@ -920,8 +920,9 @@ def StapleProductsSearch():
                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
                 IsRelevance = data.get("IsRelevance")
-                total = db_session.query(StapleProducts).filter(StapleProducts.IsRelevance == IsRelevance).count()
-                oclass = db_session.query(StapleProducts).filter(StapleProducts.IsRelevance == IsRelevance).all()[
+                BillNo = data.get("BillNo")
+                total = db_session.query(StapleProducts).filter(StapleProducts.IsRelevance == IsRelevance, StapleProducts.BillNo == BillNo).count()
+                oclass = db_session.query(StapleProducts).filter(StapleProducts.IsRelevance == IsRelevance, StapleProducts.BillNo == BillNo).all()[
                          inipage:endpage]
                 jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonpequipments = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
@@ -975,12 +976,12 @@ def StapleProductsUpdate():
             jsonstr = json.dumps(data.to_dict())
             if len(jsonstr) > 10:
                 jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
-                product_code = data.get("product_code")
+                BillNo = data.get("BillNo")
                 for key in jsonnumber:
                     id = int(key)
                     try:
                         oclass = db_session.query(StapleProducts).filter_by(ID=id).first()
-                        oclass.product_code = product_code
+                        oclass.BillNo = BillNo
                         oclass.IsRelevance = "1"
                         db_session.commit()
                     except Exception as ee:
@@ -994,3 +995,34 @@ def StapleProductsUpdate():
             logger.error(e)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
             insertSyslog("error", "WMS原料单关联SAP采购单报错Error：" + str(e), current_user.Name)
+
+@ERP.route('/cancelStapleProductsUpdate', methods=['POST', 'GET'])
+def cancelStapleProductsUpdate():
+    '''
+    WMS原料单取消关联SAP采购单
+    :return:
+    '''
+    if request.method == 'GET':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
+                for key in jsonnumber:
+                    id = int(key)
+                    try:
+                        oclass = db_session.query(StapleProducts).filter_by(ID=id).first()
+                        oclass.BillNo = ""
+                        oclass.IsRelevance = "0"
+                        db_session.commit()
+                    except Exception as ee:
+                        db_session.rollback()
+                        print(ee)
+                        logger.error(ee)
+                        return json.dumps([{"status": "WMS原料单取消关联SAP采购单报错:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
+                                          ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+            insertSyslog("error", "WMS原料单取消关联SAP采购单报错：" + str(e), current_user.Name)
