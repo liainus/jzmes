@@ -20,60 +20,14 @@
 </head>
 <body>
     <div style="padding: 15px">
-        <div id="BatchClassDialog" class="easyui-dialog" style="width:400px;height:400px;padding:10px;"
-             data-options="closed:'true',buttons:'#BatchClassDialogButtons',modal:true">
-            <form id="BatchClassDialogForm" method="post" class="dialog-form" enctype="multipart/form-data">
-                <table class="kv-table">
-                    <tbody>
-                        <tr>
-                            <td class="kv-label">ID</td>
-                            <td class="kv-content">
-                                 <input name="ID" id="ID" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder="" disabled="disabled" >
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="kv-label">工单号</td>
-                            <td class="kv-content">
-                                 <input name="BillNo" id="BillNo" type="text" required="true" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder="">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="kv-label">物料编码</td>
-                            <td class="kv-content">
-                                 <input name="mid" id="mid" type="text" required="true" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder="">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="kv-label">批次号</td>
-                            <td class="kv-content">
-                                 <input name="BatchNo" id="BatchNo" type="text" required="true" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder="">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="kv-label">库房号</td>
-                            <td class="kv-content">
-                                 <input name="StoreDef_ID" id="StoreDef_ID" type="text" required="true" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder="">
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div id="BatchClassDialogButtons">
-                    <a href="#" class="easyui-linkbutton"  data-options="iconCls:'icon-save'" onclick="toolbar.BatchSave()">保存</a>
-                    <a href="#" class="easyui-linkbutton" onclick="$('#BatchClassDialog').dialog('close')">关闭</a>
-                </div>
-            </form>
-        </div>
         <div id="BatchToolbar" style="padding:0 10px;">
             工单号:
             <input type="text" id="searchBatch" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
             placeholder="">
-            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="toolbar.searchBatch()">查询</a>
-            <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="toolbar.addBatch()">添加</a>
-            <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="toolbar.editBatch()">修改</a>
-            <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="toolbar.deleteBatch()">删除</a>
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="toolbar.search()">查询</a>
             <a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="toolbar.ConfirmOK()">确认合格</a>
             <a href="#" class="easyui-linkbutton" iconCls="icon-back" onclick="toolbar.ConfirmNO()">确认不合格</a>
-            <a href="#" class="easyui-linkbutton" iconCls="icon-reload" onclick="toolbar.reloadBatch()">刷新</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-reload" onclick="toolbar.reload()">刷新</a>
         </div>
         <table class="easyui-datagrid" id="tabBatch" title="原料确认流程" style="width:100%;margin-bottom: 20px;" data-options="
             queryParams: {
@@ -165,134 +119,10 @@
     <script>
         $(function() {
             toolbar = {
-                searchBatch:function(){
+                search:function(){
                     $("#tabBatch").datagrid('load',{
                         BillNo:$("#searchBatch").val()
                     })
-                },
-                addBatch:function(){
-                    $("#BatchClassDialog").dialog('open').dialog('setTitle','添加');
-                    $("#ID").val("")
-                    $("#BillNo").val("")
-                    $("#mid").val("")
-                    $("#BatchNo").val("")
-                    $("#StoreDef_ID").val("")
-                },
-                editBatch:function(){
-                    var rows = $('#tabBatch').datagrid('getSelections');
-                    if (rows.length > 1) {
-                        $.messager.alert('警告操作！', '编辑只能选定一条数据！', 'warning');
-                    } else if (rows.length == 1) {
-                        var row = $('#tabBatch').datagrid('getSelected');
-                        if (row) {
-                            $("#BatchClassDialog").dialog('open').dialog('setTitle','修改');
-                            $("#ID").val(row.ID)
-                            $("#BillNo").val(row.BillNo)
-                            $("#mid").val(row.mid)
-                            $("#BatchNo").val(row.BatchNo)
-                            $("#StoreDef_ID").val(row.StoreDef_ID)
-                        };
-                    } else if (rows.length == 0) {
-                        $.messager.alert('警告操作！', '请至少选定一条数据进行编辑！', 'warning');
-                    }
-                },
-                BatchSave:function(){
-                    var strID = $('input[name="ID"]').val();
-                    var urlAddr = ""
-                    var stmp = $('input[name="BillNo"]').val();
-                    if(Bee.StringUtils.isEmpty(stmp)) {
-                       alert('Warning：工单号不能为空！');
-                       return false;
-                    }
-                    stmp = $('input[name="mid"]').val();
-                    if(Bee.StringUtils.isEmpty(stmp)) {
-                       alert('Warning：物料编码不能为空！');
-                       return false;
-                    }
-                    stmp = $('input[name="BatchNo"]').val();
-                    if(Bee.StringUtils.isEmpty(stmp)) {
-                       alert('Warning：批次号不能为空！');
-                       return false;
-                    }
-                    if (strID.length >= 1){
-                        urlAddr = '/WMStatusLoadUpdate'
-                    }
-                    else {
-                        urlAddr = '/WMStatusLoadCreate'
-                    }
-                    $.ajax({
-                        url: urlAddr,
-                        method: 'POST',
-                        traditional: true,
-                        data: {
-                            ID:strID,
-                            BillNo:$('#BillNo').val(),
-                            mid:$('#mid').val(),
-                            BatchNo:$('#BatchNo').val(),
-                            StoreDef_ID:$('#StoreDef_ID').val(),
-                            NewStatus:"3"
-                        },
-                        cache: false,
-                        error: function(data){
-                           console.log(data.responseText)
-                        },
-                        success: function (data,response,status) {
-                            $.messager.progress('close');
-                            if(data == "OK"){
-                                $.messager.show({
-                                    title: '提示',
-                                    msg: '操作成功',
-                                    timeout:1000,
-                                    style: {
-                                        right: '',
-                                        top: document.body.scrollTop + document.documentElement.scrollTop,
-                                        bottom: ''
-                                    }
-                                });
-                                $("#BatchClassDialog").dialog('close');
-                                $("#tabBatch").datagrid('reload');
-                            } else {
-                                $.messager.alert('失败！', '未知错误导致失败，请重试！', 'warning');
-                            }
-                        }
-                    });
-                },
-                deleteBatch:function(){
-                    var rows = $("#tabBatch").datagrid('getSelections');
-                    if (rows.length > 0) {
-                        var jsonarray=[];
-                        $.messager.confirm('确定操作', '您正在删除所选的记录吗？', function (flag) {
-                            if (flag) {
-                                for (var i = 0; i < rows.length; i++) {
-                                    var obj=createKeyIDObj(parseInt(rows[i].ID));
-                                    jsonarray.push(obj);
-                                }
-                                var a = JSON.stringify(jsonarray);
-                                $.ajax({
-                                    url: '/WMStatusLoadDetele',
-                                    method: 'POST',
-                                    data: a,
-                                    success: function (data) {
-                                        if(data == "OK"){
-                                            $.messager.show({
-                                                title: '提示',
-                                                msg: '删除成功',
-                                                timeout:1000,
-                                                style: {
-                                                    right: '',
-                                                    top: document.body.scrollTop + document.documentElement.scrollTop,
-                                                    bottom: ''
-                                                }
-                                            });
-                                            $("#tabBatch").datagrid('reload');
-                                        }
-                                    }
-                                });
-                            }
-                        });
-                    } else {
-                        $.messager.alert('提示', '请选择要删除的记录！', 'info');
-                    }
                 },
                 ConfirmOK:function(){
                     var rows = $("#tabBatch").datagrid('getSelections');
@@ -362,7 +192,7 @@
                         $.messager.alert('提示', '请单选要确认的记录！', 'info');
                     }
                 },
-                reloadBatch:function(){
+                reload:function(){
                     $('#tabBatch').datagrid('reload');
                 }
                 {#searchName:function(){#}

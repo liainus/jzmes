@@ -45,8 +45,10 @@
                 </thead>
             </table>
         </div>
-        <a href="#" class="easyui-linkbutton" id="synchronization" data-options="iconCls:'icon-redo'" style="margin-top: 20px">同步到系统</a>
-        <a href="#" class="easyui-linkbutton" id="synchronizationToWMS" data-options="iconCls:'icon-redo'" style="margin-top: 20px">同步物料到WMS</a>
+        <div style="margin-top: 20px">
+            <a href="#" class="easyui-linkbutton" id="synchronization" data-options="iconCls:'icon-redo'">同步到系统</a>
+            <a href="#" class="easyui-linkbutton" id="synchronizationToWMS" data-options="iconCls:'icon-redo'">同步物料到WMS</a>
+        </div>
         <div id="WMSClassDialog" class="easyui-dialog" style="width:400px;height:200px;padding:10px;"
              data-options="closed:'true',buttons:'#WMSClassDialogButtons',modal:true">
             <form id="WMSClassForm" method="post" class="dialog-form">
@@ -66,16 +68,22 @@
                 </div>
             </form>
         </div>
+        <div id="Toolbar">
+            <a href="#" class="easyui-linkbutton" id="synchronizationToBL" data-options="iconCls:'icon-ok'">同步物料到备料段</a>
+        </div>
         <table class="easyui-datagrid" id="selfTab" title="系统物料列表" style="width:100%;" data-options="
             loadMsg:false,
             rownumbers:true,
+            singleSelect:false,
             autoRowHeight:false,
             pagination:true,
             pageSize:10,
+            toolbar:'#Toolbar',
             url:'/erp_model/productinfoSearch',
             method:'get'">
             <thead>
                 <tr>
+                    <th field="ck" checkbox="true"></th>
                     <th data-options="field:'product_code',width:200,align:'center'">物料编码</th>
                     <th data-options="field:'product_name',width:250,align:'center'">物料名称</th>
                     <th data-options="field:'product_unit',width:200,align:'center'">计量单位</th>
@@ -87,30 +95,34 @@
     <script>
         $(function(){
             $("#synchronization").on('click',function(){
-                $.ajax({
-                    url: '/erp_model/ERP_productinfoSynchro',
-                    method: 'GET',
-                    success: function (data) {
-                        if (data == "OK") {
-                            $.messager.show({
-                                title: '提示',
-                                timeout: 1000,
-                                msg: '同步成功',
-                                style: {
-                                    right: '',
-                                    top: document.body.scrollTop + document.documentElement.scrollTop,
-                                    bottom: ''
+                $.messager.confirm('确定操作', '您确认要同步到系统吗？', function (flag) {
+                    if (flag) {
+                        $.ajax({
+                            url: '/erp_model/ERP_productinfoSynchro',
+                            method: 'GET',
+                            success: function (data) {
+                                if (data == "OK") {
+                                    $.messager.show({
+                                        title: '提示',
+                                        timeout: 1000,
+                                        msg: '同步成功',
+                                        style: {
+                                            right: '',
+                                            top: document.body.scrollTop + document.documentElement.scrollTop,
+                                            bottom: ''
+                                        }
+                                    });
+                                    $("#selfTab").datagrid('reload')
+                                } else {
+                                    $.messager.alert('提示', data, 'info');
                                 }
-                            });
-                            $("#selfTab").datagrid('load')
-                        }else{
-                            $.messager.alert('提示', data, 'info');
-                        }
-                    },
-                    error: function () {
-                        alert("请求失败，请稍后重试！")
+                            },
+                            error: function () {
+                                alert("请求失败，请稍后重试！")
+                            }
+                        });
                     }
-                 });
+                })
             })
             $("#synchronizationToWMS").on('click',function(){
                 $("#WMSClassDialog").dialog('open').dialog('setTitle','请输入物料编码');
@@ -120,8 +132,8 @@
                 $.ajax({
                     url: '/WMS_SendSAPMatil',
                     method: 'GET',
-                    data:{
-                        product_code:$("#product_code").val()
+                    data: {
+                        product_code: $("#product_code").val()
                     },
                     success: function (data) {
                         if (data == "OK") {
@@ -136,14 +148,57 @@
                                 }
                             });
                             $('#userClassDialog').dialog('close');
-                        }else{
+                        } else {
                             $.messager.alert('提示', data, 'info');
                         }
                     },
                     error: function () {
                         alert("请求失败，请稍后重试！")
                     }
-                 });
+                });
+            })
+            $("#synchronizationToBL").on('click',function(){
+                var rows = $("#selfTab").datagrid('getSelections');
+                if(rows.length > 0){
+                    var jsonarray=[];
+                    $.messager.confirm('确定操作', '您确认要同步到备料段吗？', function (flag) {
+                        if (flag) {
+                            for (var i = 0; i < rows.length; i++) {
+                                var obj=createKeyIDObj(parseInt(rows[i].ID));
+                                jsonarray.push(obj);
+                            }
+                            var a = JSON.stringify(jsonarray);
+                            $.ajax({
+                                url: '/SAPtoWMSMailBL',
+                                method: 'GET',
+                                data: a,
+                                success: function (data) {
+                                    if (data == "OK") {
+                                        $.messager.progress('close');
+                                        $.messager.show({
+                                            title: '提示',
+                                            timeout: 1000,
+                                            msg: '同步成功',
+                                            style: {
+                                                right: '',
+                                                top: document.body.scrollTop + document.documentElement.scrollTop,
+                                                bottom: ''
+                                            }
+                                        });
+                                        $("#selfTab").datagrid('reload')
+                                    } else {
+                                        $.messager.alert('提示', data, 'info');
+                                    }
+                                },
+                                error: function () {
+                                    alert("请求失败，请稍后重试！")
+                                }
+                            });
+                        }
+                    })
+                }else{
+                    $.messager.alert('提示', "请选择需要同步的记录", 'info');
+                }
             })
             $.extend($.fn.datagrid.defaults.editors, {
                 text: {
@@ -166,6 +221,11 @@
                 }
             });
         })
+        function createKeyIDObj(keyID){
+            return {
+                id:keyID
+            }
+        }
     </script>
 </body>
 </html>
