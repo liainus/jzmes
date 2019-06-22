@@ -30,7 +30,7 @@ from sqlalchemy import create_engine, Column, ForeignKey, Table, Integer, String
 from io import StringIO
 import calendar
 from Model.system import CenterCost, ERPproductcode_prname, SchedulingStock, ProcessQualityPDF, ProcessQuality, ImpowerInterface, EmpowerPeakItem,\
-    EmpowerContent, EmpowerContentJournal, ZYPlanWMS, WMStatusLoad, PartiallyProducts
+    EmpowerContent, EmpowerContentJournal, ZYPlanWMS, WMStatusLoad, PartiallyProducts, StapleProducts
 from tools.common import logger,insertSyslog,insert,delete,update,select
 import os
 import openpyxl
@@ -382,6 +382,29 @@ class WMS_Interface(ServiceBase):
             return json.dumps(e)
 
     @rpc(Unicode, Unicode, _returns=Unicode())
+    def Sync_StapleProducts(self, name, json_data):
+        '''
+        WMS同步原料检验单
+        '''
+        try:
+            dic = []
+            jso = json.loads(json_data)
+            for i in jso:
+                sta = StapleProducts()
+                sta.BillNo = i.get("BillNo")
+                sta.StoreDef_ID = i.get("StoreDef_ID")
+                sta.btype = i.get("btype")
+                sta.mid = i.get("mid")
+                sta.Num = i.get("Num")
+                sta.OperationDate = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                db_session.add(sta)
+                db_session.commit()
+            return json.dumps("SUCCESS")
+        except Exception as e:
+            print("WMS调用WMS_OrderStatus接口报错！")
+            return json.dumps(e)
+
+    @rpc(Unicode, Unicode, _returns=Unicode())
     def WMS_ZYPlanStatus(self, name, json_data):
         '''
         备料段计划开始结束状态WMS回传
@@ -552,16 +575,17 @@ class SAP_Interface(ServiceBase):
         '''
         try:
             dic = []
+            print(json_data)
             dict_data = json.loads(json_data)
             for oc in dict_data:
-                print(oc['a'])
-            for i in range(0, 3):
-                dic.append(appendStr(i))
+                w = WMSDetail()
+                db_session.add(w)
+                db_session.commit()
             return json.dumps('SUCCESS')
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "WMS_SendSAPMatil报错：" + str(e), current_user.Name)
+            insertSyslog("error", "SAP_Order_Download报错：" + str(e), current_user.Name)
             return json.dumps(e)
 
 class NH_Interface(ServiceBase):
@@ -1034,3 +1058,10 @@ def WMSMailSelect():
             logger.error(e)
             insertSyslog("error", "WMSMailSelect查询报错Error：" + str(e), current_user.Name)
             return json.dumps("WMSMailSelect查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+@Process.route('/StapleProductsPage')
+def StapleProductsPage():
+    '''
+    WMS原料检验
+    '''
+    return render_template('StapleProductsPage.html')

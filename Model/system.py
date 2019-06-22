@@ -1580,7 +1580,7 @@ class EmpowerContentJournal(Base):
 
     # 其他:
     Other = Column(Unicode(60), primary_key=False, autoincrement=False, nullable=True)
-# 与WMS计划管理
+# 与WMS和SAP采购订单表
 class WMSDetail(Base):
     __tablename__ = 'WMSDetail'
     # id:
@@ -1607,7 +1607,7 @@ class WMSDetail(Base):
     # 库房号（缺省值为1）:
     StoreDef_id = Column(Unicode(60), primary_key=False, autoincrement=False, nullable=True)
 
-# 与WMS计划管理
+# 与WMS状态同步表
 class WMStatusLoad(Base):
     __tablename__ = 'WMStatusLoad'
     # id:
@@ -1669,6 +1669,51 @@ class PartiallyProducts(Base):
 
     # 审核状态
     ReviewStatus = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
+
+    # 修改日期:
+    OperationDate = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+# 原料单检验
+class StapleProducts(Base):
+    __tablename__ = 'StapleProducts'
+    # id:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+    # 单据号:
+    BillNo = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    #关联SAP的采购订单号
+    product_code = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 单据类型
+    btype = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 物料编码:
+    mid = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 数量
+    Num = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
+
+    # 库房编码
+    StoreDef_ID = Column(Unicode(25), default="1", primary_key=False, autoincrement=False, nullable=True)
+
+    # 复核人:
+    CheckedPeople = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
+
+    # 复核状态
+    CheckedStatus = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
+
+    # 审核人:
+    Reviewer = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
+
+    # 审核状态
+    ReviewStatus = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
+
+    # QA确认:
+    QAConfirm = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
+
+    # QA确认状态
+    QAConfirmStatus = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
 
     # 修改日期:
     OperationDate = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
