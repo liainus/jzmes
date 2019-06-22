@@ -25,7 +25,7 @@ from Model.system import Role, Organization, User, Menu, Role_Menu, BatchMaterie
     EquipmentRunRecord, \
     EquipmentRunPUID, EquipmentMaintenanceStore, SpareTypeStore, ElectronicBatch, EquipmentStatusCount, Shifts, \
     EquipmentTimeStatisticTree, SystemEQPCode, EquipmentManagementManua, EquipmentMaintenanceStandard, product_info, \
-    product_plan, product_infoERP, WMSDetail
+    product_plan, product_infoERP, WMSDetail, PurchasingOrder
 from sqlalchemy import create_engine, Column, ForeignKey, Table, Integer, String, and_, or_, desc,extract
 from io import StringIO
 import calendar
@@ -396,6 +396,7 @@ class WMS_Interface(ServiceBase):
                 sta.btype = i.get("btype")
                 sta.mid = i.get("mid")
                 sta.Num = i.get("Num")
+                sta.IsRelevance = "0"
                 sta.OperationDate = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 db_session.add(sta)
                 db_session.commit()
@@ -1021,7 +1022,7 @@ def WMSDetailedSelect():
                 dic.append({"BatchID":BatchID,"BrandName":BrandName})
                 jsondic = json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False)
                 client = Client(Model.Global.WMSurl)
-                ret = client.service.Mes_Interface_TL(" WorkFlowLoad", jsondic)
+                ret = client.service.Mes_Interface_TL("WorkFlowLoad", jsondic)
                 if re[0] == "SUCCESS":
                     jsondata = json.loads(re[2])
                     return '{"total"' + ":" + str(len(jsondata)) + ',"rows"' + ":\n" + re[2] + "}"
@@ -1033,31 +1034,32 @@ def WMSDetailedSelect():
             insertSyslog("error", "WMSDetailedSelect查询报错Error：" + str(e), current_user.Name)
             return json.dumps("WMSDetailedSelect查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
-#WMS物料同步
-@Process.route('/WMSMailSelect', methods=['GET', 'POST'])
-def WMSMailSelect():
+@Process.route('/SAPtoWMSMailBL', methods=['GET', 'POST'])
+def SAPtoWMSMailBL():
+    '''
+    同步物料信息到备料段
+    :return:
+    '''
     if request.method == 'GET':
         data = request.values
         try:
-            json_str = json.dumps(data.to_dict())
-            if len(json_str) > 10:
-                dic = []
-                BatchID = data.get("BatchID")
-                BrandName = data.get("BrandName")
-                dic.append({"BatchID":BatchID,"BrandName":BrandName})
-                jsondic = json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False)
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
+                dir = []
+                for key in jsonnumber:
+                    id = int(key)
+                    oclass = db_session.query(product_infoERP).filter_by(ID=id).first()
+                    dir.append(oclass)
+                jsondic = json.dumps(dir, cls=AlchemyEncoder, ensure_ascii=False)
                 client = Client(Model.Global.WMSurl)
                 ret = client.service.Mes_Interface_TL("MatDetLoad", jsondic)
-                if re[0] == "SUCCESS":
-                    jsondata = json.loads(re[2])
-                    return '{"total"' + ":" + str(len(jsondata)) + ',"rows"' + ":\n" + re[2] + "}"
-                else:
-                    return json.dumps(re[1])
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "WMSMailSelect查询报错Error：" + str(e), current_user.Name)
-            return json.dumps("WMSMailSelect查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+            return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder,
+                              ensure_ascii=False)
+            insertSyslog("接口/SAPtoWMSMailBL", "同步物料信息到备料段报错Error：" + str(e), current_user.Name)
 
 @Process.route('/StapleProductsPage')
 def StapleProductsPage():
@@ -1065,3 +1067,53 @@ def StapleProductsPage():
     WMS原料检验
     '''
     return render_template('StapleProductsPage.html')
+
+#SAP采购订单增加
+@Process.route('/PurchasingOrderCreate', methods=['GET', 'POST'])
+def PurchasingOrderCreate():
+    if request.method == 'POST':
+        data = request.values
+        return insert(PurchasingOrder, data)
+
+#SAP采购订单修改
+@Process.route('/PurchasingOrderUpdate', methods=['GET', 'POST'])
+def PurchasingOrderUpdate():
+    if request.method == 'POST':
+        data = request.values
+        return update(PurchasingOrder, data)
+
+#SAP采购订单删除
+@Process.route('/PurchasingOrderDetele', methods=['GET', 'POST'])
+def PurchasingOrderDetele():
+    if request.method == 'POST':
+        data = request.values
+        return delete(PurchasingOrder, data)
+
+#SAP采购订单查询
+@Process.route('/PurchasingOrderSelect', methods=['GET', 'POST'])
+def PurchasingOrderSelect():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                pages = int(data['page'])
+                rowsnumber = int(data['rows'])
+                inipage = (pages - 1) * rowsnumber + 0
+                endpage = (pages - 1) * rowsnumber + rowsnumber
+                BillNo = data["BillNo"]
+                if BillNo == "":
+                    Count = db_session.query(PurchasingOrder).filter_by().count()
+                    Class = db_session.query(PurchasingOrder).filter_by().all()[inipage:endpage]
+                else:
+                    Count = db_session.query(PurchasingOrder).filter(
+                        PurchasingOrder.BillNo == BillNo).count()
+                    Class = db_session.query(PurchasingOrder).filter(
+                        PurchasingOrder.BillNo == BillNo).all()[inipage:endpage]
+                jsonoclass = json.dumps(Class, cls=AlchemyEncoder, ensure_ascii=False)
+                return '{"total"' + ":" + str(Count) + ',"rows"' + ":\n" + jsonoclass + "}"
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "SAP采购订单查询报错Error：" + str(e), current_user.Name)
+            return json.dumps("SAP采购订单查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)

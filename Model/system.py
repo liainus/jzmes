@@ -1580,7 +1580,7 @@ class EmpowerContentJournal(Base):
 
     # 其他:
     Other = Column(Unicode(60), primary_key=False, autoincrement=False, nullable=True)
-# 与WMS和SAP采购订单表
+# 与WMS采购订单表
 class WMSDetail(Base):
     __tablename__ = 'WMSDetail'
     # id:
@@ -1717,6 +1717,33 @@ class StapleProducts(Base):
 
     # 修改日期:
     OperationDate = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 是否关联:
+    IsRelevance= Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+# SAP采购订单
+class PurchasingOrder(Base):
+    __tablename__ = 'PurchasingOrder'
+    # id:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+    # 单据号:
+    BillNo = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 批次号:
+    BatchNo = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 总数量:
+    Num = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 物料编码
+    mid = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
+
+    # 单据类型（采购入库101，成品入库102，生产计划203）:
+    btype = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
+
+    # 库房号（缺省值为1）:
+    StoreDef_id = Column(Unicode(60), primary_key=False, autoincrement=False, nullable=True)
 
 # 生成表单的执行语句
 Base.metadata.create_all(engine)

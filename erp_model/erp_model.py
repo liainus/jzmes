@@ -25,7 +25,7 @@ from Model.system import Role, Organization, User, Menu, Role_Menu, BatchMaterie
     EquipmentRunPUID, EquipmentMaintenanceStore, SpareTypeStore, ElectronicBatch, EquipmentStatusCount, Shifts, \
     EquipmentTimeStatisticTree, SystemEQPCode, EquipmentManagementManua, EquipmentMaintenanceStandard, product_info, \
     product_plan, product_infoERP, YieldMaintain, plantCalendarScheduling, Scheduling, SchedulingStandard, \
-    SchedulingMaterial
+    SchedulingMaterial, StapleProducts
 from sqlalchemy import create_engine, Column, ForeignKey, Table, Integer, String, and_, or_, desc,extract
 from io import StringIO
 import calendar
@@ -92,9 +92,16 @@ def productinfoSearch():
                 rowsnumber = int(data['rows'])  # 行数
                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
-                total = db_session.query(product_infoERP).count()
-                oclass = db_session.query(product_infoERP).all()[inipage:endpage]
-                jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
+                product_type = data.get("product_type")
+                product_code = data.get("product_code")
+                if product_type == None or product_type =="":
+                    total = db_session.query(product_infoERP).filter(product_infoERP.product_code.like("%"+product_code+"%")).count()
+                    oclass = db_session.query(product_infoERP).filter(product_infoERP.product_code.like("%"+product_code+"%")).all()[inipage:endpage]
+                    jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
+                else:
+                    total = db_session.query(product_infoERP).filter(product_infoERP.product_type == product_type, product_infoERP.product_code.like("%"+product_code+"%")).count()
+                    oclass = db_session.query(product_infoERP).filter(product_infoERP.product_type == product_type, product_infoERP.product_code.like("%"+product_code+"%")).all()[inipage:endpage]
+                    jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonpequipments = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
                 return jsonpequipments
         except Exception as e:
@@ -896,3 +903,94 @@ def SchedulingMaterialSearch():
             print(e)
             logger.error(e)
             insertSyslog("error", "SchedulingMaterial查询报错Error：" + str(e), current_user.Name)
+
+@ERP.route('/erp_model/StapleProductsSearch', methods=['POST', 'GET'])
+def StapleProductsSearch():
+    '''
+    原料单检验查询
+    :return:
+    '''
+    if request.method == 'GET':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                pages = int(data['page'])  # 页数
+                rowsnumber = int(data['rows'])  # 行数
+                inipage = (pages - 1) * rowsnumber + 0  # 起始页
+                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+                IsRelevance = data.get("IsRelevance")
+                total = db_session.query(StapleProducts).filter(StapleProducts.IsRelevance == IsRelevance).count()
+                oclass = db_session.query(StapleProducts).filter(StapleProducts.IsRelevance == IsRelevance).all()[
+                         inipage:endpage]
+                jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
+                jsonpequipments = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
+                return jsonpequipments
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "原料单检验查询查询报错Error：" + str(e), current_user.Name)
+
+@ERP.route('/StapleProductsChecked', methods=['POST', 'GET'])
+def StapleProductsChecked():
+    '''
+    原料复核
+    :return:
+    '''
+    if request.method == 'GET':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
+                for key in jsonnumber:
+                    # for subkey in list(key):
+                    id = int(key)
+                    try:
+                        oclass = db_session.query(StapleProducts).filter_by(ID=id).first()
+                        oclass.CheckedPeople = current_user.Name
+                        oclass.CheckedStatus = ""
+                        db_session.commit()
+                    except Exception as ee:
+                        db_session.rollback()
+                        print(ee)
+                        logger.error(ee)
+                        return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
+                                          ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+            insertSyslog("error", "设备建模删除报错Error：" + str(e), current_user.Name)
+
+@ERP.route('/StapleProductsUpdate', methods=['POST', 'GET'])
+def StapleProductsUpdate():
+    '''
+    WMS原料单关联SAP采购单
+    :return:
+    '''
+    if request.method == 'GET':
+        data = request.values  # 返回请求中的参数和form
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
+                product_code = data.get("product_code")
+                for key in jsonnumber:
+                    id = int(key)
+                    try:
+                        oclass = db_session.query(StapleProducts).filter_by(ID=id).first()
+                        oclass.product_code = product_code
+                        oclass.IsRelevance = "1"
+                        db_session.commit()
+                    except Exception as ee:
+                        db_session.rollback()
+                        print(ee)
+                        logger.error(ee)
+                        return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
+                                          ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+            insertSyslog("error", "WMS原料单关联SAP采购单报错Error：" + str(e), current_user.Name)
