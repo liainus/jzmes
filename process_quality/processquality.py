@@ -1007,11 +1007,11 @@ def WMSStoreSelect():
             if len(json_str) > 10:
                 client = Client(Model.Global.WMSurl)
                 ret = client.service.Mes_Interface_TL("StoreLoad")
-                if re[0] == "SUCCESS":
-                    jsondata = json.loads(re[2])
-                    return '{"total"' + ":" + str(len(jsondata)) + ',"rows"' + ":\n" + re[2] + "}"
+                if ret["Mes_Interface_TLResult"] == "SUCCESS":
+                    jsondata = ret["json_data"]
+                    return '{"total"' + ":" + str(len(jsondata)) + ',"rows"' + ":\n" + jsondata + "}"
                 else:
-                    return json.dumps(re[1])
+                    return json.dumps(ret["ErrData"])
         except Exception as e:
             print(e)
             logger.error(e)
@@ -1028,16 +1028,19 @@ def WMSDetailedSelect():
             if len(json_str) > 10:
                 dic = []
                 BatchID = data.get("BatchID")
+                BatchID = "201803120001"
                 BrandName = data.get("BrandName")
+                BrandName = "健胃消食片浸膏粉"
                 dic.append({"BatchID":BatchID,"BrandName":BrandName})
                 jsondic = json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False)
                 client = Client(Model.Global.WMSurl)
                 ret = client.service.Mes_Interface_TL("WorkFlowLoad", jsondic)
-                if re[0] == "SUCCESS":
-                    jsondata = json.loads(re[2])
-                    return '{"total"' + ":" + str(len(jsondata)) + ',"rows"' + ":\n" + re[2] + "}"
+                if ret["Mes_Interface_TLResult"] == "SUCCESS":
+                    jsondata = json.loads(ret["json_data"])
+                    print(len(jsondata))
+                    return '{"total"' + ":" + str(len(jsondata)) + ',"rows"' + ":\n" + jsondata + "}"
                 else:
-                    return json.dumps(re[1])
+                    return json.dumps(ret["ErrData"])
         except Exception as e:
             print(e)
             logger.error(e)
@@ -1143,7 +1146,7 @@ def WMS_SendPartiallyProducts():
                 dic = []
                 for key in jsonnumber:
                     id = int(key)
-                    oclass = db_session.query(PartiallyProducts).filter(PartiallyProducts.ID == id).first()
+                    oclass = db_session.query(PartiallyProducts).filter(PartiallyProducts.ID == 1).first()
                     dic.append(
                         {"BillNo": str(oclass.BatchID) + str(oclass.BrandID), "btype": "101", "StoreDef_ID": "1",
                          "mid": oclass.BrandID, "num": oclass.Produce})
