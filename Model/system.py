@@ -1685,6 +1685,9 @@ class PartiallyProducts(Base):
     # 修改日期:
     OperationDate = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
+    # 是否发送
+    IsSend = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
+
 # 原料单检验
 class StapleProducts(Base):
     __tablename__ = 'StapleProducts'
