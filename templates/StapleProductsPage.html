@@ -4,116 +4,101 @@
     <meta charset="UTF-8">
     <title>原料采购订单</title>
     <link href="../static/css/base.css" rel="stylesheet">
-    <link rel="stylesheet" href="../static/css/bootstrap.min.css">
-	<link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
-	<link href="../static/css/basic_info.css" rel="stylesheet">
-	<link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
-	<link href="../static/js/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
-    <link href="../static/css/datagridpanel_customer.css" rel="stylesheet">
-    <link href="../static/css/dialogpanel.css" type="text/css" rel="stylesheet">
-    <link href="../static/css/datagrid_customer.css" type="text/css" rel="stylesheet">
-    <link rel="stylesheet" href="../static/css/bootstrap.min.css">
     <script type="text/javascript" src="../static/js/jquery-3.3.1.min.js"></script>
-    <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
-    <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
-    <script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
-    <style>
-        .panel{margin-bottom: 0;}
-        .panel-body{padding: 0;border:none;}
-    </style>
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css" crossorigin="anonymous">
+    <script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootstrap-table.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootstrap-table-zh-CN.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootbox.min.js"></script>
 </head>
 <body>
     <div class="col-md-12" style="margin-top: 15px;">
         <div class="panel panel-info">
             <div class="panel-heading">ERP原料采购订单列表</div>
             <div class="panel-body">
-                <div id="WMSClassDialog" class="easyui-dialog" style="width:400px;height:200px;padding:10px;"
-                     data-options="closed:'true',buttons:'#WMSClassDialogButtons',modal:true">
-                    <form id="WMSClassForm" method="post" class="dialog-form">
-                        <table class="kv-table">
-                            <tbody>
-                                <tr>
-                                    <td class="kv-label">id</td>
-                                    <td class="kv-content">
-                                        <input name="id" id="id" type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="" disabled="disabled">
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="kv-label">单据号</td>
-                                    <td class="kv-content">
-                                        <input name="BillNo" id="BillNo" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="kv-label">批次号</td>
-                                    <td class="kv-content">
-                                        <input name="BatchNo" id="BatchNo" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="kv-label">总数量</td>
-                                    <td class="kv-content">
-                                        <input name="Num" id="Num" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="kv-label">物料编码</td>
-                                    <td class="kv-content">
-                                        <input name="mid" id="mid" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="kv-label">单据类型</td>
-                                    <td class="kv-content">
-                                        <input name="btype" id="btype" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="kv-label">库房号</td>
-                                    <td class="kv-content">
-                                        <input name="StoreDef_id" id="StoreDef_id" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <div id="WMSClassDialogButtons" >
-                            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" onclick="toolbar.save()">保存</a>
-                            <a href="#" class="easyui-linkbutton" onclick="$('#WMSClassDialog').dialog('close')">关闭</a>
+                <div id="myModal" class="modal fade">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                    ×
+                                </button>
+                                <h4 class="modal-title" id="myModalLabel">
+                                    订单表单信息
+                                </h4>
+                            </div>
+                            <div class="modal-body">
+                                <form class="form-horizontal" action="">
+                                    <div class="form-group">
+                                        <label for="id" class="col-sm-2 control-label">id</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" class="form-control" id="id" placeholder="" disabled="disabled">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="BillNo" class="col-sm-2 control-label">单据号</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" class="form-control" id="BillNo" placeholder="">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="BatchNo" class="col-sm-2 control-label">批次号</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" class="form-control" id="BatchNo" placeholder="">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="Num" class="col-sm-2 control-label">总数量</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" class="form-control" id="Num" placeholder="">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="mid" class="col-sm-2 control-label">物料编码</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" class="form-control" id="mid" placeholder="">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="btype" class="col-sm-2 control-label">单据类型</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" class="form-control" id="btype" placeholder="">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="StoreDef_id" class="col-sm-2 control-label">库房号</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" class="form-control" id="StoreDef_id" placeholder="">
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <!-- dialog buttons -->
+                            <div class="modal-footer"><button type="button" class="btn btn-primary" id="save">保存</button></div>
+                        </div>
+                    </div>
+                </div>
+                <div id="Toolbar">
+                    <form class="form-inline" style="margin-bottom: 15px;">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <label class="input-group-addon">单据号</label>
+                                <input type="text" class="form-control" id="SearchVal">
+                            </div>
+                            <button type="button" class="btn btn-primary" onclick="toolbar.Search()">查询</button>
+                        </div>
+                        <div class="form-group">
+                            <button type="button" class="btn btn-primary" onclick="toolbar.Add()">添加</button>
+                        </div>
+                        <div class="form-group">
+                            <button type="button" class="btn btn-primary" onclick="toolbar.Updata()">编辑</button>
+                        </div>
+                        <div class="form-group">
+                            <button type="button" class="btn btn-primary" onclick="toolbar.Delete()">删除</button>
                         </div>
                     </form>
                 </div>
-                <div class="" id="Toolbar" style="padding: 0 15px;">
-                     单据号:
-                    <input type="text" id="SearchVal" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
-                    placeholder="">
-                    <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="toolbar.Search();">查询</a>
-                    <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="toolbar.Add()">添加</a>
-                    <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="toolbar.Updata()">编辑</a>
-                    <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="toolbar.Delete()">删除</a>
-                    <a href="#" class="easyui-linkbutton" iconCls="icon-reload" onclick="toolbar.Reload()">刷新</a>
-                </div>
-                <table class="easyui-datagrid" id="infoTable" title="" style="width:100%" data-options="
-                    loadMsg:false,
-                    rownumbers:true,
-                    singleSelect:true,
-                    autoRowHeight:false,
-                    pagination:true,
-                    pageSize:10,
-                    toolbar:'#Toolbar',
-                    url:'/PurchasingOrderSelect',
-                    method:'get'">
-                    <thead>
-                        <tr>
-                            <th field="ck" checkbox="true"></th>
-                            <th data-options="field:'BillNo',width:200,align:'center'">单据号</th>
-                            <th data-options="field:'BatchNo',width:150,align:'center'">批次号</th>
-                            <th data-options="field:'Num',width:150,align:'center'">总数量</th>
-                            <th data-options="field:'mid',width:150,align:'center'">物料编码</th>
-                            <th data-options="field:'btype',width:150,align:'center'">单据类型</th>
-                            <th data-options="field:'StoreDef_id',width:150,align:'center'">库房号</th>
-                        </tr>
-                    </thead>
-                </table>
+                <table class="table table-bordered" id="infoTable"></table>
             </div>
         </div>
     </div>
@@ -121,42 +106,12 @@
         <div class="panel panel-warning">
             <div class="panel-heading">原料采购入库列表</div>
             <div class="panel-body">
-                <div class="datagrid-toolbar" style="padding:0 10px;">
-                    <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="toolbar.relevent()">关联</a>
+                <div id="toolbar1" style="margin-top: 15px;">
+                    <div class="form-group">
+                        <button type="button" class="btn btn-primary" onclick="toolbar.relevent()">关联</button>
+                    </div>
                 </div>
-                <table class="easyui-datagrid" id="warningTable" title="" style="width:100%" data-options="
-                    queryParams: {
-                        BillNo: '',
-                        IsRelevance:'0'
-                    },
-                    loadMsg:false,
-                    rownumbers:true,
-                    singleSelect:false,
-                    autoRowHeight:false,
-                    pagination:true,
-                    pageSize:10,
-                    url:'/erp_model/StapleProductsSearch',
-                    method:'get'">
-                    <thead>
-                        <tr>
-                            <th field="ck" checkbox="true"></th>
-                            <th data-options="field:'BillNo',width:200,align:'center'">单据号</th>
-                            <th data-options="field:'product_code',width:150,align:'center'">关联SAP的采购订单号</th>
-                            <th data-options="field:'btype',width:150,align:'center'">单据类型</th>
-                            <th data-options="field:'mid',width:150,align:'center'">物料编码</th>
-                            <th data-options="field:'Num',width:150,align:'center'">数量</th>
-                            <th data-options="field:'StoreDef_ID',width:150,align:'center'">库房编码</th>
-                            <th data-options="field:'CheckedPeople',width:150,align:'center'">复核人</th>
-                            <th data-options="field:'CheckedStatus',width:150,align:'center'">复核状态</th>
-                            <th data-options="field:'Reviewer',width:150,align:'center'">审核人</th>
-                            <th data-options="field:'ReviewStatus',width:150,align:'center'">审核状态</th>
-                            <th data-options="field:'QAConfirm',width:150,align:'center'">QA确认</th>
-                            <th data-options="field:'QAConfirmStatus',width:150,align:'center'">QA确认状态</th>
-                            <th data-options="field:'OperationDate',width:200,align:'center'">修改日期</th>
-                            <th data-options="field:'IsRelevance',width:200,align:'center'">是否关联</th>
-                        </tr>
-                    </thead>
-                </table>
+                <table class="table table-bordered" id="warningTable"></table>
             </div>
         </div>
     </div>
@@ -164,86 +119,234 @@
         <div class="panel panel-success">
             <div class="panel-heading">已入库列表</div>
             <div class="panel-body">
-                <div class="datagrid-toolbar" style="padding:0 10px;">
-                    <a href="#" class="easyui-linkbutton" iconCls="icon-remove" onclick="toolbar.unrelevent()">取消关联</a>
+                <div id="toolbar2" style="margin-top: 15px;">
+                    <div class="form-group">
+                        <button type="button" class="btn btn-primary" onclick="toolbar.unrelevent()">取消关联</button>
+                    </div>
                 </div>
-                <table class="easyui-datagrid" id="successTable" title="" style="width:100%" data-options="
-                    queryParams: {
-                        BillNo: '',
-                        IsRelevance:'1'
-                    },
-                    loadMsg:false,
-                    rownumbers:true,
-                    singleSelect:false,
-                    autoRowHeight:false,
-                    pagination:true,
-                    pageSize:10,
-                    url:'/erp_model/StapleProductsSearch',
-                    method:'get'">
-                    <thead>
-                        <tr>
-                            <th data-options="field:'BillNo',width:200,align:'center'">单据号</th>
-                            <th data-options="field:'product_code',width:150,align:'center'">关联SAP的采购订单号</th>
-                            <th data-options="field:'btype',width:150,align:'center'">单据类型</th>
-                            <th data-options="field:'mid',width:150,align:'center'">物料编码</th>
-                            <th data-options="field:'Num',width:150,align:'center'">数量</th>
-                            <th data-options="field:'StoreDef_ID',width:150,align:'center'">库房编码</th>
-                            <th data-options="field:'CheckedPeople',width:150,align:'center'">复核人</th>
-                            <th data-options="field:'CheckedStatus',width:150,align:'center'">复核状态</th>
-                            <th data-options="field:'Reviewer',width:150,align:'center'">审核人</th>
-                            <th data-options="field:'ReviewStatus',width:150,align:'center'">审核状态</th>
-                            <th data-options="field:'QAConfirm',width:150,align:'center'">QA确认</th>
-                            <th data-options="field:'QAConfirmStatus',width:150,align:'center'">QA确认状态</th>
-                            <th data-options="field:'OperationDate',width:200,align:'center'">修改日期</th>
-                            <th data-options="field:'IsRelevance',width:200,align:'center'">是否关联</th>
-                        </tr>
-                    </thead>
-                </table>
+                <table class="table table-bordered" id="successTable"></table>
             </div>
         </div>
     </div>
     <script>
         $(function () {
-            $("#infoTable").datagrid({
-                onSelect:function (rowIndex, rowData) {
-                    console.log(rowData)
-                    $("#successTable").datagrid("load",{
-
-                    })
-                }
+            $("#infoTable").bootstrapTable({
+                url: '/PurchasingOrderSelect',
+                method: 'get',
+                queryParams:{
+                    BillNo: ''
+                },
+	            pagination: true,
+                toolbar:"#Toolbar",
+                pageNumber:1,
+	            pageSize: 10,
+	            pageList: [10, 20, 30, 40, 50],
+                sidePagination: "server",
+                paginationLoop:false,
+                paginationPreText:'上一页',
+                paginationNextText:'下一页',
+                singleSelect:true,
+                clickToSelect:true,
+	            locale: "zh-CN",
+	            striped: true,
+                columns: [{
+                    checkbox: true
+                },{
+                    field: 'BillNo',
+                    title: '单据号'
+                },{
+                    field: 'BatchNo',
+                    title: '批次号'
+                },{
+                    field: 'Num',
+                    title: '总数量'
+                },{
+                    field: 'mid',
+                    title: '物料编码'
+                },{
+                    field: 'btype',
+                    title: '单据类型'
+                },{
+                    field: 'StoreDef_id',
+                    title: '库房号'
+                }]
+            })
+            $("#warningTable").bootstrapTable({
+                url: '/erp_model/StapleProductsSearch',
+                method: 'get',
+                queryParams:{
+                    BillNo: '',
+                    IsRelevance:'0'
+                },
+	            pagination: true,
+                toolbar:"#toolbar1",
+                search: true,
+                pageNumber:1,
+	            pageSize: 10,
+	            pageList: [10, 20, 30, 40, 50],
+                sidePagination: "server",
+                paginationLoop:false,
+                paginationPreText:'上一页',
+                paginationNextText:'下一页',
+                singleSelect:false,
+                clickToSelect:true,
+	            locale: "zh-CN",
+	            striped: true,
+                columns: [{
+                    checkbox: true
+                },{
+                    field: 'BillNo',
+                    title: '单据号'
+                },{
+                    field: 'product_code',
+                    title: '关联SAP的采购订单号'
+                },{
+                    field: 'btype',
+                    title: '单据类型'
+                },{
+                    field: 'mid',
+                    title: '物料编码'
+                },{
+                    field: 'Num',
+                    title: '数量'
+                },{
+                    field: 'StoreDef_ID',
+                    title: '库房编码'
+                },{
+                    field: 'Confirmer',
+                    title: '合格确认人'
+                },{
+                    field: 'ConfirmStatus',
+                    title: '合格状态'
+                },{
+                    field: 'CheckedPeople',
+                    title: '复核人'
+                },{
+                    field: 'CheckedStatus',
+                    title: '复核状态'
+                },{
+                    field: 'Reviewer',
+                    title: '审核人'
+                },{
+                    field: 'ReviewStatus',
+                    title: '审核状态'
+                },{
+                    field: 'QAConfirm',
+                    title: 'QA确认人'
+                },{
+                    field: 'QAConfirmStatus',
+                    title: 'QA确认状态'
+                },{
+                    field: 'OperationDate',
+                    title: '修改日期'
+                },{
+                    field: 'IsRelevance',
+                    title: '是否关联'
+                }]
+            })
+            $("#successTable").bootstrapTable({
+                url: '/erp_model/StapleProductsSearch',
+                method: 'get',
+                queryParams:{
+                    BillNo: '',
+                    IsRelevance:'1'
+                },
+	            pagination: true,
+                toolbar:"#toolbar2",
+                search: true,
+                pageNumber:1,
+	            pageSize: 10,
+	            pageList: [10, 20, 30, 40, 50],
+                sidePagination: "server",
+                paginationLoop:false,
+                paginationPreText:'上一页',
+                paginationNextText:'下一页',
+                singleSelect:false,
+                clickToSelect:true,
+	            locale: "zh-CN",
+	            striped: true,
+                columns: [{
+                    checkbox: true
+                },{
+                    field: 'BillNo',
+                    title: '单据号'
+                },{
+                    field: 'product_code',
+                    title: '关联SAP的采购订单号'
+                },{
+                    field: 'btype',
+                    title: '单据类型'
+                },{
+                    field: 'mid',
+                    title: '物料编码'
+                },{
+                    field: 'Num',
+                    title: '数量'
+                },{
+                    field: 'StoreDef_ID',
+                    title: '库房编码'
+                },{
+                    field: 'Confirmer',
+                    title: '合格确认人'
+                },{
+                    field: 'ConfirmStatus',
+                    title: '合格状态'
+                },{
+                    field: 'CheckedPeople',
+                    title: '复核人'
+                },{
+                    field: 'CheckedStatus',
+                    title: '复核状态'
+                },{
+                    field: 'Reviewer',
+                    title: '审核人'
+                },{
+                    field: 'ReviewStatus',
+                    title: '审核状态'
+                },{
+                    field: 'QAConfirm',
+                    title: 'QA确认人'
+                },{
+                    field: 'QAConfirmStatus',
+                    title: 'QA确认状态'
+                },{
+                    field: 'OperationDate',
+                    title: '修改日期'
+                },{
+                    field: 'IsRelevance',
+                    title: '是否关联'
+                }]
             })
             toolbar = {
                 Search:function(){
-                    $('#infoTable').datagrid('load',{
-                        infoTable: $('#SearchVal').val()
+                    $('#infoTable').bootstrapTable('load',{
+                        BillNo: $('#SearchVal').val()
                     });
                 },
                 Add:function(){
-                    $("#WMSClassDialog").dialog('open').dialog('setTitle','添加订单');
-                    $('input[name="BillNo"]').val();
-                    $('input[name="BatchNo"]').val();
-                    $('input[name="Num"]').val();
-                    $('input[name="mid"]').val();
-                    $('input[name="btype"]').val();
-                    $('input[name="StoreDef_id"]').val();
+                    $("#myModal").modal('show')
+                    $('#BillNo').val();
+                    $('#BatchNo').val();
+                    $('#Num').val();
+                    $('#mid').val();
+                    $('#btype').val();
+                    $('#StoreDef_id').val();
                 },
                 Updata:function(){
-                    var rows = $("#infoTable").datagrid('getSelections');
-                    if (rows.length > 1) {
-                        $.messager.alert('警告操作！', '编辑记录只能选定一条数据！', 'warning');
-                    }else if(rows.length == 1){
-                        var row = $("#infoTable").datagrid('getSelected');
+                    var rows = $("#infoTable").bootstrapTable('getAllSelections');
+                    if(rows.length == 1){
+                        var row = $("#infoTable").bootstrapTable('getSelections');
                         if(row){
-                            $("#WMSClassDialog").dialog('open').dialog('setTitle','修改信息');
-                            $('input[name="BillNo"]').val(row.BillNo);
-                            $('input[name="BatchNo"]').val(row.BatchNo);
-                            $('input[name="Num"]').val(row.Num);
-                            $('input[name="mid"]').val(row.mid);
-                            $('input[name="btype"]').val(row.btype);
-                            $('input[name="StoreDef_id"]').val(row.StoreDef_id);
+                            $("#myModal").modal('show')
+                            $('BillNo').val(row.BillNo);
+                            $('BatchNo').val(row.BatchNo);
+                            $('Num').val(row.Num);
+                            $('mid').val(row.mid);
+                            $('btype').val(row.btype);
+                            $('StoreDef_id').val(row.StoreDef_id);
                         }
-                    } else if (rows.length == 0) {
-                        $.messager.alert('警告操作！', '请至少选定一条数据进行编辑！', 'warning');
+                    } else {
+                        bootbox.alert('请单选一条数据进行编辑！');
                     }
                 },
                 save:function(){
@@ -251,22 +354,22 @@
                     var urlAddr = ''
                     var hintinfo = ''
                     if(Bee.StringUtils.isEmpty($('#BillNo').val())) {
-                        $.messager.alert('提示', '单据号不能为空！', 'info');
+                        bootbox.alert('单据号不能为空！');
                         return false;
                     }else if(Bee.StringUtils.isEmpty($('#BatchNo').val())){
-                        $.messager.alert('提示', '批次号不能为空！', 'info');
+                        bootbox.alert('批次号不能为空！');
                         return false;
                     }else if(Bee.StringUtils.isEmpty($('#Num').val())){
-                        $.messager.alert('提示', '总数量不能为空！', 'info');
+                        bootbox.alert('总数量不能为空！');
                         return false;
                     }else if(Bee.StringUtils.isEmpty($('#mid').val())){
-                        $.messager.alert('提示', '物料编码不能为空！', 'info');
+                        bootbox.alert('物料编码不能为空！');
                         return false;
                     }else if(Bee.StringUtils.isEmpty($('#btype').val())){
-                        $.messager.alert('提示', '单据类型不能为空！', 'info');
+                        bootbox.alert('单据类型不能为空！');
                         return false;
                     }else if(Bee.StringUtils.isEmpty($('#StoreDef_id').val())){
-                        $.messager.alert('提示', '库房号不能为空！', 'info');
+                        bootbox.alert('库房号不能为空！');
                         return false;
                     }
                     if (strID.length >= 1){
@@ -290,156 +393,151 @@
                             StoreDef_id:$('#StoreDef_id').val()
                         },
                         success:function(data){
-                            $.messager.progress('close');
                             if(data == "OK"){
-                                $.messager.show({
-                                    title: '提示',
-                                    msg: hintinfo  + '成功',
-                                    timeout:1000,
-                                    style: {
-                                        right: '',
-                                        top: document.body.scrollTop + document.documentElement.scrollTop,
-                                        bottom: ''
-                                    }
-                                });
-                                $("#WMSClassDialog").dialog('close');
-                                $('#infoTable').datagrid('reload');
+                                bootbox.alert('操作成功')
+                                $('#infoTable').bootstrapTable('refresh');
                             } else {
-                                $.messager.alert('提醒：', data, 'warning');
+                                bootbox.alert(data)
                             }
                         },
                         error: function(data){
                            console.log(data.responseText)
-                           alert(hintinfo+ "异常，请刷新后重试...");
+                           bootbox.alert('请求失败')
                         },
                     })
                 },
                 Delete:function(){
-                    var rows = $("#infoTable").datagrid('getSelections');
+                    var rows = $("#infoTable").bootstrapTable('getAllSelections');
                     if (rows.length > 0) {
                         var jsonarray=[];
-                        $.messager.confirm('确定操作', '您正在删除所选的记录吗？', function (flag) {
-                            if (flag) {
-                                for (var i = 0; i < rows.length; i++) {
-                                    var obj=createKeyIDObj(parseInt(rows[i].ID));
-                                    jsonarray.push(obj);
+                        bootbox.confirm({
+                            message: "您确认要删除所选的记录吗？",
+                            buttons: {
+                                confirm: {
+                                    label: '删除',
+                                    className: 'btn-success'
+                                },
+                                cancel: {
+                                    label: '返回',
+                                    className: 'btn-danger'
                                 }
-                                var a = JSON.stringify(jsonarray);
-                                $.ajax({
-                                    url: '/PurchasingOrderDetele',
-                                    method: 'POST',
-                                    traditional: true,
-                                    data: a,
-                                    success: function (data) {
-                                        if(data == "OK"){
-                                            $.messager.progress('close');
-                                            $.messager.show({
-                                                title: '提示',
-                                                msg: '删除成功',
-                                                timeout:1000,
-                                                style: {
-                                                    right: '',
-                                                    top: document.body.scrollTop + document.documentElement.scrollTop,
-                                                    bottom: ''
-                                                }
-                                            });
-                                            $("#infoTable").datagrid('reload');
-                                        }
-                                    }
-                                });
-                            }
-                        });
-                    } else {
-                        $.messager.alert('提示', '请选择要删除的记录！', 'info');
-                    }
-                },
-                Reload:function(){
-                    $('#infoTable').datagrid("reload")
-                },
-                relevent:function(){
-                    var rows = $("#infoTable").datagrid('getSelections');
-                    if(rows.length == 1){
-                        var infoRows = $("#warningTable").datagrid('getSelections');
-                        if(infoRows.length > 0){
-                            var jsonarray=[];
-                            $.messager.confirm('确定操作', '您确认要关联吗？', function (flag) {
-                                if (flag) {
-                                    for (var i = 0; i < infoRows.length; i++) {
-                                        var obj = createKeyIDObj(parseInt(infoRows[i].ID));
+                            },
+                            callback: function (result) {
+                                if(result){
+                                    for (var i = 0; i < rows.length; i++) {
+                                        var obj=createKeyIDObj(parseInt(rows[i].ID));
                                         jsonarray.push(obj);
                                     }
                                     var a = JSON.stringify(jsonarray);
                                     $.ajax({
-                                        url: '/StapleProductsUpdate',
+                                        url: '/PurchasingOrderDetele',
                                         method: 'POST',
                                         traditional: true,
-                                        data: {
-                                            BillNo:rows[0].BillNo,
-                                            ids:a
-                                        },
+                                        data: a,
                                         success: function (data) {
                                             if(data == "OK"){
-                                                $.messager.progress('close');
-                                                $.messager.show({
-                                                    title: '提示',
-                                                    msg: '关联成功',
-                                                    timeout:1000,
-                                                    style: {
-                                                        right: '',
-                                                        top: document.body.scrollTop + document.documentElement.scrollTop,
-                                                        bottom: ''
-                                                    }
-                                                });
-                                                $("#successTable").datagrid('reload');
+                                                bootbox.alert('成功删除')
+                                                $("#infoTable").bootstrapTable('refresh');
                                             }
                                         }
                                     });
                                 }
-                            })
+                            }
+                        });
+                    } else {
+                        bootbox.alert('请选择要删除的记录')
+                    }
+                },
+                relevent:function(){
+                    var rows = $("#infoTable").bootstrapTable('getSelections');
+                    if(rows.length == 1){
+                        var infoRows = $("#warningTable").bootstrapTable('getAllSelections');
+                        if(infoRows.length > 0){
+                            var jsonarray=[];
+                            bootbox.confirm({
+                                message: "您确认要关联吗？",
+                                buttons: {
+                                    confirm: {
+                                        label: '确认关联',
+                                        className: 'btn-success'
+                                    },
+                                    cancel: {
+                                        label: '返回',
+                                        className: 'btn-danger'
+                                    }
+                                },
+                                callback: function (result) {
+                                    if(result){
+                                        for (var i = 0; i < infoRows.length; i++) {
+                                            var obj = createKeyIDObj(parseInt(infoRows[i].ID));
+                                            jsonarray.push(obj);
+                                        }
+                                        var a = JSON.stringify(jsonarray);
+                                        $.ajax({
+                                            url: '/StapleProductsUpdate',
+                                            method: 'POST',
+                                            traditional: true,
+                                            data: {
+                                                BillNo:rows[0].BillNo,
+                                                ids:a
+                                            },
+                                            success: function (data) {
+                                                if(data == "OK"){
+                                                    bootbox.alert('成功关联')
+                                                    $("#successTable").bootstrapTable('refresh');
+                                                }
+                                            }
+                                        });
+                                    }
+                                }
+                            });
                         }else{
-                            $.messager.alert('提示', '请选择要关联的数据！', 'info');
+                            bootbox.alert('请选择要关联的数据')
                         }
                     }else{
-                        $.messager.alert('提示', '请选择单条订单数据！', 'info');
+                        bootbox.alert('请选择单条订单数据')
                     }
                 },
                 unrelevent:function(){
-                    var rows = $("#successTable").datagrid('getSelections');
+                    var rows = $("#successTable").bootstrapTable('getAllSelections');
                     if(rows.length > 0){
                         var jsonarray=[];
-                        $.messager.confirm('确定操作', '您确认要取消关联吗？', function (flag) {
-                            if (flag) {
-                                for (var i = 0; i < rows.length; i++) {
-                                    var obj = createKeyIDObj(parseInt(rows[i].ID));
-                                    jsonarray.push(obj);
+                        bootbox.confirm({
+                            message: "您确认要取消关联吗？",
+                            buttons: {
+                                confirm: {
+                                    label: '取消关联',
+                                    className: 'btn-success'
+                                },
+                                cancel: {
+                                    label: '返回',
+                                    className: 'btn-danger'
                                 }
-                                var a = JSON.stringify(jsonarray);
-                                $.ajax({
-                                    url: '/cancelStapleProductsUpdate',
-                                    method: 'POST',
-                                    traditional: true,
-                                    data: a,
-                                    success: function (data) {
-                                        if(data == "OK"){
-                                            $.messager.progress('close');
-                                            $.messager.show({
-                                                title: '提示',
-                                                msg: '已取消关联',
-                                                timeout:1000,
-                                                style: {
-                                                    right: '',
-                                                    top: document.body.scrollTop + document.documentElement.scrollTop,
-                                                    bottom: ''
-                                                }
-                                            });
-                                            $("#successTable").datagrid('reload');
-                                        }
+                            },
+                            callback: function (result) {
+                                if(result){
+                                    for (var i = 0; i < rows.length; i++) {
+                                        var obj = createKeyIDObj(parseInt(rows[i].ID));
+                                        jsonarray.push(obj);
                                     }
-                                });
+                                    var a = JSON.stringify(jsonarray);
+                                    $.ajax({
+                                        url: '/cancelStapleProductsUpdate',
+                                        method: 'POST',
+                                        traditional: true,
+                                        data: a,
+                                        success: function (data) {
+                                            if(data == "OK"){
+                                                bootbox.alert('已取消关联')
+                                                $("#successTable").bootstrapTable('refresh');
+                                            }
+                                        }
+                                    });
+                                }
                             }
-                        })
+                        });
                     }else{
-                        $.messager.alert('提示', '请选择数据进行取消！', 'info');
+                        bootbox.alert('请选择需要取消关联的数据')
                     }
                 }
             }
