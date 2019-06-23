@@ -20,8 +20,12 @@
             $('#tabBatch').bootstrapTable({
                 url: '/erp_model/StapleProductsSearch',
                 method: 'get',
-                queryParams:{
-                    BillNo:""
+                queryParams:function(params){
+                    return {
+                        BillNo: '',
+                        limit : params.limit,
+                        offset : parseInt(params.offset/params.limit)
+                    };
                 },
 	            pagination: true,
                 toolbar:"#toolbar",
