@@ -11,7 +11,7 @@
     <link href="../static/css/datagridpanel_customer.css" rel="stylesheet">
     <link href="../static/css/dialogpanel.css" type="text/css" rel="stylesheet">
     <link href="../static/css/datagrid_customer.css" type="text/css" rel="stylesheet">
-    <script type="text/javascript" src="../static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="../static/js/jquery-3.3.1.min.js"></script>
     <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
     <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
     <script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
@@ -48,6 +48,7 @@
         <div style="margin-top: 20px">
             <a href="#" class="easyui-linkbutton" id="synchronization" data-options="iconCls:'icon-redo'">同步到系统</a>
             <a href="#" class="easyui-linkbutton" id="synchronizationToWMS" data-options="iconCls:'icon-redo'">同步物料到WMS</a>
+            <a href="#" class="easyui-linkbutton" id="synchronizationToBL" data-options="iconCls:'icon-ok'">同步物料到备料段</a>
         </div>
         <div id="WMSClassDialog" class="easyui-dialog" style="width:400px;height:200px;padding:10px;"
              data-options="closed:'true',buttons:'#WMSClassDialogButtons',modal:true">
@@ -68,9 +69,6 @@
                 </div>
             </form>
         </div>
-        <div id="Toolbar">
-            <a href="#" class="easyui-linkbutton" id="synchronizationToBL" data-options="iconCls:'icon-ok'">同步物料到备料段</a>
-        </div>
         <table class="easyui-datagrid" id="selfTab" title="系统物料列表" style="width:100%;" data-options="
             loadMsg:false,
             rownumbers:true,
@@ -78,7 +76,6 @@
             autoRowHeight:false,
             pagination:true,
             pageSize:10,
-            toolbar:'#Toolbar',
             url:'/erp_model/productinfoSearch',
             method:'get'">
             <thead>
@@ -124,16 +121,31 @@
                     }
                 })
             })
+            var ToWMSurl = ""
             $("#synchronizationToWMS").on('click',function(){
                 $("#WMSClassDialog").dialog('open').dialog('setTitle','请输入物料编码');
                 $("#product_code").val("")
+                ToWMSurl = '/WMS_SendSAPMatil'
+            })
+            $("#synchronizationToBL").on('click',function(){
+                $("#WMSClassDialog").dialog('open').dialog('setTitle','请输入物料编码');
+                $("#product_code").val("")
+                ToWMSurl = '/SAPtoWMSMailBL'
             })
             $("#save").on('click',function(){
+                var rows = $("#selfTab").datagrid('getSelections');
+                var jsonarray=[];
+                for (var i = 0; i < rows.length; i++) {
+                    var obj=createKeyIDObj(parseInt(rows[i].ID));
+                    jsonarray.push(obj);
+                }
+                var a = JSON.stringify(jsonarray);
                 $.ajax({
-                    url: '/WMS_SendSAPMatil',
+                    url: '',
                     method: 'GET',
                     data: {
-                        product_code: $("#product_code").val()
+                        product_code: $("#product_code").val(),
+                        ids:a
                     },
                     success: function (data) {
                         if (data == "OK") {
@@ -147,7 +159,7 @@
                                     bottom: ''
                                 }
                             });
-                            $('#userClassDialog').dialog('close');
+                            $('#WMSClassDialog').dialog('close');
                         } else {
                             $.messager.alert('提示', data, 'info');
                         }
@@ -156,49 +168,6 @@
                         alert("请求失败，请稍后重试！")
                     }
                 });
-            })
-            $("#synchronizationToBL").on('click',function(){
-                var rows = $("#selfTab").datagrid('getSelections');
-                if(rows.length > 0){
-                    var jsonarray=[];
-                    $.messager.confirm('确定操作', '您确认要同步到备料段吗？', function (flag) {
-                        if (flag) {
-                            for (var i = 0; i < rows.length; i++) {
-                                var obj=createKeyIDObj(parseInt(rows[i].ID));
-                                jsonarray.push(obj);
-                            }
-                            var a = JSON.stringify(jsonarray);
-                            $.ajax({
-                                url: '/SAPtoWMSMailBL',
-                                method: 'GET',
-                                data: a,
-                                success: function (data) {
-                                    if (data == "OK") {
-                                        $.messager.progress('close');
-                                        $.messager.show({
-                                            title: '提示',
-                                            timeout: 1000,
-                                            msg: '同步成功',
-                                            style: {
-                                                right: '',
-                                                top: document.body.scrollTop + document.documentElement.scrollTop,
-                                                bottom: ''
-                                            }
-                                        });
-                                        $("#selfTab").datagrid('reload')
-                                    } else {
-                                        $.messager.alert('提示', data, 'info');
-                                    }
-                                },
-                                error: function () {
-                                    alert("请求失败，请稍后重试！")
-                                }
-                            });
-                        }
-                    })
-                }else{
-                    $.messager.alert('提示', "请选择需要同步的记录", 'info');
-                }
             })
             $.extend($.fn.datagrid.defaults.editors, {
                 text: {

@@ -16,14 +16,21 @@
      <script type="text/javascript">
         $(function(){
             $("#planTab").datagrid({
+                url:'/batchManager/SearchBatchZYPlan',
                 queryParams: {
                     ID: getUrlParam('ID'),
                     PName: getUrlParam('name')+"段"
                 },
                 onClickRow:function(rowIndex,rowData){
-                    $("#DetailedTab").datagrid('load',{
-                        BatchID:rowData.BatchID,
-                        BrandName:rowData.BrandName
+                    $("#StoreTab").datagrid({
+                        url:'/WMSStoreSelect'
+                    })
+                    $("#DetailedTab").datagrid({
+                        url:'/WMSDetailedSelect',
+                        queryParams: {
+                            BatchID: rowData.BatchID,
+                            BrandName: rowData.BrandName
+                        }
                     })
                 }
             })
@@ -39,7 +46,6 @@
 <body>
     <div class="container" style="padding: 15px;">
         <table id="planTab" class="easyui-datagrid" style="width:100%;height:300px;" title="批次计划明细" data-options="
-            url:'/batchManager/SearchBatchZYPlan',
             method:'GET',
             rownumbers:true,
             singleSelect:true,
@@ -75,10 +81,9 @@
                 </tr>
             </thead>
         </table>
-        <div id="tab" class="easyui-tabs" style="width:100%;height:250px;margin-top: 10px;">
+        <div id="panelTab" class="easyui-tabs" style="width:100%;height:250px;margin-top: 10px;">
             <div title="库存信息" data-options="closable:false"  style="padding:0px;display:none;">
                 <table id="StoreTab" class="easyui-datagrid" style="width:100%;"  data-options="
-                    url:'/WMSStoreSelect',
                     method: 'get',
                     rownumbers:true,
                     singleSelect:false,
@@ -106,7 +111,6 @@
             </div>
             <div title="流水信息" data-options="closable:false" style="overflow:auto;padding:0px;display:none;">
                 <table id="DetailedTab" class="easyui-datagrid" style="width:100%;" data-options="
-                    url:'/WMSDetailedSelect',
                     method: 'get',
                     rownumbers:true,
                     singleSelect:false,
@@ -116,7 +120,7 @@
                     checkOnSelect:false,
                     selectOnCheck:false,
                     collapsible:true,
-                    pageSize:10 " >
+                    pageSize:10">
                     <thead>
                         <tr>
                             <th data-options="field: 'BrandName',width:200,align: 'center' ">品名</th>
@@ -125,29 +129,6 @@
                             <th data-options="field: 'MID',width:200,align: 'center' ">物料编码</th>
                             <th data-options="field: 'MATNAME',width:200,align: 'center' ">物料名称</th>
                             <th data-options="field: 'WorkFlowType',width:100,lign: 'center' ">流水类别</th>
-                        </tr>
-                    </thead>
-                </table>
-            </div>
-            <div title="物料信息" data-options="closable:false" style="overflow:auto;padding:0px;display:none;">
-                <table id="MaterialsTab" class="easyui-datagrid" style="width:100%;" data-options="
-                    url:'/WMSMailSelect',
-                    method: 'get',
-                    rownumbers:true,
-                    singleSelect:false,
-                    autoRowHeight:false,
-                    pagination:true,
-                    striped:true,
-                    checkOnSelect:false,
-                    selectOnCheck:false,
-                    collapsible:true,
-                    pageSize:10 " >
-                    <thead>
-                        <tr>
-                            <th data-options="field: 'product_code',width:200,align: 'center' ">物料编码</th>
-                            <th data-options="field: 'product_name',width:200,align: 'center' ">物料名称</th>
-                            <th data-options="field: 'product_unit',width:200,align: 'center' ">计量单位</th>
-                            <th data-options="field: 'product_type',width:200,align: 'center' ">物料类型</th>
                         </tr>
                     </thead>
                 </table>
