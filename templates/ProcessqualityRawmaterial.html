@@ -13,23 +13,17 @@
 </head>
 <body>
     <div class="col-md-12" style="padding-top: 15px;">
-        <div id="Toolbar">
-            <div class="form-group">
-                <button type="button" class="btn btn-primary" id="Pass">合格确认</button>
-            </div>
-        </div>
         <table class="table table-bordered" id="tabBatch"></table>
     </div>
     <script>
         $(function() {
             $('#tabBatch').bootstrapTable({
-                url: '/ZYPlanWMSSelect',
+                url: '/PartiallyProductsSelect',
                 method: 'get',
                 queryParams:{
                     BillNo:""
                 },
 	            pagination: true,
-                toolbar:"#Toolbar",
                 search: true,
                 pageNumber:1,
 	            pageSize: 10,

@@ -137,7 +137,7 @@
                     return {
                         BillNo: '',
                         limit : params.limit,
-                        offset : params.offset,
+                        offset : parseInt(params.offset/params.limit)
                     };
                 },
 	            pagination: true,
@@ -173,7 +173,12 @@
                 },{
                     field: 'StoreDef_id',
                     title: '库房号'
-                }]
+                }],
+                onCheck:function (row,$element) {
+                    $("#successTable").bootstrapTable('load',function(){
+                        BillNo: row.BillNo
+                    })
+                }
             })
             $("#warningTable").bootstrapTable({
                 url: '/erp_model/StapleProductsSearch',
@@ -183,7 +188,7 @@
                         BillNo: '',
                         IsRelevance:'0',
                         limit : params.limit,
-                        offset : params.offset,
+                        offset : parseInt(params.offset/params.limit)
                     };
                 },
                 toolbar:"#toolbar1",
@@ -257,12 +262,11 @@
                 url: '/erp_model/StapleProductsSearch',
                 method: 'get',
                 queryParams:function(params){
-                    console.log(params)
                     return {
                         BillNo: '',
                         IsRelevance:'1',
                         limit : params.limit,
-                        offset : params.offset,
+                        offset : parseInt(params.offset/params.limit)
                     };
                 },
 	            pagination: true,
