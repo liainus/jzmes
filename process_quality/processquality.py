@@ -1008,8 +1008,8 @@ def WMSStoreSelect():
                 client = Client(Model.Global.WMSurl)
                 ret = client.service.Mes_Interface_TL("StoreLoad")
                 if ret["Mes_Interface_TLResult"] == "SUCCESS":
-                    jsondata = ret["json_data"]
-                    return '{"total"' + ":" + str(len(jsondata)) + ',"rows"' + ":\n" + jsondata + "}"
+                    jsondata = json.loads(ret["json_data"])
+                    return '{"total"' + ":" + str(len(jsondata)) + ',"rows"' + ":\n" + json.dumps(jsondata, cls=AlchemyEncoder, ensure_ascii=False) + "}"
                 else:
                     return json.dumps(ret["ErrData"])
         except Exception as e:
@@ -1028,17 +1028,14 @@ def WMSDetailedSelect():
             if len(json_str) > 10:
                 dic = []
                 BatchID = data.get("BatchID")
-                BatchID = "201803120001"
                 BrandName = data.get("BrandName")
-                BrandName = "健胃消食片浸膏粉"
                 dic.append({"BatchID":BatchID,"BrandName":BrandName})
                 jsondic = json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False)
                 client = Client(Model.Global.WMSurl)
                 ret = client.service.Mes_Interface_TL("WorkFlowLoad", jsondic)
                 if ret["Mes_Interface_TLResult"] == "SUCCESS":
                     jsondata = json.loads(ret["json_data"])
-                    print(len(jsondata))
-                    return '{"total"' + ":" + str(len(jsondata)) + ',"rows"' + ":\n" + jsondata + "}"
+                    return '{"total"' + ":" + str(len(jsondata)) + ',"rows"' + ":\n" + json.dumps(jsondata, cls=AlchemyEncoder, ensure_ascii=False) + "}"
                 else:
                     return json.dumps(ret["ErrData"])
         except Exception as e:
