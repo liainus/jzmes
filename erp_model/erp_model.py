@@ -936,37 +936,40 @@ def StapleProductsSearch():
             logger.error(e)
             insertSyslog("error", "原料单检验查询查询报错Error：" + str(e), current_user.Name)
 
-@ERP.route('/StapleProductsChecked', methods=['POST', 'GET'])
+@ERP.route('/StapleProductsChecked', methods=['GET', 'POST'])
 def StapleProductsChecked():
-    '''
-    原料复核
-    :return:
-    '''
-    if request.method == 'GET':
-        data = request.values  # 返回请求中的参数和form
+    '''原料复核审核'''
+    if request.method == 'POST':
+        data = request.values
         try:
-            jsonstr = json.dumps(data.to_dict())
-            if len(jsonstr) > 10:
-                jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
-                for key in jsonnumber:
-                    # for subkey in list(key):
-                    id = int(key)
-                    try:
-                        oclass = db_session.query(StapleProducts).filter_by(ID=id).first()
-                        oclass.CheckedPeople = current_user.Name
-                        oclass.CheckedStatus = ""
-                        db_session.commit()
-                    except Exception as ee:
-                        db_session.rollback()
-                        print(ee)
-                        logger.error(ee)
-                        return json.dumps([{"status": "error:" + str(ee)}], cls=Model.BSFramwork.AlchemyEncoder,
-                                          ensure_ascii=False)
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                ID = data.get("ID")
+                CheckedStatus = data.get("CheckedStatus")
+                ReviewStatus = data.get("ReviewStatus")
+                QAConfirmStatus = data.get("QAConfirmStatus")
+                ConfirmStatus = data.get("ConfirmStatus")
+                if ID == "":
+                    cla = db_session.query(StapleProducts).filter_by(ID = ID).first()
+                    if CheckedStatus != None:
+                        cla.CheckedStatus = CheckedStatus
+                        cla.CheckedPeople = current_user.Name
+                    elif ConfirmStatus != None:
+                        cla.ConfirmStatus = ConfirmStatus
+                        cla.connfirmer = current_user.Name
+                    elif ReviewStatus != None:
+                        cla.ReviewStatus = ReviewStatus
+                        cla.Reviewer = current_user.Name
+                    elif QAConfirmStatus != None:
+                        cla.QAConfirmStatus = QAConfirmStatus
+                        cla.QAConfirmer = current_user.Name
+                    db_session.commit()
+                    return 'OK'
         except Exception as e:
             print(e)
             logger.error(e)
-            return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
-            insertSyslog("error", "设备建模删除报错Error：" + str(e), current_user.Name)
+            insertSyslog("error", "/StapleProductsChecked原料复核审核报错Error：" + str(e), current_user.Name)
+            return json.dumps("StapleProductsChecked原料复核审核报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 @ERP.route('/StapleProductsUpdate', methods=['POST', 'GET'])
 def StapleProductsUpdate():

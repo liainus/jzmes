@@ -1658,6 +1658,12 @@ class PartiallyProducts(Base):
     # 得率
     Yield = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
 
+    # 确认人:
+    Confirmer = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
+
+    # 确认状态
+    ConfirmStatus = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
+
     # 复核人:
     CheckedPeople = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
 
@@ -1670,8 +1676,17 @@ class PartiallyProducts(Base):
     # 审核状态
     ReviewStatus = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
 
+    # QA确认:
+    QAConfirmer = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
+
+    # QA确认状态
+    QAConfirmStatus = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
+
     # 修改日期:
     OperationDate = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 是否发送
+    IsSend = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
 
 # 原料单检验
 class StapleProducts(Base):
@@ -1697,6 +1712,12 @@ class StapleProducts(Base):
     # 库房编码
     StoreDef_ID = Column(Unicode(25), default="1", primary_key=False, autoincrement=False, nullable=True)
 
+    # 确认人:
+    Confirmer = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
+
+    # 确认状态
+    ConfirmStatus = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
+
     # 复核人:
     CheckedPeople = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
 
@@ -1710,7 +1731,7 @@ class StapleProducts(Base):
     ReviewStatus = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
 
     # QA确认:
-    QAConfirm = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
+    QAConfirmer = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
 
     # QA确认状态
     QAConfirmStatus = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)

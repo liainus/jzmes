@@ -973,12 +973,22 @@ def PartiallyProductsChecked():
                 ID = data.get("ID")
                 CheckedStatus = data.get("CheckedStatus")
                 ReviewStatus = data.get("ReviewStatus")
+                QAConfirmStatus = data.get("QAConfirmStatus")
+                ConfirmStatus = data.get("ConfirmStatus")
                 if ID == "":
                     cla = db_session.query(PartiallyProducts).filter_by(ID = ID).first()
                     if CheckedStatus != None:
                         cla.CheckedStatus = CheckedStatus
+                        cla.CheckedPeople = current_user.Name
+                    elif ConfirmStatus != None:
+                        cla.ConfirmStatus = ConfirmStatus
+                        cla.connfirmer = current_user.Name
                     elif ReviewStatus != None:
                         cla.ReviewStatus = ReviewStatus
+                        cla.Reviewer = current_user.Name
+                    elif QAConfirmStatus != None:
+                        cla.QAConfirmStatus = QAConfirmStatus
+                        cla.QAConfirmer = current_user.Name
                     db_session.commit()
                     return 'OK'
         except Exception as e:
@@ -1054,6 +1064,9 @@ def SAPtoWMSMailBL():
                 jsondic = json.dumps(dir, cls=AlchemyEncoder, ensure_ascii=False)
                 client = Client(Model.Global.WMSurl)
                 ret = client.service.Mes_Interface_TL("MatDetLoad", jsondic)
+                if ret[0] != "SUCCESS":
+                    return json.dumps("调用SAPtoWMSMailBL接口报错！" + ret[1])
+                return 'OK'
         except Exception as e:
             print(e)
             logger.error(e)
@@ -1117,3 +1130,31 @@ def PurchasingOrderSelect():
             logger.error(e)
             insertSyslog("error", "SAP采购订单查询报错Error：" + str(e), current_user.Name)
             return json.dumps("SAP采购订单查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+@Process.route('/WMS_SendPartiallyProducts', methods=['GET', 'POST'])
+def WMS_SendPartiallyProducts():
+    '''发送半成品到WMS'''
+    if request.method == 'POST':
+        data = request.values
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
+                dic = []
+                for key in jsonnumber:
+                    id = int(key)
+                    oclass = db_session.query(PartiallyProducts).filter(PartiallyProducts.ID == id).first()
+                    dic.append(
+                        {"BillNo": str(oclass.BatchID) + str(oclass.BrandID), "btype": "101", "StoreDef_ID": "1",
+                         "mid": oclass.BrandID, "num": oclass.Produce})
+                jsondic = json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False)
+                client = Client(Model.Global.WMSurl)
+                ret = client.service.Mes_Interface("billload", jsondic)
+                if ret[0] != "SUCCESS":
+                    return json.dumps("调用WMS_SendPartiallyProducts接口报错！" + ret[1])
+                oclass.IsSend = "10"
+                db_session.commit()
+                return 'OK'
+        except Exception as e:
+            print("调用WMS_SendPartiallyProducts接口报错！")
+            return json.dumps("调用WMS_SendPartiallyProducts接口报错！")
