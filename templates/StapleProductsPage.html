@@ -133,8 +133,12 @@
             $("#infoTable").bootstrapTable({
                 url: '/PurchasingOrderSelect',
                 method: 'get',
-                queryParams:{
-                    BillNo: ''
+                queryParams:function(params){
+                    return {
+                        BillNo: '',
+                        limit : params.limit,
+                        offset : params.offset,
+                    };
                 },
 	            pagination: true,
                 toolbar:"#Toolbar",
@@ -174,13 +178,18 @@
             $("#warningTable").bootstrapTable({
                 url: '/erp_model/StapleProductsSearch',
                 method: 'get',
-                queryParams:{
-                    BillNo: '',
-                    IsRelevance:'0'
+                queryParams:function(params){
+                    return {
+                        BillNo: '',
+                        IsRelevance:'0',
+                        limit : params.limit,
+                        offset : params.offset,
+                    };
                 },
-	            pagination: true,
                 toolbar:"#toolbar1",
+                queryParamsType:'',
                 search: true,
+                pagination: true,
                 pageNumber:1,
 	            pageSize: 10,
 	            pageList: [10, 20, 30, 40, 50],
@@ -188,7 +197,7 @@
                 paginationLoop:false,
                 paginationPreText:'上一页',
                 paginationNextText:'下一页',
-                singleSelect:false,
+                singleSelect:true,
                 clickToSelect:true,
 	            locale: "zh-CN",
 	            striped: true,
@@ -247,9 +256,13 @@
             $("#successTable").bootstrapTable({
                 url: '/erp_model/StapleProductsSearch',
                 method: 'get',
-                queryParams:{
-                    BillNo: '',
-                    IsRelevance:'1'
+                queryParams:function(params){
+                    return {
+                        BillNo: '',
+                        IsRelevance:'1',
+                        limit : params.limit,
+                        offset : params.offset,
+                    };
                 },
 	            pagination: true,
                 toolbar:"#toolbar2",
