@@ -67,7 +67,13 @@
                     title: '合格确认人'
                 },{
                     field: 'ConfirmStatus',
-                    title: '合格状态'
+                    title: '合格状态',
+                    events: window.checkEvents = {
+                        'click .check':function(e,value,row,index){
+                            ispassFun("合格",row.ID)
+                        }
+                    },
+                    formatter:checkFormatter
                 },{
                     field: 'CheckedPeople',
                     title: '复核人'
@@ -88,7 +94,7 @@
                     title: '审核状态',
                     events: window.checkEvents = {
                         'click .check':function(e,value,row,index){
-                            ispassFun("复核",row.ID)
+                            ispassFun("审核",row.ID)
                         }
                     },
                     formatter:recheckFormatter
@@ -100,7 +106,7 @@
                     title: 'QA确认状态',
                     events: window.checkEvents = {
                         'click .check':function(e,value,row,index){
-                            ispassFun("复核",row.ID)
+                            ispassFun("QA确认",row.ID)
                         }
                     },
                     formatter:QAcheckFormatter
@@ -112,64 +118,13 @@
                     title: '是否关联'
                 }]
             });
-            $("#Pass").on('click',function(){
-                var rows = $('#tabBatch').bootstrapTable("getAllSelections")
-                var idsArr = []
-                $.each(rows,function(i,value){
-                    idsArr.push(createKeyIDObj(rows[i].ID))
-                })
-                bootbox.dialog({
-                    title: '选择是否合格',
-                    message: "<p>点击下列按钮选择是否合格，修改后可在表格中查看状态。</p>",
-                    size: 'large',
-                    buttons: {
-                        noclose: {
-                            label: "不合格",
-                            className: 'btn-warning',
-                            callback: function(){
-                                $.ajax({
-                                    url: '/StapleProductsChecked',
-                                    method: 'POST',
-                                    data: {
-                                        ID:idsArr,
-                                        ConfirmStatus:"不合格"
-                                    },
-                                    success: function (data) {
-                                        if(data == "OK"){
-                                            bootbox.alert("操作成功");
-                                            $('#tabBatch').bootstrapTable("refresh")
-                                        }else{
-                                            bootbox.alert(data);
-                                        }
-                                    }
-                                })
-                            }
-                        },
-                        ok: {
-                            label: "合格",
-                            className: 'btn-info',
-                            callback: function(){
-                                $.ajax({
-                                    url: '/StapleProductsChecked',
-                                    method: 'POST',
-                                    data: {
-                                        ID:idsArr,
-                                        ConfirmStatus:"合格"
-                                    },
-                                    success: function (data) {
-                                        if(data == "OK"){
-                                            bootbox.alert("操作成功");
-                                            $('#tabBatch').bootstrapTable("refresh")
-                                        }else{
-                                            bootbox.alert(data);
-                                        }
-                                    }
-                                })
-                            }
-                        }
-                    }
-                });
-            })
+            function checkFormatter(value, row, index) {
+                if(!value) {
+                    return "<a href='JavaScript:;' class='check' title='合格'>" + "单击合格" + "</a>";
+                }else{
+                    return "<a href='JavaScript:;' class='check' title='合格'>" + value + "</a>";
+                }
+            }
             function checkFormatter(value, row, index) {
                 if(!value) {
                     return "<a href='JavaScript:;' class='check' title='复核'>" + "单击复核" + "</a>";
@@ -198,11 +153,11 @@
                     size: 'large',
                     buttons: {
                         noclose: {
-                            label: "不通过",
+                            label: Status+"不通过",
                             className: 'btn-warning',
                             callback: function(){
                                 $.ajax({
-                                    url: '/WMStatusLoadConfirm',
+                                    url: '/StapleProductsChecked',
                                     method: 'POST',
                                     data: {
                                         ID:ID,
@@ -220,11 +175,11 @@
                             }
                         },
                         ok: {
-                            label: "通过",
+                            label: Status+"通过",
                             className: 'btn-info',
                             callback: function(){
                                 $.ajax({
-                                    url: '/WMStatusLoadConfirm',
+                                    url: '/StapleProductsChecked',
                                     method: 'POST',
                                     data: {
                                         ID:ID,
