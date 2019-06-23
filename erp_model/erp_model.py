@@ -949,8 +949,8 @@ def StapleProductsChecked():
                 ReviewStatus = data.get("ReviewStatus")
                 QAConfirmStatus = data.get("QAConfirmStatus")
                 ConfirmStatus = data.get("ConfirmStatus")
-                if ID == "":
-                    cla = db_session.query(StapleProducts).filter_by(ID = ID).first()
+                if ID != None:
+                    cla = db_session.query(StapleProducts).filter_by(ID = int(ID)).first()
                     if CheckedStatus != None:
                         cla.CheckedStatus = CheckedStatus
                         cla.CheckedPeople = current_user.Name
