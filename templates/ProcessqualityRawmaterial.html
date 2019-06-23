@@ -4,209 +4,245 @@
     <meta charset="UTF-8">
     <title>半成品确认流程</title>
     <link href="../static/css/base.css" rel="stylesheet">
-	<link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
-	<link href="../static/css/basic_info.css" rel="stylesheet">
-	<link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
-	<link href="../static/js/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
-    <link href="../static/css/datagridpanel_customer.css" rel="stylesheet">
-    <link href="../static/css/dialogpanel.css" type="text/css" rel="stylesheet">
-    <link href="../static/css/datagrid_customer.css" type="text/css" rel="stylesheet">
     <script type="text/javascript" src="../static/js/jquery-3.3.1.min.js"></script>
-    <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
-    <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
-    <script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css" crossorigin="anonymous">
+    <script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootstrap-table.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootstrap-table-zh-CN.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootbox.min.js"></script>
 </head>
 <body>
-    <div style="padding: 15px">
-        <div id="BatchToolbar" style="padding:0 10px;">
-            工单号:
-            <input type="text" id="searchBatch" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
-            placeholder="">
-            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="toolbar.searchBatch()">查询</a>
-            <a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="toolbar.recheck()">复核通过</a>
-            <a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="toolbar.unrecheck()">复核不通过</a>
-            <a href="#" class="easyui-linkbutton" iconCls="icon-back" onclick="toolbar.check()">审核通过</a>
-            <a href="#" class="easyui-linkbutton" iconCls="icon-back" onclick="toolbar.uncheck()">审核不通过</a>
-            <a href="#" class="easyui-linkbutton" iconCls="icon-reload" onclick="toolbar.reloadBatch()">刷新</a>
+    <div class="col-md-12" style="padding-top: 15px;">
+        <div id="Toolbar">
+            <div class="form-group">
+                <button type="button" class="btn btn-primary" id="Pass">合格确认</button>
+            </div>
         </div>
-        <table class="easyui-datagrid" id="tabBatch" title="成品确认流程" style="width:100%;margin-bottom: 20px;" data-options="
-            queryParams: {
-                BillNo:''
-            },
-            loadMsg:false,
-            rownumbers:true,
-            singleSelect:true,
-            autoRowHeight:false,
-            pagination:true,
-            pageSize:10,
-            toolbar:'#BatchToolbar',
-            url:'/PartiallyProductsSelect',
-            method:'get'">
-            <thead>
-                <tr>
-                    <th field="ck" checkbox="true"></th>
-                    <th data-options="field:'BatchID',width:200,align:'center'">批次号</th>
-                    <th data-options="field:'BrandName',width:150,align:'center'">品名</th>
-                    <th data-options="field:'TotalInvestment',width:150,align:'center'">药材总投料量</th>
-                    <th data-options="field:'Produce',width:150,align:'center'">浸膏粉总重量</th>
-                    <th data-options="field:'Sampling',width:150,align:'center'">取样量</th>
-                    <th data-options="field:'Yield',width:150,align:'center'">得率</th>
-                    <th data-options="field:'CheckedPeople',width:150,align:'center'">复核人</th>
-                    <th data-options="field:'CheckedStatus',width:150,align:'center'">复核状态</th>
-                    <th data-options="field:'Reviewer',width:150,align:'center'">审核人</th>
-                    <th data-options="field:'ReviewStatus',width:150,align:'center'">审核状态</th>
-                    <th data-options="field:'OperationDate',width:150,align:'center'">修改日期</th>
-                </tr>
-            </thead>
-        </table>
+        <table class="table table-bordered" id="tabBatch"></table>
     </div>
     <script>
         $(function() {
-            toolbar = {
-                searchBatch: function () {
-                    $("#tabBatch").datagrid('load', {
-                        BillNo: $("#searchBatch").val()
-                    })
+            $('#tabBatch').bootstrapTable({
+                url: '/ZYPlanWMSSelect',
+                method: 'get',
+                queryParams:{
+                    BillNo:""
                 },
-                recheck: function () {
-                    var rows = $("#tabBatch").datagrid('getSelections');
-                    if (rows.length == 1) {
-                        $.messager.confirm('确定操作', '是否通过复核？', function (flag) {
-                            if (flag) {
+	            pagination: true,
+                toolbar:"#Toolbar",
+                search: true,
+                pageNumber:1,
+	            pageSize: 10,
+	            pageList: [10, 20, 30, 40, 50],
+                sidePagination: "server",
+                paginationLoop:false,
+                paginationPreText:'上一页',
+                paginationNextText:'下一页',
+                singleSelect:false,
+                clickToSelect:true,
+	            locale: "zh-CN",
+	            striped: true,
+                columns: [{
+                    checkbox: true
+                },{
+                    field: 'BatchID',
+                    title: '批次号'
+                },{
+                    field: 'BrandName',
+                    title: '品名'
+                },{
+                    field: 'TotalInvestment',
+                    title: '药材总投料量'
+                },{
+                    field: 'Produce',
+                    title: '浸膏粉总重量'
+                },{
+                    field: 'Sampling',
+                    title: '取样量'
+                },{
+                    field: 'Yield',
+                    title: '得率'
+                },{
+                    field: 'Confirmer',
+                    title: '合格确认人'
+                },{
+                    field: 'ConfirmStatus',
+                    title: '合格状态'
+                },{
+                    field: 'CheckedPeople',
+                    title: '复核人'
+                },{
+                    field: 'CheckedStatus',
+                    title: '复核状态',
+                    events: window.checkEvents = {
+                        'click .check':function(e,value,row,index){
+                            ispassFun("复核",row.ID)
+                        }
+                    },
+                    formatter:checkFormatter
+                },{
+                    field: 'Reviewer',
+                    title: '审核人'
+                },{
+                    field: 'ReviewStatus',
+                    title: '审核状态',
+                    events: window.checkEvents = {
+                        'click .check':function(e,value,row,index){
+                            ispassFun("复核",row.ID)
+                        }
+                    },
+                    formatter:recheckFormatter
+                },{
+                    field: 'QAConfirm',
+                    title: 'QA确认人'
+                },{
+                    field: 'QAConfirmStatus',
+                    title: 'QA确认状态',
+                    events: window.checkEvents = {
+                        'click .check':function(e,value,row,index){
+                            ispassFun("复核",row.ID)
+                        }
+                    },
+                    formatter:QAcheckFormatter
+                },{
+                    field: 'OperationDate',
+                    title: '修改日期'
+                },{
+                    field: 'IsSend',
+                    title: '是否发送'
+                }]
+            });
+            $("#Pass").on('click',function(){
+                var rows = $('#tabBatch').bootstrapTable("getAllSelections")
+                var idsArr = []
+                $.each(rows,function(i,value){
+                    idsArr.push(createKeyIDObj(rows[i].ID))
+                })
+                bootbox.dialog({
+                    title: '选择是否合格',
+                    message: "<p>点击下列按钮选择是否合格，修改后可在表格中查看状态。</p>",
+                    size: 'large',
+                    buttons: {
+                        noclose: {
+                            label: "不合格",
+                            className: 'btn-warning',
+                            callback: function(){
                                 $.ajax({
-                                    url: '/PartiallyProductsChecked',
+                                    url: '/StapleProductsChecked',
                                     method: 'POST',
                                     data: {
-                                        ID: rows[0].ID,
-                                        CheckedStatus: "通过复核"
+                                        ID:idsArr,
+                                        ConfirmStatus:"不合格"
                                     },
                                     success: function (data) {
-                                        if (data == "OK") {
-                                            $.messager.show({
-                                                title: '提示',
-                                                msg: '确认成功',
-                                                timeout: 1000,
-                                                style: {
-                                                    right: '',
-                                                    top: document.body.scrollTop + document.documentElement.scrollTop,
-                                                    bottom: ''
-                                                }
-                                            });
-                                            $("#tabBatch").datagrid('reload');
+                                        if(data == "OK"){
+                                            bootbox.alert("操作成功");
+                                            $('#tabBatch').bootstrapTable("refresh")
+                                        }else{
+                                            bootbox.alert(data);
                                         }
                                     }
-                                });
+                                })
                             }
-                        });
-                    } else {
-                        $.messager.alert('提示', '请单选要确认的记录！', 'info');
-                    }
-                },
-                unrecheck: function () {
-                    var rows = $("#tabBatch").datagrid('getSelections');
-                    if (rows.length == 1) {
-                        $.messager.confirm('确定操作', '是否不通过复核？', function (flag) {
-                            if (flag) {
+                        },
+                        ok: {
+                            label: "合格",
+                            className: 'btn-info',
+                            callback: function(){
                                 $.ajax({
-                                    url: '/WMStatusLoadConfirm',
+                                    url: '/StapleProductsChecked',
                                     method: 'POST',
                                     data: {
-                                        ID: rows[0].ID,
-                                        CheckedStatus: "不通过复核"
+                                        ID:idsArr,
+                                        ConfirmStatus:"合格"
                                     },
                                     success: function (data) {
-                                        if (data == "OK") {
-                                            $.messager.show({
-                                                title: '提示',
-                                                msg: '确认成功',
-                                                timeout: 1000,
-                                                style: {
-                                                    right: '',
-                                                    top: document.body.scrollTop + document.documentElement.scrollTop,
-                                                    bottom: ''
-                                                }
-                                            });
-                                            $("#tabBatch").datagrid('reload');
+                                        if(data == "OK"){
+                                            bootbox.alert("操作成功");
+                                            $('#tabBatch').bootstrapTable("refresh")
+                                        }else{
+                                            bootbox.alert(data);
                                         }
                                     }
-                                });
+                                })
                             }
-                        });
-                    } else {
-                        $.messager.alert('提示', '请单选要确认的记录！', 'info');
+                        }
                     }
-                },
-                check: function () {
-                    var rows = $("#tabBatch").datagrid('getSelections');
-                    if (rows.length == 1) {
-                        $.messager.confirm('确定操作', '是否通过审核？', function (flag) {
-                            if (flag) {
-                                $.ajax({
-                                    url: '/WMStatusLoadConfirm',
-                                    method: 'POST',
-                                    data: {
-                                        ID: rows[0].ID,
-                                        ReviewStatus: "通过审核"
-                                    },
-                                    success: function (data) {
-                                        if (data == "OK") {
-                                            $.messager.show({
-                                                title: '提示',
-                                                msg: '确认成功',
-                                                timeout: 1000,
-                                                style: {
-                                                    right: '',
-                                                    top: document.body.scrollTop + document.documentElement.scrollTop,
-                                                    bottom: ''
-                                                }
-                                            });
-                                            $("#tabBatch").datagrid('reload');
-                                        }
-                                    }
-                                });
-                            }
-                        });
-                    } else {
-                        $.messager.alert('提示', '请单选要确认的记录！', 'info');
-                    }
-                },
-                check: function () {
-                    var rows = $("#tabBatch").datagrid('getSelections');
-                    if (rows.length == 1) {
-                        $.messager.confirm('确定操作', '是否不通过审核？', function (flag) {
-                            if (flag) {
-                                $.ajax({
-                                    url: '/WMStatusLoadConfirm',
-                                    method: 'POST',
-                                    data: {
-                                        ID: rows[0].ID,
-                                        ReviewStatus: "不通过审核"
-                                    },
-                                    success: function (data) {
-                                        if (data == "OK") {
-                                            $.messager.show({
-                                                title: '提示',
-                                                msg: '确认成功',
-                                                timeout: 1000,
-                                                style: {
-                                                    right: '',
-                                                    top: document.body.scrollTop + document.documentElement.scrollTop,
-                                                    bottom: ''
-                                                }
-                                            });
-                                            $("#tabBatch").datagrid('reload');
-                                        }
-                                    }
-                                });
-                            }
-                        });
-                    } else {
-                        $.messager.alert('提示', '请单选要确认的记录！', 'info');
-                    }
-                },
-                reloadBatch: function () {
-                    $('#tabBatch').datagrid('reload');
+                });
+            })
+            function checkFormatter(value, row, index) {
+                if(!value) {
+                    return "<a href='JavaScript:;' class='check' title='复核'>" + "单击复核" + "</a>";
+                }else{
+                    return "<a href='JavaScript:;' class='check' title='复核'>" + value + "</a>";
                 }
+            }
+            function recheckFormatter(value, row, index) {
+                if(!value){
+                    return "<a href='JavaScript:;' class='check' title='审核'>单击审核</a>";
+                }else{
+                    return "<a href='JavaScript:;' class='check' title='审核'>" + value + "</a>";
+                }
+            }
+            function QAcheckFormatter(value, row, index) {
+                if(!value) {
+                    return "<a href='JavaScript:;' class='check' title='QA确认'>" + "单击QA确认" + "</a>";
+                }else{
+                    return "<a href='JavaScript:;' class='check' title='QA确认'>" + value + "</a>";
+                }
+            }
+            function ispassFun(Status,ID){
+                bootbox.dialog({
+                    title: '选择是否通过',
+                    message: "<p>点击下列按钮选择是否通过，修改后可在表格中查看状态。</p>",
+                    size: 'large',
+                    buttons: {
+                        noclose: {
+                            label: "不通过",
+                            className: 'btn-warning',
+                            callback: function(){
+                                $.ajax({
+                                    url: '/WMStatusLoadConfirm',
+                                    method: 'POST',
+                                    data: {
+                                        ID:ID,
+                                        CheckedStatus:Status+"不通过"
+                                    },
+                                    success: function (data) {
+                                        if(data == "OK"){
+                                            bootbox.alert(Status+"成功");
+                                            $('#tabBatch').bootstrapTable("refresh")
+                                        }else{
+                                            bootbox.alert(data);
+                                        }
+                                    }
+                                })
+                            }
+                        },
+                        ok: {
+                            label: "通过",
+                            className: 'btn-info',
+                            callback: function(){
+                                $.ajax({
+                                    url: '/WMStatusLoadConfirm',
+                                    method: 'POST',
+                                    data: {
+                                        ID:ID,
+                                        CheckedStatus:Status+"通过"
+                                    },
+                                    success: function (data) {
+                                        if(data == "OK"){
+                                            bootbox.alert(Status+"成功");
+                                            $('#tabBatch').bootstrapTable("refresh")
+                                        }else{
+                                            bootbox.alert(data);
+                                        }
+                                    }
+                                })
+                            }
+                        }
+                    }
+                });
             }
         })
         function createKeyIDObj(keyID){
