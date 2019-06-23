@@ -10,6 +10,7 @@
     <script type="text/javascript" src="../static/js/bootstrap-table.min.js"></script>
     <script type="text/javascript" src="../static/js/bootstrap-table-zh-CN.min.js"></script>
     <script type="text/javascript" src="../static/js/bootbox.min.js"></script>
+    <script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
 </head>
 <body>
     <div class="col-md-12" style="margin-top: 15px;">
@@ -30,9 +31,9 @@
                             <div class="modal-body">
                                 <form class="form-horizontal" action="">
                                     <div class="form-group">
-                                        <label for="id" class="col-sm-2 control-label">id</label>
+                                        <label for="ID" class="col-sm-2 control-label">id</label>
                                         <div class="col-sm-10">
-                                            <input type="text" class="form-control" id="id" placeholder="" disabled="disabled">
+                                            <input type="text" class="form-control" id="ID" placeholder="" disabled="disabled">
                                         </div>
                                     </div>
                                     <div class="form-group">
@@ -74,7 +75,7 @@
                                 </form>
                             </div>
                             <!-- dialog buttons -->
-                            <div class="modal-footer"><button type="button" class="btn btn-primary" id="save">保存</button></div>
+                            <div class="modal-footer"><button type="button" class="btn btn-primary" onclick="toolbar.save()">保存</button></div>
                         </div>
                     </div>
                 </div>
@@ -343,6 +344,7 @@
                 },
                 Add:function(){
                     $("#myModal").modal('show')
+                    $('#ID').val();
                     $('#BillNo').val();
                     $('#BatchNo').val();
                     $('#Num').val();
@@ -353,15 +355,15 @@
                 Updata:function(){
                     var rows = $("#infoTable").bootstrapTable('getAllSelections');
                     if(rows.length == 1){
-                        var row = $("#infoTable").bootstrapTable('getSelections');
-                        if(row){
+                        if(rows){
                             $("#myModal").modal('show')
-                            $('BillNo').val(row.BillNo);
-                            $('BatchNo').val(row.BatchNo);
-                            $('Num').val(row.Num);
-                            $('mid').val(row.mid);
-                            $('btype').val(row.btype);
-                            $('StoreDef_id').val(row.StoreDef_id);
+                            $('#ID').val(rows[0].ID);
+                            $('#BillNo').val(rows[0].BillNo);
+                            $('#BatchNo').val(rows[0].BatchNo);
+                            $('#Num').val(rows[0].Num);
+                            $('#mid').val(rows[0].mid);
+                            $('#btype').val(rows[0].btype);
+                            $('#StoreDef_id').val(rows[0].StoreDef_id);
                         }
                     } else {
                         bootbox.alert('请单选一条数据进行编辑！');
@@ -413,6 +415,7 @@
                         success:function(data){
                             if(data == "OK"){
                                 bootbox.alert('操作成功')
+                                $("#myModal").modal('hide')
                                 $('#infoTable').bootstrapTable('refresh');
                             } else {
                                 bootbox.alert(data)
