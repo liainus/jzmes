@@ -451,7 +451,7 @@ def WMS_SendPlan():
                         oclss = db_session.query(MaterialBOM).filter(MaterialBOM.ProductRuleID == oclass.BrandID).all()
                         for ocl in oclss:
                             num = str(float(ocl.BatchTotalWeight)*float(ocl.BatchPercentage))
-                            dic.append({"BillNo":str(oclass.BatchID)+str(oclass.BrandID),"btype":"203","StoreDef_ID":"1","mid":ocl.MATID,"num":num})
+                            dic.append({"BillNo":str(oclass.BatchID)+str(oclass.BrandID),"BatchNo":str(oclass.BatchID),"btype":"203","StoreDef_ID":"1","mid":ocl.MATID,"num":num})
                         jsondic = json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False)
                         client = Client(Model.Global.WMSurl)
                         ret = client.service.Mes_Interface("billload", jsondic)
@@ -514,22 +514,21 @@ def WMS_StockInfo():
             rowsnumber = int(data.get("limit"))  # 行数
             inipage = pages * rowsnumber + 0  # 起始页
             endpage = pages * rowsnumber + rowsnumber  # 截止页
-            if pages == 1:
-                client = Client(Model.Global.WMSurl)
-                re = client.service.Mes_Interface("StoreLoad")
-                if re[0] == "SUCCESS":
-                    jsondata = json.loads(re[2])
-                    for i in jsondata:
-                        product_code = i.get("MID")
-                        num = i.get("num")
-                        oclass = db_session.query(SchedulingStock).filter(
-                            SchedulingStock.product_code == product_code).first()
-                        if oclass != None:
-                            oclass.StockHouse = num
-                            db_session.commit()
-                else:
-                    return json.dumps(re[1])
-            count = db_session.query(SchedulingStock).count()[inipage:endpage]
+            client = Client(Model.Global.WMSurl)
+            re = client.service.Mes_Interface("StoreLoad")
+            if re[0] == "SUCCESS":
+                jsondata = json.loads(re[2])
+                for i in jsondata:
+                    product_code = i.get("MID")
+                    num = i.get("num")
+                    oclass = db_session.query(SchedulingStock).filter(
+                        SchedulingStock.product_code == product_code).first()
+                    if oclass != None:
+                        oclass.StockHouse = num
+                        db_session.commit()
+            else:
+                return json.dumps(re[1])
+            count = db_session.query(SchedulingStock).count()
             oclass = db_session.query(SchedulingStock).all()[inipage:endpage]
             jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
             return '{"total"' + ":" + str(count) + ',"rows"' + ":\n" + jsonoclass + "}"
@@ -893,14 +892,12 @@ def WMStatusLoadConfirm():
         try:
             jsonstr = json.dumps(data.to_dict())
             if len(jsonstr) > 10:
-                NewStatus = data.get("NewStatus")
                 ID = data.get("ID")
-                oclass = db_session.query(WMStatusLoad).filter(
-                    WMStatusLoad.ID == ID).first()
-                oclass.NewStatus = NewStatus
-                db_session.commit()
-                dic = db_session.query(WMStatusLoad).filter(
-                    WMStatusLoad.ID == ID).first()
+                oclass = db_session.query(StapleProducts).filter(StapleProducts.ID == ID).first()
+                dic = []
+                dic.append(
+                    {"BillNo": str(oclass.BatchID) + str(oclass.BrandID), "mid": "101", "BatchNo": "1",
+                     "StoreDef_ID": "1", "OldStatus": "3","NewStatus":"3"})
                 client = Client(Model.Global.WMSurl)
                 ret = client.service.Mes_Interface("MStatusLoad", json.dumps(dic))
                 if ret[0] == "SUCCESS":
@@ -942,11 +939,11 @@ def PartiallyProductsSelect():
         try:
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 10:
-                pages = int(data['page'])
-                rowsnumber = int(data['rows'])
-                inipage = (pages - 1) * rowsnumber + 0
-                endpage = (pages - 1) * rowsnumber + rowsnumber
-                BatchID = data["BatchID"]
+                pages = int(data.get("offset"))  # 页数
+                rowsnumber = int(data.get("limit"))  # 行数
+                inipage = pages * rowsnumber + 0  # 起始页
+                endpage = pages * rowsnumber + rowsnumber  # 截止页
+                BatchID = data.get("BatchID")
                 if BatchID == "":
                     Count = db_session.query(PartiallyProducts).filter_by().count()
                     Class = db_session.query(PartiallyProducts).filter_by().all()[inipage:endpage]
