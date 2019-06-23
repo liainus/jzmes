@@ -973,12 +973,22 @@ def PartiallyProductsChecked():
                 ID = data.get("ID")
                 CheckedStatus = data.get("CheckedStatus")
                 ReviewStatus = data.get("ReviewStatus")
+                QAConfirmStatus = data.get("QAConfirmStatus")
+                ConfirmStatus = data.get("ConfirmStatus")
                 if ID == "":
                     cla = db_session.query(PartiallyProducts).filter_by(ID = ID).first()
                     if CheckedStatus != None:
                         cla.CheckedStatus = CheckedStatus
+                        cla.CheckedPeople = current_user.Name
+                    elif ConfirmStatus != None:
+                        cla.ConfirmStatus = ConfirmStatus
+                        cla.connfirmer = current_user.Name
                     elif ReviewStatus != None:
                         cla.ReviewStatus = ReviewStatus
+                        cla.Reviewer = current_user.Name
+                    elif QAConfirmStatus != None:
+                        cla.QAConfirmStatus = QAConfirmStatus
+                        cla.QAConfirmer = current_user.Name
                     db_session.commit()
                     return 'OK'
         except Exception as e:
