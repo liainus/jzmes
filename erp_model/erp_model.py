@@ -925,13 +925,21 @@ def StapleProductsSearch():
                 endpage = pages * rowsnumber + rowsnumber  # 截止页
                 IsRelevance = data.get("IsRelevance")
                 BillNo = data.get("BillNo")
-                if BillNo == None:
-                    BillNo = ""
-                if IsRelevance == None:
-                    IsRelevance = ""
-                total = db_session.query(StapleProducts).filter(StapleProducts.IsRelevance == IsRelevance, StapleProducts.BillNo == BillNo).count()
-                oclass = db_session.query(StapleProducts).filter(StapleProducts.IsRelevance == IsRelevance, StapleProducts.BillNo == BillNo).all()[
-                         inipage:endpage]
+                if IsRelevance != "" and BillNo != "":
+                    total = db_session.query(StapleProducts).filter(StapleProducts.IsRelevance == IsRelevance, StapleProducts.BillNo == BillNo).count()
+                    oclass = db_session.query(StapleProducts).filter(StapleProducts.IsRelevance == IsRelevance, StapleProducts.BillNo == BillNo).all()[
+                             inipage:endpage]
+                elif IsRelevance != "" and BillNo == "":
+                    total = db_session.query(StapleProducts).filter(StapleProducts.IsRelevance == IsRelevance).count()
+                    oclass = db_session.query(StapleProducts).filter(StapleProducts.IsRelevance == IsRelevance).all()[
+                             inipage:endpage]
+                elif IsRelevance == "" and BillNo != "":
+                    total = db_session.query(StapleProducts).filter(StapleProducts.BillNo == BillNo).count()
+                    oclass = db_session.query(StapleProducts).filter(StapleProducts.BillNo == BillNo).all()[
+                             inipage:endpage]
+                else:
+                    total = db_session.query(StapleProducts).filter().count()
+                    oclass = db_session.query(StapleProducts).filter().all()[inipage:endpage]
                 jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonpequipments = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
                 return jsonpequipments
