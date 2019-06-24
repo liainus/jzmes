@@ -92,19 +92,14 @@ def productinfoSearch():
                 rowsnumber = int(data['rows'])  # 行数
                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
-                product_type = data.get("product_type")
                 product_code = data.get("product_code")
                 if product_code == None or product_code =="":
-                    if product_type == None or product_type == "":
-                        total = db_session.query(product_infoERP).filter().count()
-                        oclass = db_session.query(product_infoERP).filter().all()[inipage:endpage]
-                    else:
-                        total = db_session.query(product_infoERP).filter(product_infoERP.product_type == product_type).count()
-                        oclass = db_session.query(product_infoERP).filter(product_infoERP.product_type == product_type).all()[inipage:endpage]
+                    total = db_session.query(product_infoERP).filter().count()
+                    oclass = db_session.query(product_infoERP).filter().all()[inipage:endpage]
                     jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
                 else:
-                    total = db_session.query(product_infoERP).filter(product_infoERP.product_type == product_type, product_infoERP.product_code.like("%"+product_code+"%")).count()
-                    oclass = db_session.query(product_infoERP).filter(product_infoERP.product_type == product_type, product_infoERP.product_code.like("%"+product_code+"%")).all()[inipage:endpage]
+                    total = db_session.query(product_infoERP).filter(product_infoERP.product_code.like("%"+product_code+"%")).count()
+                    oclass = db_session.query(product_infoERP).filter(product_infoERP.product_code.like("%"+product_code+"%")).all()[inipage:endpage]
                     jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonpequipments = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
                 return jsonpequipments
