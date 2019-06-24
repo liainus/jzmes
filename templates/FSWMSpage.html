@@ -46,7 +46,12 @@
             $('#tab').bootstrapTable({
                 url: '/ZYPlanWMSSelect',
                 method: 'get',
-                contentType: "application/x-www-form-urlencoded",
+                queryParams:function(params){
+                    return {
+                        limit : params.limit,
+                        offset : parseInt(params.offset/params.limit)
+                    };
+                },
 	            pagination: true,
                 pageNumber:1,
 	            pageSize: 5,
@@ -103,11 +108,14 @@
                     $('#selfTab').bootstrapTable("destroy")
                     $('#selfTab').bootstrapTable({
                         url: '/WMS_ReceiveDetail',
-                        queryParams: {
-                            ID:rows[0].ID
-                        },
                         method: 'get',
-                        contentType: "application/x-www-form-urlencoded",
+                        queryParams:function(params){
+                            return {
+                                ID:rows[0].ID,
+                                limit : params.limit,
+                                offset : parseInt(params.offset/params.limit)
+                            };
+                        },
                         pagination: true,
                         pageNumber: 1,
                         pageSize: 5,
@@ -152,7 +160,12 @@
                 $('#StoreTab').bootstrapTable({
                     url: '/WMS_StockInfo',
                     method: 'get',
-                    contentType: "application/x-www-form-urlencoded",
+                    queryParams:function(params){
+                        return {
+                            limit : params.limit,
+                            offset : parseInt(params.offset/params.limit)
+                        };
+                    },
                     pagination: true,
                     pageNumber: 1,
                     pageSize: 5,
