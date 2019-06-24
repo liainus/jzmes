@@ -392,10 +392,12 @@ class WMS_Interface(ServiceBase):
             for i in jso:
                 sta = StapleProducts()
                 sta.BillNo = i.get("BillNo")
+                sta.BatchNo = i.get("BatchNo")
                 sta.StoreDef_ID = i.get("StoreDef_ID")
                 sta.btype = i.get("btype")
                 sta.mid = i.get("mid")
                 sta.Num = i.get("Num")
+                sta.FinishNum = i.get("FinishNum")
                 sta.IsRelevance = "0"
                 sta.OperationDate = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 db_session.add(sta)
@@ -502,8 +504,10 @@ def WMS_ReceiveDetail():
             client = Client(Model.Global.WMSurl)
             re = client.service.Mes_Interface("WorkFlowLoad", jsondic)
             if re[0] == 'SUCCESS':
-                print(re[2])
-                return json.dumps(re[2])
+                jsondata = json.loads(re["json_data"])
+                return '{"total"' + ":" + str(len(jsondata)) + ',"rows"' + ":\n" + json.dumps(jsondata,
+                                                                                              cls=AlchemyEncoder,
+                                                                                              ensure_ascii=False) + "}"
             else:
                 return json.dumps(re[1])
         except Exception as e:
@@ -899,11 +903,13 @@ def WMStatusLoadConfirm():
         try:
             jsonstr = json.dumps(data.to_dict())
             if len(jsonstr) > 10:
-                ID = data.get("ID")
+                ID = data.get("id")
                 oclass = db_session.query(StapleProducts).filter(StapleProducts.ID == ID).first()
+                if oclass.ConfirmStatus == None or oclass.ConfirmStatus == "":
+                    return "请先做质保状态确认，再发送！"
                 dic = []
                 dic.append(
-                    {"BillNo": str(oclass.BatchID) + str(oclass.BrandID), "mid": "101", "BatchNo": "1",
+                    {"BillNo": str(oclass.BillNo), "mid": str(oclass.mid), "BatchNo": str(oclass.BatchNo),
                      "StoreDef_ID": "1", "OldStatus": "3","NewStatus":"1" if "合格" in oclass.ConfirmStatus else "2"})
                 client = Client(Model.Global.WMSurl)
                 ret = client.service.Mes_Interface("MStatusLoad", json.dumps(dic))
