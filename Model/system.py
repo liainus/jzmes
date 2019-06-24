@@ -1676,10 +1676,10 @@ class PartiallyProducts(Base):
     # 审核状态
     ReviewStatus = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
 
-    # QA确认:
+    # 质保确认:
     QAConfirmer = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
 
-    # QA确认状态
+    # 质保确认状态
     QAConfirmStatus = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
 
     # 修改日期:
@@ -1730,10 +1730,10 @@ class StapleProducts(Base):
     # 审核状态
     ReviewStatus = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
 
-    # QA确认:
+    # 质保确认:
     QAConfirmer = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
 
-    # QA确认状态
+    # 质保确认状态
     QAConfirmStatus = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
 
     # 修改日期:
