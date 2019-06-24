@@ -80,17 +80,19 @@
                     </div>
                 </div>
                 <div id="Toolbar">
-                    <div class="form-group">
-                        <div class="input-group">
-                            <label class="input-group-addon">单据号</label>
-                            <input type="text" class="form-control" id="SearchVal">
+                    <form class="form-inline">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <label class="input-group-addon">单据号</label>
+                                <input type="text" class="form-control" id="SearchVal">
+                            </div>
+                            <button type="button" class="btn btn-primary" onclick="toolbar.Search()">查询</button>
+                            <button type="button" class="btn btn-primary" onclick="toolbar.Add()">添加</button>
+                            <button type="button" class="btn btn-primary" onclick="toolbar.Updata()">编辑</button>
+                            <button type="button" class="btn btn-danger" onclick="toolbar.Delete()">删除</button>
+                            <button type="button" class="btn btn-danger" onclick="toolbar.reload()">刷新</button>
                         </div>
-                        <button type="button" class="btn btn-primary" onclick="toolbar.Search()">查询</button>
-                        <button type="button" class="btn btn-primary" onclick="toolbar.Add()">添加</button>
-                        <button type="button" class="btn btn-primary" onclick="toolbar.Updata()">编辑</button>
-                        <button type="button" class="btn btn-danger" onclick="toolbar.Delete()">删除</button>
-                        <button type="button" class="btn btn-danger" onclick="toolbar.reload()">刷新</button>
-                    </div>
+                    </form>
                 </div>
                 <table class="table table-bordered" id="infoTable"></table>
             </div>
