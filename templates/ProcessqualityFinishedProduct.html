@@ -62,8 +62,14 @@
                     field: 'mid',
                     title: '物料编码'
                 },{
+                    field: 'BatchNo',
+                    title: '批次号'
+                },{
                     field: 'Num',
-                    title: '数量'
+                    title: '计划数量'
+                },{
+                    field: 'FinishNum',
+                    title: '实际数量'
                 },{
                     field: 'StoreDef_ID',
                     title: '库房编码'
@@ -87,7 +93,7 @@
                     title: '复核状态',
                     events: window.checkEvents = {
                         'click .check':function(e,value,row,index){
-                            ispassFun("复核",row.ID)
+                            ispassFun("复核",row.ID,"CheckedStatus")
                         }
                     },
                     formatter:checkFormatter
@@ -99,7 +105,7 @@
                     title: '审核状态',
                     events: window.checkEvents = {
                         'click .check':function(e,value,row,index){
-                            ispassFun("审核",row.ID)
+                            ispassFun("审核",row.ID,"ReviewStatus")
                         }
                     },
                     formatter:recheckFormatter
@@ -111,7 +117,7 @@
                     title: '质保确认状态',
                     events: window.checkEvents = {
                         'click .check':function(e,value,row,index){
-                            ispassFun("质保",row.ID)
+                            ispassFun("质保",row.ID,"QAConfirmStatus")
                         }
                     },
                     formatter:QAcheckFormatter
@@ -170,7 +176,7 @@
             }
             function recheckFormatter(value, row, index) {
                 if(!value){
-                    return "<a href='JavaScript:;' class='check' title='审核'>单击审核</a>";
+                    return "<a href='JavaScript:;' class='check' title='审核'>" + "单击审核" +  +"</a>";
                 }else{
                     return "<a href='JavaScript:;' class='check' title='审核'>" + value + "</a>";
                 }
@@ -182,7 +188,7 @@
                     return "<a href='JavaScript:;' class='check' title='质保'>" + value + "</a>";
                 }
             }
-            function ispassFun(Status,ID){
+            function ispassFun(Status,ID,StatusKey){
                 bootbox.dialog({
                     title: '选择是否通过',
                     message: "<p>点击下列按钮选择是否通过，修改后可在表格中查看状态。</p>",
@@ -192,13 +198,13 @@
                             label: Status+"不通过",
                             className: 'btn-warning',
                             callback: function(){
+                                var obj = {}
+                                obj.ID = ID
+                                obj[StatusKey] = Status+"不通过"
                                 $.ajax({
                                     url: '/StapleProductsChecked',
                                     method: 'POST',
-                                    data: {
-                                        ID:ID,
-                                        CheckedStatus:Status+"不通过"
-                                    },
+                                    data: obj,
                                     success: function (data) {
                                         if(data == "OK"){
                                             var dialog = bootbox.dialog({
@@ -222,13 +228,13 @@
                             label: Status+"通过",
                             className: 'btn-info',
                             callback: function(){
+                                var obj = {}
+                                obj.ID = ID
+                                obj[StatusKey] = Status+"通过"
                                 $.ajax({
                                     url: '/StapleProductsChecked',
                                     method: 'POST',
-                                    data: {
-                                        ID:ID,
-                                        CheckedStatus:Status+"通过"
-                                    },
+                                    data: obj,
                                     success: function (data) {
                                         if(data == "OK"){
                                             var dialog = bootbox.dialog({

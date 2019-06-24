@@ -17,7 +17,7 @@ $(function () {
     return {
         ID:keyID
     }}
-    
+
 
      $('input[name="iMaterialBOMName"]').change(function () {
          var sMaterialBOMName = $('input[name="iMaterialBOMName"]').val();
@@ -160,7 +160,7 @@ $(function () {
             $('input[name="Name"]').focus();
             $('input[name="iID"]').attr("disabled", "disabled");
             $('input[name="iID"]').val();
-            //$('input[name="iMATID"]').val();
+            $('#MATID').val();
             $('#iMATID option[value=""]').prop("selected", 'selected');//ID默认空
             $('input[name="iBatchTotalWeight"]').val();
             //$('input[name="iBatchSingleMATWeight"]').val();
@@ -194,6 +194,7 @@ $(function () {
                     $('input[name="iID"]').val(row.ID);
                     $('#iMATID option[value='+row.MATID+']').prop("selected", 'selected');
                     $('input[name="iBatchTotalWeight"]').val(row.BatchTotalWeight);
+                    $('#MATID').val(row.MATID)
                     //$('input[name="iBatchSingleMATWeight"]').val(row.BatchSingleMATWeight);
                     //$('input[name="iUnit"]').val(row.Unit);
                     $('input[name="iBatchPercentage"]').val(row.BatchPercentage);
@@ -202,7 +203,7 @@ $(function () {
                     $('#iMATTypeID option[value=' +row.MATTypeID+ ']').prop("selected", 'selected');
                     //$('input[name="iSeq"]').val(row.Seq);
                     //$('input[name="iGrade"]').val(row.Grade);
-                    //var thisSwitchbuttonObj = $(".switchstatus").find("[switchbuttonName='IsEnable']");//获取switchbutton对象  
+                    //var thisSwitchbuttonObj = $(".switchstatus").find("[switchbuttonName='IsEnable']");//获取switchbutton对象
                     if (row.IsEnable == '禁用') {
 
                         $("[switchbuttonName='IsEnable']").switchbutton("uncheck");
@@ -276,6 +277,11 @@ $(function () {
                alert('Warning：物料名称不能为空！');
                return false;
             }
+            stmp = $('#MATID').val();
+            if(Bee.StringUtils.isEmpty(stmp)) {
+               alert('Warning：物料编码不能为空！');
+               return false;
+            }
             stmp = $('#iProductRuleID').find("option:selected").val();
             if(Bee.StringUtils.isEmpty(stmp)) {
                alert('Warning：产品定义名称不能为空！');
@@ -304,7 +310,7 @@ $(function () {
             }
                 var entity = {
                     ID:$('input[name="iID"]').val(),
-                    MATID:$('#iMATID').find("option:selected").val(),
+                    MATID:$('#MATID').val(),
                     MaterialName:$('#iMATID').find("option:selected").html(),
                     BatchTotalWeight:$('input[name="iBatchTotalWeight"]').val(),
                     BatchSingleMATWeight:'',
@@ -422,7 +428,7 @@ $(function () {
     });
             $(tableId).datagrid('reload');
             $(tableId).datagrid('clearSelections');
-           
+
         }
 
     }
