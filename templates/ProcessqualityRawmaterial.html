@@ -76,7 +76,7 @@
                             ispassFun("合格",row.ID)
                         }
                     },
-                    formatter:checkFormatter
+                    formatter:stanFormatter
                 },{
                     field: 'CheckedPeople',
                     title: '复核人'
@@ -144,7 +144,7 @@
                     bootbox.alert("请选择要发送的记录");
                 }
             })
-            function checkFormatter(value, row, index) {
+            function stanFormatter(value, row, index) {
                 if(!value) {
                     return "<a href='JavaScript:;' class='check' title='合格'>" + "单击合格" + "</a>";
                 }else{
