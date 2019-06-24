@@ -80,24 +80,17 @@
                     </div>
                 </div>
                 <div id="Toolbar">
-                    <form class="form-inline" style="margin-bottom: 15px;">
-                        <div class="form-group">
-                            <div class="input-group">
-                                <label class="input-group-addon">单据号</label>
-                                <input type="text" class="form-control" id="SearchVal">
-                            </div>
-                            <button type="button" class="btn btn-primary" onclick="toolbar.Search()">查询</button>
+                    <div class="form-group">
+                        <div class="input-group">
+                            <label class="input-group-addon">单据号</label>
+                            <input type="text" class="form-control" id="SearchVal">
                         </div>
-                        <div class="form-group">
-                            <button type="button" class="btn btn-primary" onclick="toolbar.Add()">添加</button>
-                        </div>
-                        <div class="form-group">
-                            <button type="button" class="btn btn-primary" onclick="toolbar.Updata()">编辑</button>
-                        </div>
-                        <div class="form-group">
-                            <button type="button" class="btn btn-danger" onclick="toolbar.Delete()">删除</button>
-                        </div>
-                    </form>
+                        <button type="button" class="btn btn-primary" onclick="toolbar.Search()">查询</button>
+                        <button type="button" class="btn btn-primary" onclick="toolbar.Add()">添加</button>
+                        <button type="button" class="btn btn-primary" onclick="toolbar.Updata()">编辑</button>
+                        <button type="button" class="btn btn-danger" onclick="toolbar.Delete()">删除</button>
+                        <button type="button" class="btn btn-danger" onclick="toolbar.reload()">刷新</button>
+                    </div>
                 </div>
                 <table class="table table-bordered" id="infoTable"></table>
             </div>
@@ -468,6 +461,9 @@
                     } else {
                         bootbox.alert('请选择要删除的记录')
                     }
+                },
+                reload:function(){
+                    $("#infoTable").bootstrapTable('refresh');
                 },
                 relevent:function(){
                     var rows = $("#infoTable").bootstrapTable('getSelections');
