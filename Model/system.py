@@ -1697,6 +1697,9 @@ class StapleProducts(Base):
     # 单据号:
     BillNo = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
+    # 批次号:
+    BatchNo = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
     #关联SAP的采购订单号
     product_code = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
@@ -1706,8 +1709,11 @@ class StapleProducts(Base):
     # 物料编码:
     mid = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
-    # 数量
+    # 计划数量
     Num = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
+
+    # 实际数量
+    FinishNum = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
 
     # 库房编码
     StoreDef_ID = Column(Unicode(25), default="1", primary_key=False, autoincrement=False, nullable=True)
