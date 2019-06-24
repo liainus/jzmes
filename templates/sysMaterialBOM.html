@@ -43,7 +43,7 @@
         </div>
     </div>
 
-    <div id="MaterialBOMClassDialog" class="easyui-dialog" style="width:520px;height:360px;padding:10px;"
+    <div id="MaterialBOMClassDialog" class="easyui-dialog" style="width:520px;height:400px;padding:10px;"
      data-options="closed:'true',buttons:'#MaterialBOMClassDialogButtons',modal:true">
     <!-- <div id="MaterialBOMClassFormTitle" class="field-title">Title</div> -->
     <form id="MaterialBOMClassForm" method="post" class="dialog-form">
@@ -64,6 +64,12 @@
                                 <option value="{{ id['ID'] }}">{{ id['text'] }}</option>
                             {% endfor %}
                         </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="kv-label">物料编码</td>
+                    <td class="kv-content">
+                        <input  name="MATID" id="MATID" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
                     </td>
                 </tr>
                 <tr>
@@ -108,7 +114,7 @@
                 <tr>
                     <td class="kv-label">批物料重量</td>
                     <td class="kv-content">
-                        <input  name="iBatchTotalWeight" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                        <input  name="iBatchTotalWeight" id="iBatchTotalWeight" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
                     </td>
                 </tr>
 {#                <tr>#}
@@ -120,7 +126,7 @@
                 <tr>
                     <td class="kv-label">批次百分比(小数)</td>
                     <td class="kv-content">
-                        <input  name="iBatchPercentage" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                        <input  name="iBatchPercentage" id="iBatchPercentage" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
                     </td>
                 </tr>
 {#                <tr>#}
