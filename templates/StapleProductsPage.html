@@ -409,8 +409,16 @@
                         },
                         success:function(data){
                             if(data == "OK"){
-                                bootbox.alert('操作成功')
                                 $("#myModal").modal('hide')
+                                var dialog = bootbox.dialog({
+                                    message: '<p class="text-center mb-0"><i class="fa fa-spin fa-cog"></i>操作成功！</p>',
+                                    closeButton: false
+                                });
+                                dialog.init(function(){
+                                    setTimeout(function(){
+                                        dialog.modal('hide');
+                                    }, 2000);
+                                });
                                 $('#infoTable').bootstrapTable('refresh');
                             } else {
                                 bootbox.alert(data)
@@ -452,7 +460,15 @@
                                         data: a,
                                         success: function (data) {
                                             if(data == "OK"){
-                                                bootbox.alert('成功删除')
+                                                var dialog = bootbox.dialog({
+                                                    message: '<p class="text-center mb-0"><i class="fa fa-spin fa-cog"></i>操作成功！</p>',
+                                                    closeButton: false
+                                                });
+                                                dialog.init(function(){
+                                                    setTimeout(function(){
+                                                        dialog.modal('hide');
+                                                    }, 2000);
+                                                });
                                                 $("#infoTable").bootstrapTable('refresh');
                                             }
                                         }
@@ -502,7 +518,15 @@
                                             },
                                             success: function (data) {
                                                 if(data == "OK"){
-                                                    bootbox.alert('成功关联')
+                                                    var dialog = bootbox.dialog({
+                                                        message: '<p class="text-center mb-0"><i class="fa fa-spin fa-cog"></i>操作成功！</p>',
+                                                        closeButton: false
+                                                    });
+                                                    dialog.init(function(){
+                                                        setTimeout(function(){
+                                                            dialog.modal('hide');
+                                                        }, 2000);
+                                                    });
                                                     $("#successTable").bootstrapTable('refresh');
                                                 }
                                             }
@@ -547,7 +571,15 @@
                                         data: a,
                                         success: function (data) {
                                             if(data == "OK"){
-                                                bootbox.alert('已取消关联')
+                                                var dialog = bootbox.dialog({
+                                                    message: '<p class="text-center mb-0"><i class="fa fa-spin fa-cog"></i>操作成功！</p>',
+                                                    closeButton: false
+                                                });
+                                                dialog.init(function(){
+                                                    setTimeout(function(){
+                                                        dialog.modal('hide');
+                                                    }, 2000);
+                                                });
                                                 $("#successTable").bootstrapTable('refresh');
                                             }
                                         }
