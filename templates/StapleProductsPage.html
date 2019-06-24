@@ -88,10 +88,10 @@
                                     <input type="text" class="form-control" id="SearchVal">
                                 </div>
                                 <button type="button" class="btn btn-primary" onclick="toolbar.Search()">查询</button>
-                                <button type="button" class="btn btn-primary" onclick="toolbar.Add()">添加</button>
-                                <button type="button" class="btn btn-primary" onclick="toolbar.Updata()">编辑</button>
+                                <button type="button" class="btn btn-info" onclick="toolbar.Add()">添加</button>
+                                <button type="button" class="btn btn-warning" onclick="toolbar.Updata()">编辑</button>
                                 <button type="button" class="btn btn-danger" onclick="toolbar.Delete()">删除</button>
-                                <button type="button" class="btn btn-primary" onclick="toolbar.reload()">刷新</button>
+                                <button type="button" class="btn btn-default" onclick="toolbar.reload()">刷新</button>
                             </p>
                         </div>
                     </form>
@@ -106,23 +106,27 @@
             <div class="panel-body">
                 <div id="toolbar1">
                     <div class="form-group">
-                        <button type="button" class="btn btn-primary" onclick="toolbar.relevent()">关联</button>
+                        <button type="button" class="btn btn-success" onclick="toolbar.relevent()">关联</button>
                     </div>
                 </div>
-                <table class="table table-bordered" id="warningTable"></table>
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="warningTable" style="word-break: keep-all"></table>
+                </div>
             </div>
         </div>
     </div>
     <div class="col-md-6" style="margin-top: 15px;">
         <div class="panel panel-success">
-            <div class="panel-heading">已入库列表</div>
+            <div class="panel-heading">已关联列表</div>
             <div class="panel-body">
                 <div id="toolbar2">
                     <div class="form-group">
-                        <button type="button" class="btn btn-primary" onclick="toolbar.unrelevent()">取消关联</button>
+                        <button type="button" class="btn btn-warning" onclick="toolbar.unrelevent()">取消关联</button>
                     </div>
                 </div>
-                <table class="table table-bordered" id="successTable"></table>
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="successTable" style="word-break: keep-all"></table>
+                </div>
             </div>
         </div>
     </div>
@@ -185,8 +189,8 @@
                     return {
                         BillNo: '',
                         IsRelevance:'0',
-                        limit : params.limit,
-                        offset : parseInt(params.offset/params.limit)
+                        limit: params.limit,
+                        offset: parseInt(params.offset/params.limit)
                     };
                 },
                 toolbar:"#toolbar1",
@@ -263,8 +267,8 @@
                     return {
                         BillNo: '',
                         IsRelevance:'1',
-                        limit : params.limit,
-                        offset : parseInt(params.offset/params.limit)
+                        limit: params.limit,
+                        offset: parseInt(params.offset/params.limit)
                     };
                 },
 	            pagination: true,
