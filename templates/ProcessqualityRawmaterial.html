@@ -102,14 +102,14 @@
                     },
                     formatter:recheckFormatter
                 },{
-                    field: 'QAConfirm',
-                    title: 'QA确认人'
+                    field: 'QAConfirmer',
+                    title: '质保确认人'
                 },{
                     field: 'QAConfirmStatus',
-                    title: 'QA确认状态',
+                    title: '质保确认状态',
                     events: window.checkEvents = {
                         'click .check':function(e,value,row,index){
-                            ispassFun("QA确认",row.ID)
+                            ispassFun("质保",row.ID)
                         }
                     },
                     formatter:QAcheckFormatter
@@ -133,7 +133,15 @@
                         },
                         success: function (data) {
                             if(data == "OK"){
-                                bootbox.alert('成功发送')
+                                var dialog = bootbox.dialog({
+                                    message: '<p class="text-center mb-0"><i class="fa fa-spin fa-cog"></i>操作成功！</p>',
+                                    closeButton: false
+                                });
+                                dialog.init(function(){
+                                    setTimeout(function(){
+                                        dialog.modal('hide');
+                                    }, 2000);
+                                });
                                 $("#successTable").bootstrapTable('refresh');
                             }else{
                                 bootbox.alert(data)
@@ -146,7 +154,7 @@
             })
             function stanFormatter(value, row, index) {
                 if(!value) {
-                    return "<a href='JavaScript:;' class='check' title='合格'>" + "单击合格" + "</a>";
+                    return "<a href='JavaScript:;' class='check' title='合格'>" + "单击合格确认" + "</a>";
                 }else{
                     return "<a href='JavaScript:;' class='check' title='合格'>" + value + "</a>";
                 }
@@ -167,9 +175,9 @@
             }
             function QAcheckFormatter(value, row, index) {
                 if(!value) {
-                    return "<a href='JavaScript:;' class='check' title='QA确认'>" + "单击QA确认" + "</a>";
+                    return "<a href='JavaScript:;' class='check' title='质保'>" + "单击质保确认" + "</a>";
                 }else{
-                    return "<a href='JavaScript:;' class='check' title='QA确认'>" + value + "</a>";
+                    return "<a href='JavaScript:;' class='check' title='质保'>" + value + "</a>";
                 }
             }
             function ispassFun(Status,ID){
@@ -191,7 +199,15 @@
                                     },
                                     success: function (data) {
                                         if(data == "OK"){
-                                            bootbox.alert(Status+"成功");
+                                            var dialog = bootbox.dialog({
+                                                message: '<p class="text-center mb-0"><i class="fa fa-spin fa-cog"></i>' + Status+ '"成功"</p>',
+                                                closeButton: false
+                                            });
+                                            dialog.init(function(){
+                                                setTimeout(function(){
+                                                    dialog.modal('hide');
+                                                }, 2000);
+                                            });
                                             $('#tabBatch').bootstrapTable("refresh")
                                         }else{
                                             bootbox.alert(data);
@@ -213,7 +229,15 @@
                                     },
                                     success: function (data) {
                                         if(data == "OK"){
-                                            bootbox.alert(Status+"成功");
+                                            var dialog = bootbox.dialog({
+                                                message: '<p class="text-center mb-0"><i class="fa fa-spin fa-cog"></i>' + Status+ '"成功"</p>',
+                                                closeButton: false
+                                            });
+                                            dialog.init(function(){
+                                                setTimeout(function(){
+                                                    dialog.modal('hide');
+                                                }, 2000);
+                                            });
                                             $('#tabBatch').bootstrapTable("refresh")
                                         }else{
                                             bootbox.alert(data);
