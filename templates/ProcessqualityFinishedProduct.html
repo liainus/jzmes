@@ -90,7 +90,7 @@
                     title: '复核状态',
                     events: window.checkEvents = {
                         'click .check':function(e,value,row,index){
-                            ispassFun("复核",row.ID)
+                            ispassFun("复核",row.ID,"CheckedStatus")
                         }
                     },
                     formatter:checkFormatter
@@ -102,7 +102,7 @@
                     title: '审核状态',
                     events: window.checkEvents = {
                         'click .check':function(e,value,row,index){
-                            ispassFun("审核",row.ID)
+                            ispassFun("审核",row.ID,"ReviewStatus")
                         }
                     },
                     formatter:recheckFormatter
@@ -114,7 +114,7 @@
                     title: '质保确认状态',
                     events: window.checkEvents = {
                         'click .check':function(e,value,row,index){
-                            ispassFun("质保",row.ID)
+                            ispassFun("质保",row.ID,"QAConfirmStatus")
                         }
                     },
                     formatter:QAcheckFormatter
@@ -185,7 +185,7 @@
                     return "<a href='JavaScript:;' class='check' title='质保'>" + value + "</a>";
                 }
             }
-            function ispassFun(Status,ID){
+            function ispassFun(Status,ID,StatusKey){
                 bootbox.dialog({
                     title: '选择是否通过',
                     message: "<p>点击下列按钮选择是否通过，修改后可在表格中查看状态。</p>",
@@ -195,13 +195,13 @@
                             label: Status+"不通过",
                             className: 'btn-warning',
                             callback: function(){
+                                var obj = {}
+                                obj.ID = ID
+                                obj[StatusKey] = Status+"不通过"
                                 $.ajax({
                                     url: '/StapleProductsChecked',
                                     method: 'POST',
-                                    data: {
-                                        ID:ID,
-                                        CheckedStatus:Status+"不通过"
-                                    },
+                                    data: obj,
                                     success: function (data) {
                                         if(data == "OK"){
                                             var dialog = bootbox.dialog({
@@ -225,13 +225,13 @@
                             label: Status+"通过",
                             className: 'btn-info',
                             callback: function(){
+                                var obj = {}
+                                obj.ID = ID
+                                obj[StatusKey] = Status+"通过"
                                 $.ajax({
                                     url: '/StapleProductsChecked',
                                     method: 'POST',
-                                    data: {
-                                        ID:ID,
-                                        CheckedStatus:Status+"通过"
-                                    },
+                                    data: obj,
                                     success: function (data) {
                                         if(data == "OK"){
                                             var dialog = bootbox.dialog({
