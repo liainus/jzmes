@@ -13,6 +13,11 @@
 </head>
 <body>
     <div class="col-md-12" style="padding-top: 15px;">
+        <div id="toolbar">
+            <div class="form-group">
+                <button type="button" class="btn btn-primary" id="sendWMS">发送到WMS</button>
+            </div>
+        </div>
         <table class="table table-bordered" id="tabBatch"></table>
     </div>
     <script>
@@ -117,6 +122,29 @@
                     title: '是否关联'
                 }]
             });
+            $("#sendWMS").on('click',function(){
+                var rows = $("#tabBatch").bootstrapTable("getSelections")
+                if(rows.length > 0){
+                    $.ajax({
+                        url: '/WMStatusLoadConfirm',
+                        method: 'POST',
+                        traditional: true,
+                        data: {
+                            id:rows[0].ID
+                        },
+                        success: function (data) {
+                            if(data == "OK"){
+                                bootbox.alert('成功发送')
+                                $("#successTable").bootstrapTable('refresh');
+                            }else{
+                                bootbox.alert(data)
+                            }
+                        }
+                    });
+                }else{
+                    bootbox.alert("请选择要发送的记录");
+                }
+            })
             function checkFormatter(value, row, index) {
                 if(!value) {
                     return "<a href='JavaScript:;' class='check' title='合格'>" + "单击合格" + "</a>";
@@ -199,6 +227,11 @@
                 });
             }
         })
+        function createKeyIDObj(keyID){
+            return {
+                id:keyID
+            }
+        }
     </script>
 </body>
 </html>
