@@ -897,7 +897,7 @@ def WMStatusLoadConfirm():
                 dic = []
                 dic.append(
                     {"BillNo": str(oclass.BatchID) + str(oclass.BrandID), "mid": "101", "BatchNo": "1",
-                     "StoreDef_ID": "1", "OldStatus": "3","NewStatus":"3"})
+                     "StoreDef_ID": "1", "OldStatus": "3","NewStatus":"1" if "合格" in oclass.ConfirmStatus else "2"})
                 client = Client(Model.Global.WMSurl)
                 ret = client.service.Mes_Interface("MStatusLoad", json.dumps(dic))
                 if ret[0] == "SUCCESS":
