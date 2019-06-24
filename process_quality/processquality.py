@@ -471,13 +471,20 @@ def WMS_SendSAPMatil():
     if request.method == 'GET':
         data = request.values
         try:
+            jsonstr = json.dumps(data.to_dict())
+            jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
             dic = []
-            product_code = data.get("product_code")
-            oclass = db_session.query(product_infoERP).filter(product_infoERP.product_code.like("%"+product_code+"%")).all()
-            jsondic = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
+            for key in jsonnumber:
+                id = int(key)
+                oclass = db_session.query(product_infoERP).filter(product_infoERP.ID == id).first()
+                dic.append(oclass)
+            jsondic = json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False)
             client = Client(Model.Global.WMSurl)
-            re = client.service.Mes_Interface("MatDetLoad", jsondic)
-            return 'OK'
+            ret = client.service.Mes_Interface("MatDetLoad", jsondic)
+            if ret["Mes_InterfaceResult"] == "SUCCESS":
+                return 'OK'
+            else:
+                return json.dumps(ret["ErrData"])
         except Exception as e:
             print("调用WMS_SendPlan接口报错！")
             return json.dumps("调用WMS_SendPlan接口报错！")
@@ -944,7 +951,7 @@ def PartiallyProductsSelect():
                 inipage = pages * rowsnumber + 0  # 起始页
                 endpage = pages * rowsnumber + rowsnumber  # 截止页
                 BatchID = data.get("BatchID")
-                if BatchID == "":
+                if BatchID == "" or BatchID ==None:
                     Count = db_session.query(PartiallyProducts).filter_by().count()
                     Class = db_session.query(PartiallyProducts).filter_by().all()[inipage:endpage]
                 else:
@@ -1141,9 +1148,10 @@ def WMS_SendPartiallyProducts():
                 for key in jsonnumber:
                     id = int(key)
                     oclass = db_session.query(PartiallyProducts).filter(PartiallyProducts.ID == 1).first()
+                    product_code = db_session.query(ERPproductcode_prname.product_code).filter(ERPproductcode_prname.PRName == oclass.BrandName).first()[0]
                     dic.append(
-                        {"BillNo": str(oclass.BatchID) + str(oclass.BrandID), "btype": "101", "StoreDef_ID": "1",
-                         "mid": oclass.BrandID, "num": oclass.Produce})
+                        {"BillNo": str(oclass.BatchID) + str(oclass.BrandID), "BatchNo":str(oclass.BatchID), "btype": "101", "StoreDef_ID": "1",
+                         "mid": product_code, "num": oclass.Produce})
                 jsondic = json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False)
                 client = Client(Model.Global.WMSurl)
                 ret = client.service.Mes_Interface("billload", jsondic)
