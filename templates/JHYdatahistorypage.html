@@ -209,6 +209,7 @@
                         end:myformatter(new Date())
                     },
                     success: function (data) {
+                        console.log(data)
                         data = JSON.parse(data)
                         option.series[0].data = data.CPG
                         option.series[1].data = data.SF
