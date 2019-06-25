@@ -1964,13 +1964,14 @@ def EquipmentFailureRunXTSearch():
             if SYSEQPCode == None:
                 equip_codes = db_session.query(EquipmentRunPUID.EQPCode).filter(EquipmentRunPUID.PUIDName == process).all()
                 for equipcode in equip_codes:
-                    gz = db_session.query(EquipmentStatusCount.Duration).filter(EquipmentStatusCount.SYSEQPCode == equipcode,
+                    EQPID = str(db_session.query(Equipment.ID).filter(Equipment.EQPCode == equipcode[0]).first()[0])
+                    gz = db_session.query(EquipmentStatusCount.Duration).filter(EquipmentStatusCount.SYSEQPCode == EQPID,
                                         EquipmentStatusCount.Status == '设备故障',EquipmentStatusCount.BatchNo == BatchID,
                                         EquipmentStatusCount.SampleTime.between(startDate, endDate)).first()
-                    stop = db_session.query(EquipmentStatusCount.Duration).filter(EquipmentStatusCount.SYSEQPCode == equipcode,
+                    stop = db_session.query(EquipmentStatusCount.Duration).filter(EquipmentStatusCount.SYSEQPCode == EQPID,
                                                                                   EquipmentStatusCount.Status == '设备停机',EquipmentStatusCount.BatchNo == BatchID,
                                         EquipmentStatusCount.SampleTime.between(startDate, endDate)).first()
-                    run = db_session.query(EquipmentStatusCount.Duration).filter(EquipmentStatusCount.SYSEQPCode == equipcode,
+                    run = db_session.query(EquipmentStatusCount.Duration).filter(EquipmentStatusCount.SYSEQPCode == EQPID,
                                                                                   EquipmentStatusCount.Status == '设备运行',EquipmentStatusCount.BatchNo == BatchID,
                                         EquipmentStatusCount.SampleTime.between(startDate, endDate)).first()
                     equipment_batchnos.append(equipcode[0])
@@ -1982,16 +1983,13 @@ def EquipmentFailureRunXTSearch():
                     EquipmentStatusCount.SYSEQPCode == SYSEQPCode, EquipmentStatusCount.SampleTime.between(startDate, endDate)).all()
                 for equipcode in equip_codes:
                     gz = db_session.query(EquipmentStatusCount.Duration).filter(
-                        EquipmentStatusCount.SYSEQPCode == SYSEQPCode,
-                        EquipmentStatusCount.Status == '设备故障', EquipmentStatusCount.BatchNo == BatchID,
+                        EquipmentStatusCount.Status == '设备故障', EquipmentStatusCount.BatchNo == equipcode[0],
                         EquipmentStatusCount.SampleTime.between(startDate, endDate)).first()
                     stop = db_session.query(EquipmentStatusCount.Duration).filter(
-                        EquipmentStatusCount.SYSEQPCode == SYSEQPCode,
-                        EquipmentStatusCount.Status == '设备停机', EquipmentStatusCount.BatchNo == BatchID,
+                        EquipmentStatusCount.Status == '设备停机', EquipmentStatusCount.BatchNo == equipcode[0],
                         EquipmentStatusCount.SampleTime.between(startDate, endDate)).first()
                     run = db_session.query(EquipmentStatusCount.Duration).filter(
-                        EquipmentStatusCount.SYSEQPCode == SYSEQPCode,
-                        EquipmentStatusCount.Status == '设备运行', EquipmentStatusCount.BatchNo == BatchID,
+                        EquipmentStatusCount.Status == '设备运行', EquipmentStatusCount.BatchNo == equipcode[0],
                         EquipmentStatusCount.SampleTime.between(startDate, endDate)).first()
                     equipment_batchnos.append(equipcode[0])
                     equip_run_time.append(round(run[0] / 60) if run != None else '0')
