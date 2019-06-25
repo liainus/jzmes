@@ -8,155 +8,119 @@
     <script type="text/javascript" src="../static/js/echarts.common.min.js"></script>
     <script type="text/javascript" src="../static/js/jquery-3.3.1.min.js"></script>
     <script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootstrap-table.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootstrap-table-zh-CN.min.js"></script>
     <script type="text/javascript" src="../static/js/bootstrap-datetimepicker.min.js"></script>
     <script>
         $(function(){
+            $.fn.datetimepicker.dates['zh'] = {
+                days:       ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六","星期日"],
+                daysShort:  ["日", "一", "二", "三", "四", "五", "六","日"],
+                daysMin:    ["日", "一", "二", "三", "四", "五", "六","日"],
+                months:     ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月","十二月"],
+                monthsShort:  ["一", "二", "三", "四", "五", "六", "七", "八", "九", "十", "十一", "十二"],
+                meridiem:    ["上午", "下午"],
+                //suffix:      ["st", "nd", "rd", "th"],
+                today:       "今天"
+            };
             $('#beginTimeDate,#endTimehDate').datetimepicker({
                 format: 'yyyy-mm-dd',
                 startView: 2,
 		        minView: 2,
+                language:  'zh',
                 autoclose: true
             });
             $("#beginTimeDate,#endTimehDate").datetimepicker("setDate", new Date());
 
             var brand = ""
+            var batchID = ""
             $("#seachBatch").on('click',function(){
-                if($("#BatchName").find("option:selected").html() == "健胃消食片浸膏粉"){
-                    brand = "A"
-                }else if($("#BatchName").find("option:selected").html() == "肿节风浸膏"){
-                    brand = "B"
-                }
+                brand = $("#BrandName").find("option:selected").html()
                 $.ajax({
                     url:'/BatchMaterialTracing/GetData',
                     type:'get',
                     data:{
                         beginTime:$('#beginTimeDate').data("datetimepicker").getDate(),
                         endTime:$('#endTimehDate').data("datetimepicker").getDate(),
-                        brand:$("#BatchName").find("option:selected").html()
-                    },
-                    success:function(data){
-                        data = JSON.parse(data)
-                        $("#batch").html("<option>请选择</option>")
-                        for (var i = 0; i < data.batchs.length; i++) {
-                            $("#batch").append("<option>"+ data.batchs[i] + "</option>")
-                        }
-                    }
-                })
-            })
-            $("#batch").on('change',function(){
-                $.ajax({
-                    url:'/BatchMaterialTracing/BatchData',
-                    type:'get',
-                    data:{
-                        batch:$(this).find("option:selected").html(),
                         brand:brand
                     },
                     success:function(data){
                         data = JSON.parse(data)
-
+                        $("#batch").html("<option>请选择</option>")
+                        var html = ""
+                        for (var i = 0; i < data.batchs.length; i++) {
+                            html += "<option>" + data.batchs[i] + "</option>"
+                        }
+                        $("#batch").append(html)
                     }
                 })
             })
-            function TQchartFun(){
-                var myChart = echarts.init($("#TQchart"))
-                myChart.showLoading();
-                $.ajax({
-                    url: "/HomePageHistogram",
-                    type: "get",
-                    data:{
-
+            $("#batch").on('change',function(){
+                $("#toolbar").css("display","block")
+                batchID = $(this).val()
+                $('#tab').bootstrapTable("destroy")
+                $('#tab').bootstrapTable({
+                    url: '/batchDetailSelect',
+                    method: 'get',
+                    queryParams:function(params){
+                        return {
+                            BrandName:brand,
+                            BatchID:batchID,
+                            PDUnitRouteName:"WMS",
+                            limit : params.limit,
+                            offset : parseInt(params.offset/params.limit)
+                        };
                     },
-                    success: function (data) {
-                        myChart.hideLoading();
-                        myChart.setOption(option = {
-                            tooltip: {
-                                trigger: 'axis',
-                                axisPointer: {
-                                    type: 'shadow'
-                                }
-                            },
-                            legend: {
-                                data: ['投入量']
-                            },
-                            toolbox: {
-                                feature: {
-                                    dataView: {show: true, readOnly: false},
-                                    magicType: {show: true, type: ['line', 'bar']},
-                                    restore: {show: true},
-                                    saveAsImage: {show: true}
-                                }
-                            },
-                            dataZoom : {
-                                show : true,
-                                realtime : true,
-                                start : 50,
-                                end : 100
-                            },
-                            xAxis: {
-                                type: 'category',
-                                data: data[0].batch
-                            },
-                            yAxis: [
-                                {
-                                    type: 'value',
-                                    name: '重量',
-                                    min: 0,
-                                    interval: 500,
-                                    axisLabel: {
-                                        formatter: '{value} kg'
-                                    }
-                                }
-                            ],
-                            series: [{
-                                name: "投入量",
-                                type: 'bar',
-                                label: {
-                                    normal: {
-                                        show: true,
-                                        position: 'top'
-                                    }
-                                },
-                                itemStyle:{
-                                    normal:{
-                                        color:'#90ed7d'
-                                    }
-                                },
-                                data: data[0].input
-                            }]
-                        });
-                        myChart.setOption(option);
-                    }
+                    toolbar:"#toolbar",
+                    pagination: true,
+                    pageNumber: 1,
+                    pageSize: 5,
+                    pageList: [5, 10, 15, 20],
+                    sidePagination: "server",
+                    paginationLoop: false,
+                    paginationPreText: '上一页',
+                    paginationNextText: '下一页',
+                    singleSelect: false,
+                    clickToSelect: true,
+                    locale: "zh-CN",
+                    striped: true,
+                    columns: [{
+                        field: 'BatchID',
+                        title: '批次号'
+                    },{
+                        field: 'EQPID',
+                        title: '设备编码'
+                    }, {
+                        field: 'OpcTagID',
+                        title: '类型'
+                    }, {
+                        field: 'BrandName',
+                        title: '品名'
+                    },{
+                        field: 'SampleValue',
+                        title: '采样值'
+                    },{
+                        field: 'SampleDate',
+                        title: '采样时间'
+                    }]
                 })
-            }
-            function adddata(ids,res){
-                $("#" + ids).html(res)
-            }
+            })
+            $(".period").on('click',function(){
+                $('#tab').bootstrapTable("destroy")
+                $('#tab').bootstrapTable('load',function(){
+                    PDUnitRouteName:$(this).html()
+                })
+            })
         })
     </script>
 </head>
 <body>
-    <div class="modal" id="loadingModal1">
-        <div style="width: 200px;height:20px; z-index: 20000; position: absolute; text-align: center; left: 50%; top: 50%;margin-left:-100px;margin-top:-10px">
-            <div class="progress progress-striped active" style="margin-bottom: 0;">
-                <div class="progress-bar" style="width: 100%;"></div>
-            </div>
-            <h5>正在加载健胃消食片的物料信息。。。</h5>
-        </div>
-    </div>
-    <div class="modal" id="loadingModal2">
-        <div style="width: 200px;height:20px; z-index: 20000; position: absolute; text-align: center; left: 50%; top: 50%;margin-left:-100px;margin-top:-10px">
-            <div class="progress progress-striped active" style="margin-bottom: 0;">
-                <div class="progress-bar" style="width: 100%;"></div>
-            </div>
-            <h5>正在加载肿节风浸膏的物料信息。。。</h5>
-        </div>
-    </div>
     <div class="container">
         <div class="page-header">
             <div class="form-inline">
                 <div class="form-group clearfix">
                     <label for="" class="control-label">选择品名：</label>
-                    <select id="BatchName" class="form-control">
+                    <select id="BrandName" class="form-control">
                         {% for brand in brands %}
                             <option>{{ brand[0] }}</option>
                         {% endfor %}
@@ -166,17 +130,24 @@
                     <label for="" class="control-label"> 结束时间：</label>
                     <input type="text" class="form-control" id="endTimehDate">
                     <button class="btn btn-primary" id="seachBatch"> 查询批次号</button>
-                    <select id="batch" class="form-control">
-                        <option value="">请选择</option>
-                    </select>
+                    <select id="batch" class="form-control"></select>
                 </div>
             </div>
         </div>
     </div>
     <div class="col-md-12">
-        <div class="well">
-            <div class="chartItem" id="chartMain" style="width: 900px; height: 400px; margin: 10px auto;"></div>
+        <div id="toolbar" style="display: none">
+            <div class="form-group">
+                <button class="btn btn-info period">WMS</button>
+                <button class="btn btn-info period">备料段</button>
+                <button class="btn btn-info period">煎煮段</button>
+                <button class="btn btn-info period">浓缩段</button>
+                <button class="btn btn-info period">喷雾干燥段</button>
+                <button class="btn btn-info period">醇沉段</button>
+                <button class="btn btn-info period">单效浓缩段</button>
+            </div>
         </div>
+        <table class="table table-bordered" id='tab'></table>
     </div>
 </body>
 </html>
