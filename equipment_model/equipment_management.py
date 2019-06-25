@@ -8,7 +8,7 @@ from openpyxl.compat import file
 from sqlalchemy.orm import Session, relationship, sessionmaker
 from sqlalchemy import create_engine
 import Model.Global
-from Model.core import ProcessUnit, Equipment, SysLog
+from Model.core import ProcessUnit, Equipment, SysLog, PlanManager
 from flask import render_template, request, make_response
 from tools.MESLogger import MESLogger
 from Model.BSFramwork import AlchemyEncoder
@@ -1964,13 +1964,14 @@ def EquipmentFailureRunXTSearch():
             if SYSEQPCode == None:
                 equip_codes = db_session.query(EquipmentRunPUID.EQPCode).filter(EquipmentRunPUID.PUIDName == process).all()
                 for equipcode in equip_codes:
-                    gz = db_session.query(EquipmentStatusCount.Duration).filter(EquipmentStatusCount.SYSEQPCode == equipcode,
+                    EQPID = str(db_session.query(Equipment.ID).filter(Equipment.EQPCode == equipcode[0]).first()[0])
+                    gz = db_session.query(EquipmentStatusCount.Duration).filter(EquipmentStatusCount.SYSEQPCode == EQPID,
                                         EquipmentStatusCount.Status == '设备故障',EquipmentStatusCount.BatchNo == BatchID,
                                         EquipmentStatusCount.SampleTime.between(startDate, endDate)).first()
-                    stop = db_session.query(EquipmentStatusCount.Duration).filter(EquipmentStatusCount.SYSEQPCode == equipcode,
+                    stop = db_session.query(EquipmentStatusCount.Duration).filter(EquipmentStatusCount.SYSEQPCode == EQPID,
                                                                                   EquipmentStatusCount.Status == '设备停机',EquipmentStatusCount.BatchNo == BatchID,
                                         EquipmentStatusCount.SampleTime.between(startDate, endDate)).first()
-                    run = db_session.query(EquipmentStatusCount.Duration).filter(EquipmentStatusCount.SYSEQPCode == equipcode,
+                    run = db_session.query(EquipmentStatusCount.Duration).filter(EquipmentStatusCount.SYSEQPCode == EQPID,
                                                                                   EquipmentStatusCount.Status == '设备运行',EquipmentStatusCount.BatchNo == BatchID,
                                         EquipmentStatusCount.SampleTime.between(startDate, endDate)).first()
                     equipment_batchnos.append(equipcode[0])
@@ -1982,16 +1983,13 @@ def EquipmentFailureRunXTSearch():
                     EquipmentStatusCount.SYSEQPCode == SYSEQPCode, EquipmentStatusCount.SampleTime.between(startDate, endDate)).all()
                 for equipcode in equip_codes:
                     gz = db_session.query(EquipmentStatusCount.Duration).filter(
-                        EquipmentStatusCount.SYSEQPCode == SYSEQPCode,
-                        EquipmentStatusCount.Status == '设备故障', EquipmentStatusCount.BatchNo == BatchID,
+                        EquipmentStatusCount.Status == '设备故障', EquipmentStatusCount.BatchNo == equipcode[0],
                         EquipmentStatusCount.SampleTime.between(startDate, endDate)).first()
                     stop = db_session.query(EquipmentStatusCount.Duration).filter(
-                        EquipmentStatusCount.SYSEQPCode == SYSEQPCode,
-                        EquipmentStatusCount.Status == '设备停机', EquipmentStatusCount.BatchNo == BatchID,
+                        EquipmentStatusCount.Status == '设备停机', EquipmentStatusCount.BatchNo == equipcode[0],
                         EquipmentStatusCount.SampleTime.between(startDate, endDate)).first()
                     run = db_session.query(EquipmentStatusCount.Duration).filter(
-                        EquipmentStatusCount.SYSEQPCode == SYSEQPCode,
-                        EquipmentStatusCount.Status == '设备运行', EquipmentStatusCount.BatchNo == BatchID,
+                        EquipmentStatusCount.Status == '设备运行', EquipmentStatusCount.BatchNo == equipcode[0],
                         EquipmentStatusCount.SampleTime.between(startDate, endDate)).first()
                     equipment_batchnos.append(equipcode[0])
                     equip_run_time.append(round(run[0] / 60) if run != None else '0')
@@ -2031,3 +2029,46 @@ def FailureRunBatchIDsSearch():
             print(e)
             logger.error(e)
             insertSyslog("error", "路由：/FailureRunBatchIDsSearch，设备故障统计获取批次号（系统采集）Error：" + str(e), current_user.Name)
+
+@equip.route('/souyeEquipmentFailureRunXTSearch', methods=['GET', 'POST'])
+def souyeEquipmentFailureRunXTSearch():
+    """
+    首页设备故障运行统计（系统采集）
+    """
+    if request.method == 'GET':
+        data = request.values
+        try:
+            equip_run_time = list()
+            equip_failure_time = list()
+            equip_downtime = list()
+            equipment_batchnos = list()
+            BatchID = db_session.query(PlanManager.BatchID).filter().order_by(desc("BatchID")).first()
+            equip_codes = db_session.query(EquipmentRunPUID.EQPCode).filter(
+                EquipmentRunPUID.PUIDName == '提取').all()
+            for equipcode in equip_codes:
+                EQPID = str(db_session.query(Equipment.ID).filter(Equipment.EQPCode == equipcode[0]).first()[0])
+                gz = db_session.query(EquipmentStatusCount.Duration).filter(
+                    EquipmentStatusCount.SYSEQPCode == EQPID,
+                    EquipmentStatusCount.Status == '设备故障', EquipmentStatusCount.BatchNo == BatchID).first()
+                stop = db_session.query(EquipmentStatusCount.Duration).filter(
+                    EquipmentStatusCount.SYSEQPCode == EQPID,
+                    EquipmentStatusCount.Status == '设备停机', EquipmentStatusCount.BatchNo == BatchID).first()
+                run = db_session.query(EquipmentStatusCount.Duration).filter(
+                    EquipmentStatusCount.SYSEQPCode == EQPID,
+                    EquipmentStatusCount.Status == '设备运行', EquipmentStatusCount.BatchNo == BatchID).first()
+                equipment_batchnos.append(equipcode[0])
+                equip_run_time.append(round(run[0] / 60) if run != None else '0')
+                equip_failure_time.append(round(gz[0] / 60) if run != None else '0')
+                equip_downtime.append(round(stop[0] / 60) if run != None else '0')
+            dir = {}
+            dir["BatchID"] = BatchID
+            dir["equip_run_time"] = equip_run_time
+            dir["equip_failure_time"] = equip_failure_time
+            dir["equip_downtime"] = equip_downtime
+            dir["equipment_batchnos"] = equipment_batchnos
+            return json.dumps(dir, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "路由：/souyeEquipmentFailureRunXTSearch，首页设备故障运行统计（系统采集）Error：" + str(e),
+                         current_user.Name)
