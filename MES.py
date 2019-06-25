@@ -7794,9 +7794,9 @@ def BatchMaterialTracingGetBatch():
             data = request.values
             brand = data['brand']
             beginTime = data.get("beginTime")
-            beginTime = datetime.datetime.strptime(beginTime,'%Y-%m-%d %H:%M:%S')
+            beginTime = datetime.datetime.strptime(beginTime,'%Y-%m-%d')
             endTime = data.get("endTime")
-            endTime = datetime.datetime.strptime(endTime, "%Y-%m-%d %H:%M:%S")
+            endTime = datetime.datetime.strptime(endTime, "%Y-%m-%d")
             # beginTime = time_trans_format(beginTime, '%a %b %d %Y %H:%M:%S GMT+0800 (中国标准时间)')
             # endTime = data['endTime']
             # endTime = time_trans_format(endTime, '%a %b %d %Y %H:%M:%S GMT+0800 (中国标准时间)')

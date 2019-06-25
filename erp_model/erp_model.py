@@ -1055,7 +1055,7 @@ def batchDetailSelect():
             PDUnitRouteName = data.get("PDUnitRouteName")
             dic = []
             if PDUnitRouteName == 'WMS':
-                dic.append({"BillNo": BatchID + pro.BrandID})
+                dic.append({"BillNo": BatchID + str(pro.ID)})
                 jsondic = json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False)
                 client = Client(Model.Global.WMSurl)
                 re = client.service.Mes_Interface("WorkFlowLoad", jsondic)
