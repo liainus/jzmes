@@ -107,7 +107,7 @@
             })
             $(".period").on('click',function(){
                 $('#tab').bootstrapTable("destroy")
-                $('#tab').bootstrapTable('load',function(){
+                $('#tab').bootstrapTable('load',{
                     PDUnitRouteName:$(this).html()
                 })
             })
