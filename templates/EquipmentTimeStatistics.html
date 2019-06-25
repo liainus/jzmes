@@ -145,7 +145,7 @@
                 onClick: function (node) {
                     if($('#EQtree').tree('isLeaf',node.target)){
                         selectType = "设备"
-                        SYSEQPCode = node.id
+                        SYSEQPCode = node.text
                         toJson(startDate,endDate,batch,process,SYSEQPCode)
                     }
 
