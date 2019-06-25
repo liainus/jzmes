@@ -479,11 +479,12 @@
                 url: "/souyeEquipmentFailureRunXTSearch",
                 type: "get",
                 success: function (data) {
+                    data = JSON.parse(data)
                     if (data !=  "NO") {
                         myChart1.hideLoading();
                         myChart1.setOption(option = {
                             title:{
-                                text: data.BatchID+"设备运行数据"
+                                text: data.BatchID+"-设备运行数据"
                             },
                             tooltip: {
                                 trigger: 'axis',
