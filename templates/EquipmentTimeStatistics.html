@@ -118,7 +118,7 @@
                     toJson(startDate,endDate,batch,process)
                 }
             })
-            $("#tree").tree({
+            $("#PUtree").tree({
                 url:"/EquipmentTimeStatistics/DataTree",
                 method: 'get',
                 animate:true,
@@ -130,6 +130,20 @@
                         process = node.text
                         toJson(startDate,endDate,batch,process)
                     }
+                }
+            })
+            $('#EQtree').tree({
+                url:"/quipmentRunPUIDParent",
+                method: 'get',
+                animate:true,
+                loadFilter:function(data){
+                    return data
+                },
+                onClick: function (node) {
+                    if($('#LeftTree').tree('isLeaf',node.target)){
+
+                    }
+
                 }
             })
             //时间选择控件
@@ -316,12 +330,22 @@
     </script>
 </head>
 <body>
-    <div class="col-md-4" style="padding-top:15px;">
+    <div class="col-md-2" style="padding-top:15px;">
         <div class="panel panel-default clearfix">
             <div class="panel-heading">选择工艺段</div>
             <div class="panel-body">
                 <div class="left-tree" style="height: 610px">
-                    <ul class="easyui-tree" id="tree"></ul>
+                    <ul class="easyui-tree" id="PUtree"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2" style="padding-top:15px;">
+        <div class="panel panel-default clearfix">
+            <div class="panel-heading">选择设备</div>
+            <div class="panel-body">
+                <div class="left-tree" style="height: 610px">
+                    <ul class="easyui-tree" id="EQtree"></ul>
                 </div>
             </div>
         </div>

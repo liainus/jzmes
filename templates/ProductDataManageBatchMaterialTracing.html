@@ -40,8 +40,8 @@
                     url:'/BatchMaterialTracing/GetData',
                     type:'get',
                     data:{
-                        beginTime:$('#beginTimeDate').data("datetimepicker").getDate(),
-                        endTime:$('#endTimehDate').data("datetimepicker").getDate(),
+                        beginTime:$('#beginTimeDate').val(),
+                        endTime:$('#endTimehDate').val(),
                         brand:brand
                     },
                     success:function(data){
