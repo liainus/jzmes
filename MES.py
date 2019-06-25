@@ -7793,16 +7793,18 @@ def BatchMaterialTracingGetBatch():
         try:
             data = request.values
             brand = data['brand']
-            beginTime = data['beginTime']
-            beginTime = time_trans_format(beginTime, '%a %b %d %Y %H:%M:%S GMT+0800 (中国标准时间)')
-            endTime = data['endTime']
-            endTime = time_trans_format(endTime, '%a %b %d %Y %H:%M:%S GMT+0800 (中国标准时间)')
-
+            beginTime = data.get("beginTime")
+            beginTime = datetime.datetime.strptime(beginTime,'%Y-%m-%d %H:%M:%S')
+            endTime = data.get("endTime")
+            endTime = datetime.datetime.strptime(endTime, "%Y-%m-%d %H:%M:%S")
+            # beginTime = time_trans_format(beginTime, '%a %b %d %Y %H:%M:%S GMT+0800 (中国标准时间)')
+            # endTime = data['endTime']
+            # endTime = time_trans_format(endTime, '%a %b %d %Y %H:%M:%S GMT+0800 (中国标准时间)')
             if beginTime is None or endTime is None:
                 return "NO"
-            batchs = set(db_session.query(ZYPlan.BatchID).filter(and_(
-                ZYPlan.BrandName == brand,
-                ZYPlan.PlanDate.between(beginTime, endTime))).all())
+            batchs = set(db_session.query(PlanManager.BatchID).filter(and_(
+                PlanManager.BrandName == brand,
+                PlanManager.PlanBeginTime.between(beginTime, endTime))).order_by(("BatchID")).all())
             return json.dumps({"batchs": [batch[0] for batch in batchs]}, cls=Model.BSFramwork.AlchemyEncoder,
                               ensure_ascii=False)
         except Exception as e:
