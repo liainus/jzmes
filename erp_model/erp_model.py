@@ -25,7 +25,7 @@ from Model.system import Role, Organization, User, Menu, Role_Menu, BatchMaterie
     EquipmentRunPUID, EquipmentMaintenanceStore, SpareTypeStore, ElectronicBatch, EquipmentStatusCount, Shifts, \
     EquipmentTimeStatisticTree, SystemEQPCode, EquipmentManagementManua, EquipmentMaintenanceStandard, product_info, \
     product_plan, product_infoERP, YieldMaintain, plantCalendarScheduling, Scheduling, SchedulingStandard, \
-    SchedulingMaterial, StapleProducts
+    SchedulingMaterial, StapleProducts, ElectronicBatchTwo
 from sqlalchemy import create_engine, Column, ForeignKey, Table, Integer, String, and_, or_, desc,extract
 from io import StringIO
 import calendar
@@ -33,6 +33,8 @@ from Model.system import CenterCost, ERPproductcode_prname, SchedulingStock
 from tools.common import logger,insertSyslog,insert,delete,update,select
 import os
 import openpyxl
+import suds
+from suds.client import Client
 
 engine = create_engine(Model.Global.GLOBAL_DATABASE_CONNECT_STRING, deprecate_large_types=True)
 Session = sessionmaker(bind=engine)
@@ -1040,3 +1042,68 @@ def cancelStapleProductsUpdate():
             logger.error(e)
             return json.dumps([{"status": "Error:" + str(e)}], cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
             insertSyslog("error", "WMS原料单取消关联SAP采购单报错：" + str(e), current_user.Name)
+
+@ERP.route('/batchDetailSelect', methods=['GET', 'POST'])
+def batchDetailSelect():
+    """批物料追溯"""
+    if request.method == 'GET':
+        data = request.values
+        try:
+            BrandName = data.get("BrandName")
+            pro = db_session.query(ProductRule).filter(ProductRule.PRName == BrandName).first()
+            BatchID = data.get("BatchID")
+            PDUnitRouteName = data.get("PDUnitRouteName")
+            dic = []
+            if PDUnitRouteName == 'WMS':
+                dic.append({"BillNo": BatchID + pro.BrandID})
+                jsondic = json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False)
+                client = Client(Model.Global.WMSurl)
+                re = client.service.Mes_Interface("WorkFlowLoad", jsondic)
+                if re[0] == 'SUCCESS':
+                    jsondata = json.loads(re["json_data"])
+                    return '{"total"' + ":" + str(len(jsondata)) + ',"rows"' + ":\n" + json.dumps(jsondata,
+                                                                                                  cls=AlchemyEncoder,
+                                                                                                  ensure_ascii=False) + "}"
+                else:
+                    return json.dumps(re[1])
+            elif PDUnitRouteName == '备料段':
+                dic.append({"BatchID": BatchID, "BrandName": BrandName})
+                jsondic = json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False)
+                client = Client(Model.Global.WMSurl)
+                ret = client.service.Mes_Interface_TL("WorkFlowLoad", jsondic)
+                if ret["Mes_Interface_TLResult"] == "SUCCESS":
+                    jsondata = json.loads(ret["json_data"])
+                    return '{"total"' + ":" + str(len(jsondata)) + ',"rows"' + ":\n" + json.dumps(jsondata,
+                                                                                                  cls=AlchemyEncoder,
+                                                                                                  ensure_ascii=False) + "}"
+                else:
+                    return json.dumps(ret["ErrData"])
+            elif PDUnitRouteName == '煎煮段':
+                res = db_session.query(ElectronicBatchTwo).filter(ElectronicBatchTwo.BrandName == BrandName,
+                                                                 ElectronicBatchTwo.BatchID == BatchID,
+                                                                 ElectronicBatchTwo.PDUnitRouteID == 2).all()
+                return json.dumps(res, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+            elif PDUnitRouteName == '浓缩段':
+                res = db_session.query(ElectronicBatchTwo).filter(ElectronicBatchTwo.BrandName == BrandName,
+                                                                  ElectronicBatchTwo.BatchID == BatchID,
+                                                                  ElectronicBatchTwo.PDUnitRouteID == 3).all()
+                return json.dumps(res, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+            elif PDUnitRouteName == '喷雾干燥段':
+                res = db_session.query(ElectronicBatchTwo).filter(ElectronicBatchTwo.BrandName == BrandName,
+                                                                  ElectronicBatchTwo.BatchID == BatchID,
+                                                                  ElectronicBatchTwo.PDUnitRouteID == 4).all()
+                return json.dumps(res, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+            elif PDUnitRouteName == '醇沉段':
+                res = db_session.query(ElectronicBatchTwo).filter(ElectronicBatchTwo.BrandName == BrandName,
+                                                                  ElectronicBatchTwo.BatchID == BatchID,
+                                                                  ElectronicBatchTwo.PDUnitRouteID == 9).all()
+                return json.dumps(res, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+            elif PDUnitRouteName == '单效浓缩段':
+                res = db_session.query(ElectronicBatchTwo).filter(ElectronicBatchTwo.BrandName == BrandName,
+                                                                  ElectronicBatchTwo.BatchID == BatchID,
+                                                                  ElectronicBatchTwo.PDUnitRouteID == 10).all()
+                return json.dumps(res, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "路由：/batchDetailSelect，批物料追溯Error：" + str(e), current_user.Name)

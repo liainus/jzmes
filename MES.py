@@ -7777,8 +7777,8 @@ def BatchMaterielBalanceDataStore():
 # 生产数据管理-批物料追溯
 @app.route('/ProductDataManage/BatchMaterialTracing')
 def BatchMaterialTracing():
-    brands = set(db_session.query(ProductRule.PRName).all())
-    return render_template('ProductDataManageBatchMaterialTracing.html', brands=brands)
+    brands = set(db_session.query(ProductUnitRoute.PDUnitRouteName).distinct().all())
+    return render_template('ProductDataManageBatchMaterialTracing.html')
 
 
 def time_trans_format(time_string, from_format, to_format='%Y-%m-%d'):
