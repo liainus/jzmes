@@ -1979,8 +1979,9 @@ def EquipmentFailureRunXTSearch():
                     equip_failure_time.append(round(gz[0]/60) if run != None  else '0')
                     equip_downtime.append(round(stop[0]/60) if run != None  else '0')
             else:
+                eqpID = str(db_session.query(Equipment).filter(Equipment.EQPName == SYSEQPCode).first()[0])
                 equip_codes = db_session.query(EquipmentStatusCount.BatchNo).distinct().filter(
-                    EquipmentStatusCount.SYSEQPCode == SYSEQPCode, EquipmentStatusCount.SampleTime.between(startDate, endDate)).all()
+                    EquipmentStatusCount.SYSEQPCode == eqpID, EquipmentStatusCount.SampleTime.between(startDate, endDate)).all()
                 for equipcode in equip_codes:
                     gz = db_session.query(EquipmentStatusCount.Duration).filter(
                         EquipmentStatusCount.Status == '设备故障', EquipmentStatusCount.BatchNo == equipcode[0],
