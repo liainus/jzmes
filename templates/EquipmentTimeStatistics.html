@@ -95,6 +95,7 @@
         $(function(){
             var process = ""
             var batch = ""
+            var SYSEQPCode = ""
             var startDate = getPeriodTime(new Date())[0]
             var endDate = getPeriodTime(new Date())[1]
             //初始化加载时间  并获取批次
@@ -118,6 +119,7 @@
                     toJson(startDate,endDate,batch,process)
                 }
             })
+            var selectType = ""
             $("#PUtree").tree({
                 url:"/EquipmentTimeStatistics/DataTree",
                 method: 'get',
@@ -126,9 +128,10 @@
                     return data
                 },
                 onClick: function (node) {
-                    if($('#LeftTree').tree('isLeaf',node.target)){
+                    if($('#PUtree').tree('isLeaf',node.target)){
+                        selectType = "工艺段"
                         process = node.text
-                        toJson(startDate,endDate,batch,process)
+                        toJson(startDate,endDate,batch,process,SYSEQPCode)
                     }
                 }
             })
@@ -140,8 +143,10 @@
                     return data
                 },
                 onClick: function (node) {
-                    if($('#LeftTree').tree('isLeaf',node.target)){
-
+                    if($('#EQtree').tree('isLeaf',node.target)){
+                        selectType = "设备"
+                        SYSEQPCode = node.id
+                        toJson(startDate,endDate,batch,process,SYSEQPCode)
                     }
 
                 }
@@ -183,113 +188,123 @@
                         })
                         $("#selectBatch").append(option)
                         batch = $("#selectBatch").find("option:eq(0)").html()
-                        toJson(startDate,endDate,batch,process)
+                        toJson(startDate,endDate,batch,process,SYSEQPCode)
                     }
                 })
             });
             $("#selectBatch").on('change',function(){
                 batch = $(this).val()
-                toJson(startDate,endDate,batch,process)
+                toJson(startDate,endDate,batch,process,SYSEQPCode)
             })
-        })
-        function toJson(startDate,endDate,batch,process){
-            var myDiv = document.getElementById("main")
-            var myChartContainer = function () {
-                var width = $("#chartBox").width()
-                myDiv.style.width = width +'px';
-            };
-            myChartContainer();
-            var myChart = echarts.init(myDiv)
-            myChart.showLoading();
-            $.ajax({
-                url: "/EquipmentFailureRunXTSearch",
-                type: "get",
-                data: {
-                    startDate: startDate,
-                    endDate:endDate,
-                    process:process,
-                    BatchID: batch
-                },
-                traditional:true,
-                success: function (data) {
-                    data = JSON.parse(data)
-                    if (data !=  "NO") {
-                        myChart.hideLoading();
-                        myChart.setOption(option = {
-                            tooltip: {
-                                trigger: 'axis',
-                                axisPointer: {
-                                    type: 'shadow'
-                                }
-                            },
-                            legend: {
-                                data: ['运行时间', '故障时间', '停机时间']
-                            },
-                            toolbox: {
-                                feature: {
-                                    dataView: {show: true, readOnly: false},
-                                    magicType: {show: true, type: ['line', 'bar']},
-                                    restore: {show: true},
-                                    saveAsImage: {show: true}
-                                }
-                            },
-                            xAxis: {
-                                type: 'category',
-                                data: data.equipment_batchnos
-                            },
-                            yAxis: [
-                                {
-                                    type: 'value',
-                                    name: '时间',
-                                    min: 0,
-                                    axisLabel: {
-                                        formatter: '{value} 分钟'
-                                    }
-                                }
-                            ],
-                            series: [{
-                                name: "运行时间",
-                                type: 'bar',
-                                itemStyle:{
-                                    normal:{
-                                        color:'#90ed7d'
+            function toJson(startDate,endDate,batch,process,SYSEQPCode){
+                var data = {}
+                if(selectType == "工艺段"){
+                    data = {
+                        startDate: startDate,
+                        endDate:endDate,
+                        process:process,
+                        BatchID: batch
+                    }
+                }else if(selectType == "设备"){
+                    data = {
+                        startDate: startDate,
+                        endDate:endDate,
+                        SYSEQPCode:SYSEQPCode
+                    }
+                }
+                var myDiv = document.getElementById("main")
+                var myChartContainer = function () {
+                    var width = $("#chartBox").width()
+                    myDiv.style.width = width +'px';
+                };
+                myChartContainer();
+                var myChart = echarts.init(myDiv)
+                myChart.showLoading();
+                $.ajax({
+                    url: "/EquipmentFailureRunXTSearch",
+                    type: "get",
+                    data: data,
+                    traditional:true,
+                    success: function (data) {
+                        data = JSON.parse(data)
+                        if (data !=  "NO") {
+                            myChart.hideLoading();
+                            myChart.setOption(option = {
+                                tooltip: {
+                                    trigger: 'axis',
+                                    axisPointer: {
+                                        type: 'shadow'
                                     }
                                 },
-                                data: data.equip_run_time
-                            },{
-                                name: "故障时间",
-                                type: 'bar',
-                                itemStyle:{
-                                    normal:{
-                                        color:'#f15c80'
+                                legend: {
+                                    data: ['运行时间', '故障时间', '停机时间']
+                                },
+                                toolbox: {
+                                    feature: {
+                                        dataView: {show: true, readOnly: false},
+                                        magicType: {show: true, type: ['line', 'bar']},
+                                        restore: {show: true},
+                                        saveAsImage: {show: true}
                                     }
                                 },
-                                data: data.equip_failure_time
-                            },{
-                                name: "停机时间",
-                                type: 'bar',
-                                itemStyle:{
-                                    normal:{
-                                        color:'#858585'
-                                    }
+                                xAxis: {
+                                    type: 'category',
+                                    data: data.equipment_batchnos
                                 },
-                                data: data.equip_downtime
-                            }]
-                        });
-                        myChart.setOption(option);
-                    } else {
+                                yAxis: [
+                                    {
+                                        type: 'value',
+                                        name: '时间',
+                                        min: 0,
+                                        axisLabel: {
+                                            formatter: '{value} 分钟'
+                                        }
+                                    }
+                                ],
+                                series: [{
+                                    name: "运行时间",
+                                    type: 'bar',
+                                    itemStyle:{
+                                        normal:{
+                                            color:'#90ed7d'
+                                        }
+                                    },
+                                    data: data.equip_run_time
+                                },{
+                                    name: "故障时间",
+                                    type: 'bar',
+                                    itemStyle:{
+                                        normal:{
+                                            color:'#f15c80'
+                                        }
+                                    },
+                                    data: data.equip_failure_time
+                                },{
+                                    name: "停机时间",
+                                    type: 'bar',
+                                    itemStyle:{
+                                        normal:{
+                                            color:'#858585'
+                                        }
+                                    },
+                                    data: data.equip_downtime
+                                }]
+                            });
+                            myChart.setOption(option);
+                        } else {
+                            myChart.hideLoading();
+                        }
+                    },
+                    error:function(data){
                         myChart.hideLoading();
                     }
-                },
-                error:function(data){
-                    myChart.hideLoading();
-                }
-            })
-            $("#chartBox").resize(function(){
-                myChartContainer();
-                myChart.resize();
-            })
-        }
+                })
+                $("#chartBox").resize(function(){
+                    myChartContainer();
+                    myChart.resize();
+                })
+            }
+        })
         //获取指定日期的周一和周天
         function getPeriodTime(date){
             var arr = myformatter(date).split("-")
@@ -337,12 +352,12 @@
         </ul>
         <div class="tab-content">
             <div role="tabpanel" class="tab-pane active" id="PU">
-                <div class="left-tree" style="height: 610px">
+                <div class="left-tree" style="height: 610px;margin: 15px;">
                     <ul class="easyui-tree" id="PUtree"></ul>
                 </div>
             </div>
             <div role="tabpanel" class="tab-pane" id="EQ">
-                <div class="left-tree" style="height: 610px">
+                <div class="left-tree" style="height: 610px;margin: 15px;">
                     <ul class="easyui-tree" id="EQtree"></ul>
                 </div>
             </div>
