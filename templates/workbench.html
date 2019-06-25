@@ -476,20 +476,14 @@
             var myChart1 = echarts.init(myDiv1)
             myChart1.showLoading();
             $.ajax({
-                url: "/EquipmentFailureRunXTSearch",
+                url: "/souyeEquipmentFailureRunXTSearch",
                 type: "get",
-                data: {
-                    startDate: getPeriodTime(new Date())[0],
-                    endDate:getPeriodTime(new Date())[1]
-                },
-                dataType: "json",
-                traditional:true,
                 success: function (data) {
                     if (data !=  "NO") {
                         myChart1.hideLoading();
                         myChart1.setOption(option = {
                             title:{
-                                text: "本周设备运行数据"
+                                text: data.BatchID+"设备运行数据"
                             },
                             tooltip: {
                                 trigger: 'axis',
