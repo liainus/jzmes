@@ -151,7 +151,7 @@ def productplanSearch():
                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
                 total = db_session.query(product_plan).count()
-                oclass = db_session.query(product_plan).all()[inipage:endpage]
+                oclass = db_session.query(product_plan).order_by(("plan_period")).all()[inipage:endpage]
                 jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonpequipments = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
                 return jsonpequipments
