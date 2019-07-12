@@ -452,7 +452,7 @@
                 $('.panel-body').height($("#pf-page").height() - 76)
             }).resize();
             var page = 0,
-                pages = ($('.pf-nav').height() / 42) - 1;
+                pages = ($('.pf-nav').height() / 50) - 1;
             if (pages === 0) {
                 $('.pf-nav-prev,.pf-nav-next').hide();
             }
@@ -460,7 +460,7 @@
                 if ($(this).hasClass('disabled')) return;
                 if ($(this).hasClass('pf-nav-next')) {
                     page++;
-                    $('.pf-nav').stop().animate({ 'margin-top': -42 * page }, 200);
+                    $('.pf-nav').stop().animate({ 'margin-top': -50 * page }, 200);
                     if (page == pages) {
                         $(this).addClass('disabled');
                         $('.pf-nav-prev').removeClass('disabled');
@@ -470,7 +470,7 @@
 
                 } else {
                     page--;
-                    $('.pf-nav').stop().animate({ 'margin-top': -42 * page }, 200);
+                    $('.pf-nav').stop().animate({ 'margin-top': -50 * page }, 200);
                     if (page == 0) {
                         $(this).addClass('disabled');
                         $('.pf-nav-next').removeClass('disabled');
