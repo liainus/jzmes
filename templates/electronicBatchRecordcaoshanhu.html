@@ -177,8 +177,8 @@
         </div>
     </div>
     <div class="example">
-        <button class="btn btn-primary" id="renderPdf">导出pdf</button>
         <button class="btn btn-primary" id="save">保存表单信息</button>
+        <button class="btn btn-primary" id="renderPdf">导出pdf</button>
     </div>
     <div class="col-md-12" id="pdfMain" style="font-size: 14px;padding-top: 20px;background-color: #ffffff;">
         <input type="hidden" id="PUID" value={{ PUID }}>
@@ -187,7 +187,7 @@
                 <thead>
                     <tr>
                         <td class="middle-center">工序</td>
-                        <td class="middle-center">{{ PName }}</td>
+                        <td class="middle-center" id="PName">{{ PName }}</td>
                         <td class="middle-center">产品批号</td>
                         <td class="middle-center" id="batchID">{{ BatchID }}</td>
                         <td class="middle-center">批量</td>
@@ -407,26 +407,47 @@
                         <td><input type="text" class="form-control batchInput" id="JZJFWeight8"></td>
                     </tr>
                     <tr>
-                        <td>开始时间</td>
-                        <td><input type="text" value="" id="startDate1" class="datetimepicker selectDateTime" readonly></td>
-                        <td><input type="text" value="" id="startDate2" class="datetimepicker selectDateTime" readonly></td>
-                        <td><input type="text" value="" id="startDate3" class="datetimepicker selectDateTime" readonly></td>
-                        <td><input type="text" value="" id="startDate4" class="datetimepicker selectDateTime" readonly></td>
-                        <td><input type="text" value="" id="startDate5" class="datetimepicker selectDateTime" readonly></td>
-                        <td><input type="text" value="" id="startDate6" class="datetimepicker selectDateTime" readonly></td>
-                        <td><input type="text" value="" id="startDate7" class="datetimepicker selectDateTime" readonly></td>
-                        <td><input type="text" value="" id="startDate8" class="datetimepicker selectDateTime" readonly></td>
-                    </tr>
-                    <tr>
-                        <td>结束时间</td>
-                        <td><input type="text" value="" id="endDate1" class="datetimepicker selectDateTime" readonly></td>
-                        <td><input type="text" value="" id="endDate2" class="datetimepicker selectDateTime" readonly></td>
-                        <td><input type="text" value="" id="endDate3" class="datetimepicker selectDateTime" readonly></td>
-                        <td><input type="text" value="" id="endDate4" class="datetimepicker selectDateTime" readonly></td>
-                        <td><input type="text" value="" id="endDate5" class="datetimepicker selectDateTime" readonly></td>
-                        <td><input type="text" value="" id="endDate6" class="datetimepicker selectDateTime" readonly></td>
-                        <td><input type="text" value="" id="endDate7" class="datetimepicker selectDateTime" readonly></td>
-                        <td><input type="text" value="" id="endDate8" class="datetimepicker selectDateTime" readonly></td>
+                        <td class="middle-center">起止时间</td>
+                        <td class="middle-center">
+                            <input type="text" value="" id="startDate1" class="datetimepicker selectDateTime" readonly>
+                            <p class="text-center">~</p>
+                            <input type="text" value="" id="endDate1" class="datetimepicker selectDateTime" readonly>
+                        </td>
+                        <td class="middle-center">
+                            <input type="text" value="" id="startDate2" class="datetimepicker selectDateTime" readonly>
+                            <p class="text-center">~</p>
+                            <input type="text" value="" id="endDate2" class="datetimepicker selectDateTime" readonly>
+                        </td>
+                        <td class="middle-center">
+                            <input type="text" value="" id="startDate3" class="datetimepicker selectDateTime" readonly>
+                            <p class="text-center">~</p>
+                            <input type="text" value="" id="endDate3" class="datetimepicker selectDateTime" readonly>
+                        </td>
+                        <td class="middle-center">
+                            <input type="text" value="" id="startDate4" class="datetimepicker selectDateTime" readonly>
+                            <p class="text-center">~</p>
+                            <input type="text" value="" id="endDate4" class="datetimepicker selectDateTime" readonly>
+                        </td>
+                        <td class="middle-center">
+                            <input type="text" value="" id="startDate5" class="datetimepicker selectDateTime" readonly>
+                            <p class="text-center">~</p>
+                            <input type="text" value="" id="endDate5" class="datetimepicker selectDateTime" readonly>
+                        </td>
+                        <td class="middle-center">
+                            <input type="text" value="" id="startDate6" class="datetimepicker selectDateTime" readonly>
+                            <p class="text-center">~</p>
+                            <input type="text" value="" id="endDate6" class="datetimepicker selectDateTime" readonly>
+                        </td>
+                        <td class="middle-center">
+                            <input type="text" value="" id="startDate7" class="datetimepicker selectDateTime" readonly>
+                            <p class="text-center">~</p>
+                            <input type="text" value="" id="endDate7" class="datetimepicker selectDateTime" readonly>
+                        </td>
+                        <td class="middle-center">
+                            <input type="text" value="" id="startDate8" class="datetimepicker selectDateTime" readonly>
+                            <p class="text-center">~</p>
+                            <input type="text" value="" id="endDate8" class="datetimepicker selectDateTime" readonly>
+                        </td>
                     </tr>
                     <tr>
                         <td>操作人</td>
@@ -4213,7 +4234,7 @@
                               }
                           }
                       }
-                      pdf.save('电子批记录html to pdf.pdf');
+                      pdf.save($("#batchID").html() + $("#PName").html() +'.pdf');
                   }
               })
             })

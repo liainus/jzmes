@@ -5,12 +5,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>江中制药MES系统</title>
+    <link href="../static/css/bootstrap.min.css" rel="stylesheet">
     <link href="../static/css/base.css" rel="stylesheet">
     <link href="../static/css/platform.css" rel="stylesheet">
     <link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
 </head>
 <body>
-    <div class="container">
+    <div class="">
         <div id="pf-hd">
             <div class="pf-logo">
                 <img src="../static/images/jzjt_logo.png" style="width:100px;height: auto;position: relative;top: -30px;" alt="logo">
@@ -21,11 +22,11 @@
                 <div class="pf-user-photo">
                     <img src="../static/jzmes_images/Customer_Male_Light.png" alt="">
                 </div>
-                <h4 class="pf-user-name ellipsis">{{ current_user['Name']}}</h4>
+                <h4 class="pf-user-name ellipsis" id="userName">{{ current_user['Name']}}</h4>
                 <i class="iconfont xiala">&#xe607;</i>
                 <div class="pf-user-panel">
                     <ul class="pf-user-opt">
-                        <li>
+                        <li class="seeUserInfo">
                             <a href="javascript:;">
                                 <i class="iconfont">&#xe60d;</i>
                                 <span class="pf-opt-name">用户信息</span>
@@ -69,11 +70,6 @@
                                     <a href="#" onclick="addTab('运输段监控','/TransportMonitor')">运输段监控</a>
                                 </li>
                             {% endif %}
-{#                            {% if '4' in session.get('menus') %}#}
-{#                                <li>#}
-{#                                    <a href="#" onclick="addTab('投料段监控','/FeedingSectionMonitor')">投料段监控</a>#}
-{#                                </li>#}
-{#                            {% endif %}#}
                             {% if '5' in session.get('menus') %}
                                 <li>
                                     <a href="#" onclick="addTab('产品生产线监控','/processMonitorLine')">产品生产线监控</a>
@@ -95,16 +91,6 @@
                                     <a href="#" onclick="addTab('组织结构建模','organization')">组织结构</a>
                                 </li>
                             {% endif %}
-{#                            {% if '8' in session.get('menus') %}#}
-{#                                <li>#}
-{#                                    <a href="#" onclick="addTab('组织结构','organizationMap')">组织结构</a>#}
-{#                                </li>#}
-{#                            {% endif %}#}
-{#                            {% if '9' in session.get('menus') %}#}
-{#                                <li>#}
-{#                                    <a href="#" onclick="addTab('区域建模','Area')">区域建模</a>#}
-{#                                </li>#}
-{#                            {% endif %}#}
                             {% if '10' in session.get('menus') %}
                                 <li>
                                     <a href="#" onclick="addTab('用户管理','userManager')">用户管理</a>
@@ -120,11 +106,6 @@
                                     <a href="#" onclick="addTab('权限分配','roleright')">权限分配</a>
                                 </li>
                             {% endif %}
-{#                            {% if '13' in session.get('menus') %}#}
-{#                                <li>#}
-{#                                    <a href="#" onclick="addTab('组织机构','Myorganization')">组织机构</a>#}
-{#                                </li>#}
-{#                            {% endif %}#}
                             {% if '14' in session.get('menus') %}
                                 <li>
                                     <a href="#" onclick="addTab('系统日志','syslogs')">系统日志</a>
@@ -385,71 +366,8 @@
                             <span class="iconfont sider-nav-icon">&#xe65f;</span>
                             <span class="sider-nav-title">能源智能管理系统</span>
                         </a>
-{#                        <ul class="sider-nav-s">#}
-{#                            {% if '67' in session.get('menus') %}#}
-{#                                <li>#}
-{#                                    <a href="#">能耗数据采集配置</a>#}
-{#                                </li>#}
-{#                            {% endif %}#}
-{#                            {% if '68' in session.get('menus') %}#}
-{#                                <li>#}
-{#                                    <a href="#">能耗数据分析</a>#}
-{#                                </li>#}
-{#                            {% endif %}#}
-{#                        </ul>#}
                     </li>
                 {% endif %}
-{#                {% if isIn(['74', '75', '76', '77', '78', '79', '80', '81'], session.get('menus')) %}#}
-{#                    <li>#}
-{#                        <a href="javascript:;">#}
-{#                            <span class="iconfont sider-nav-icon">&#xe6ec;</span>#}
-{#                            <span class="sider-nav-title">服务配置</span>#}
-{#                            <i class="iconfont">&#xe642;</i>#}
-{#                        </a>#}
-{#                        <ul class="sider-nav-s">#}
-{#                            {% if '74' in session.get('menus') %}#}
-{#                                <li>#}
-{#                                    <a href="#" onclick="addTab('实时数据服务配置','/RealTime_DataServerConfig')">实时数据服务配置</a>#}
-{#                                </li>#}
-{#                            {% endif %}#}
-{#                            {% if '75' in session.get('menus') %}#}
-{#                                <li>#}
-{#                                    <a href="#" onclick="addTab('OPC服务配置','/OpcServer')">OPC服务配置</a>#}
-{#                                </li>#}
-{#                            {% endif %}#}
-{#                            {% if '76' in session.get('menus') %}#}
-{#                                <li>#}
-{#                                    <a href="#" onclick="addTab('加载OPC-Tag','/OpcTag/load')">加载OPC-Tag</a>#}
-{#                                </li>#}
-{#                            {% endif %}#}
-{#                            {% if '77' in session.get('menus') %}#}
-{#                                <li>#}
-{#                                    <a href="#" onclick="addTab('管理采集模板','/CollectParamsTemplate/config')">管理采集模板</a>#}
-{#                                </li>#}
-{#                            {% endif %}#}
-{#                            {% if '78' in session.get('menus') %}#}
-{#                                <li>#}
-{#                                    <a href="#" onclick="addTab('配置采集模板','/CollectParams/config')">配置采集模板</a>#}
-{#                                </li>#}
-{#                            {% endif %}#}
-{#                            {% if '79' in session.get('menus') %}#}
-{#                                <li>#}
-{#                                    <a href="#" onclick="addTab('配置采集策略','/Collectionstrategy/config')">配置采集策略</a>#}
-{#                                </li>#}
-{#                            {% endif %}#}
-{#                            {% if '80' in session.get('menus') %}#}
-{#                                <li>#}
-{#                                    <a href="#" onclick="addTab('配置采集任务','/CollectTask/config')">配置采集任务</a>#}
-{#                                </li>#}
-{#                            {% endif %}#}
-{#                            {% if '81' in session.get('menus') %}#}
-{#                                <li>#}
-{#                                    <a href="#" onclick="addTab('NodeID注释配置','/NodeIdNote/config')">NodeID注释配置</a>#}
-{#                                </li>#}
-{#                            {% endif %}#}
-{#                        </ul>#}
-{#                    </li>#}
-{#                {% endif %}#}
                 </ul>
             </div>
             <div id="pf-page">
@@ -469,7 +387,6 @@
                 </div>
             </div>
         </div>
-
         <div id="pf-ft">
             <div class="system-name">
                 <i class="iconfont">&#xe6fe;</i>
@@ -483,108 +400,116 @@
     </div>
 
     <script type="text/javascript" src="../static/custom/jquery.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootbox.min.js"></script>
     <script type="text/javascript" src="../static/custom/jquery.easyui.min.js"></script>
-    <!-- <script type="text/javascript" src="js/menu.js"></script> -->
     <script type="text/javascript" src="../static/js/main.js"></script>
-    <!--[if IE 7]>
-      <script type="text/javascript">
-        $(window).resize(function(){
-          $('#pf-bd').height($(window).height()-76);
-        }).resize();
-
-      </script>
-    <![endif]-->
-
-
     <script type="text/javascript">
-        $('.easyui-tabs1').tabs({
-            tabHeight: 34,
-            onContextMenu:function(e, title){
-                //在每个菜单选项中添加title值
-				var $divMenu = $("#tab_rightmenu div[id]");
-				$divMenu.each(function() {
-					$(this).attr("id", title);
-				});
-				//显示menu菜单
-				$('#tab_rightmenu').menu('show', {
-				    left: e.pageX,
-					top: e.pageY
-				});
-				e.preventDefault();
-            }
-        })
-        //实例化menu点击触发事件
-		$('#tab_rightmenu').menu({
-			"onClick":function(item) {
-				closeTab(item.id,item.text);
-			}
-		});
-        //关闭
-        function closeTab(title, text) {
-            if(text == '关闭全部标签') {
-                $(".tabs li").each(function(index, obj) {
-                      //获取所有可关闭的选项卡
-                      var tabTitle = $(".tabs-closable", this).text();
-                      $("#tabs_menu").tabs("close", tabTitle);
-                 });
-            }
-            if(text == '关闭其他标签') {
-                $(".tabs li").each(function(index, obj) {
-                      //获取所有可关闭的选项卡
-                      var tabTitle = $(".tabs-closable", this).text();
-                      if(tabTitle != title) {
-                        $("#tabs_menu").tabs("close", tabTitle);
-                      }
-                 });
-            }
-        }
-
-        $(window).resize(function () {
-            $('.tabs-panels').height($("#pf-page").height() - 46);
-            $('.panel-body').height($("#pf-page").height() - 76)
-        }).resize();
-
-        var page = 0,
-            pages = ($('.pf-nav').height() / 42) - 1;
-
-        if (pages === 0) {
-            $('.pf-nav-prev,.pf-nav-next').hide();
-        }
-        $(document).on('click', '.pf-nav-prev,.pf-nav-next', function () {
-
-
-            if ($(this).hasClass('disabled')) return;
-            if ($(this).hasClass('pf-nav-next')) {
-                page++;
-                $('.pf-nav').stop().animate({ 'margin-top': -42 * page }, 200);
-                if (page == pages) {
-                    $(this).addClass('disabled');
-                    $('.pf-nav-prev').removeClass('disabled');
-                } else {
-                    $('.pf-nav-prev').removeClass('disabled');
+        $(function(){
+            $('.easyui-tabs1').tabs({
+                tabHeight: 34,
+                onContextMenu:function(e, title){
+                    //在每个菜单选项中添加title值
+                    var $divMenu = $("#tab_rightmenu div[id]");
+                    $divMenu.each(function() {
+                        $(this).attr("id", title);
+                    });
+                    //显示menu菜单
+                    $('#tab_rightmenu').menu('show', {
+                        left: e.pageX,
+                        top: e.pageY
+                    });
+                    e.preventDefault();
                 }
-
-            } else {
-                page--;
-                $('.pf-nav').stop().animate({ 'margin-top': -42 * page }, 200);
-                if (page == 0) {
-                    $(this).addClass('disabled');
-                    $('.pf-nav-next').removeClass('disabled');
-                } else {
-                    $('.pf-nav-next').removeClass('disabled');
+            })
+            //实例化menu点击触发事件
+            $('#tab_rightmenu').menu({
+                "onClick":function(item) {
+                    closeTab(item.id,item.text);
                 }
-
+            });
+            //关闭
+            function closeTab(title, text) {
+                if(text == '关闭全部标签') {
+                    $(".tabs li").each(function(index, obj) {
+                          //获取所有可关闭的选项卡
+                          var tabTitle = $(".tabs-closable", this).text();
+                          $("#tabs_menu").tabs("close", tabTitle);
+                     });
+                }
+                if(text == '关闭其他标签') {
+                    $(".tabs li").each(function(index, obj) {
+                          //获取所有可关闭的选项卡
+                          var tabTitle = $(".tabs-closable", this).text();
+                          if(tabTitle != title) {
+                            $("#tabs_menu").tabs("close", tabTitle);
+                          }
+                     });
+                }
             }
-        })
+            $(window).resize(function () {
+                $('.tabs-panels').height($("#pf-page").height() - 46);
+                $('.panel-body').height($("#pf-page").height() - 76)
+            }).resize();
+            var page = 0,
+                pages = ($('.pf-nav').height() / 42) - 1;
+            if (pages === 0) {
+                $('.pf-nav-prev,.pf-nav-next').hide();
+            }
+            $(document).on('click', '.pf-nav-prev,.pf-nav-next', function () {
+                if ($(this).hasClass('disabled')) return;
+                if ($(this).hasClass('pf-nav-next')) {
+                    page++;
+                    $('.pf-nav').stop().animate({ 'margin-top': -42 * page }, 200);
+                    if (page == pages) {
+                        $(this).addClass('disabled');
+                        $('.pf-nav-prev').removeClass('disabled');
+                    } else {
+                        $('.pf-nav-prev').removeClass('disabled');
+                    }
 
-    // setTimeout(function(){
-    //    $('.tabs-panels').height($("#pf-page").height()-46);
-    //    $('.panel-body').height($("#pf-page").height()-76)
-    // }, 200)
+                } else {
+                    page--;
+                    $('.pf-nav').stop().animate({ 'margin-top': -42 * page }, 200);
+                    if (page == 0) {
+                        $(this).addClass('disabled');
+                        $('.pf-nav-next').removeClass('disabled');
+                    } else {
+                        $('.pf-nav-next').removeClass('disabled');
+                    }
+
+                }
+            })
+            $(".seeUserInfo").on('click',function(){
+                var html= ''
+                $.ajax({
+                    url:'/MyUser/Select',
+                    method: 'get',
+                    data:{
+                        id: '',
+                        Name:$("#userName").html(),
+                        page:"1",
+                        rows:"1"
+                    },
+                    success:function(res){
+                        res = JSON.parse(res)
+                        console.log(res)
+                        html = '<table class="table table-bordered"><tr><td>用户名</td><td>' + res.rows[0].Name +'</td></tr>'+
+                        '<tr><td>工号</td><td>'+ res.rows[0].WorkNumber +'</td></tr><tr><td>所属部门</td><td>'+ res.rows[0].OrganizationName +'</td></tr>'+
+                        '<tr><td>所属角色</td><td>'+ res.rows[0].RoleName +'</td></tr>'+
+                        '<tr><td>创建用户</td><td>'+ res.rows[0].Creater +'</td></tr>'+
+                        '<tr><td>创建时间</td><td>'+ res.rows[0].CreateTime +'</td></tr>'+
+                        '<tr><td>上次登录时间</td><td>'+ res.rows[0].LastLoginTime +'</td></tr></table>'
+                        bootbox.alert(html)
+                    },
+                    error:function (data) {
+                        bootbox.alert("请求失败")
+                    }
+                })
+            })
+        })
     </script>
-
     <script type="text/javascript">
-
         //按钮点击后添加选项卡
         function addTab(title, url) {
             if ($('.easyui-tabs1').tabs('exists', title)) {
