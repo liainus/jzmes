@@ -9,6 +9,26 @@ import socket
 import datetime
 from Model.BSFramwork import AlchemyEncoder
 import re
+from Model.core import Enterprise, Area, Factory, ProductLine, ProcessUnit, Equipment, Material, MaterialType, \
+    ProductUnit, ProductRule, ZYTask, ZYPlanMaterial, ZYPlan, Unit, PlanManager, SchedulePlan, ProductControlTask, \
+    OpcServer, Pequipment, WorkFlowStatus, WorkFlowEventZYPlan, WorkFlowEventPlan, \
+    OpcTag, CollectParamsTemplate, CollectParams, Collectionstrategy, CollectTask, \
+    CollectTaskCollection, ReadyWork, NodeIdNote, ProductUnitRoute, ProductionMonitor, NewZYPlanMaterial, \
+    QualityControlTree
+from Model.system import Role, Organization, User, Menu, Role_Menu, BatchMaterielBalance, OperationManual, NewReadyWork, \
+    EquipmentWork, EletronicBatchDataStore, SpareStock, EquipmentMaintenanceKnowledge, EquipmentMaintain, \
+    SchedulePlan, SparePartInStockManagement, SparePartStock, Area, Instruments, MaintenanceStatus, MaintenanceCycle, \
+    plantCalendarScheduling
+from Model.system import User, EquipmentRunPUID, ElectronicBatch, EquipmentRunRecord, QualityControl, PackMaterial, \
+    TypeCollection, OperationProcedure, EquipmentMaintenanceStore, Scheduling, SchedulingStock, ERPproductcode_prname, \
+    SchedulingStandard, product_plan, SchedulingMaterial, YieldMaintain, ZYPlanWMS, ElectronicBatchTwo, PartiallyProducts
+from Model.system import Role, Organization, User, Menu, Role_Menu, BatchMaterielBalance, OperationManual, NewReadyWork, \
+    EquipmentWork, EletronicBatchDataStore, SpareStock, EquipmentMaintenanceKnowledge, EquipmentReportingRecord, \
+    EquipmentMaintain, \
+    SchedulePlan, SparePartInStockManagement, SparePartStock, Area, Instruments, MaintenanceStatus, MaintenanceCycle, \
+    EquipmentRunRecord, \
+    EquipmentRunPUID, EquipmentMaintenanceStore, SpareTypeStore, ElectronicBatch, EquipmentStatusCount, Shifts, \
+    EquipmentTimeStatisticTree, SystemEQPCode, EquipmentManagementManua, EquipmentMaintenanceStandard
 
 
 engine = create_engine(Model.Global.GLOBAL_DATABASE_CONNECT_STRING, deprecate_large_types=True)
@@ -113,7 +133,7 @@ def update(tablename, new_data):
                 insertSyslog("error", "%s数据更新报错："%tablename + str(e), current_user.Name)
                 return json.dumps('数据更新失败！', cls=AlchemyEncoder, ensure_ascii=False)
 
-def select(table, page, rows, fieid, param):
+def select(table, offset, limit, param):
     '''
     :param tablename: 查询表
     :param pages: 页数
@@ -122,23 +142,21 @@ def select(table, page, rows, fieid, param):
     :param param: 查询条件
     :return: 
     '''
+    from sqlalchemy import MetaData, create_engine
+    metadata = MetaData()
+    from sqlalchemy import Table
     try:
-        inipage = (page - 1) * rows + 0
-        endpage = (page - 1) * rows + rows
+        pages = int(offset)
+        rowsnumber = int(limit)
+        inipage = pages * rowsnumber + 0
+        endpage = pages * rowsnumber + rowsnumber
         if (param == "" or param == None):
             total = db_session.query(table).count()
             oclass = db_session.query(table).all()[inipage:endpage]
         else:
-            # sql = "select * from "+tableName+" t where t."+fieid+" like "+"'%"+param+"%'"
-            # oclass = db_session.execute(sql).fetchall()
-            # total = len(oclass)
-            # db_session.close()
-            print(fieid)
-            print(param)
-            print(table)
-            # obj.__tablename__ = table
-            total = db_session.query(table).filter_by(fieid==param).count()
-            oclass = db_session.query(table).filter_by(fieid=param).all()[inipage:endpage]
+            newTable = Table(table, metadata, autoload=True, autoload_with=engine)
+            total = db_session.query(table).filter(newTable.columns._data[param] == param.value()).count()
+            oclass = db_session.query(table).filter(newTable.columns._data[param] == param.get(param)).all()[inipage:endpage]
         jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
         jsonoclass = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
         return jsonoclass
