@@ -574,7 +574,6 @@ def MStatusLoad():
             return json.dumps("调用MStatusLoad接口报错！")
 
 
-@Process.route('/WMS_SendSAPMatil', methods=['GET', 'POST'])
 class SAP_Interface(ServiceBase):
     logging.basicConfig(level=logging.DEBUG)
     @rpc(Unicode, Unicode, _returns=Unicode())
@@ -586,10 +585,15 @@ class SAP_Interface(ServiceBase):
         '''
         try:
             dic = []
-            print(json_data)
             dict_data = json.loads(json_data)
             for oc in dict_data:
                 w = WMSDetail()
+                w.BillNo = oc.get("billNo")
+                w.btype = oc.get("bType")
+                w.mid = oc.get("mid")
+                w.Num = oc.get("num")
+                w.StoreDef_id = oc.get("storeDef_id")
+                w.BatchNo = oc.get("batchNo")
                 db_session.add(w)
                 db_session.commit()
             return json.dumps('SUCCESS')
