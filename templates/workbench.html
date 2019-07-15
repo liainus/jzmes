@@ -12,19 +12,30 @@
     <link rel="stylesheet" href="../static/css/fullcalendar.min.css">
     <style>
         .content{
-            background: #eaedf2;
+            background: #f1f1f1;
             padding:20px 10px;
+        }
+        .card{
+            position: relative;
+            min-height: 100px;
+            overflow: hidden!important;
+            background-color: #fff;
+            color: #666;
+            border: none;
+            border-radius: 5px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
         }
         .AgencyArea{
             position: relative;
             font-size: 12px;
         }
         .AgencyArea .AgencyArea-item{
-            background: #00c4dc;
+            background: linear-gradient(to right, #45a2d0 , #7ec5ef);
             color: #fff;
             padding: 10px;
             margin-bottom: 20px;
-            border-radius: 3px;
+            border-radius: 5px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1)
             cursor: pointer;
         }
         .AgencyArea-head{
@@ -129,12 +140,12 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-12" style="margin-bottom:20px;padding: 10px;background: #fff;border-radius: 5px;">
+                    <div class="col-md-12 card" style="margin-bottom:20px;padding: 15px;">
                         <div id="compareBox" style="width: 100%;">
                             <div id="CompareMain" style="width: 760px; height: 320px;"></div>
                         </div>
                     </div>
-                    <div class="col-md-12" style="margin-bottom:20px;padding: 10px;background: #fff;border-radius: 5px;">
+                    <div class="col-md-12 card" style="margin-bottom:20px;padding: 15px;">
                         <div id="eqBox" style="width: 100%;">
                             <div id="eqMain" style="width: 760px; height: 320px;"></div>
                         </div>
@@ -143,7 +154,7 @@
                 <div class="col-md-4 col-sm-12">
                     <div class="row">
                         <div class="col-md-12">
-                            <div id='calendar' style="width: 100%;background: #fff;padding: 15px;border-radius: 5px;"></div>
+                            <div id='calendar' class="card" style="width: 100%;padding: 15px;"></div>
                             <div class="col-md-12 col-sm-12" style="background: #d2d2d2;margin-bottom: 20px;">
                                 <div class="row">
                                     <div class="col-md-4">
@@ -157,7 +168,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="panel panel-default clearfix">
+                            <div class="panel panel-default clearfix" style="box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);">
                                 <div class="panel-heading">计划待处理<a href="javascript:;" id="toZYPlanManage" style="float: right">去处理</a></div>
                                 <div class="panel-body">
                                     <table id="planTable" class="table table-striped"></table>
@@ -277,7 +288,7 @@
             $("#planTable").bootstrapTable({
                 url:'/maindaiban',
                 method: 'get',
-                height:270,
+                height:280,
                 columns: [{
                     field: 'BrandName',
                     title: '品名'
@@ -382,6 +393,9 @@
                         },
                         legend: {
                             data: ['投入量', '产出量', '得率']
+                        },
+                        grid: {
+                            y2: '10% '
                         },
                         xAxis: {
                             type: 'category',
@@ -501,6 +515,9 @@
                                     restore: {show: true}
                                 }
                             },
+                            grid: {
+                                y2: '10% '
+                            },
                             xAxis: {
                                 type: 'category',
                                 data: data.equipment_batchnos
@@ -563,7 +580,7 @@
                 locale:'zh-cn',
                 weekNumbers: true, //是否在日历中显示第几周
                 eventLimit: true, // allow "more" link when too many events
-                height:385,
+                height:395,
                 events: function(start,end,timezone,callback){
                     var events = []
                     $.ajax({
