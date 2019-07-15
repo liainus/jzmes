@@ -23,18 +23,18 @@
                     <img src="../static/jzmes_images/Customer_Male_Light.png" alt="">
                 </div>
                 <h4 class="pf-user-name ellipsis" id="userName">{{ current_user['Name']}}</h4>
-                <i class="iconfont xiala">&#xe607;</i>
+                <i class="glyphicon glyphicon-menu-down xiala"></i>
                 <div class="pf-user-panel">
                     <ul class="pf-user-opt">
                         <li class="seeUserInfo">
                             <a href="javascript:;">
-                                <i class="iconfont">&#xe60d;</i>
+                                <i class="glyphicon glyphicon-user"></i>
                                 <span class="pf-opt-name">用户信息</span>
                             </a>
                         </li>
                         <li class="pf-logout">
                             <a href="/logout">
-                                <i class="iconfont">&#xe60e;</i>
+                                <i class="glyphicon glyphicon-off"></i>
                                 <span class="pf-opt-name">退出</span>
                             </a>
                         </li>
@@ -55,9 +55,9 @@
                 {% if isIn(['2', '3', '4','5'], session.get('menus')) %}
                     <li>
                         <a href="javascript:;">
-                            <span class="iconfont sider-nav-icon">&#xe611;</span>
+                            <span class="glyphicon glyphicon-facetime-video sider-nav-icon"></span>
                             <span class="sider-nav-title">生产监控</span>
-                            <i class="iconfont">&#xe642;</i>
+                            <i class="glyphicon glyphicon-menu-down"></i>
                         </a>
                         <ul class="sider-nav-s">
                             {% if '2' in session.get('menus') %}
@@ -78,52 +78,11 @@
                         </ul>
                     </li>
                 {% endif %}
-                {% if isIn(['7', '8', '9', '10', '11', '12', '13', '14', '15'], session.get('menus')) %}
-                    <li>
-                        <a href="javascript:;">
-                            <span class="iconfont sider-nav-icon">&#xe6ed;</span>
-                            <span class="sider-nav-title">系统管理</span>
-                            <i class="iconfont">&#xe642;</i>
-                        </a>
-                        <ul class="sider-nav-s">
-                            {% if '7' in session.get('menus') %}
-                                <li>
-                                    <a href="#" onclick="addTab('组织结构建模','organization')">组织结构</a>
-                                </li>
-                            {% endif %}
-                            {% if '10' in session.get('menus') %}
-                                <li>
-                                    <a href="#" onclick="addTab('用户管理','userManager')">用户管理</a>
-                                </li>
-                            {% endif %}
-                            {% if '11' in session.get('menus') %}
-                                <li>
-                                    <a href="#" onclick="addTab('角色管理','sysrole')">角色管理</a>
-                                </li>
-                            {% endif %}
-                            {% if '12' in session.get('menus') %}
-                                <li>
-                                    <a href="#" onclick="addTab('权限分配','roleright')">权限分配</a>
-                                </li>
-                            {% endif %}
-                            {% if '14' in session.get('menus') %}
-                                <li>
-                                    <a href="#" onclick="addTab('系统日志','syslogs')">系统日志</a>
-                                </li>
-                            {% endif %}
-                            {% if '15' in session.get('menus') %}
-                                <li>
-                                    <a href="#" onclick="addTab('工厂日历','/plantCalendarResult?type=1')">工厂日历</a>
-                                </li>
-                            {% endif %}
-                        </ul>
-                    </li>
-                {% endif %}
                 <li>
                     <a href="javascript:;">
-                        <span class="iconfont sider-nav-icon">&#xe6ed;</span>
+                        <span class="glyphicon glyphicon-calendar sider-nav-icon"></span>
                         <span class="sider-nav-title">ERP数据管理</span>
-                        <i class="iconfont">&#xe642;</i>
+                        <i class="glyphicon glyphicon-menu-down"></i>
                     </a>
                     <ul class="sider-nav-s">
                         <li>
@@ -137,9 +96,9 @@
                 {% if isIn(['25', '26', '27', '28', '29', '30'], session.get('menus')) %}
                     <li>
                         <a href="javascript:;">
-                            <span class="iconfont sider-nav-icon">&#xe6c3;</span>
+                            <span class="glyphicon glyphicon-tasks sider-nav-icon"></span>
                             <span class="sider-nav-title">生产计划调度管理</span>
-                            <i class="iconfont">&#xe642;</i>
+                            <i class="glyphicon glyphicon-menu-down"></i>
                         </a>
                         <ul class="sider-nav-s">
                             {% if '25' in session.get('menus') %}
@@ -171,9 +130,9 @@
                 {% if isIn(['32', '33', '34', '35', '36', '37'], session.get('menus')) %}
                     <li>
                         <a href="javascript:;">
-                            <span class="iconfont sider-nav-icon">&#xe65b;</span>
+                            <span class="glyphicon glyphicon-list-alt sider-nav-icon"></span>
                             <span class="sider-nav-title">生产建模管理</span>
-                            <i class="iconfont">&#xe642;</i>
+                            <i class="glyphicon glyphicon-menu-down"></i>
                         </a>
                         <ul class="sider-nav-s">
                             {% if '32' in session.get('menus') %}
@@ -212,9 +171,9 @@
                 {% if isIn(['39', '40', '41', '42'], session.get('menus')) %}
                     <li>
                         <a href="javascript:;">
-                            <span class="iconfont sider-nav-icon">&#xe611;</span>
+                            <span class="glyphicon glyphicon-edit sider-nav-icon"></span>
                             <span class="sider-nav-title">生产数据管理</span>
-                            <i class="iconfont">&#xe642;</i>
+                            <i class="glyphicon glyphicon-menu-down"></i>
                         </a>
                         <ul class="sider-nav-s">
                             {% if '39' in session.get('menus') %}
@@ -237,9 +196,9 @@
                 {% endif %}
                 <li>
                     <a href="javascript:;">
-                        <span class="iconfont sider-nav-icon">&#xe64c;</span>
+                        <span class="glyphicon glyphicon-equalizer sider-nav-icon"></span>
                         <span class="sider-nav-title">工艺质量</span>
-                        <i class="iconfont">&#xe642;</i>
+                        <i class="glyphicon glyphicon-menu-down"></i>
                     </a>
                     <ul class="sider-nav-s">
                         <li>
@@ -253,9 +212,9 @@
                 {% if isIn(['44', '45', '46', '47', '48', '49', '50', '96'], session.get('menus')) %}
                     <li>
                         <a href="javascript:;">
-                            <span class="iconfont sider-nav-icon">&#xe64c;</span>
+                            <span class="glyphicon glyphicon-stats sider-nav-icon"></span>
                             <span class="sider-nav-title">过程质量分析</span>
-                            <i class="iconfont">&#xe642;</i>
+                            <i class="glyphicon glyphicon-menu-down"></i>
                         </a>
                         <ul class="sider-nav-s">
                             {% if '44' in session.get('menus') %}
@@ -286,9 +245,9 @@
                 {% if isIn(['52', '53', '54', '55', '56', '57', '58','90','91'], session.get('menus')) %}
                     <li>
                         <a href="javascript:;">
-                            <span class="iconfont sider-nav-icon">&#xe69e;</span>
+                            <span class="glyphicon glyphicon-wrench sider-nav-icon"></span>
                             <span class="sider-nav-title">设备管理</span>
-                            <i class="iconfont">&#xe642;</i>
+                            <i class="glyphicon glyphicon-menu-down"></i>
                         </a>
                         <ul class="sider-nav-s">
                             {% if '52' in session.get('menus') %}
@@ -301,6 +260,9 @@
                                     <a href="#" onclick="addTab('设备备件管理','/equipmentspare')">设备备件管理</a>
                                 </li>
                             {% endif %}
+                            <li>
+                                <a href="#" onclick="addTab('仪器仪表周期整定','/cyclediagnosis')">仪器仪表周期整定</a>
+                            </li>
                             {% if '90' in session.get('menus') %}
                                 <li>
                                     <a href="#" onclick="addTab('设备故障管理','/equipmenttrouble')">设备故障管理</a>
@@ -342,9 +304,9 @@
                 {% if isIn(['60', '61', '62', '63', '64', '65'], session.get('menus')) %}
                     <li>
                         <a href="javascript:;">
-                            <span class="iconfont sider-nav-icon">&#xe620;</span>
+                            <span class="glyphicon glyphicon-grain sider-nav-icon"></span>
                             <span class="sider-nav-title">物料管理</span>
-                            <i class="iconfont">&#xe642;</i>
+                            <i class="glyphicon glyphicon-menu-down"></i>
                         </a>
                         <ul class="sider-nav-s">
                             {% if '60' in session.get('menus') %}
@@ -360,10 +322,51 @@
                         </ul>
                     </li>
                 {% endif %}
+                {% if isIn(['7', '8', '9', '10', '11', '12', '13', '14', '15'], session.get('menus')) %}
+                    <li>
+                        <a href="javascript:;">
+                            <span class="glyphicon glyphicon-cog sider-nav-icon"></span>
+                            <span class="sider-nav-title">系统管理</span>
+                            <i class="glyphicon glyphicon-menu-down"></i>
+                        </a>
+                        <ul class="sider-nav-s">
+                            {% if '7' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onclick="addTab('组织结构建模','organization')">组织结构</a>
+                                </li>
+                            {% endif %}
+                            {% if '10' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onclick="addTab('用户管理','userManager')">用户管理</a>
+                                </li>
+                            {% endif %}
+                            {% if '11' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onclick="addTab('角色管理','sysrole')">角色管理</a>
+                                </li>
+                            {% endif %}
+                            {% if '12' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onclick="addTab('权限分配','roleright')">权限分配</a>
+                                </li>
+                            {% endif %}
+                            {% if '14' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onclick="addTab('系统日志','syslogs')">系统日志</a>
+                                </li>
+                            {% endif %}
+                            {% if '15' in session.get('menus') %}
+                                <li>
+                                    <a href="#" onclick="addTab('工厂日历','/plantCalendarResult?type=1')">工厂日历</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </li>
+                {% endif %}
                 {% if isIn(['67', '68'], session.get('menus')) %}
                     <li>
                         <a href="http://192.168.10.215:10087" target="_blank">
-                            <span class="iconfont sider-nav-icon">&#xe65f;</span>
+                            <span class="glyphicon glyphicon-oil sider-nav-icon"></span>
                             <span class="sider-nav-title">能源智能管理系统</span>
                         </a>
                     </li>
@@ -389,17 +392,16 @@
         </div>
         <div id="pf-ft">
             <div class="system-name">
-                <i class="iconfont">&#xe6fe;</i>
+                <i class="glyphicon glyphicon-info-sign"></i>
                 <span>MES制造执行系统&nbsp;v1.0</span>
             </div>
             <div class="copyright-name">
                 <span>CopyRight&nbsp;2019&nbsp;&nbsp;&nbsp;版权所有&nbsp;&nbsp;</span>
-                <!--<i class="iconfont" >&#xe6ff;</i>-->
             </div>
         </div>
     </div>
 
-    <script type="text/javascript" src="../static/custom/jquery.min.js"></script>
+    <script type="text/javascript" src="../static/js/jquery-3.3.1.min.js"></script>
     <script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="../static/js/bootbox.min.js"></script>
     <script type="text/javascript" src="../static/custom/jquery.easyui.min.js"></script>
