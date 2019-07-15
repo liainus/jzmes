@@ -23,7 +23,8 @@ from Model.system import Role, Organization, User, Menu, Role_Menu, BatchMaterie
     SchedulePlan, SparePartInStockManagement, SparePartStock, Area, Instruments, MaintenanceStatus, MaintenanceCycle, \
     EquipmentRunRecord, \
     EquipmentRunPUID, EquipmentMaintenanceStore, SpareTypeStore, ElectronicBatch, EquipmentStatusCount, Shifts, \
-    EquipmentTimeStatisticTree, SystemEQPCode, EquipmentManagementManua, EquipmentMaintenanceStandard
+    EquipmentTimeStatisticTree, SystemEQPCode, EquipmentManagementManua, EquipmentMaintenanceStandard, Instrumentation, \
+    InstrumentationHandle
 from sqlalchemy import create_engine, Column, ForeignKey, Table, Integer, String, and_, or_, desc,extract
 from io import StringIO
 import calendar
@@ -56,22 +57,97 @@ def a():
             logger.error(e)
             insertSyslog("error", "/BatchInfoSearch查询报错Error：" + str(e), current_user.Name)
 
-@diagnosis.route('/equipment_model/CenterCostCreate', methods=['GET', 'POST'])
-def CenterCostCreate():
+@diagnosis.route('/equipment_model/InstrumentationCreate', methods=['GET', 'POST'])
+def InstrumentationCreate():
     if request.method == 'POST':
         data = request.values
-        return insert(CenterCost, data)
+        return insert(Instrumentation, data)
 
-@diagnosis.route('/equipment_model/CenterCostUpdate', methods=['GET', 'POST'])
-def CenterCostUpdate():
+@diagnosis.route('/equipment_model/InstrumentationUpdate', methods=['GET', 'POST'])
+def InstrumentationUpdate():
     if request.method == 'POST':
         data = request.values
-        return update(CenterCost, data)
+        return update(Instrumentation, data)
 
-#成本中心删除
-@diagnosis.route('/equipment_model/CenterCostDelete', methods=['GET', 'POST'])
-def CenterCostDelete():
+@diagnosis.route('/equipment_model/InstrumentationDelete', methods=['GET', 'POST'])
+def InstrumentationDelete():
     if request.method == 'POST':
         data = request.values
-        return delete(CenterCost, data)
+        return delete(Instrumentation, data)
+
+@diagnosis.route('/equipment_model/InstrumentationHandleCreate', methods=['GET', 'POST'])
+def InstrumentationHandleCreate():
+    if request.method == 'POST':
+        data = request.values
+        return insert(InstrumentationHandle, data)
+
+@diagnosis.route('/equipment_model/InstrumentationHandleUpdate', methods=['GET', 'POST'])
+def InstrumentationHandleUpdate():
+    if request.method == 'POST':
+        data = request.values
+        return update(InstrumentationHandle, data)
+
+@diagnosis.route('/equipment_model/InstrumentationHandleDelete', methods=['GET', 'POST'])
+def InstrumentationHandleDelete():
+    if request.method == 'POST':
+        data = request.values
+        return delete(InstrumentationHandle, data)
+
+#成本中心查询
+@diagnosis.route('/equipment_model/InstrumentationSelect', methods=['GET', 'POST'])
+def CenterCostSelect():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                pages = int(data['page'])
+                rowsnumber = int(data['rows'])
+                inipage = (pages - 1) * rowsnumber + 0
+                endpage = (pages - 1) * rowsnumber + rowsnumber
+                CharityPerson = data["CharityPerson"]
+                if CharityPerson == "":
+                    count = db_session.query(Instrumentation).filter_by().count()
+                    oclass = db_session.query(Instrumentation).filter_by().all()[inipage:endpage]
+                else:
+                    count = db_session.query(Instrumentation).filter(
+                        CenterCost.CharityPerson.like("%"+CharityPerson+"%")).count()
+                    oclass = db_session.query(Instrumentation).filter(
+                        CenterCost.CharityPerson.like("%"+CharityPerson+"%")).all()[inipage:endpage]
+                jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
+                return '{"total"' + ":" + str(count) + ',"rows"' + ":\n" + jsonoclass + "}"
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "成本中心查询报错Error：" + str(e), current_user.Name)
+            return json.dumps("成本中心查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+#成本中心查询
+@diagnosis.route('/equipment_model/InstrumentationHandleSelect', methods=['GET', 'POST'])
+def CenterCostSelect():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                pages = int(data['page'])
+                rowsnumber = int(data['rows'])
+                inipage = (pages - 1) * rowsnumber + 0
+                endpage = (pages - 1) * rowsnumber + rowsnumber
+                CharityPerson = data["CharityPerson"]
+                if CharityPerson == "":
+                    count = db_session.query(InstrumentationHandle).filter_by().count()
+                    oclass = db_session.query(InstrumentationHandle).filter_by().all()[inipage:endpage]
+                else:
+                    count = db_session.query(InstrumentationHandle).filter(
+                        CenterCost.CharityPerson.like("%"+CharityPerson+"%")).count()
+                    oclass = db_session.query(InstrumentationHandle).filter(
+                        CenterCost.CharityPerson.like("%"+CharityPerson+"%")).all()[inipage:endpage]
+                jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
+                return '{"total"' + ":" + str(count) + ',"rows"' + ":\n" + jsonoclass + "}"
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "成本中心查询报错Error：" + str(e), current_user.Name)
+            return json.dumps("成本中心查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
