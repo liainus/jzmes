@@ -1772,6 +1772,52 @@ class PurchasingOrder(Base):
     # 库房号（缺省值为1）:
     StoreDef_id = Column(Unicode(60), primary_key=False, autoincrement=False, nullable=True)
 
+# 仪器仪表model
+class Instrumentation(Base):
+    __tablename__ = 'Instrumentation'
+    # id:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+    # 仪表编码:
+    InstrumentationCode = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 仪表名称:
+    InstrumentationName = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 检定周期
+    VerificationCycle = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 检定次数
+    NumberVerification = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 提醒时间:
+    ReminderTime = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 状态
+    Status = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
+
+# 仪器仪表检修情况表
+class InstrumentationHandle(Base):
+    __tablename__ = 'InstrumentationHandle'
+    # id:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+    # 仪表名称:
+    InstrumentationName = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 处理人:
+    Handler = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
+
+    # 处理状态
+    HandleStatus = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
+
+    # 审核人:
+    Reviewer = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
+
+    # 审核状态
+    ReviewStatus = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
+
+
 # 生成表单的执行语句
 Base.metadata.create_all(engine)
 
