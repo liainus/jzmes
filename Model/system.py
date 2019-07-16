@@ -1796,6 +1796,9 @@ class Instrumentation(Base):
     # 状态
     Status = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
 
+    #录入时间
+    CreateTime = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
 # 仪器仪表检修情况表
 class InstrumentationHandle(Base):
     __tablename__ = 'InstrumentationHandle'

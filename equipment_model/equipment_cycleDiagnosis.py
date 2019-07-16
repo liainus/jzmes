@@ -93,27 +93,26 @@ def InstrumentationHandleDelete():
         data = request.values
         return delete(InstrumentationHandle, data)
 
-#成本中心查询
 @diagnosis.route('/equipment_model/InstrumentationSelect', methods=['GET', 'POST'])
-def CenterCostSelect():
+def InstrumentationSelect():
     if request.method == 'GET':
         data = request.values
         try:
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 10:
-                pages = int(data['page'])
-                rowsnumber = int(data['rows'])
-                inipage = (pages - 1) * rowsnumber + 0
-                endpage = (pages - 1) * rowsnumber + rowsnumber
-                CharityPerson = data["CharityPerson"]
-                if CharityPerson == "":
+                pages = int(data.get("offset"))  # 页数
+                rowsnumber = int(data.get("limit"))  # 行数
+                inipage = pages * rowsnumber + 0  # 起始页
+                endpage = pages * rowsnumber + rowsnumber  # 截止页
+                InstrumentationName = data["InstrumentationName"]
+                if InstrumentationName == "":
                     count = db_session.query(Instrumentation).filter_by().count()
                     oclass = db_session.query(Instrumentation).filter_by().all()[inipage:endpage]
                 else:
                     count = db_session.query(Instrumentation).filter(
-                        CenterCost.CharityPerson.like("%"+CharityPerson+"%")).count()
+                        Instrumentation.InstrumentationName.like("%"+InstrumentationName+"%")).count()
                     oclass = db_session.query(Instrumentation).filter(
-                        CenterCost.CharityPerson.like("%"+CharityPerson+"%")).all()[inipage:endpage]
+                        Instrumentation.InstrumentationName.like("%"+InstrumentationName+"%")).all()[inipage:endpage]
                 jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
                 return '{"total"' + ":" + str(count) + ',"rows"' + ":\n" + jsonoclass + "}"
         except Exception as e:
@@ -122,27 +121,59 @@ def CenterCostSelect():
             insertSyslog("error", "成本中心查询报错Error：" + str(e), current_user.Name)
             return json.dumps("成本中心查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
-#成本中心查询
 @diagnosis.route('/equipment_model/InstrumentationHandleSelect', methods=['GET', 'POST'])
-def CenterCostSelect():
+def InstrumentationHandleSelect():
     if request.method == 'GET':
         data = request.values
         try:
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 10:
-                pages = int(data['page'])
-                rowsnumber = int(data['rows'])
-                inipage = (pages - 1) * rowsnumber + 0
-                endpage = (pages - 1) * rowsnumber + rowsnumber
-                CharityPerson = data["CharityPerson"]
-                if CharityPerson == "":
+                pages = int(data.get("offset"))  # 页数
+                rowsnumber = int(data.get("limit"))  # 行数
+                inipage = pages * rowsnumber + 0  # 起始页
+                endpage = pages * rowsnumber + rowsnumber  # 截止页
+                InstrumentationName = data["InstrumentationName"]
+                if InstrumentationName == "":
                     count = db_session.query(InstrumentationHandle).filter_by().count()
                     oclass = db_session.query(InstrumentationHandle).filter_by().all()[inipage:endpage]
                 else:
                     count = db_session.query(InstrumentationHandle).filter(
-                        CenterCost.CharityPerson.like("%"+CharityPerson+"%")).count()
+                        InstrumentationHandle.InstrumentationName.like("%"+InstrumentationName+"%")).count()
                     oclass = db_session.query(InstrumentationHandle).filter(
-                        CenterCost.CharityPerson.like("%"+CharityPerson+"%")).all()[inipage:endpage]
+                        InstrumentationHandle.InstrumentationName.like("%"+InstrumentationName+"%")).all()[inipage:endpage]
+                jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
+                return '{"total"' + ":" + str(count) + ',"rows"' + ":\n" + jsonoclass + "}"
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "成本中心查询报错Error：" + str(e), current_user.Name)
+            return json.dumps("成本中心查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+@diagnosis.route('/equipment_model/InstrumentationReminderTimeSelect', methods=['GET', 'POST'])
+def InstrumentationReminderTimeSelect():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                pages = int(data.get("offset"))  # 页数
+                rowsnumber = int(data.get("limit"))  # 行数
+                inipage = pages * rowsnumber + 0  # 起始页
+                endpage = pages * rowsnumber + rowsnumber  # 截止页
+                oclass = db_session.query(InstrumentationHandle).filter_by().all()
+                nowTime = datetime.datetime.now()
+                for oc in oclass:
+                    aa = ""
+
+                InstrumentationName = data["InstrumentationName"]
+                if InstrumentationName == "":
+                    count = db_session.query(InstrumentationHandle).filter_by().count()
+                    oclass = db_session.query(InstrumentationHandle).filter_by().all()[inipage:endpage]
+                else:
+                    count = db_session.query(InstrumentationHandle).filter(
+                        InstrumentationHandle.InstrumentationName.like("%"+InstrumentationName+"%")).count()
+                    oclass = db_session.query(InstrumentationHandle).filter(
+                        InstrumentationHandle.InstrumentationName.like("%"+InstrumentationName+"%")).all()[inipage:endpage]
                 jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
                 return '{"total"' + ":" + str(count) + ',"rows"' + ":\n" + jsonoclass + "}"
         except Exception as e:
