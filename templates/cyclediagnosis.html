@@ -87,10 +87,10 @@
                     <table class="table-bordered" id="tab"></table>
                 </div>
             </div>
-            <div class="panel panel-default">
-                <div class="panel-heading">仪器仪表检修情况列表</div>
+             <div class="panel panel-default">
+                <div class="panel-heading">仪器仪表提醒待检列表</div>
                 <div class="panel-body">
-                    <table class="table-bordered" id="serviceTab"></table>
+                    <table class="table-bordered" id="stayTab"></table>
                 </div>
             </div>
         </div>
@@ -110,8 +110,8 @@
 	            pagination: true,
                 toolbar:"#Toolbar",
                 pageNumber:1,
-	            pageSize: 10,
-	            pageList: [10, 20, 30, 40, 50],
+	            pageSize: 5,
+	            pageList: [5, 10, 20, 30, 40, 50],
                 sidePagination: "server",
                 paginationLoop:false,
                 singleSelect:false,
@@ -147,52 +147,55 @@
                     }
                 }
             })
-            $("#serviceTab").bootstrapTable({
-                url: '/equipment_model/InstrumentationHandleSelect',
+            $("#stayTab").bootstrapTable({
+                url: '/equipment_model/InstrumentationSelect',
                 method: 'get',
-                queryParams:function(params){
+                queryParams: function (params) {
                     return {
                         InstrumentationName: '',
-                        limit : params.limit,
-                        offset : parseInt(params.offset/params.limit)
+                        limit: params.limit,
+                        offset: parseInt(params.offset / params.limit)
                     };
                 },
-	            pagination: true,
-                toolbar:"#Toolbar2",
-                pageNumber:1,
-	            pageSize: 10,
-	            pageList: [10, 20, 30, 40, 50],
+                pagination: true,
+                toolbar: "#Toolbar",
+                pageNumber: 1,
+                pageSize: 5,
+                pageList: [5, 10, 20, 30, 40, 50],
                 sidePagination: "server",
-                paginationLoop:false,
-                singleSelect:false,
-                clickToSelect:true,
-	            locale: "zh-CN",
-	            striped: true,
+                paginationLoop: false,
+                singleSelect: false,
+                clickToSelect: true,
+                locale: "zh-CN",
+                striped: true,
                 columns: [{
                     checkbox: true
-                },{
+                }, {
+                    field: 'InstrumentationCode',
+                    title: '仪表编码'
+                }, {
                     field: 'InstrumentationName',
                     title: '仪表名称'
-                },{
-                    field: 'Handler',
-                    title: '处理人'
-                },{
-                    field: 'HandleStatus',
-                    title: '处理状态'
-                },{
-                    field: 'Reviewer',
-                    title: '审核人'
-                },{
-                    field: 'ReviewStatus',
-                    title: '审核状态'
+                }, {
+                    field: 'VerificationCycle',
+                    title: '检定周期/天'
+                }, {
+                    field: 'NumberVerification',
+                    title: '检定次数'
+                }, {
+                    field: 'ReminderTime',
+                    title: '提醒时间/天'
+                }, {
+                    field: 'Status',
+                    title: '状态'
                 }],
-                onClickRow:function (row,$element) {
-                    if($($element).is(".info")){
-                        $($element).removeClass('info');
-                    }else{
+                onClickRow: function (row, $element) {
+                    if ($($element).is(".info")) {
+                        $($element).removeClass('info');
+                    } else {
                         $($element).addClass('info');
                     }
-                }
+                }
             })
             toolbar = {
                 Search:function(){

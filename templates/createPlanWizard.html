@@ -303,7 +303,7 @@
         });
         function searchTime(){
             $('#planTab').datagrid('load',{
-                SchedulingTime: $('#SearchTime').datebox('getValue')
+                SchedulingNum: $('#SearchBatch').val()
             });
         }
         function myformatter(date){
@@ -399,8 +399,8 @@
                     </form>
                 </div>
                 <div id="toolbar" style="padding:0 10px;">
-                    计划排产时间:
-                    <input type="text" id="SearchTime" class="easyui-datebox" name="search" data-options="showSeconds:false" style="height:28px;" autocomplete="off"
+                    批次号:
+                    <input type="text" id="SearchBatch" class="textbox-text validatebox-text textbox-prompt" name="search"  style="height:28px;"
                     placeholder="">
                     <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="searchTime();">查询</a>
                 </div>
@@ -423,7 +423,7 @@
                             <th field="ck" checkbox="true"></th>
                             <th data-options="field:'SchedulingTime',width:150,align:'center'">时间(工厂日历)</th>
                             <th data-options="field:'PRName',width:120,align:'center'">产品名称</th>
-                            <th data-options="field:'SchedulingNum',width:150,align:'center'">排产序列号</th>
+                            <th data-options="field:'SchedulingNum',width:150,align:'center'">排产批号</th>
                             <th data-options="field:'BatchNumS',width:100,align:'center'">批数</th>
                             <th data-options="field:'SchedulingStatus',width:100,align:'center'">排产状态</th>
                             <th data-options="field:'create_time',width:150,align:'center'">创建时间</th>

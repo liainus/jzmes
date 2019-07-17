@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>仪器仪表检修管理</title>
+    <link href="../static/css/base.css" rel="stylesheet">
+    <script type="text/javascript" src="../static/js/jquery-3.3.1.min.js"></script>
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css" crossorigin="anonymous">
+    <script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootstrap-table.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootstrap-table-zh-CN.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootbox.min.js"></script>
+</head>
+<body>
+    <div class="col-md-12" style="padding: 15px 0;">
+        <div class="col-sm-12">
+            <div id="Toolbar">
+                <form class="form-inline">
+                    <div class="form-group">
+                        <p>
+                            <div class="input-group">
+                                <label class="input-group-addon">名称</label>
+                                <input type="text" class="form-control" id="SearchVal">
+                            </div>
+                            <button type="button" class="btn btn-primary" onclick="toolbar.Search()">查询</button>
+                            <button type="button" class="btn btn-info" onclick="toolbar.manager()">处理人确认</button>
+                            <button type="button" class="btn btn-info" onclick="toolbar.auditor()">审核人确认</button>
+                            <button type="button" class="btn btn-default" onclick="toolbar.reload()">刷新</button>
+                        </p>
+                    </div>
+                </form>
+            </div>
+            <table class="table-bordered" id="tab"></table>
+        </div>
+    </div>
+    <script type="text/javascript">
+        $(function() {
+            $("#tab").bootstrapTable({
+                url: '/equipment_model/InstrumentationHandleSelect',
+                method: 'get',
+                queryParams:function(params){
+                    return {
+                        InstrumentationName: '',
+                        limit : params.limit,
+                        offset : parseInt(params.offset/params.limit)
+                    };
+                },
+	            pagination: true,
+                pageNumber:1,
+	            pageSize: 5,
+	            pageList: [5, 10, 20, 30, 40, 50],
+                sidePagination: "server",
+                paginationLoop:false,
+                singleSelect:false,
+                clickToSelect:true,
+	            locale: "zh-CN",
+	            striped: true,
+                columns: [{
+                    checkbox: true
+                },{
+                    field: 'InstrumentationName',
+                    title: '仪表名称'
+                },{
+                    field: 'Handler',
+                    title: '处理人'
+                },{
+                    field: 'HandleStatus',
+                    title: '处理状态'
+                },{
+                    field: 'Reviewer',
+                    title: '审核人'
+                },{
+                    field: 'ReviewStatus',
+                    title: '审核状态'
+                }],
+                onClickRow:function (row,$element) {
+                    if($($element).is(".info")){
+                        $($element).removeClass('info');
+                    }else{
+                        $($element).addClass('info');
+                    }
+                }
+            })
+            toolbar = {
+                Search:function(){
+                    $('#tab').bootstrapTable('refresh',{
+                        query:{
+                            InstrumentationName: $("#SearchVal").val()
+                        }
+                    });
+                },
+                manager:function(){
+
+                },
+                auditor:function(){
+
+                },
+                reload:function(){
+                    $("#tab").bootstrapTable('refresh');
+                }
+            }
+        })
+    </script>
+</body>
+</html>
