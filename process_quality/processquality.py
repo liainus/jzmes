@@ -910,7 +910,7 @@ def WMStatusLoadConfirm():
         try:
             jsonstr = json.dumps(data.to_dict())
             if len(jsonstr) > 10:
-                ID = data.get("id")
+                ID = data.get("ID")
                 oclass = db_session.query(StapleProducts).filter(StapleProducts.ID == ID).first()
                 if oclass.ConfirmStatus == None or oclass.ConfirmStatus == "":
                     return "请先做质保状态确认，再发送！"

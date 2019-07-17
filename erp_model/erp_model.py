@@ -821,13 +821,13 @@ def SchedulingSearchNew():
                 rowsnumber = int(data['rows'])  # 行数
                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
-                SchedulingTime = data["SchedulingTime"]
-                if (SchedulingTime == ""):
+                SchedulingNum = data.get("SchedulingNum")
+                if SchedulingNum is "" or SchedulingNum is None:
                     total = db_session.query(Scheduling).count()
                     oclass = db_session.query(Scheduling).order_by("SchedulingTime").all()[inipage:endpage]
                 else:
-                    total = db_session.query(Scheduling).filter(Scheduling.SchedulingTime == SchedulingTime).count()
-                    oclass = db_session.query(Scheduling).filter(Scheduling.SchedulingTime == SchedulingTime).order_by("SchedulingTime").all()[inipage:endpage]
+                    total = db_session.query(Scheduling).filter(Scheduling.SchedulingNum == SchedulingNum).count()
+                    oclass = db_session.query(Scheduling).filter(Scheduling.SchedulingNum == SchedulingNum).order_by("SchedulingTime").all()[inipage:endpage]
                 jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonoclass = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
                 return jsonoclass
