@@ -266,6 +266,7 @@
     <script type="text/javascript" src="../static/js/bootstrap-datetimepicker.min.js"></script>
     <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
     <script type="text/javascript" src="../static/js/fullcalendar.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootbox.min.js"></script>
     <script type="text/javascript" src="../static/js/zh-cn.js"></script>
     <script type="text/javascript">
         //chart0
@@ -282,7 +283,7 @@
                     $("#daiban4").html(data.D)
                 },
                 error: function () {
-                    alert("获取待办数据失败，请稍后重试！")
+                    bootbox.alert("获取待办数据失败，请稍后重试！")
                 }
             });
             $("#planTable").bootstrapTable({
@@ -337,12 +338,12 @@
                             addTab(text,src)
                         }else{
                             $("#loadingModal").modal('hide');
-                            $.messager.alert('提示', data, 'info');
+                            bootbox.alert(data);
                         }
                     },
                     error: function () {
                         $("#loadingModal").modal('hide');
-                        alert("请求失败，请稍后重试！")
+                        bootbox.alert("请求失败，请稍后重试！")
                     }
                 });
             })
