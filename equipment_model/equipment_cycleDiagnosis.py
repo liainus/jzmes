@@ -214,3 +214,6 @@ def InstrumentationHandleChecked():
             insertSyslog("error", "/equipment_model/InstrumentationHandleChecked仪器仪表复核审核报错Error：" + str(e), current_user.Name)
             return json.dumps("/equipment_model/InstrumentationHandleChecked仪器仪表复核审核报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
+@diagnosis.route('/cycleInstrumentsDispose')
+def cycleInstrumentsDispose():
+    return render_template('cycleInstrumentsDispose.html')
