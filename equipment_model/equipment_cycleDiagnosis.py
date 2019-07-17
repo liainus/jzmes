@@ -118,8 +118,8 @@ def InstrumentationSelect():
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "成本中心查询报错Error：" + str(e), current_user.Name)
-            return json.dumps("成本中心查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+            insertSyslog("error", "仪器仪表查询报错Error：" + str(e), current_user.Name)
+            return json.dumps("仪器仪表查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 @diagnosis.route('/equipment_model/InstrumentationHandleSelect', methods=['GET', 'POST'])
 def InstrumentationHandleSelect():
@@ -154,31 +154,63 @@ def InstrumentationReminderTimeSelect():
     if request.method == 'GET':
         data = request.values
         try:
-            json_str = json.dumps(data.to_dict())
-            if len(json_str) > 10:
-                pages = int(data.get("offset"))  # 页数
-                rowsnumber = int(data.get("limit"))  # 行数
-                inipage = pages * rowsnumber + 0  # 起始页
-                endpage = pages * rowsnumber + rowsnumber  # 截止页
-                oclass = db_session.query(InstrumentationHandle).filter_by().all()
-                nowTime = datetime.datetime.now()
-                for oc in oclass:
-                    aa = ""
-
-                InstrumentationName = data["InstrumentationName"]
-                if InstrumentationName == "":
-                    count = db_session.query(InstrumentationHandle).filter_by().count()
-                    oclass = db_session.query(InstrumentationHandle).filter_by().all()[inipage:endpage]
-                else:
-                    count = db_session.query(InstrumentationHandle).filter(
-                        InstrumentationHandle.InstrumentationName.like("%"+InstrumentationName+"%")).count()
-                    oclass = db_session.query(InstrumentationHandle).filter(
-                        InstrumentationHandle.InstrumentationName.like("%"+InstrumentationName+"%")).all()[inipage:endpage]
-                jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
-                return '{"total"' + ":" + str(count) + ',"rows"' + ":\n" + jsonoclass + "}"
+            # pages = int(data.get("offset"))  # 页数
+            # rowsnumber = int(data.get("limit"))  # 行数
+            # inipage = pages * rowsnumber + 0  # 起始页
+            # endpage = pages * rowsnumber + rowsnumber  # 截止页
+            oclass = db_session.query(Instrumentation).all()
+            nowTime = datetime.datetime.now().strftime('%Y-%m-%d')
+            dic = []
+            for oc in oclass:
+                if oc != None:
+                    # aa = (datetime.datetime.now() - datetime.datetime.strptime(oc.CreateTime[0:10],"%Y-%m-%d")).days
+                    # bb = aa/int(oc.NumberVerification)
+                    # cc = int(oc.VerificationCycle) - int(oc.ReminderTime)
+                    if (datetime.datetime.now() - datetime.datetime.strptime(oc.CreateTime[0:10],"%Y-%m-%d")).days / int(oc.NumberVerification) >= (int(oc.VerificationCycle) - int(oc.ReminderTime)):
+                        dic.append(oc)
+            jsonoclass = json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False)
+            return '{"total"' + ":" + str(len(dic)) + ',"rows"' + ":\n" + jsonoclass + "}"
         except Exception as e:
             print(e)
             logger.error(e)
-            insertSyslog("error", "成本中心查询报错Error：" + str(e), current_user.Name)
-            return json.dumps("成本中心查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+            insertSyslog("error", "仪器仪表查询报错Error：" + str(e), current_user.Name)
+            return json.dumps("仪器仪表查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+@diagnosis.route('/equipment_model/InstrumentationHandleChecked', methods=['GET', 'POST'])
+def InstrumentationHandleChecked():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                ID = data.get("ID")
+                HandleStatus = data.get("HandleStatus")
+                ReviewStatus = data.get("ReviewStatus")
+                if ID is "":
+                    cla = db_session.query(Instrumentation).filter_by(ID=ID).first()
+                    clas = db_session.query(InstrumentationHandle).filter(InstrumentationHandle.InstrumentationName == cla.InstrumentationName).first()
+                    if clas is None:
+                        ins = InstrumentationHandle()
+                        ins.InstrumentationName = cla.InstrumentationName
+                        if HandleStatus:
+                            ins.Handler = current_user.Name
+                            ins.HandleStatus = HandleStatus
+                        if ReviewStatus:
+                            ins.Reviewer = current_user.Name
+                            ins.ReviewStatus = ReviewStatus
+                        db_session.add(ins)
+                    else:
+                        if HandleStatus:
+                            clas.Handler = current_user.Name
+                            clas.HandleStatus = HandleStatus
+                        if ReviewStatus:
+                            clas.Reviewer = current_user.Name
+                            clas.ReviewStatus = ReviewStatus
+                    db_session.commit()
+                    return 'OK'
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "/equipment_model/InstrumentationHandleChecked仪器仪表复核审核报错Error：" + str(e), current_user.Name)
+            return json.dumps("/equipment_model/InstrumentationHandleChecked仪器仪表复核审核报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 

@@ -448,8 +448,8 @@ def WMS_SendPlan():
                     try:
                         dic = []
                         oclass = db_session.query(ZYPlanWMS).filter(ZYPlanWMS.ID == id).first()
-                        # if oclass.IsSend == "10":
-                        #     return "数据已发送过WMS！"
+                        if oclass.IsSend == "10":
+                            return json.dumps("数据已发送过WMS！")
                         oclss = db_session.query(MaterialBOM).filter(MaterialBOM.ProductRuleID == oclass.BrandID).all()
                         for ocl in oclss:
                             num = str(float(ocl.BatchTotalWeight)*float(ocl.BatchPercentage))
@@ -587,10 +587,13 @@ class SAP_Interface(ServiceBase):
             dic = []
             dict_data = json.loads(json_data)
             for oc in dict_data:
-                w = WMSDetail()
+                wms = db_session.query(PurchasingOrder).filter(PurchasingOrder.BillNo == oc.get("billNo"), PurchasingOrder.mid == oc.get("mid")).first()
+                if wms != None:
+                    continue
+                w = PurchasingOrder()
                 w.BillNo = oc.get("billNo")
-                w.btype = oc.get("bType")
                 w.mid = oc.get("mid")
+                w.btype = oc.get("bType")
                 w.Num = oc.get("num")
                 w.StoreDef_id = oc.get("storeDef_id")
                 w.BatchNo = oc.get("batchNo")
