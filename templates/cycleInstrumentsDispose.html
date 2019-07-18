@@ -71,13 +71,6 @@
                 }
             })
             toolbar = {
-                Search:function(){
-                    $('#tab').bootstrapTable('refresh',{
-                        query:{
-                            InstrumentationName: $("#SearchVal").val()
-                        }
-                    });
-                },
                 manager:function(){
                     var rows = $("#tab").bootstrapTable('getAllSelections');
                     if (rows.length == 1) {
@@ -173,9 +166,6 @@
                     } else {
                         bootbox.alert('请选择要审核的记录')
                     }
-                },
-                reload:function(){
-                    $("#tab").bootstrapTable('refresh');
                 }
             }
         })

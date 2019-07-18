@@ -171,7 +171,7 @@
                             <div class="panel panel-default clearfix" style="box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);">
                                 <div class="panel-heading">计划待处理<a href="javascript:;" id="toZYPlanManage" style="float: right">去处理</a></div>
                                 <div class="panel-body">
-                                    <table id="planTable" class="table table-striped"></table>
+                                    <table id="tab" class="table table-striped"></table>
                                 </div>
                             </div>
                         </div>
@@ -286,36 +286,27 @@
                     bootbox.alert("获取待办数据失败，请稍后重试！")
                 }
             });
-            $("#planTable").bootstrapTable({
-                url:'/maindaiban',
+            $("#tab").bootstrapTable({
+                url: '/equipment_model/InstrumentationReminderTimeSelect',
                 method: 'get',
                 height:280,
+	            locale: "zh-CN",
+	            striped: true,
                 columns: [{
-                    field: 'BrandName',
-                    title: '品名'
-                }, {
-                    field: 'BatchID',
-                    title: '批次号'
-                }, {
-                    field: 'PlanStatus',
-                    title: '计划状态',
-                    formatter:function(value,row,index){
-                        if (value == 10){
-                            return '新增计划'
-                        }else if(value == 11){
-                            return '审核计划'
-                        }else if(value == 20){
-                            return '下发计划'
-                        }else if(value == 40){
-                            return '撤回计划'
-                        }else if(value == 50){
-                            return '执行计划'
-                        }else if(value == 60){
-                            return '完成计划'
-                        }else if(value == 70){
-                            return 'QA入库'
-                        }
-                    }
+                    field: 'InstrumentationName',
+                    title: '仪表名称'
+                },{
+                    field: 'Handler',
+                    title: '处理人'
+                },{
+                    field: 'HandleStatus',
+                    title: '处理状态'
+                },{
+                    field: 'Reviewer',
+                    title: '审核人'
+                },{
+                    field: 'ReviewStatus',
+                    title: '审核状态'
                 }]
             })
 
