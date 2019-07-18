@@ -34,6 +34,7 @@
                 },
 	            pagination: true,
                 search: true,
+                toolbar:"#toolbar",
                 pageNumber:1,
 	            pageSize: 10,
 	            pageList: [10, 20, 30, 40, 50],
@@ -221,7 +222,7 @@
                             className: 'btn-info',
                             callback: function(){
                                 $.ajax({
-                                    url: '/WMStatusLoadConfirm',
+                                    url: '/PartiallyProductsChecked',
                                     method: 'POST',
                                     data: {
                                         ID:ID,
