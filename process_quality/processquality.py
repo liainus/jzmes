@@ -1160,7 +1160,7 @@ def WMS_SendPartiallyProducts():
                 dic = []
                 for key in jsonnumber:
                     id = int(key)
-                    oclass = db_session.query(PartiallyProducts).filter(PartiallyProducts.ID == 1).first()
+                    oclass = db_session.query(PartiallyProducts).filter(PartiallyProducts.ID == id).first()
                     product_code = db_session.query(ERPproductcode_prname.product_code).filter(ERPproductcode_prname.PRName == oclass.BrandName).first()[0]
                     dic.append(
                         {"BillNo": str(oclass.BatchID) + str(oclass.BrandID), "BatchNo":str(oclass.BatchID), "btype": "101", "StoreDef_ID": "1",

@@ -1799,15 +1799,6 @@ class Instrumentation(Base):
     #录入时间
     CreateTime = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
-# 仪器仪表检修情况表
-class InstrumentationHandle(Base):
-    __tablename__ = 'InstrumentationHandle'
-    # id:
-    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
-
-    # 仪表名称:
-    InstrumentationName = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
-
     # 处理人:
     Handler = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
 
@@ -1822,6 +1813,8 @@ class InstrumentationHandle(Base):
 
     # 更新时间
     UpdateTime = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+
 
 
 # 生成表单的执行语句
