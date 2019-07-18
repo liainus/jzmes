@@ -90,10 +90,100 @@
                     });
                 },
                 manager:function(){
-
+                    var rows = $("#tab").bootstrapTable('getAllSelections');
+                    if (rows.length == 1) {
+                        var jsonarray=[];
+                        bootbox.confirm({
+                            message: "您确认要处理所选的记录吗？",
+                            buttons: {
+                                confirm: {
+                                    label: '确认',
+                                    className: 'btn-success'
+                                },
+                                cancel: {
+                                    label: '返回',
+                                    className: 'btn-danger'
+                                }
+                            },
+                            callback: function (result) {
+                                if(result){
+                                    $.ajax({
+                                        url: '/equipment_model/InstrumentationCheckedReview',
+                                        method: 'POST',
+                                        traditional: true,
+                                        data: {
+                                            ID:rows[0].ID,
+                                            HandleStatus:"已处理"
+                                        },
+                                        success: function (data) {
+                                            if(data == "OK"){
+                                                var dialog = bootbox.dialog({
+                                                    message: '<p class="text-center mb-0"><i class="fa fa-spin fa-cog"></i>操作成功！</p>',
+                                                    closeButton: false
+                                                });
+                                                dialog.init(function(){
+                                                    setTimeout(function(){
+                                                        dialog.modal('hide');
+                                                    }, 2000);
+                                                });
+                                                $("#tab").bootstrapTable('refresh');
+                                            }
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                    } else {
+                        bootbox.alert('请选择要处理的记录')
+                    }
                 },
                 auditor:function(){
-
+                    var rows = $("#tab").bootstrapTable('getAllSelections');
+                    if (rows.length == 1) {
+                        var jsonarray=[];
+                        bootbox.confirm({
+                            message: "您确认要审核所选的记录吗？",
+                            buttons: {
+                                confirm: {
+                                    label: '确认',
+                                    className: 'btn-success'
+                                },
+                                cancel: {
+                                    label: '返回',
+                                    className: 'btn-danger'
+                                }
+                            },
+                            callback: function (result) {
+                                if(result){
+                                    $.ajax({
+                                        url: '/equipment_model/InstrumentationCheckedReview',
+                                        method: 'POST',
+                                        traditional: true,
+                                        data: {
+                                            ID:rows[0].ID,
+                                            HandleStatus:"已审核"
+                                        },
+                                        success: function (data) {
+                                            if(data == "OK"){
+                                                var dialog = bootbox.dialog({
+                                                    message: '<p class="text-center mb-0"><i class="fa fa-spin fa-cog"></i>操作成功！</p>',
+                                                    closeButton: false
+                                                });
+                                                dialog.init(function(){
+                                                    setTimeout(function(){
+                                                        dialog.modal('hide');
+                                                    }, 2000);
+                                                });
+                                                $("#tab").bootstrapTable('refresh');
+                                            }
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                    } else {
+                        bootbox.alert('请选择要审核的记录')
+                    }
                 },
                 reload:function(){
                     $("#tab").bootstrapTable('refresh');
