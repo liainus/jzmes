@@ -36,20 +36,14 @@
     <script type="text/javascript">
         $(function() {
             $("#tab").bootstrapTable({
-                url: '/equipment_model/InstrumentationHandleSelect',
+                url: '/equipment_model/InstrumentationReminderTimeSelect',
                 method: 'get',
-                queryParams:function(params){
-                    return {
-                        InstrumentationName: '',
-                        limit : params.limit,
-                        offset : parseInt(params.offset/params.limit)
-                    };
-                },
 	            pagination: true,
                 pageNumber:1,
-	            pageSize: 5,
-	            pageList: [5, 10, 20, 30, 40, 50],
-                sidePagination: "server",
+	            pageSize: 10,
+	            pageList: [10, 20, 30, 40, 50],
+                sidePagination: "client",
+                search: true,
                 paginationLoop:false,
                 singleSelect:false,
                 clickToSelect:true,
