@@ -831,7 +831,7 @@ def EmpowerContentCostUpdate():
         db_session.add(jour)
         db_session.commit()
         return update(EmpowerContent, data)
-#操作日志查询
+
 @Process.route('/EmpowerContentJournalSelect', methods=['GET', 'POST'])
 def EmpowerContentJournalSelect():
     if request.method == 'GET':
@@ -873,7 +873,6 @@ def WMStatusLoadDetele():
         data = request.values
         return delete(WMStatusLoad, data)
 
-#操作日志查询
 @Process.route('/WMStatusLoadSelect', methods=['GET', 'POST'])
 def WMStatusLoadSelect():
     if request.method == 'GET':
@@ -951,9 +950,9 @@ def PartiallyProductsDetele():
         data = request.values
         return delete(PartiallyProducts, data)
 
-#半成品库查询
 @Process.route('/PartiallyProductsSelect', methods=['GET', 'POST'])
 def PartiallyProductsSelect():
+    '''半成品库查询'''
     if request.method == 'GET':
         data = request.values
         try:
@@ -979,9 +978,10 @@ def PartiallyProductsSelect():
             logger.error(e)
             insertSyslog("error", "WMStatusLoadSelect查询报错Error：" + str(e), current_user.Name)
             return json.dumps("WMStatusLoadSelect查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
-#半成品复核审核
+
 @Process.route('/PartiallyProductsChecked', methods=['GET', 'POST'])
 def PartiallyProductsChecked():
+    '''半成品复核审核'''
     if request.method == 'POST':
         data = request.values
         try:
@@ -1014,9 +1014,9 @@ def PartiallyProductsChecked():
             insertSyslog("error", "/PartiallyProductsChecked半成品复核审核报错Error：" + str(e), current_user.Name)
             return json.dumps("/PartiallyProductsChecked半成品复核审核报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
-#WMS备料库存信息查询
 @Process.route('/WMSStoreSelect', methods=['GET', 'POST'])
 def WMSStoreSelect():
+    '''WMS备料库存信息查询'''
     if request.method == 'GET':
         data = request.values
         try:
@@ -1035,9 +1035,9 @@ def WMSStoreSelect():
             insertSyslog("error", "WMSStoreSelect查询报错Error：" + str(e), current_user.Name)
             return json.dumps("WMSStoreSelect查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
-#WMS流水信息查询
 @Process.route('/WMSDetailedSelect', methods=['GET', 'POST'])
 def WMSDetailedSelect():
+    '''WMS流水信息查询'''
     if request.method == 'GET':
         data = request.values
         try:
@@ -1119,9 +1119,9 @@ def PurchasingOrderDetele():
         data = request.values
         return delete(PurchasingOrder, data)
 
-#SAP采购订单查询
 @Process.route('/PurchasingOrderSelect', methods=['GET', 'POST'])
 def PurchasingOrderSelect():
+    '''SAP采购订单查询'''
     if request.method == 'GET':
         data = request.values
         try:
