@@ -1788,7 +1788,7 @@ class Instrumentation(Base):
     VerificationCycle = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
     # 检定次数
-    NumberVerification = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    NumberVerification = Column(Unicode(32),  default="1", primary_key=False, autoincrement=False, nullable=True)
 
     # 提醒时间:
     ReminderTime = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
@@ -1797,7 +1797,7 @@ class Instrumentation(Base):
     Status = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
 
     #录入时间
-    CreateTime = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    CreateTime = Column(Unicode(32), default=datetime.now().strftime('%Y-%m-%d %H:%M:%S'), primary_key=False, autoincrement=False, nullable=True)
 
     # 处理人:
     Handler = Column(Unicode(25), primary_key=False, autoincrement=False, nullable=True)
