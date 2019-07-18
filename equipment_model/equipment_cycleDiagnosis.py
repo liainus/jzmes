@@ -74,24 +74,6 @@ def InstrumentationDelete():
         data = request.values
         return delete(Instrumentation, data)
 
-@diagnosis.route('/equipment_model/InstrumentationHandleCreate', methods=['GET', 'POST'])
-def InstrumentationHandleCreate():
-    if request.method == 'POST':
-        data = request.values
-        return insert(InstrumentationHandle, data)
-
-@diagnosis.route('/equipment_model/InstrumentationHandleUpdate', methods=['GET', 'POST'])
-def InstrumentationHandleUpdate():
-    if request.method == 'POST':
-        data = request.values
-        return update(InstrumentationHandle, data)
-
-@diagnosis.route('/equipment_model/InstrumentationHandleDelete', methods=['GET', 'POST'])
-def InstrumentationHandleDelete():
-    if request.method == 'POST':
-        data = request.values
-        return delete(InstrumentationHandle, data)
-
 @diagnosis.route('/equipment_model/InstrumentationSelect', methods=['GET', 'POST'])
 def InstrumentationSelect():
     if request.method == 'GET':
@@ -120,34 +102,6 @@ def InstrumentationSelect():
             insertSyslog("error", "仪器仪表查询报错Error：" + str(e), current_user.Name)
             return json.dumps("仪器仪表查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
-@diagnosis.route('/equipment_model/InstrumentationHandleSelect', methods=['GET', 'POST'])
-def InstrumentationHandleSelect():
-    if request.method == 'GET':
-        data = request.values
-        try:
-            json_str = json.dumps(data.to_dict())
-            if len(json_str) > 10:
-                pages = int(data.get("offset"))  # 页数
-                rowsnumber = int(data.get("limit"))  # 行数
-                inipage = pages * rowsnumber + 0  # 起始页
-                endpage = pages * rowsnumber + rowsnumber  # 截止页
-                InstrumentationName = data["InstrumentationName"]
-                if InstrumentationName == "":
-                    count = db_session.query(InstrumentationHandle).filter_by().count()
-                    oclass = db_session.query(InstrumentationHandle).filter_by().all()[inipage:endpage]
-                else:
-                    count = db_session.query(InstrumentationHandle).filter(
-                        InstrumentationHandle.InstrumentationName.like("%"+InstrumentationName+"%")).count()
-                    oclass = db_session.query(InstrumentationHandle).filter(
-                        InstrumentationHandle.InstrumentationName.like("%"+InstrumentationName+"%")).all()[inipage:endpage]
-                jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
-                return '{"total"' + ":" + str(count) + ',"rows"' + ":\n" + jsonoclass + "}"
-        except Exception as e:
-            print(e)
-            logger.error(e)
-            insertSyslog("error", "成本中心查询报错Error：" + str(e), current_user.Name)
-            return json.dumps("成本中心查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
-
 @diagnosis.route('/equipment_model/InstrumentationReminderTimeSelect', methods=['GET', 'POST'])
 def InstrumentationReminderTimeSelect():
     if request.method == 'GET':
@@ -175,7 +129,7 @@ def InstrumentationReminderTimeSelect():
             insertSyslog("error", "仪器仪表查询报错Error：" + str(e), current_user.Name)
             return json.dumps("仪器仪表查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
-@diagnosis.route('/equipment_model/InstrumentationHandleChecked', methods=['GET', 'POST'])
+@diagnosis.route('/equipment_model/InstrumentationCheckedReview', methods=['GET', 'POST'])
 def InstrumentationHandleChecked():
     if request.method == 'POST':
         data = request.values
@@ -187,24 +141,13 @@ def InstrumentationHandleChecked():
                 ReviewStatus = data.get("ReviewStatus")
                 if ID is "":
                     cla = db_session.query(Instrumentation).filter_by(ID=ID).first()
-                    clas = db_session.query(InstrumentationHandle).filter(InstrumentationHandle.InstrumentationName == cla.InstrumentationName).first()
-                    if clas is None:
-                        ins = InstrumentationHandle()
-                        ins.InstrumentationName = cla.InstrumentationName
+                    if cla is None:
                         if HandleStatus:
-                            ins.Handler = current_user.Name
-                            ins.HandleStatus = HandleStatus
+                            cla.Handler = current_user.Name
+                            cla.HandleStatus = HandleStatus
                         if ReviewStatus:
-                            ins.Reviewer = current_user.Name
-                            ins.ReviewStatus = ReviewStatus
-                        db_session.add(ins)
-                    else:
-                        if HandleStatus:
-                            clas.Handler = current_user.Name
-                            clas.HandleStatus = HandleStatus
-                        if ReviewStatus:
-                            clas.Reviewer = current_user.Name
-                            clas.ReviewStatus = ReviewStatus
+                            cla.Reviewer = current_user.Name
+                            cla.ReviewStatus = ReviewStatus
                     db_session.commit()
                     return 'OK'
         except Exception as e:

@@ -1163,7 +1163,7 @@ def WMS_SendPartiallyProducts():
                     oclass = db_session.query(PartiallyProducts).filter(PartiallyProducts.ID == id).first()
                     product_code = db_session.query(ERPproductcode_prname.product_code).filter(ERPproductcode_prname.PRName == oclass.BrandName).first()[0]
                     dic.append(
-                        {"BillNo": str(oclass.BatchID) + str(oclass.BrandID), "BatchNo":str(oclass.BatchID), "btype": "101", "StoreDef_ID": "1",
+                        {"BillNo": str(oclass.BatchID) + str(oclass.BrandID), "BatchNo":str(oclass.BatchID), "btype": "102", "StoreDef_ID": "1",
                          "mid": product_code, "num": oclass.Produce})
                 jsondic = json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False)
                 client = Client(Model.Global.WMSurl)
