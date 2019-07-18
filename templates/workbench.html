@@ -286,28 +286,36 @@
                     bootbox.alert("获取待办数据失败，请稍后重试！")
                 }
             });
-            $("#tab").bootstrapTable({
-                url: '/equipment_model/InstrumentationReminderTimeSelect',
-                method: 'get',
-                height:280,
-	            locale: "zh-CN",
-	            striped: true,
-                columns: [{
-                    field: 'InstrumentationName',
-                    title: '仪表名称'
-                },{
-                    field: 'Handler',
-                    title: '处理人'
-                },{
-                    field: 'HandleStatus',
-                    title: '处理状态'
-                },{
-                    field: 'Reviewer',
-                    title: '审核人'
-                },{
-                    field: 'ReviewStatus',
-                    title: '审核状态'
-                }]
+            $.ajax({
+                url:"/equipment_model/InstrumentationReminderTimeSelect",
+                type:"get",
+                success:function (res) {
+                    res = JSON.parse(res)
+                    $("#tab").bootstrapTable({
+                        url: '/equipment_model/InstrumentationReminderTimeSelect',
+                        method: 'get',
+                        height:280,
+                        locale: "zh-CN",
+                        striped: true,
+                        data:res.rows,
+                        columns: [{
+                            field: 'InstrumentationName',
+                            title: '仪表名称'
+                        },{
+                            field: 'Handler',
+                            title: '处理人'
+                        },{
+                            field: 'HandleStatus',
+                            title: '处理状态'
+                        },{
+                            field: 'Reviewer',
+                            title: '审核人'
+                        },{
+                            field: 'ReviewStatus',
+                            title: '审核状态'
+                        }]
+                    })
+                }
             })
 
             //有此权限时增加tabs跳转到操作页面 审核-下发-放行-物料平衡

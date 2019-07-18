@@ -33,6 +33,7 @@
                 url:"/equipment_model/InstrumentationReminderTimeSelect",
                 type:"get",
                 success:function (res) {
+                    res = JSON.parse(res)
                     $("#tab").bootstrapTable({
                         pagination: true,
                         pageNumber:1,
