@@ -992,7 +992,7 @@ def PartiallyProductsChecked():
                 ReviewStatus = data.get("ReviewStatus")
                 QAConfirmStatus = data.get("QAConfirmStatus")
                 ConfirmStatus = data.get("ConfirmStatus")
-                if ID == "":
+                if ID is not "" or ID is not None:
                     cla = db_session.query(PartiallyProducts).filter_by(ID = ID).first()
                     if CheckedStatus != None:
                         cla.CheckedStatus = CheckedStatus
