@@ -72,7 +72,10 @@
                             }else{
                                 $($element).addClass('info');
                             }
-                        }
+                        },
+                        onLoadSuccess:function (data) {
+                            $("#tab").bootstrapTable("hideLoading")
+                        }
                     })
                 }
             })
