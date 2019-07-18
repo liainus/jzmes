@@ -18,14 +18,8 @@
                 <form class="form-inline">
                     <div class="form-group">
                         <p>
-                            <div class="input-group">
-                                <label class="input-group-addon">名称</label>
-                                <input type="text" class="form-control" id="SearchVal">
-                            </div>
-                            <button type="button" class="btn btn-primary" onclick="toolbar.Search()">查询</button>
                             <button type="button" class="btn btn-info" onclick="toolbar.manager()">处理人确认</button>
                             <button type="button" class="btn btn-info" onclick="toolbar.auditor()">审核人确认</button>
-                            <button type="button" class="btn btn-default" onclick="toolbar.reload()">刷新</button>
                         </p>
                     </div>
                 </form>
@@ -43,6 +37,7 @@
 	            pageSize: 10,
 	            pageList: [10, 20, 30, 40, 50],
                 sidePagination: "client",
+                toolbar:"#Toolbar",
                 search: true,
                 paginationLoop:false,
                 singleSelect:false,
