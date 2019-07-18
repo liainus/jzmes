@@ -72,11 +72,9 @@
                             }else{
                                 $($element).addClass('info');
                             }
-                        },
-                        onLoadSuccess:function (data) {
-                            $("#tab").bootstrapTable("hideLoading")
-                        }
+                        }
                     })
+                    $("#tab").bootstrapTable("hideLoading")
                 }
             })
             toolbar = {
