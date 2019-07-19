@@ -139,9 +139,9 @@ def InstrumentationHandleChecked():
                 ID = data.get("ID")
                 HandleStatus = data.get("HandleStatus")
                 ReviewStatus = data.get("ReviewStatus")
-                if ID is "":
+                if ID is not "":
                     cla = db_session.query(Instrumentation).filter_by(ID=ID).first()
-                    if cla is None:
+                    if cla:
                         if HandleStatus:
                             cla.Handler = current_user.Name
                             cla.HandleStatus = HandleStatus
