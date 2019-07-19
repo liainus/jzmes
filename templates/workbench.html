@@ -169,7 +169,7 @@
                                 </div>
                             </div>
                             <div class="panel panel-default clearfix" style="box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);">
-                                <div class="panel-heading">仪器仪表待处理</div>
+                                <div class="panel-heading">仪器仪表待处理 <a href="javascript:;" id="toInstrumentsPage" class="pull-right">去处理</a></div>
                                 <div class="panel-body">
                                     <table id="tab" class="table table-striped"></table>
                                 </div>
@@ -614,8 +614,8 @@
              });
 
             //增加tabs跳转到制药计划管理
-            $("#toZYPlanManage").on('click',function(){
-                addTab("制药计划管理","/ZYPlanManage")
+            $("#toInstrumentsPage").on('click',function(){
+                addTab("仪器仪表检修管理","/cycleInstrumentsDispose")
             })
             //增加tabs跳转到备件管理
             $("#toEquipmentspare").on('click',function(){
