@@ -5565,7 +5565,7 @@ def QAflow(ID, statusName, name):
 def EletronicBatchDataStoreAllSelect(BatchID, Content):
     OperationpValue = db_session.query(EletronicBatchDataStore.OperationpValue).filter(EletronicBatchDataStore.BatchID == BatchID,
                                                      EletronicBatchDataStore.Content == Content,
-                                                     EletronicBatchDataStore.PUID.in_((5, 11))).first()
+                                                     EletronicBatchDataStore.PUID.in_((5, 7, 8, 11))).first()
     if OperationpValue == None or OperationpValue == "":
         return ""
     else:
