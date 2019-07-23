@@ -3798,6 +3798,7 @@
             }
             //操作人确认请求方法，制药计划管理页面里已有的确认，包括生产前的准备，开始，结束清场
             function OperationConfirmFun(ID,title,name){
+                $("#loadingModal").modal('show');
                 $.ajax({
                     url: '/ZYPlanGuid/operateConfirm',
                     method: 'POST',
@@ -3807,6 +3808,7 @@
                         PUName:name
                     },
                     success: function (data) {
+                        $("#loadingModal").modal('hide');
                         if (data == "OK") {
                             $.messager.show({
                                 title: '提示',
@@ -3830,6 +3832,7 @@
             }
             //复核人确认请求方法，制药计划管理页面里已有的确认，包括生产前的准备，开始，结束清场
             function CheckedConfirmFun(ID,title,name){
+                $("#loadingModal").modal('show');
                 $.ajax({
                     url: '/ZYPlanGuid/checkedConfirm',
                     method: 'POST',
@@ -3839,6 +3842,7 @@
                         PUName:name
                     },
                     success: function (data) {
+                        $("#loadingModal").modal('hide');
                         if (data == "OK") {
                             $.messager.show({
                                 title: '提示',
@@ -3862,6 +3866,7 @@
             }
             //QA确认请求方法，制药计划管理页面里已有的确认，包括生产前的准备，开始，结束清场
             function QAConfirmFun(ID,title,name){
+                $("#loadingModal").modal('hide');
                 $.ajax({
                     url: '/ZYPlanGuid/QAautograph',
                     method: 'POST',
@@ -3894,6 +3899,7 @@
             }
             //额外确认内容请求方法，包括质量控制，参数控制，领取物料等。。
             function elseConfirmFun(PUID,BatchID,type,confirm){
+                $("#loadingModal").modal('show');
                 $.ajax({
                     url: '/addNewReadyWork',
                     method: 'POST',
@@ -3904,6 +3910,7 @@
                         confirm: confirm
                     },
                     success: function (data) {
+                        $("#loadingModal").modal('hide');
                         if (data == "OK") {
                             $.messager.show({
                                 title: '提示',
