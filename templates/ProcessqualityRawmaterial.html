@@ -25,20 +25,13 @@
             $('#tabBatch').bootstrapTable({
                 url: '/PartiallyProductsSelect',
                 method: 'get',
-                queryParams:function(params){
-                    return {
-                        BillNo: '',
-                        limit : params.limit,
-                        offset : parseInt(params.offset/params.limit)
-                    };
-                },
 	            pagination: true,
                 search: true,
                 toolbar:"#toolbar",
                 pageNumber:1,
 	            pageSize: 10,
 	            pageList: [10, 20, 30, 40, 50],
-                sidePagination: "server",
+                sidePagination: "client",
                 paginationLoop:false,
                 paginationPreText:'上一页',
                 paginationNextText:'下一页',
