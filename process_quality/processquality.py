@@ -958,19 +958,19 @@ def PartiallyProductsSelect():
         try:
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 10:
-                pages = int(data.get("offset"))  # 页数
-                rowsnumber = int(data.get("limit"))  # 行数
-                inipage = pages * rowsnumber + 0  # 起始页
-                endpage = pages * rowsnumber + rowsnumber  # 截止页
+                # pages = int(data.get("offset"))  # 页数
+                # rowsnumber = int(data.get("limit"))  # 行数
+                # inipage = pages * rowsnumber + 0  # 起始页
+                # endpage = pages * rowsnumber + rowsnumber  # 截止页
                 BatchID = data.get("BatchID")
                 if BatchID == "" or BatchID ==None:
                     Count = db_session.query(PartiallyProducts).count()
-                    Class = db_session.query(PartiallyProducts).order_by(desc("BatchID")).all()[inipage:endpage]
+                    Class = db_session.query(PartiallyProducts).order_by(desc("BatchID")).all()
                 else:
                     Count = db_session.query(PartiallyProducts).filter(
                         PartiallyProducts.BatchID == BatchID).count()
                     Class = db_session.query(PartiallyProducts).filter(
-                        PartiallyProducts.BatchID == BatchID).order_by(desc("BatchID")).all()[inipage:endpage]
+                        PartiallyProducts.BatchID == BatchID).order_by(desc("BatchID")).all()
                 jsonoclass = json.dumps(Class, cls=AlchemyEncoder, ensure_ascii=False)
                 return '{"total"' + ":" + str(Count) + ',"rows"' + ":\n" + jsonoclass + "}"
         except Exception as e:
