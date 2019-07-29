@@ -25,21 +25,13 @@
             $('#tabBatch').bootstrapTable({
                 url: '/erp_model/StapleProductsSearch',
                 method: 'get',
-                queryParams:function(params){
-                    return {
-                        BillNo: '',
-                        IsRelevance: '',
-                        limit : params.limit,
-                        offset : parseInt(params.offset/params.limit)
-                    };
-                },
 	            pagination: true,
                 toolbar:"#toolbar",
                 search: true,
                 pageNumber:1,
 	            pageSize: 10,
 	            pageList: [10, 20, 30, 40, 50],
-                sidePagination: "server",
+                sidePagination: "client",
                 paginationLoop:false,
                 paginationPreText:'上一页',
                 paginationNextText:'下一页',
