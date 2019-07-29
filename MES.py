@@ -5538,7 +5538,6 @@ def QAflow(ID, statusName, name):
         if (fl == "TRUE"):
             planaMStatus = db_session.query(PlanManager).filter(PlanManager.ID == ID).first()
             planaMStatus.PlanStatus = Model.Global.PlanStatus.FINISH.value
-            TotalInvestment = \
             pa = PartiallyProducts()
             pa.BrandID = planaMStatus.BrandID
             pa.BatchID = planaMStatus.BatchID
@@ -5553,7 +5552,9 @@ def QAflow(ID, statusName, name):
                 pa.Produce = EletronicBatchDataStoreAllSelect(planaMStatus.BatchID, "count2")
                 pa.Sampling = EletronicBatchDataStoreAllSelect(planaMStatus.BatchID, "count3")
                 pa.Yield = EletronicBatchDataStoreAllSelect(planaMStatus.BatchID, "count4")
-            db_session.add(pa)
+            occ = db_session.query(PartiallyProducts).filter(PartiallyProducts.BrandID == planaMStatus.BrandID,PartiallyProducts.BatchID == planaMStatus.BatchID).first()
+            if occ is None:
+                db_session.add(pa)
             db_session.commit()
         return flag
     except Exception as e:
@@ -6588,7 +6589,7 @@ def electionBatchSearch():
                         EQPName = db_session.query(Equipment.EQPName).filter(Equipment.ID == EQPID).first()
                         dic["NSEQPName" + str(i)] = EQPName[0]
                         count = 0
-                        for j in range(1, 34, 2):
+                        for j in range(3, 34, 2):
                             zkd = searO(BrandName, BatchID, Pclass.ID, EQPID, "浓缩真空度采集" + str(j))
                             dic["zkd" + "_" + str(i) + "_" + str(count)] = changef(zkd.SampleValue) + zkd.Unit
                             dic["zkdTime" + "_" + str(i) + "_" + str(count)] = strchange(zkd.SampleDate)

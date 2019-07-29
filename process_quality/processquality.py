@@ -964,13 +964,13 @@ def PartiallyProductsSelect():
                 endpage = pages * rowsnumber + rowsnumber  # 截止页
                 BatchID = data.get("BatchID")
                 if BatchID == "" or BatchID ==None:
-                    Count = db_session.query(PartiallyProducts).filter_by().count()
-                    Class = db_session.query(PartiallyProducts).filter_by().all()[inipage:endpage]
+                    Count = db_session.query(PartiallyProducts).count()
+                    Class = db_session.query(PartiallyProducts).order_by(desc("BatchID")).all()[inipage:endpage]
                 else:
                     Count = db_session.query(PartiallyProducts).filter(
                         PartiallyProducts.BatchID == BatchID).count()
                     Class = db_session.query(PartiallyProducts).filter(
-                        PartiallyProducts.BatchID == BatchID).all()[inipage:endpage]
+                        PartiallyProducts.BatchID == BatchID).order_by(desc("BatchID")).all()[inipage:endpage]
                 jsonoclass = json.dumps(Class, cls=AlchemyEncoder, ensure_ascii=False)
                 return '{"total"' + ":" + str(Count) + ',"rows"' + ":\n" + jsonoclass + "}"
         except Exception as e:
