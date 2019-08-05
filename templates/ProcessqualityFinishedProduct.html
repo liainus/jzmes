@@ -14,9 +14,17 @@
 <body>
     <div class="col-md-12" style="padding-top: 15px;">
         <div id="toolbar">
-            <div class="form-group">
-                <button type="button" class="btn btn-primary" id="sendWMS">发送到WMS</button>
-            </div>
+            <form class="form-inline">
+                <div class="form-group">
+                    <p>
+                        <label for="">单据号</label>
+                        <input type="text" class="form-control" name="search">
+                        <button type="button" class="btn btn-primary" onclick="Toolbar.search();">查询</button>
+                        <button type="button" class="btn btn-info" onclick="Toolbar.refresh();">刷新</button>
+                        <button type="button" class="btn btn-primary" id="sendWMS">发送到WMS</button>
+                    </p>
+                </div>
+            </form>
         </div>
         <table class="table table-bordered" id="tabBatch"></table>
     </div>
@@ -27,11 +35,11 @@
                 method: 'get',
 	            pagination: true,
                 toolbar:"#toolbar",
-                search: true,
+                //search: true,
                 pageNumber:1,
 	            pageSize: 10,
 	            pageList: [10, 20, 30, 40, 50],
-                sidePagination: "client",
+                sidePagination: "server",
                 paginationLoop:false,
                 paginationPreText:'上一页',
                 paginationNextText:'下一页',
@@ -65,43 +73,45 @@
                 },{
                     field: 'StoreDef_ID',
                     title: '库房编码'
-                },{
-                    field: 'Confirmer',
-                    title: '合格确认人'
-                },{
-                    field: 'ConfirmStatus',
-                    title: '合格状态',
-                    events: window.checkEvents = {
-                        'click .check':function(e,value,row,index){
-                            ispassFun("合格",row.ID,'ConfirmStatus')
-                        }
-                    },
-                    formatter:stanFormatter
-                },{
-                    field: 'CheckedPeople',
-                    title: '复核人'
-                },{
-                    field: 'CheckedStatus',
-                    title: '复核状态',
-                    events: window.checkEvents = {
-                        'click .check':function(e,value,row,index){
-                            ispassFun("复核",row.ID,"CheckedStatus")
-                        }
-                    },
-                    formatter:checkFormatter
-                },{
-                    field: 'Reviewer',
-                    title: '审核人'
-                },{
-                    field: 'ReviewStatus',
-                    title: '审核状态',
-                    events: window.checkEvents = {
-                        'click .check':function(e,value,row,index){
-                            ispassFun("审核",row.ID,"ReviewStatus")
-                        }
-                    },
-                    formatter:recheckFormatter
-                },{
+                },
+                {#    {#}
+                {#    field: 'Confirmer',#}
+                {#    title: '合格确认人'#}
+                {# },{#}
+                {#    field: 'ConfirmStatus',#}
+                {#    title: '合格状态',#}
+                {#    events: window.checkEvents = {#}
+                {#        'click .check':function(e,value,row,index){#}
+                {#            ispassFun("合格",row.ID,'ConfirmStatus')#}
+                {#        }#}
+                {#    },#}
+                {#    formatter:stanFormatter#}
+                {# },{#}
+                {#    field: 'CheckedPeople',#}
+                {#    title: '复核人'#}
+                {# },{#}
+                {#    field: 'CheckedStatus',#}
+                {#    title: '复核状态',#}
+                {#    events: window.checkEvents = {#}
+                {#        'click .check':function(e,value,row,index){#}
+                {#            ispassFun("复核",row.ID,"CheckedStatus")#}
+                {#        }#}
+                {#    },#}
+                {#    formatter:checkFormatter#}
+                {# },{#}
+                {#    field: 'Reviewer',#}
+                {#    title: '审核人'#}
+                {# },{#}
+                {#    field: 'ReviewStatus',#}
+                {#    title: '审核状态',#}
+                {#    events: window.checkEvents = {#}
+                {#        'click .check':function(e,value,row,index){#}
+                {#            ispassFun("审核",row.ID,"ReviewStatus")#}
+                {#        }#}
+                {#    },#}
+                {#    formatter:recheckFormatter#}
+                {# },#}
+                {
                     field: 'QAConfirmer',
                     title: '质保确认人'
                 },{
@@ -121,6 +131,18 @@
                     title: '是否关联'
                 }]
             });
+            Toolbar = {
+                search:function(){
+                    $('#tabBatch').bootstrapTable("refresh",{
+                        query:{
+                            BillNo: $('input[name="search"]').val()
+                        }
+                    })
+                },
+                refresh:function(){
+                    $("#tabBatch").bootstrapTable('refresh')
+                }
+            }
             $("#sendWMS").on('click',function(){
                 var rows = $("#tabBatch").bootstrapTable("getSelections")
                 if(rows.length > 0){
@@ -152,27 +174,27 @@
                     bootbox.alert("请选择要发送的记录");
                 }
             })
-            function stanFormatter(value, row, index) {
-                if(!value) {
-                    return "<a href='JavaScript:;' class='check' title='合格'>" + "单击合格确认" + "</a>";
-                }else{
-                    return "<a href='JavaScript:;' class='check' title='合格'>" + value + "</a>";
-                }
-            }
-            function checkFormatter(value, row, index) {
-                if(!value) {
-                    return "<a href='JavaScript:;' class='check' title='复核'>" + "单击复核" + "</a>";
-                }else{
-                    return "<a href='JavaScript:;' class='check' title='复核'>" + value + "</a>";
-                }
-            }
-            function recheckFormatter(value, row, index) {
-                if(!value){
-                    return "<a href='JavaScript:;' class='check' title='审核'>" + "单击审核" +"</a>";
-                }else{
-                    return "<a href='JavaScript:;' class='check' title='审核'>" + value + "</a>";
-                }
-            }
+            {#function stanFormatter(value, row, index) {#}
+            {#    if(!value) {#}
+            {#        return "<a href='JavaScript:;' class='check' title='合格'>" + "单击合格确认" + "</a>";#}
+            {#    }else{#}
+            {#        return "<a href='JavaScript:;' class='check' title='合格'>" + value + "</a>";#}
+            {#    }#}
+            {# }#}
+            {#function checkFormatter(value, row, index) {#}
+            {#    if(!value) {#}
+            {#        return "<a href='JavaScript:;' class='check' title='复核'>" + "单击复核" + "</a>";#}
+            {#    }else{#}
+            {#        return "<a href='JavaScript:;' class='check' title='复核'>" + value + "</a>";#}
+            {#    }#}
+            {# }#}
+            {#function recheckFormatter(value, row, index) {#}
+            {#    if(!value){#}
+            {#        return "<a href='JavaScript:;' class='check' title='审核'>" + "单击审核" +"</a>";#}
+            {#    }else{#}
+            {#        return "<a href='JavaScript:;' class='check' title='审核'>" + value + "</a>";#}
+            {#    }#}
+            {# }#}
             function QAcheckFormatter(value, row, index) {
                 if(!value) {
                     return "<a href='JavaScript:;' class='check' title='质保'>" + "单击质保确认" + "</a>";
