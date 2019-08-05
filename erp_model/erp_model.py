@@ -541,7 +541,7 @@ def planScheduling():
             stocks = db_session.query(SchedulingStock).filter(SchedulingStock.product_code == oc.product_code).all()
             for st in stocks:
                 sto = int(st.StockHouse) - int(st.SafetyStock)#库存-安全库存 库存情况
-                mid = db_session.query(Material.ID).filter(Material.MATName == st.MATName).first()[0]
+                mid = db_session.query(Material.MATCode).filter(Material.MATName == st.MATName).first()[0]
                 BatchPercentage = db_session.query(MaterialBOM.BatchPercentage).filter(MaterialBOM.MATID == mid).first()#此物料的百分比
                 cals = db_session.query(plantCalendarScheduling).filter(
                     plantCalendarScheduling.title.like("%" + st.MATName + "%")).all()
@@ -664,7 +664,7 @@ def planSchedulingTu():
             PRName = data['PRName']
             product_code = db_session.query(ERPproductcode_prname.product_code).filter(ERPproductcode_prname.PRName
                                                                                        == PRName).first()[0]
-            MATNames = db_session.query(Material.MATName).join(MaterialBOM, MaterialBOM.MATID == Material.ID).join(
+            MATNames = db_session.query(Material.MATName).join(MaterialBOM, MaterialBOM.MATID == Material.MATCode).join(
                 ProductRule, ProductRule.ID == MaterialBOM.ProductRuleID).filter(ProductRule.PRName == PRName).all()
             for na in MATNames:
                 dir.append(yselect(na[0], product_code))
