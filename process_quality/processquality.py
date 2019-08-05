@@ -958,10 +958,10 @@ def PartiallyProductsSelect():
         try:
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 10:
-                # pages = int(data.get("offset"))  # 页数
-                # rowsnumber = int(data.get("limit"))  # 行数
-                # inipage = pages * rowsnumber + 0  # 起始页
-                # endpage = pages * rowsnumber + rowsnumber  # 截止页
+                pages = int(data.get("offset"))  # 页数
+                rowsnumber = int(data.get("limit"))  # 行数
+                inipage = pages * rowsnumber + 0  # 起始页
+                endpage = pages * rowsnumber + rowsnumber  # 截止页
                 BatchID = data.get("BatchID")
                 if BatchID == "" or BatchID ==None:
                     Count = db_session.query(PartiallyProducts).count()
