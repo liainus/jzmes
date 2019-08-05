@@ -922,15 +922,15 @@ def StapleProductsSearch():
                 endpage = pages * rowsnumber + rowsnumber  # 截止页
                 IsRelevance = data.get("IsRelevance")
                 BillNo = data.get("BillNo")
-                if IsRelevance != "" and BillNo != "":
+                if IsRelevance != None and BillNo != None:
                     total = db_session.query(StapleProducts).filter(StapleProducts.IsRelevance == IsRelevance, StapleProducts.BillNo == BillNo).count()
                     oclass = db_session.query(StapleProducts).filter(StapleProducts.IsRelevance == IsRelevance, StapleProducts.BillNo == BillNo).all()[
                              inipage:endpage]
-                elif IsRelevance != "" and BillNo == "":
+                elif IsRelevance != None and BillNo == None:
                     total = db_session.query(StapleProducts).filter(StapleProducts.IsRelevance == IsRelevance).count()
                     oclass = db_session.query(StapleProducts).filter(StapleProducts.IsRelevance == IsRelevance).all()[
                              inipage:endpage]
-                elif IsRelevance == "" and BillNo != "":
+                elif IsRelevance == None and BillNo != None:
                     total = db_session.query(StapleProducts).filter(StapleProducts.BillNo == BillNo).count()
                     oclass = db_session.query(StapleProducts).filter(StapleProducts.BillNo == BillNo).all()[
                              inipage:endpage]
