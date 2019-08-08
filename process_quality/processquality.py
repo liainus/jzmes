@@ -369,8 +369,8 @@ class WMS_Interface(ServiceBase):
                 BillNo = i.get("BillNo")
                 status = i.get("status")
                 if BillNo != None:
-                    BatchID = BillNo[0:-1]
-                    BrandID = BillNo[-1:]
+                    BatchID = BillNo[0:-2]
+                    BrandID = BillNo[-2:-1]
                     zy = db_session.query(ZYPlanWMS).filter(ZYPlanWMS.BatchID == BatchID ,ZYPlanWMS.BrandID == BrandID).first()
                     zy.ExcuteStatus = status
                     db_session.commit()
@@ -448,18 +448,18 @@ def WMS_SendPlan():
                     try:
                         dic = []
                         oclass = db_session.query(ZYPlanWMS).filter(ZYPlanWMS.ID == id).first()
-                        if oclass.IsSend == "10":
-                            return json.dumps("数据已发送过WMS！")
+                        if oclass.IsSend == "2":
+                            return json.dumps("数据已发送过两次到WMS！")
                         oclss = db_session.query(MaterialBOM).filter(MaterialBOM.ProductRuleID == oclass.BrandID).all()
                         for ocl in oclss:
-                            num = str(float(ocl.BatchTotalWeight)*float(ocl.BatchPercentage))
-                            dic.append({"BillNo":str(oclass.BatchID)+str(oclass.BrandID),"BatchNo":str(oclass.BatchID),"btype":"203","StoreDef_ID":"1","mid":ocl.MATID,"num":num})
+                            num = str((float(ocl.BatchTotalWeight)*float(ocl.BatchPercentage))/2)
+                            dic.append({"BillNo":str(oclass.BatchID)+str(oclass.BrandID)+oclass.IsSend,"BatchNo":str(oclass.BatchID),"btype":"203","StoreDef_ID":"1","mid":ocl.MATID,"num":num})
                         jsondic = json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False)
                         client = Client(Model.Global.WMSurl)
                         ret = client.service.Mes_Interface("billload", jsondic)
                         if ret[0] != "SUCCESS":
                             return json.dumps("调用WMS_SendPlan接口报错！"+ret[1])
-                        oclass.IsSend = "10"
+                        oclass.IsSend = str(int(oclass.IsSend)+1)
                         db_session.commit()
                         return 'OK'
                     except Exception as ee:
@@ -499,7 +499,7 @@ def WMS_ReceiveDetail():
             dic = []
             ID = data.get("ID")
             zyw = db_session.query(ZYPlanWMS).filter(ZYPlanWMS.ID == ID).first()
-            dic.append({"BillNo":zyw.BatchID+zyw.BrandID})
+            dic.append({"BillNo":zyw.BatchID+zyw.BrandID+zyw.IsSend})
             jsondic = json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False)
             client = Client(Model.Global.WMSurl)
             re = client.service.Mes_Interface("WorkFlowLoad", jsondic)
@@ -909,7 +909,7 @@ def WMStatusLoadConfirm():
         try:
             jsonstr = json.dumps(data.to_dict())
             if len(jsonstr) > 10:
-                ID = data.get("ID")
+                ID = data.get("id")
                 oclass = db_session.query(StapleProducts).filter(StapleProducts.ID == ID).first()
                 if oclass.ConfirmStatus == None or oclass.ConfirmStatus == "":
                     return "请先做质保状态确认，再发送！"

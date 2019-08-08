@@ -4067,7 +4067,7 @@ def createZYPlanZYtask():
                         wms.BrandID = oclassplan.BrandID
                         wms.PUIDName = 'WMS'
                         wms.ExcuteStatus = '0'
-                        wms.IsSend = '0'
+                        wms.IsSend = '1'
                         wms.OperationDate = datetime.datetime.now()
                         wms.OperationPeople = userName
                         db_session.add(wms)
