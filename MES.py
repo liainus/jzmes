@@ -6722,7 +6722,7 @@ def getmin(args):
 
 
 def searO(BrandName, BatchID, PID, EQPID, Type):
-    re = db_session.query(ElectronicBatchTwo).filter(ElectronicBatchTwo.BrandName == BrandName,
+    re = db_session.query(ElectronicBatchTwo).filter(ElectronicBatchTwo.BrandName.like("%" + BrandName + "%"),
                                                      ElectronicBatchTwo.BatchID == BatchID,
                                                      ElectronicBatchTwo.PDUnitRouteID == PID,
                                                      ElectronicBatchTwo.EQPID == EQPID, ElectronicBatchTwo.Type == Type).first()
@@ -6735,7 +6735,7 @@ def searO(BrandName, BatchID, PID, EQPID, Type):
     else:
         return re
 def searJZ(BrandName, BatchID, PID, EQPID, Type):
-    re = db_session.query(ElectronicBatchTwo).filter(ElectronicBatchTwo.BrandName == BrandName,
+    re = db_session.query(ElectronicBatchTwo).filter(ElectronicBatchTwo.BrandName.like("%" + BrandName + "%"),
                                                      ElectronicBatchTwo.BatchID == BatchID,
                                                      ElectronicBatchTwo.PDUnitRouteID == PID,
                                                      ElectronicBatchTwo.EQPID == EQPID, ElectronicBatchTwo.Type == Type).first()
@@ -6753,7 +6753,7 @@ def searchEqpID(BrandName, BatchID, PID, name):
     EQPIDs = db_session.query(Equipment.ID).filter(Equipment.PUID == PID,
                                                    Equipment.EQPName.like("%" + name + "%")).all()
     EQPS = db_session.query(ElectronicBatchTwo.EQPID).distinct().filter(ElectronicBatchTwo.PDUnitRouteID == PID,
-                                                                        ElectronicBatchTwo.BrandName == BrandName,
+                                                                        ElectronicBatchTwo.BrandName.like("%" + BrandName + "%"),
                                                                         ElectronicBatchTwo.BatchID == BatchID).all()
     tmp = [val for val in EQPIDs if val in EQPS]
     return tmp
@@ -6761,7 +6761,7 @@ def searchEqpZJ(BrandName, BatchID, PID, name):
     EQPIDs = db_session.query(Equipment.ID).filter(Equipment.PUID == PID,
                                                    Equipment.EQPName.like("%" + name + "%")).all()
     EQPS = db_session.query(ElectronicBatchTwo.EQPID).distinct().filter(ElectronicBatchTwo.PDUnitRouteID == PID,
-                                                                        ElectronicBatchTwo.BrandName == BrandName,
+                                                                        ElectronicBatchTwo.BrandName.like("%" + BrandName + "%"),
                                                                         ElectronicBatchTwo.BatchID == BatchID).all()
     tmp = [val for val in EQPIDs if val in EQPS]
     return tmp
