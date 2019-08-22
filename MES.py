@@ -6542,7 +6542,7 @@ def electionBatchSearch():
                 PName = data['PName']
                 BatchID = data['batchID']
                 Pclass = db_session.query(ProductUnitRoute).filter(ProductUnitRoute.PDUnitRouteName == PName).first()
-                BrandName = db_session.query(ProductRule.PRName).filter(ProductRule.ID == BrandID).first()
+                BrandName = db_session.query(ProductRule.PRName).filter(ProductRule.ID == BrandID).first()[0]
                 PUID = Pclass.PUID
                 dic = {}
                 if (Pclass.PDUnitRouteName == "煎煮段"):
@@ -6752,7 +6752,7 @@ def searJZ(BrandName, BatchID, PID, EQPID, Type):
 def searchEqpID(BrandName, BatchID, PID, name):
     EQPIDs = db_session.query(Equipment.ID).filter(Equipment.PUID == PID,
                                                    Equipment.EQPName.like("%" + name + "%")).all()
-    EQPS = db_session.query(ElectronicBatchTwo.EQPID).distinct().filter(ElectronicBatchTwo.PDUnitRouteID == PID,
+    EQPS = db_session.query(ElectronicBatchTwo.EQPID).distinct().filter(ElectronicBatchTwo.PDUnitRouteID == int(PID),
                                                                         ElectronicBatchTwo.BrandName.like("%" + BrandName + "%"),
                                                                         ElectronicBatchTwo.BatchID == BatchID).all()
     tmp = [val for val in EQPIDs if val in EQPS]

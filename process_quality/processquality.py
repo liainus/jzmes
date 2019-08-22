@@ -9,7 +9,7 @@ from openpyxl.compat import file
 from sqlalchemy.orm import Session, relationship, sessionmaker
 from sqlalchemy import create_engine
 import Model.Global
-from Model.core import ProcessUnit, Equipment, SysLog, MaterialBOM, ProductRule, Material, ZYPlan
+from Model.core import ProcessUnit, Equipment, SysLog, MaterialBOM, ProductRule, Material, ZYPlan, PlanManager
 from flask import render_template, request, make_response
 from tools.MESLogger import MESLogger
 from Model.BSFramwork import AlchemyEncoder
@@ -609,18 +609,29 @@ class SAP_Interface(ServiceBase):
 class NH_Interface(ServiceBase):
     logging.basicConfig(level=logging.DEBUG)
     @rpc(Unicode, Unicode, _returns=Unicode())
-    def NH_GetTime(self, name, json_data):
+    def NH_GetOutPut(self, name, json_data):
         '''
         SAP同步采购订单
         :param data:
         :return:
         '''
         dic = []
+        str = '"StartTime":"2019-12-12 00:00:00","EndTime":"2019-12-18 23:59:59"'
+        aa = json.dumps(str)
         dict_data = json.loads(json_data)
-        for oc in dict_data:
-            print(oc['a'])
-        for i in range(0, 3):
-            dic.append(appendStr(i))
+        start = dict_data.get("StartTime")
+        end = dict_data.get("EndTime")
+        ocass = db_session.query(PlanManager).filter(PlanManager.PlanBeginTime.between(start, end), PlanManager.PlanStatus == "70").all()
+        for oc in ocass:
+            BrandName = oc.BrandName
+            if BrandName == "健胃消食片浸膏粉":
+                Produce = db_session.query(EletronicBatchDataStore).filter(EletronicBatchDataStore.BatchID == oc.BatchID,
+                                                             EletronicBatchDataStore.Content == "count8").first()
+            elif BrandName == "肿节风浸膏":
+                Produce = db_session.query(EletronicBatchDataStore).filter(
+                    EletronicBatchDataStore.BatchID == oc.BatchID,
+                    EletronicBatchDataStore.Content == "count2").first()
+            dic.append({"BatchID":oc.BatchID,"output":Produce,"BrandName":BrandName})
         return json.dumps(dic)
 
 @Process.route('/impowerSpage')
