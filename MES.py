@@ -6331,7 +6331,7 @@ def electronicBatchRecords(name, BrandID, BatchID, ID):
     Pclass = db_session.query(ProductUnitRoute).filter(ProductUnitRoute.PDUnitRouteName == name,
                                                        ProductUnitRoute.ProductRuleID == BrandID).first()
     Zclass = db_session.query(ZYPlan).filter(ZYPlan.BatchID == BatchID, ZYPlan.PUID == Pclass.PUID).first()
-    Eoclas = db_session.query(EquipmentWork).filter(EquipmentWork.PUID == Pclass.PUID,
+    Eoclas = db_session.query(EquipmentWork).filter(EquipmentWork.BrandID == BrandID, EquipmentWork.PUID == Pclass.PUID,
                                                     EquipmentWork.BatchID == BatchID).first()
     Noclas = db_session.query(Model.node.NodeCollection).filter(Model.node.NodeCollection.oddNum == ID,
                                                                 Model.node.NodeCollection.status == "10").all()
