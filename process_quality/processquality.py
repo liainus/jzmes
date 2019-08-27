@@ -616,8 +616,6 @@ class NH_Interface(ServiceBase):
         :return:
         '''
         dic = []
-        str = '"StartTime":"2019-12-12 00:00:00","EndTime":"2019-12-18 23:59:59"'
-        aa = json.dumps(str)
         dict_data = json.loads(json_data)
         start = dict_data.get("StartTime")
         end = dict_data.get("EndTime")
@@ -625,13 +623,17 @@ class NH_Interface(ServiceBase):
         for oc in ocass:
             BrandName = oc.BrandName
             if BrandName == "健胃消食片浸膏粉":
-                Produce = db_session.query(EletronicBatchDataStore).filter(EletronicBatchDataStore.BatchID == oc.BatchID,
+                produce = db_session.query(EletronicBatchDataStore.OperationpValue).filter(EletronicBatchDataStore.BatchID == oc.BatchID,
                                                              EletronicBatchDataStore.Content == "count8").first()
             elif BrandName == "肿节风浸膏":
-                Produce = db_session.query(EletronicBatchDataStore).filter(
+                produce = db_session.query(EletronicBatchDataStore.OperationpValue).filter(
                     EletronicBatchDataStore.BatchID == oc.BatchID,
                     EletronicBatchDataStore.Content == "count2").first()
-            dic.append({"BatchID":oc.BatchID,"output":Produce,"BrandName":BrandName})
+            if produce != None:
+                produce = produce[0]
+            else:
+                produce = ""
+            dic.append({"BatchID":oc.BatchID,"output":produce,"BrandName":BrandName,"PlanBeginTime":ocass.PlanBeginTime})
         return json.dumps(dic)
 
 @Process.route('/impowerSpage')
