@@ -9,7 +9,7 @@ from openpyxl.compat import file
 from sqlalchemy.orm import Session, relationship, sessionmaker
 from sqlalchemy import create_engine
 import Model.Global
-from Model.core import ProcessUnit, Equipment, SysLog, MaterialBOM, ProductRule, Material, ZYPlan
+from Model.core import ProcessUnit, Equipment, SysLog, MaterialBOM, ProductRule, Material, ZYPlan, PlanManager
 from flask import render_template, request, make_response
 from tools.MESLogger import MESLogger
 from Model.BSFramwork import AlchemyEncoder
@@ -369,8 +369,8 @@ class WMS_Interface(ServiceBase):
                 BillNo = i.get("BillNo")
                 status = i.get("status")
                 if BillNo != None:
-                    BatchID = BillNo[0:-1]
-                    BrandID = BillNo[-1:]
+                    BatchID = BillNo[0:-2]
+                    BrandID = BillNo[-2:-1]
                     zy = db_session.query(ZYPlanWMS).filter(ZYPlanWMS.BatchID == BatchID ,ZYPlanWMS.BrandID == BrandID).first()
                     zy.ExcuteStatus = status
                     db_session.commit()
@@ -448,18 +448,18 @@ def WMS_SendPlan():
                     try:
                         dic = []
                         oclass = db_session.query(ZYPlanWMS).filter(ZYPlanWMS.ID == id).first()
-                        if oclass.IsSend == "10":
-                            return json.dumps("数据已发送过WMS！")
+                        if oclass.IsSend == "2":
+                            return json.dumps("数据已发送过两次到WMS！")
                         oclss = db_session.query(MaterialBOM).filter(MaterialBOM.ProductRuleID == oclass.BrandID).all()
                         for ocl in oclss:
-                            num = str(float(ocl.BatchTotalWeight)*float(ocl.BatchPercentage))
-                            dic.append({"BillNo":str(oclass.BatchID)+str(oclass.BrandID),"BatchNo":str(oclass.BatchID),"btype":"203","StoreDef_ID":"1","mid":ocl.MATID,"num":num})
+                            num = str((float(ocl.BatchTotalWeight)*float(ocl.BatchPercentage))/2)
+                            dic.append({"BillNo":str(oclass.BatchID)+str(oclass.BrandID)+oclass.IsSend,"BatchNo":str(oclass.BatchID),"btype":"203","StoreDef_ID":"1","mid":ocl.MATID,"num":num})
                         jsondic = json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False)
                         client = Client(Model.Global.WMSurl)
                         ret = client.service.Mes_Interface("billload", jsondic)
                         if ret[0] != "SUCCESS":
                             return json.dumps("调用WMS_SendPlan接口报错！"+ret[1])
-                        oclass.IsSend = "10"
+                        oclass.IsSend = str(int(oclass.IsSend)+1)
                         db_session.commit()
                         return 'OK'
                     except Exception as ee:
@@ -499,7 +499,7 @@ def WMS_ReceiveDetail():
             dic = []
             ID = data.get("ID")
             zyw = db_session.query(ZYPlanWMS).filter(ZYPlanWMS.ID == ID).first()
-            dic.append({"BillNo":zyw.BatchID+zyw.BrandID})
+            dic.append({"BillNo":zyw.BatchID+zyw.BrandID+zyw.IsSend})
             jsondic = json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False)
             client = Client(Model.Global.WMSurl)
             re = client.service.Mes_Interface("WorkFlowLoad", jsondic)
@@ -609,18 +609,29 @@ class SAP_Interface(ServiceBase):
 class NH_Interface(ServiceBase):
     logging.basicConfig(level=logging.DEBUG)
     @rpc(Unicode, Unicode, _returns=Unicode())
-    def NH_GetTime(self, name, json_data):
+    def NH_GetOutPut(self, name, json_data):
         '''
         SAP同步采购订单
         :param data:
         :return:
         '''
         dic = []
+        str = '"StartTime":"2019-12-12 00:00:00","EndTime":"2019-12-18 23:59:59"'
+        aa = json.dumps(str)
         dict_data = json.loads(json_data)
-        for oc in dict_data:
-            print(oc['a'])
-        for i in range(0, 3):
-            dic.append(appendStr(i))
+        start = dict_data.get("StartTime")
+        end = dict_data.get("EndTime")
+        ocass = db_session.query(PlanManager).filter(PlanManager.PlanBeginTime.between(start, end), PlanManager.PlanStatus == "70").all()
+        for oc in ocass:
+            BrandName = oc.BrandName
+            if BrandName == "健胃消食片浸膏粉":
+                Produce = db_session.query(EletronicBatchDataStore).filter(EletronicBatchDataStore.BatchID == oc.BatchID,
+                                                             EletronicBatchDataStore.Content == "count8").first()
+            elif BrandName == "肿节风浸膏":
+                Produce = db_session.query(EletronicBatchDataStore).filter(
+                    EletronicBatchDataStore.BatchID == oc.BatchID,
+                    EletronicBatchDataStore.Content == "count2").first()
+            dic.append({"BatchID":oc.BatchID,"output":Produce,"BrandName":BrandName})
         return json.dumps(dic)
 
 @Process.route('/impowerSpage')
@@ -909,7 +920,7 @@ def WMStatusLoadConfirm():
         try:
             jsonstr = json.dumps(data.to_dict())
             if len(jsonstr) > 10:
-                ID = data.get("ID")
+                ID = data.get("id")
                 oclass = db_session.query(StapleProducts).filter(StapleProducts.ID == ID).first()
                 if oclass.ConfirmStatus == None or oclass.ConfirmStatus == "":
                     return "请先做质保状态确认，再发送！"
@@ -958,10 +969,10 @@ def PartiallyProductsSelect():
         try:
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 10:
-                # pages = int(data.get("offset"))  # 页数
-                # rowsnumber = int(data.get("limit"))  # 行数
-                # inipage = pages * rowsnumber + 0  # 起始页
-                # endpage = pages * rowsnumber + rowsnumber  # 截止页
+                pages = int(data.get("offset"))  # 页数
+                rowsnumber = int(data.get("limit"))  # 行数
+                inipage = pages * rowsnumber + 0  # 起始页
+                endpage = pages * rowsnumber + rowsnumber  # 截止页
                 BatchID = data.get("BatchID")
                 if BatchID == "" or BatchID ==None:
                     Count = db_session.query(PartiallyProducts).count()

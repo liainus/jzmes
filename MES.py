@@ -4067,7 +4067,7 @@ def createZYPlanZYtask():
                         wms.BrandID = oclassplan.BrandID
                         wms.PUIDName = 'WMS'
                         wms.ExcuteStatus = '0'
-                        wms.IsSend = '0'
+                        wms.IsSend = '1'
                         wms.OperationDate = datetime.datetime.now()
                         wms.OperationPeople = userName
                         db_session.add(wms)
@@ -6542,7 +6542,7 @@ def electionBatchSearch():
                 PName = data['PName']
                 BatchID = data['batchID']
                 Pclass = db_session.query(ProductUnitRoute).filter(ProductUnitRoute.PDUnitRouteName == PName).first()
-                BrandName = db_session.query(ProductRule.PRName).filter(ProductRule.ID == BrandID).first()
+                BrandName = db_session.query(ProductRule.PRName).filter(ProductRule.ID == BrandID).first()[0]
                 PUID = Pclass.PUID
                 dic = {}
                 if (Pclass.PDUnitRouteName == "煎煮段"):
@@ -6722,7 +6722,7 @@ def getmin(args):
 
 
 def searO(BrandName, BatchID, PID, EQPID, Type):
-    re = db_session.query(ElectronicBatchTwo).filter(ElectronicBatchTwo.BrandName == BrandName,
+    re = db_session.query(ElectronicBatchTwo).filter(ElectronicBatchTwo.BrandName.like("%" + BrandName + "%"),
                                                      ElectronicBatchTwo.BatchID == BatchID,
                                                      ElectronicBatchTwo.PDUnitRouteID == PID,
                                                      ElectronicBatchTwo.EQPID == EQPID, ElectronicBatchTwo.Type == Type).first()
@@ -6735,7 +6735,7 @@ def searO(BrandName, BatchID, PID, EQPID, Type):
     else:
         return re
 def searJZ(BrandName, BatchID, PID, EQPID, Type):
-    re = db_session.query(ElectronicBatchTwo).filter(ElectronicBatchTwo.BrandName == BrandName,
+    re = db_session.query(ElectronicBatchTwo).filter(ElectronicBatchTwo.BrandName.like("%" + BrandName + "%"),
                                                      ElectronicBatchTwo.BatchID == BatchID,
                                                      ElectronicBatchTwo.PDUnitRouteID == PID,
                                                      ElectronicBatchTwo.EQPID == EQPID, ElectronicBatchTwo.Type == Type).first()
@@ -6752,8 +6752,8 @@ def searJZ(BrandName, BatchID, PID, EQPID, Type):
 def searchEqpID(BrandName, BatchID, PID, name):
     EQPIDs = db_session.query(Equipment.ID).filter(Equipment.PUID == PID,
                                                    Equipment.EQPName.like("%" + name + "%")).all()
-    EQPS = db_session.query(ElectronicBatchTwo.EQPID).distinct().filter(ElectronicBatchTwo.PDUnitRouteID == PID,
-                                                                        ElectronicBatchTwo.BrandName == BrandName,
+    EQPS = db_session.query(ElectronicBatchTwo.EQPID).distinct().filter(ElectronicBatchTwo.PDUnitRouteID == int(PID),
+                                                                        ElectronicBatchTwo.BrandName.like("%" + BrandName + "%"),
                                                                         ElectronicBatchTwo.BatchID == BatchID).all()
     tmp = [val for val in EQPIDs if val in EQPS]
     return tmp
@@ -6761,7 +6761,7 @@ def searchEqpZJ(BrandName, BatchID, PID, name):
     EQPIDs = db_session.query(Equipment.ID).filter(Equipment.PUID == PID,
                                                    Equipment.EQPName.like("%" + name + "%")).all()
     EQPS = db_session.query(ElectronicBatchTwo.EQPID).distinct().filter(ElectronicBatchTwo.PDUnitRouteID == PID,
-                                                                        ElectronicBatchTwo.BrandName == BrandName,
+                                                                        ElectronicBatchTwo.BrandName.like("%" + BrandName + "%"),
                                                                         ElectronicBatchTwo.BatchID == BatchID).all()
     tmp = [val for val in EQPIDs if val in EQPS]
     return tmp
