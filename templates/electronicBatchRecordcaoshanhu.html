@@ -3758,7 +3758,8 @@
                 method: 'GET',
                 data: {
                     PUID: $("#PUID").val(),
-                    BatchID: $("#batchID").html()
+                    BatchID: $("#batchID").html(),
+                    BrandID:getUrlParam('BrandID'),
                 },
                 beforeSend:function(){
                     $("#loadingModal").modal("show");
@@ -3906,6 +3907,7 @@
                     data: {
                         PUID: PUID,
                         BatchID: BatchID,
+                        BrandID:getUrlParam('BrandID'),
                         type:type,
                         confirm: confirm
                     },
@@ -4130,6 +4132,7 @@
                     data: {
                         PUID: PUID,
                         BatchID: BatchID,
+                        BrandID:getUrlParam('BrandID'),
                         confirm: confirm
                     },
                     success: function (data) {
@@ -4225,6 +4228,7 @@
                     data: {
                         PUID: PUID,
                         BatchID: batchID,
+                        BrandID:getUrlParam('BrandID'),
                         PNameProDate:$("#PNameProDate").val(),
                         startReadyDate:$("#startReadyDate").val(),
                         endReadyDate:$("#endReadyDate").val(),
