@@ -6331,7 +6331,7 @@ def electronicBatchRecords(name, BrandID, BatchID, ID):
     Pclass = db_session.query(ProductUnitRoute).filter(ProductUnitRoute.PDUnitRouteName == name,
                                                        ProductUnitRoute.ProductRuleID == BrandID).first()
     Zclass = db_session.query(ZYPlan).filter(ZYPlan.BatchID == BatchID, ZYPlan.PUID == Pclass.PUID).first()
-    Eoclas = db_session.query(EquipmentWork).filter(EquipmentWork.PUID == Pclass.PUID,
+    Eoclas = db_session.query(EquipmentWork).filter(EquipmentWork.BrandID == BrandID, EquipmentWork.PUID == Pclass.PUID,
                                                     EquipmentWork.BatchID == BatchID).first()
     Noclas = db_session.query(Model.node.NodeCollection).filter(Model.node.NodeCollection.oddNum == ID,
                                                                 Model.node.NodeCollection.status == "10").all()
@@ -6347,13 +6347,15 @@ def addEquipmentWork():
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 2:
                 PUID = data['PUID']
+                BrandID = data['BrandID']
                 BatchID = data['BatchID']
                 confirm = data['confirm']
                 if (confirm == "操作人"):
-                    oclass = db_session.query(EquipmentWork).filter(EquipmentWork.BatchID == BatchID,EquipmentWork.PUID == PUID).first()
+                    oclass = db_session.query(EquipmentWork).filter(EquipmentWork.BrandID == BrandID,EquipmentWork.BatchID == BatchID,EquipmentWork.PUID == PUID).first()
                     if not oclass:
                         db_session.add(
                             EquipmentWork(
+                                BrandID=BrandID,
                                 BatchID=BatchID,
                                 PUID=int(PUID),
                                 # EQPName=EQPName,
@@ -6369,7 +6371,7 @@ def addEquipmentWork():
                         oclass.OperationPeople = oclass.OperationPeople + " " + current_user.Name
                         OperationDate = datetime.datetime.now()
                 else:
-                    oclasss = db_session.query(EquipmentWork).filter(EquipmentWork.PUID == PUID,
+                    oclasss = db_session.query(EquipmentWork).filter(EquipmentWork.BrandID == BrandID, EquipmentWork.PUID == PUID,
                                                                      EquipmentWork.BatchID == BatchID).all()
                     for oc in oclasss:
                         if not oc.CheckedPeople:
@@ -6395,17 +6397,19 @@ def addNewReadyWork():
         try:
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 2:
+                BrandID = data['BrandID']
                 PUID = data['PUID']
                 BatchID = data['BatchID']
                 Type = data['type']
                 confirm = data['confirm']
                 if (confirm == "1"):
-                    oclass = db_session.query(NewReadyWork).filter(NewReadyWork.PUID == PUID,
+                    oclass = db_session.query(NewReadyWork).filter(NewReadyWork.BrandID == BrandID,NewReadyWork.PUID == PUID,
                                                                    NewReadyWork.BatchID == BatchID,
                                                                    NewReadyWork.Type == Type).first()
                     if oclass == None:
                         db_session.add(
                             NewReadyWork(
+                                BrandID=BrandID,
                                 BatchID=BatchID,
                                 PUID=PUID,
                                 Type=Type,
@@ -6416,7 +6420,7 @@ def addNewReadyWork():
                         oclass.OperationPeople = oclass.OperationPeople + " " + current_user.Name
                         oclass.OperationDate = datetime.datetime.now()
                 elif confirm == "2":
-                    oclass = db_session.query(NewReadyWork).filter(NewReadyWork.PUID == PUID,
+                    oclass = db_session.query(NewReadyWork).filter(NewReadyWork.BrandID == BrandID,NewReadyWork.PUID == PUID,
                                                                    NewReadyWork.BatchID == BatchID,
                                                                    NewReadyWork.Type == Type).first()
                     if oclass.CheckedPeople == None or oclass.CheckedPeople == "":
@@ -6426,7 +6430,7 @@ def addNewReadyWork():
                     oclass.OperationDate = datetime.datetime.now()
                 elif confirm == "3":
                     if Type == "52" or Type == "54" or Type == "58":
-                        oclass = db_session.query(NewReadyWork).filter(NewReadyWork.PUID == PUID,
+                        oclass = db_session.query(NewReadyWork).filter(NewReadyWork.BrandID == BrandID,NewReadyWork.PUID == PUID,
                                                                        NewReadyWork.BatchID == BatchID,
                                                                        NewReadyWork.Type == Type).first()
                         if oclass != None:
@@ -6438,6 +6442,7 @@ def addNewReadyWork():
                         else:
                             db_session.add(
                                 NewReadyWork(
+                                    BrandID=BrandID,
                                     BatchID=BatchID,
                                     PUID=PUID,
                                     Type=Type,
@@ -6445,7 +6450,7 @@ def addNewReadyWork():
                                     OperationDate=datetime.datetime.now()
                                 ))
                     else:
-                        oclass = db_session.query(NewReadyWork).filter(NewReadyWork.PUID == PUID,
+                        oclass = db_session.query(NewReadyWork).filter(NewReadyWork.BrandID == BrandID,NewReadyWork.PUID == PUID,
                                                                        NewReadyWork.BatchID == BatchID,
                                                                        NewReadyWork.Type == Type).first()
                         if oclass.QAConfirmPeople == None or oclass.QAConfirmPeople == "":
@@ -6472,12 +6477,14 @@ def allUnitDataMutual():
         data = data.to_dict()
         try:
             for key in data.keys():
+                if key == "BrandID":
+                    continue
                 if key == "PUID":
                     continue
                 if key == "BatchID":
                     continue
                 val = data.get(key)
-                addUpdateEletronicBatchDataStore(data.get("PUID"), data.get("BatchID"), key, val)
+                addUpdateEletronicBatchDataStore(data.get("BrandID"), data.get("PUID"), data.get("BatchID"), key, val)
             return 'OK'
         except Exception as e:
             db_session.rollback()
@@ -6493,7 +6500,8 @@ def allUnitDataMutual():
             if len(json_str) > 2:
                 PUID = data['PUID']
                 BatchID = data['BatchID']
-                oclasss = db_session.query(EletronicBatchDataStore).filter(EletronicBatchDataStore.PUID == PUID,
+                BrandID = data.get("BrandID")
+                oclasss = db_session.query(EletronicBatchDataStore).filter(EletronicBatchDataStore.BrandID == BrandID, EletronicBatchDataStore.PUID == PUID,
                                                                            EletronicBatchDataStore.BatchID == BatchID).all()
                 dic = {}
                 for oclass in oclasss:
@@ -6508,13 +6516,14 @@ def allUnitDataMutual():
                               ensure_ascii=False)
 
 
-def addUpdateEletronicBatchDataStore(PUID, BatchID, ke, val):
+def addUpdateEletronicBatchDataStore(BrandID, PUID, BatchID, ke, val):
     try:
-        oc = db_session.query(EletronicBatchDataStore).filter(EletronicBatchDataStore.PUID == PUID,
+        oc = db_session.query(EletronicBatchDataStore).filter(EletronicBatchDataStore.BrandID == BrandID,
+                                                              EletronicBatchDataStore.PUID == PUID,
                                                               EletronicBatchDataStore.BatchID == BatchID,
                                                               EletronicBatchDataStore.Content == ke).first()
         if oc == None:
-            db_session.add(EletronicBatchDataStore(BatchID=BatchID, PUID=PUID, Content=ke, OperationpValue=val,
+            db_session.add(EletronicBatchDataStore(BrandID=BrandID, BatchID=BatchID, PUID=PUID, Content=ke, OperationpValue=val,
                                                    Operator=current_user.Name))
         else:
             oc.Content = ke

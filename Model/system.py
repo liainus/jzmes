@@ -578,6 +578,9 @@ class EquipmentWork(Base):
     # 操作时间:
     OperationDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
 
+    # 品名ID
+    BrandID = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
 #收粉结束，包装材料统计
 class PackMaterial(Base):
     __tablename__ = 'PackMaterial'
@@ -683,6 +686,9 @@ class EletronicBatchDataStore(Base):
 
     # 描述:
     Description = Column(String(100), primary_key=False, autoincrement=False, nullable=True)
+
+    # 品名ID
+    BrandID = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
 #  维护周期
 class MaintenanceCycle(Base):
