@@ -542,6 +542,9 @@ class NewReadyWork(Base):
     # 操作时间:
     OperationDate = Column(DateTime, primary_key=False, autoincrement=False, nullable=True)
 
+    # 品名ID
+    BrandID = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
 # 设备运转情况表
 class EquipmentWork(Base):
     __tablename__ = 'EquipmentWork'
