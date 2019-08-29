@@ -4067,7 +4067,7 @@ def createZYPlanZYtask():
                         wms.BrandID = oclassplan.BrandID
                         wms.PUIDName = 'WMS'
                         wms.ExcuteStatus = '0'
-                        wms.IsSend = '1'
+                        wms.IsSend = '0'
                         wms.OperationDate = datetime.datetime.now()
                         wms.OperationPeople = userName
                         db_session.add(wms)
@@ -8278,7 +8278,7 @@ def ZYPlanWMSSelect():
                 inipage = pages * rowsnumber + 0  # 起始页
                 endpage = pages * rowsnumber + rowsnumber  # 截止页
                 count = db_session.query(ZYPlanWMS).count()
-                oclass = db_session.query(ZYPlanWMS).order_by(("BatchID")).all()[inipage:endpage]
+                oclass = db_session.query(ZYPlanWMS).order_by(("BatchID")).order_by(("BatchID")).all()[inipage:endpage]
                 jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
                 return '{"total"' + ":" + str(count) + ',"rows"' + ":\n" + jsonoclass + "}"
         except Exception as e:

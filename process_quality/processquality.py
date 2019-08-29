@@ -448,12 +448,13 @@ def WMS_SendPlan():
                     try:
                         dic = []
                         oclass = db_session.query(ZYPlanWMS).filter(ZYPlanWMS.ID == id).first()
+                        IsSend = str(int(oclass.IsSend)+1)
                         if oclass.IsSend == "2":
                             return json.dumps("数据已发送过两次到WMS！")
                         oclss = db_session.query(MaterialBOM).filter(MaterialBOM.ProductRuleID == oclass.BrandID).all()
                         for ocl in oclss:
                             num = str((float(ocl.BatchTotalWeight)*float(ocl.BatchPercentage))/2)
-                            dic.append({"BillNo":str(oclass.BatchID)+str(oclass.BrandID)+oclass.IsSend,"BatchNo":str(oclass.BatchID),"btype":"203","StoreDef_ID":"1","mid":ocl.MATID,"num":num})
+                            dic.append({"BillNo":str(oclass.BatchID)+str(oclass.BrandID)+IsSend,"BatchNo":str(oclass.BatchID),"btype":"203","StoreDef_ID":"1","mid":ocl.MATID,"num":num})
                         jsondic = json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False)
                         client = Client(Model.Global.WMSurl)
                         ret = client.service.Mes_Interface("billload", jsondic)
