@@ -1037,7 +1037,7 @@ def PartiallyProductsChecked():
                         dic.append(
                             {"BillNo": str(cla.BatchID + cla.BrandID), "mid": mid, "BatchNo": str(cla.BatchID),
                              "StoreDef_ID": StoreDef_ID, "OldStatus": "3",
-                             "NewStatus": "1" if "合格" in cla.ConfirmStatus else "2"})
+                             "NewStatus": "1" if "质保通过" in QAConfirmStatus else "2"})
                         client = Client(Model.Global.WMSurl)
                         ret = client.service.Mes_Interface("MStatusLoad", json.dumps(dic))
                         if ret[0] != "SUCCESS":

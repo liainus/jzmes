@@ -6800,6 +6800,7 @@ def searchEqpID(BrandName, BatchID, PID, name):
                                                                         ElectronicBatchTwo.BatchID == BatchID).all()
     if BrandName == "肿节风浸膏" and int(PID) == 2:
         tem = []
+        EQPS = [val for val in EQPIDs if val in EQPS]
         for i in EQPS:
             tem.append(i)
         for j in EQPS:
@@ -8319,7 +8320,7 @@ def ZYPlanWMSSelect():
                 inipage = pages * rowsnumber + 0  # 起始页
                 endpage = pages * rowsnumber + rowsnumber  # 截止页
                 count = db_session.query(ZYPlanWMS).count()
-                oclass = db_session.query(ZYPlanWMS).order_by(("BatchID")).order_by(("BatchID")).all()[inipage:endpage]
+                oclass = db_session.query(ZYPlanWMS).order_by(desc("BatchID")).all()[inipage:endpage]
                 jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
                 return '{"total"' + ":" + str(count) + ',"rows"' + ":\n" + jsonoclass + "}"
         except Exception as e:
