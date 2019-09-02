@@ -369,11 +369,14 @@ class WMS_Interface(ServiceBase):
                 BillNo = i.get("BillNo")
                 status = i.get("status")
                 if BillNo != None:
-                    BatchID = BillNo[0:-2]
-                    BrandID = BillNo[-2:-1]
+                    BatchID = BillNo[0:-1]
+                    BrandID = BillNo[-1:]
                     zy = db_session.query(ZYPlanWMS).filter(ZYPlanWMS.BatchID == BatchID ,ZYPlanWMS.BrandID == BrandID).first()
-                    zy.ExcuteStatus = status
-                    db_session.commit()
+                    if zy:
+                        zy.ExcuteStatus = status
+                        db_session.commit()
+                    else:
+                        return json.dumps("没有此单据号！")
                 else:
                     continue
             return json.dumps("SUCCESS")
@@ -448,19 +451,22 @@ def WMS_SendPlan():
                     try:
                         dic = []
                         oclass = db_session.query(ZYPlanWMS).filter(ZYPlanWMS.ID == id).first()
-                        IsSend = str(int(oclass.IsSend)+1)
-                        if oclass.IsSend == "2":
-                            return json.dumps("数据已发送过两次到WMS！")
+                        # IsSend = str(int(oclass.IsSend)+1)
+                        if oclass.IsSend == "10":
+                            return json.dumps("数据已发送过WMS！")
                         oclss = db_session.query(MaterialBOM).filter(MaterialBOM.ProductRuleID == oclass.BrandID).all()
                         for ocl in oclss:
-                            num = str((float(ocl.BatchTotalWeight)*float(ocl.BatchPercentage))/2)
-                            dic.append({"BillNo":str(oclass.BatchID)+str(oclass.BrandID)+IsSend,"BatchNo":str(oclass.BatchID),"btype":"203","StoreDef_ID":"1","mid":ocl.MATID,"num":num})
+                            StoreDef_ID = "1"
+                            if ocl.MATID in ("100005", "100009", "2120"):
+                                StoreDef_ID = "2"
+                            num = str(float(ocl.BatchTotalWeight)*float(ocl.BatchPercentage))
+                            dic.append({"BillNo":str(oclass.BatchID)+str(oclass.BrandID),"BatchNo":str(oclass.BatchID),"btype":"203","StoreDef_ID":StoreDef_ID,"mid":ocl.MATID,"num":num})
                         jsondic = json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False)
                         client = Client(Model.Global.WMSurl)
                         ret = client.service.Mes_Interface("billload", jsondic)
                         if ret[0] != "SUCCESS":
                             return json.dumps("调用WMS_SendPlan接口报错！"+ret[1])
-                        oclass.IsSend = str(int(oclass.IsSend)+1)
+                        oclass.IsSend = "10"
                         db_session.commit()
                         return 'OK'
                     except Exception as ee:
@@ -928,9 +934,12 @@ def WMStatusLoadConfirm():
                 if oclass.ConfirmStatus == None or oclass.ConfirmStatus == "":
                     return "请先做质保状态确认，再发送！"
                 dic = []
+                StoreDef_ID = "1"
+                if oclass.mid in ("100005", "100009","2120"):
+                    StoreDef_ID = "2"
                 dic.append(
                     {"BillNo": str(oclass.BillNo), "mid": str(oclass.mid), "BatchNo": str(oclass.BatchNo),
-                     "StoreDef_ID": "1", "OldStatus": "3","NewStatus":"1" if "合格" in oclass.ConfirmStatus else "2"})
+                     "StoreDef_ID": StoreDef_ID, "OldStatus": "3","NewStatus":"1" if "合格" in oclass.ConfirmStatus else "2"})
                 client = Client(Model.Global.WMSurl)
                 ret = client.service.Mes_Interface("MStatusLoad", json.dumps(dic))
                 if ret[0] == "SUCCESS":
@@ -1020,6 +1029,19 @@ def PartiallyProductsChecked():
                     elif QAConfirmStatus != None:
                         cla.QAConfirmStatus = QAConfirmStatus
                         cla.QAConfirmer = current_user.Name
+                        dic = []
+                        StoreDef_ID = "1"
+                        mid = db_session.query(Material.MATCode).filter(Material.MATName == cla.BrandName).first()[0]
+                        if cla.BrandName == "肿节风浸膏":
+                            StoreDef_ID = "2"
+                        dic.append(
+                            {"BillNo": str(cla.BatchID + cla.BrandID), "mid": mid, "BatchNo": str(cla.BatchID),
+                             "StoreDef_ID": StoreDef_ID, "OldStatus": "3",
+                             "NewStatus": "1" if "合格" in cla.ConfirmStatus else "2"})
+                        client = Client(Model.Global.WMSurl)
+                        ret = client.service.Mes_Interface("MStatusLoad", json.dumps(dic))
+                        if ret[0] != "SUCCESS":
+                            return json.dumps("调用半成品检验接口MStatusLoad报错：" + ret[1])
                     db_session.commit()
                     return 'OK'
         except Exception as e:
@@ -1175,9 +1197,12 @@ def WMS_SendPartiallyProducts():
                 for key in jsonnumber:
                     id = int(key)
                     oclass = db_session.query(PartiallyProducts).filter(PartiallyProducts.ID == id).first()
+                    StoreDef_ID = "1"
+                    if oclass.BrandName == "肿节风浸膏":
+                        StoreDef_ID = "2"
                     product_code = db_session.query(ERPproductcode_prname.product_code).filter(ERPproductcode_prname.PRName == oclass.BrandName).first()[0]
                     dic.append(
-                        {"BillNo": str(oclass.BatchID) + str(oclass.BrandID), "BatchNo":str(oclass.BatchID), "btype": "102", "StoreDef_ID": "1",
+                        {"BillNo": str(oclass.BatchID) + str(oclass.BrandID), "BatchNo":str(oclass.BatchID), "btype": "102", "StoreDef_ID": StoreDef_ID,
                          "mid": product_code, "num": oclass.Produce})
                 jsondic = json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False)
                 client = Client(Model.Global.WMSurl)

@@ -6556,34 +6556,68 @@ def electionBatchSearch():
                 dic = {}
                 if (Pclass.PDUnitRouteName == "煎煮段"):
                     TEQPIDs = searchEqpID(BrandName, BatchID, PUID, "吊篮提取罐")
-                    for i in range(0, len(TEQPIDs)):
-                        EQPID = TEQPIDs[i]
-                        EQPName = db_session.query(Equipment.EQPName).filter(Equipment.ID == EQPID).first()
-                        dic["TQEQPName" + str(i)] = EQPName[0]
-                        dic["tqstartTime" + str(i)] = strch(
-                            searO(BrandName, BatchID, Pclass.ID, EQPID, "提取开始时间").SampleValue)
-                        dic["tqendTime" + str(i)] = strch(
-                            searO(BrandName, BatchID, Pclass.ID, EQPID, "提取结束时间").SampleValue)
-                        firstAddWater = searO(BrandName, BatchID, Pclass.ID, EQPID, "提取第一次加水量设定值")
-                        dic["firstAddWater" + str(i)] = firstAddWater.SampleValue + firstAddWater.Unit
-                        secondAddWater = searO(BrandName, BatchID, Pclass.ID, EQPID, "提取第二次加水量设定值")
-                        dic["secondAddWater" + str(i)] = secondAddWater.SampleValue + secondAddWater.Unit
-                        for j in range(1, 6, 2):
-                            temp = searO(BrandName, BatchID, Pclass.ID, EQPID, "提取第一次煎煮温度采集" + str(j))
-                            dic["firstTemp" + "_" + str(i) + "_" + str(j)] = changef(temp.SampleValue) + temp.Unit
-                            dic["firstTempTime" + "_" + str(i) + "_" + str(j)] = strchange(temp.SampleDate)
-                            stemp = searO(BrandName, BatchID, Pclass.ID, EQPID, "提取第二次煎煮温度采集" + str(j))
-                            dic["secondTemp" + "_" + str(i) + "_" + str(j)] = changef(stemp.SampleValue) + stemp.Unit
-                            dic["secondTempTime" + "_" + str(i) + "_" + str(j)] = strchange(stemp.SampleDate)
-                        dic["firstDevotingTime" + str(i)] = strchange(
-                            searO(BrandName, BatchID, Pclass.ID, EQPID, "提取第一次煎煮开始时间").SampleValue)
-                        dic["firstDevotingEndTime" + str(i)] = strchange(
-                            searO(BrandName, BatchID, Pclass.ID, EQPID, "提取第一次煎煮结束时间").SampleValue)
-                        dic["secondDevotingTime" + str(i)] = strchange(
-                            searO(BrandName, BatchID, Pclass.ID, EQPID, "提取第二次煎煮开始时间").SampleValue)
-                        dic["secondDevotingEndTime" + str(i)] = strchange(
-                            searO(BrandName, BatchID, Pclass.ID, EQPID, "提取第二次煎煮结束时间").SampleValue)
-
+                    if BrandID == "2":
+                        for i in range(0, len(TEQPIDs)):
+                            QZJF = ""
+                            if i < 4:
+                                QZJF = "肿节风浸膏-前四罐"
+                            else:
+                                QZJF = "肿节风浸膏-后四罐"
+                            EQPID = TEQPIDs[i]
+                            EQPName = db_session.query(Equipment.EQPName).filter(Equipment.ID == EQPID).first()
+                            dic["TQEQPName" + str(i)] = EQPName[0]
+                            dic["tqstartTime" + str(i)] = strch(
+                                searO(QZJF, BatchID, Pclass.ID, EQPID, "提取开始时间").SampleValue)
+                            dic["tqendTime" + str(i)] = strch(
+                                searO(QZJF, BatchID, Pclass.ID, EQPID, "提取结束时间").SampleValue)
+                            firstAddWater = searO(QZJF, BatchID, Pclass.ID, EQPID, "提取第一次加水量设定值")
+                            dic["firstAddWater" + str(i)] = firstAddWater.SampleValue + firstAddWater.Unit
+                            secondAddWater = searO(QZJF, BatchID, Pclass.ID, EQPID, "提取第二次加水量设定值")
+                            dic["secondAddWater" + str(i)] = secondAddWater.SampleValue + secondAddWater.Unit
+                            for j in range(1, 6, 2):
+                                temp = searO(QZJF, BatchID, Pclass.ID, EQPID, "提取第一次煎煮温度采集" + str(j))
+                                dic["firstTemp" + "_" + str(i) + "_" + str(j)] = changef(temp.SampleValue) + temp.Unit
+                                dic["firstTempTime" + "_" + str(i) + "_" + str(j)] = strchange(temp.SampleDate)
+                                stemp = searO(QZJF, BatchID, Pclass.ID, EQPID, "提取第二次煎煮温度采集" + str(j))
+                                dic["secondTemp" + "_" + str(i) + "_" + str(j)] = changef(
+                                    stemp.SampleValue) + stemp.Unit
+                                dic["secondTempTime" + "_" + str(i) + "_" + str(j)] = strchange(stemp.SampleDate)
+                            dic["firstDevotingTime" + str(i)] = strchange(
+                                searO(QZJF, BatchID, Pclass.ID, EQPID, "提取第一次煎煮开始时间").SampleValue)
+                            dic["firstDevotingEndTime" + str(i)] = strchange(
+                                searO(QZJF, BatchID, Pclass.ID, EQPID, "提取第一次煎煮结束时间").SampleValue)
+                            dic["secondDevotingTime" + str(i)] = strchange(
+                                searO(QZJF, BatchID, Pclass.ID, EQPID, "提取第二次煎煮开始时间").SampleValue)
+                            dic["secondDevotingEndTime" + str(i)] = strchange(
+                                searO(QZJF, BatchID, Pclass.ID, EQPID, "提取第二次煎煮结束时间").SampleValue)
+                    else:
+                        for i in range(0, len(TEQPIDs)):
+                            EQPID = TEQPIDs[i]
+                            EQPName = db_session.query(Equipment.EQPName).filter(Equipment.ID == EQPID).first()
+                            dic["TQEQPName" + str(i)] = EQPName[0]
+                            dic["tqstartTime" + str(i)] = strch(
+                                searO(BrandName, BatchID, Pclass.ID, EQPID, "提取开始时间").SampleValue)
+                            dic["tqendTime" + str(i)] = strch(
+                                searO(BrandName, BatchID, Pclass.ID, EQPID, "提取结束时间").SampleValue)
+                            firstAddWater = searO(BrandName, BatchID, Pclass.ID, EQPID, "提取第一次加水量设定值")
+                            dic["firstAddWater" + str(i)] = firstAddWater.SampleValue + firstAddWater.Unit
+                            secondAddWater = searO(BrandName, BatchID, Pclass.ID, EQPID, "提取第二次加水量设定值")
+                            dic["secondAddWater" + str(i)] = secondAddWater.SampleValue + secondAddWater.Unit
+                            for j in range(1, 6, 2):
+                                temp = searO(BrandName, BatchID, Pclass.ID, EQPID, "提取第一次煎煮温度采集" + str(j))
+                                dic["firstTemp" + "_" + str(i) + "_" + str(j)] = changef(temp.SampleValue) + temp.Unit
+                                dic["firstTempTime" + "_" + str(i) + "_" + str(j)] = strchange(temp.SampleDate)
+                                stemp = searO(BrandName, BatchID, Pclass.ID, EQPID, "提取第二次煎煮温度采集" + str(j))
+                                dic["secondTemp" + "_" + str(i) + "_" + str(j)] = changef(stemp.SampleValue) + stemp.Unit
+                                dic["secondTempTime" + "_" + str(i) + "_" + str(j)] = strchange(stemp.SampleDate)
+                            dic["firstDevotingTime" + str(i)] = strchange(
+                                searO(BrandName, BatchID, Pclass.ID, EQPID, "提取第一次煎煮开始时间").SampleValue)
+                            dic["firstDevotingEndTime" + str(i)] = strchange(
+                                searO(BrandName, BatchID, Pclass.ID, EQPID, "提取第一次煎煮结束时间").SampleValue)
+                            dic["secondDevotingTime" + str(i)] = strchange(
+                                searO(BrandName, BatchID, Pclass.ID, EQPID, "提取第二次煎煮开始时间").SampleValue)
+                            dic["secondDevotingEndTime" + str(i)] = strchange(
+                                searO(BrandName, BatchID, Pclass.ID, EQPID, "提取第二次煎煮结束时间").SampleValue)
                     JEQPIDs = searchEqpZJ(BrandName, BatchID, PUID, "静置罐")
                     for i in range(0, len(JEQPIDs)):
                         EQPID = JEQPIDs[i]
@@ -6764,8 +6798,15 @@ def searchEqpID(BrandName, BatchID, PID, name):
     EQPS = db_session.query(ElectronicBatchTwo.EQPID).distinct().filter(ElectronicBatchTwo.PDUnitRouteID == int(PID),
                                                                         ElectronicBatchTwo.BrandName.like("%" + BrandName + "%"),
                                                                         ElectronicBatchTwo.BatchID == BatchID).all()
-    tmp = [val for val in EQPIDs if val in EQPS]
-    return tmp
+    if BrandName == "肿节风浸膏" and int(PID) == 2:
+        tem = []
+        for i in EQPS:
+            tem.append(i)
+        for j in EQPS:
+            tem.append(j)
+        return tem
+    else:
+        return [val for val in EQPIDs if val in EQPS]
 def searchEqpZJ(BrandName, BatchID, PID, name):
     EQPIDs = db_session.query(Equipment.ID).filter(Equipment.PUID == PID,
                                                    Equipment.EQPName.like("%" + name + "%")).all()
