@@ -5853,7 +5853,7 @@ def electronicBatchRecord():
                     dic["CheckedPeople_a4"] = no.oddUser
                 elif (no.name == "（备料段）生产结束清场（QA签名）"):
                     dic["QAConfirmPeople_a4"] = no.oddUser
-            Newoclass = db_session.query(NewReadyWork).filter(NewReadyWork.PUID == Pclass.PUID, NewReadyWork.BatchID ==
+            Newoclass = db_session.query(NewReadyWork).filter(NewReadyWork.BrandID == oclass.BrandID, NewReadyWork.PUID == Pclass.PUID, NewReadyWork.BatchID ==
                                                               oclass.BatchID, NewReadyWork.Type == "32").first()
             if (Newoclass != None):
                 dic["OperationPeople_a2"] = Newoclass.OperationPeople
@@ -5911,7 +5911,7 @@ def electronicBatchRecord():
                     dic["CheckedPeople_b4"] = no.oddUser
                 elif (no.name == "（煎煮段）生产结束清场（QA签名）"):
                     dic["QAConfirmPeople_b4"] = no.oddUser
-            Newoclass = db_session.query(NewReadyWork).filter(NewReadyWork.PUID == Pclass.PUID, NewReadyWork.BatchID ==
+            Newoclass = db_session.query(NewReadyWork).filter(NewReadyWork.BrandID == oclass.BrandID, NewReadyWork.PUID == Pclass.PUID, NewReadyWork.BatchID ==
                                                               oclass.BatchID, NewReadyWork.Type == "42").first()
             if (Newoclass != None):
                 dic["OperationPeople_b5"] = Newoclass.OperationPeople
@@ -5971,7 +5971,7 @@ def electronicBatchRecord():
                     dic["CheckedPeople_c6"] = no.oddUser
                 elif (no.name == "浓缩结束清场（QA签名）"):
                     dic["QAConfirmPeople_c6"] = no.oddUser
-            Newoclasss = db_session.query(NewReadyWork).filter(NewReadyWork.PUID == Pclass.PUID, NewReadyWork.BatchID ==
+            Newoclasss = db_session.query(NewReadyWork).filter(NewReadyWork.BrandID == oclass.BrandID, NewReadyWork.PUID == Pclass.PUID, NewReadyWork.BatchID ==
                                                                oclass.BatchID,
                                                                NewReadyWork.Type.in_(("45", "46", "54"))).all()
             if (len(Newoclasss) > 0):
@@ -6092,7 +6092,7 @@ def electronicBatchRecord():
                     dic["CheckedPeople_e6"] = no.oddUser
                 elif (no.name == "收粉结束，按SOP清场（QA签名）"):
                     dic["QAConfirmPeople_e6"] = no.oddUser
-            Newoclasss = db_session.query(NewReadyWork).filter(NewReadyWork.PUID == Pclass.PUID, NewReadyWork.BatchID ==
+            Newoclasss = db_session.query(NewReadyWork).filter(NewReadyWork.BrandID == oclass.BrandID, NewReadyWork.PUID == Pclass.PUID, NewReadyWork.BatchID ==
                                                                oclass.BatchID,
                                                                NewReadyWork.Type.in_(("48", "50", "51", "52"))).all()
             if (len(Newoclasss) > 0):
@@ -6135,7 +6135,7 @@ def electronicBatchRecord():
             re = electronicBatchRecords("醇沉段", oclass.BrandID, oclass.BatchID, ID)
             Pclass = re[0]
             Zclass = re[1]
-            Newoclasss = db_session.query(NewReadyWork).filter(NewReadyWork.PUID == Pclass.PUID, NewReadyWork.BatchID ==
+            Newoclasss = db_session.query(NewReadyWork).filter(NewReadyWork.BrandID == oclass.BrandID, NewReadyWork.PUID == Pclass.PUID, NewReadyWork.BatchID ==
                                                                oclass.BatchID,
                                                                NewReadyWork.Type == "55").first()
             if Newoclasss != None:
@@ -6219,7 +6219,7 @@ def electronicBatchRecord():
                 dic["CheckedPeople_e7"] = re[2].CheckedPeople
                 if re[2].CheckedPeople == None:
                     dic["CheckedPeople_e7"] = ""
-            Newoclasss = db_session.query(NewReadyWork).filter(NewReadyWork.PUID == Pclass.PUID, NewReadyWork.BatchID ==
+            Newoclasss = db_session.query(NewReadyWork).filter(NewReadyWork.BrandID == oclass.BrandID, NewReadyWork.PUID == Pclass.PUID, NewReadyWork.BatchID ==
                                                                oclass.BatchID,
                                                                NewReadyWork.Type.in_(("56", "57", "58"))).all()
             if (len(Newoclasss) > 0):
@@ -6264,7 +6264,7 @@ def electronicBatchRecord():
             Pclass = re[0]
             Zclass = re[1]
             Noclas = re[3]
-            Newoclasss = db_session.query(NewReadyWork).filter(NewReadyWork.PUID == Pclass.PUID, NewReadyWork.BatchID ==
+            Newoclasss = db_session.query(NewReadyWork).filter(NewReadyWork.BrandID == oclass.BrandID, NewReadyWork.PUID == Pclass.PUID, NewReadyWork.BatchID ==
                                                                oclass.BatchID,
                                                                NewReadyWork.Type.in_(("59", "60", "61"))).all()
             if (len(Newoclasss) > 0):
