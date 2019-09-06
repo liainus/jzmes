@@ -6632,7 +6632,7 @@ def electionBatchSearch():
                         EQPName = db_session.query(Equipment.EQPName).filter(Equipment.ID == EQPID).first()
                         dic["NSEQPName" + str(i)] = EQPName[0]
                         count = 0
-                        for j in range(1, 13):
+                        for j in range(1, 21):
                             zkd = searO(BrandName, BatchID, Pclass.ID, EQPID, "浓缩真空度采集" + str(j))
                             dic["zkd" + "_" + str(i) + "_" + str(count)] = changef(zkd.SampleValue) + zkd.Unit
                             dic["zkdTime" + "_" + str(i) + "_" + str(count)] = strchange(zkd.SampleDate)
@@ -6664,7 +6664,7 @@ def electionBatchSearch():
                         dic["pwEndTime" + str(i)] = strch(
                             searO(BrandName, BatchID, Pclass.ID, EQPID, "干燥结束时间").SampleValue)
                         cc = 0
-                        for j in range(1, 13):
+                        for j in range(1, 7):
                             hff = searO(BrandName, BatchID, Pclass.ID, EQPID, "混风温度采集" + str(j))
                             dic["hfTemp_" + str(i) + "_" + str(cc)] = changef(hff.SampleValue) + hff.Unit
                             dic["hfTime_" + str(i) + "_" + str(cc)] = strchange(hff.SampleDate)
@@ -6704,7 +6704,7 @@ def electionBatchSearch():
                         dic["dxEndTime" + str(i)] = strch(
                             searO(BrandName, BatchID, Pclass.ID, EQPID, "单效浓缩结束时间").SampleValue)
                         yy = 0
-                        for j in range(1, 12):
+                        for j in range(1, 7):
                             zqyl = searO(BrandName, BatchID, Pclass.ID, EQPID, "单效浓缩蒸汽压力采集" + str(j))
                             dic["zqyl_" + str(i) + "_" + str(yy)] = changef(zqyl.SampleValue) + zqyl.Unit
                             dic["zqylTime_" + str(i) + "_" + str(yy)] = strchange(zqyl.SampleDate)
