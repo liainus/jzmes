@@ -600,11 +600,8 @@
                             {% if '83' == flag %}
                                 {% if None == dir[0]["OperationPeople_a5"] or "" == dir[0]["OperationPeople_a5"] %}
                                 {% else %}
-                                    {% if None == dir[0]["CheckedPeople_a5"] or "" == dir[0]["CheckedPeople_a5"] %}
-                                        <a href="javascript:;" class="btn btn-primary equipmentConfirm" name="复核人">确认</a>
-                                    {% else %}
-                                        {{ dir[0]["CheckedPeople_a5"] }}
-                                    {% endif %}
+                                    {{ dir[0]["CheckedPeople_a5"] }}
+                                    <a href="javascript:;" class="btn btn-primary equipmentConfirm" name="复核人">确认</a>
                                 {% endif %}
                             {% endif %}
                             {% if '84' == flag %}
