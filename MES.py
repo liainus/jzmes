@@ -8090,40 +8090,6 @@ def checkSaveUpdate(PUID, BatchID, ke, val):
         return json.dumps("保存更新EletronicBatchDataStore报错", cls=Model.BSFramwork.AlchemyEncoder,
                           ensure_ascii=False)
 
-@app.route('/aaaa', methods=['POST', 'GET'])
-def aaaa():
-    '''
-    删除
-    :return:
-    '''
-    if request.method == 'GET':
-        ocs = db_session.query(NodeCollection).filter(NodeCollection.oddUser.like('WQT%')).all()
-        for oc in ocs:
-            oc.oddUser = str(oc.oddUser)[4:]
-        db_session.commit()
-        return "123"
-
-@app.route('/refractometerRedis', methods=['POST', 'GET'])
-def refractometerRedis():
-    '''
-    折光仪实时数据
-    :return:
-    '''
-    if request.method == 'GET':
-        data = request.values
-        try:
-            jsonstr = json.dumps(data.to_dict())
-            if len(jsonstr) > 10:
-                data_dict = {}
-                redis_conn = redis.Redis(connection_pool=pool)
-                for key in data:
-                    data_dict[key] = redis_conn.hget(constant.REDIS_TABLENAME, "t|"+str(key)).decode('utf-8')
-                return json.dumps(data_dict, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
-        except Exception as e:
-            print(e)
-            logger.error(e)
-            insertSyslog("error", "折光仪实时数据查询报错Error：" + str(e), current_user.Name)
-
 @app.route('/refractometerDataHistory', methods=['POST', 'GET'])
 def refractometerDataHistory():
     '''
@@ -8166,25 +8132,6 @@ def refractometerDataHistory():
 @app.route('/JHYdatahistorypage')
 def JHYdatahistorypage():
     return render_template('JHYdatahistorypage.html')
-@app.route('/JHYRedis', methods=['POST', 'GET'])
-def JHYRedis():
-    '''
-    进红外实时数据
-    :return:
-    '''
-    if request.method == 'GET':
-        data = request.values
-        try:
-            redis_conn = redis.Redis(connection_pool=pool)
-            data_dict = {}
-            data_dict['CPG'] = redis_conn.hget(constant.REDIS_TABLENAME, 't|JHY_Item01Result').decode('utf-8')
-            data_dict['SF'] = redis_conn.hget(constant.REDIS_TABLENAME, 't|JHY_Item02Result').decode('utf-8')
-            data_dict['LJ'] = redis_conn.hget(constant.REDIS_TABLENAME, 't|JHY_Item03Result').decode('utf-8')
-            return json.dumps(data_dict, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
-        except Exception as e:
-            print(e)
-            logger.error(e)
-            insertSyslog("error", "进红外实时数据报错Error：" + str(e), current_user.Name)
 @app.route('/JHYDatapage')
 def JHYDataHistorypage():
     return render_template('JHYDatapage.html')
@@ -8240,25 +8187,6 @@ def WBdatahistorypage():
 @app.route('/WBDatapage')
 def WBDatapage():
     return render_template('WBDatapage.html')
-@app.route('/WBRedis', methods=['POST', 'GET'])
-def WBRedis():
-    '''
-    微波实时数据
-    :return:
-    '''
-    if request.method == 'GET':
-        data = request.values
-        try:
-            redis_conn = redis.Redis(connection_pool=pool)
-            data_dict = {}
-            data_dict['SF'] = redis_conn.hget(constant.REDIS_TABLENAME, 't|WB_Water').decode('utf-8')
-            data_dict['WD'] = redis_conn.hget(constant.REDIS_TABLENAME, 't|WB_Temp').decode('utf-8')
-            data_dict['MD'] = redis_conn.hget(constant.REDIS_TABLENAME, 't|WB_MD').decode('utf-8')
-            return json.dumps(data_dict, cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
-        except Exception as e:
-            print(e)
-            logger.error(e)
-            insertSyslog("error", "进红外实时数据报错Error：" + str(e), current_user.Name)
 
 @app.route('/WBDataHistory', methods=['POST', 'GET'])
 def WBDataHistory():
