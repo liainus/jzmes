@@ -10,40 +10,25 @@
     <script type="text/javascript" src="../static/js/bootbox.min.js"></script>
     <script>
         $(function(){
-            function getNewData(){
-                $.ajax({
-                    url:'/WBRedis',
-                    type:'get',
-                    async: true,
-                    success:function(data){
-                        data = JSON.parse(data)
-                        if(data.MD == "init" || data.WD == "init" || data.SF == "init"){
-                             $.messager.show({
-                                title: '提示',
-                                msg: '数据连接中断',
-                                timeout:500,
-                                style: {
-                                    right: '',
-                                    top: document.body.scrollTop + document.documentElement.scrollTop,
-                                    bottom: ''
-                                }
-                            });
-                        }else{
-                            $("#MD").html(data.MD)
-                            $("#WD").html(data.WD)
-                            $("#SF").html(data.SF)
-                        }
-                    },
-                    error:function(result){
-                        console.log(result)
-                    }
-                })
+            if ("WebSocket" in window){
+                var ws = new WebSocket("ws://127.0.0.1:8002/xxoo");
+                ws.onopen = function(){
+                    ws.send("hello");
+                    console.log("数据发送中...");
+                };
+                ws.onmessage = function (evt){
+                    var received_msg = evt.data;
+                    received_msg = JSON.parse(received_msg)
+                    $("#MD").html(received_msg.MD)
+                    $("#WD").html(received_msg.WD)
+                    $("#SF").html(received_msg.SF)
+                };
+                ws.onclose = function(){
+                    console.log("连接已关闭...");
+                };
+            }else{
+               bootbox.alert("您的浏览器不支持 WebSocket！无法查看实时数据。");
             }
-            getNewData();
-            setInterval(function(){
-                getNewData();
-                getNewChart();
-            }, 2000);
 
             $(".pull-right").on('click',function(){
                 addTab("微波历史数据","/WBdatahistorypage")
@@ -213,6 +198,9 @@
 
                 myChart.setOption(option);
             })
+            setInterval(function(){
+                getNewChart();
+            }, 3000);
             function getNewChart(){
                 $.ajax({
                     url: '/WBDataHistory',
