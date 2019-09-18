@@ -81,33 +81,6 @@ response_str = response_tpl % (ac.decode('utf-8'), headers['Host'], headers['url
 conn.send(bytes(response_str, encoding='utf-8'))
 
 while True:
-    # info = conn.recv(8096)
-    # # 1. 获取第2个字节 content[1] & 127
-    # payload_len = info[1] & 127
-    # if payload_len == 126:
-    #     extend_payload_len = info[2:4]
-    #     mask = info[4:8]
-    #     decoded = info[8:]
-    # elif payload_len == 127:
-    #     extend_payload_len = info[2:10]
-    #     mask = info[10:14]
-    #     decoded = info[14:]
-    # else:
-    #     extend_payload_len = None
-    #     mask = info[2:6]
-    #     decoded = info[6:]
-    #
-    # bytes_list = bytearray()
-    # for i in range(len(decoded)):
-    #     chunk = decoded[i] ^ mask[i % 4]
-    #     bytes_list.append(chunk)
-    # body = str(bytes_list, encoding='utf-8')
-    # print(body)
-    # body = body + ' sb'
-    #
-    #
-    # send_msg(conn,body.encode('utf-8'))
-
     data_dict = {}
     pool = redis.ConnectionPool(host=constant.REDIS_HOST, password=constant.REDIS_PASSWORD)
     redis_conn = redis.Redis(connection_pool=pool)
@@ -121,7 +94,6 @@ while True:
     data_dict['ZGY_ZGL'] = redis_conn.hget(constant.REDIS_TABLENAME, "t|ZGY_ZGL").decode('utf-8')
     json_data = json.dumps(data_dict, cls=AlchemyEncoder, ensure_ascii=False)
     bytemsg = bytes(json_data, encoding="utf8")
-
     send_msg(conn, bytemsg)
     time.sleep(2)
 sock.close()
