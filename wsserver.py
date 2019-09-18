@@ -4,21 +4,11 @@ import socket
 import base64
 import hashlib
 import time
-import redis
-from flask import Blueprint, render_template, request, make_response
-import json
-import datetime
-from sqlalchemy import desc, create_engine
-from flask_login import login_required, logout_user, login_user,current_user,LoginManager
-from sqlalchemy.orm import sessionmaker
-
-import Model.Global
 from constant import constant
+import redis
 from Model.BSFramwork import AlchemyEncoder
-engine = create_engine(Model.Global.GLOBAL_DATABASE_CONNECT_STRING, deprecate_large_types=True)
-Session = sessionmaker(bind=engine)
-db_session = Session()
-pool = redis.ConnectionPool(host=constant.REDIS_HOST, password=constant.REDIS_PASSWORD)
+import json
+
 
 def get_headers(data):
     """
@@ -117,13 +107,8 @@ def run():
     # body = str(bytes_list, encoding='utf-8')
     icount = 0
     while True:
-        # bytes_list = ""
-        # icount = icount + 1
-        # strtmp = "My Websocket中文测试" + str(icount)
-        # # str(bytes_list.encode('utf-8').strip() + b"\n")
-        # # body = str(bytes_list, encoding='utf-8')
-        # bytemsg = bytes(strtmp, encoding="utf8")
         data_dict = {}
+        pool = redis.ConnectionPool(host=constant.REDIS_HOST, password=constant.REDIS_PASSWORD)
         redis_conn = redis.Redis(connection_pool=pool)
         data_dict['CPG'] = redis_conn.hget(constant.REDIS_TABLENAME, 't|JHY_Item01Result').decode('utf-8')
         data_dict['SF'] = redis_conn.hget(constant.REDIS_TABLENAME, 't|JHY_Item02Result').decode('utf-8')
@@ -138,7 +123,6 @@ def run():
 
         send_msg(conn, bytemsg)
         time.sleep(2)
-
     sock.close()
 
 

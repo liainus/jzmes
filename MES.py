@@ -5176,6 +5176,13 @@ def operateConfirm():
                 elif (PName == "收膏"):
                     PName = "收膏段"
                     if (PUName == "生产前的准备"):
+                        node = db_session.query(Model.node.NodeCollection).filter(
+                            Model.node.NodeCollection.oddNum == ID,
+                            Model.node.NodeCollection.name == '（收膏段）任务确认').first()
+                        node.status = Model.node.NodeStatus.PASSED.value
+                        node.opertionTime = datetime.datetime.now()
+                        node.oddUser = node.oddUser + " " + current_user.Name
+                        db_session.commit()
                         name = '（收膏段）生产前准备（操作人）'
                         return operateflow(ID, name, PName)
                     elif (PUName == "收膏开始"):
@@ -8257,6 +8264,9 @@ def ZYPlanWMSSelect():
             insertSyslog("error", "/ZYPlanWMSSelect报错Error：" + str(e), current_user.Name)
             return json.dumps("ZYPlanWMS查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
+@app.route('/aaaaa')
+def aaaaa():
+    return render_template('energyRedisData.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
