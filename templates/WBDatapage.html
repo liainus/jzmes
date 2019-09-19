@@ -19,9 +19,9 @@
                 ws.onmessage = function (evt){
                     var received_msg = evt.data;
                     received_msg = JSON.parse(received_msg)
-                    $("#MD").html(received_msg.MD)
-                    $("#WD").html(received_msg.WD)
-                    $("#SF").html(received_msg.SF)
+                    $("#MD").html(received_msg.WB_MD)
+                    $("#WD").html(received_msg.WB_WD)
+                    $("#SF").html(received_msg.WB_SF)
                 };
                 ws.onclose = function(){
                     console.log("连接已关闭...");
