@@ -109,29 +109,25 @@ def handler_msg(conn):
         with conn as c:
             data_recv = c.recv(1024)
             while True:
-                try:
-                    if data_recv[0:1] == b"\x81":
-                        data_parse = parse_payload(data_recv)
-                    data_dict = {}
-                    pool = redis.ConnectionPool(host=constant.REDIS_HOST, password=constant.REDIS_PASSWORD)
-                    redis_conn = redis.Redis(connection_pool=pool)
-                    data_dict['JHY_CPG'] = redis_conn.hget(constant.REDIS_TABLENAME, 't|JHY_Item01Result').decode('utf-8')
-                    data_dict['JHY_SF'] = redis_conn.hget(constant.REDIS_TABLENAME, 't|JHY_Item02Result').decode('utf-8')
-                    data_dict['JHY_LJ'] = redis_conn.hget(constant.REDIS_TABLENAME, 't|JHY_Item03Result').decode('utf-8')
-                    data_dict['WB_SF'] = redis_conn.hget(constant.REDIS_TABLENAME, 't|WB_Water').decode('utf-8')
-                    data_dict['WB_WD'] = redis_conn.hget(constant.REDIS_TABLENAME, 't|WB_Temp').decode('utf-8')
-                    data_dict['WB_MD'] = redis_conn.hget(constant.REDIS_TABLENAME, 't|WB_MD').decode('utf-8')
-                    data_dict['ZGY_Temp'] = redis_conn.hget(constant.REDIS_TABLENAME, "t|ZGY_Temp").decode('utf-8')
-                    data_dict['ZGY_ZGL'] = redis_conn.hget(constant.REDIS_TABLENAME, "t|ZGY_ZGL").decode('utf-8')
-                    json_data = json.dumps(data_dict, cls=AlchemyEncoder, ensure_ascii=False)
-                    # bytemsg = bytes(json_data, encoding="utf8")
-                    # send_msg(c, bytes("recv: {}".format(data_parse), encoding="utf-8"))
-                    bytemsg = bytes(json_data, encoding="utf8")
-                    send_msg(conn, bytemsg)
-                    time.sleep(2)
-                except Exception as e:
-                    print(e)
-                    logger.error(e)
+                if data_recv[0:1] == b"\x81":
+                    data_parse = parse_payload(data_recv)
+                data_dict = {}
+                pool = redis.ConnectionPool(host=constant.REDIS_HOST, password=constant.REDIS_PASSWORD)
+                redis_conn = redis.Redis(connection_pool=pool)
+                data_dict['JHY_CPG'] = redis_conn.hget(constant.REDIS_TABLENAME, 't|JHY_Item01Result').decode('utf-8')
+                data_dict['JHY_SF'] = redis_conn.hget(constant.REDIS_TABLENAME, 't|JHY_Item02Result').decode('utf-8')
+                data_dict['JHY_LJ'] = redis_conn.hget(constant.REDIS_TABLENAME, 't|JHY_Item03Result').decode('utf-8')
+                data_dict['WB_SF'] = redis_conn.hget(constant.REDIS_TABLENAME, 't|WB_Water').decode('utf-8')
+                data_dict['WB_WD'] = redis_conn.hget(constant.REDIS_TABLENAME, 't|WB_Temp').decode('utf-8')
+                data_dict['WB_MD'] = redis_conn.hget(constant.REDIS_TABLENAME, 't|WB_MD').decode('utf-8')
+                data_dict['ZGY_Temp'] = redis_conn.hget(constant.REDIS_TABLENAME, "t|ZGY_Temp").decode('utf-8')
+                data_dict['ZGY_ZGL'] = redis_conn.hget(constant.REDIS_TABLENAME, "t|ZGY_ZGL").decode('utf-8')
+                json_data = json.dumps(data_dict, cls=AlchemyEncoder, ensure_ascii=False)
+                # bytemsg = bytes(json_data, encoding="utf8")
+                # send_msg(c, bytes("recv: {}".format(data_parse), encoding="utf-8"))
+                bytemsg = bytes(json_data, encoding="utf8")
+                send_msg(conn, bytemsg)
+                time.sleep(2)
 
 
 
