@@ -11,7 +11,7 @@
     <script>
         $(function(){
             if ("WebSocket" in window){
-                var ws = new WebSocket("ws://127.0.0.1:8002/xxoo");
+                var ws = new WebSocket("ws://127.0.0.1:8002");
                 ws.onopen = function(){
                     ws.send("hello");
                     console.log("数据发送中...");
