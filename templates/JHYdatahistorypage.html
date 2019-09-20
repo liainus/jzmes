@@ -13,19 +13,19 @@
             if ("WebSocket" in window){
                 var ws = new WebSocket("ws://192.168.100.150:5003");
                 if(ws.readyState != 1){
-                    ws = new WebSocket("ws://111.75.201.235:5003");
-                    ws.onopen = function(){
+                    var socket = new WebSocket("ws://111.75.201.235:5003");
+                    socket.onopen = function(){
                         ws.send("hello");
                         console.log("数据发送中...");
                     };
-                    ws.onmessage = function (evt){
+                    socket.onmessage = function (evt){
                         var received_msg = evt.data;
                         received_msg = JSON.parse(received_msg)
                         $("#CPG").html(received_msg.JHY_CPG)
                         $("#SF").html(received_msg.JHY_SF)
                         $("#LJ").html(received_msg.JHY_LJ)
                     };
-                    ws.onclose = function(){
+                    socket.onclose = function(){
                         console.log("连接已关闭...");
                     };
                 }else{
