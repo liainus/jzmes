@@ -12,36 +12,6 @@
         $(function(){
             if ("WebSocket" in window){
                 var ws = new WebSocket("ws://192.168.100.150:5003");
-                if(ws.readyState != 1){
-                    var socket = new WebSocket("ws://111.75.201.235:5003");
-                    socket.onopen = function(){
-                        ws.send("hello");
-                        console.log("数据发送中...");
-                    };
-                    socket.onmessage = function (evt){
-                        var received_msg = evt.data;
-                        received_msg = JSON.parse(received_msg)
-                        $("#conc").html(received_msg.ZGY_ZGL)
-                        $("#temp").html(received_msg.ZGY_Temp)
-                    };
-                    socket.onclose = function(){
-                        console.log("连接已关闭...");
-                    };
-                }else{
-                    ws.onopen = function(){
-                        ws.send("hello");
-                        console.log("数据发送中...");
-                    };
-                    ws.onmessage = function (evt){
-                        var received_msg = evt.data;
-                        received_msg = JSON.parse(received_msg)
-                        $("#conc").html(received_msg.ZGY_ZGL)
-                        $("#temp").html(received_msg.ZGY_Temp)
-                    };
-                    ws.onclose = function(){
-                        console.log("连接已关闭...");
-                    };
-                }
                 ws.onopen = function(){
                     ws.send("hello");
                     console.log("数据发送中...");
@@ -55,6 +25,27 @@
                 ws.onclose = function(){
                     console.log("连接已关闭...");
                 };
+                ws.onerror = function(){
+                    var dialog = bootbox.dialog({
+                        message: '<p class="text-center mb-0"><i class="fa fa-spin fa-cog"></i>连接服务失败，即将重连...</p>',
+                        closeButton: false
+                    });
+                    var socket = new WebSocket("ws://111.75.201.235:5003");
+                    socket.onopen = function(){
+                        dialog.modal('hide');
+                        ws.send("hello");
+                        console.log("数据发送中...");
+                    };
+                    socket.onmessage = function (evt){
+                        var received_msg = evt.data;
+                        received_msg = JSON.parse(received_msg)
+                        $("#conc").html(received_msg.ZGY_ZGL)
+                        $("#temp").html(received_msg.ZGY_Temp)
+                    };
+                    socket.onclose = function(){
+                        console.log("连接已关闭...");
+                    };
+                }
             }else{
                bootbox.alert("您的浏览器不支持 WebSocket！无法查看实时数据。");
             }

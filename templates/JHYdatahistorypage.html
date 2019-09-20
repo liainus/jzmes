@@ -12,9 +12,28 @@
         $(function(){
             if ("WebSocket" in window){
                 var ws = new WebSocket("ws://192.168.100.150:5003");
-                if(ws.readyState != 1){
+                ws.onopen = function(){
+                    ws.send("hello");
+                    console.log("数据发送中...");
+                };
+                ws.onmessage = function (evt){
+                    var received_msg = evt.data;
+                    received_msg = JSON.parse(received_msg)
+                    $("#CPG").html(received_msg.JHY_CPG)
+                    $("#SF").html(received_msg.JHY_SF)
+                    $("#LJ").html(received_msg.JHY_LJ)
+                };
+                ws.onclose = function(){
+                    console.log("连接已关闭...");
+                };
+                ws.onerror = function(){
+                    var dialog = bootbox.dialog({
+                        message: '<p class="text-center mb-0"><i class="fa fa-spin fa-cog"></i>连接服务失败，即将重连...</p>',
+                        closeButton: false
+                    });
                     var socket = new WebSocket("ws://111.75.201.235:5003");
                     socket.onopen = function(){
+                        dialog.modal('hide');
                         ws.send("hello");
                         console.log("数据发送中...");
                     };
@@ -26,21 +45,6 @@
                         $("#LJ").html(received_msg.JHY_LJ)
                     };
                     socket.onclose = function(){
-                        console.log("连接已关闭...");
-                    };
-                }else{
-                    ws.onopen = function(){
-                        ws.send("hello");
-                        console.log("数据发送中...");
-                    };
-                    ws.onmessage = function (evt){
-                        var received_msg = evt.data;
-                        received_msg = JSON.parse(received_msg)
-                        $("#CPG").html(received_msg.JHY_CPG)
-                        $("#SF").html(received_msg.JHY_SF)
-                        $("#LJ").html(received_msg.JHY_LJ)
-                    };
-                    ws.onclose = function(){
                         console.log("连接已关闭...");
                     };
                 }
