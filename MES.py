@@ -4983,6 +4983,8 @@ def updateNodeA(id, name):
                                                                      Model.node.NodeCollection.oddNum == id).first()
         if noclass != None:
             noclass.status = Model.node.NodeStatus.PASSED.value
+            noclass.oddUser = current_user.Name
+            noclass.opertionTime = datetime.datetime.now()
             db_session.commit()
         else:
             print("没有对应的NodeCollection节点！")
@@ -6583,12 +6585,22 @@ def electionBatchSearch():
                             dic["secondAddWater" + str(i)] = secondAddWater.SampleValue + secondAddWater.Unit
                             for j in range(1, 6, 2):
                                 temp = searO(QZJF, BatchID, Pclass.ID, EQPID, "提取第一次煎煮温度采集" + str(j))
-                                dic["firstTemp" + "_" + str(i) + "_" + str(j)] = changef(temp.SampleValue) + temp.Unit
-                                dic["firstTempTime" + "_" + str(i) + "_" + str(j)] = strchange(temp.SampleDate)
+                                if QZJF == "肿节风浸膏-后四罐":
+                                    dic["firstTemp" + "_" + str(i+4) + "_" + str(j)] = changef(
+                                        temp.SampleValue) + temp.Unit
+                                    dic["firstTempTime" + "_" + str(i+4) + "_" + str(j)] = strchange(temp.SampleDate)
+                                else:
+                                    dic["firstTemp" + "_" + str(i) + "_" + str(j)] = changef(temp.SampleValue) + temp.Unit
+                                    dic["firstTempTime" + "_" + str(i) + "_" + str(j)] = strchange(temp.SampleDate)
                                 stemp = searO(QZJF, BatchID, Pclass.ID, EQPID, "提取第二次煎煮温度采集" + str(j))
-                                dic["secondTemp" + "_" + str(i) + "_" + str(j)] = changef(
-                                    stemp.SampleValue) + stemp.Unit
-                                dic["secondTempTime" + "_" + str(i) + "_" + str(j)] = strchange(stemp.SampleDate)
+                                if QZJF == "肿节风浸膏-后四罐":
+                                    dic["secondTemp" + "_" + str(i+4) + "_" + str(j)] = changef(
+                                        stemp.SampleValue) + stemp.Unit
+                                    dic["secondTempTime" + "_" + str(i+4) + "_" + str(j)] = strchange(stemp.SampleDate)
+                                else:
+                                    dic["secondTemp" + "_" + str(i) + "_" + str(j)] = changef(
+                                        stemp.SampleValue) + stemp.Unit
+                                    dic["secondTempTime" + "_" + str(i) + "_" + str(j)] = strchange(stemp.SampleDate)
                             dic["firstDevotingTime" + str(i)] = strchange(
                                 searO(QZJF, BatchID, Pclass.ID, EQPID, "提取第一次煎煮开始时间").SampleValue)
                             dic["firstDevotingEndTime" + str(i)] = strchange(
