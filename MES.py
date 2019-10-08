@@ -4983,6 +4983,8 @@ def updateNodeA(id, name):
                                                                      Model.node.NodeCollection.oddNum == id).first()
         if noclass != None:
             noclass.status = Model.node.NodeStatus.PASSED.value
+            noclass.oddUser = current_user.Name
+            noclass.opertionTime = datetime.datetime.now()
             db_session.commit()
         else:
             print("没有对应的NodeCollection节点！")
