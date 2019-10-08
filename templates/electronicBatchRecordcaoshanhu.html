@@ -2993,15 +2993,15 @@
                         <td>QA确认人</td>
                         <td class="middle-center">
                             {% if '82' == flag %}
-                                {{ dir[0]["QAConfirmPeople_e4"] }}
+                                {{ dir[0]["QAConfirmPeople_e2"] }}
                             {% endif %}
                             {% if '83' == flag %}
-                                {{ dir[0]["QAConfirmPeople_e4"] }}
+                                {{ dir[0]["QAConfirmPeople_e2"] }}
                             {% endif %}
                             {% if '84' == flag %}
-                                {% if None == dir[0]["OperationPeople_e4"] or None == dir[0]["CheckedPeople_e4"] or "" == dir[0]["OperationPeople_e4"] or "" == dir[0]["CheckedPeople_e4"] %}
+                                {% if None == dir[0]["OperationPeople_e2"] or None == dir[0]["CheckedPeople_e2"] or "" == dir[0]["OperationPeople_e2"] or "" == dir[0]["CheckedPeople_e2"] %}
                                 {% else %}
-                                    {{ dir[0]["QAConfirmPeople_e4"] }}
+                                    {{ dir[0]["QAConfirmPeople_e2"] }}
                                     <a href="javascript:;" class="btn btn-primary QAConfirm" name="单效浓缩开始" rel="3">确认</a>
                                 {% endif %}
                             {% endif %}
