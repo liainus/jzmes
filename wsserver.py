@@ -125,6 +125,7 @@ def handler_msg(conn):
                 json_data = json.dumps(data_dict, cls=AlchemyEncoder, ensure_ascii=False)
                 # bytemsg = bytes(json_data, encoding="utf8")
                 # send_msg(c, bytes("recv: {}".format(data_parse), encoding="utf-8"))
+                print(json_data)
                 bytemsg = bytes(json_data, encoding="utf8")
                 send_msg(conn, bytemsg)
                 time.sleep(2)
