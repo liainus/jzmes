@@ -8113,7 +8113,7 @@ def refractometerDataHistory():
                 begin = data.get('begin')
                 end = data.get('end')
                 if begin and end:#[t|ZGY_Temp] AS ZGY_Temp
-                    sql = "SELECT  [SampleTime],[t|ZGY_ZGL],[t|ZGY_Temp] FROM [MES].[dbo].[DataHistory] WHERE SampleTime BETWEEN '" + begin + "' AND '" + end +"' order by ID"
+                    sql = "SELECT  [SampleTime],[t|ZGY_ZGL],[t|ZGY_Temp] FROM [MES].[dbo].[DataHistory] with (INDEX =IX_DataHistory) WHERE SampleTime BETWEEN '" + begin + "' AND '" + end +"' order by ID"
                     re = db_session.execute(sql).fetchall()
                     db_session.close()
                     div = {}
@@ -8158,7 +8158,7 @@ def JHYDataHistory():
                 begin = data.get('begin')
                 end = data.get('end')
                 if begin and end:#[t|ZGY_Temp] AS ZGY_Temp
-                    sql = "SELECT  [Item01Result],[Item02Result],[Item03Result],[SampleTime] FROM [MES].[dbo].[JHYDataHistory] WHERE SampleTime BETWEEN '" + begin + "' AND '" + end +"' order by ID"
+                    sql = "SELECT  [Item01Result],[Item02Result],[Item03Result],[SampleTime] FROM [MES].[dbo].[JHYDataHistory] with (INDEX =IX_DataHistory) WHERE SampleTime BETWEEN '" + begin + "' AND '" + end +"' order by ID"
                     re = db_session.execute(sql).fetchall()
                     db_session.close()
                     div = {}
@@ -8211,7 +8211,7 @@ def WBDataHistory():
                 begin = data.get('begin')
                 end = data.get('end')
                 if begin and end:#[t|ZGY_Temp] AS ZGY_Temp
-                    sql = "SELECT  [t|WB_MD],[t|WB_Temp],[t|WB_Water],[SampleTime] FROM [MES].[dbo].[DataHistory] WHERE SampleTime BETWEEN '" + begin + "' AND '" + end +"' order by ID"
+                    sql = "SELECT  [t|WB_MD],[t|WB_Temp],[t|WB_Water],[SampleTime] FROM [MES].[dbo].[DataHistory] with (INDEX =IX_DataHistory) WHERE SampleTime BETWEEN '" + begin + "' AND '" + end +"' order by ID"
                     re = db_session.execute(sql).fetchall()
                     db_session.close()
                     div = {}
