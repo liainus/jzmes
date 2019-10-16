@@ -8306,15 +8306,15 @@ def JZJFtableSelect():
                 rowsnumber = int(data['rows'])
                 inipage = (pages - 1) * rowsnumber + 0
                 endpage = (pages - 1) * rowsnumber + rowsnumber
-                BillNo = data["BillNo"]
-                if BillNo == "":
+                BatchID = data["BatchID"]
+                if BatchID == "":
                     Count = db_session.query(JZJFtable).filter_by().count()
                     Class = db_session.query(JZJFtable).filter_by().all()[inipage:endpage]
                 else:
                     Count = db_session.query(JZJFtable).filter(
-                        JZJFtable.BillNo == BillNo).count()
+                        JZJFtable.BatchID == BatchID).count()
                     Class = db_session.query(JZJFtable).filter(
-                        JZJFtable.BillNo == BillNo).all()[inipage:endpage]
+                        JZJFtable.BatchID == BatchID).all()[inipage:endpage]
                 jsonoclass = json.dumps(Class, cls=AlchemyEncoder, ensure_ascii=False)
                 return '{"total"' + ":" + str(Count) + ',"rows"' + ":\n" + jsonoclass + "}"
         except Exception as e:
