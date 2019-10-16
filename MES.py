@@ -33,7 +33,7 @@ from Model.core import Enterprise, Area, Factory, ProductLine, ProcessUnit, Equi
 from Model.system import Role, Organization, User, Menu, Role_Menu, BatchMaterielBalance, OperationManual, NewReadyWork, \
     EquipmentWork, EletronicBatchDataStore, SpareStock, EquipmentMaintenanceKnowledge, EquipmentMaintain, \
     SchedulePlan, SparePartInStockManagement, SparePartStock, Area, Instruments, MaintenanceStatus, MaintenanceCycle, \
-    plantCalendarScheduling
+    plantCalendarScheduling, JZJFtable
 from equipment_model.equipment_cycleDiagnosis import diagnosis
 from tools.MESLogger import MESLogger
 from Model.core import SysLog, MaterialBOM
@@ -8273,6 +8273,55 @@ def electronicBatchRecordNav3():
 @app.route('/electronicBatchRecordjzjf')
 def electronicBatchRecordjzjf():
     return render_template('electronicBatchRecordjzjf.html')
+
+#备件类型增加
+@Process.route('/JZJFtableCreate', methods=['GET', 'POST'])
+def JZJFtableCreate():
+    if request.method == 'POST':
+        data = request.values
+        return insert(JZJFtable, data)
+
+#备件类型修改
+@Process.route('/JZJFtableUpdate', methods=['GET', 'POST'])
+def JZJFtableUpdate():
+    if request.method == 'POST':
+        data = request.values
+        return update(JZJFtable, data)
+
+#备件类型删除
+@Process.route('/JZJFtableDetele', methods=['GET', 'POST'])
+def JZJFtableDetele():
+    if request.method == 'POST':
+        data = request.values
+        return delete(JZJFtable, data)
+
+@Process.route('/JZJFtableSelect', methods=['GET', 'POST'])
+def JZJFtableSelect():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                pages = int(data['page'])
+                rowsnumber = int(data['rows'])
+                inipage = (pages - 1) * rowsnumber + 0
+                endpage = (pages - 1) * rowsnumber + rowsnumber
+                BillNo = data["BillNo"]
+                if BillNo == "":
+                    Count = db_session.query(JZJFtable).filter_by().count()
+                    Class = db_session.query(JZJFtable).filter_by().all()[inipage:endpage]
+                else:
+                    Count = db_session.query(JZJFtable).filter(
+                        JZJFtable.BillNo == BillNo).count()
+                    Class = db_session.query(JZJFtable).filter(
+                        JZJFtable.BillNo == BillNo).all()[inipage:endpage]
+                jsonoclass = json.dumps(Class, cls=AlchemyEncoder, ensure_ascii=False)
+                return '{"total"' + ":" + str(Count) + ',"rows"' + ":\n" + jsonoclass + "}"
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "WMStatusLoadSelect查询报错Error：" + str(e), current_user.Name)
+            return json.dumps("WMStatusLoadSelect查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 if __name__ == '__main__':
     app.run(debug=True)

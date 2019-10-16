@@ -1823,7 +1823,26 @@ class Instrumentation(Base):
     # 更新时间
     UpdateTime = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
+# 净肿节风
+class JZJFtable(Base):
+    __tablename__ = 'JZJFtable'
+    # id:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
 
+    # 批次号:
+    BatchID = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 品名ID
+    BrandID = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 品名:
+    BrandName = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 工艺段:
+    PUID = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
+
+    # 工艺路线名称:
+    PDUnitRouteName = Column(Unicode(64), primary_key=False, autoincrement=False, nullable=True)
 
 
 # 生成表单的执行语句
