@@ -4,247 +4,154 @@
     <meta charset="UTF-8">
     <title>微波实时数据</title>
     <link rel="stylesheet" href="../static/css/bootstrap.min.css">
-    <script type="text/javascript" src="../static/js/echarts.common.min.js"></script>
     <script type="text/javascript" src="../static/js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="../static/highcharts/highcharts.js"></script>
     <script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="../static/js/bootbox.min.js"></script>
     <script>
         $(function(){
-            if ("WebSocket" in window){
-                var ws = new WebSocket("ws://192.168.100.150:5003");
+            $(".pull-right").on('click',function(){
+                addTab("微波历史数据","/WBdatahistorypage")
+            })
+
+            //highchart 实时数据趋势图
+            var ws = new WebSocket("ws://192.168.100.150:5003");
+            websocket()
+            function websocket(){
                 ws.onopen = function(){
                     ws.send("hello");
                     console.log("数据发送中...");
                 };
-                ws.onmessage = function (evt){
-                    var received_msg = evt.data;
-                    received_msg = JSON.parse(received_msg)
-                    $("#MD").html(received_msg.WB_MD)
-                    $("#WD").html(received_msg.WB_WD)
-                    $("#SF").html(received_msg.WB_SF)
-                };
-                ws.onclose = function(){
-                    console.log("连接已关闭...");
-                    var dialog = bootbox.dialog({
-                        message: '<p class="text-center mb-0"><i class="fa fa-spin fa-cog"></i>连接服务失败，即将重连...</p>',
-                        closeButton: false
-                    });
-                    dialog.init(function(){
-                        setTimeout(function(){
-                            dialog.modal('hide');
-                        }, 2000);
-                    });
-                    var socket = new WebSocket("ws://111.75.201.235:5003");
-                    socket.onopen = function(){
-                        socket.send("hello");
-                        console.log("数据发送中...");
-                    };
-                    socket.onmessage = function (evt){
-                        var received_msg = evt.data;
-                        received_msg = JSON.parse(received_msg)
-                        $("#MD").html(received_msg.WB_MD)
-                        $("#WD").html(received_msg.WB_WD)
-                        $("#SF").html(received_msg.WB_SF)
-                    };
-                    socket.onclose = function(){
-                        console.log("连接已关闭...");
-                    };
-                };
-                ws.onerror = function() {
-
-                }
-            }else{
-               bootbox.alert("您的浏览器不支持 WebSocket！无法查看实时数据。");
             }
-
-            $(".pull-right").on('click',function(){
-                addTab("微波历史数据","/WBdatahistorypage")
-            })
-            var myDiv = document.getElementById("main")
-            var myChartContainer = function () {
-                var width = $("#chartBox").width()
-                myDiv.style.width = width +'px';
-            };
-            myChartContainer();
-            var myChart = echarts.init(myDiv)
-            myChart.showLoading();
-            $.ajax({
-                url: '/WBDataHistory',
-                type: 'get',
-                data: {
-                    begin:myformatter(new Date(new Date().getTime() - 5*60*1000)),
-                    end:myformatter(new Date())
-                },
-                success: function (data) {
-                    data = JSON.parse(data)
-                    myChart.hideLoading();
-                    myChart.setOption(option = {
-                        tooltip: {
-                            trigger: 'axis'
-                        },
-                        legend: {
-                            data: ["密度","温度","水分"]
-                        },
-                        toolbox: {
-                            feature: {
-                                mark : {show: true},
-                                dataView: {show: true, readOnly: false},
-                                restore: {show: true},
-                                saveAsImage: {show: true}
-                            }
-                        },
-                        dataZoom: {
-                            show: true,
-                            start : 0
-                        },
-                        grid: {
-                            y2: 80
-                        },
-                        xAxis: {
-                            type : 'time',
-                            splitNumber:10
-                        },
-                        yAxis: {
-                            type : 'value',
-                            axisLabel: {
-                                formatter: '{value}'
-                            }
-                        },
-                        series: [{
-                            name: "密度",
-                            type: 'line',
-                            symbol: 'none', //拐点
-                            showAllSymbol: true,
-                            smooth:true,
-                            data: data.MD,
-                            markLine : {
-                                itemStyle: {
-                                    normal: {
-                                        borderWidth: 1,
-                                        lineStyle: {
-                                            type: 'solid',
-                                            width: 2,
-                                            color:"#ffd85c"
-                                        },
-                                        label: {
-                                            formatter: '',
-                                            textStyle: {
-                                                fontSize: 16,
-                                                fontWeight: "bolder",
-                                            },
-                                        }
-                                    },
-                                },
-                                data : [
-                                    {name : '密度上限',yAxis:3},
-                                    {name : '密度下限',yAxis:1}
-                                ]
-                            }
-                        },{
-                            name: "温度",
-                            type: 'line',
-                            symbol: 'none', //拐点
-                            showAllSymbol: true,
-                            smooth:true,
-                            data: data.WD,
-                            markLine : {
-                                itemStyle: {
-                                    normal: {
-                                        borderWidth: 1,
-                                        lineStyle: {
-                                            type: 'solid',
-                                            width: 2,
-                                            color:"#37A2DA"
-                                        },
-                                        label: {
-                                            formatter: '',
-                                            textStyle: {
-                                                fontSize: 16,
-                                                fontWeight: "bolder",
-                                            },
-                                        }
-                                    },
-                                },
-                                data : [
-                                    {name : '温度上限',yAxis:90},
-                                    {name : '温度下限',yAxis:10}
-                                ]
-                            }
-                        },{
-                            name: "水分",
-                            type: 'line',
-                            symbol: 'none', //拐点
-                            showAllSymbol: true,
-                            smooth:true,
-                            data: data.SF,
-                            markLine : {
-                                itemStyle: {
-                                    normal: {
-                                        borderWidth: 1,
-                                        lineStyle: {
-                                            type: 'solid',
-                                            width: 2,
-                                            color:"#008000"
-                                        },
-                                        label: {
-                                            formatter: '',
-                                            textStyle: {
-                                                fontSize: 16,
-                                                fontWeight: "bolder",
-                                            },
-                                        }
-                                    },
-                                },
-                                data : [
-                                    {name : '水分上限',yAxis:10},
-                                    {name : '水分下限',yAxis:1}
-                                ]
-                            }
-                        }]
-                    });
-                    myChart.setOption(option);
+            Highcharts.setOptions({
+                global: {
+                    useUTC: false
                 }
-            })
-            $("#chartBox").resize(function(){
-                myChartContainer();
-                myChart.resize();
-            })
-            $(".markLineFlg").on('blur',function(){
-                var mdTop = $("#mdTop").val()
-                var mdBottom = $("#mdBottom").val()
-                var wdTop = $("#wdTop").val()
-                var wdBottom = $("#wdBottom").val()
-                var sfTop = $("#sfTop").val()
-                var sfBottom = $("#sfBottom").val()
-                option.series[0].markLine.data[0].yAxis = mdTop
-                option.series[0].markLine.data[1].yAxis = mdBottom
-                option.series[1].markLine.data[0].yAxis = wdTop
-                option.series[1].markLine.data[1].yAxis = wdBottom
-                option.series[2].markLine.data[0].yAxis = sfTop
-                option.series[2].markLine.data[1].yAxis = sfBottom
-
-                myChart.setOption(option);
-            })
-            setInterval(function(){
-                getNewChart();
-            }, 3000);
-            function getNewChart(){
-                $.ajax({
-                    url: '/WBDataHistory',
-                    type: 'get',
-                    data: {
-                        begin:myformatter(new Date(new Date().getTime() - 5*60*1000)),
-                        end:myformatter(new Date())
-                    },
-                    success: function (data) {
-                        data = JSON.parse(data)
-                        option.series[0].data = data.MD
-                        option.series[1].data = data.WD
-                        option.series[2].data = data.SF
-                        myChart.setOption(option);
+            });
+            var chart = Highcharts.chart("chartBox", {
+                chart: {
+                    type: 'spline',
+                    marginRight: 10,
+                    events: {
+                        load: function () {
+                            var series1 = this.series[0],
+                                series2 = this.series[1],
+                                series3 = this.series[2],
+                                chart = this;
+                            ws.onmessage = function (evt){
+                                var received_msg = evt.data;
+                                received_msg = JSON.parse(received_msg)
+                                var x = new Date(received_msg.realtime).getTime(),   // 返回时间
+                                    y1 = parseInt(received_msg.WB_MD),
+                                    y2 = parseInt(received_msg.WB_WD),
+                                    y3 = parseInt(received_msg.WB_SF);
+                                series1.addPoint([x, y1], true, true);
+                                series2.addPoint([x, y2], true, true);
+                                series3.addPoint([x, y3], true, true);
+                                $("#MD").html(received_msg.WB_MD)
+                                $("#WD").html(received_msg.WB_WD)
+                                $("#SF").html(received_msg.WB_SF)
+                            };
+                            ws.onclose = function(){
+                                console.log("连接已关闭...");
+                                var dialog = bootbox.dialog({
+                                    message: '<p class="text-center mb-0"><i class="fa fa-spin fa-cog"></i>连接服务失败，即将重连...</p>',
+                                    closeButton: false
+                                });
+                                dialog.init(function(){
+                                    setTimeout(function(){
+                                        dialog.modal('hide');
+                                    }, 2000);
+                                });
+                                var socket = new WebSocket("ws://111.75.201.235:5003");
+                                socket.onopen = function(){
+                                    socket.send("hello");
+                                    console.log("数据发送中...");
+                                };
+                                socket.onmessage = function (evt){
+                                    var received_msg = evt.data;
+                                    received_msg = JSON.parse(received_msg)
+                                    var x = new Date(received_msg.realtime).getTime(),   // 返回时间
+                                        y1 = parseInt(received_msg.WB_MD),
+                                        y2 = parseInt(received_msg.WB_WD),
+                                        y3 = parseInt(received_msg.WB_SF);
+                                    series1.addPoint([x, y1], true, true);
+                                    series2.addPoint([x, y2], true, true);
+                                    series3.addPoint([x, y3], true, true);
+                                    $("#MD").html(received_msg.WB_MD)
+                                    $("#WD").html(received_msg.WB_WD)
+                                    $("#SF").html(received_msg.WB_SF)
+                                };
+                                socket.onclose = function(){
+                                    console.log("连接已关闭...");
+                                };
+                            };
+                        }
                     }
-                })
-            }
+                },
+                title: {
+                    text: null
+                },
+                xAxis: {
+                    type: 'datetime',
+                    tickPixelInterval: 150
+                },
+                yAxis: {
+                    title: {
+                        text: null
+                    }
+                },
+                tooltip: {
+                    formatter: function () {
+                        return '<b>' + this.series.name + '</b><br/>' +
+                            Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
+                            Highcharts.numberFormat(this.y, 2);
+                    }
+                },
+                credits: {
+                    enabled: false//不显示LOGO
+                },
+                series: [{
+                    name: '密度',
+                    data: (function () {
+                        var data = [],
+                            i;
+                        for (i = -19; i <= 0; i += 1) {
+                            data.push({
+                                x: null,
+                                y: 0
+                            });
+                        }
+                        return data;
+                    }())
+                },{
+                    name: '温度',
+                    data: (function () {
+                        var data = [],
+                            i;
+                        for (i = -19; i <= 0; i += 1) {
+                            data.push({
+                                x: null,
+                                y: 0
+                            });
+                        }
+                        return data;
+                    }())
+                },{
+                    name: '水分',
+                    data: (function () {
+                        var data = [],
+                            i;
+                        for (i = -19; i <= 0; i += 1) {
+                            data.push({
+                                x: null,
+                                y: 0
+                            });
+                        }
+                        return data;
+                    }())
+                }]
+            });
             //按钮点击后添加选项卡
             function addTab(title, url) {
                 if (parent.parent.$('.easyui-tabs1').tabs('exists', title)) {
@@ -325,56 +232,7 @@
                 </div>
                 <div class="clearfix" style="border-top:1px solid #e3e5e4;padding: 25px 0;">
                     <div title="微波历史数据" id="chartBox">
-                        <div id="main" style="width: 1000px; height: 540px; margin: 10px auto;"></div>
                     </div>
-                    <form class="col-sm-6">
-                      <div class="form-group">
-                        <label for="">
-                            密度上限
-                            <span style="display: inline-block;margin-bottom:3px;width: 50px;height: 3px;background: #ffd85c;"></span>
-                        </label>
-                        <input type="number" class="form-control markLineFlg" id="mdTop" value="3"/>
-                      </div>
-                      <div class="form-group">
-                        <label for="">
-                            密度下限
-                            <span style="display: inline-block;margin-bottom:3px;width: 50px;height: 3px;background: #ffd85c;"></span>
-                        </label>
-                        <input type="number" class="form-control markLineFlg" id="mdBottom" value="1"/>
-                      </div>
-                    </form>
-                    <form class="col-sm-6">
-                      <div class="form-group">
-                        <label for="">
-                            温度上限
-                            <span style="display: inline-block;margin-bottom:3px;width: 50px;height: 3px;background: #37A2DA;"></span>
-                        </label>
-                        <input type="number" class="form-control markLineFlg" id="wdTop" value="90"/>
-                      </div>
-                      <div class="form-group">
-                        <label for="">
-                            温度下限
-                            <span style="display: inline-block;margin-bottom:3px;width: 50px;height: 3px;background: #37A2DA;"></span>
-                        </label>
-                        <input type="number" class="form-control markLineFlg" id="wdBottom" value="10"/>
-                      </div>
-                    </form>
-                    <form class="col-sm-6">
-                      <div class="form-group">
-                        <label for="">
-                            水分上限
-                            <span style="display: inline-block;margin-bottom:3px;width: 50px;height: 3px;background: #008000;"></span>
-                        </label>
-                        <input type="number" class="form-control markLineFlg" id="sfTop" value="10"/>
-                      </div>
-                      <div class="form-group">
-                        <label for="">
-                            水分下限
-                            <span style="display: inline-block;margin-bottom:3px;width: 50px;height: 3px;background: #008000;"></span>
-                        </label>
-                        <input type="number" class="form-control markLineFlg" id="sfBottom" value="1"/>
-                      </div>
-                    </form>
                 </div>
             </div>
         </div>
