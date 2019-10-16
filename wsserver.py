@@ -115,23 +115,14 @@ def handler_msg(conn):
                 data_dict = {}
                 pool = redis.ConnectionPool(host=constant.REDIS_HOST, password=constant.REDIS_PASSWORD)
                 redis_conn = redis.Redis(connection_pool=pool)
-                # data_dict['JHY_CPG'] = redis_conn.hget(constant.REDIS_TABLENAME, 't|JHY_Item01Result').decode('utf-8')
-                # data_dict['JHY_SF'] = redis_conn.hget(constant.REDIS_TABLENAME, 't|JHY_Item02Result').decode('utf-8')
-                # data_dict['JHY_LJ'] = redis_conn.hget(constant.REDIS_TABLENAME, 't|JHY_Item03Result').decode('utf-8')
-                # data_dict['WB_SF'] = redis_conn.hget(constant.REDIS_TABLENAME, 't|WB_Water').decode('utf-8')
-                # data_dict['WB_WD'] = redis_conn.hget(constant.REDIS_TABLENAME, 't|WB_Temp').decode('utf-8')
-                # data_dict['WB_MD'] = redis_conn.hget(constant.REDIS_TABLENAME, 't|WB_MD').decode('utf-8')
-                # data_dict['ZGY_Temp'] = redis_conn.hget(constant.REDIS_TABLENAME, "t|ZGY_Temp").decode('utf-8')
-                # data_dict['ZGY_ZGL'] = redis_conn.hget(constant.REDIS_TABLENAME, "t|ZGY_ZGL").decode('utf-8')
-                data_dict['JHY_CPG'] = "12"
-                data_dict['JHY_SF'] = "13"
-                data_dict['JHY_LJ'] = "41"
-                data_dict['WB_SF'] = "23"
-                data_dict['WB_WD'] = "45"
-                data_dict['WB_MD'] = "67"
-                data_dict['ZGY_Temp'] = "76"
-                data_dict['ZGY_ZGL'] = "78"
-
+                data_dict['JHY_CPG'] = redis_conn.hget(constant.REDIS_TABLENAME, 't|JHY_Item01Result').decode('utf-8')
+                data_dict['JHY_SF'] = redis_conn.hget(constant.REDIS_TABLENAME, 't|JHY_Item02Result').decode('utf-8')
+                data_dict['JHY_LJ'] = redis_conn.hget(constant.REDIS_TABLENAME, 't|JHY_Item03Result').decode('utf-8')
+                data_dict['WB_SF'] = redis_conn.hget(constant.REDIS_TABLENAME, 't|WB_Water').decode('utf-8')
+                data_dict['WB_WD'] = redis_conn.hget(constant.REDIS_TABLENAME, 't|WB_Temp').decode('utf-8')
+                data_dict['WB_MD'] = redis_conn.hget(constant.REDIS_TABLENAME, 't|WB_MD').decode('utf-8')
+                data_dict['ZGY_Temp'] = redis_conn.hget(constant.REDIS_TABLENAME, "t|ZGY_Temp").decode('utf-8')
+                data_dict['ZGY_ZGL'] = redis_conn.hget(constant.REDIS_TABLENAME, "t|ZGY_ZGL").decode('utf-8')
                 data_dict['realtime'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 json_data = json.dumps(data_dict, cls=AlchemyEncoder, ensure_ascii=False)
                 # bytemsg = bytes(json_data, encoding="utf8")
