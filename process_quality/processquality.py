@@ -655,7 +655,7 @@ def impowerSelect():
             imp.filter.add('http://WebXml.com.cn/')
             doctor = ImportDoctor(imp)
             client = Client(Model.Global.EmpowerURL, doctor=doctor)
-            userzj = db_session.query(User).filter(User.Name == "tly042").first()
+            userzj = db_session.query(User).filter(User.Name == "dw5213").first()
             re = client.service.GetAllEmpowerProject(userzj.Name, userzj.Password)
             if re[2] == 'OK':
                 ret = re[0]
@@ -690,7 +690,7 @@ def impowerSelectData():
             imp.filter.add('http://WebXml.com.cn/')
             doctor = ImportDoctor(imp)
             client = Client(Model.Global.EmpowerURL, doctor=doctor)  # 创建一个webservice接口对象
-            userzj = db_session.query(User).filter(User.Name == "tly042").first()
+            userzj = db_session.query(User).filter(User.Name == "dw5213").first()
             re = client.service.GetEmpowerProjectItem(userzj.Name, userzj.Password, projectName, "*")
             datadir = []
             if re[2] == 'OK':
@@ -737,7 +737,7 @@ def impowerPeakItemSelect():
             imp.filter.add('http://WebXml.com.cn/')
             doctor = ImportDoctor(imp)
             client = Client(Model.Global.EmpowerURL, doctor=doctor)  # 创建一个webservice接口对象
-            userzj = db_session.query(User).filter(User.Name == "tly042").first()
+            userzj = db_session.query(User).filter(User.Name == "dw5213").first()
             re = client.service.GetEmpowerPeakItem(userzj.Name, userzj.Password, projectName, "结果ID", ResultID)
             datadir = []
             if re[2] == 'OK':
@@ -780,7 +780,7 @@ def impowerIniDataSelect():
             imp.filter.add('http://WebXml.com.cn/')
             doctor = ImportDoctor(imp)
             client = Client(Model.Global.EmpowerURL, doctor=doctor)  # 创建一个webservice接口对象
-            userzj = db_session.query(User).filter(User.Name == "tly042").first()#userzj.Name, userzj.Password, "成品组\\2017健胃消食片浸膏粉橙皮苷含量", "样品名称", "17116003-2", "样品瓶", "	67", "进样", "2"
+            userzj = db_session.query(User).filter(User.Name == "dw5213").first()#userzj.Name, userzj.Password, "成品组\\2017健胃消食片浸膏粉橙皮苷含量", "样品名称", "17116003-2", "样品瓶", "	67", "进样", "2"
             re = client.service.GetEmpowerIniData(userzj.Name, userzj.Password, projectName, "样品名称", SampleName, "样品瓶", SampleBottle, "进样", Sampling)
             dir = {}
             list1 = []
