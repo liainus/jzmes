@@ -8266,9 +8266,13 @@ def ZYPlanWMSSelect():
             insertSyslog("error", "/ZYPlanWMSSelect报错Error：" + str(e), current_user.Name)
             return json.dumps("ZYPlanWMS查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
-@app.route('/aaaaa')
-def aaaaa():
-    return render_template('energyRedisData.html')
+@app.route('/electronicBatchRecordNav3')
+def electronicBatchRecordNav3():
+    return render_template('electronicBatchRecordNav3.html')
+
+@app.route('/electronicBatchRecordjzjf')
+def electronicBatchRecordjzjf():
+    return render_template('electronicBatchRecordjzjf.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
