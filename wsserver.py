@@ -124,13 +124,13 @@ def handler_msg(conn):
                 # data_dict['ZGY_Temp'] = redis_conn.hget(constant.REDIS_TABLENAME, "t|ZGY_Temp").decode('utf-8')
                 # data_dict['ZGY_ZGL'] = redis_conn.hget(constant.REDIS_TABLENAME, "t|ZGY_ZGL").decode('utf-8')
                 data_dict['JHY_CPG'] = "12"
-                data_dict['JHY_SF'] = "12"
-                data_dict['JHY_LJ'] = "12""12"
-                data_dict['WB_SF'] = "12"
-                data_dict['WB_WD'] = "12"
-                data_dict['WB_MD'] = "12"
-                data_dict['ZGY_Temp'] = "12"
-                data_dict['ZGY_ZGL'] = "12"
+                data_dict['JHY_SF'] = "13"
+                data_dict['JHY_LJ'] = "41"
+                data_dict['WB_SF'] = "23"
+                data_dict['WB_WD'] = "45"
+                data_dict['WB_MD'] = "67"
+                data_dict['ZGY_Temp'] = "76"
+                data_dict['ZGY_ZGL'] = "78"
 
                 data_dict['realtime'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 json_data = json.dumps(data_dict, cls=AlchemyEncoder, ensure_ascii=False)
