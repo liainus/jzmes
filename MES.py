@@ -8306,10 +8306,10 @@ def JZJFtableSelect():
         try:
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 10:
-                pages = int(data['page'])
-                rowsnumber = int(data['rows'])
-                inipage = (pages - 1) * rowsnumber + 0
-                endpage = (pages - 1) * rowsnumber + rowsnumber
+                pages = int(data['page'])  # 页数
+                rowsnumber = int(data['rows'])  # 行数
+                inipage = (pages - 1) * rowsnumber + 0  # 起始页
+                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
                 BatchID = data["BatchID"]
                 if BatchID == "":
                     Count = db_session.query(JZJFtable).filter_by().count()
