@@ -715,8 +715,7 @@ def impowerSelectData():
                     else:
                         a = a + 1
                         continue
-                s = sorted(datadir, key=attrgetter('ResultID'))
-                newdatadir = sorted(s, key=attrgetter('ResultID'), reverse=True)
+                newdatadir = sorted(datadir, key=lambda imp: int(imp.ResultID), reverse=True)
                 jsonoclass = json.dumps(newdatadir, cls=AlchemyEncoder, ensure_ascii=False)
                 return jsonoclass
             else:
