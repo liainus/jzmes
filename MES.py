@@ -8273,8 +8273,10 @@ def electronicBatchRecordNav3():
 @app.route('/electronicBatchRecordjzjf')
 def electronicBatchRecordjzjf():
     data = request.values
-    PUID = data.get("PUID")
-    return render_template('electronicBatchRecordjzjf.html', PUID = PUID)
+    title = data.get("title")
+    BrandID = data.get("BrandID")
+    BatchID = data.get("BatchID")
+    return render_template('electronicBatchRecordjzjf.html', title = title, BatchID=BatchID)
 
 #备件类型增加
 @Process.route('/JZJFtableCreate', methods=['GET', 'POST'])
