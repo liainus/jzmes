@@ -8310,7 +8310,7 @@ def JZJFtableSelect():
                 rowsnumber = int(data['rows'])  # 行数
                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
-                BatchID = data["BatchID"]
+                BatchID = data.get("BatchID")
                 if BatchID == "":
                     Count = db_session.query(JZJFtable).filter_by().count()
                     Class = db_session.query(JZJFtable).filter_by().all()[inipage:endpage]
