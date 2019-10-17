@@ -8279,27 +8279,27 @@ def electronicBatchRecordjzjf():
     return render_template('electronicBatchRecordjzjf.html', title = title, BatchID=BatchID)
 
 #备件类型增加
-@Process.route('/JZJFtableCreate', methods=['GET', 'POST'])
+@app.route('/JZJFtableCreate', methods=['GET', 'POST'])
 def JZJFtableCreate():
     if request.method == 'POST':
         data = request.values
         return insert(JZJFtable, data)
 
 #备件类型修改
-@Process.route('/JZJFtableUpdate', methods=['GET', 'POST'])
+@app.route('/JZJFtableUpdate', methods=['GET', 'POST'])
 def JZJFtableUpdate():
     if request.method == 'POST':
         data = request.values
         return update(JZJFtable, data)
 
 #备件类型删除
-@Process.route('/JZJFtableDetele', methods=['GET', 'POST'])
+@app.route('/JZJFtableDetele', methods=['GET', 'POST'])
 def JZJFtableDetele():
     if request.method == 'POST':
         data = request.values
         return delete(JZJFtable, data)
 
-@Process.route('/JZJFtableSelect', methods=['GET', 'POST'])
+@app.route('/JZJFtableSelect', methods=['GET', 'POST'])
 def JZJFtableSelect():
     if request.method == 'GET':
         data = request.values
