@@ -179,8 +179,8 @@
         <button class="btn btn-primary" id="renderPdf">导出pdf</button>
     </div>
     <div class="col-md-12" id="pdfMain" style="font-size: 14px;padding-top: 20px;background-color: #ffffff;">
-        <input type="hidden" id="PUID" value={{ PUID }}>
-        {% if isIn(['挑选'], session.get('title')) %}
+{#        <input type="hidden" id="PUID" value={{ PUID }}>#}
+        {% if session.get('title') == '挑选' %}
             <table class="table table-bordered">
                 <thead>
                     <tr>
@@ -851,7 +851,7 @@
             </table>
         {% endif %}
 
-        {% if isIn(['洗润'], session.get('title')) %}
+        {% if session.get('title') == '洗润' %}
             <table class="table table-bordered">
                 <thead>
                     <tr>
@@ -1225,7 +1225,7 @@
             </table>
         {% endif %}
 
-        {% if isIn(['切制'], session.get('title')) %}
+        {% if session.get('title') == '切制' %}
             <table class="table table-bordered">
                 <thead>
                     <tr>
@@ -1574,7 +1574,7 @@
             </table>
         {% endif %}
 
-        {% if isIn(['烘干'], session.get('title')) %}
+        {% if session.get('title') == '烘干' %}
             <table class="table table-bordered">
                 <thead>
                     <tr>

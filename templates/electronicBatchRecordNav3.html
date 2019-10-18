@@ -165,9 +165,9 @@
                 var text = $(this).html()
                 var rows = $("#tab").datagrid('getSelections');
                 if(rows.length == 1){
-                    addTab(rows[0].BatchID +"（" + text +"）","/electronicBatchRecordjzjf?title=" + text + "&ID=" + rows[0].ID + "&BrandID=" + rows[0].BrandID)
+                    addTab(rows[0].BatchID +"（" + text +"）","/electronicBatchRecordjzjf?title=" + text)
                 }else{
-                    //$.messager.alert('提示', "请选择计划", 'info');
+                    $.messager.alert('提示', "请选择计划", 'info');
                 }
             })
         })
