@@ -8272,11 +8272,23 @@ def electronicBatchRecordNav3():
 
 @app.route('/electronicBatchRecordjzjf')
 def electronicBatchRecordjzjf():
-    data = request.values
-    title = data.get("title")
-    BrandID = data.get("BrandID")
-    BatchID = data.get("BatchID")
-    return render_template('electronicBatchRecordjzjf.html', title = title, BatchID=BatchID)
+    try:
+        data = request.values
+        title = data.get("title")
+        BatchID = "123"
+        session['title'] = title
+        session['BatchID'] = BatchID
+        dir = []
+        dic = {}
+        dic["OperationPeople_a1"] = "123"
+        dic["CheckedPeople_a1"] = "123"
+        dic["QAConfirmPeople_a1"] = "123"
+        dir.append(dic)
+        return render_template('electronicBatchRecordjzjf.html', title=title, dir=dir)
+    except Exception as e:
+        print(e)
+        logger.error(e)
+        return json.dumps([{"status": "Error:" + str(e)}], cls=AlchemyEncoder, ensure_ascii=False)
 
 #备件类型增加
 @app.route('/JZJFtableCreate', methods=['GET', 'POST'])
