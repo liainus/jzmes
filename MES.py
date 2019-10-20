@@ -8283,6 +8283,14 @@ def electronicBatchRecordjzjf():
         dic["OperationPeople_a1"] = "123"
         dic["CheckedPeople_a1"] = "123"
         dic["QAConfirmPeople_a1"] = "123"
+        Newoclass = db_session.query(NewReadyWork).filter(NewReadyWork.BrandID == oclass.BrandID,
+                                                          NewReadyWork.PUID == Pclass.PUID, NewReadyWork.BatchID ==
+                                                          oclass.BatchID, NewReadyWork.Type == "32").first()
+        if (Newoclass != None):
+            dic["OperationPeople_a2"] = Newoclass.OperationPeople
+            dic["CheckedPeople_a2"] = Newoclass.CheckedPeople
+            if Newoclass.CheckedPeople == None:
+                dic["CheckedPeople_a2"] = ""
         dir.append(dic)
         return render_template('electronicBatchRecordjzjf.html', title=title, dir=dir)
     except Exception as e:
