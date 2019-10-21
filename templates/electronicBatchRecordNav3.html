@@ -146,12 +146,6 @@
                         </td>
                     </tr>
                     <tr>
-                        <td class="kv-label">品名</td>
-                        <td class="kv-content">
-                            <input name="BrandName" id="BrandName" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
-                        </td>
-                    </tr>
-                    <tr>
                         <td class="kv-label">批量</td>
                         <td class="kv-content">
                             <input name="BatchNum" id="BatchNum" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
@@ -180,7 +174,6 @@
                     $("#batchRecordClassDialog").dialog('open').dialog('setTitle','新增批次');
                     $('#ID').val("");
                     $("#BatchID").val("")
-                    $("#BrandName").val("")
                     $("#BatchNum").val("")
                 },
                 updata:function(){
@@ -193,7 +186,6 @@
                             $("#batchRecordClassDialog").dialog('open').dialog('setTitle','修改批次信息');
                             $('#ID').val(row.ID);
                             $("#BatchID").val(row.BatchID)
-                            $("#BrandName").val(row.BrandName)
                             $("#BatchNum").val(row.BatchNum)
                         };
                     } else if (rows.length == 0) {
@@ -235,9 +227,6 @@
                     if(Bee.StringUtils.isEmpty($('#BatchID').val())){
                         $.messager.alert('提示', '批次号不能为空！', 'info');
                         return false;
-                    }else if(Bee.StringUtils.isEmpty($('#BrandName').val())){
-                        $.messager.alert('提示', '品名不能为空！', 'info');
-                        return false;
                     }else if(Bee.StringUtils.isEmpty($('#BatchNum').val())){
                         $.messager.alert('提示', '批量不能为空！', 'info');
                         return false;
@@ -256,8 +245,9 @@
                         data:{
                             ID:$('#ID').val(),
                             BatchID:$('#BatchID').val(),
-                            BrandName:$('#BrandName').val(),
-                            BatchNum:$('#BatchNum').val()
+                            BrandName:"净肿节风",
+                            BatchNum:$('#BatchNum').val(),
+                            BrandID:"1000"
                         },
                         success:function(data){
                             $.messager.progress('close');
