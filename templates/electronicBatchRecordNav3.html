@@ -124,9 +124,47 @@
                 <th field="ck" checkbox="true"></th>
                 <th data-options="field:'BatchID',width:200,align:'center'">批次号</th>
                 <th data-options="field:'BrandName',width:150,align:'center'">品名</th>
+                <th data-options="field:'BatchNum',width:150,align:'center'">批量</th>
             </tr>
         </thead>
     </table>
+    <div id="batchRecordClassDialog" class="easyui-dialog" style="width:400px;height:300px;padding:10px;"
+         data-options="closed:'true',buttons:'#fileClassDialogButtons',modal:true">
+        <form id="fileClassDialogForm" method="post" class="dialog-form" enctype="multipart/form-data">
+            <table class="kv-table">
+                <tbody>
+                    <tr>
+                        <td class="kv-label">ID</td>
+                        <td class="kv-content">
+                            <input name="ID" id="ID" type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="" disabled="disabled">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="kv-label">批次号</td>
+                        <td class="kv-content">
+                            <input name="BatchID" id="BatchID" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="kv-label">品名</td>
+                        <td class="kv-content">
+                            <input name="BrandName" id="BrandName" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="kv-label">批量</td>
+                        <td class="kv-content">
+                            <input name="BatchNum" id="BatchNum" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div id="fileClassDialogButtons">
+                <a href="#" class="easyui-linkbutton"  data-options="iconCls:'icon-save'" onclick="toolbar.Save()">保存</a>
+                <a href="#" class="easyui-linkbutton" onclick="$('#batchRecordClassDialog').dialog('close')">关闭</a>
+            </div>
+        </form>
+    </div>
     <script>
         $(function(){
             CollectToolbar = {
@@ -140,15 +178,111 @@
                 },
                 add:function(){
                     $("#batchRecordClassDialog").dialog('open').dialog('setTitle','新增批次');
-                    $('#ID').val();
-                    $("#BatchID").val()
-                    $("#BrandName").val()
+                    $('#ID').val("");
+                    $("#BatchID").val("")
+                    $("#BrandName").val("")
+                    $("#BatchNum").val("")
                 },
                 updata:function(){
-
+                    var rows = $('#tab').datagrid('getSelections');
+                    if (rows.length > 1) {
+                        $.messager.alert('警告操作！', '编辑记录只能选定一条数据！', 'warning');
+                    } else if (rows.length == 1) {
+                        var row = $('#tab').datagrid('getSelected');
+                        if (row) {
+                            $("#batchRecordClassDialog").dialog('open').dialog('setTitle','修改批次信息');
+                            $('#ID').val(row.ID);
+                            $("#BatchID").val(row.BatchID)
+                            $("#BrandName").val(row.BrandName)
+                            $("#BatchNum").val(row.BatchNum)
+                        };
+                    } else if (rows.length == 0) {
+                        $.messager.alert('警告操作！', '请至少选定一条数据进行编辑！', 'warning');
+                    }
                 },
                 delete:function(){
-
+                    var rows = $("#tab").datagrid('getSelections');
+                    if (rows.length > 0) {
+                        var jsonarray=[];
+                        $.messager.confirm('确定操作', '您正在删除所选的记录吗？', function (flag) {
+                            if (flag) {
+                                for (var i = 0; i < rows.length; i++) {
+                                    var obj=createKeyIDObj(parseInt(rows[i].ID));
+                                    jsonarray.push(obj);
+                                }
+                                var a = JSON.stringify(jsonarray);
+                                $.ajax({
+                                    url: '/JZJFtableDetele',
+                                    method: 'POST',
+                                    data: a,
+                                    success: function (data) {
+                                        if(data == "OK"){
+                                            $.messager.progress('close');
+                                            $("#tab").datagrid('reload');
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                    } else {
+                        $.messager.alert('提示', '请选择要删除的记录！', 'info');
+                    }
+                },
+                Save:function(){
+                    var strID = $('#ID').val();
+                    var urlAddr = ''
+                    var hintinfo = ''
+                    if(Bee.StringUtils.isEmpty($('#BatchID').val())){
+                        $.messager.alert('提示', '批次号不能为空！', 'info');
+                        return false;
+                    }else if(Bee.StringUtils.isEmpty($('#BrandName').val())){
+                        $.messager.alert('提示', '品名不能为空！', 'info');
+                        return false;
+                    }else if(Bee.StringUtils.isEmpty($('#BatchNum').val())){
+                        $.messager.alert('提示', '批量不能为空！', 'info');
+                        return false;
+                    }
+                    if (strID.length >= 1){
+                        urlAddr = '/JZJFtableUpdate'
+                        hintinfo = "修改批次"
+                    }
+                    else {
+                        urlAddr = '/JZJFtableCreate'
+                        hintinfo = "新增批次"
+                    }
+                    $.ajax({
+                        url:urlAddr,
+                        type:"post",
+                        data:{
+                            ID:$('#ID').val(),
+                            BatchID:$('#BatchID').val(),
+                            BrandName:$('#BrandName').val(),
+                            BatchNum:$('#BatchNum').val()
+                        },
+                        success:function(data){
+                            $.messager.progress('close');
+                            if(data == "OK"){
+                                $.messager.show({
+                                    title: '提示',
+                                    msg: hintinfo  + '成功',
+                                    timeout:1000,
+                                    style: {
+                                        right: '',
+                                        top: document.body.scrollTop + document.documentElement.scrollTop,
+                                        bottom: ''
+                                    }
+                                });
+                                $("#batchRecordClassDialog").dialog('close');
+                                $('#tab').datagrid('reload');
+                            } else {
+                                $.messager.alert('请求失败！', '未知错误导致失败，请重试！', 'warning');
+                            }
+                        },
+                        error: function(data){
+                           console.log(data.responseText)
+                           alert(hintinfo+ "异常，请刷新后重试...");
+                        },
+                    })
                 },
                 refresh:function(){
                     $("#tab").datagrid('load')
@@ -165,7 +299,7 @@
                 var text = $(this).html()
                 var rows = $("#tab").datagrid('getSelections');
                 if(rows.length == 1){
-                    addTab(rows[0].BatchID +"（" + text +"）","/electronicBatchRecordjzjf?title=" + text)
+                    addTab(rows[0].BatchID +"（" + text +"）","/electronicBatchRecordjzjf?title=" + text + "&ID=" + rows[0].ID)
                 }else{
                     $.messager.alert('提示', "请选择计划", 'info');
                 }
