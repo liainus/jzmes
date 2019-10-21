@@ -8275,12 +8275,14 @@ def electronicBatchRecordjzjf():
     try:
         data = request.values
         title = data.get("title")
-        BrandID = data.get("BrandID")
-        PUID = data.get("PUID")
-        BatchID = data.get("BatchID")
-        Type = data.get("Type")
-
-        BatchID = "123"
+        ID = data.get("ID")
+        oclass = db_session.query(JZJFtable).filter(JZJFtable.ID == ID).first()
+        PUID = data.get("title")
+        BatchID = oclass.BatchID
+        Type = oclass.Type
+        BatchNum = oclass.BatchNum
+        BrandName = oclass.BrandName
+        BarndID = oclass.BarndID
         session['title'] = title
         session['BatchID'] = BatchID
         dir = []
@@ -8288,7 +8290,7 @@ def electronicBatchRecordjzjf():
         dic["OperationPeople_a1"] = "123"
         dic["CheckedPeople_a1"] = "123"
         dic["QAConfirmPeople_a1"] = "123"
-        Newoclass = db_session.query(NewReadyWork).filter(NewReadyWork.BrandID == BrandID,
+        Newoclass = db_session.query(NewReadyWork).filter(NewReadyWork.BrandID == BarndID,
                                                           NewReadyWork.PUID == PUID, NewReadyWork.BatchID ==
                                                           BatchID, NewReadyWork.Type == Type).first()
         if (Newoclass != None):
@@ -8297,7 +8299,7 @@ def electronicBatchRecordjzjf():
             if Newoclass.CheckedPeople == None:
                 dic["CheckedPeople_a2"] = ""
         dir.append(dic)
-        return render_template('electronicBatchRecordjzjf.html', title=title, dir=dir)
+        return render_template('electronicBatchRecordjzjf.html', title=title, dir=dir, BatchID=BatchID, BatchNum=BatchNum, BrandName=BrandName)
     except Exception as e:
         print(e)
         logger.error(e)
