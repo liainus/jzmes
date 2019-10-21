@@ -1836,7 +1836,7 @@ class JZJFtable(Base):
     BatchNum = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
     # 品名ID
-    BrandID = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+    BrandID = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
 
     # 品名:
     BrandName = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
