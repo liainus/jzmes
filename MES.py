@@ -8275,6 +8275,11 @@ def electronicBatchRecordjzjf():
     try:
         data = request.values
         title = data.get("title")
+        BrandID = data.get("BrandID")
+        PUID = data.get("PUID")
+        BatchID = data.get("BatchID")
+        Type = data.get("Type")
+
         BatchID = "123"
         session['title'] = title
         session['BatchID'] = BatchID
@@ -8283,9 +8288,9 @@ def electronicBatchRecordjzjf():
         dic["OperationPeople_a1"] = "123"
         dic["CheckedPeople_a1"] = "123"
         dic["QAConfirmPeople_a1"] = "123"
-        Newoclass = db_session.query(NewReadyWork).filter(NewReadyWork.BrandID == oclass.BrandID,
-                                                          NewReadyWork.PUID == Pclass.PUID, NewReadyWork.BatchID ==
-                                                          oclass.BatchID, NewReadyWork.Type == "32").first()
+        Newoclass = db_session.query(NewReadyWork).filter(NewReadyWork.BrandID == BrandID,
+                                                          NewReadyWork.PUID == PUID, NewReadyWork.BatchID ==
+                                                          BatchID, NewReadyWork.Type == Type).first()
         if (Newoclass != None):
             dic["OperationPeople_a2"] = Newoclass.OperationPeople
             dic["CheckedPeople_a2"] = Newoclass.CheckedPeople
