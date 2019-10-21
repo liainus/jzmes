@@ -408,7 +408,7 @@
                     <tr>
                         <td>质量控制</td>
                         <td>是否符合要求</td>
-                        <td>QA确认人</td>
+                        <td rowspan="2">QA确认人</td>
                         <td class="middle-center" rowspan="2">
                             <input type="hidden" id="QAreadycheckbox" value={{ dir[0]["QAConfirmPeople_a1"] }}>
                             {% if '82' == flag %}
@@ -431,8 +431,8 @@
                         <td><label class="checkbox-inline"><input type="checkbox" name="readycheckbox"> 是 / 否</label></td>
                     </tr>
                     <tr>
-                        <td>生产过程是否符合安全管理规定</td>
-                        <td><label class="checkbox-inline"><input type="checkbox" name="readycheckbox"> 是 / 否</label></td>
+                        <td colspan="2">生产过程是否符合安全管理规定</td>
+                        <td colspan="2"><label class="checkbox-inline"><input type="checkbox" name="readycheckbox"> 是 / 否</label></td>
                     </tr>
                 </tbody>
             </table>
@@ -468,7 +468,7 @@
                                 {{ dir[0]["OperationPeople_a4"] }}
                             {% endif %}
                         </td>
-                        <td rowspan="5" class="middle-center">
+                        <td rowspan="4" class="middle-center">
                             {% if '82' == flag %}
                                 {{ dir[0]["CheckedPeople_a4"] }}
                             {% endif %}
@@ -1093,7 +1093,7 @@
                                 {{ dir[0]["OperationPeople_a4"] }}
                             {% endif %}
                         </td>
-                        <td rowspan="5" class="middle-center">
+                        <td rowspan="4" class="middle-center">
                             {% if '82' == flag %}
                                 {{ dir[0]["CheckedPeople_a4"] }}
                             {% endif %}
@@ -1153,7 +1153,7 @@
                     </tr>
                 </tbody>
             </table>
-            <!--挑选设备-->
+            <!--洗润设备-->
             <table class="table table-bordered">
                 <thead>
                     <tr>
@@ -1356,13 +1356,8 @@
                     </tr>
                     <tr>
                         <td>参数控制</td>
-                        <td>
-                            <div class="input-group">
-                                <input type="text" class="form-control batchInput" id="baggingOff1">
-                                <div class="input-group-addon">r/min</div>
-                            </div>
-                        </td>
-                        <td><label class="checkbox-inline"><input type="checkbox" name="readycheckbox"> 是 / 否</label></td>
+                        <td>转速</td>
+                        <td>是否符合要求</td>
                         <td rowspan="3" class="middle-center">
                             <input type="hidden" id="readycheckbox" value={{ dir[0]["OperationPeople_a1"] }}>
                             {% if '82' == flag %}
@@ -1393,6 +1388,16 @@
                         </td>
                     </tr>
                     <tr>
+                        <td>剁刀式切药机运行转速：600~1200r/min</td>
+                        <td>
+                            <div class="input-group">
+                                <input type="text" class="form-control batchInput" id="baggingOff1">
+                                <div class="input-group-addon">r/min</div>
+                            </div>
+                        </td>
+                        <td colspan="2"><label class="checkbox-inline"><input type="checkbox" name="readycheckbox"> 是 / 否</label></td>
+                    </tr>
+                    <tr>
                         <td>结束时间</td>
                         <td colspan="2"><input type="text" value="" class="form-control datetimepicker" readonly></td>
                     </tr>
@@ -1419,8 +1424,8 @@
                     </tr>
                 </tbody>
             </table>
-            <!--洗润结束清场-->
-            <h4 class="text-center">洗润结束清场</h4>
+            <!--切制结束清场-->
+            <h4 class="text-center">切制结束清场</h4>
             <table class="table table-bordered">
                 <thead>
                     <tr>
@@ -1451,7 +1456,7 @@
                                 {{ dir[0]["OperationPeople_a4"] }}
                             {% endif %}
                         </td>
-                        <td rowspan="5" class="middle-center">
+                        <td rowspan="4" class="middle-center">
                             {% if '82' == flag %}
                                 {{ dir[0]["CheckedPeople_a4"] }}
                             {% endif %}
@@ -1511,7 +1516,7 @@
                     </tr>
                 </tbody>
             </table>
-            <!--挑选设备-->
+            <!--切制设备-->
             <table class="table table-bordered">
                 <thead>
                     <tr>
@@ -1566,7 +1571,7 @@
                     </tr>
                     <tr>
                         <td colspan="4">生产过程是否符合安全管理规定</td>
-                        <td>
+                        <td colspan="2">
                             <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox"> 是 / 否</label>
                         </td>
                     </tr>
@@ -1700,6 +1705,8 @@
                     <tr>
                         <td>开始时间</td>
                         <td colspan="8"><input type="text" value="" class="form-control datetimepicker" readonly></td>
+                        <td>操作人</td>
+                        <td>复核人</td>
                     </tr>
                     <tr>
                         <td colspan="9">参数控制</td>
@@ -2075,7 +2082,7 @@
                                 {{ dir[0]["OperationPeople_a4"] }}
                             {% endif %}
                         </td>
-                        <td rowspan="5" class="middle-center">
+                        <td rowspan="4" class="middle-center">
                             {% if '82' == flag %}
                                 {{ dir[0]["CheckedPeople_a4"] }}
                             {% endif %}
@@ -2135,7 +2142,7 @@
                     </tr>
                 </tbody>
             </table>
-            <!--挑选设备-->
+            <!--烘干设备-->
             <table class="table table-bordered">
                 <thead>
                     <tr>
@@ -2236,6 +2243,8 @@
                                 <div class="input-group-addon">kg</div>
                             </div>
                         </td>
+                        <td>统计人</td>
+                        <td>复核人</td>
                     </tr>
                     <tr>
                         <td colspan="4">
@@ -2245,10 +2254,41 @@
                                 <div class="input-group-addon">%</div>
                             </div>
                         </td>
+                        <td class="middle-center">
+                            <input type="hidden" id="equipmentCheckbox" value={{ dir[0]["OperationPeople_a5"] }}>
+                            {% if '82' == flag %}
+                                {{ dir[0]["OperationPeople_a5"] }}
+                                <a href="javascript:;" class="btn btn-primary equipmentConfirm" name="操作人">确认</a>
+                            {% endif %}
+                            {% if '83' == flag %}
+                                {{ dir[0]["OperationPeople_a5"] }}
+                            {% endif %}
+                            {% if '84' == flag %}
+                                {{ dir[0]["OperationPeople_a5"] }}
+                            {% endif %}
+                        </td>
+                        <td class="middle-center">
+                            {% if '82' == flag %}
+                                {{ dir[0]["CheckedPeople_a5"] }}
+                            {% endif %}
+                            {% if '83' == flag %}
+                                {% if None == dir[0]["OperationPeople_a5"] or "" == dir[0]["OperationPeople_a5"] %}
+                                {% else %}
+                                    {% if None == dir[0]["CheckedPeople_a5"] or "" == dir[0]["CheckedPeople_a5"] %}
+                                        <a href="javascript:;" class="btn btn-primary equipmentConfirm" name="复核人">确认</a>
+                                    {% else %}
+                                        {{ dir[0]["CheckedPeople_a5"] }}
+                                    {% endif %}
+                                {% endif %}
+                            {% endif %}
+                            {% if '84' == flag %}
+                                {{ dir[0]["CheckedPeople_a5"] }}
+                            {% endif %}
+                        </td>
                     </tr>
                     <tr>
                         <td colspan="4">生产过程是否符合安全管理规定</td>
-                        <td><label class="checkbox-inline"><input type="checkbox" name="readycheckbox"> 是 / 否</label></td>
+                        <td colspan="2"><label class="checkbox-inline"><input type="checkbox" name="readycheckbox"> 是 / 否</label></td>
                     </tr>
                 </tbody>
             </table>
@@ -2259,5 +2299,51 @@
     <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
     <script type="text/javascript" src="../static/js/html2canvas.js"></script>
     <script type="text/javascript" src="../static/js/jsPdf.debug.js"></script>
+    <script>
+        $(function(){
+            //保存输入的表单信息
+            $("#save").on('click',function(){
+                var PUID = $("#PUID").val(),
+                    batchID = $("#batchID").html()
+                $.ajax({
+                    url: 'allUnitDataMutual',
+                    method: 'POST',
+                    data: {
+                        PUID: PUID,
+                        BatchID: batchID,
+                        BrandID:getUrlParam('BrandID'),
+                        PNameProDate:$("#PNameProDate").val(),
+                        startReadyDate:$("#startReadyDate").val(),
+                        endReadyDate:$("#endReadyDate").val(),
+                        startOverDate:$("#startOverDate").val(),
+                        endOverDate:$("#endOverDate").val(),
+                        startStewingDate:$("#startStewingDate").val(),
+                        endStewingDate:$("#endStewingDate").val(),
+
+                        twoFilterCheckbox1:$("#twoFilterCheckbox1").prop("checked"),
+                        twoFilterCheckbox2:$("#twoFilterCheckbox2").prop("checked"),
+                        twoFilterCheckbox3:$("#twoFilterCheckbox3").prop("checked"),
+                        twoFilterCheckbox4:$("#twoFilterCheckbox4").prop("checked"),
+                        twoFilterCheckbox5:$("#twoFilterCheckbox5").prop("checked"),
+                        twoFilterCheckbox6:$("#twoFilterCheckbox6").prop("checked"),
+                    },
+                    beforeSend:function(){
+                        $("#loadingModal").modal('show');
+                    },
+                    success: function (data) {
+                        $("#loadingModal").modal('hide');
+                        if (data == "OK") {
+                            window.location.reload();
+                        } else {
+                            $.messager.alert('提示', data, 'info');
+                        }
+                    },
+                    error: function () {
+                        alert("请求失败，请稍后重试！")
+                    }
+                });
+            })
+        })
+    </script>
 </body>
 </html>
