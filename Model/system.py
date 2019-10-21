@@ -1832,17 +1832,16 @@ class JZJFtable(Base):
     # 批次号:
     BatchID = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
+    # 批量:
+    BatchNum = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
     # 品名ID
     BrandID = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
     # 品名:
     BrandName = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
-    # 工艺段:
-    PUID = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
 
-    # 工艺路线名称:
-    PDUnitRouteName = Column(Unicode(64), primary_key=False, autoincrement=False, nullable=True)
 
 
 # 生成表单的执行语句
