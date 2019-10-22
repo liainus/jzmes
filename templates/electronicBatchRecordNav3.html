@@ -289,12 +289,17 @@
                 var text = $(this).html()
                 var rows = $("#tab").datagrid('getSelections');
                 if(rows.length == 1){
-                    addTab(rows[0].BatchID +"（" + text +"）","/electronicBatchRecordjzjf?title=" + text + "&ID=" + rows[0].ID)
+                    addTab(rows[0].BatchID +"（" + text +"）","/electronicBatchRecordjzjf?title=" + text + "&ID=" + rows[0].ID + "&BrandID=" + rows[0].BrandID)
                 }else{
                     $.messager.alert('提示', "请选择计划", 'info');
                 }
             })
         })
+        function createKeyIDObj(keyID){
+            return {
+                ID:keyID
+            }
+        }
         //按钮点击后添加选项卡
         function addTab(title, url) {
             if (parent.parent.parent.$('.easyui-tabs1').tabs('exists', title)) {

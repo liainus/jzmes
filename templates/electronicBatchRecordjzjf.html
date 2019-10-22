@@ -71,11 +71,8 @@
             //判断hidden是否有值，有值就选中复选框
             var readycheckbox = $("#readycheckbox").val(),  //所有生产前的准备 判断操作人是否有值
                 QAreadycheckbox = $("#QAreadycheckbox").val(), //所有生产前的准备 判断QA确认是否有值
-                CollectMaterialCheckbox = $("#CollectMaterialCheckbox").val(), //领取物料判断操作人是否有值
                 overcheckbox = $("#overcheckbox").val(), //生产结束清场 判断操作人是否有值
-                QAovercheckbox = $("#QAovercheckbox").val(), //生产结束清场 判断QA确认是否有值
-                stewingOvercheckbox = $("#stewingOvercheckbox").val(), //静置结束清场 判断操作人是否有值
-                QAstewingOvercheckbox = $("#QAstewingOvercheckbox").val() //静置结束清场 判断操作人是否有值
+                QAovercheckbox = $("#QAovercheckbox").val() //生产结束清场 判断QA确认是否有值
             if(readycheckbox != ""){
                 $("input[name=readycheckbox]").prop("checked",true).attr("disabled",true);
                 $("#allreadycheckbox").prop("checked",true).attr("disabled",true);
@@ -83,22 +80,12 @@
             if(QAreadycheckbox != ""){
                 $("input[name=QAreadycheckbox]").prop("checked",true).attr("disabled",true);
             }
-            if(CollectMaterialCheckbox != ""){
-                $("#BLFilterCheckbox1").prop("checked",true).attr("disabled",true);
-            }
             if(overcheckbox != ""){
                 $("input[name=overcheckbox]").prop("checked",true).attr("disabled",true);
                 $("#allovercheckbox").prop("checked",true).attr("disabled",true);
             }
             if(QAovercheckbox != ""){
                 $("input[name=QAovercheckbox]").prop("checked",true).attr("disabled",true);
-            }
-            if(stewingOvercheckbox != ""){
-                $("input[name=stewingOvercheckbox]").prop("checked",true).attr("disabled",true);
-                $("#allstewingovercheckbox").prop("checked",true).attr("disabled",true);
-            }
-            if(QAstewingOvercheckbox != ""){
-                $("input[name=QAstewingOvercheckbox]").prop("checked",true).attr("disabled",true);
             }
 
             //复选框的全选和反选
@@ -128,21 +115,6 @@
                     $("#allovercheckbox").prop("checked",true)
                 }else{
                     $("#allovercheckbox").prop("checked",false)
-                }
-            })
-            //静置清场的全选和反选
-            $("#allstewingovercheckbox").on("click",function(){
-                if (this.checked) {
-                    $("input[name='stewingOvercheckbox']:checkbox").prop("checked", true);
-                }else{
-                    $("input[name='stewingOvercheckbox']:checkbox").prop("checked", false);
-                }
-            })
-            $("input[name='stewingOvercheckbox']:checkbox").on("click",function(){
-                if($("input[name='stewingOvercheckbox']:checkbox").length == $("input[name='stewingOvercheckbox']:checkbox:checked").length){
-                    $("#allstewingovercheckbox").prop("checked",true)
-                }else{
-                    $("#allstewingovercheckbox").prop("checked",false)
                 }
             })
             var clickNum = 1
@@ -179,7 +151,6 @@
         <button class="btn btn-primary" id="renderPdf">导出pdf</button>
     </div>
     <div class="col-md-12" id="pdfMain" style="font-size: 14px;padding-top: 20px;background-color: #ffffff;">
-{#        <input type="hidden" id="PUID" value={{ PUID }}>#}
         {% if session.get('title') == '挑选' %}
             <table class="table table-bordered">
                 <thead>
@@ -306,7 +277,7 @@
                     <tr>
                         <td colspan="4">按批生产指令从仓库领取本批生产所用的物料</td>
                         <td>
-                            <label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="BLFilterCheckbox1"> 是 / 否</label>
+                            <label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="TXFilterCheckbox1"> 是 / 否</label>
                         </td>
                         <td>操作人</td>
                         <td>复核人</td>
@@ -314,7 +285,7 @@
                     <tr>
                         <td colspan="4">复核物料的品名、批号、检验单号、数量</td>
                         <td>
-                            <label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="BLFilterCheckbox2"> 是 / 否</label>
+                            <label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="TXFilterCheckbox2"> 是 / 否</label>
                         </td>
                         <td class="middle-center" rowspan="3">
                             <input type="hidden" id="CollectMaterialCheckbox" value={{ dir[0]["OperationPeople_a2"] }}>
@@ -355,9 +326,9 @@
                     <tr>
                         <td>肿节风</td>
                         <td>102067</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td><input type="text" class="form-control batchInput" id="TXBLBatchid"></td>
+                        <td><input type="text" class="form-control batchInput" id="TXBLOdd"></td>
+                        <td><input type="text" class="form-control batchInput" id="TXBLNum"></td>
                     </tr>
                 </tbody>
             </table>
@@ -365,13 +336,13 @@
                 <tbody>
                     <tr>
                         <td>开始时间</td>
-                        <td><input type="text" class="batchInput datetimepicker" id="" readonly></td>
+                        <td><input type="text" class="ProDate datetimepicker" id="TXBLStartDate" readonly></td>
                         <td>操作人</td>
                         <td>复核人</td>
                     </tr>
                     <tr>
                         <td>结束时间</td>
-                        <td><input type="text" class="batchInput datetimepicker" id="" readonly></td>
+                        <td><input type="text" class="ProDate datetimepicker" id="TXBLEndDate" readonly></td>
                         <td class="middle-center">
                             <input type="hidden" id="CollectMaterialCheckbox" value={{ dir[0]["OperationPeople_a2"] }}>
                             {% if '82' == flag %}
@@ -428,11 +399,11 @@
                     </tr>
                     <tr>
                         <td>无霉变药材，杂物或非药用部分物质不得过2%</td>
-                        <td><label class="checkbox-inline"><input type="checkbox" name="readycheckbox"> 是 / 否</label></td>
+                        <td><label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="TXFilterCheckbox3"> 是 / 否</label></td>
                     </tr>
                     <tr>
                         <td colspan="2">生产过程是否符合安全管理规定</td>
-                        <td colspan="2"><label class="checkbox-inline"><input type="checkbox" name="readycheckbox"> 是 / 否</label></td>
+                        <td colspan="2"><label class="checkbox-inline"><input type="checkbox" name="FilterCheckbox" id="TXFilterCheckbox4"> 是 / 否</label></td>
                     </tr>
                 </tbody>
             </table>
@@ -546,8 +517,8 @@
                         <td>FJB-1000</td>
                         <td>22089</td>
                         <td>
-                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="beiliaoEquipmentCheckbox1" > 正常 </label>
-                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="beiliaoEquipmentUnCheckbox1"> 不正常 </label>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="TXEquipmentCheckbox1" > 正常 </label>
+                            <label class="checkbox-inline"><input type="checkbox" name="equipmentCheckbox" id="TXEquipmentUnCheckbox1"> 不正常 </label>
                         </td>
                         <td class="middle-center">
                             <input type="hidden" id="equipmentCheckbox" value={{ dir[0]["OperationPeople_a5"] }}>
@@ -2301,9 +2272,473 @@
     <script type="text/javascript" src="../static/js/jsPdf.debug.js"></script>
     <script>
         $(function(){
+            $("#loadingModal").modal('show');
+            //数据采集
+            $.ajax({
+                url: '/electionBatchSearch',
+                method: 'GET',
+                data: {
+                    batchID: $("#batchID").html(),
+                    PName: getUrlParam('title') + "段",
+                    BrandID:"1"
+                },
+                success: function (response) {
+                    $("#loadingModal").modal('hide');
+                    response = JSON.parse(response)
+                    for(var key in response){
+                        adddata(key,response[key])
+                    }
+                },
+                error: function () {
+                    alert("请求数据失败，请稍后重试！")
+                }
+            });
+            //表单数据插入
+            $.ajax({
+                url: 'allUnitDataMutual',
+                method: 'GET',
+                data: {
+                    PUID: getUrlParam("title"),
+                    BatchID: $("#batchID").html(),
+                    BrandID:getUrlParam('BrandID')
+                },
+                beforeSend:function(){
+                    $("#loadingModal").modal("show");
+                },
+                success: function (response) {
+                    response = JSON.parse(response)
+                    for(var key in response){
+                        addInputData(key,response[key])
+                    }
+                },
+                error: function () {
+                    alert("请求失败，请稍后重试！")
+                }
+            });
+            //根据key匹配id  加入数据
+            function adddata(ids,res){
+                $("#" + ids).html(res)
+            }
+            //根据复选框值判断选中状态
+            function addInputData(ids,res){
+                $("#" + ids).val(res)
+                $("input[name=FilterCheckbox]").each(function(){
+                    if($(this).val() == 'false'){
+                        $(this).prop("checked",false)
+                    }else if($(this).val() == 'true'){
+                        $(this).prop("checked",true)
+                    }
+                })
+                $("input[name=equipmentCheckbox]").each(function(){
+                    if($(this).val() == 1){
+                        $(this).prop("checked",true)
+                    }else if($(this).val() == 2){
+                        $(this).prop("indeterminate",true)
+                    }else if($(this).val() == 3){
+                        $(this).prop("checked",false)
+                    }
+                })
+            }
+
+            //操作人确认请求方法，制药计划管理页面里已有的确认，包括生产前的准备，开始，结束清场
+            function OperationConfirmFun(ID,title,name){
+                $("#loadingModal").modal('show');
+                $.ajax({
+                    url: '/ZYPlanGuid/operateConfirm',
+                    method: 'POST',
+                    data: {
+                        ID: ID,
+                        PName:title,
+                        PUName:name
+                    },
+                    success: function (data) {
+                        $("#loadingModal").modal('hide');
+                        if (data == "OK") {
+                            $.messager.show({
+                                title: '提示',
+                                timeout: 1000,
+                                msg: '操作成功！',
+                                style: {
+                                    right: '',
+                                    top: document.body.scrollTop + document.documentElement.scrollTop,
+                                    bottom: ''
+                                }
+                            });
+                            window.location.reload();
+                        }else{
+                            $.messager.alert('提示', data, 'info');
+                        }
+                    },
+                    error: function () {
+                        alert("请求失败，请稍后重试！")
+                    }
+                });
+            }
+            //复核人确认请求方法，制药计划管理页面里已有的确认，包括生产前的准备，开始，结束清场
+            function CheckedConfirmFun(ID,title,name){
+                $("#loadingModal").modal('show');
+                $.ajax({
+                    url: '/ZYPlanGuid/checkedConfirm',
+                    method: 'POST',
+                    data: {
+                        ID: ID,
+                        PName:title,
+                        PUName:name
+                    },
+                    success: function (data) {
+                        $("#loadingModal").modal('hide');
+                        if (data == "OK") {
+                            $.messager.show({
+                                title: '提示',
+                                timeout: 1000,
+                                msg: '复核成功！',
+                                style: {
+                                    right: '',
+                                    top: document.body.scrollTop + document.documentElement.scrollTop,
+                                    bottom: ''
+                                }
+                            });
+                            window.location.reload();
+                        }else{
+                            $.messager.alert('提示', data, 'info');
+                        }
+                    },
+                    error: function () {
+                        alert("请求失败，请稍后重试！")
+                    }
+                });
+            }
+            //QA确认请求方法，制药计划管理页面里已有的确认，包括生产前的准备，开始，结束清场
+            function QAConfirmFun(ID,title,name){
+                $("#loadingModal").modal('show');
+                $.ajax({
+                    url: '/ZYPlanGuid/QAautograph',
+                    method: 'POST',
+                    data: {
+                        ID: ID,
+                        PName: title,
+                        PUName: name
+                    },
+                    success: function (data) {
+                        $("#loadingModal").modal('hide');
+                        if (data == "OK") {
+                            $.messager.show({
+                                title: '提示',
+                                timeout: 1000,
+                                msg: '确认成功！',
+                                style: {
+                                    right: '',
+                                    top: document.body.scrollTop + document.documentElement.scrollTop,
+                                    bottom: ''
+                                }
+                            });
+                            window.location.reload();
+                        } else {
+                            $.messager.alert('提示', data, 'info');
+                        }
+                    },
+                    error: function () {
+                        alert("请求失败，请稍后重试！")
+                    }
+                });
+            }
+            //额外确认内容请求方法，包括质量控制，参数控制，领取物料等。。
+            function elseConfirmFun(PUID,BatchID,type,confirm){
+                $("#loadingModal").modal('show');
+                $.ajax({
+                    url: '/addNewReadyWork',
+                    method: 'POST',
+                    data: {
+                        PUID: PUID,
+                        BatchID: BatchID,
+                        BrandID:getUrlParam('BrandID'),
+                        type:type,
+                        confirm: confirm
+                    },
+                    success: function (data) {
+                        $("#loadingModal").modal('hide');
+                        if (data == "OK") {
+                            $.messager.show({
+                                title: '提示',
+                                timeout: 1000,
+                                msg: '操作成功！',
+                                style: {
+                                    right: '',
+                                    top: document.body.scrollTop + document.documentElement.scrollTop,
+                                    bottom: ''
+                                }
+                            });
+                            window.location.reload();
+                        }else{
+                            $.messager.alert('提示', data, 'info');
+                        }
+                    },
+                    error: function () {
+                        alert("请求失败，请稍后重试！")
+                    }
+                });
+            }
+            //操作人确认
+            $(".OperationConfirm").on('click',function(){
+                var ID = getUrlParam('ID'),
+                    title = getUrlParam('title'),
+                    name = $(this).attr("name"),
+                    PUID = $("#PUID").val(),
+                    BatchID = $("#batchID").html(),
+                    type = $(this).attr("name"),
+                    confirm = $(this).attr("rel")
+                if(name == "生产前的准备"){
+                    $.messager.confirm('确定操作', '是否要进行确认？确认后您无法撤回和修改时间，请认真检查。', function (flag) {
+                        if(flag) {
+                            var number = ""
+                            $("input:checkbox[name=readycheckbox]:checked").each(function(k){
+                                number = k
+                            })
+                            if(number == 5){
+                                OperationConfirmFun(ID,title,name)
+                            }else{
+                                $.messager.alert('提示', "完成当前所有的准备工作才可以做确认操作", 'info');
+                            }
+                        }
+                    })
+                }else if(name == "备料结束清场" || name == "煎煮结束清场" || name == "浓缩结束清场" || name == "喷雾干燥结束清场" || name == "收粉结束清场"){
+                    $.messager.confirm('确定操作', '是否要进行确认？确认后您无法撤回和修改时间，请认真检查。', function (flag) {
+                        if(flag) {
+                            var number = ""
+                            $("input:checkbox[name=overcheckbox]:checked").each(function(k){
+                                number = k
+                            })
+                            if(number == 4){
+                                OperationConfirmFun(ID,title,name)
+                            }else{
+                                $.messager.alert('提示', "完成当前所有的清场工作才可以做确认操作", 'info');
+                            }
+                        }
+                    })
+                }else if(name == "32"){ //领取物料操作人确认
+                    $.messager.confirm('确定操作', '是否要进行确认？确认后您无法撤回，请认真检查。', function (flag) {
+                        if(flag) {
+                            if($("#BLFilterCheckbox1").prop("checked") == true){
+                                elseConfirmFun(PUID,BatchID,type,confirm)
+                            }else{
+                                $.messager.alert('提示', "物料复核无误才可以做确认操作", 'info');
+                            }
+                        }
+                    })
+                }else if(name == "42"){ //静置结束清场操作人确认
+                    $.messager.confirm('确定操作', '是否要进行确认？确认后您无法撤回和修改时间，请认真检查。', function (flag) {
+                        if(flag) {
+                            var number = ""
+                            $("input:checkbox[name=stewingOvercheckbox]:checked").each(function(k){
+                                number = k
+                            })
+                            if(number == 4){
+                                elseConfirmFun(PUID,BatchID,type,confirm)
+                            }else{
+                                $.messager.alert('提示', "完成当前所有的清场工作才可以做确认操作", 'info');
+                            }
+                        }
+                    })
+                }else if(name == "45" || name == "46" || name == "54" || name == "48" || name == "52" || name == "50" || name == "51"){
+                    $.messager.confirm('确定操作', '是否要进行确认？确认后您无法撤回，请认真检查。', function (flag) {
+                        if(flag) {
+                            elseConfirmFun(PUID,BatchID,type,confirm)
+                        }
+                    })
+                }else{
+                    $.messager.confirm('确定操作', '是否要进行确认？确认后不允许撤回。', function (flag) {
+                        if(flag) {
+                            OperationConfirmFun(ID,title,name)
+                        }
+                    })
+                }
+            })
+            //复核人确认
+            $(".CheckedConfirm").on('click',function(){
+                var ID = getUrlParam('ID'),
+                    title = getUrlParam('title'),
+                    name = $(this).attr("name"),
+                    PUID = $("#PUID").val(),
+                    BatchID = $("#batchID").html(),
+                    type = $(this).attr("name"),
+                    confirm = $(this).attr("rel")
+                if(name == "32" || name == "42" || name == "45" || name == "46" || name == "48" || name == "50" || name == "51") {
+                    $.messager.confirm('确定操作', '是否要进行确认？确认后您无法撤回，请认真检查。', function (flag) {
+                        if(flag) {
+                            elseConfirmFun(PUID,BatchID,type,confirm)
+                        }
+                    })
+                }else{
+                    $.messager.confirm('确定操作', '是否要进行确认？确认后不允许撤回。', function (flag) {
+                        if (flag) {
+                            CheckedConfirmFun(ID, title, name)
+                        }
+                    })
+                }
+            })
+            //QA确认
+            $(".QAConfirm").on('click',function(){
+                var ID = getUrlParam('ID'),
+                    title = getUrlParam('title'),
+                    name = $(this).attr("name"),
+                    PUID = $("#PUID").val(),
+                    BatchID = $("#batchID").html(),
+                    type = $(this).attr("name"),
+                    confirm = $(this).attr("rel")
+                if(name == "生产前的准备") {
+                    $.messager.confirm('确定操作', '是否要进行确认？确认后不允许撤回。', function (flag) {
+                        if (flag) {
+                            if(title == "收粉"){
+                                var number = ""
+                                $("input:checkbox[name=QAreadycheckbox]:checked").each(function(k){
+                                    number = k
+                                })
+                                if(number == 1){
+                                    QAConfirmFun(ID,title,name)
+                                }else{
+                                    $.messager.alert('提示', "全部检查无误才可以做确认操作", 'info');
+                                }
+                            }else {
+                                if($("input:checkbox[name=QAreadycheckbox]").prop("checked") == true){
+                                    QAConfirmFun(ID, title, name)
+                                }else{
+                                    $.messager.alert('提示', "当前的准备工作检查合格才可以做确认操作", 'info');
+                                }
+                            }
+                        }
+                    })
+                }else if(name == "42"){
+                    $.messager.confirm('确定操作', '是否要进行确认？确认后不允许撤回。', function (flag) {
+                        if (flag) {
+                            if($("input:checkbox[name=QAstewingOvercheckbox]").prop("checked") == true){
+                                elseConfirmFun(PUID,BatchID,type,confirm)
+                            }else{
+                                $.messager.alert('提示', "当前的清场工作检查合格才可以做确认操作", 'info');
+                            }
+                        }
+                    })
+                }else if(name == "备料结束清场" || name == "煎煮结束清场" || name == "浓缩结束清场" || name == "喷雾干燥结束清场" || name == "收粉结束清场"){
+                    $.messager.confirm('确定操作', '是否要进行确认？确认后不允许撤回。', function (flag) {
+                        if (flag) {
+                            if($("input:checkbox[name=QAovercheckbox]").prop("checked") == true){
+                                QAConfirmFun(ID, title, name)
+                            }else{
+                                $.messager.alert('提示', "当前的清场工作检查合格才可以做确认操作", 'info');
+                            }
+                        }
+                    })
+                }else if(name == "45" || name == "46" || name == "54" || name == "52"){
+                    $.messager.confirm('确定操作', '是否要进行确认？确认后不允许撤回。', function (flag) {
+                        if (flag) {
+                            elseConfirmFun(PUID,BatchID,type,confirm)
+                        }
+                    })
+                }else{
+                    $.messager.confirm('确定操作', '是否要进行确认？确认后不允许撤回。', function (flag) {
+                        if (flag) {
+                            QAConfirmFun(ID, title, name)
+                        }
+                    })
+                }
+            })
+
+            //设备确认请求方法
+            function equipmentConfirmFun(PUID,BatchID,confirm){
+                $.ajax({
+                    url: '/addEquipmentWork',
+                    method: 'POST',
+                    data: {
+                        PUID: PUID,
+                        BatchID: BatchID,
+                        BrandID:getUrlParam('BrandID'),
+                        confirm: confirm
+                    },
+                    success: function (data) {
+                        if (data == "OK") {
+                            $.messager.show({
+                                title: '提示',
+                                timeout: 1000,
+                                msg: '确认成功！',
+                                style: {
+                                    right: '',
+                                    top: document.body.scrollTop + document.documentElement.scrollTop,
+                                    bottom: ''
+                                }
+                            });
+                            window.location.reload();
+                        } else {
+                            $.messager.alert('提示', data, 'info');
+                        }
+                    },
+                    error: function () {
+                        alert("请求失败，请稍后重试！")
+                    }
+                });
+            }
+            //设备确认
+            $(".equipmentConfirm").on('click',function(){
+                var PUID = $("#PUID").val(),
+                    BatchID = $("#batchID").html(),
+                    confirm = $(this).attr("name")
+                var checkboxChecked = $("input[name=equipmentCheckbox]").length //复选框数量
+                $.messager.confirm('确定操作', '是否要进行确认？确认后不允许撤回。', function (flag) {
+                    if (flag) {
+                        {#if(confirm == "操作人"){#}
+                        {#    var number = ""#}
+                        {#    $("input:checkbox[name=equipmentCheckbox]:checked").each(function(k){#}
+                        {#        number = k#}
+                        {#    })#}
+                        {#    if(number == checkboxChecked - 1){ //判断是否全部选中设备#}
+                        {#        equipmentConfirmFun(PUID,BatchID,confirm)#}
+                        {#    }else{#}
+                        {#        $.messager.alert('提示', "当前所有的设备正常才可以做确认操作", 'info');#}
+                        {#    }#}
+                        {# }else{#}
+                            equipmentConfirmFun(PUID,BatchID,confirm)
+                        //}
+                    }
+                })
+            })
+            //导出PDF
+            $("#renderPdf").on('click',function(){
+                var pdfMain = $("#pdfMain")
+                html2canvas(pdfMain, {
+                  onrendered:function(canvas) {
+                      var contentWidth = canvas.width;
+                      var contentHeight = canvas.height;
+                      //一页pdf显示html页面生成的canvas高度;
+                      var pageHeight = contentWidth / 595.28 * 841.89;
+                      //未生成pdf的html页面高度
+                      var leftHeight = contentHeight;
+                      //pdf页面偏移
+                      var position = 0;
+                      //a4纸的尺寸[595.28,841.89]，html页面生成的canvas在pdf中图片的宽高
+                      var imgWidth = 555.28;
+                      var imgHeight = 555.28/contentWidth * contentHeight;
+                      var pageData = canvas.toDataURL('image/jpeg', 1.0);
+                      var pdf = new jsPDF('', 'pt', 'a4');
+                      //有两个高度需要区分，一个是html页面的实际高度，和生成pdf的页面高度(841.89)
+                      //当内容未超过pdf一页显示的范围，无需分页
+                      if (leftHeight < pageHeight) {
+                          pdf.addImage(pageData, 'JPEG', 20, 0, imgWidth, imgHeight );
+                      } else {
+                          while(leftHeight > 0) {
+                              pdf.addImage(pageData, 'JPEG', 20, position, imgWidth, imgHeight)
+                              leftHeight -= pageHeight;
+                              position -= 841.89;
+                              //避免添加空白页
+                              if(leftHeight > 0) {
+                                  pdf.addPage();
+                              }
+                          }
+                      }
+                      pdf.save($("#batchID").html() + $("#PName").html() +'.pdf');
+                  }
+              })
+            })
             //保存输入的表单信息
             $("#save").on('click',function(){
-                var PUID = $("#PUID").val(),
+                var PUID = getUrlParam("title"),
                     batchID = $("#batchID").html()
                 $.ajax({
                     url: 'allUnitDataMutual',
@@ -2317,15 +2752,20 @@
                         endReadyDate:$("#endReadyDate").val(),
                         startOverDate:$("#startOverDate").val(),
                         endOverDate:$("#endOverDate").val(),
-                        startStewingDate:$("#startStewingDate").val(),
-                        endStewingDate:$("#endStewingDate").val(),
 
-                        twoFilterCheckbox1:$("#twoFilterCheckbox1").prop("checked"),
-                        twoFilterCheckbox2:$("#twoFilterCheckbox2").prop("checked"),
-                        twoFilterCheckbox3:$("#twoFilterCheckbox3").prop("checked"),
-                        twoFilterCheckbox4:$("#twoFilterCheckbox4").prop("checked"),
-                        twoFilterCheckbox5:$("#twoFilterCheckbox5").prop("checked"),
-                        twoFilterCheckbox6:$("#twoFilterCheckbox6").prop("checked"),
+                        TXFilterCheckbox1:$("#TXFilterCheckbox1").prop("checked"),
+                        TXFilterCheckbox2:$("#TXFilterCheckbox2").prop("checked"),
+                        TXFilterCheckbox3:$("#TXFilterCheckbox3").prop("checked"),
+                        TXFilterCheckbox4:$("#TXFilterCheckbox4").prop("checked"),
+
+                        TXBLBatchid:$("#TXBLBatchid").val(),
+                        TXBLOdd:$("#TXBLOdd").val(),
+                        TXBLNum:$("#TXBLNum").val(),
+                        TXBLStartDate:$("#TXBLStartDate").val(),
+                        TXBLEndDate:$("#TXBLEndDate").val(),
+
+                        TXEquipmentCheckbox1:$("#TXEquipmentCheckbox1").val(),
+                        TXEquipmentUnCheckbox1:$("#TXEquipmentUnCheckbox1").val(),
                     },
                     beforeSend:function(){
                         $("#loadingModal").modal('show');
@@ -2344,6 +2784,12 @@
                 });
             })
         })
+        //获取页面传参
+        function getUrlParam(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+            var r = decodeURI(window.location.search).substr(1).match(reg); //匹配目标参数
+            if (r != null) return unescape(r[2]); return null; //返回参数值
+        }
     </script>
 </body>
 </html>
