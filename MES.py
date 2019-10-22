@@ -8277,7 +8277,8 @@ def electronicBatchRecordjzjf():
         title = data.get("title")
         ID = data.get("ID")
         oclass = db_session.query(JZJFtable).filter(JZJFtable.ID == ID).first()
-        PUID = "1000"
+        PUID = data.get("PUID")
+        BrandID = data.get("BrandID")
         BatchID = oclass.BatchID
         Type = "1000"
         BatchNum = oclass.BatchNum
@@ -8287,19 +8288,110 @@ def electronicBatchRecordjzjf():
         session['BatchID'] = BatchID
         dir = []
         dic = {}
-        dic["OperationPeople_a1"] = "123"
-        dic["CheckedPeople_a1"] = "123"
-        dic["QAConfirmPeople_a1"] = "123"
-        Newoclass = db_session.query(NewReadyWork).filter(NewReadyWork.BrandID == BarndID,
-                                                          NewReadyWork.PUID == PUID, NewReadyWork.BatchID ==
-                                                          BatchID, NewReadyWork.Type == Type).first()
-        if (Newoclass != None):
-            dic["OperationPeople_a2"] = Newoclass.OperationPeople
-            dic["CheckedPeople_a2"] = Newoclass.CheckedPeople
-            if Newoclass.CheckedPeople == None:
-                dic["CheckedPeople_a2"] = ""
+        Newoclasss = db_session.query(NewReadyWork).filter(NewReadyWork.BrandID == BrandID,
+                                                           NewReadyWork.PUID == PUID, NewReadyWork.BatchID == BatchID,
+                                                           NewReadyWork.Type.in_(("100", "102", "103", "104", "105", "106", "107"))).all()
+        dic["OperationPeople_a1"] = ""
+        dic["CheckedPeople_a1"] = ""
+        dic["QAConfirmPeople_a1"] = ""
+        dic["OperationPeople_a2"] = ""
+        dic["CheckedPeople_a2"] = ""
+        dic["QAConfirmPeople_a2"] = ""
+        dic["OperationPeople_a3"] = ""
+        dic["CheckedPeople_a3"] = ""
+        dic["QAConfirmPeople_a3"] = ""
+        dic["OperationPeople_a4"] = ""
+        dic["CheckedPeople_a4"] = ""
+        dic["QAConfirmPeople_a4"] = ""
+        dic["OperationPeople_a5"] = ""
+        dic["CheckedPeople_a5"] = ""
+        dic["QAConfirmPeople_a5"] = ""
+        dic["OperationPeople_a6"] = ""
+        dic["CheckedPeople_a6"] = ""
+        dic["QAConfirmPeople_a6"] = ""
+        dic["OperationPeople_a7"] = ""
+        dic["CheckedPeople_a7"] = ""
+        dic["QAConfirmPeople_a7"] = ""
+        if (len(Newoclasss) > 0):
+            for nc in Newoclasss:
+                if (nc.Type == "100"):
+                    dic["OperationPeople_a1"] = nc.OperationPeople
+                    dic["CheckedPeople_a1"] = nc.CheckedPeople
+                    if nc.CheckedPeople == None:
+                        dic["CheckedPeople_a1"] = ""
+                    dic["QAConfirmPeople_a1"] = nc.QAConfirmPeople
+                    if nc.QAConfirmPeople == None:
+                        dic["QAConfirmPeople_a1"] = ""
+                elif (nc.Type == "101"):
+                    dic["OperationPeople_a2"] = nc.OperationPeople
+                    dic["CheckedPeople_a2"] = nc.CheckedPeople
+                    if nc.CheckedPeople == None:
+                        dic["CheckedPeople_a2"] = ""
+                    dic["QAConfirmPeople_a2"] = nc.QAConfirmPeople
+                    if nc.QAConfirmPeople == None:
+                        dic["QAConfirmPeople_a2"] = ""
+                elif (nc.Type == "102"):
+                    dic["OperationPeople_a3"] = nc.OperationPeople
+                    dic["CheckedPeople_a3"] = nc.CheckedPeople
+                    if nc.CheckedPeople == None:
+                        dic["CheckedPeople_a3"] = ""
+                    dic["QAConfirmPeople_a3"] = nc.QAConfirmPeople
+                    if nc.QAConfirmPeople == None:
+                        dic["QAConfirmPeople_a3"] = ""
+                elif (nc.Type == "103"):
+                    dic["OperationPeople_a4"] = nc.OperationPeople
+                    dic["CheckedPeople_a4"] = nc.CheckedPeople
+                    if nc.CheckedPeople == None:
+                        dic["CheckedPeople_a4"] = ""
+                    dic["QAConfirmPeople_a4"] = nc.QAConfirmPeople
+                    if nc.QAConfirmPeople == None:
+                        dic["QAConfirmPeople_a4"] = ""
+                elif (nc.Type == "104"):
+                    dic["OperationPeople_a5"] = nc.OperationPeople
+                    dic["CheckedPeople_a5"] = nc.CheckedPeople
+                    if nc.CheckedPeople == None:
+                        dic["CheckedPeople_a5"] = ""
+                    dic["QAConfirmPeople_a5"] = nc.QAConfirmPeople
+                    if nc.QAConfirmPeople == None:
+                        dic["QAConfirmPeople_a5"] = ""
+                elif (nc.Type == "105"):
+                    dic["OperationPeople_a6"] = nc.OperationPeople
+                    dic["CheckedPeople_a6"] = nc.CheckedPeople
+                    if nc.CheckedPeople == None:
+                        dic["CheckedPeople_a6"] = ""
+                    dic["QAConfirmPeople_a6"] = nc.QAConfirmPeople
+                    if nc.QAConfirmPeople == None:
+                        dic["QAConfirmPeople_a6"] = ""
+                elif (nc.Type == "106"):
+                    dic["OperationPeople_a7"] = nc.OperationPeople
+                    dic["CheckedPeople_a7"] = nc.CheckedPeople
+                    if nc.CheckedPeople == None:
+                        dic["CheckedPeople_a7"] = ""
+                    dic["QAConfirmPeople_a7"] = nc.QAConfirmPeople
+                    if nc.QAConfirmPeople == None:
+                        dic["QAConfirmPeople_a7"] = ""
+                elif (nc.Type == "107"):
+                    dic["OperationPeople_a8"] = nc.OperationPeople
+                    dic["CheckedPeople_a8"] = nc.CheckedPeople
+                    if nc.CheckedPeople == None:
+                        dic["CheckedPeople_a8"] = ""
+                    dic["QAConfirmPeople_a8"] = nc.QAConfirmPeople
+                    if nc.QAConfirmPeople == None:
+                        dic["QAConfirmPeople_a8"] = ""
+        RoleNames = db_session.query(User.RoleName).filter(User.Name == current_user.Name).all()
+        flag = ""
+        for rN in RoleNames:
+            roleID = db_session.query(Role.ID).filter(Role.RoleName == rN[0]).first()
+            menus = db_session.query(Menu.ModuleName).join(Role_Menu, isouter=True).filter_by(Role_ID=roleID).all()
+            for menu in menus:
+                if (menu[0] == "操作人确认"):
+                    flag = "82"
+                elif (menu[0] == "复核人确认"):
+                    flag = "83"
+                elif (menu[0] == "QA确认"):
+                    flag = "84"
         dir.append(dic)
-        return render_template('electronicBatchRecordjzjf.html', title=title, dir=dir, BatchID=BatchID, PlanQuantity=BatchNum, BrandName=BrandName, PName=title )
+        return render_template('electronicBatchRecordjzjf.html', title=title, dir=dir, BatchID=BatchID, PlanQuantity=BatchNum, BrandName=BrandName, PName=title, flag=flag)
     except Exception as e:
         print(e)
         logger.error(e)
