@@ -78,22 +78,22 @@
     <!--流程图-->
     <div class="progress-head">
         <div class="host-progress bigPlan1">
-            <div class="host-ball batchRecord">挑选</div>
+            <div class="host-ball batchRecord" rel="10">挑选</div>
             <div class="host-line"></div>
             <div class="host-arrow"></div>
         </div>
         <div class="host-progress bigPlan2">
-            <div class="host-ball batchRecord">洗润</div>
+            <div class="host-ball batchRecord" rel="11">洗润</div>
             <div class="host-line"></div>
             <div class="host-arrow"></div>
         </div>
         <div class="host-progress bigPlan3">
-            <div class="host-ball batchRecord">切制</div>
+            <div class="host-ball batchRecord" rel="12">切制</div>
             <div class="host-line"></div>
             <div class="host-arrow"></div>
         </div>
         <div class="host-progress bigPlan4">
-            <div class="host-ball batchRecord">烘干</div>
+            <div class="host-ball batchRecord" rel="13">烘干</div>
         </div>
     </div>
     <!--表格-->
@@ -287,9 +287,10 @@
             //有此权限时增加tabs跳转到批记录 挑选。。
             $(".batchRecord").on('click',function(){
                 var text = $(this).html()
+                var PUID = $(this).attr("rel")
                 var rows = $("#tab").datagrid('getSelections');
                 if(rows.length == 1){
-                    addTab(rows[0].BatchID +"（" + text +"）","/electronicBatchRecordjzjf?title=" + text + "&ID=" + rows[0].ID + "&BrandID=" + rows[0].BrandID)
+                    addTab(rows[0].BatchID +"（" + text +"）","/electronicBatchRecordjzjf?title=" + text + "&ID=" + rows[0].ID + "&BrandID=" + rows[0].BrandID + "&PUID=" + PUID)
                 }else{
                     $.messager.alert('提示', "请选择计划", 'info');
                 }

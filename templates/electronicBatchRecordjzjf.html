@@ -2298,7 +2298,7 @@
                 url: 'allUnitDataMutual',
                 method: 'GET',
                 data: {
-                    PUID: getUrlParam("title"),
+                    PUID: getUrlParam("PUID"),
                     BatchID: $("#batchID").html(),
                     BrandID:getUrlParam('BrandID')
                 },
@@ -2738,7 +2738,7 @@
             })
             //保存输入的表单信息
             $("#save").on('click',function(){
-                var PUID = getUrlParam("title"),
+                var PUID = getUrlParam("PUID"),
                     batchID = $("#batchID").html()
                 $.ajax({
                     url: 'allUnitDataMutual',
