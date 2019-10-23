@@ -8290,7 +8290,7 @@ def electronicBatchRecordjzjf():
         dic = {}
         Newoclasss = db_session.query(NewReadyWork).filter(NewReadyWork.BrandID == BrandID,
                                                            NewReadyWork.PUID == PUID, NewReadyWork.BatchID == BatchID,
-                                                           NewReadyWork.Type.in_(("100", "102", "103", "104", "105", "106", "107"))).all()
+                                                           NewReadyWork.Type.in_(("100", "101","102", "103", "104", "105", "106", "107"))).all()
         dic["OperationPeople_a1"] = ""
         dic["CheckedPeople_a1"] = ""
         dic["QAConfirmPeople_a1"] = ""
