@@ -3233,24 +3233,10 @@
                 var PUID = getUrlParam('PUID'),
                     BatchID = $("#batchID").html(),
                     type = $(this).attr("name"),
-                    confirm = $(this).attr("rel"),
-                    title = $(this).attr("title")
-                var checkboxChecked = $("input[name=equipmentCheckbox]").length //复选框数量
+                    confirm = $(this).attr("rel")
                 $.messager.confirm('确定操作', '是否要进行确认？确认后不允许撤回。', function (flag) {
                     if (flag) {
-                        if(title == "操作人"){
-                            var number = ""
-                            $("input:checkbox[name=equipmentCheckbox]:checked").each(function(k){
-                                number = k
-                            })
-                            if(number == checkboxChecked - 1){ //判断是否全部选中设备
-                                elseConfirmFun(PUID,BatchID,type,confirm)
-                            }else{
-                                $.messager.alert('提示', "当前所有的设备正常才可以做确认操作", 'info');
-                            }
-                         }else{
-                            elseConfirmFun(PUID,BatchID,type,confirm)
-                        }
+                        elseConfirmFun(PUID,BatchID,type,confirm)
                     }
                 })
             })
