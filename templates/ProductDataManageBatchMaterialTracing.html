@@ -55,84 +55,88 @@
                     }
                 })
             })
+            $('#tab').bootstrapTable({
+                url: '/zyplanByPNameBatchID',
+                method: 'get',
+                queryParams:function(params){
+                    return {
+                        BrandName:brand,
+                        BatchID:batchID,
+                        PDUnitRouteName:"",
+                        limit : params.limit,
+                            offset : parseInt(params.offset/params.limit)
+                    };
+                },
+                toolbar:"#toolbar",
+                pagination: true,
+                pageNumber: 1,
+                pageSize: 5,
+                pageList: [5, 10, 15, 20],
+                sidePagination: "server",
+                paginationLoop: false,
+                paginationPreText: '上一页',
+                paginationNextText: '下一页',
+                singleSelect: false,
+                clickToSelect: true,
+                locale: "zh-CN",
+                striped: true,
+                columns: [{
+                    field: 'PlanDate',
+                    title: '计划日期'
+                },{
+                    field: 'PlanNo',
+                    title: '制药计划单号'
+                },{
+                    field: 'BatchID',
+                    title: '批次号'
+                },{
+                    field: 'PUID',
+                    title: '工艺段'
+                },{
+                    field: 'PlanType',
+                    title: '计划类型'
+                }, {
+                    field: 'BrandName',
+                    title: '品名'
+                }, {
+                    field: 'ERPOrderNo',
+                    title: 'ERP订单号'
+                },{
+                    field: 'PlanQuantity',
+                    title: '计划重量'
+                }, {
+                    field: 'ActQuantity',
+                    title: '实际重量'
+                },{
+                    field: 'PlanBeginTime',
+                    title: '计划开始时间'
+                },{
+                    field: 'PlanEndTime',
+                    title: '计划结束时间'
+                },{
+                    field: 'ActBeginTime',
+                    title: '实际开始时间'
+                },{
+                    field: 'ActEndTime',
+                    title: '实际完成时间'
+                },{
+                    field: 'ZYPlanStatus',
+                    title: '计划状态'
+                }]
+            })
             $("#batch").on('change',function(){
                 $("#toolbar").css("display","block")
                 batchID = $(this).val()
-                $('#tab').bootstrapTable("destroy")
-                $('#tab').bootstrapTable({
-                    url: '/zyplanByPNameBatchID',
-                    method: 'get',
-                    queryParams:function(params){
-                        return {
-                            BrandName:brand,
-                            BatchID:batchID,
-                            PDUnitRouteName:"备料段",
-                            limit : params.limit,
-                            offset : parseInt(params.offset/params.limit)
-                        };
-                    },
-                    toolbar:"#toolbar",
-                    pagination: true,
-                    pageNumber: 1,
-                    pageSize: 5,
-                    pageList: [5, 10, 15, 20],
-                    sidePagination: "server",
-                    paginationLoop: false,
-                    paginationPreText: '上一页',
-                    paginationNextText: '下一页',
-                    singleSelect: false,
-                    clickToSelect: true,
-                    locale: "zh-CN",
-                    striped: true,
-                    columns: [{
-                        field: 'PlanDate',
-                        title: '计划日期'
-                    },{
-                        field: 'PlanNo',
-                        title: '制药计划单号'
-                    },{
-                        field: 'BatchID',
-                        title: '批次号'
-                    },{
-                        field: 'PUID',
-                        title: '工艺段'
-                    },{
-                        field: 'PlanType',
-                        title: '计划类型'
-                    }, {
-                        field: 'BrandName',
-                        title: '品名'
-                    }, {
-                        field: 'ERPOrderNo',
-                        title: 'ERP订单号'
-                    },{
-                        field: 'PlanQuantity',
-                        title: '计划重量'
-                    }, {
-                        field: 'ActQuantity',
-                        title: '实际重量'
-                    },{
-                        field: 'PlanBeginTime',
-                        title: '计划开始时间'
-                    },{
-                        field: 'PlanEndTime',
-                        title: '计划结束时间'
-                    },{
-                        field: 'ActBeginTime',
-                        title: '实际开始时间'
-                    },{
-                        field: 'ActEndTime',
-                        title: '实际完成时间'
-                    },{
-                        field: 'ZYPlanStatus',
-                        title: '计划状态'
-                    }]
+                $('#tab').bootstrapTable("load",{
+                    queryParams:{
+                        PDUnitRouteName:"备料段"
+                    }
                 })
             })
             $(".period").on('click',function(){
                 if($(this).html() == "备料段" || $(this).html() == "煎煮段"){
                     $('#tab').bootstrapTable("load",{
-                        queryParams:function(){
+                        queryParams:{
                             PDUnitRouteName:$(this).html()
                         }
                     })
@@ -161,56 +165,23 @@
                         locale: "zh-CN",
                         striped: true,
                         columns: [{
-                            field: 'PlanDate',
-                            title: '计划日期'
-                        },{
-                            field: 'PlanNo',
-                            title: '制药计划单号'
-                        },{
                             field: 'BatchID',
                             title: '批次号'
                         },{
-                            field: 'PUID',
-                            title: '工艺段'
-                        },{
-                            field: 'PlanType',
-                            title: '计划类型'
+                            field: 'TrayNum',
+                            title: '托盘号'
                         }, {
                             field: 'BrandName',
                             title: '品名'
-                        }, {
-                            field: 'ERPOrderNo',
-                            title: 'ERP订单号'
-                        },{
-                            field: 'PlanQuantity',
-                            title: '计划重量'
-                        }, {
-                            field: 'ActQuantity',
-                            title: '实际重量'
-                        },{
-                            field: 'PlanBeginTime',
-                            title: '计划开始时间'
-                        },{
-                            field: 'PlanEndTime',
-                            title: '计划结束时间'
-                        },{
-                            field: 'ActBeginTime',
-                            title: '实际开始时间'
-                        },{
-                            field: 'ActEndTime',
-                            title: '实际完成时间'
-                        },{
-                            field: 'ZYPlanStatus',
-                            title: '计划状态'
                         }]
                     })
                 }else{
-                    $('#TrayNumberTab').bootstrapTable("destroy")
                     $('#tab').bootstrapTable("load",{
-                        queryParams:function(){
+                        queryParams:{
                             PDUnitRouteName:$(this).html()
                         }
                     })
+                    $('#TrayNumberTab').bootstrapTable("destroy")
                 }
             })
         })
