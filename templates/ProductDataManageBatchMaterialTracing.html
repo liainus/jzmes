@@ -60,13 +60,13 @@
                 batchID = $(this).val()
                 $('#tab').bootstrapTable("destroy")
                 $('#tab').bootstrapTable({
-                    url: '/batchDetailSelect',
+                    url: '/zyplanByPNameBatchID',
                     method: 'get',
                     queryParams:function(params){
                         return {
                             BrandName:brand,
                             BatchID:batchID,
-                            PDUnitRouteName:"WMS",
+                            PDUnitRouteName:"备料段",
                             limit : params.limit,
                             offset : parseInt(params.offset/params.limit)
                         };
@@ -85,73 +85,133 @@
                     locale: "zh-CN",
                     striped: true,
                     columns: [{
+                        field: 'PlanDate',
+                        title: '计划日期'
+                    },{
+                        field: 'PlanNo',
+                        title: '制药计划单号'
+                    },{
                         field: 'BatchID',
                         title: '批次号'
                     },{
-                        field: 'EQPID',
-                        title: '设备编码'
-                    }, {
-                        field: 'OpcTagID',
-                        title: '类型'
+                        field: 'PUID',
+                        title: '工艺段'
+                    },{
+                        field: 'PlanType',
+                        title: '计划类型'
                     }, {
                         field: 'BrandName',
                         title: '品名'
+                    }, {
+                        field: 'ERPOrderNo',
+                        title: 'ERP订单号'
                     },{
-                        field: 'SampleValue',
-                        title: '采样值'
+                        field: 'PlanQuantity',
+                        title: '计划重量'
+                    }, {
+                        field: 'ActQuantity',
+                        title: '实际重量'
                     },{
-                        field: 'SampleDate',
-                        title: '采样时间'
+                        field: 'PlanBeginTime',
+                        title: '计划开始时间'
+                    },{
+                        field: 'PlanEndTime',
+                        title: '计划结束时间'
+                    },{
+                        field: 'ActBeginTime',
+                        title: '实际开始时间'
+                    },{
+                        field: 'ActEndTime',
+                        title: '实际完成时间'
+                    },{
+                        field: 'ZYPlanStatus',
+                        title: '计划状态'
                     }]
                 })
             })
             $(".period").on('click',function(){
-                $('#tab').bootstrapTable("destroy")
-                $('#tab').bootstrapTable({
-                    url: '/batchDetailSelect',
-                    method: 'get',
-                    queryParams:function(params){
-                        return {
-                            BrandName:brand,
-                            BatchID:batchID,
-                            PDUnitRouteName:$(this).html(),
-                            limit : params.limit,
-                            offset : parseInt(params.offset/params.limit)
-                        };
-                    },
-                    toolbar:"#toolbar",
-                    pagination: true,
-                    pageNumber: 1,
-                    pageSize: 5,
-                    pageList: [5, 10, 15, 20],
-                    sidePagination: "server",
-                    paginationLoop: false,
-                    paginationPreText: '上一页',
-                    paginationNextText: '下一页',
-                    singleSelect: false,
-                    clickToSelect: true,
-                    locale: "zh-CN",
-                    striped: true,
-                    columns: [{
-                        field: 'BatchID',
-                        title: '批次号'
-                    },{
-                        field: 'EQPID',
-                        title: '设备编码'
-                    }, {
-                        field: 'OpcTagID',
-                        title: '类型'
-                    }, {
-                        field: 'BrandName',
-                        title: '品名'
-                    },{
-                        field: 'SampleValue',
-                        title: '采样值'
-                    },{
-                        field: 'SampleDate',
-                        title: '采样时间'
-                    }]
-                })
+                if($(this).html() == "备料段" || $(this).html() == "煎煮段"){
+                    $('#tab').bootstrapTable("load",{
+                        queryParams:function(){
+                            PDUnitRouteName:$(this).html()
+                        }
+                    })
+                    $('#TrayNumberTab').bootstrapTable({
+                        url: '/getTrayNumberByBatchID',
+                        method: 'get',
+                        queryParams:function(params){
+                            return {
+                                BrandName:brand,
+                                BatchID:batchID,
+                                limit : params.limit,
+                                offset : parseInt(params.offset/params.limit)
+                            };
+                        },
+                        toolbar:"#toolbar",
+                        pagination: true,
+                        pageNumber: 1,
+                        pageSize: 5,
+                        pageList: [5, 10, 15, 20],
+                        sidePagination: "server",
+                        paginationLoop: false,
+                        paginationPreText: '上一页',
+                        paginationNextText: '下一页',
+                        singleSelect: false,
+                        clickToSelect: true,
+                        locale: "zh-CN",
+                        striped: true,
+                        columns: [{
+                            field: 'PlanDate',
+                            title: '计划日期'
+                        },{
+                            field: 'PlanNo',
+                            title: '制药计划单号'
+                        },{
+                            field: 'BatchID',
+                            title: '批次号'
+                        },{
+                            field: 'PUID',
+                            title: '工艺段'
+                        },{
+                            field: 'PlanType',
+                            title: '计划类型'
+                        }, {
+                            field: 'BrandName',
+                            title: '品名'
+                        }, {
+                            field: 'ERPOrderNo',
+                            title: 'ERP订单号'
+                        },{
+                            field: 'PlanQuantity',
+                            title: '计划重量'
+                        }, {
+                            field: 'ActQuantity',
+                            title: '实际重量'
+                        },{
+                            field: 'PlanBeginTime',
+                            title: '计划开始时间'
+                        },{
+                            field: 'PlanEndTime',
+                            title: '计划结束时间'
+                        },{
+                            field: 'ActBeginTime',
+                            title: '实际开始时间'
+                        },{
+                            field: 'ActEndTime',
+                            title: '实际完成时间'
+                        },{
+                            field: 'ZYPlanStatus',
+                            title: '计划状态'
+                        }]
+                    })
+                }else{
+                    $('#TrayNumberTab').bootstrapTable("destroy")
+                    $('#tab').bootstrapTable("load",{
+                        queryParams:function(){
+                            PDUnitRouteName:$(this).html()
+                        }
+                    })
+                }
             })
         })
     </script>
@@ -180,7 +240,6 @@
     <div class="col-md-12">
         <div id="toolbar" style="display: none">
             <div class="form-group">
-                <button class="btn btn-info period">WMS</button>
                 <button class="btn btn-info period">备料段</button>
                 <button class="btn btn-info period">煎煮段</button>
                 <button class="btn btn-info period">浓缩段</button>
@@ -190,6 +249,7 @@
             </div>
         </div>
         <table class="table table-bordered" id='tab'></table>
+        <table class="table table-bordered" id='TrayNumberTab'></table>
     </div>
 </body>
 </html>
