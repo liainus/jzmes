@@ -33,7 +33,7 @@ from Model.core import Enterprise, Area, Factory, ProductLine, ProcessUnit, Equi
 from Model.system import Role, Organization, User, Menu, Role_Menu, BatchMaterielBalance, OperationManual, NewReadyWork, \
     EquipmentWork, EletronicBatchDataStore, SpareStock, EquipmentMaintenanceKnowledge, EquipmentMaintain, \
     SchedulePlan, SparePartInStockManagement, SparePartStock, Area, Instruments, MaintenanceStatus, MaintenanceCycle, \
-    plantCalendarScheduling, JZJFtable
+    plantCalendarScheduling, JZJFtable, TrayNumber
 from equipment_model.equipment_cycleDiagnosis import diagnosis
 from tools.MESLogger import MESLogger
 from Model.core import SysLog, MaterialBOM
@@ -8445,6 +8445,60 @@ def JZJFtableSelect():
             logger.error(e)
             insertSyslog("error", "WMStatusLoadSelect查询报错Error：" + str(e), current_user.Name)
             return json.dumps("WMStatusLoadSelect查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+@app.route('/zyplanByPNameBatchID', methods=['GET', 'POST'])
+def zyplanByPNameBatchID():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                pages = int(data['page'])  # 页数
+                rowsnumber = int(data['rows'])  # 行数
+                inipage = (pages - 1) * rowsnumber + 0  # 起始页
+                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+                BatchID = data.get("BatchID")
+                PDUnitRouteName = data.get("PDUnitRouteName")
+                BrandID = data.get("BrandID")
+                if BatchID != "":
+                    PUID = db_session.query(ProductUnitRoute.PUID).filter(ProductUnitRoute.PDUnitRouteName == PDUnitRouteName).first()[0]
+                    Count = db_session.query(ZYPlan).filter(
+                        ZYPlan.BatchID == BatchID, ZYPlan.BrandID == BrandID, ZYPlan.PUID == PUID).count()
+                    Class = db_session.query(ZYPlan).filter(
+                        ZYPlan.BatchID == BatchID, ZYPlan.BrandID == BrandID, ZYPlan.PUID == PUID).all()[inipage:endpage]
+                jsonoclass = json.dumps(Class, cls=AlchemyEncoder, ensure_ascii=False)
+                return '{"total"' + ":" + str(Count) + ',"rows"' + ":\n" + jsonoclass + "}"
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "zyplanByPNameBatchID查询报错Error：" + str(e), current_user.Name)
+            return json.dumps("zyplanByPNameBatchID查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
+
+@app.route('/getTrayNumberByBatchID', methods=['GET', 'POST'])
+def getTrayNumberByBatchID():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                pages = int(data['page'])  # 页数
+                rowsnumber = int(data['rows'])  # 行数
+                inipage = (pages - 1) * rowsnumber + 0  # 起始页
+                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+                BatchID = data.get("BatchID")
+                BrandName = data.get("BrandName")
+                if BatchID != "":
+                    Count = db_session.query(TrayNumber).filter(
+                        TrayNumber.BatchID == BatchID, TrayNumber.BrandName == BrandName).count()
+                    Class = db_session.query(TrayNumber).filter(
+                        TrayNumber.BatchID == BatchID, TrayNumber.BrandName == BrandName).all()[inipage:endpage]
+                jsonoclass = json.dumps(Class, cls=AlchemyEncoder, ensure_ascii=False)
+                return '{"total"' + ":" + str(Count) + ',"rows"' + ":\n" + jsonoclass + "}"
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "getTrayNumberByBatchID查询报错Error：" + str(e), current_user.Name)
+            return json.dumps("getTrayNumberByBatchID查询报错", cls=Model.BSFramwork.AlchemyEncoder, ensure_ascii=False)
 
 if __name__ == '__main__':
     app.run(debug=True)

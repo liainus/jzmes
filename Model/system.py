@@ -1841,6 +1841,24 @@ class JZJFtable(Base):
     # 品名:
     BrandName = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
+# 托盘号存储
+class TrayNumber(Base):
+    __tablename__ = 'TrayNumber'
+    # id:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+    # 批次号:
+    BatchID = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 托盘号:
+    TrayNum = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 品名ID
+    BrandID = Column(Integer, primary_key=False, autoincrement=False, nullable=True)
+
+    # 品名:
+    BrandName = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
 
 
 
