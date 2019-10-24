@@ -8453,21 +8453,23 @@ def zyplanByPNameBatchID():
         try:
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 10:
-                pages = int(data['page'])  # 页数
-                rowsnumber = int(data['rows'])  # 行数
-                inipage = (pages - 1) * rowsnumber + 0  # 起始页
-                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+                pages = int(data.get("offset"))  # 页数
+                rowsnumber = int(data.get("limit"))  # 行数
+                inipage = pages * rowsnumber + 0  # 起始页
+                endpage = pages * rowsnumber + rowsnumber  # 截止页
                 BatchID = data.get("BatchID")
                 PDUnitRouteName = data.get("PDUnitRouteName")
-                BrandID = data.get("BrandID")
+                BrandName = data.get("BrandName")
                 if BatchID != "":
                     PUID = db_session.query(ProductUnitRoute.PUID).filter(ProductUnitRoute.PDUnitRouteName == PDUnitRouteName).first()[0]
                     Count = db_session.query(ZYPlan).filter(
-                        ZYPlan.BatchID == BatchID, ZYPlan.BrandID == BrandID, ZYPlan.PUID == PUID).count()
+                        ZYPlan.BatchID == BatchID, ZYPlan.BrandName == BrandName, ZYPlan.PUID == PUID).count()
                     Class = db_session.query(ZYPlan).filter(
-                        ZYPlan.BatchID == BatchID, ZYPlan.BrandID == BrandID, ZYPlan.PUID == PUID).all()[inipage:endpage]
-                jsonoclass = json.dumps(Class, cls=AlchemyEncoder, ensure_ascii=False)
-                return '{"total"' + ":" + str(Count) + ',"rows"' + ":\n" + jsonoclass + "}"
+                        ZYPlan.BatchID == BatchID, ZYPlan.BrandName == BrandName, ZYPlan.PUID == PUID).all()[inipage:endpage]
+                    jsonoclass = json.dumps(Class, cls=AlchemyEncoder, ensure_ascii=False)
+                    return '{"total"' + ":" + str(Count) + ',"rows"' + ":\n" + jsonoclass + "}"
+                else:
+                    return ""
         except Exception as e:
             print(e)
             logger.error(e)
@@ -8481,10 +8483,10 @@ def getTrayNumberByBatchID():
         try:
             json_str = json.dumps(data.to_dict())
             if len(json_str) > 10:
-                pages = int(data['page'])  # 页数
-                rowsnumber = int(data['rows'])  # 行数
-                inipage = (pages - 1) * rowsnumber + 0  # 起始页
-                endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
+                pages = int(data.get("offset"))  # 页数
+                rowsnumber = int(data.get("limit"))  # 行数
+                inipage = pages * rowsnumber + 0  # 起始页
+                endpage = pages * rowsnumber + rowsnumber  # 截止页
                 BatchID = data.get("BatchID")
                 BrandName = data.get("BrandName")
                 if BatchID != "":
@@ -8492,8 +8494,10 @@ def getTrayNumberByBatchID():
                         TrayNumber.BatchID == BatchID, TrayNumber.BrandName == BrandName).count()
                     Class = db_session.query(TrayNumber).filter(
                         TrayNumber.BatchID == BatchID, TrayNumber.BrandName == BrandName).all()[inipage:endpage]
-                jsonoclass = json.dumps(Class, cls=AlchemyEncoder, ensure_ascii=False)
-                return '{"total"' + ":" + str(Count) + ',"rows"' + ":\n" + jsonoclass + "}"
+                    jsonoclass = json.dumps(Class, cls=AlchemyEncoder, ensure_ascii=False)
+                    return '{"total"' + ":" + str(Count) + ',"rows"' + ":\n" + jsonoclass + "}"
+                else:
+                    return ""
         except Exception as e:
             print(e)
             logger.error(e)
