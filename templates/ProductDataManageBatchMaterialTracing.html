@@ -128,6 +128,8 @@
                 batchID = $(this).val()
                 $('#tab').bootstrapTable("refresh",{
                     queryParams:{
+                        BrandName:brand,
+                        BatchID:batchID,
                         PDUnitRouteName:"备料段"
                     }
                 })
