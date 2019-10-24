@@ -62,9 +62,9 @@
                     return {
                         BrandName:brand,
                         BatchID:batchID,
-                        PDUnitRouteName:"",
+                        PDUnitRouteName:"备料段",
                         limit : params.limit,
-                            offset : parseInt(params.offset/params.limit)
+                        offset : parseInt(params.offset/params.limit)
                     };
                 },
                 toolbar:"#toolbar",
@@ -138,6 +138,8 @@
                 if($(this).html() == "备料段" || $(this).html() == "煎煮段"){
                     $('#tab').bootstrapTable("refresh",{
                         queryParams:{
+                            BrandName:brand,
+                            BatchID:batchID,
                             PDUnitRouteName:$(this).html()
                         }
                     })
