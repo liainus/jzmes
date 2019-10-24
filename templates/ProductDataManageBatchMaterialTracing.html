@@ -125,9 +125,8 @@
                 }]
             })
             $("#batch").on('change',function(){
-                $("#toolbar").css("display","block")
                 batchID = $(this).val()
-                $('#tab').bootstrapTable("load",{
+                $('#tab').bootstrapTable("refresh",{
                     queryParams:{
                         PDUnitRouteName:"备料段"
                     }
@@ -135,7 +134,7 @@
             })
             $(".period").on('click',function(){
                 if($(this).html() == "备料段" || $(this).html() == "煎煮段"){
-                    $('#tab').bootstrapTable("load",{
+                    $('#tab').bootstrapTable("refresh",{
                         queryParams:{
                             PDUnitRouteName:$(this).html()
                         }
@@ -175,7 +174,7 @@
                         }]
                     })
                 }else{
-                    $('#tab').bootstrapTable("load",{
+                    $('#tab').bootstrapTable("refresh",{
                         queryParams:{
                             PDUnitRouteName:$(this).html()
                         }
@@ -208,7 +207,7 @@
         </div>
     </div>
     <div class="col-md-12">
-        <div id="toolbar" style="display: none">
+        <div id="toolbar">
             <div class="form-group">
                 <button class="btn btn-info period">备料段</button>
                 <button class="btn btn-info period">煎煮段</button>
