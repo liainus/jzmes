@@ -151,7 +151,7 @@ def productplanSearch():
                 inipage = (pages - 1) * rowsnumber + 0  # 起始页
                 endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
                 total = db_session.query(product_plan).count()
-                oclass = db_session.query(product_plan).order_by(("plan_period")).all()[inipage:endpage]
+                oclass = db_session.query(product_plan).order_by(desc("plan_period")).all()[inipage:endpage]
                 jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonpequipments = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
                 return jsonpequipments
@@ -244,6 +244,7 @@ def ERP_productplanSynchro():
             db_session.commit()
             return 'OK'
         except Exception as e:
+            ERP_session.rollback()
             db_session.rollback()
             print(e)
             logger.error(e)
@@ -824,10 +825,10 @@ def SchedulingSearchNew():
                 SchedulingNum = data.get("SchedulingNum")
                 if SchedulingNum is "" or SchedulingNum is None:
                     total = db_session.query(Scheduling).count()
-                    oclass = db_session.query(Scheduling).order_by("SchedulingTime").all()[inipage:endpage]
+                    oclass = db_session.query(Scheduling).order_by(desc("SchedulingTime")).all()[inipage:endpage]
                 else:
                     total = db_session.query(Scheduling).filter(Scheduling.SchedulingNum == SchedulingNum).count()
-                    oclass = db_session.query(Scheduling).filter(Scheduling.SchedulingNum == SchedulingNum).order_by("SchedulingTime").all()[inipage:endpage]
+                    oclass = db_session.query(Scheduling).filter(Scheduling.SchedulingNum == SchedulingNum).order_by(desc("SchedulingTime")).all()[inipage:endpage]
                 jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonoclass = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
                 return jsonoclass

@@ -43,3 +43,5 @@ B_drug = [j for j in materia_tracing_B_drug.keys()]
 Decocting_A_EquipID = eval(config['EquipID']['Decocting_A'])
 Decocting_B_EquipID = eval(config['EquipID']['Decocting_B'])
 AlcoholEquipID = eval(config['EquipID']['Alcohol'])
+TrayNumber = config['TrayNumber']
+EQPNameS = config['EQPNameS']
