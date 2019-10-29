@@ -25,7 +25,7 @@ from Model.system import Role, Organization, User, Menu, Role_Menu, BatchMaterie
     EquipmentRunRecord, \
     EquipmentRunPUID, EquipmentMaintenanceStore, SpareTypeStore, ElectronicBatch, EquipmentStatusCount, Shifts, \
     EquipmentTimeStatisticTree, SystemEQPCode, EquipmentManagementManua, EquipmentMaintenanceStandard, product_info, \
-    product_plan, product_infoERP, WMSDetail, PurchasingOrder
+    product_plan, product_infoERP, WMSDetail, PurchasingOrder, WMSTrayNumber
 from sqlalchemy import create_engine, Column, ForeignKey, Table, Integer, String, and_, or_, desc,extract
 from io import StringIO
 import calendar
@@ -437,6 +437,43 @@ class WMS_Interface(ServiceBase):
         except Exception as e:
             print("WMS调用WMS_ZYPlanStatus接口报错！")
             return json.dumps(e)
+
+    @rpc(Unicode, Unicode, _returns=Unicode())
+    def WMS_TrayNumber(self, name, json_data):
+        '''
+        WMS托盘信息回传
+        '''
+        try:
+            dic = []
+            jso = json.loads(json_data)
+            for i in jso:
+                BatchNo = i.get("BatchNo")
+                TrayNum = i.get("TrayNum")
+                MID = i.get("MID")
+                PalletID = i.get("PalletID")
+                FormulaID = i.get("FormulaID")
+                MWeight = i.get("MWeight")
+                zy = db_session.query(WMSTrayNumber).filter(WMSTrayNumber.BatchNo == BatchNo,
+                                                            WMSTrayNumber.TrayNum == TrayNum,
+                                                            WMSTrayNumber.MID == MID).first()
+                if zy == None:
+                    tn = WMSTrayNumber()
+                    tn.BatchNo = BatchNo
+                    tn.TrayNum = TrayNum
+                    tn.MID = MID
+                    tn.PalletID = PalletID
+                    tn.FormulaID = FormulaID
+                    tn.MWeight = MWeight
+                    tn.UpdateTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                    db_session.commit()
+                else:
+                    continue
+            return json.dumps("SUCCESS")
+        except Exception as e:
+            print("WMS调用WMS_TrayNumber接口报错！")
+            return json.dumps(e)
+
+
 @Process.route('/WMS_SendPlan', methods=['GET', 'POST'])
 def WMS_SendPlan():
     '''发送备料计划到WMS'''

@@ -1859,6 +1859,63 @@ class TrayNumber(Base):
     # 品名:
     BrandName = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
+# 托盘号存储
+class TrayNumberRedisTag(Base):
+    __tablename__ = 'TrayNumberRedisTag'
+    # id:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+    # 提取罐号:
+    EQPCode = Column(Unicode(30), primary_key=False, autoincrement=False, nullable=True)
+
+    # 提取罐名称:
+    EQPName = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+
+    # 对应托盘:
+    PalletID = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 对应的tag点:
+    TagID = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 对应的tag点值:
+    value = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+# WMS对应托盘信息
+class WMSTrayNumber(Base):
+    __tablename__ = 'WMSTrayNumber'
+    # id:
+    ID = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+    # 批次号:
+    BatchNo = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 桶号:
+    TrayNum = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 产品编号
+    MID = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 托盘号:
+    PalletID = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 配方号:
+    FormulaID = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 重量:
+    MWeight = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 设备名称:
+    EQPName = Column(Unicode(50), primary_key=False, autoincrement=False, nullable=True)
+
+    # 进罐时间
+    inTime = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 出罐时间
+    outTime = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 更新时间
+    UpdateTime = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
 
 
 
