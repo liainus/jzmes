@@ -234,7 +234,7 @@ def ERP_productplanSynchro():
             #     db_session.commit()
             MATIDs = db_session.query(MaterialBOM.MATID).filter(MaterialBOM.ProductRuleID == ProductRuleID).all()
             for MATID in MATIDs:
-                MATName = db_session.query(Material.MATName).filter(Material.ID == MATID).first()[0]
+                MATName = db_session.query(Material.MATName).filter(Material.MATCode == MATID).first()[0]
                 ss = db_session.query(SchedulingStock).filter(SchedulingStock.MATName == MATName, SchedulingStock.product_code == plan.product_code).first()
                 if ss == None:
                     sc = SchedulingStock()
