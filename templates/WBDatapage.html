@@ -99,7 +99,20 @@
                 yAxis: {
                     title: {
                         text: null
-                    }
+                    },
+                    plotLines: [{
+                        color: '#f56589',
+                        width: 2,
+                        value: 5,
+                        dashStyle: 'longdashdot',
+                        id:"a"
+                    },{
+                        color: '#ffc107',
+                        width: 2,
+                        value: 10,
+                        dashStyle: 'longdashdot',
+                        id:"b"
+                    }]
                 },
                 tooltip: {
                     formatter: function () {
@@ -152,6 +165,28 @@
                     }())
                 }]
             });
+
+            //上下限
+            $("#tagTop").on('blur',function(){
+                chart.yAxis[0].removePlotLine('a');
+                chart.yAxis[0].addPlotLine({
+                    color: '#f56589',
+                    width: 2,
+                    value: $(this).val(),
+                    dashStyle: 'longdashdot',
+                    id:"a"
+                })
+            })
+            $("#tagBottom").on('blur',function(){
+                chart.yAxis[0].removePlotLine('b');
+                chart.yAxis[0].addPlotLine({
+                    color: '#ffc107',
+                    width: 2,
+                    value: $(this).val(),
+                    dashStyle: 'longdashdot',
+                    id:"b"
+                })
+            })
             //按钮点击后添加选项卡
             function addTab(title, url) {
                 if (parent.parent.$('.easyui-tabs1').tabs('exists', title)) {
@@ -201,8 +236,8 @@
                         </div>
                     </div>
                     <div style="width: 50%;float: left;color: #7C7D7D;">
-                        <div id="MD" style="text-align: left;font-weight: bold;font-size: 38px;margin-right: 20px;">
-                            0
+                        <div style="text-align: left;font-weight: bold;font-size: 38px;margin-right: 20px;">
+                            <span id="MD">0</span>g/m³
                         </div>
                     </div>
                 </div>
@@ -213,8 +248,8 @@
                         </div>
                     </div>
                     <div style="width: 50%;float: left;color: #7C7D7D;">
-                        <div id="WD" style="text-align: left;font-weight: bold;font-size: 38px;margin-right: 20px;">
-                            0
+                        <div style="text-align: left;font-weight: bold;font-size: 38px;margin-right: 20px;">
+                            <span id="WD">0</span>°C
                         </div>
                     </div>
                 </div>
@@ -225,13 +260,24 @@
                         </div>
                     </div>
                     <div style="width: 50%;float: left;color: #7C7D7D;">
-                        <div id="SF" style="text-align: left;font-weight: bold;font-size: 38px;margin-right: 20px;">
-                            0
+                        <div style="text-align: left;font-weight: bold;font-size: 38px;margin-right: 20px;">
+                            <span id="SF">0</span>%
                         </div>
                     </div>
                 </div>
                 <div class="clearfix" style="border-top:1px solid #e3e5e4;padding: 25px 0;">
-                    <div title="微波历史数据" id="chartBox">
+                    <div title="微波历史数据" id="chartBox"></div>
+                    <div class="col-sm-12" style="margin-top: 20px;">
+                        <form class="form-inline">
+                            <div class="form-group">
+                                <label for=""><span style="color: #f56589">上限</span></label>
+                                <input type="number" class="form-control" id="tagTop" value="10"/>
+                            </div>
+                            <div class="form-group">
+                                <label for=""><span style="color: #ffc107">下限</span></label>
+                                <input type="number" class="form-control" id="tagBottom" value="5"/>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
