@@ -6674,20 +6674,21 @@ def electionBatchSearch():
                         EQPName = db_session.query(Equipment.EQPName).filter(Equipment.ID == EQPID).first()
                         dic["DXNSEQPName" + str(i)] = EQPName[0]
                         dic["dxStartTime" + str(i)] = strch(
-                            searO(BrandName, BatchID, Pclass.ID, EQPID, "单效浓缩开始时间").SampleValue)
+                            searO(BrandName, BatchID, PUID, EQPID, "单效浓缩开始时间").SampleValue)
                         dic["dxEndTime" + str(i)] = strch(
-                            searO(BrandName, BatchID, Pclass.ID, EQPID, "单效浓缩结束时间").SampleValue)
+                            searO(BrandName, BatchID, PUID, EQPID, "单效浓缩结束时间").SampleValue)
                         yy = 0
                         for j in range(1, 7):
-                            zqyl = searO(BrandName, BatchID, Pclass.ID, EQPID, "单效浓缩蒸汽压力采集" + str(j))
+                            zqyl = searO(BrandName, BatchID, PUID, EQPID, "单效浓缩蒸汽压力采集" + str(j))
                             dic["zqyl_" + str(i) + "_" + str(yy)] = changef(zqyl.SampleValue) + zqyl.Unit
                             dic["zqylTime_" + str(i) + "_" + str(yy)] = strchange(zqyl.SampleDate)
-                            dzkd = searO(BrandName, BatchID, Pclass.ID, EQPID, "单效浓缩真空度采集" + str(j))
+                            dzkd = searO(BrandName, BatchID, PUID, EQPID, "单效浓缩真空度采集" + str(j))
                             dic["dzkd_" + str(i) + "_" + str(yy)] = changef(dzkd.SampleValue) + dzkd.Unit
                             dic["dzkdTime_" + str(i) + "_" + str(yy)] = strchange(dzkd.SampleDate)
-                            dwd = searO(BrandName, BatchID, Pclass.ID, EQPID, "单效浓缩温度采集" + str(j))
+                            dwd = searO(BrandName, BatchID, PUID, EQPID, "单效浓缩温度采集" + str(j))
                             dic["dwd_" + str(i) + "_" + str(yy)] = changef(dwd.SampleValue) + dwd.Unit
                             dic["dwdTime_" + str(i) + "_" + str(yy)] = strchange(dwd.SampleDate)
+                            yy = yy + 1
                 return json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False)
         except Exception as e:
             print(e)
@@ -8078,7 +8079,8 @@ def refractometerDataHistory():
                 begin = data.get('begin')
                 end = data.get('end')
                 if begin and end:#[t|ZGY_Temp] AS ZGY_Temp
-                    sql = "SELECT  [SampleTime],[t|ZGY_ZGL],[t|ZGY_Temp] FROM [MES].[dbo].[DataHistory] with (INDEX =IX_DataHistory) WHERE SampleTime BETWEEN '" + begin + "' AND '" + end +"' order by ID"
+                    # sql = "SELECT Convert(varchar, SampleTime, 120) as SampleTime,[t|ZGY_ZGL],[t|ZGY_Temp] FROM[MES].[dbo].[DataHistory] where sampletime > cast('"+begin+"' as datetime) and sampletime < cast('"+end+"' as datetime)"
+                    sql = "SELECT SampleTime,[t|ZGY_ZGL],[t|ZGY_Temp] FROM[MES].[dbo].[DataHistory] where sampletime > cast('" + begin + "' as datetime) and sampletime < cast('" + end + "' as datetime)"
                     re = db_session.execute(sql).fetchall()
                     db_session.close()
                     div = {}
@@ -8176,7 +8178,8 @@ def WBDataHistory():
                 begin = data.get('begin')
                 end = data.get('end')
                 if begin and end:#[t|ZGY_Temp] AS ZGY_Temp
-                    sql = "SELECT  [t|WB_MD],[t|WB_Temp],[t|WB_Water],[SampleTime] FROM [MES].[dbo].[DataHistory] with (INDEX =IX_DataHistory) WHERE SampleTime BETWEEN '" + begin + "' AND '" + end +"' order by ID"
+                    # sql = "SELECT  [t|WB_MD],[t|WB_Temp],[t|WB_Water],[SampleTime] FROM [MES].[dbo].[DataHistory] with (INDEX =IX_DataHistory) WHERE SampleTime BETWEEN '" + begin + "' AND '" + end +"' order by ID"
+                    sql = "SELECT [t|WB_MD],[t|WB_Temp],[t|WB_Water],[SampleTime] FROM[MES].[dbo].[DataHistory] where sampletime > cast('" + begin + "' as datetime) and sampletime < cast('" + end + "' as datetime) order by ID"
                     re = db_session.execute(sql).fetchall()
                     db_session.close()
                     div = {}
