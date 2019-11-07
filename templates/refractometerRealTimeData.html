@@ -31,22 +31,21 @@
             var chart = Highcharts.chart("chartBox", {
                 chart: {
                     type: 'spline',
-                    marginRight: 10,
+                    backgroundColor:"#f8f8f8",
                     events: {
                         load: function () {
                             var series1 = this.series[0],
-                                series2 = this.series[1],
-                                chart = this;
+                                series2 = this.series[1]
                             ws.onmessage = function (evt){
                                 var received_msg = evt.data;
                                 received_msg = JSON.parse(received_msg)
                                 var x = new Date(received_msg.realtime).getTime(),   // 返回时间
-                                    y1 = parseInt(received_msg.ZGY_ZGL),
-                                    y2 = parseInt(received_msg.ZGY_Temp);
+                                    y1 = Math.floor(received_msg.ZGY_ZGL*100) / 100,
+                                    y2 = Math.floor(received_msg.ZGY_Temp*100) / 100;
                                 series1.addPoint([x, y1], true, true);
                                 series2.addPoint([x, y2], true, true);
-                                $("#conc").html(received_msg.ZGY_ZGL)
-                                $("#temp").html(received_msg.ZGY_Temp)
+                                $("#conc").html(y1)
+                                $("#temp").html(y2)
                             };
                             ws.onclose = function(){
                                 console.log("连接已关闭...");
@@ -68,12 +67,12 @@
                                     var received_msg = evt.data;
                                     received_msg = JSON.parse(received_msg)
                                     var x = new Date(received_msg.realtime).getTime(),   // 返回时间
-                                        y1 = parseInt(received_msg.ZGY_ZGL),
-                                        y2 = parseInt(received_msg.ZGY_Temp);
+                                        y1 = Math.floor(received_msg.ZGY_ZGL*100) / 100,
+                                        y2 = Math.floor(received_msg.ZGY_Temp*100) / 100;
                                     series1.addPoint([x, y1], true, true);
                                     series2.addPoint([x, y2], true, true);
-                                    $("#conc").html(received_msg.ZGY_ZGL)
-                                    $("#temp").html(received_msg.ZGY_Temp)
+                                    $("#conc").html(y1)
+                                    $("#temp").html(y2)
                                 };
                                 socket.onclose = function(){
                                     console.log("连接已关闭...");
@@ -89,31 +88,34 @@
                     type: 'datetime',
                     tickPixelInterval: 150
                 },
-                yAxis: {
+                yAxis: [{
                     title: {
-                        text: null
+                        text: '折光率',
+                        style: {
+                            color: Highcharts.getOptions().colors[0]
+                        }
                     },
-                    plotLines: [{
-                        color: '#f56589',
-                        width: 2,
-                        value: 5,
-                        dashStyle: 'longdashdot',
-                        id:"a"
-                    },{
-                        color: '#ffc107',
-                        width: 2,
-                        value: 10,
-                        dashStyle: 'longdashdot',
-                        id:"b"
-                    }]
-                },
-                tooltip: {
-                    formatter: function () {
-                        return '<b>' + this.series.name + '</b><br/>' +
-                            Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
-                            Highcharts.numberFormat(this.y, 2);
+                    labels: {
+                        format: '{value} Brix',
+                        style: {
+                            color: Highcharts.getOptions().colors[0]
+                        }
                     }
-                },
+                },{
+                    title: {
+                        text: '温度',
+                        style: {
+                            color: Highcharts.getOptions().colors[1]
+                        }
+                    },
+                    labels: {
+                        format: '{value} °C',
+                        style: {
+                            color: Highcharts.getOptions().colors[1]
+                        }
+                    },
+                    opposite: true
+                }],
                 credits: {
                     enabled: false//不显示LOGO
                 },
@@ -129,7 +131,14 @@
                             });
                         }
                         return data;
-                    }())
+                    }()),
+                    yAxis: 0,
+                    marker: {
+                        enabled: false
+                    },
+                    tooltip: {
+                        valueSuffix: 'Brix'
+                    }
                 },{
                     name: '温度',
                     data: (function () {
@@ -142,29 +151,53 @@
                             });
                         }
                         return data;
-                    }())
+                    }()),
+                    yAxis: 1,
+                    marker: {
+                        enabled: false
+                    },
+                    tooltip: {
+                        valueSuffix: '°C'
+                    }
                 }]
             });
-            //上下限
-            $("#tagTop").on('blur',function(){
-                chart.yAxis[0].removePlotLine('a');
-                chart.yAxis[0].addPlotLine({
-                    color: '#f56589',
-                    width: 2,
-                    value: $(this).val(),
-                    dashStyle: 'longdashdot',
-                    id:"a"
-                })
-            })
-            $("#tagBottom").on('blur',function(){
-                chart.yAxis[0].removePlotLine('b');
-                chart.yAxis[0].addPlotLine({
-                    color: '#ffc107',
-                    width: 2,
-                    value: $(this).val(),
-                    dashStyle: 'longdashdot',
-                    id:"b"
-                })
+            //设置上下限
+            $(".setLine").on('click',function(){
+                if($(this).attr("data-type") == 1){
+                    chart.yAxis[0].removePlotLine('a1');
+                    chart.yAxis[0].removePlotLine('a2');
+                    chart.yAxis[0].addPlotLine({
+                        color: '#7cb5ec',
+                        width: 2,
+                        value: $(this).siblings(".markLineTop").val(),
+                        dashStyle: 'longdashdot',
+                        id:"a1"
+                    })
+                    chart.yAxis[0].addPlotLine({
+                        color: '#7cb5ec',
+                        width: 2,
+                        value: $(this).siblings(".markLineBottom").val(),
+                        dashStyle: 'longdashdot',
+                        id:"a2"
+                     })
+                }else if($(this).attr("data-type") == 2){
+                    chart.yAxis[1].removePlotLine('b1');
+                    chart.yAxis[1].removePlotLine('b2');
+                    chart.yAxis[1].addPlotLine({
+                        color: '#434348',
+                        width: 2,
+                        value: $(this).siblings(".markLineTop").val(),
+                        dashStyle: 'longdashdot',
+                        id:"b1"
+                    })
+                    chart.yAxis[1].addPlotLine({
+                        color: '#434348',
+                        width: 2,
+                        value: $(this).siblings(".markLineBottom").val(),
+                        dashStyle: 'longdashdot',
+                        id:"b2"
+                    })
+                }
             })
             //按钮点击后添加选项卡
             function addTab(title, url) {
@@ -233,12 +266,18 @@
                     <div class="col-sm-12" style="margin-top: 20px;">
                         <form class="form-inline">
                             <div class="form-group">
-                                <label for=""><span style="color: #f56589">上限</span></label>
-                                <input type="number" class="form-control" id="tagTop" value="10"/>
+                                <label for="">折光率上下限：</label>
+                                <input type="number" class="form-control markLineTop" value="3"/>
+                                <input type="number" class="form-control markLineBottom" value="0"/>
+                                <button type="button" class="btn btn-default setLine" data-type="1">设置标识线</button>
                             </div>
+                        </form>
+                        <form class="form-inline">
                             <div class="form-group">
-                                <label for=""><span style="color: #ffc107">下限</span></label>
-                                <input type="number" class="form-control" id="tagBottom" value="5"/>
+                                <label for="">温度上下限：</label>
+                                <input type="number" class="form-control markLineTop" value="106"/>
+                                <input type="number" class="form-control markLineBottom" value="97"/>
+                                <button type="button" class="btn btn-default setLine" data-type="2">设置标识线</button>
                             </div>
                         </form>
                     </div>

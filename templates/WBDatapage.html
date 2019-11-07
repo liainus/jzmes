@@ -31,26 +31,25 @@
             var chart = Highcharts.chart("chartBox", {
                 chart: {
                     type: 'spline',
-                    marginRight: 10,
+                    backgroundColor:"#f8f8f8",
                     events: {
                         load: function () {
                             var series1 = this.series[0],
                                 series2 = this.series[1],
-                                series3 = this.series[2],
-                                chart = this;
+                                series3 = this.series[2]
                             ws.onmessage = function (evt){
                                 var received_msg = evt.data;
                                 received_msg = JSON.parse(received_msg)
                                 var x = new Date(received_msg.realtime).getTime(),   // 返回时间
-                                    y1 = parseInt(received_msg.WB_MD),
-                                    y2 = parseInt(received_msg.WB_WD),
-                                    y3 = parseInt(received_msg.WB_SF);
+                                    y1 = Math.floor(received_msg.WB_MD*100) / 100,
+                                    y2 = Math.floor(received_msg.WB_WD*100) / 100,
+                                    y3 = Math.floor(received_msg.WB_SF*100) / 100;
                                 series1.addPoint([x, y1], true, true);
                                 series2.addPoint([x, y2], true, true);
                                 series3.addPoint([x, y3], true, true);
-                                $("#MD").html(received_msg.WB_MD)
-                                $("#WD").html(received_msg.WB_WD)
-                                $("#SF").html(received_msg.WB_SF)
+                                $("#MD").html(y1)
+                                $("#WD").html(y2)
+                                $("#SF").html(y3)
                             };
                             ws.onclose = function(){
                                 console.log("连接已关闭...");
@@ -72,15 +71,15 @@
                                     var received_msg = evt.data;
                                     received_msg = JSON.parse(received_msg)
                                     var x = new Date(received_msg.realtime).getTime(),   // 返回时间
-                                        y1 = parseInt(received_msg.WB_MD),
-                                        y2 = parseInt(received_msg.WB_WD),
-                                        y3 = parseInt(received_msg.WB_SF);
+                                        y1 = Math.floor(received_msg.WB_MD*100) / 100,
+                                        y2 = Math.floor(received_msg.WB_WD*100) / 100,
+                                        y3 = Math.floor(received_msg.WB_SF*100) / 100;
                                     series1.addPoint([x, y1], true, true);
                                     series2.addPoint([x, y2], true, true);
                                     series3.addPoint([x, y3], true, true);
-                                    $("#MD").html(received_msg.WB_MD)
-                                    $("#WD").html(received_msg.WB_WD)
-                                    $("#SF").html(received_msg.WB_SF)
+                                    $("#MD").html(y1)
+                                    $("#WD").html(y2)
+                                    $("#SF").html(y3)
                                 };
                                 socket.onclose = function(){
                                     console.log("连接已关闭...");
@@ -96,31 +95,49 @@
                     type: 'datetime',
                     tickPixelInterval: 150
                 },
-                yAxis: {
+                yAxis: [{
                     title: {
-                        text: null
+                        text: '密度',
+                        style: {
+                            color: Highcharts.getOptions().colors[0]
+                        }
                     },
-                    plotLines: [{
-                        color: '#f56589',
-                        width: 2,
-                        value: 5,
-                        dashStyle: 'longdashdot',
-                        id:"a"
-                    },{
-                        color: '#ffc107',
-                        width: 2,
-                        value: 10,
-                        dashStyle: 'longdashdot',
-                        id:"b"
-                    }]
-                },
-                tooltip: {
-                    formatter: function () {
-                        return '<b>' + this.series.name + '</b><br/>' +
-                            Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
-                            Highcharts.numberFormat(this.y, 2);
+                    labels: {
+                        format: '{value} g/m³',
+                        style: {
+                            color: Highcharts.getOptions().colors[0]
+                        }
                     }
-                },
+                },{
+                    title: {
+                        text: '温度',
+                        style: {
+                            color: Highcharts.getOptions().colors[1]
+                        }
+                    },
+                    labels: {
+                        format: '{value} °C',
+                        style: {
+                            color: Highcharts.getOptions().colors[1]
+                        }
+                    },
+                    tickInterval:5,
+                    opposite: true
+                },{
+                    title: {
+                        text: '水分',
+                        style: {
+                            color: Highcharts.getOptions().colors[2]
+                        }
+                    },
+                    labels: {
+                        format: '{value} %',
+                        style: {
+                            color: Highcharts.getOptions().colors[2]
+                        }
+                    },
+                    opposite: true
+                }],
                 credits: {
                     enabled: false//不显示LOGO
                 },
@@ -136,7 +153,14 @@
                             });
                         }
                         return data;
-                    }())
+                    }()),
+                    yAxis: 0,
+                    marker: {
+                        enabled: false
+                    },
+                    tooltip: {
+                        valueSuffix: 'g/m³'
+                    }
                 },{
                     name: '温度',
                     data: (function () {
@@ -149,7 +173,14 @@
                             });
                         }
                         return data;
-                    }())
+                    }()),
+                    yAxis: 1,
+                    marker: {
+                        enabled: false
+                    },
+                    tooltip: {
+                        valueSuffix: '°C'
+                    }
                 },{
                     name: '水分',
                     data: (function () {
@@ -162,30 +193,71 @@
                             });
                         }
                         return data;
-                    }())
+                    }()),
+                    yAxis: 2,
+                    marker: {
+                        enabled: false
+                    },
+                    tooltip: {
+                        valueSuffix: '%'
+                    }
                 }]
             });
 
-            //上下限
-            $("#tagTop").on('blur',function(){
-                chart.yAxis[0].removePlotLine('a');
-                chart.yAxis[0].addPlotLine({
-                    color: '#f56589',
-                    width: 2,
-                    value: $(this).val(),
-                    dashStyle: 'longdashdot',
-                    id:"a"
-                })
-            })
-            $("#tagBottom").on('blur',function(){
-                chart.yAxis[0].removePlotLine('b');
-                chart.yAxis[0].addPlotLine({
-                    color: '#ffc107',
-                    width: 2,
-                    value: $(this).val(),
-                    dashStyle: 'longdashdot',
-                    id:"b"
-                })
+            //设置上下限
+            $(".setLine").on('click',function(){
+                if($(this).attr("data-type") == 1){
+                    chart.yAxis[0].removePlotLine('a1');
+                    chart.yAxis[0].removePlotLine('a2');
+                    chart.yAxis[0].addPlotLine({
+                        color: '#7cb5ec',
+                        width: 2,
+                        value: $(this).siblings(".markLineTop").val(),
+                        dashStyle: 'longdashdot',
+                        id:"a1"
+                    })
+                    chart.yAxis[0].addPlotLine({
+                        color: '#7cb5ec',
+                        width: 2,
+                        value: $(this).siblings(".markLineBottom").val(),
+                        dashStyle: 'longdashdot',
+                        id:"a2"
+                     })
+                }else if($(this).attr("data-type") == 2){
+                    chart.yAxis[1].removePlotLine('b1');
+                    chart.yAxis[1].removePlotLine('b2');
+                    chart.yAxis[1].addPlotLine({
+                        color: '#434348',
+                        width: 2,
+                        value: $(this).siblings(".markLineTop").val(),
+                        dashStyle: 'longdashdot',
+                        id:"b1"
+                    })
+                    chart.yAxis[1].addPlotLine({
+                        color: '#434348',
+                        width: 2,
+                        value: $(this).siblings(".markLineBottom").val(),
+                        dashStyle: 'longdashdot',
+                        id:"b2"
+                    })
+                }else if($(this).attr("data-type") == 3){
+                    chart.yAxis[2].removePlotLine('c1');
+                    chart.yAxis[2].removePlotLine('c2');
+                    chart.yAxis[2].addPlotLine({
+                        color: '#90ed7d',
+                        width: 2,
+                        value: $(this).siblings(".markLineTop").val(),
+                        dashStyle: 'longdashdot',
+                        id:"c1"
+                    })
+                    chart.yAxis[2].addPlotLine({
+                        color: '#90ed7d',
+                        width: 2,
+                        value: $(this).siblings(".markLineBottom").val(),
+                        dashStyle: 'longdashdot',
+                        id:"c2"
+                    })
+                }
             })
             //按钮点击后添加选项卡
             function addTab(title, url) {
@@ -237,7 +309,7 @@
                     </div>
                     <div style="width: 50%;float: left;color: #7C7D7D;">
                         <div style="text-align: left;font-weight: bold;font-size: 38px;margin-right: 20px;">
-                            <span id="MD">0</span>g/m³
+                            <span id="MD">0</span> g/m³
                         </div>
                     </div>
                 </div>
@@ -249,7 +321,7 @@
                     </div>
                     <div style="width: 50%;float: left;color: #7C7D7D;">
                         <div style="text-align: left;font-weight: bold;font-size: 38px;margin-right: 20px;">
-                            <span id="WD">0</span>°C
+                            <span id="WD">0</span> °C
                         </div>
                     </div>
                 </div>
@@ -261,21 +333,35 @@
                     </div>
                     <div style="width: 50%;float: left;color: #7C7D7D;">
                         <div style="text-align: left;font-weight: bold;font-size: 38px;margin-right: 20px;">
-                            <span id="SF">0</span>%
+                            <span id="SF">0</span> %
                         </div>
                     </div>
                 </div>
                 <div class="clearfix" style="border-top:1px solid #e3e5e4;padding: 25px 0;">
-                    <div title="微波历史数据" id="chartBox"></div>
+                    <div id="chartBox"></div>
                     <div class="col-sm-12" style="margin-top: 20px;">
                         <form class="form-inline">
                             <div class="form-group">
-                                <label for=""><span style="color: #f56589">上限</span></label>
-                                <input type="number" class="form-control" id="tagTop" value="10"/>
+                                <label for="">密度上下限：</label>
+                                <input type="number" class="form-control markLineTop" value="0"/>
+                                <input type="number" class="form-control markLineBottom" value="0"/>
+                                <button type="button" class="btn btn-default setLine" data-type="1">设置标识线</button>
                             </div>
+                        </form>
+                        <form class="form-inline">
                             <div class="form-group">
-                                <label for=""><span style="color: #ffc107">下限</span></label>
-                                <input type="number" class="form-control" id="tagBottom" value="5"/>
+                                <label for="">温度上下限：</label>
+                                <input type="number" class="form-control markLineTop" value="0"/>
+                                <input type="number" class="form-control markLineBottom" value="0"/>
+                                <button type="button" class="btn btn-default setLine" data-type="2">设置标识线</button>
+                            </div>
+                        </form>
+                        <form class="form-inline">
+                            <div class="form-group">
+                                <label for="">水分上下限：</label>
+                                <input type="number" class="form-control markLineTop" value="14"/>
+                                <input type="number" class="form-control markLineBottom" value="0"/>
+                                <button type="button" class="btn btn-default setLine" data-type="3">设置标识线</button>
                             </div>
                         </form>
                     </div>
