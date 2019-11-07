@@ -1251,3 +1251,21 @@ def WMS_SendPartiallyProducts():
         except Exception as e:
             print("调用WMS_SendPartiallyProducts接口报错！")
             return json.dumps("调用WMS_SendPartiallyProducts接口报错！")
+
+@Process.route('/NH_getSDQQ', methods=['GET', 'POST'])
+def NH_getSDQQ():
+    '''获取能耗水电汽气'''
+    if request.method == 'POST':
+        data = request.values
+        try:
+            jsonstr = json.dumps(data.to_dict())
+            if len(jsonstr) > 10:
+                jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
+                dic = {}
+                client = Client(Model.Global.WMSurl)
+                ret = client.service.Mes_Interface("billload", "")
+                if ret[0] != "SUCCESS":
+                    return json.dumps("调用WMS_SendPartiallyProducts接口报错！" + ret[1])
+                return 'OK'
+        except Exception as e:
+            print("调用WMS_SendPartiallyProducts获取能耗水电汽气接口报错！")
