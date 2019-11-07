@@ -6668,24 +6668,24 @@ def electionBatchSearch():
                         dic["scStartTime" + str(i)] = strch(
                             searO(BrandName, BatchID, Pclass.ID, EQPID, "醇沉开始时间").SampleValue)
                 elif (Pclass.PDUnitRouteName == "单效浓缩段"):
-                    DIDs = searchEqpID(BrandName, BatchID, PUID, "单效浓缩")
+                    DIDs = searchEqpIDDX(BrandName, BatchID, PUID, "单效浓缩")
                     for i in range(len(DIDs)):
                         EQPID = DIDs[i]
                         EQPName = db_session.query(Equipment.EQPName).filter(Equipment.ID == EQPID).first()
                         dic["DXNSEQPName" + str(i)] = EQPName[0]
                         dic["dxStartTime" + str(i)] = strch(
-                            searO(BrandName, BatchID, PUID, EQPID, "单效浓缩开始时间").SampleValue)
+                            searDX(BrandName, BatchID, PUID, EQPID, "单效浓缩开始时间").SampleValue)
                         dic["dxEndTime" + str(i)] = strch(
-                            searO(BrandName, BatchID, PUID, EQPID, "单效浓缩结束时间").SampleValue)
+                            searDX(BrandName, BatchID, PUID, EQPID, "单效浓缩结束时间").SampleValue)
                         yy = 0
                         for j in range(1, 7):
-                            zqyl = searO(BrandName, BatchID, PUID, EQPID, "单效浓缩蒸汽压力采集" + str(j))
+                            zqyl = searDX(BrandName, BatchID, PUID, EQPID, "单效浓缩蒸汽压力采集" + str(j))
                             dic["zqyl_" + str(i) + "_" + str(yy)] = changef(zqyl.SampleValue) + zqyl.Unit
                             dic["zqylTime_" + str(i) + "_" + str(yy)] = strchange(zqyl.SampleDate)
-                            dzkd = searO(BrandName, BatchID, PUID, EQPID, "单效浓缩真空度采集" + str(j))
+                            dzkd = searDX(BrandName, BatchID, PUID, EQPID, "单效浓缩真空度采集" + str(j))
                             dic["dzkd_" + str(i) + "_" + str(yy)] = changef(dzkd.SampleValue) + dzkd.Unit
                             dic["dzkdTime_" + str(i) + "_" + str(yy)] = strchange(dzkd.SampleDate)
-                            dwd = searO(BrandName, BatchID, PUID, EQPID, "单效浓缩温度采集" + str(j))
+                            dwd = searDX(BrandName, BatchID, PUID, EQPID, "单效浓缩温度采集" + str(j))
                             dic["dwd_" + str(i) + "_" + str(yy)] = changef(dwd.SampleValue) + dwd.Unit
                             dic["dwdTime_" + str(i) + "_" + str(yy)] = strchange(dwd.SampleDate)
                             yy = yy + 1
@@ -6791,6 +6791,36 @@ def searchEqpZJ(BrandName, BatchID, PID, name):
                                                                         ElectronicBatchTwo.BatchID == BatchID).all()
     tmp = [val for val in EQPIDs if val in EQPS]
     return tmp
+def searDX(BrandName, BatchID, PID, EQPID, Type):
+    re = db_session.query(ElectronicBatchTwo).filter(ElectronicBatchTwo.BrandName.like("%" + BrandName + "%"),
+                                                     ElectronicBatchTwo.BatchID == BatchID,
+                                                     ElectronicBatchTwo.PDUnitRouteID == 5,
+                                                     ElectronicBatchTwo.EQPID == EQPID, ElectronicBatchTwo.Type == Type).first()
+    if re == None:
+        electronicBatch = ElectronicBatchTwo()
+        electronicBatch.SampleValue = ""
+        electronicBatch.Unit = ""
+        electronicBatch.SampleDate = ""
+        return electronicBatch
+    else:
+        return re
+
+def searchEqpIDDX(BrandName, BatchID, PID, name):
+    EQPIDs = db_session.query(Equipment.ID).filter(Equipment.PUID == 6,
+                                                   Equipment.EQPName.like("%" + name + "%")).all()
+    EQPS = db_session.query(ElectronicBatchTwo.EQPID).distinct().filter(ElectronicBatchTwo.PDUnitRouteID == 5,
+                                                                        ElectronicBatchTwo.BrandName.like("%" + BrandName + "%"),
+                                                                        ElectronicBatchTwo.BatchID == BatchID).all()
+    if BrandName == "肿节风浸膏" and int(PID) == 2:
+        tem = []
+        EQPS = [val for val in EQPIDs if val in EQPS]
+        for i in EQPS:
+            tem.append(i)
+        for j in EQPS:
+            tem.append(j)
+        return tem
+    else:
+        return [val for val in EQPIDs if val in EQPS]
 
 # QA放行
 @app.route('/QAauthPass')
