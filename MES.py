@@ -6708,6 +6708,8 @@ def changef(args):
 def strchange(args):
     if args != None and args != "":
         return str(args)[10:-10]
+    elif len(str(args)) == 19:
+        return str(args)[10:-3]
     else:
         return ""
 

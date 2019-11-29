@@ -1262,7 +1262,7 @@ def NH_getSDQQ():
             if len(jsonstr) > 10:
                 jsonnumber = re.findall(r"\d+\.?\d*", jsonstr)
                 dic = {}
-                client = Client(Model.Global.WMSurl)
+                client = Client(Model.Global.NHurl)
                 ret = client.service.Mes_Interface("billload", "")
                 if ret[0] != "SUCCESS":
                     return json.dumps("调用WMS_SendPartiallyProducts接口报错！" + ret[1])
