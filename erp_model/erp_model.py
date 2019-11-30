@@ -466,7 +466,6 @@ def planScheduling():
                 ~plantCalendarScheduling.title.like("%安全库存%")).count()
             mou = month.split("-")
             monthRange = calendar.monthrange(int(mou[0]), int(mou[1]))
-            monthRangeNext = calendar.monthrange(int(mou[0]), int(mou[1])+1)
             SchedulDates = monthRange[1] - count #排产月份有多少天
             PRName = db_session.query(ERPproductcode_prname.PRName).filter(ERPproductcode_prname.product_code == oc.product_code).first()[0]
             sch = db_session.query(SchedulingStandard).filter(SchedulingStandard.PRName == PRName).first()
