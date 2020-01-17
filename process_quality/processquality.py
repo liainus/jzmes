@@ -1269,3 +1269,11 @@ def NH_getSDQQ():
                 return 'OK'
         except Exception as e:
             print("调用WMS_SendPartiallyProducts获取能耗水电汽气接口报错！")
+
+@Process.route('/aaa')
+def aaa():
+    '''
+    演示
+    :return:
+    '''
+    return render_template('aaa.html')
