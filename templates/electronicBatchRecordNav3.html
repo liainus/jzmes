@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>净肿节风</title>
+    <link href="../static/css/base.css" rel="stylesheet">
+	<link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
+	<link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
+    <script type="text/javascript" src="../static/js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="../static/js/bee.js" charset="utf-8"></script>
+    <style>
+        .datagrid-wrap.panel-body{
+            padding:0;
+        }
+
+        /*横向时间轴*/
+        .progress-head{
+            position: relative;
+            padding:20px;
+            clear: both;
+            overflow: hidden;
+        }
+        .host-progress{
+            position: relative;
+            float: left;
+        }
+        .host-ball{
+            float: left;
+            width: 80px;
+            height: 30px;
+            line-height: 30px;
+            border-radius: 3px;
+            background-color: #9f9f9f;
+            color: #fff;
+            text-align: center;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+        .host-line{
+            position: relative;
+            float: left;
+            width: 50px;
+            height: 2px;
+            margin-top: 15px;
+            background-color: #9F9F9F;
+            z-index: 3;
+        }
+        .host-arrow{
+            position: relative;
+        }
+        .host-arrow:after,.host-arrow:before{
+            width: 0;
+            height: 0;
+            border: 10px solid transparent;
+            border-left-color: #9f9f9f;
+            position: absolute;
+            content: "";
+            top: 6px;
+            left:120px;
+        }
+        .host-arrow:before{
+            top: 6px;
+            left: 117px;
+            border-left-color: white;
+            z-index: 2;
+        }
+        .host-progress-active .host-arrow:after{
+            border-left-color: #5cb85c;
+        }
+        .host-progress-way-active .host-arrow:after{
+            border-left-color: #ffac38;
+        }
+    </style>
+</head>
+<body>
+    <!--流程图-->
+    <div class="progress-head">
+        <div class="host-progress bigPlan1">
+            <div class="host-ball batchRecord" rel="10">挑选</div>
+            <div class="host-line"></div>
+            <div class="host-arrow"></div>
+        </div>
+        <div class="host-progress bigPlan2">
+            <div class="host-ball batchRecord" rel="11">洗润</div>
+            <div class="host-line"></div>
+            <div class="host-arrow"></div>
+        </div>
+        <div class="host-progress bigPlan3">
+            <div class="host-ball batchRecord" rel="12">切制</div>
+            <div class="host-line"></div>
+            <div class="host-arrow"></div>
+        </div>
+        <div class="host-progress bigPlan4">
+            <div class="host-ball batchRecord" rel="13">烘干</div>
+        </div>
+    </div>
+    <!--表格-->
+    <div id="Toolbar" style="padding:0 10px;">
+        批次号:
+        <input type="text" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
+            placeholder="">
+        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="CollectToolbar.search();">查询</a>
+        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add'" onclick="CollectToolbar.add()">添加</a>
+        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit'" onclick="CollectToolbar.updata()">编辑</a>
+        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove'" onclick="CollectToolbar.delete()">删除</a>
+        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-reload'" onclick="CollectToolbar.refresh();">刷新</a>
+    </div>
+    <table class="easyui-datagrid" id="tab" style="width:100%;" data-options="
+        queryParams: {
+            BatchID: ''
+        },
+        rownumbers:true,
+        singleSelect:true,
+        autoRowHeight:false,
+        pagination:true,
+        pageSize:10,
+        toolbar:'#Toolbar',
+        url:'/JZJFtableSelect',
+        method:'get'">
+        <thead>
+            <tr>
+                <th field="ck" checkbox="true"></th>
+                <th data-options="field:'BatchID',width:200,align:'center'">批次号</th>
+                <th data-options="field:'BrandName',width:150,align:'center'">品名</th>
+                <th data-options="field:'BatchNum',width:150,align:'center'">批量</th>
+            </tr>
+        </thead>
+    </table>
+    <div id="batchRecordClassDialog" class="easyui-dialog" style="width:400px;height:300px;padding:10px;"
+         data-options="closed:'true',buttons:'#fileClassDialogButtons',modal:true">
+        <form id="fileClassDialogForm" method="post" class="dialog-form" enctype="multipart/form-data">
+            <table class="kv-table">
+                <tbody>
+                    <tr>
+                        <td class="kv-label">ID</td>
+                        <td class="kv-content">
+                            <input name="ID" id="ID" type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="" disabled="disabled">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="kv-label">批次号</td>
+                        <td class="kv-content">
+                            <input name="BatchID" id="BatchID" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="kv-label">批量</td>
+                        <td class="kv-content">
+                            <input name="BatchNum" id="BatchNum" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=""  >
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div id="fileClassDialogButtons">
+                <a href="#" class="easyui-linkbutton"  data-options="iconCls:'icon-save'" onclick="CollectToolbar.Save()">保存</a>
+                <a href="#" class="easyui-linkbutton" onclick="$('#batchRecordClassDialog').dialog('close')">关闭</a>
+            </div>
+        </form>
+    </div>
+    <script>
+        $(function(){
+            CollectToolbar = {
+                search:function(){
+                    var searchBatchID = $('input[name="search"]').val()
+                    $("#tab").datagrid({
+                        queryParams: {
+                            BatchID: searchBatchID
+                        }
+                    })
+                },
+                add:function(){
+                    $("#batchRecordClassDialog").dialog('open').dialog('setTitle','新增批次');
+                    $('#ID').val("");
+                    $("#BatchID").val("")
+                    $("#BatchNum").val("")
+                },
+                updata:function(){
+                    var rows = $('#tab').datagrid('getSelections');
+                    if (rows.length > 1) {
+                        $.messager.alert('警告操作！', '编辑记录只能选定一条数据！', 'warning');
+                    } else if (rows.length == 1) {
+                        var row = $('#tab').datagrid('getSelected');
+                        if (row) {
+                            $("#batchRecordClassDialog").dialog('open').dialog('setTitle','修改批次信息');
+                            $('#ID').val(row.ID);
+                            $("#BatchID").val(row.BatchID)
+                            $("#BatchNum").val(row.BatchNum)
+                        };
+                    } else if (rows.length == 0) {
+                        $.messager.alert('警告操作！', '请至少选定一条数据进行编辑！', 'warning');
+                    }
+                },
+                delete:function(){
+                    var rows = $("#tab").datagrid('getSelections');
+                    if (rows.length > 0) {
+                        var jsonarray=[];
+                        $.messager.confirm('确定操作', '您正在删除所选的记录吗？', function (flag) {
+                            if (flag) {
+                                for (var i = 0; i < rows.length; i++) {
+                                    var obj=createKeyIDObj(parseInt(rows[i].ID));
+                                    jsonarray.push(obj);
+                                }
+                                var a = JSON.stringify(jsonarray);
+                                $.ajax({
+                                    url: '/JZJFtableDetele',
+                                    method: 'POST',
+                                    data: a,
+                                    success: function (data) {
+                                        if(data == "OK"){
+                                            $.messager.progress('close');
+                                            $("#tab").datagrid('reload');
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                    } else {
+                        $.messager.alert('提示', '请选择要删除的记录！', 'info');
+                    }
+                },
+                Save:function(){
+                    var strID = $('#ID').val();
+                    var urlAddr = ''
+                    var hintinfo = ''
+                    if(Bee.StringUtils.isEmpty($('#BatchID').val())){
+                        $.messager.alert('提示', '批次号不能为空！', 'info');
+                        return false;
+                    }else if(Bee.StringUtils.isEmpty($('#BatchNum').val())){
+                        $.messager.alert('提示', '批量不能为空！', 'info');
+                        return false;
+                    }
+                    if (strID.length >= 1){
+                        urlAddr = '/JZJFtableUpdate'
+                        hintinfo = "修改批次"
+                    }
+                    else {
+                        urlAddr = '/JZJFtableCreate'
+                        hintinfo = "新增批次"
+                    }
+                    $.ajax({
+                        url:urlAddr,
+                        type:"post",
+                        data:{
+                            ID:$('#ID').val(),
+                            BatchID:$('#BatchID').val(),
+                            BrandName:"净肿节风",
+                            BatchNum:$('#BatchNum').val(),
+                            BrandID:1000
+                        },
+                        success:function(data){
+                            $.messager.progress('close');
+                            if(data == "OK"){
+                                $.messager.show({
+                                    title: '提示',
+                                    msg: hintinfo  + '成功',
+                                    timeout:1000,
+                                    style: {
+                                        right: '',
+                                        top: document.body.scrollTop + document.documentElement.scrollTop,
+                                        bottom: ''
+                                    }
+                                });
+                                $("#batchRecordClassDialog").dialog('close');
+                                $('#tab').datagrid('reload');
+                            } else {
+                                $.messager.alert('请求失败！', '未知错误导致失败，请重试！', 'warning');
+                            }
+                        },
+                        error: function(data){
+                           console.log(data.responseText)
+                           alert(hintinfo+ "异常，请刷新后重试...");
+                        },
+                    })
+                },
+                refresh:function(){
+                    $("#tab").datagrid('load')
+                }
+            }
+            //表格默认选中第一行
+            $("#tab").datagrid({
+                onLoadSuccess:function(d){
+                    $(this).datagrid("selectRow", 0);
+                }
+            })
+            //有此权限时增加tabs跳转到批记录 挑选。。
+            $(".batchRecord").on('click',function(){
+                var text = $(this).html()
+                var PUID = $(this).attr("rel")
+                var rows = $("#tab").datagrid('getSelections');
+                if(rows.length == 1){
+                    addTab(rows[0].BatchID +"（" + text +"）","/electronicBatchRecordjzjf?title=" + text + "&ID=" + rows[0].ID + "&BrandID=" + rows[0].BrandID + "&PUID=" + PUID)
+                }else{
+                    $.messager.alert('提示', "请选择计划", 'info');
+                }
+            })
+        })
+        function createKeyIDObj(keyID){
+            return {
+                ID:keyID
+            }
+        }
+        //按钮点击后添加选项卡
+        function addTab(title, url) {
+            if (parent.parent.parent.$('.easyui-tabs1').tabs('exists', title)) {
+                parent.parent.parent.$('.easyui-tabs1').tabs('select', title);
+            }
+            else {
+                var content = '<iframe class="page-iframe" src="' + url + '" frameborder="no" border="no" height="100%" width="100%" scrolling="auto"></iframe>';
+                parent.parent.parent.$('.easyui-tabs1').tabs('add', {
+                    title: title,
+                    content: content,
+                    closable: true
+                });
+            }
+        }
+    </script>
+</body>
+</html>

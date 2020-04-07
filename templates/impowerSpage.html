@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Empower</title>
+    <link href="../static/css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/css/bootstrap-table.min.css">
+	<link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
+	<link href="../static/css/basic_info.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
+	<link href="../static/js/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
+    <link href="../static/css/datagridpanel_customer.css" rel="stylesheet">
+    <link href="../static/css/dialogpanel.css" type="text/css" rel="stylesheet">
+    <link href="../static/css/datagrid_customer.css" type="text/css" rel="stylesheet">
+    <script type="text/javascript" src="../static/js/echarts.common.min.js"></script>
+    <script type="text/javascript" src="../static/js/jquery-3.3.1.min.js"></script>
+    <script>
+        //监听div大小变化
+        (function($, h, c) {
+            var a = $([]),
+            e = $.resize = $.extend($.resize, {}),
+            i,
+            k = "setTimeout",
+            j = "resize",
+            d = j + "-special-event",
+            b = "delay",
+            f = "throttleWindow";
+            e[b] = 250;
+            e[f] = true;
+            $.event.special[j] = {
+                setup: function() {
+                    if (!e[f] && this[k]) {
+                        return false;
+                    }
+                    var l = $(this);
+                    a = a.add(l);
+                    $.data(this, d, {
+                        w: l.width(),
+                        h: l.height()
+                    });
+                    if (a.length === 1) {
+                        g();
+                    }
+                },
+                teardown: function() {
+                    if (!e[f] && this[k]) {
+                        return false;
+                    }
+                    var l = $(this);
+                    a = a.not(l);
+                    l.removeData(d);
+                    if (!a.length) {
+                        clearTimeout(i);
+                    }
+                },
+                add: function(l) {
+                    if (!e[f] && this[k]) {
+                        return false;
+                    }
+                    var n;
+                    function m(s, o, p) {
+                        var q = $(this),
+                        r = $.data(this, d);
+                        r.w = o !== c ? o: q.width();
+                        r.h = p !== c ? p: q.height();
+                        n.apply(this, arguments);
+                    }
+                    if ($.isFunction(l)) {
+                        n = l;
+                        return m;
+                    } else {
+                        n = l.handler;
+                        l.handler = m;
+                    }
+                }
+            };
+            function g() {
+                i = h[k](function() {
+                    a.each(function() {
+                        var n = $(this),
+                        m = n.width(),
+                        l = n.height(),
+                        o = $.data(this, d);
+                        if (m !== o.w || l !== o.h) {
+                            n.trigger(j, [o.w = m, o.h = l]);
+                        }
+                    });
+                    g();
+                },
+                e[b]);
+            }
+        })(jQuery, this);
+    </script>
+    <script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootstrap-table.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootstrap-table-zh-CN.min.js"></script>
+    <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
+    <script>
+        $(function(){
+            $("#loadingModal").modal('show');
+            var ResultID = "" //结果ID
+            $('#LeftTree').tree({
+                url:'/impowerSelect',
+                method: 'get',
+                animate:true,
+                loadFilter:function(data){
+                    return data
+                },
+                onLoadSuccess:function(data){
+                    $("#loadingModal").modal('hide');
+                },
+                onClick: function (node) {
+                    if($('#LeftTree').tree('isLeaf',node.target)){
+                        $("#loadingModal").modal('show');
+                        var parentText = $('#LeftTree').tree('getParent', node.target)
+                        if(parentText != null){
+                            var projectName = parentText.text + '\\' + node.text
+                        }else{
+                            var projectName = node.text
+                        }
+                        $("#tab").bootstrapTable("destroy")
+                        $("#tab").bootstrapTable({
+                            method : 'get',
+                            url:'/impowerSelectData',
+                            striped : true,
+                            search:true, //搜素
+                            pageNumber : 1, //初始化加载第一页
+                            pagination : true,//是否分页
+                            sidePagination : 'client',//server:服务器端分页|client：前端分页
+                            pageSize : 10,//单页记录数
+                            pageList : [10, 20, 30, 40, 50 ],//可选择单页记录数
+                            singleSelect:true, //单选
+                            clickToSelect: true, //点击行选中复选框
+                            queryParams: {
+                                projectName: projectName
+                            },
+                            columns: [{
+                                checkbox: true
+                            },{
+                                field: 'SampleName',
+                                title: '样品名称'
+                            }, {
+                                field: 'SampleBottle',
+                                title: '样品瓶'
+                            }, {
+                                field: 'Sampling',
+                                title: '进样'
+                            }, {
+                                field: 'SampleType',
+                                title: '样品类型'
+                            }, {
+                                field: 'ProcessingChannel',
+                                title: '处理通道说明'
+                            }, {
+                                field: 'CollectionDate',
+                                title: '采集日期'
+                            }, {
+                                field: 'OperationDate',
+                                title: '处理日期'
+                            }, {
+                                field: 'ProcessingMethod',
+                                title: '处理方法'
+                            }, {
+                                field: 'ResultID',
+                                title: '结果ID'
+                            }],
+                            onClickRow:function (row,$element) {
+                                $('.info').removeClass('info');//移除class
+                                $($element).addClass('info');//添加class
+                            },
+                            onCheck:function(rowData,$element){
+                                ResultID = rowData.ResultID
+                                //峰值
+                                $("#peakItemTab").bootstrapTable("destroy")
+                                $("#peakItemTab").bootstrapTable({
+                                    method : 'get',
+                                    url:'impowerPeakItemSelect',
+                                    striped : true,
+                                    pageNumber : 1, //初始化加载第一页
+                                    pagination : true,//是否分页
+                                    sidePagination : 'client',//server:服务器端分页|client：前端分页
+                                    pageSize : 5,//单页记录数
+                                    pageList : [5, 10, 20, 30, 40, 50 ],//可选择单页记录数
+                                    queryParams: {
+                                        projectName: projectName,
+                                        ResultID: ResultID
+                                    },
+                                    columns: [{
+                                        field: 'Name',
+                                        title: '名称'
+                                    }, {
+                                        field: 'RetentionTime',
+                                        title: '保留时间'
+                                    }, {
+                                        field: 'Area',
+                                        title: '面积'
+                                    }, {
+                                        field: 'PercentileArea',
+                                        title: '%面积'
+                                    }, {
+                                        field: 'Height',
+                                        title: '高度'
+                                    }]
+                                })
+                                $.ajax({
+                                    url: '/EmpowerContentSelect',
+                                    type: 'get',
+                                    data: {
+                                        ResultID: ResultID
+                                    },
+                                    success: function (data) {
+                                        data = JSON.parse(data)
+                                        $("#contentID").val(data.ID)
+                                        $("#contentText").html(data.Content)
+                                    }
+                                })
+                                //图谱
+                                getNewData(projectName,rowData.SampleName,rowData.SampleBottle,rowData.Sampling)
+                            },
+                            onLoadSuccess:function(data){
+                                $("#loadingModal").modal('hide');
+                            },
+                         })
+                    }
+                }
+            })
+            //修改含量
+            $("#edit").on('click',function(){
+                if(ResultID != "") {
+                    $("#myModal").modal('show')
+                }
+            })
+            //保存含量
+            $("#save").on('click',function(){
+                $.ajax({
+                    url: '/EmpowerContentUpdate',
+                    type: 'post',
+                    data:{
+                        ID:$("#contentID").val(),
+                        ResultID:ResultID,
+                        Content:$("#contentIpt").val()
+                    },
+                    success: function (data) {
+                        $("#myModal").modal('hide')
+                        if(data != "OK"){
+                            alert("未知错误")
+                        }else{
+                            $("#contentText").html($("#contentIpt").val())
+                        }
+                    }
+                });
+            })
+            //查看明细
+            $("#details").on('click',function(){
+                if(ResultID != "") {
+                    $("#detailsModal").modal('show')
+                    $("#detailsTab").bootstrapTable("destroy")
+                    $("#detailsTab").bootstrapTable({
+                        method : 'get',
+                        url:'/EmpowerContentJournalSelect',
+                        striped : true,
+                        pageNumber : 1, //初始化加载第一页
+                        pagination : true,//是否分页
+                        sidePagination : 'server',//server:服务器端分页|client：前端分页
+                        pageSize : 10,//单页记录数
+                        pageList : [10, 20, 30, 40, 50 ],//可选择单页记录数
+                        queryParams: {
+                            ResultID: ResultID
+                        },
+                        columns: [{
+                            field: 'Operation',
+                            title: '操作'
+                        }, {
+                            field: 'DetailedInformation',
+                            title: '详细信息'
+                        }, {
+                            field: 'OperationDate',
+                            title: '操作日期'
+                        }, {
+                            field: 'Other',
+                            title: '其他'
+                        }]
+                    })
+                }
+             })
+            function getNewData(projectName,SampleName,SampleBottle,Sampling){
+                var myDiv = document.getElementById("chart")
+                var myChartContainer = function () {
+                    var width = $("#chartBox").width()
+                    myDiv.style.width = width +'px';
+                };
+                myChartContainer();
+                var myChart = echarts.init(myDiv)
+                myChart.showLoading();
+                $.ajax({
+                    url: '/impowerIniDataSelect',
+                    type: 'get',
+                    data: {
+                        projectName: projectName,
+                        SampleName:SampleName,
+                        SampleBottle:SampleBottle,
+                        Sampling:Sampling
+                    },
+                    success: function (data) {
+                        data = JSON.parse(data)
+                        var tabData = $("#peakItemTab").bootstrapTable("getData")
+                        myChart.hideLoading();
+                        myChart.setOption(option = {
+                            tooltip: {
+                                trigger: 'axis'
+                            },
+                            toolbox: {
+                                feature: {
+                                    mark : {show: true},
+                                    dataView: {show: true, readOnly: false},
+                                    restore: {show: true},
+                                    saveAsImage: {show: true}
+                                }
+                            },
+                            dataZoom: {
+                                show: true,
+                                start : 0
+                            },
+                            xAxis: {
+                                type : 'category',
+                                name : '分钟',
+                                min:0,
+                                axisLabel : {
+                                    //rotate:"45"
+                                },
+                                data:data.X.map(Number)
+                            },
+                            yAxis: {
+                                type : 'value',
+                                name : 'AU',
+                                axisLabel: {
+                                    formatter: '{value}'
+                                }
+                            },
+                            series: [{
+                                name: "AU",
+                                type: 'line',
+                                itemStyle:{
+                                    normal : {
+                                        lineStyle:{
+                                            color:'#333333'
+                                        }
+                                    }
+                                },
+                                markPoint: {
+                                    data: markPointData(data.X,tabData)
+                                },
+                                data: data.Y
+                            }]
+                        });
+                        myChart.setOption(option);
+                    }
+                })
+                $("#chartBox").resize(function(){
+                    myChartContainer();
+                    myChart.resize();
+                })
+            }
+        })
+        function findCloseNum(arr, num) {
+            var index = 0; // 保存最接近数值在数组中的索引
+            var d_value = Number.MAX_VALUE; // 保存差值绝对值，默认为最大数值
+            for (var i = 0; i < arr.length; i++) {
+                var new_d_value = Math.abs(arr[i] - num); // 新差值
+                if (new_d_value <= d_value) { // 如果新差值绝对值小于等于旧差值绝对值，保存新差值绝对值和索引
+                    if (new_d_value === d_value && arr[i] < arr[index]) { // 如果数组中两个数值跟目标数值差值一样，取大
+                        continue;
+                    }
+                    index = i;
+                    d_value = new_d_value;
+                }
+            }
+            return arr[index] // 返回最接近的数值
+        }
+        function markPointData(dataX,tabData){
+            var tabDataArr = []
+            for (var i = 0; i < tabData.length; i++) {
+                var obj = {}
+                obj.value = tabData[i].Height
+                obj.yAxis = tabData[i].Height / 1000000
+                obj.xAxis = parseFloat(tabData[i].RetentionTime)
+                obj.xAxis = String(findCloseNum(dataX.map(Number), obj.xAxis))
+                tabDataArr.push(obj)
+            }
+            return tabDataArr
+        }
+    </script>
+</head>
+<body style="padding: 15px;">
+    <div class="modal" id="loadingModal" data-backdrop="static" data-keyboard="false">
+        <div style="width: 200px;height:20px; z-index: 20000; position: absolute; text-align: center; left: 50%; top: 50%;margin-left:-100px;margin-top:-10px">
+            <div class="progress progress-striped active" style="margin-bottom: 0;">
+                <div class="progress-bar" style="width: 100%;"></div>
+            </div>
+            <h5>正在加载...</h5>
+        </div>
+    </div>
+    <div class="easyui-layout" style="width:100%;height:510px;">
+        <div data-options="region:'west',split:true" title="项目" style="width:25%">
+            <div class="left-tree" style="padding: 15px;">
+                <ul id="LeftTree" class="easyui-tree"></ul>
+            </div>
+        </div>
+        <div data-options="region:'center',title:'结果'">
+            <table class="table table-bordered" id="tab"></table>
+        </div>
+	</div>
+    <div class="easyui-layout" style="width:100%;height:500px;margin-top: 15px;">
+        <div data-options="region:'center',title:'图谱'" style="width: 100%;" id="chartBox">
+            <div id="chart" style="width: 960px; height: 450px;"></div>
+        </div>
+        <div data-options="region:'east',split:true" title="峰值" style="width:25%">
+            <table class="table table-bordered" id="peakItemTab"></table>
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <label for="content" class="col-sm-4 control-label">含量：</label>
+                    <div class="col-sm-8">
+                        <label class="control-label">
+                            <span id="contentText"></span>
+                            <input type="hidden" id="contentID" value="">
+                            <a href="javascript:;" id="edit" style="margin-left: 15px;">编辑</a>
+                            <a href="javascript:;" id="details" style="margin-left: 15px;">明细</a>
+                        </label>
+                    </div>
+                </div>
+            </form>
+        </div>
+	</div>
+    {#  编辑含量 模态框  #}
+    <div id="myModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        ×
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">
+                        编辑
+                    </h4>
+                </div>
+                <!-- dialog body -->
+                <div class="modal-body">
+                    <form class="form-horizontal" action="">
+                        <div class="form-group">
+                            <label for="" class="col-sm-2 control-label">含量</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="contentIpt">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <!-- dialog buttons -->
+                <div class="modal-footer"><button type="button" class="btn btn-primary" id="save">保存</button></div>
+            </div>
+        </div>
+    </div>
+    {#  明细 模态框  #}
+    <div id="detailsModal" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">日志明细</h4>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-bordered" id="detailsTab"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        //监听div大小变化
+        (function($, h, c) {
+            var a = $([]),
+            e = $.resize = $.extend($.resize, {}),
+            i,
+            k = "setTimeout",
+            j = "resize",
+            d = j + "-special-event",
+            b = "delay",
+            f = "throttleWindow";
+            e[b] = 250;
+            e[f] = true;
+            $.event.special[j] = {
+                setup: function() {
+                    if (!e[f] && this[k]) {
+                        return false;
+                    }
+                    var l = $(this);
+                    a = a.add(l);
+                    $.data(this, d, {
+                        w: l.width(),
+                        h: l.height()
+                    });
+                    if (a.length === 1) {
+                        g();
+                    }
+                },
+                teardown: function() {
+                    if (!e[f] && this[k]) {
+                        return false;
+                    }
+                    var l = $(this);
+                    a = a.not(l);
+                    l.removeData(d);
+                    if (!a.length) {
+                        clearTimeout(i);
+                    }
+                },
+                add: function(l) {
+                    if (!e[f] && this[k]) {
+                        return false;
+                    }
+                    var n;
+                    function m(s, o, p) {
+                        var q = $(this),
+                        r = $.data(this, d);
+                        r.w = o !== c ? o: q.width();
+                        r.h = p !== c ? p: q.height();
+                        n.apply(this, arguments);
+                    }
+                    if ($.isFunction(l)) {
+                        n = l;
+                        return m;
+                    } else {
+                        n = l.handler;
+                        l.handler = m;
+                    }
+                }
+            };
+            function g() {
+                i = h[k](function() {
+                    a.each(function() {
+                        var n = $(this),
+                        m = n.width(),
+                        l = n.height(),
+                        o = $.data(this, d);
+                        if (m !== o.w || l !== o.h) {
+                            n.trigger(j, [o.w = m, o.h = l]);
+                        }
+                    });
+                    g();
+                },
+                e[b]);
+            }
+        })(jQuery, this);
+        function unique(arr){
+            for(var i=0;i<arr.length;i++){
+                for(var j=i+1;j<arr.length;j++){
+                    if(arr[i] == arr[j]){
+                        arr.splice(j,1)
+                        j--
+                    }
+                }
+            }
+            return arr
+        }
+    </script>
+</body>
+</html>

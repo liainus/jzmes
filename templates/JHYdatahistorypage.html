@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>近红外实时数据</title>
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css">
+    <script type="text/javascript" src="../static/js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="../static/highcharts/highcharts.js"></script>
+    <script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootbox.min.js"></script>
+    <script>
+        $(function(){
+            $(".pull-right").on('click',function(){
+                addTab("近红外历史数据","/JHYDatapage")
+            })
+            //highchart 实时数据趋势图
+            var ws = new WebSocket("ws://192.168.100.150:5003");
+            websocket()
+            function websocket(){
+                ws.onopen = function(){
+                    ws.send("hello");
+                    console.log("数据发送中...");
+                };
+            }
+            Highcharts.setOptions({
+                global: {
+                    useUTC: false
+                }
+            });
+            var chart = Highcharts.chart("chartBox", {
+                chart: {
+                    type: 'spline',
+                    backgroundColor:"#f8f8f8",
+                    events: {
+                        load: function () {
+                            var series1 = this.series[0],
+                                series2 = this.series[1],
+                                series3 = this.series[2]
+                            ws.onmessage = function (evt){
+                                var received_msg = evt.data;
+                                received_msg = JSON.parse(received_msg)
+                                var x = new Date(received_msg.realtime).getTime(),   // 返回时间
+                                    y1 = Math.floor(received_msg.JHY_CPG*100) / 100,
+                                    y2 = Math.floor(received_msg.JHY_SF*100) / 100,
+                                    y3 = Math.floor(received_msg.JHY_LJ);
+                                series1.addPoint([x, y1], true, true);
+                                series2.addPoint([x, y2], true, true);
+                                series3.addPoint([x, y3], true, true);
+                                $("#CPG").html(y1)
+                                $("#SF").html(y2)
+                                $("#LJ").html(y3)
+                            };
+                            ws.onclose = function(){
+                                console.log("连接已关闭...");
+                                var dialog = bootbox.dialog({
+                                    message: '<p class="text-center mb-0"><i class="fa fa-spin fa-cog"></i>连接服务失败，即将重连...</p>',
+                                    closeButton: false
+                                });
+                                dialog.init(function(){
+                                    setTimeout(function(){
+                                        dialog.modal('hide');
+                                    }, 2000);
+                                });
+                                var socket = new WebSocket("ws://111.75.201.235:5003");
+                                socket.onopen = function(){
+                                    socket.send("hello");
+                                    console.log("数据发送中...");
+                                };
+                                socket.onmessage = function (evt){
+                                    var received_msg = evt.data;
+                                    received_msg = JSON.parse(received_msg)
+                                    var x = new Date(received_msg.realtime).getTime(),   // 返回时间
+                                        y1 = Math.floor(received_msg.JHY_CPG*100) / 100,
+                                        y2 = Math.floor(received_msg.JHY_SF*100) / 100,
+                                        y3 = Math.floor(received_msg.JHY_LJ);
+                                    series1.addPoint([x, y1], true, true);
+                                    series2.addPoint([x, y2], true, true);
+                                    series3.addPoint([x, y3], true, true);
+                                    $("#CPG").html(y1)
+                                    $("#SF").html(y2)
+                                    $("#LJ").html(y3)
+                                };
+                                socket.onclose = function(){
+                                    console.log("连接已关闭...");
+                                };
+                            };
+                        }
+                    }
+                },
+                title: {
+                    text: null
+                },
+                xAxis: {
+                    type: 'datetime',
+                    tickPixelInterval: 150
+                },
+                yAxis: [{
+                    title: {
+                        text: '橙皮苷',
+                        style: {
+                            color: Highcharts.getOptions().colors[0]
+                        }
+                    },
+                    labels: {
+                        format: '{value} mg/g',
+                        style: {
+                            color: Highcharts.getOptions().colors[0]
+                        }
+                    }
+                },{
+                    title: {
+                        text: '水分',
+                        style: {
+                            color: Highcharts.getOptions().colors[1]
+                        }
+                    },
+                    labels: {
+                        format: '{value} %',
+                        style: {
+                            color: Highcharts.getOptions().colors[1]
+                        }
+                    },
+                    opposite: true
+                },{
+                    title: {
+                        text: '粒径',
+                        style: {
+                            color: Highcharts.getOptions().colors[2]
+                        }
+                    },
+                    labels: {
+                        format: '{value} um',
+                        style: {
+                            color: Highcharts.getOptions().colors[2]
+                        }
+                    },
+                    tickInterval:10,
+                    opposite: true
+                }],
+                credits: {
+                    enabled: false//不显示LOGO
+                },
+                series: [{
+                    name: '橙皮苷',
+                    data: (function () {
+                        var data = [],
+                            i;
+                        for (i = -19; i <= 0; i += 1) {
+                            data.push({
+                                x: null,
+                                y: 0
+                            });
+                        }
+                        return data;
+                    }()),
+                    yAxis: 0,
+                    marker: {
+                        enabled: false
+                    },
+                    tooltip: {
+                        valueSuffix: 'mg/g'
+                    }
+                },{
+                    name: '水分',
+                    data: (function () {
+                        var data = [],
+                            i;
+                        for (i = -19; i <= 0; i += 1) {
+                            data.push({
+                                x: null,
+                                y: 0
+                            });
+                        }
+                        return data;
+                    }()),
+                    yAxis: 1,
+                    marker: {
+                        enabled: false
+                    },
+                    tooltip: {
+                        valueSuffix: '%'
+                    }
+                },{
+                    name: '粒径',
+                    data: (function () {
+                        var data = [],
+                            i;
+                        for (i = -19; i <= 0; i += 1) {
+                            data.push({
+                                x: null,
+                                y: 0
+                            });
+                        }
+                        return data;
+                    }()),
+                    yAxis: 2,
+                    marker: {
+                        enabled: false
+                    },
+                    tooltip: {
+                        valueSuffix: 'um'
+                    }
+                }]
+            });
+
+            //设置上下限
+            $(".setLine").on('click',function(){
+                if($(this).attr("data-type") == 1){
+                    chart.yAxis[0].removePlotLine('a1');
+                    chart.yAxis[0].removePlotLine('a2');
+                    chart.yAxis[0].addPlotLine({
+                        color: '#7cb5ec',
+                        width: 2,
+                        value: $(this).siblings(".markLineTop").val(),
+                        dashStyle: 'longdashdot',
+                        id:"a1"
+                    })
+                    chart.yAxis[0].addPlotLine({
+                        color: '#7cb5ec',
+                        width: 2,
+                        value: $(this).siblings(".markLineBottom").val(),
+                        dashStyle: 'longdashdot',
+                        id:"a2"
+                     })
+                }else if($(this).attr("data-type") == 2){
+                    chart.yAxis[1].removePlotLine('b1');
+                    chart.yAxis[1].removePlotLine('b2');
+                    chart.yAxis[1].addPlotLine({
+                        color: '#434348',
+                        width: 2,
+                        value: $(this).siblings(".markLineTop").val(),
+                        dashStyle: 'longdashdot',
+                        id:"b1"
+                    })
+                    chart.yAxis[1].addPlotLine({
+                        color: '#434348',
+                        width: 2,
+                        value: $(this).siblings(".markLineBottom").val(),
+                        dashStyle: 'longdashdot',
+                        id:"b2"
+                    })
+                }else if($(this).attr("data-type") == 3){
+                    chart.yAxis[2].removePlotLine('c1');
+                    chart.yAxis[2].removePlotLine('c2');
+                    chart.yAxis[2].addPlotLine({
+                        color: '#90ed7d',
+                        width: 2,
+                        value: $(this).siblings(".markLineTop").val(),
+                        dashStyle: 'longdashdot',
+                        id:"c1"
+                    })
+                    chart.yAxis[2].addPlotLine({
+                        color: '#90ed7d',
+                        width: 2,
+                        value: $(this).siblings(".markLineBottom").val(),
+                        dashStyle: 'longdashdot',
+                        id:"c2"
+                    })
+                }
+            })
+            //按钮点击后添加选项卡
+            function addTab(title, url) {
+                if (parent.parent.$('.easyui-tabs1').tabs('exists', title)) {
+                    parent.parent.$('.easyui-tabs1').tabs('select', title);
+                }
+                else {
+                    var content = '<iframe class="page-iframe" src="' + url + '" frameborder="no" border="no" height="100%" width="100%" scrolling="auto"></iframe>';
+                    parent.parent.$('.easyui-tabs1').tabs('add', {
+                        title: title,
+                        content: content,
+                        closable: true
+                    });
+                }
+            }
+            //时间格式转换
+            function Appendzero(obj){
+                if(obj < 10){
+                    return "0" + obj
+                }else{
+                    return obj
+                }
+            }
+            function myformatter(date){
+                var y = date.getFullYear();
+                var m = date.getMonth()+1;
+                var d = date.getDate();
+                var h = date.getHours()
+                var minutes = date.getMinutes()
+                var s = date.getSeconds()
+                return Appendzero(y) + '-' + Appendzero(m) + '-' + Appendzero(d) + ' ' + Appendzero(h) + ':' + Appendzero(minutes);
+            }
+        })
+    </script>
+</head>
+<body style="background: #e3e5e4;">
+    <div class="container">
+        <div style="margin: 28px 0;position: relative;background-color: #e3e5e4;">
+            <div style="min-height: 380px;border-width: 0 0 0 0px;background-color: #f8f8f8;border-radius: 0 0 17px 0;padding: 15px;">
+                <div style="padding-bottom: 5px;border-bottom: 1px solid #e3e5e4;font-size: 25px;font-weight: bold;">
+                    <span class="text-left">近红外</span>
+                    <a class="pull-right" style="font-weight: 500;font-size: 18px;" href="javascript:;">近红外历史数据</a>
+                </div>
+                <div class="clearfix" style="padding: 25px 0;">
+                    <div style="width: 50%;float: left;color: #7C7D7D;">
+                        <div style="text-align: right;font-weight: bold;font-size: 24px;margin-right: 20px;margin-top: 10px;">
+                            橙皮苷
+                        </div>
+                    </div>
+                    <div style="width: 50%;float: left;color: #7C7D7D;">
+                        <div style="text-align: left;font-weight: bold;font-size: 38px;margin-right: 20px;">
+                            <span id="CPG">0</span> mg/g
+                        </div>
+                    </div>
+                </div>
+                <div class="clearfix" style="border-top:1px solid #e3e5e4;padding: 25px 0;">
+                    <div style="width: 50%;float: left;color: #7C7D7D;">
+                        <div style="text-align: right;font-weight: bold;font-size: 24px;margin-right: 20px;margin-top: 10px;">
+                            水分
+                        </div>
+                    </div>
+                    <div style="width: 50%;float: left;color: #7C7D7D;">
+                        <div style="text-align: left;font-weight: bold;font-size: 38px;margin-right: 20px;">
+                            <span id="SF">0</span> %
+                        </div>
+                    </div>
+                </div>
+                <div class="clearfix" style="border-top:1px solid #e3e5e4;padding: 25px 0;">
+                    <div style="width: 50%;float: left;color: #7C7D7D;">
+                        <div style="text-align: right;font-weight: bold;font-size: 24px;margin-right: 20px;margin-top: 10px;">
+                            粒径
+                        </div>
+                    </div>
+                    <div style="width: 50%;float: left;color: #7C7D7D;">
+                        <div style="text-align: left;font-weight: bold;font-size: 38px;margin-right: 20px;">
+                            <span id="LJ">0</span> um
+                        </div>
+                    </div>
+                </div>
+                <div class="clearfix" style="border-top:1px solid #e3e5e4;padding: 25px 0;">
+                    <div id="chartBox"></div>
+                    <div class="col-sm-12" style="margin-top: 20px;">
+                        <form class="form-inline">
+                            <div class="form-group">
+                                <label for="">橙皮苷上下限：</label>
+                                <input type="number" class="form-control markLineTop"/>
+                                <input type="number" class="form-control markLineBottom" value="2.2"/>
+                                <button type="button" class="btn btn-default setLine" data-type="1">设置标识线</button>
+                            </div>
+                        </form>
+                        <form class="form-inline">
+                            <div class="form-group">
+                                <label for="">水分上下限：</label>
+                                <input type="number" class="form-control markLineTop" value="10"/>
+                                <input type="number" class="form-control markLineBottom"/>
+                                <button type="button" class="btn btn-default setLine" data-type="2">设置标识线</button>
+                            </div>
+                        </form>
+                        <form class="form-inline">
+                            <div class="form-group">
+                                <label for="">粒径上下限：</label>
+                                <input type="number" class="form-control markLineTop" value="50"/>
+                                <input type="number" class="form-control markLineBottom" value="20"/>
+                                <button type="button" class="btn btn-default setLine" data-type="3">设置标识线</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

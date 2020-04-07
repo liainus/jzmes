@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>设置安全库存</title>
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/css/step.css">
+    <link rel="stylesheet" href="../static/css/bootstrap-slider.min.css">
+    <script type="text/javascript" src="../static/js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootbox.min.js"></script>
+    <script type="text/javascript" src="../static/js/bsStep.js"></script>
+    <script type="text/javascript" src="../static/js/less.js"></script>
+    <script type="text/javascript" src="../static/js/bootstrap-slider.min.js"></script>
+    <style>
+        .pad-per{
+            padding-top: 15px;
+            padding-bottom: 15px;
+        }
+        .step-round{
+            margin-bottom: 20px;
+        }
+        .slider.slider-vertical{
+            height: 380px;
+            margin: 0 10px;
+        }
+        .slider.slider-vertical .slider-track{
+            background: #FAA13C;
+        }
+        #total.slider.slider-vertical .slider-track{
+            background: #00C2EE;
+        }
+        .slider-selection {
+            background: #BABABA;
+        }
+        .slider-handle {
+            background: #FAA13C;
+        }
+        #total .slider-handle {
+            background: #00C2EE;
+        }
+        #myAlert{
+            position: absolute;
+            width: 100%;
+        }
+    </style>
+    <script>
+        $(function(){
+            bsStep();
+        })
+    </script>
+</head>
+<body>
+    <div class="pad-per">
+        <div class="col-md-12">
+            <ul class="nav nav-pills nav-justified step step-round" data-step="3">
+                <li>
+                    <a href="/ERP_productplan">ERP计划信息</a>
+                </li>
+                <li>
+                    <a href="/plantCalendarYield">设置得率</a>
+                </li>
+                <li>
+                    <a href="/plantCalendarSafeStock">设置安全库存</a>
+                </li>
+                <li>
+                    <a href="/plantCalendarbatchNumber">设置每日生产批数</a>
+                </li>
+                <li>
+                    <a href="/plantCalendar">工厂日历</a>
+                </li>
+                <li>
+                    <a href="/calendarScheduling">日历排产</a>
+                </li>
+                <li>
+                    <a href="/plantCalendarResult">排产结果</a>
+                </li>
+            </ul>
+            <div class="col-md-12 col-sm-12 text-center">
+                <div id="myAlert" class="alert alert-success hide">
+                    <strong>成功！</strong>物料库存设置成功！
+                </div>
+                <form class="form-inline" style="margin-bottom: 15px;">
+                  <div class="form-group">
+                    <p class="form-control-static">选择品名：</p>
+                  </div>
+                  <div class="form-group">
+                    <select class="form-control" id="PRNameSelect">
+                        {% for i in data %}
+                            <option value="{{ i['id'] }}">{{ i['text'] }}</option>
+                        {% endfor %}
+                    </select>
+                  </div>
+                </form>
+            </div>
+            <div class="col-md-12 col-sm-12 material-main">
+
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="modal-footer">
+                <a href="/plantCalendarbatchNumber" class="btn btn-primary">下一步</a>
+            </div>
+        </div>
+    </div>
+    <script>
+        $(function(){
+            var PRName = $("#PRNameSelect").find("option").eq(0).html()
+            render(PRName)
+            $("#PRNameSelect").change(function(){
+                PRName = $(this).find("option:checked").html()
+                render(PRName)
+            })
+            function render(PRName){
+                $(".material-main").html("")
+                $.ajax({
+                    url: '/planSchedulingTu',
+                    type: 'get',
+                    data:{
+                        PRName:PRName
+                    },
+                    success: function (data) {
+                        data = JSON.parse(data)
+                        var str= ""
+                        for(var i in data){
+                            str = '<div class="col-md-2 col-sm-2 text-center">'+
+                                        '<p class="material-title">'+ data[i].name +'</p>'+
+                                        '<input type="text" class="material-slider totalSlider '+ data[i].ID +'" value="" id="" data-slider-id="total" data-slider-step="100" data-slider-min="0" data-slider-max="10000"'+
+                                        'data-slider-value="'+ data[i].total +'" data-slider-orientation="vertical"/>'+
+                                        '<input type="text" class="material-slider safeSlider '+ data[i].ID +'" value="" id="" data-slider-id="safe" data-slider-step="50" data-slider-min="0" data-slider-max="10000"'+
+                                        'data-slider-value="'+ data[i].safe +'" data-slider-orientation="vertical"/>'+
+                                        '<h5 class="totalVal">剩余库存为：<span>'+ data[i].total +'</span> kg</h5>'+
+                                        '<h5 class="safeVal">安全库存为：<span>'+ data[i].safe +'</span> kg</h5>'+
+                                    '</div>'
+                            $(".material-main").append(str)
+                            $('.'+ data[i].ID +'').slider({
+                                reversed : true
+                            })
+                        }
+                        $(".totalSlider").on("slide",function (slideEvt) {
+                            $(this).siblings(".totalVal").find("span").html(slideEvt.value)
+                        })
+                        $(".safeSlider").on("slide",function (slideEvt) {
+                            $(this).siblings(".safeVal").find("span").html(slideEvt.value)
+                        })
+                        $(".material-slider").on("slideStop ",function (slideEvt) {
+                            var ids = slideEvt.target.classList[2]
+                            ids = ids.replace("y","")
+                            var value = slideEvt.value
+                            var type = slideEvt.target.dataset.sliderId
+                            var json = ""
+                            if(type == "total"){
+                                json = {
+                                    ID:ids,
+                                    StockHouse:value,
+                                    SafetyStock:""
+                                }
+                            }else if(type == "safe"){
+                                json = {
+                                    ID:ids,
+                                    StockHouse:"",
+                                    SafetyStock:value
+                                }
+                            }
+                            $.ajax({
+                                url: '/SchedulingStockUpdateCreate',
+                                type: 'post',
+                                data:json,
+                                success: function (data) {
+                                    if(data == "OK"){
+                                        $("#myAlert").removeClass('hide').addClass('in')
+                                        setTimeout(function() {
+                                            $("#myAlert").removeClass('in').addClass('hide')
+                                        },2000)
+                                    }else{
+                                        bootbox.alert(data)
+                                    }
+                                },
+                                error:function(){
+                                    bootbox.alert("请求失败")
+                                }
+                            });
+                        })
+                    }
+                });
+            }
+        })
+    </script>
+</body>
+</html>

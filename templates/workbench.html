@@ -6,26 +6,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>工作台</title>
     <link href="../static/css/base.css" rel="stylesheet">
-	<link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
     <link rel="stylesheet" href="../static/css/bootstrap.min.css">
     <link rel="stylesheet" href="../static/css/bootstrap-table.min.css">
     <link rel="stylesheet" href="../static/css/bootstrap-datetimepicker.min.css" crossorigin="anonymous">
     <link rel="stylesheet" href="../static/css/fullcalendar.min.css">
     <style>
         .content{
-            background: #eaedf2;
+            background: #f1f1f1;
             padding:20px 10px;
+        }
+        .card{
+            position: relative;
+            min-height: 100px;
+            overflow: hidden!important;
+            background-color: #fff;
+            color: #666;
+            border: none;
+            border-radius: 5px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
         }
         .AgencyArea{
             position: relative;
             font-size: 12px;
         }
         .AgencyArea .AgencyArea-item{
-            background: #00c4dc;
+            background: linear-gradient(to right, #45a2d0 , #7ec5ef);
             color: #fff;
             padding: 10px;
             margin-bottom: 20px;
-            border-radius: 3px;
+            border-radius: 5px;
+            box-shadow: -5px 5px 10px rgba(0, 0, 0, 0.1);
             cursor: pointer;
         }
         .AgencyArea-head{
@@ -129,92 +139,22 @@
                                 <h3 id="daiban4" class="modal-title">0</h3>
                             </div>
                         </div>
-{#                        <div class="col-md-3" skip-src="/BatchMaterielBalanceStatistic" title="设备故障待维修">#}
-{#                            <div class="AgencyArea-item">#}
-{#                                <h3 id="daiban4">0</h3>#}
-{#                                <span><i class="glyphicon glyphicon-pencil"></i> 设备故障待维修</span>#}
-{#                            </div>#}
-{#                        </div>#}
-{#                        <div class="col-md-3" skip-src="/BatchMaterielBalanceStatistic" title="设备故障待完成">#}
-{#                            <div class="AgencyArea-item">#}
-{#                                <h3 id="daiban4">0</h3>#}
-{#                                <span><i class="glyphicon glyphicon-pencil"></i> 设备故障待完成</span>#}
-{#                            </div>#}
-{#                        </div>#}
-{#                        <div class="col-md-3" skip-src="/BatchMaterielBalanceStatistic" title="设备检修待完成">#}
-{#                            <div class="AgencyArea-item">#}
-{#                                <h3 id="daiban4">0</h3>#}
-{#                                <span><i class="glyphicon glyphicon-pencil"></i> 设备检修待完成</span>#}
-{#                            </div>#}
-{#                        </div>#}
-{#                        <div class="col-md-3" skip-src="/BatchMaterielBalanceStatistic" title="设备检修待审核">#}
-{#                            <div class="AgencyArea-item">#}
-{#                                <h3 id="daiban4">0</h3>#}
-{#                                <span><i class="glyphicon glyphicon-pencil"></i> 设备检修待审核</span>#}
-{#                            </div>#}
-{#                        </div>#}
                     </div>
-                    <div id="compareBox" style="width: 100%;width: 100%;margin-bottom:20px;padding: 10px;background: #fff;border-radius: 5px;">
-                        <div id="CompareMain" style="width: 760px; height: 360px;"></div>
+                    <div class="col-md-12 card" style="margin-bottom:20px;padding: 15px;">
+                        <div id="compareBox" style="width: 100%;">
+                            <div id="CompareMain" style="width: 760px; height: 320px;"></div>
+                        </div>
                     </div>
-                    <div class="col-md-12" style="margin-bottom: 20px;">
-                        <div class="row">
-                            <div class="col-md-8 col-sm-8" style="padding-left: 0">
-                                <div class="" style="background: #fff;height: 130px;margin-bottom: 15px;border-radius: 5px;padding: 15px 0;">
-                                    <div class="col-md-9">
-                                        <p style="margin-bottom: 40px;">生产数据</p>
-                                        <form class="form-inline">
-                                            <div class="form-group">
-                                                <div class="input-group input-append date col-sm-4">
-                                                    <input type="text" value="" id="start_date" class="form-control" readonly>
-                                                    <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
-                                                </div>
-                                                <div class="input-group input-append date col-sm-4">
-                                                    <input type="text" value="" id="over_date" class="form-control" readonly>
-                                                    <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
-                                                </div>
-                                                <button type="button" class="btn btn-primary">查询</button>
-                                                <button type="button" class="btn btn-primary">重置</button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <p class="text-right" style="margin-top: 50px;color: #00bbee;font-size: 22px;">3544</p>
-                                    </div>
-                                </div>
-                                <div class="" style="background: #fff;height: 130px;border-radius: 5px;padding: 15px 0;">
-                                    <div class="col-md-9">
-                                        <p style="margin-bottom: 40px;">生产成本</p>
-                                        <form class="form-inline">
-                                            <div class="form-group">
-                                                <div class="input-group input-append date col-sm-4">
-                                                    <input type="text" value="" id="" class="form-control" readonly>
-                                                    <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
-                                                </div>
-                                                <div class="input-group input-append date col-sm-4">
-                                                    <input type="text" value="" id="" class="form-control" readonly>
-                                                    <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
-                                                </div>
-                                                <button type="button" class="btn btn-primary">查询</button>
-                                                <button type="button" class="btn btn-primary">重置</button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <p class="text-right" style="margin-top: 50px;color: #00bbee;font-size: 22px;">6345</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4 col-sm-4" style="background:#fff;height: 275px;border-radius: 5px;">
-
-                            </div>
+                    <div class="col-md-12 card" style="margin-bottom:20px;padding: 15px;">
+                        <div id="eqBox" style="width: 100%;">
+                            <div id="eqMain" style="width: 760px; height: 320px;"></div>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-4 col-sm-12">
                     <div class="row">
                         <div class="col-md-12">
-                            <div id='calendar' style="width: 100%;background: #fff;padding: 15px;border-radius: 5px;"></div>
+                            <div id='calendar' class="card" style="width: 100%;padding: 15px;"></div>
                             <div class="col-md-12 col-sm-12" style="background: #d2d2d2;margin-bottom: 20px;">
                                 <div class="row">
                                     <div class="col-md-4">
@@ -224,14 +164,14 @@
                                         <p class="bg-backlog text-center">休息</p>
                                     </div>
                                     <div class="col-md-4">
-                                        <p class="bg-urgency text-center">紧急</p>
+                                        <p class="bg-urgency text-center">其他</p>
                                     </div>
                                 </div>
                             </div>
-                            <div class="panel panel-widget" style="background: #e3e3e3;">
-                                <div class="panel-heading">制药计划待处理列表<a href="javascript:;" id="toZYPlanManage" style="float: right">去处理</a></div>
+                            <div class="panel panel-default clearfix" style="box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);">
+                                <div class="panel-heading">仪器仪表待处理 <a href="javascript:;" id="toInstrumentsPage" class="pull-right">去处理</a></div>
                                 <div class="panel-body">
-                                    <table id="planTable" class="table table-striped"></table>
+                                    <table id="tab" class="table table-striped"></table>
                                 </div>
                             </div>
                         </div>
@@ -243,12 +183,90 @@
     <script type="text/javascript" src="../static/js/echarts.common.min.js"></script>
     <script type="text/javascript" src="../static/js/moment.min.js"></script>
     <script type="text/javascript" src="../static/js/jquery-3.3.1.min.js"></script>
+    <script>
+        //监听div大小变化
+        (function($, h, c) {
+            var a = $([]),
+            e = $.resize = $.extend($.resize, {}),
+            i,
+            k = "setTimeout",
+            j = "resize",
+            d = j + "-special-event",
+            b = "delay",
+            f = "throttleWindow";
+            e[b] = 250;
+            e[f] = true;
+            $.event.special[j] = {
+                setup: function() {
+                    if (!e[f] && this[k]) {
+                        return false;
+                    }
+                    var l = $(this);
+                    a = a.add(l);
+                    $.data(this, d, {
+                        w: l.width(),
+                        h: l.height()
+                    });
+                    if (a.length === 1) {
+                        g();
+                    }
+                },
+                teardown: function() {
+                    if (!e[f] && this[k]) {
+                        return false;
+                    }
+                    var l = $(this);
+                    a = a.not(l);
+                    l.removeData(d);
+                    if (!a.length) {
+                        clearTimeout(i);
+                    }
+                },
+                add: function(l) {
+                    if (!e[f] && this[k]) {
+                        return false;
+                    }
+                    var n;
+                    function m(s, o, p) {
+                        var q = $(this),
+                        r = $.data(this, d);
+                        r.w = o !== c ? o: q.width();
+                        r.h = p !== c ? p: q.height();
+                        n.apply(this, arguments);
+                    }
+                    if ($.isFunction(l)) {
+                        n = l;
+                        return m;
+                    } else {
+                        n = l.handler;
+                        l.handler = m;
+                    }
+                }
+            };
+            function g() {
+                i = h[k](function() {
+                    a.each(function() {
+                        var n = $(this),
+                        m = n.width(),
+                        l = n.height(),
+                        o = $.data(this, d);
+                        if (m !== o.w || l !== o.h) {
+                            n.trigger(j, [o.w = m, o.h = l]);
+                        }
+                    });
+                    g();
+                },
+                e[b]);
+            }
+        })(jQuery, this);
+    </script>
     <script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="../static/js/bootstrap-table.min.js"></script>
     <script type="text/javascript" src="../static/js/bootstrap-table-zh-CN.min.js"></script>
     <script type="text/javascript" src="../static/js/bootstrap-datetimepicker.min.js"></script>
     <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
     <script type="text/javascript" src="../static/js/fullcalendar.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootbox.min.js"></script>
     <script type="text/javascript" src="../static/js/zh-cn.js"></script>
     <script type="text/javascript">
         //chart0
@@ -265,40 +283,39 @@
                     $("#daiban4").html(data.D)
                 },
                 error: function () {
-                    alert("获取待办数据失败，请稍后重试！")
+                    bootbox.alert("获取待办数据失败，请稍后重试！")
                 }
             });
-            $("#planTable").bootstrapTable({
-                url:'/maindaiban',
-                method: 'get',
-                height:320,
-                columns: [{
-                    field: 'BrandName',
-                    title: '品名'
-                }, {
-                    field: 'BatchID',
-                    title: '批次号'
-                }, {
-                    field: 'PlanStatus',
-                    title: '计划状态',
-                    formatter:function(value,row,index){
-                        if (value == 10){
-                            return '新增计划'
-                        }else if(value == 11){
-                            return '审核计划'
-                        }else if(value == 20){
-                            return '下发计划'
-                        }else if(value == 40){
-                            return '撤回计划'
-                        }else if(value == 50){
-                            return '执行计划'
-                        }else if(value == 60){
-                            return '完成计划'
-                        }else if(value == 70){
-                            return 'QA入库'
-                        }
-                    }
-                }]
+            $.ajax({
+                url:"/equipment_model/InstrumentationReminderTimeSelect",
+                type:"get",
+                success:function (res) {
+                    res = JSON.parse(res)
+                    $("#tab").bootstrapTable({
+                        url: '/equipment_model/InstrumentationReminderTimeSelect',
+                        method: 'get',
+                        height:280,
+                        locale: "zh-CN",
+                        striped: true,
+                        data:res.rows,
+                        columns: [{
+                            field: 'InstrumentationName',
+                            title: '仪表名称'
+                        },{
+                            field: 'Handler',
+                            title: '处理人'
+                        },{
+                            field: 'HandleStatus',
+                            title: '处理状态'
+                        },{
+                            field: 'Reviewer',
+                            title: '审核人'
+                        },{
+                            field: 'ReviewStatus',
+                            title: '审核状态'
+                        }]
+                    })
+                }
             })
 
             //有此权限时增加tabs跳转到操作页面 审核-下发-放行-物料平衡
@@ -320,12 +337,12 @@
                             addTab(text,src)
                         }else{
                             $("#loadingModal").modal('hide');
-                            $.messager.alert('提示', data, 'info');
+                            bootbox.alert(data);
                         }
                     },
                     error: function () {
                         $("#loadingModal").modal('hide');
-                        alert("请求失败，请稍后重试！")
+                        bootbox.alert("请求失败，请稍后重试！")
                     }
                 });
             })
@@ -335,7 +352,7 @@
                 autoclose: true, //选择完成自动关闭下拉框
                 minView: 2,
                 startView: 2, //从日开始选
-                format: 'yyyy-mm-dd',
+                format: 'yy-mm-dd',
                 todayBtn: true,
             });
             $("#start_date").val(myformatter(new Date()))
@@ -345,7 +362,6 @@
                 var d = date.getDate();
                 return y+'-'+(m<10?('0'+m):m)+'-'+( d<10?('0'+d):d);
             }
-
             //投入产出数据图表
             var myDiv = document.getElementById("CompareMain")
             var myChartContainer = function () {
@@ -353,7 +369,7 @@
                 myDiv.style.width = width +'px';
             };
             myChartContainer();
-            myChart = echarts.init(myDiv)
+            var myChart = echarts.init(myDiv)
             myChart.showLoading();
             $.ajax({
                 url: "/HomePageHistogram",
@@ -364,30 +380,22 @@
                     myChart.hideLoading();
                     myChart.setOption(option = {
                         title:{
-                            text: data[0].time + "-数据对比"
+                            text: "本月生产数据"
                         },
                         tooltip: {
-                            trigger: 'axis',
-                            axisPointer: {
-                                type: 'shadow'
+                            trigger: 'axis'
+                        },
+                        toolbox: {
+                            feature: {
+                                magicType: {show: true, type: ['line', 'bar']},
+                                restore: {show: true}
                             }
                         },
                         legend: {
                             data: ['投入量', '产出量', '得率']
                         },
-                        toolbox: {
-                            feature: {
-                                dataView: {show: true, readOnly: false},
-                                magicType: {show: true, type: ['line', 'bar']},
-                                restore: {show: true},
-                                saveAsImage: {show: true}
-                            }
-                        },
-                        dataZoom : {
-                            show : true,
-                            realtime : true,
-                            start : 50,
-                            end : 100
+                        grid: {
+                            y2: '10% '
                         },
                         xAxis: {
                             type: 'category',
@@ -415,7 +423,8 @@
                         ],
                         series: [{
                             name: "投入量",
-                            type: 'bar',
+                            type: 'line',
+                            smooth:true,
                             label: {
                                 normal: {
                                     show: true,
@@ -424,13 +433,14 @@
                             },
                             itemStyle:{
                                 normal:{
-                                    color:'#90ed7d'
+                                    color:'rgb(144, 237, 125)'
                                 }
                             },
                             data: data[0].input
                         }, {
                             name: "产出量",
-                            type: 'bar',
+                            type: 'line',
+                            smooth:true,
                             label: {
                                 normal: {
                                     show: true,
@@ -439,13 +449,14 @@
                             },
                             itemStyle:{
                                 normal:{
-                                    color:'#f7a35c'
+                                    color:'rgb(247, 163, 92)'
                                 }
                             },
                             data: data[0].output
                         }, {
                             name: "得率",
-                            type: 'bar',
+                            type: 'line',
+                            smooth:true,
                             yAxisIndex: 1,
                             label: {
                                 normal: {
@@ -456,7 +467,7 @@
                             },
                             itemStyle:{
                                 normal:{
-                                    color:'#7cb5ec'
+                                    color:'rgb(124, 181, 236)'
                                 }
                             },
                             data: data[0].sampling_quantity
@@ -465,16 +476,111 @@
                     myChart.setOption(option);
                 }
             })
-            parent.$(window).resize(function(){
+            $("#compareBox").resize(function(){
                 myChartContainer();
                 myChart.resize();
+            })
+            //设备运行数据图表
+            var myDiv1 = document.getElementById("eqMain")
+            var myChartContainer1 = function () {
+                var width = $("#eqBox").width()
+                myDiv1.style.width = width +'px';
+            };
+            myChartContainer1();
+            var myChart1 = echarts.init(myDiv1)
+            myChart1.showLoading();
+            $.ajax({
+                url: "/souyeEquipmentFailureRunXTSearch",
+                type: "get",
+                success: function (data) {
+                    data = JSON.parse(data)
+                    if (data !=  "NO") {
+                        myChart1.hideLoading();
+                        myChart1.setOption(option = {
+                            title:{
+                                text: data.BatchID+"-设备运行数据"
+                            },
+                            tooltip: {
+                                trigger: 'axis',
+                                axisPointer: {
+                                    type: 'shadow'
+                                }
+                            },
+                            legend: {
+                                data: ['运行时间', '故障时间', '停机时间']
+                            },
+                            toolbox: {
+                                feature: {
+                                    magicType: {show: true, type: ['line', 'bar']},
+                                    restore: {show: true}
+                                }
+                            },
+                            grid: {
+                                y2: '10% '
+                            },
+                            xAxis: {
+                                type: 'category',
+                                data: data.equipment_batchnos
+                            },
+                            yAxis: [
+                                {
+                                    type: 'value',
+                                    name: '时间',
+                                    min: 0,
+                                    axisLabel: {
+                                        formatter: '{value} 分钟'
+                                    }
+                                }
+                            ],
+                            series: [{
+                                name: "运行时间",
+                                type: 'bar',
+                                itemStyle:{
+                                    normal:{
+                                        color:'#90ed7d'
+                                    }
+                                },
+                                data: data.equip_run_time
+                            },{
+                                name: "故障时间",
+                                type: 'bar',
+                                itemStyle:{
+                                    normal:{
+                                        color:'#f15c80'
+                                    }
+                                },
+                                data: data.equip_failure_time
+                            },{
+                                name: "停机时间",
+                                type: 'bar',
+                                itemStyle:{
+                                    normal:{
+                                        color:'#858585'
+                                    }
+                                },
+                                data: data.equip_downtime
+                            }]
+                        });
+                        myChart1.setOption(option);
+                    }
+                }
+            })
+            $("#eqBox").resize(function(){
+                myChartContainer1();
+                myChart1.resize();
             })
 
             //日历排产
             $('#calendar').fullCalendar({
+                header:{
+                    right: 'prev,next',
+                    center: 'title',
+                    left: 'month,listMonth'
+                },
                 locale:'zh-cn',
                 weekNumbers: true, //是否在日历中显示第几周
                 eventLimit: true, // allow "more" link when too many events
+                height:395,
                 events: function(start,end,timezone,callback){
                     var events = []
                     $.ajax({
@@ -508,8 +614,8 @@
              });
 
             //增加tabs跳转到制药计划管理
-            $("#toZYPlanManage").on('click',function(){
-                addTab("制药计划管理","/ZYPlanManage")
+            $("#toInstrumentsPage").on('click',function(){
+                addTab("仪器仪表检修管理","/cycleInstrumentsDispose")
             })
             //增加tabs跳转到备件管理
             $("#toEquipmentspare").on('click',function(){
@@ -529,6 +635,43 @@
                     closable: true
                 });
             }
+        }
+        //获取指定日期的周一和周天
+        function getPeriodTime(date){
+            var arr = myformatter(date).split("-")
+            //月份-1 因为月份从0开始 构造一个Date对象
+            var date = new Date(arr[0],arr[1]-1,arr[2]);
+            var dateOfWeek = date.getDay();//返回当前日期的在当前周的某一天（0～6--周日到周一）
+            var dateOfWeekInt = parseInt(dateOfWeek,10);//转换为整型
+
+            if(dateOfWeekInt==0){//如果是周日
+                dateOfWeekInt=7;
+            }
+            var aa = 7-dateOfWeekInt;//当前于周末相差的天数
+            var temp2 = parseInt(arr[2],10);//按10进制转换，以免遇到08和09的时候转换成0
+            var sunDay = temp2+aa;//当前日期的周日的日期
+            var monDay = sunDay-6//当前日期的周一的日期
+            var startDate = new Date(arr[0],arr[1]-1,monDay);
+            var endDate = new Date(arr[0],arr[1]-1,sunDay);
+            var sm = parseInt(startDate.getMonth())+1;//月份+1 因为月份从0开始
+            var em = parseInt(endDate.getMonth())+1;
+            var start = startDate.getFullYear()+"-"+sm+"-"+startDate.getDate()
+            var end = endDate.getFullYear()+"-"+em+"-"+endDate.getDate()
+            var array = new Array()
+            array.push(start)
+            array.push(end)
+
+            return array
+        }
+        //时间格式拼接
+        function myformatter(date){
+            var y = date.getFullYear();
+            var m = date.getMonth()+1;
+            var d = date.getDate();
+            return y + "-" + getNow(m) + "-" + getNow(d);
+        }
+        function getNow(s) {
+            return s < 10 ? '0' + s: s;
         }
     </script>
 </body>

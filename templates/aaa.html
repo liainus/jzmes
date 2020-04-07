@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebSocket</title>
+    <link href="../static/css/base.css" rel="stylesheet">
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css" crossorigin="anonymous">
+    <script type="text/javascript" src="../static/js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
+    <style>
+        html, body {
+            font: normal 0.9em arial, helvetica;
+        }
+
+        #log {
+            width: 440px;
+            height: 200px;
+            border: 1px solid #7F9DB9;
+            overflow: auto;
+        }
+
+        #msg {
+            width: 330px;
+        }
+
+        .tab-content{
+            width: 100%;
+        }
+        .tab-content img{
+            width: 100%;
+        }
+    </style>
+
+    <script>
+        {#var socket;#}
+        {##}
+        {#function init() {#}
+        {#    var host = "ws://127.0.0.1:12345/";#}
+        {#    try {#}
+        {#        socket = new WebSocket(host);#}
+        {#        socket.onopen = function (msg) {#}
+        {#            log('Connected');#}
+        {#        };#}
+        {#        socket.onmessage = function (msg) {#}
+        {#            log(msg.data);#}
+        {#        };#}
+        {#        socket.onclose = function (msg) {#}
+        {#            log("Lose Connection!");#}
+        {#        };#}
+        {#    }#}
+        {#    catch (ex) {#}
+        {#        log(ex);#}
+        {#    }#}
+        {#    $("msg").focus();#}
+        {# }#}
+        {##}
+        {#function send() {#}
+        {#    var txt, msg;#}
+        {#    txt = $("msg");#}
+        {#    msg = txt.value;#}
+        {#    if (!msg) {#}
+        {#        alert("Message can not be empty");#}
+        {#        return;#}
+        {#    }#}
+        {#    txt.value = "";#}
+        {#    txt.focus();#}
+        {#    try {#}
+        {#        socket.send(msg);#}
+        {#    } catch (ex) {#}
+        {#        log(ex);#}
+        {#    }#}
+        {# }#}
+        {##}
+        {#window.onbeforeunload = function () {#}
+        {#    try {#}
+        {#        socket.send('quit');#}
+        {#        socket.close();#}
+        {#        socket = null;#}
+        {#    }#}
+        {#    catch (ex) {#}
+        {#        log(ex);#}
+        {#    }#}
+        {# };#}
+        {##}
+        {##}
+        {#function $(id) {#}
+        {#    return document.getElementById(id);#}
+        {# }#}
+        {#function log(msg) {#}
+        {#    $("log").innerHTML += "<br>" + msg;#}
+        {# }#}
+        {#function onkey(event) {#}
+        {#    if (event.keyCode == 13) {#}
+        {#        send();#}
+        {#    }#}
+        {# }#}
+    </script>
+
+</head>
+
+
+<body>
+{#<h3>WebSocket</h3>#}
+{#<br><br>#}
+{##}
+{#<div id="log"></div>#}
+{#<input id="msg" type="textbox" onkeypress="onkey(event)"/>#}
+{#<button onclick="send()">发送</button>#}
+<ul class="nav nav-tabs" role="tablist">
+    <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">主界面</a></li>
+    <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">区域月数据</a></li>
+    <li role="presentation"><a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">区域季数据</a></li>
+    <li role="presentation"><a href="#settings" aria-controls="settings" role="tab" data-toggle="tab">区域年数据</a></li>
+  </ul>
+
+  <!-- Tab panes -->
+  <div class="tab-content">
+    <div role="tabpanel" class="tab-pane active" id="home">
+        <img src="../static/images/ng1.jpg" alt="">
+    </div>
+    <div role="tabpanel" class="tab-pane" id="profile">
+        <img src="../static/images/ng2.jpg" alt="">
+    </div>
+    <div role="tabpanel" class="tab-pane" id="messages">
+        <img src="../static/images/ng3.jpg" alt="">
+    </div>
+    <div role="tabpanel" class="tab-pane" id="settings">
+        <img src="../static/images/ng4.jpg" alt="">
+    </div>
+  </div>
+</body>
+
+</html>

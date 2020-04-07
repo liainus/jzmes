@@ -4,17 +4,10 @@
     <meta charset="utf-8"> 
     <meta name="viewport" content="width=device-width, initial-scale=1"> 
     <title>江中制药MES系统</title>
+    <link href="../static/css/bootstrap.min.css" rel="stylesheet">
     <link href="../static/css/base.css" rel="stylesheet">
     <link href="../static/css/login.css" rel="stylesheet">
     <style>
-        #canvas{
-            display: inline-block;
-            cursor: pointer;
-            border-top: 1px solid #adadad;
-            border-left: 1px solid #adadad;
-            border-right: 1px solid #cfcfcf;
-            border-bottom: 1px solid #cfcfcf;
-        }
         #submit-btn{
             display: inline-block;
             text-decoration: none;
@@ -34,94 +27,13 @@
         }
     </style>
     <script type="text/javascript" src="../static/custom/jquery.min.js"></script>
-    <script type="text/javascript">
-        $(function(){
-            function loginSubmit(flag) {
-                return flag
-            }
-            var show_num = [];
-            draw(show_num);
-
-            $("#canvas").on('click',function(){
-                draw(show_num);
-            })
-{#            $("#loginForm").submit(function(){#}
-{#                var val = $("#Txtcode").val().toLowerCase();#}
-{#                var num = show_num.join("");#}
-{#                if(val == num){#}
-{#                    $("#Txtidcode").val('');#}
-{#                    draw(show_num);#}
-{#                    return loginSubmit(true);#}
-{#                }else{#}
-{#                    alert('验证码错误！请重新输入！');#}
-{#                    $("#Txtidcode").val('');#}
-{#                    draw(show_num);#}
-{#                    return loginSubmit(false);#}
-{#                }#}
-{#            })#}
-        })
-
-        function draw(show_num) {
-            var canvas_width=$('#canvas').width();
-            var canvas_height=$('#canvas').height();
-            var canvas = document.getElementById("canvas");//获取到canvas的对象，演员
-            var context = canvas.getContext("2d");//获取到canvas画图的环境，演员表演的舞台
-            canvas.width = canvas_width;
-            canvas.height = canvas_height;
-            var sCode = "A,B,C,E,F,G,H,J,K,L,M,N,P,Q,R,S,T,W,X,Y,Z,1,2,3,4,5,6,7,8,9,0";
-            var aCode = sCode.split(",");
-            var aLength = aCode.length;//获取到数组的长度
-
-            for (var i = 0; i <= 3; i++) {
-                var j = Math.floor(Math.random() * aLength);//获取到随机的索引值
-                var deg = Math.random() * 30 * Math.PI / 180;//产生0~30之间的随机弧度
-                var txt = aCode[j];//得到随机的一个内容
-                show_num[i] = txt.toLowerCase();
-                var x = 10 + i * 20;//文字在canvas上的x坐标
-                var y = 20 + Math.random() * 8;//文字在canvas上的y坐标
-                context.font = "bold 23px 微软雅黑";
-
-                context.translate(x, y);
-                context.rotate(deg);
-
-                context.fillStyle = randomColor();
-                context.fillText(txt, 0, 0);
-
-                context.rotate(-deg);
-                context.translate(-x, -y);
-            }
-            for (var i = 0; i <= 5; i++) { //验证码上显示线条
-                context.strokeStyle = randomColor();
-                context.beginPath();
-                context.moveTo(Math.random() * canvas_width, Math.random() * canvas_height);
-                context.lineTo(Math.random() * canvas_width, Math.random() * canvas_height);
-                context.stroke();
-            }
-            for (var i = 0; i <= 30; i++) { //验证码上显示小点
-                context.strokeStyle = randomColor();
-                context.beginPath();
-                var x = Math.random() * canvas_width;
-                var y = Math.random() * canvas_height;
-                context.moveTo(x, y);
-                context.lineTo(x + 1, y + 1);
-                context.stroke();
-            }
-        }
-
-        function randomColor() {//得到随机的颜色值
-            var r = Math.floor(Math.random() * 256);
-            var g = Math.floor(Math.random() * 256);
-            var b = Math.floor(Math.random() * 256);
-            return "rgb(" + r + "," + g + "," + b + ")";
-        }
-    </script>
 </head> 
 <body class="white">
 	<div class="login-hd">
 		<div class="left-bg"></div>
 		<div class="right-bg"></div>
 		<div class="hd-inner">
-			<span class="logo"></span>
+            <img src="../static/images/jzjt_logo.png" style="height:70px;vertical-align: middle;" alt="logo">
 			<span class="split"></span>
 			<span class="sys-name">MES制造执行系统</span>
 		</div>
@@ -132,35 +44,20 @@
 				<div class="lg-zone">
 					<div class="lg-box">
 						<div class="lg-label"><h4>用户登录</h4></div>
-						<!--
-						<div class="alert alert-error" >
-			              <i class="iconfont">&#xe62e;</i>
-			              <span>请输入用户名</span>
-			            </div>
-						//-->
-						
 						<form action="/login" id="loginForm" method="post">
 							<div class="lg-username input-item clearfix">
-								<i class="iconfont">&#xe60d;</i>
+								<i class="glyphicon glyphicon-user"></i>
 								<input type="text" name="WorkNumber" placeholder="账号">
 							</div>
 							<div class="lg-password input-item clearfix">
-								<i class="iconfont">&#xe634;</i>
+								<i class="glyphicon glyphicon-lock"></i>
 								<input type="password" name="password" placeholder="请输入密码">
-							</div>
-							<div class="lg-check clearfix" style="margin: 0;">
-								<div class="input-item">
-									<i class="iconfont">&#xe633;</i>
-									<input type="text" placeholder="验证码" id="Txtcode" name="txtCode">
-								</div>
-                                <canvas id="canvas" width="114" height="40"></canvas>
 							</div>
 							<div style="height: 20px;">
 								<span class="" style="margin-left: 34px;color: red;">{{ error }}</span>
 							</div>
 							<div class="enter">
                                 <input type="submit" id="submit-btn" value="登录">
-							<!--	<a href="javascript:;" class="supplier" onClick="javascript:window.location='main.html'">供应商登录</a>-->
 							</div>
 						</form>
 						<div class="line line-y"></div>
@@ -180,7 +77,7 @@
 				<a href="javascript:;">联系方式</a>
 			</div>
 			<div class="address">地址：&nbsp;&nbsp;Copyright&nbsp;©&nbsp;2015&nbsp;-&nbsp;2017&nbsp;&nbsp;版权所有</div>
-			<div class="other-info">建议使用IE8及以上版本浏览器</div>
+			<div class="other-info">建议使用IE9及以上版本浏览器</div>
 		</div>
 	</div>
 </body> 

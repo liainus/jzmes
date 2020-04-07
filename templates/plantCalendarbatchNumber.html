@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>设置每日批数</title>
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/css/bootstrap-table.min.css">
+    <link rel="stylesheet" href="../static/css/step.css">
+    <script type="text/javascript" src="../static/js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootstrap-table.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootstrap-table-zh-CN.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootbox.min.js"></script>
+    <script type="text/javascript" src="../static/js/bsStep.js"></script>
+    <script type="text/javascript" src="../static/js/less.js"></script>
+    <style>
+        .pad-per{
+            padding-top: 15px;
+            padding-bottom: 15px;
+        }
+        .step-round{
+            margin-bottom: 20px;
+        }
+        #myAlert{
+            position: absolute;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="pad-per">
+        <div class="col-md-12">
+            <ul class="nav nav-pills nav-justified step step-round" data-step="4">
+                <li>
+                    <a href="/ERP_productplan">ERP计划信息</a>
+                </li>
+                <li>
+                    <a href="/plantCalendarYield">设置得率</a>
+                </li>
+                <li>
+                    <a href="/plantCalendarSafeStock">设置安全库存</a>
+                </li>
+                <li>
+                    <a href="/plantCalendarbatchNumber">设置每日生产批数</a>
+                </li>
+                <li>
+                    <a href="/plantCalendar">工厂日历</a>
+                </li>
+                <li>
+                    <a href="/calendarScheduling">日历排产</a>
+                </li>
+                <li>
+                    <a href="/plantCalendarResult">排产结果</a>
+                </li>
+            </ul>
+            <div id="myAlert" class="alert alert-success hide">
+                <strong>成功！</strong>批数设置成功！
+            </div>
+            <div id="toolbar">
+                <button type="button" class="btn btn-default" id="create">添加</button>
+                <button type="button" class="btn btn-default" id="updata">设置批数重量</button>
+            </div>
+            <table id="batch_Table" class="table table-bordered">
+              <thead>
+                  <tr >
+                      <th data-checkbox="true"></th>
+                      <th data-field="PRName">品名</th>
+                      <th data-field="DayBatchNumS">批数（批/每日）</th>
+                      <th data-field="Batch_quantity">重量（kg/批）</th>
+                  </tr>
+              </thead>
+              <tbody>
+              </tbody>
+            </table>
+            <div id="myModal" class="modal fade">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                ×
+                            </button>
+                            <h4 class="modal-title" id="myModalLabel">
+                                产品信息
+                            </h4>
+                        </div>
+                        <!-- dialog body -->
+                        <div class="modal-body">
+                            <form class="form-horizontal" action="">
+                                <div class="form-group">
+                                    <label for="PRName" class="col-sm-2 control-label">品名</label>
+                                    <div class="col-sm-10">
+                                        <select class="form-control" id="PRName">
+                                            {% for i in data %}
+                                                <option value="{{ i['id'] }}">{{ i['text'] }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="DayBatchNumS" class="col-sm-2 control-label">批数(批/每日)</label>
+                                    <div class="col-sm-10">
+                                        <input type="number" class="form-control" id="DayBatchNumS" placeholder="">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="Batch_quantity" class="col-sm-2 control-label">重量（kg/批）</label>
+                                    <div class="col-sm-10">
+                                        <input type="number" class="form-control" id="Batch_quantity" placeholder="">
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <!-- dialog buttons -->
+                        <div class="modal-footer"><button type="button" class="btn btn-primary" id="save">保存</button></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="modal-footer">
+                <a href="/plantCalendar" class="btn btn-primary">下一步</a>
+            </div>
+        </div>
+    </div>
+    <script>
+        $(function(){
+            bsStep();
+
+            $("#batch_Table").bootstrapTable({
+                url:"/SchedulingStandardSearch",
+                method: 'get',
+                toolbar: '#toolbar',
+                contentType: "application/x-www-form-urlencoded",
+	            pagination: true,
+                pageNumber:1,
+	            pageSize: 5,
+	            pageList: [5, 10, 15, 20],
+                sidePagination: "server",
+                paginationLoop:false,
+                paginationPreText:'上一页',
+                paginationNextText:'下一页',
+                singleSelect:true,
+                clickToSelect:true,
+	            locale: "zh-CN",
+	            striped: true
+            });
+            $("#create").click(function () {
+                $('#PRName option[value=""]').prop("selected", 'selected');
+                $("#DayBatchNumS").val('')
+                $("#Batch_quantity").val('')
+                $("#myModal").modal('show')
+            })
+            $("#updata").click(function(){
+                var rows = $("#batch_Table").bootstrapTable('getSelections')
+                if(rows.length == 1){
+                    $('#PRName option:contains('+rows[0].PRName+')').prop("selected", 'selected');
+                    $("#DayBatchNumS").val(rows[0].DayBatchNumS)
+                    $("#Batch_quantity").val(rows[0].Batch_quantity)
+                    $("#myModal").modal('show')
+                }else if(rows.length == 0){
+                    bootbox.alert("请选择要修改的品名")
+                }
+            })
+            $("#save").on('click',function(){
+                $.ajax({
+                    url: '/SchedulingStandardCreate',
+                    type: 'post',
+                    data:{
+                        PRName:$("#PRName").find("option:checked").html(),
+                        DayBatchNumS:$("#DayBatchNumS").val(),
+                        Batch_quantity:$("#Batch_quantity").val()
+                    },
+                    success: function (data) {
+                        $("#myModal").modal('hide')
+                        if(data == "OK"){
+                            $("#myAlert").removeClass('hide').addClass('in')
+                            setTimeout(function() {
+                                $("#myAlert").removeClass('in').addClass('hide')
+                            },2000)
+                            $("#batch_Table").bootstrapTable('refresh');
+                        }else{
+                            bootbox.alert(data)
+                        }
+                    },
+                    error:function(){
+                        bootbox.alert("请求失败")
+                    }
+                });
+            })
+        })
+    </script>
+</body>
+</html>

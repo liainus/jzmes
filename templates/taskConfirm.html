@@ -15,6 +15,14 @@
     <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
     <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
     <script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
+    <style>
+        .dialog-form .datagrid-row{
+            background: #be504d;
+        }
+        .datagrid-row.datagrid-row-selected{
+            background: #0074e8;
+        }
+    </style>
 </head>
 <body>
     <div class="" style="margin: 1%;">
@@ -34,7 +42,7 @@
                 method:'get'">
                 <thead>
                     <tr>
-                        <th data-options="field:'BrandName',width:100,align:'center'">品名</th>
+                        <th data-options="field:'BrandName',width:120,align:'center'">品名</th>
                         <th data-options="field:'BatchID',width:120,align:'center'">批次号</th>
                         <th data-options="field:'TaskStatus',width:100,align:'center'" formatter="formatterStatus" styler="styleStatus">任务状态</th>
                         <th data-options="field:'EquipmentID',width:120,align:'center'">设备编码</th>
@@ -231,32 +239,38 @@
 
          CollectToolbar = {
             selectEq:function(){
-                $('#oneKeyDialog').dialog("open").dialog('setTitle', '选择不使用的设备，自动分配');
+                $('#oneKeyDialog').dialog("open").dialog('setTitle', '选择设备，自动分配');
                 //获取工艺段的设备
                 $("#tabEQP").datagrid({
                     queryParams: {
                         PName: getUrlParam('name') + "段",
                         BrandID: getUrlParam('BrandID')
+                    },
+                    onLoadSuccess:function(){
+                        var dataLenth = $("#tabEQP").datagrid("getData")
+                        for (var i=0;i<dataLenth.total;i++){
+                            $('#tabEQP').datagrid('selectRow',i);
+                        }
                     }
                 })
             },
              oneKeySave:function(){
                 var rows = $("#tabEQP").datagrid('getSelections'); //选择的设备
-                var a = "";
+                var jsonarray = []
                 for (var i = 0; i < rows.length; i++) {
-                    var obj=createKeyIDObj(parseInt(rows[i].EQPCode));
-                    jsonarray.push(obj);
+                    jsonarray.push(rows[i].ID);
                 }
-                a = JSON.stringify(jsonarray);
-                console.log(a)
+                jsonarray = JSON.stringify(jsonarray)
+                jsonarray = jsonarray.replace(/\[|]/g,'')
                 $.ajax({
                     url: '/processMonitorLine/saveEQPCode',
                     method: 'GET',
                     data: {
                         ID:"",
-                        UNEQPCode:a,
+                        UNEQPCode:jsonarray,
                         confirm:"1",
                         PName: getUrlParam('name') + "段",
+                        BatchID: getUrlParam('BatchID'),
                         BrandID: getUrlParam('BrandID')
                     },
                     success: function (data) {
@@ -373,11 +387,6 @@
                     alert("请求错误，请刷新后重试！")
                 }
             })
-        }
-        function createKeyIDObj(keyID){
-            return {
-                EQPCode:keyID
-            }
         }
         function formatterStatus(value, row, index){
             if (value == 10){

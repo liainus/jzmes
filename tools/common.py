@@ -9,6 +9,26 @@ import socket
 import datetime
 from Model.BSFramwork import AlchemyEncoder
 import re
+from Model.core import Enterprise, Area, Factory, ProductLine, ProcessUnit, Equipment, Material, MaterialType, \
+    ProductUnit, ProductRule, ZYTask, ZYPlanMaterial, ZYPlan, Unit, PlanManager, SchedulePlan, ProductControlTask, \
+    OpcServer, Pequipment, WorkFlowStatus, WorkFlowEventZYPlan, WorkFlowEventPlan, \
+    OpcTag, CollectParamsTemplate, CollectParams, Collectionstrategy, CollectTask, \
+    CollectTaskCollection, ReadyWork, NodeIdNote, ProductUnitRoute, ProductionMonitor, NewZYPlanMaterial, \
+    QualityControlTree
+from Model.system import Role, Organization, User, Menu, Role_Menu, BatchMaterielBalance, OperationManual, NewReadyWork, \
+    EquipmentWork, EletronicBatchDataStore, SpareStock, EquipmentMaintenanceKnowledge, EquipmentMaintain, \
+    SchedulePlan, SparePartInStockManagement, SparePartStock, Area, Instruments, MaintenanceStatus, MaintenanceCycle, \
+    plantCalendarScheduling
+from Model.system import User, EquipmentRunPUID, ElectronicBatch, EquipmentRunRecord, QualityControl, PackMaterial, \
+    TypeCollection, OperationProcedure, EquipmentMaintenanceStore, Scheduling, SchedulingStock, ERPproductcode_prname, \
+    SchedulingStandard, product_plan, SchedulingMaterial, YieldMaintain, ZYPlanWMS, ElectronicBatchTwo, PartiallyProducts
+from Model.system import Role, Organization, User, Menu, Role_Menu, BatchMaterielBalance, OperationManual, NewReadyWork, \
+    EquipmentWork, EletronicBatchDataStore, SpareStock, EquipmentMaintenanceKnowledge, EquipmentReportingRecord, \
+    EquipmentMaintain, \
+    SchedulePlan, SparePartInStockManagement, SparePartStock, Area, Instruments, MaintenanceStatus, MaintenanceCycle, \
+    EquipmentRunRecord, \
+    EquipmentRunPUID, EquipmentMaintenanceStore, SpareTypeStore, ElectronicBatch, EquipmentStatusCount, Shifts, \
+    EquipmentTimeStatisticTree, SystemEQPCode, EquipmentManagementManua, EquipmentMaintenanceStandard
 
 
 engine = create_engine(Model.Global.GLOBAL_DATABASE_CONNECT_STRING, deprecate_large_types=True)
@@ -54,6 +74,8 @@ def insert(tablename, data):
                 db_session.commit()
                 return 'OK'
             except Exception as e:
+                print(e)
+                db_session.rollback()
                 logger.error(e)
                 insertSyslog("error", "%s数据添加报错："%tablename + str(e), current_user.Name)
                 return json.dumps('数据添加失败！')
@@ -81,6 +103,7 @@ def delete(tablename, delete_data):
                         return json.dumps("删除用户报错", cls=AlchemyEncoder,ensure_ascii=False)
                 return 'OK'
         except Exception as e:
+            db_session.rollback()
             logger.error(e)
             insertSyslog("error", "%s数据删除报错："%tablename + str(e), current_user.Name)
             return json.dumps('数据删除失败！')
@@ -105,11 +128,12 @@ def update(tablename, new_data):
                 else:
                     return json.dumps('当前记录不存在！', cls=AlchemyEncoder, ensure_ascii=False)
             except Exception as e:
+                db_session.rollback()
                 logger.error(e)
                 insertSyslog("error", "%s数据更新报错："%tablename + str(e), current_user.Name)
                 return json.dumps('数据更新失败！', cls=AlchemyEncoder, ensure_ascii=False)
 
-def select(table, data, fieid, param, tableName):
+def select(table, offset, limit, param):
     '''
     :param tablename: 查询表
     :param pages: 页数
@@ -118,27 +142,24 @@ def select(table, data, fieid, param, tableName):
     :param param: 查询条件
     :return: 
     '''
+    from sqlalchemy import MetaData, create_engine
+    metadata = MetaData()
+    from sqlalchemy import Table
     try:
-        json_str = json.dumps(data.to_dict())
-        if len(json_str) > 10:
-            pages = int(data['page'])
-            rowsnumber = int(data['rows'])
-            inipage = (pages - 1) * rowsnumber + 0
-            endpage = (pages - 1) * rowsnumber + rowsnumber
-            if (param == "" or param == None):
-                total = db_session.query(table).count()
-                oclass = db_session.query(table).all()[inipage:endpage]
-            else:
-                # sql = "select * from "+tableName+" t where t."+fieid+" like "+"'%"+param+"%'"
-                # oclass = db_session.execute(sql).fetchall()
-                # total = len(oclass)
-                # db_session.close()
-                a = 'SpareTypeName'
-                total = db_session.query(table).filter_by(a = param).count()
-                oclass = db_session.query(table).filter_by(a = param).all()[inipage:endpage]
-            jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
-            jsonoclass = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
-            return jsonoclass
+        pages = int(offset)
+        rowsnumber = int(limit)
+        inipage = pages * rowsnumber + 0
+        endpage = pages * rowsnumber + rowsnumber
+        if (param == "" or param == None):
+            total = db_session.query(table).count()
+            oclass = db_session.query(table).all()[inipage:endpage]
+        else:
+            newTable = Table(table, metadata, autoload=True, autoload_with=engine)
+            total = db_session.query(table).filter(newTable.columns._data[param] == param.value()).count()
+            oclass = db_session.query(table).filter(newTable.columns._data[param] == param.get(param)).all()[inipage:endpage]
+        jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
+        jsonoclass = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
+        return jsonoclass
     except Exception as e:
         print(e)
         logger.error(e)

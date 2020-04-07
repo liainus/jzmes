@@ -7,7 +7,7 @@
 	<link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
 	<link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
     <script type="text/javascript" src="../static/js/jquery-3.3.1.min.js"></script>
-    <script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
+    <script type="text/javascript" src="../static/js/bee.js" charset="utf-8"></script>
     <style>
         .datagrid-wrap.panel-body{
             padding:0;
@@ -164,7 +164,7 @@
                 var text = $(this).html()
                 var rows = $("#tab").datagrid('getSelections');
                 if(rows.length == 1){
-                    addTab("健胃消食片批记录（" + text +"）","/electronicBatchRecord?title=" + text + "&ID=" + rows[0].ID)
+                    addTab(rows[0].BatchID +" (" + text +")","/electronicBatchRecord?title=" + text + "&ID=" + rows[0].ID + "&BrandID=" + rows[0].BrandID)
                 }else{
                     $.messager.alert('提示', "请选择计划", 'info');
                 }

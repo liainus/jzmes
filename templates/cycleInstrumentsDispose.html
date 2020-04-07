@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>仪器仪表检修管理</title>
+    <link href="../static/css/base.css" rel="stylesheet">
+    <script type="text/javascript" src="../static/js/jquery-3.3.1.min.js"></script>
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css" crossorigin="anonymous">
+    <script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootstrap-table.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootstrap-table-zh-CN.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootbox.min.js"></script>
+</head>
+<body>
+    <div class="col-md-12" style="padding: 15px 0;">
+        <div class="col-sm-12">
+            <div id="Toolbar">
+                <form class="form-inline">
+                    <div class="form-group">
+                        <p>
+                            <button type="button" class="btn btn-info" onclick="toolbar.manager()">处理人确认</button>
+                            <button type="button" class="btn btn-info" onclick="toolbar.auditor()">审核人确认</button>
+                        </p>
+                    </div>
+                </form>
+            </div>
+            <table class="table-bordered" id="tab"></table>
+        </div>
+    </div>
+    <script type="text/javascript">
+        $(function() {
+            $.ajax({
+                url:"/equipment_model/InstrumentationReminderTimeSelect",
+                type:"get",
+                success:function (res) {
+                    res = JSON.parse(res)
+                    $("#tab").bootstrapTable({
+                        pagination: true,
+                        pageNumber:1,
+                        pageSize: 10,
+                        pageList: [10, 20, 30, 40, 50],
+                        sidePagination: "client",
+                        toolbar:"#Toolbar",
+                        search: true,
+                        paginationLoop:false,
+                        singleSelect:false,
+                        clickToSelect:true,
+                        locale: "zh-CN",
+                        striped: true,
+                        columns: [{
+                            checkbox: true
+                        },{
+                            field: 'InstrumentationName',
+                            title: '仪表名称'
+                        },{
+                            field: 'Handler',
+                            title: '处理人'
+                        },{
+                            field: 'HandleStatus',
+                            title: '处理状态'
+                        },{
+                            field: 'Reviewer',
+                            title: '审核人'
+                        },{
+                            field: 'ReviewStatus',
+                            title: '审核状态'
+                        }],
+                        data:res.rows,
+                        onClickRow:function (row,$element) {
+                            if($($element).is(".info")){
+                                $($element).removeClass('info');
+                            }else{
+                                $($element).addClass('info');
+                            }
+                        }
+                    })
+                    $("#tab").bootstrapTable("hideLoading")
+                }
+            })
+            toolbar = {
+                manager:function(){
+                    var rows = $("#tab").bootstrapTable('getAllSelections');
+                    if (rows.length == 1) {
+                        var jsonarray=[];
+                        bootbox.confirm({
+                            message: "您确认要处理所选的记录吗？",
+                            buttons: {
+                                confirm: {
+                                    label: '确认',
+                                    className: 'btn-success'
+                                },
+                                cancel: {
+                                    label: '返回',
+                                    className: 'btn-danger'
+                                }
+                            },
+                            callback: function (result) {
+                                if(result){
+                                    $.ajax({
+                                        url: '/equipment_model/InstrumentationCheckedReview',
+                                        method: 'POST',
+                                        traditional: true,
+                                        data: {
+                                            ID:rows[0].ID,
+                                            HandleStatus:"已处理"
+                                        },
+                                        success: function (data) {
+                                            if(data == "OK"){
+                                                var dialog = bootbox.dialog({
+                                                    message: '<p class="text-center mb-0"><i class="fa fa-spin fa-cog"></i>操作成功！</p>',
+                                                    closeButton: false
+                                                });
+                                                dialog.init(function(){
+                                                    setTimeout(function(){
+                                                        dialog.modal('hide');
+                                                    }, 2000);
+                                                });
+                                                $("#tab").bootstrapTable('refresh');
+                                            }
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                    } else {
+                        bootbox.alert('请选择要处理的记录')
+                    }
+                },
+                auditor:function(){
+                    var rows = $("#tab").bootstrapTable('getAllSelections');
+                    if (rows.length == 1) {
+                        var jsonarray=[];
+                        bootbox.confirm({
+                            message: "您确认要审核所选的记录吗？",
+                            buttons: {
+                                confirm: {
+                                    label: '确认',
+                                    className: 'btn-success'
+                                },
+                                cancel: {
+                                    label: '返回',
+                                    className: 'btn-danger'
+                                }
+                            },
+                            callback: function (result) {
+                                if(result){
+                                    $.ajax({
+                                        url: '/equipment_model/InstrumentationCheckedReview',
+                                        method: 'POST',
+                                        traditional: true,
+                                        data: {
+                                            ID:rows[0].ID,
+                                            ReviewStatus:"已审核"
+                                        },
+                                        success: function (data) {
+                                            if(data == "OK"){
+                                                var dialog = bootbox.dialog({
+                                                    message: '<p class="text-center mb-0"><i class="fa fa-spin fa-cog"></i>操作成功！</p>',
+                                                    closeButton: false
+                                                });
+                                                dialog.init(function(){
+                                                    setTimeout(function(){
+                                                        dialog.modal('hide');
+                                                    }, 2000);
+                                                });
+                                                $("#tab").bootstrapTable('refresh');
+                                            }
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                    } else {
+                        bootbox.alert('请选择要审核的记录')
+                    }
+                }
+            }
+        })
+    </script>
+</body>
+</html>

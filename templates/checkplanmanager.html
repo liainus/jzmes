@@ -93,6 +93,36 @@
                     } else {
                         $.messager.alert('提示', '请选择要通过的记录！', 'info');
                     }
+                },
+                delete:function(){
+                    var rows = $("#tab").datagrid('getSelections');
+                    if (rows.length > 0) {
+                        var jsonarray=[];
+                        $.messager.confirm('确定操作', '您正在删除所选的记录吗？', function (flag) {
+                            if (flag) {
+                                var a = "";
+                                for (var i = 0; i < rows.length; i++) {
+                                    var obj=createKeyIDObj(parseInt(rows[i].ID));
+                                    jsonarray.push(obj);
+                                }
+                                a = JSON.stringify(jsonarray);
+                                $.ajax({
+                                    url: '/checkPlanManagerDelete',
+                                    method: 'POST',
+                                    traditional: true,
+                                    data: a,
+                                    success: function (data) {
+                                        $.messager.progress('close');
+                                        if(data == "OK"){
+                                            $("#tab").datagrid('reload');
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                    } else {
+                        $.messager.alert('提示', '请选择要删除的记录！', 'info');
+                    }
                 }
             }
             //datagrid表格右键操作
@@ -155,6 +185,7 @@
                 placeholder="">
             <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="CollectToolbar.search();">查询</a>
             <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-ok'" onclick="CollectToolbar.pass();">批量通过审核</a>
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove'" onclick="CollectToolbar.delete();">删除</a>
         </div>
         <table class="easyui-datagrid" id="tab" title="" style="width:100%;" data-options="
             queryParams: {

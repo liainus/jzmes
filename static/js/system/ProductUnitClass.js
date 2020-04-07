@@ -89,13 +89,13 @@ $(function () {
             },
             {
                 field: 'ProductRuleID',
-                title: '产品定义ID',
+                title: '所属产品',
                 width: 100,
                 align: 'center'
             },
             {
                 field: 'PUID',
-                title: '工艺段ID',
+                title: '所属工艺段',
                 align: 'center',
                 width: 100
             },

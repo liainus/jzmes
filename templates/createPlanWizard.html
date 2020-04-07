@@ -4,8 +4,9 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<title>制药生产计划向导</title>
 	<link href="../static/css/base.css" rel="stylesheet">
-	<link href="../static/custom/uimaker/easyui.css" rel="stylesheet">
     <link rel="stylesheet" href="../static/css/bootstrap.min.css" crossorigin="anonymous">
+	<link href="../static/custom/uimaker/easyui.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
     <link href="../static/css/smart_wizard.min.css" rel="stylesheet">
 {#	<link href="../static/css/basic_info.css" rel="stylesheet">#}
     <style>
@@ -13,9 +14,6 @@
             border-radius: 5px;
             border: 1px solid #ddd;
             margin:3px;
-        }
-        .sw-theme-arrows > .sw-container {
-            height: 400px;
         }
         .sw-theme-arrows .step-content {
             padding: 0 10px;
@@ -179,6 +177,29 @@
     <script type="text/javascript">
         $(function () {
             $("#APlanDate").datebox("setValue", myformatter(new Date()))
+
+            $("#planTab").datagrid({
+                onClickRow:function(rowIndex, rowData){
+                    $.ajax({
+                        url: '/createPlanWizardGetData',
+                        type: 'GET',
+                        data:{
+                            PRName:rowData.PRName
+                        },
+                        success: function (data) {
+                            data = JSON.parse(data)
+                            $("#ABatchID").val(rowData.SchedulingNum)
+                            $('#ABrandName option:contains('+rowData.PRName+')').prop("selected", 'selected');
+                            $("#APlanWeight").val(data.APlanWeight)
+                            $('#APLineName option:contains('+data.PLineName+')').prop("selected", 'selected');
+                            $('#AUnit option:contains('+data.UnitName+')').prop("selected", 'selected');
+                        },
+                        error: function () {
+                            alert("计划信息获取时请求失败。")
+                        }
+                     });
+                }
+            })
             // Toolbar extra buttons
             var btnCancel = $('<button></button>').text('重置')
                  .addClass('btn btn-danger')
@@ -280,6 +301,11 @@
                 }
             })
         });
+        function searchTime(){
+            $('#planTab').datagrid('load',{
+                SchedulingNum: $('#SearchBatch').val()
+            });
+        }
         function myformatter(date){
             var y = date.getFullYear();
             var m = date.getMonth()+1;
@@ -321,7 +347,7 @@
         <div>
             <div id="step-1">
                 <h3 class="border-bottom border-gray pb-2">计划实际信息</h3>
-                <div class="content">
+                <div class="content" style="margin-bottom: 20px;">
                     <form id="orgForm" method="post" class="dialog-form">
                         <table class="kv-table">
                             <tbody>
@@ -372,6 +398,39 @@
                         </table>
                     </form>
                 </div>
+                <div id="toolbar" style="padding:0 10px;">
+                    批次号:
+                    <input type="text" id="SearchBatch" class="textbox-text validatebox-text textbox-prompt" name="search"  style="height:28px;"
+                    placeholder="">
+                    <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="searchTime();">查询</a>
+                </div>
+                <table class="easyui-datagrid" id="planTab" title="系统计划列表" style="width:100%;" data-options="
+                    queryParams: {
+                        SchedulingTime: ''
+                    },
+                    loadMsg:false,
+                    rownumbers:true,
+                    singleSelect:true,
+                    autoRowHeight:false,
+                    pagination:true,
+                    pageSize:5,
+                    pageList:[5,10,20,30],
+                    toolbar:'#toolbar',
+                    url:'/SchedulingSearchNew',
+                    method:'get'">
+                    <thead>
+                        <tr>
+                            <th field="ck" checkbox="true"></th>
+                            <th data-options="field:'SchedulingTime',width:150,align:'center'">时间(工厂日历)</th>
+                            <th data-options="field:'PRName',width:120,align:'center'">产品名称</th>
+                            <th data-options="field:'SchedulingNum',width:150,align:'center'">排产批号</th>
+                            <th data-options="field:'BatchNumS',width:100,align:'center'">批数</th>
+                            <th data-options="field:'SchedulingStatus',width:100,align:'center'">排产状态</th>
+                            <th data-options="field:'create_time',width:150,align:'center'">创建时间</th>
+                            <th data-options="field:'update_time',width:150,align:'center'">修改时间</th>
+                        </tr>
+                    </thead>
+                </table>
             </div>
             <div id="step-2">
                 <h3 class="border-bottom border-gray pb-2">生成计划信息</h3>
@@ -408,57 +467,11 @@
                             </thead>
                         </table>
                     </div>
-{#                    <div title="批次物料明细" data-options="closable:false" style="overflow:auto;padding:0px;">#}
-{#                        <table id="TasksTab" class="easyui-datagrid" style="width:100%;" data-options="#}
-{#                            queryParams: {#}
-{#                                ABatchID: ''#}
-{#                            },#}
-{#                             url:'/ZYPlanGuid/CriticalMaterials',#}
-{#                             method: 'get',#}
-{#                             rownumbers:true,#}
-{#                             singleSelect:false,#}
-{#                             autoRowHeight:false,#}
-{#                             pagination:true,#}
-{#                             striped:true,#}
-{#                             checkOnSelect:false,#}
-{#                             selectOnCheck:false,#}
-{#                             collapsible:true,#}
-{#                             toolbar: '#tb',#}
-{#                             pageSize:10 " >#}
-{#                            <thead>#}
-{#                                <tr>#}
-{#                                    <th data-options="field: 'PlanDate',align: 'center' ">计划日期</th>#}
-{#                                    <th data-options="field: 'TaskID',align: 'center' ">制药计划单号</th>#}
-{#                                    <th data-options="field: 'BatchID',align: 'center' ">批次号</th>#}
-{#                                    <th data-options="field: 'PlanSeq',align: 'center' ">顺序号</th>#}
-{#                                    <th data-options="field: 'PUID',align: 'center' ">工艺段</th>#}
-{#                                    <th data-options="field: 'PDUnitRouteName',align: 'center' ">工艺路线名称</th>#}
-{#                                    <th data-options="field: 'PlanType',align: 'center' ">计划类型</th>#}
-{#                                    <th data-options="field: 'BrandID',align: 'center' ">牌号编码</th>#}
-{#                                    <th data-options="field: 'BrandName',align: 'center' ">牌号名称</th>#}
-{#                                    <th data-options="field: 'PlanQuantity',align: 'center' ">计划重量</th>#}
-{#                                    <th data-options="field: 'ActQuantity',align: 'center' ">实际重量</th>#}
-{#                                    <th data-options="field: 'Unit',align: 'center' ">单位</th>#}
-{#                                    <th data-options="field: 'EnterTime',align: 'center' ">录入时间</th>#}
-{#                                    <th data-options="field: 'ActBeginTime',align: 'center' ">实际开始时间</th>#}
-{#                                    <th data-options="field: 'ActEndTime',align: 'center' ">实际完成时间</th>#}
-{#                                    <th data-options="field: 'SetRepeatCount',align: 'center' ">设定重复次数</th>#}
-{#                                    <th data-options="field: 'CurretnRepeatCount',align: 'center' ">当前重复次数</th>#}
-{#                                    <th data-options="field: 'ActTank',align: 'center' ">实际罐号</th>#}
-{#                                    <th data-options="field: 'TaskStatus',align: 'center' ">任务状态</th>#}
-{#                                    <th data-options="field: 'LockStatus',align: 'center' ">任务锁定状态</th>#}
-{#                                </tr>#}
-{#                            </thead>#}
-{#                        </table>#}
-{#                    </div>#}
                 </div>
             </div>
             <div id="step-3">
                 <h3 class="border-bottom border-gray pb-2">计划校验结果</h3>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute
-                    irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-                    cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                <p>计划添加成功</p>
             </div>
         </div>
     </div>

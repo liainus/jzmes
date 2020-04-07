@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>排产结果</title>
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/css/fullcalendar.min.css">
+    <link rel="stylesheet" href="../static/css/step.css">
+    <script type="text/javascript" src="../static/js/moment.min.js"></script>
+    <script type="text/javascript" src="../static/js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="../static/js/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootbox.min.js"></script>
+    <script type="text/javascript" src="../static/js/fullcalendar.min.js"></script>
+    <script type="text/javascript" src="../static/js/zh-cn.js"></script>
+    <script type="text/javascript" src="../static/js/bsStep.js"></script>
+    <script type="text/javascript" src="../static/js/less.js"></script>
+    <style>
+        .pad-per{
+            padding-top: 15px;
+            padding-bottom: 15px;
+        }
+        .step-round{
+            margin-bottom: 20px;
+        }
+        #external-events {
+            padding: 0 10px;
+            background: #eee;
+          }
+
+          #external-events h4 {
+            font-size: 16px;
+            margin-top: 0;
+            padding-top: 1em;
+          }
+
+          #external-events .fc-event {
+            margin: 10px 0;
+            cursor: pointer;
+          }
+
+          #external-events p {
+            margin: 1.5em 0;
+            font-size: 11px;
+            color: #666;
+          }
+
+          #external-events p input {
+            margin: 0;
+            vertical-align: middle;
+          }
+    </style>
+</head>
+<body>
+    <div class="pad-per">
+        <div class="col-md-12">
+            <ul class="nav nav-pills nav-justified step step-round" data-step="7">
+                <li>
+                    <a href="/ERP_productplan">ERP计划信息</a>
+                </li>
+                <li>
+                    <a href="/plantCalendarYield">设置得率</a>
+                </li>
+                <li>
+                    <a href="/plantCalendarSafeStock">设置安全库存</a>
+                </li>
+                <li>
+                    <a href="/plantCalendarbatchNumber">设置每日生产批数</a>
+                </li>
+                <li>
+                    <a href="/plantCalendar">工厂日历</a>
+                </li>
+                <li>
+                    <a href="/calendarScheduling">日历排产</a>
+                </li>
+                <li>
+                    <a href="/plantCalendarResult">排产结果</a>
+                </li>
+            </ul>
+            <div class="col-md-12 col-sm-12">
+                <div id='calendar' style="width: 100%;"></div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $(function(){
+            if(getUrlParam('type') == 1){
+                $(".step-round").addClass("hide")
+            }
+
+            bsStep();
+
+            //日历排产
+            $('#calendar').fullCalendar({
+                header:{
+                    right: 'prev,next today',
+                    center: 'title',
+                    left: 'month,agendaWeek,agendaDay,listMonth'
+                },
+                locale:'zh-cn',
+                editable: true, //支持拖动换位
+                navLinks: true, //是否可以单击日/周名称来导航视图
+                weekNumbers: true, //是否在日历中显示第几周
+                droppable: true, // 允许将事件放在日历上
+                height:560,
+                //初始化数据
+                events:function(start,end,timezone,callback){
+                    var events = []
+                    $.ajax({
+                        url: '/systemManager_model/plantCalendarSchedulingSelect',
+                        type: 'get',
+                        success: function (data) {
+                            data = JSON.parse(data)
+                            var _id = ""
+                            var _title = ""
+                            var _start = ""
+                            var _color = ""
+                            for (var i=0;i<data.length;i++){
+                                _id = data[i].ID
+                                _title = data[i].title
+                                _start = data[i].start
+                                _color = data[i].color
+                                events.push({
+                                    ID:_id,
+                                    title:_title,
+                                    start:_start,
+                                    color:_color
+                                })
+                            }
+                            callback(events);
+                        },
+                        error: function () {
+                            bootbox.alert("请求失败")
+                        }
+                     });
+                 }
+            });
+        })
+        //获取页面传参
+        function getUrlParam(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+            var r = decodeURI(window.location.search).substr(1).match(reg); //匹配目标参数
+            if (r != null) return unescape(r[2]); return null; //返回参数值
+        }
+    </script>
+</body>
+</html>

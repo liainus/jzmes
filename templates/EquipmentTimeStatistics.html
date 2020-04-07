@@ -4,19 +4,123 @@
     <meta charset="UTF-8">
     <title>设备运行采集数据</title>
     <link href="../static/css/base.css" rel="stylesheet">
-    <link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
-    <link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
-    <link rel="stylesheet" href="../static/css/providers.css">
+	<link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="../static/css/bootstrap-datetimepicker.min.css" crossorigin="anonymous">
+	<link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
     <script type="text/javascript" src="../static/js/echarts.common.min.js"></script>
     <script type="text/javascript" src="../static/js/jquery-3.3.1.min.js"></script>
     <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
     <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../static/js/bootstrap-datetimepicker.min.js"></script>
+    <script>
+        //监听div大小变化
+        (function($, h, c) {
+            var a = $([]),
+            e = $.resize = $.extend($.resize, {}),
+            i,
+            k = "setTimeout",
+            j = "resize",
+            d = j + "-special-event",
+            b = "delay",
+            f = "throttleWindow";
+            e[b] = 250;
+            e[f] = true;
+            $.event.special[j] = {
+                setup: function() {
+                    if (!e[f] && this[k]) {
+                        return false;
+                    }
+                    var l = $(this);
+                    a = a.add(l);
+                    $.data(this, d, {
+                        w: l.width(),
+                        h: l.height()
+                    });
+                    if (a.length === 1) {
+                        g();
+                    }
+                },
+                teardown: function() {
+                    if (!e[f] && this[k]) {
+                        return false;
+                    }
+                    var l = $(this);
+                    a = a.not(l);
+                    l.removeData(d);
+                    if (!a.length) {
+                        clearTimeout(i);
+                    }
+                },
+                add: function(l) {
+                    if (!e[f] && this[k]) {
+                        return false;
+                    }
+                    var n;
+                    function m(s, o, p) {
+                        var q = $(this),
+                        r = $.data(this, d);
+                        r.w = o !== c ? o: q.width();
+                        r.h = p !== c ? p: q.height();
+                        n.apply(this, arguments);
+                    }
+                    if ($.isFunction(l)) {
+                        n = l;
+                        return m;
+                    } else {
+                        n = l.handler;
+                        l.handler = m;
+                    }
+                }
+            };
+            function g() {
+                i = h[k](function() {
+                    a.each(function() {
+                        var n = $(this),
+                        m = n.width(),
+                        l = n.height(),
+                        o = $.data(this, d);
+                        if (m !== o.w || l !== o.h) {
+                            n.trigger(j, [o.w = m, o.h = l]);
+                        }
+                    });
+                    g();
+                },
+                e[b]);
+            }
+        })(jQuery, this);
+    </script>
     <script>
         $(function(){
-            $('#beginTime').datebox("setValue", myformatter(new Date()))
-            var brand = ""
-            var unit = ""
-            $('#LeftTree').tree({
+            var process = ""
+            var batch = ""
+            var SYSEQPCode = ""
+            var startDate = getPeriodTime(new Date())[0]
+            var endDate = getPeriodTime(new Date())[1]
+            //初始化加载时间  并获取批次
+            $('#beginTime').val(myformatter(new Date()));
+            $("#weekTime").html(getPeriodTime(new Date())[0]+" 至 "+ getPeriodTime(new Date())[1])
+            $.ajax({
+                url: "/FailureRunBatchIDsSearch",
+                type: "get",
+                data: {
+                    startDate: startDate,
+                    endDate:endDate
+                },
+                success: function (data) {
+                    data = JSON.parse(data)
+                    var option = ""
+                    $.each(data,function(i,value){
+                        option += '<option>' + data[i] + '</option>'
+                    })
+                    $("#selectBatch").append(option)
+                    batch = $("#selectBatch").find("option:eq(0)").html()
+                    toJson(startDate,endDate,batch,process)
+                }
+            })
+            var selectType = "工艺段"
+            $("#PUtree").tree({
                 url:"/EquipmentTimeStatistics/DataTree",
                 method: 'get',
                 animate:true,
@@ -24,40 +128,105 @@
                     return data
                 },
                 onClick: function (node) {
-                    if($('#LeftTree').tree('isLeaf',node.target)){
-                        brand = node.Brand
-                        unit = node.text
-                        var select_time = $('#beginTime').datebox('getValue')
-                        var interval = $("#Shift").find("option:selected").val()
-                        toJson(brand,unit,select_time,interval)
+                    if($('#PUtree').tree('isLeaf',node.target)){
+                        selectType = "工艺段"
+                        process = node.text
+                        toJson(startDate,endDate,batch,process,SYSEQPCode)
+                    }
+                }
+            })
+            $('#EQtree').tree({
+                url:"/quipmentRunPUIDParent",
+                method: 'get',
+                animate:true,
+                loadFilter:function(data){
+                    return data
+                },
+                onClick: function (node) {
+                    if($('#EQtree').tree('isLeaf',node.target)){
+                        selectType = "设备"
+                        SYSEQPCode = node.text
+                        toJson(startDate,endDate,batch,process,SYSEQPCode)
                     }
 
                 }
             })
-            $("#searchDate").on("click",function(){
-                var select_time = $('#beginTime').datebox('getValue')
-                var interval = $("#Shift").find("option:selected").val()
-                toJson(brand,unit,select_time,interval)
+            //时间选择控件
+            $.fn.datetimepicker.dates['zh'] = {
+                days:       ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六","星期日"],
+                daysShort:  ["日", "一", "二", "三", "四", "五", "六","日"],
+                daysMin:    ["日", "一", "二", "三", "四", "五", "六","日"],
+                months:     ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月","十二月"],
+                monthsShort:  ["一", "二", "三", "四", "五", "六", "七", "八", "九", "十", "十一", "十二"],
+                meridiem:    ["上午", "下午"],
+                //suffix:      ["st", "nd", "rd", "th"],
+                today:       "今天"
+            };
+            $('#beginTime').datetimepicker({
+                format: 'yyyy-mm-dd', // 标签上可用data-date-format="hh:ii" data-link-format="hh:ii"
+                autoclose: true, //选择完成自动关闭下拉框
+                startView : 2,
+                minView:2, //0到分钟结束，1到小时，2到日
+                language: 'zh-CN'
+            }).on('changeDate',function(ev){
+                startDate = getPeriodTime(ev.date)[0]
+                endDate = getPeriodTime(ev.date)[1]
+                $("#weekTime").html(startDate+" 至 "+ endDate)
+                $.ajax({
+                    url: "/FailureRunBatchIDsSearch",
+                    type: "get",
+                    data: {
+                        startDate: startDate,
+                        endDate:endDate
+                    },
+                    success: function (data) {
+                        data = JSON.parse(data)
+                        $("#selectBatch").append("")
+                        var option = ""
+                        $.each(data,function(i,value){
+                            option += '<option>' + data[i] + '</option>'
+                        })
+                        $("#selectBatch").append(option)
+                        batch = $("#selectBatch").find("option:eq(0)").html()
+                        toJson(startDate,endDate,batch,process,SYSEQPCode)
+                    }
+                })
+            });
+            $("#selectBatch").on('change',function(){
+                batch = $(this).val()
+                toJson(startDate,endDate,batch,process,SYSEQPCode)
             })
-        })
-        function toJson(brand,unit,select_time,interval){
-            var myChart = echarts.init(document.getElementById("main"))
-            if(unit == ""){
-                myChart.hideLoading();
-            }else {
+            function toJson(startDate,endDate,batch,process,SYSEQPCode){
+                var data = {}
+                if(selectType == "工艺段"){
+                    data = {
+                        startDate: startDate,
+                        endDate:endDate,
+                        process:process,
+                        BatchID: batch
+                    }
+                }else if(selectType == "设备"){
+                    data = {
+                        startDate: startDate,
+                        endDate:endDate,
+                        SYSEQPCode:SYSEQPCode
+                    }
+                }
+                var myDiv = document.getElementById("main")
+                var myChartContainer = function () {
+                    var width = $("#chartBox").width()
+                    myDiv.style.width = width +'px';
+                };
+                myChartContainer();
+                var myChart = echarts.init(myDiv)
                 myChart.showLoading();
                 $.ajax({
-                    url: "/EquipmentTimeStatistics/GetData",
-                    type: "post",
-                    data: {
-                        brand: brand,
-                        unit: unit,
-                        select_time: select_time,
-                        interval: interval
-                    },
-                    dataType: "json",
+                    url: "/EquipmentFailureRunXTSearch",
+                    type: "get",
+                    data: data,
                     traditional:true,
                     success: function (data) {
+                        data = JSON.parse(data)
                         if (data !=  "NO") {
                             myChart.hideLoading();
                             myChart.setOption(option = {
@@ -68,7 +237,7 @@
                                     }
                                 },
                                 legend: {
-                                    data: ['运行时间', '故障时间', '停机时间','清场时间']
+                                    data: ['运行时间', '故障时间', '停机时间']
                                 },
                                 toolbox: {
                                     feature: {
@@ -78,16 +247,9 @@
                                         saveAsImage: {show: true}
                                     }
                                 },
-                                dataZoom : {
-                                    show : true,
-                                    realtime : true,
-                                    start : 80,
-                                    end : 100
-                                },
                                 xAxis: {
                                     type: 'category',
-                                    name: '日',
-                                    data: data.equip_codes
+                                    data: data.equipment_batchnos
                                 },
                                 yAxis: [
                                     {
@@ -126,44 +288,49 @@
                                         }
                                     },
                                     data: data.equip_downtime
-                                },{
-                                    name: "清场时间",
-                                    type: 'bar',
-                                    itemStyle:{
-                                        normal:{
-                                            color:'#7cb5ec'
-                                        }
-                                    },
-                                    data: data.clear_time
                                 }]
                             });
                             myChart.setOption(option);
                         } else {
-                            $.messager.alert({
-                                title: '提示',
-                                msg: "暂无数据",
-                                icon: 'info',
-                                width: 300,
-                                top: 200,
-                                left: 500
-                            })
                             myChart.hideLoading();
                         }
                     },
                     error:function(data){
-                        $.messager.alert({
-                            title: '提示',
-                            msg: "请求失败",
-                            icon: 'info',
-                            width: 300,
-                            top: 200,
-                            left: 500
-                        })
                         myChart.hideLoading();
                     }
-
+                })
+                $("#chartBox").resize(function(){
+                    myChartContainer();
+                    myChart.resize();
                 })
             }
+        })
+        //获取指定日期的周一和周天
+        function getPeriodTime(date){
+            var arr = myformatter(date).split("-")
+            //月份-1 因为月份从0开始 构造一个Date对象
+            var date = new Date(arr[0],arr[1]-1,arr[2]);
+            var dateOfWeek = date.getDay();//返回当前日期的在当前周的某一天（0～6--周日到周一）
+            var dateOfWeekInt = parseInt(dateOfWeek,10);//转换为整型
+
+            if(dateOfWeekInt==0){//如果是周日
+                dateOfWeekInt=7;
+            }
+            var aa = 7-dateOfWeekInt;//当前于周末相差的天数
+            var temp2 = parseInt(arr[2],10);//按10进制转换，以免遇到08和09的时候转换成0
+            var sunDay = temp2+aa;//当前日期的周日的日期
+            var monDay = sunDay-6//当前日期的周一的日期
+            var startDate = new Date(arr[0],arr[1]-1,monDay);
+            var endDate = new Date(arr[0],arr[1]-1,sunDay);
+            var sm = parseInt(startDate.getMonth())+1;//月份+1 因为月份从0开始
+            var em = parseInt(endDate.getMonth())+1;
+            var start = startDate.getFullYear()+"-"+sm+"-"+startDate.getDate()
+            var end = endDate.getFullYear()+"-"+em+"-"+endDate.getDate()
+            var array = new Array()
+            array.push(start)
+            array.push(end)
+
+            return array
         }
         //时间格式拼接
         function myformatter(date){
@@ -178,25 +345,40 @@
     </script>
 </head>
 <body>
-    <div class="left-tree" style="width: 15%;float: left;vertical-align: top;border: 1px solid #ccc;margin: 1%;padding: 1%;">
-        <ul id="LeftTree" class="easyui-tree"></ul>
-    </div>
-    <div id="container" style="width: 80%;float: left;vertical-align: top;">
-        <div style="padding:10px 0px 5px 10px;">
-            <a>  设备运行日期:  </a>
-            <input class="easyui-datebox" id="beginTime" editable="fasle" style="width:166px;height:35px;line-height:35px;">
-            <a>  数据范围:  </a>
-            <select name="Shift" id="Shift" type="text" style="width:157px;" autocomplete="off" placeholder="">
-                <option value="早班">早班</option>
-                <option value="晚班">晚班</option>
-                <option value="全天">全天</option>
-                <option value="当月">当月</option>
-            </select>
-            <a id="searchDate" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'">查看</a>
+    <div class="col-md-3" style="padding-top:15px;margin-top: 15px;">
+        <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active"><a href="#PU" aria-controls="PU" role="tab" data-toggle="tab">根据工艺段选择</a></li>
+            <li role="presentation"><a href="#EQ" aria-controls="EQ" role="tab" data-toggle="tab">根据设备选择</a></li>
+        </ul>
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="PU">
+                <div class="left-tree" style="height: 610px;margin: 15px;">
+                    <ul class="easyui-tree" id="PUtree"></ul>
+                </div>
+            </div>
+            <div role="tabpanel" class="tab-pane" id="EQ">
+                <div class="left-tree" style="height: 610px;margin: 15px;">
+                    <ul class="easyui-tree" id="EQtree"></ul>
+                </div>
+            </div>
         </div>
-        <div id="tt" class="easyui-tabs" style="width:100%;height:600px;margin-top:10px; scrolling:'false'">
-            <div title="设备运行数据">
-                <div id="main" style="width: 1000px; height: 560px; margin: 10px auto;"></div>
+    </div>
+    <div class="col-md-9">
+        <form class="form-inline modal-body">
+            <div class="form-group">
+                <label for="exampleInputName2">选择日期</label>
+                <input type="text" class="datetimepicker" id="beginTime" readonly>
+                <label for="exampleInputName2">数据范围周期：</label>
+                <label id="weekTime"></label>
+                <select class="form-control" id="selectBatch"></select>
+            </div>
+        </form>
+        <div class="panel panel-default clearfix">
+            <div class="panel-heading">设备运行数据</div>
+            <div class="panel-body">
+                <div title="设备运行数据" id="chartBox">
+                    <div id="main" style="width: 100px; height: 540px; margin: 10px auto;"></div>
+                </div>
             </div>
         </div>
     </div>
