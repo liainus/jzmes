@@ -10,3 +10,4 @@ __pycache__/MicroMES.cpython-34.pyc
 .idea/inspectionProfiles/profiles_settings.xml
 .gitignore
 Model/Global.py
+desktop.ini
