@@ -1,11 +1,9 @@
-system/__pycache__/
-__pycache__/
 .idea/
+system/__pycache__/
 Model/Global.py
 Model/
 tools/
 constant/
-.idea/
 process_quality/
 files/
 equipment_model/
