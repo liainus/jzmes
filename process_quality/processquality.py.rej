@@ -1,0 +1,20 @@
+diff a/process_quality/processquality.py b/process_quality/processquality.py	(rejected hunks)
+@@ -1279,12 +1279,12 @@
+                 data_json = json.dumps(jsondic, cls=AlchemyEncoder, ensure_ascii=False)
+                 print(data_json)
+                 headers = {'Content-Type': 'application/soap+xml; charset="UTF-8"'}
+-                xml = Raw("""<![CDATA[<Request><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:sap-com:document:sap:rfc:functions">
+-                        <soapenv:Header/><soapenv:Body><urn:Z_PP_MES_INTF>
+-                        <IV_INPUT>"""+data_json+"""</IV_INPUT>
+-                        <IV_INTF_ID>PP1005</IV_INTF_ID>
+-                        <IV_SYSID>MES</IV_SYSID>
+-                        </urn:Z_PP_MES_INTF></soapenv:Body></soapenv:Envelope></Request>]]>""")
++                # xml = Raw("""<![CDATA[<Request><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:sap-com:document:sap:rfc:functions">
++                #         <soapenv:Header/><soapenv:Body><urn:Z_PP_MES_INTF>
++                #         <IV_INPUT>"""+data_json+"""</IV_INPUT>
++                #         <IV_INTF_ID>PP1005</IV_INTF_ID>
++                #         <IV_SYSID>MES</IV_SYSID>
++                #         </urn:Z_PP_MES_INTF></soapenv:Body></soapenv:Envelope></Request>]]>""")
+                 auth = HttpAuthenticated(username="INTF", password="Hrjz1234")
+                 url = "http://10.136.0.18:8001/sap/bc/srt/wsdl/flv_10002A111AD1/bndg_url/sap/bc/srt/rfc/sap/zws_mes_intf/300/zws_mes_intf/zbd_mes_intf?sap-client=300&sap-language=ZH"
+                 client = Client(url, transport=auth)
