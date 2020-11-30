@@ -198,8 +198,8 @@
     <script>
         $(function(){
             bsStep();
-            $("#synchronization").on('click',function(){
-                if (row) {
+            $("#synchronization").on('click',function(flag){
+                if (flag) {
                     $.ajax({
                         url: '/SAP_OrderSynchonizes',
                         type: 'GET',
