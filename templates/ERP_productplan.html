@@ -60,35 +60,19 @@
                     <a href="/plantCalendarResult">排产结果</a>
                 </li>
             </ul>
-            <div class="ERPList">
-                <table class="easyui-datagrid" id="ERPTab" title="ERP计划列表" style="width:100%;" data-options="
-                    loadMsg:false,
-                    rownumbers:true,
-                    singleSelect:true,
-                    autoRowHeight:false,
-                    pagination:true,
-                    pageSize:10,
-                    url:'/erp_model/ERP_productplanSearch',
-                    method:'get'">
-                    <thead>
-                        <tr>
-                            <th field="ck" checkbox="true"></th>
-                            <th data-options="field:'plan_period',width:150,align:'center'">计划期间</th>
-                            <th data-options="field:'product_code',width:200,align:'center'">产品(即物料)编码</th>
-                            <th data-options="field:'product_name',width:100,align:'center'">产品(即物料)名称</th>
-                            <th data-options="field:'product_unit',width:100,align:'center'">计量单位 kg\批</th>
-                            <th data-options="field:'meter_type',width:100,align:'center'">计量类型 'B' 批次  'W'重量</th>
-                            <th data-options="field:'bill_code',width:120,align:'center'">单据号</th>
-                            <th data-options="field:'plan_quantity',width:100,align:'center'">计划数量</th>
-                            <th data-options="field:'plan_type',width:100,align:'center'">计划类型 'M' 月计划</th>
-                            <th data-options="field:'create_time',width:150,align:'center'">插入时间</th>
-                            <th data-options="field:'transform_time',width:150,align:'center'">数据对接时间</th>
-                            <th data-options="field:'transform_flag',width:150,align:'center'">数据对接MES 1 已对接 0 未对接</th>
-                        </tr>
-                    </thead>
-                </table>
-            </div>
-            <a href="#" class="easyui-linkbutton" id="synchronization" data-options="iconCls:'icon-redo'" style="margin-top: 20px">同步</a>
+            <p>
+                选择起止时间和参数：
+                <input id="StartTime" type="text" class="easyui-datebox">
+                -
+                <input id="EndTime" type="text" class="easyui-datebox">
+                <select id="DAUAT" class="easyui-combobox" name="dept" style="width:200px;">
+                    <option value="JZ01">江中自制流程订单</option>
+                    <option value="JZ02">江中委托加工流程订单</option>
+                    <option value="JZ03">江中返工流程订单</option>
+                    <option value="JZ99"> 江中三批验证流程订单</option>
+                </select>
+                <a href="#" class="easyui-linkbutton" id="synchronization" data-options="iconCls:'icon-redo'" style="margin-top: 20px">同步</a>
+            </p>
             <div id="Toolbar" style="padding:0 10px;">
                 <a href="#" class="easyui-linkbutton" iconCls="icon-add" onclick="Toolbar.add()">添加</a>
                 <a href="#" class="easyui-linkbutton" iconCls="icon-edit" onclick="Toolbar.updata()">编辑</a>
@@ -214,15 +198,15 @@
     <script>
         $(function(){
             bsStep();
-
             $("#synchronization").on('click',function(){
-                var row = $("#ERPTab").datagrid('getSelected');
                 if (row) {
                     $.ajax({
-                        url: '/erp_model/ERP_productplanSynchro',
+                        url: '/SAP_OrderSynchonizes',
                         type: 'GET',
                         data:{
-                            plan_id:row.plan_id
+                            StartTime:$('#StartTime').datebox('getValue'),
+                            EndTime:$('#EndTime').datebox('getValue'),
+                            DAUAT:$('#DAUAT').datebox('getValue'),
                         },
                         success: function (data) {
                             if (data == "OK") {
