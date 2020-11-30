@@ -35,6 +35,7 @@ from Model.system import Role, Organization, User, Menu, Role_Menu, BatchMaterie
     SchedulePlan, SparePartInStockManagement, SparePartStock, Area, Instruments, MaintenanceStatus, MaintenanceCycle, \
     plantCalendarScheduling, JZJFtable, TrayNumber
 from equipment_model.equipment_cycleDiagnosis import diagnosis
+from process_quality.sapinterface import sapinter
 from tools.MESLogger import MESLogger
 from Model.core import SysLog, MaterialBOM
 from sqlalchemy import func
@@ -80,6 +81,8 @@ app.register_blueprint(equip)
 app.register_blueprint(ERP)
 app.register_blueprint(Process)
 app.register_blueprint(diagnosis)
+#Sap接口程序
+app.register_blueprint(sapinter)
 
 engine = create_engine(Model.Global.GLOBAL_DATABASE_CONNECT_STRING, deprecate_large_types=True)
 Session = sessionmaker(bind=engine)
