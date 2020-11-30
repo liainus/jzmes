@@ -17,6 +17,7 @@ WMSurl = "http://192.168.200.70:9200/Webservice1.asmx?wsdl"
 NHurl = "http://192.168.10.215:2334/Mes/GetRawData"
 #连接SAP接口URL
 SAPurl = "http://10.136.0.17:8001/sap/bc/srt/wsdl/flv_10002A111AD1/bndg_url/sap/bc/srt/rfc/sap/zws_mes_intf/600/zws_mes_intf/zbd_mes_intf?sap-client=600&sap-language=ZH"
+SAPcsurl = "http://10.136.0.18:8001/sap/bc/srt/wsdl/flv_10002A111AD1/bndg_url/sap/bc/srt/rfc/sap/zws_mes_intf/300/zws_mes_intf/zbd_mes_intf?sap-client=300&sap-language=ZH"
 
 GLOBAL_NULL_STRING= ""
 
