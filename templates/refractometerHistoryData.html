@@ -107,17 +107,17 @@
                 startView : 2,
                 minView:0, //0到分钟结束，1到小时，2到日
                 language: 'zh-CN'
-            }).on('changeDate',function(ev){
+            })
+            $("#beginTime").val(myformatter(new Date(new Date().getTime() - 1*60*60*1000)))
+            $("#endTime").val(myformatter(new Date()))
+            $("#search").click(function(){
                 var dffDate = (new Date($('#endTime').val())).getTime() -  (new Date($('#beginTime').val())).getTime()
                 if(dffDate <= 0){
                     bootbox.alert('截止时间不能小于开始时间')
                 }else{
                     getNewData()
                 }
-            });
-            $("#beginTime").val(myformatter(new Date(new Date().getTime() - 1*60*60*1000)))
-            $("#endTime").val(myformatter(new Date()))
-            getNewData()
+            })
             function getNewData(){
                 var myDiv = document.getElementById("main")
                 var myChartContainer = function () {
@@ -288,6 +288,7 @@
                 <label for="exampleInputName2">起止日期</label>
                 <input type="text" class="datetimepicker" id="beginTime" readonly>
                 <input type="text" class="datetimepicker" id="endTime" readonly>
+                <button type="button" class="btn btn-primary" id="search">查询</button>
             </div>
         </form>
         <div class="panel panel-default clearfix">
