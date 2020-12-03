@@ -11,6 +11,8 @@ from sqlalchemy import create_engine
 import Model.Global
 from Model.core import ProcessUnit, Equipment, SysLog, MaterialBOM, ProductRule, Material, ZYPlan, PlanManager
 from flask import render_template, request, make_response
+
+from Model.sap_model import SapBatchInfo, SapBrandUnitInfo, SapMatailInfo
 from tools.MESLogger import MESLogger
 from Model.BSFramwork import AlchemyEncoder
 import json
@@ -67,6 +69,99 @@ imp = Import('http://www.w3.org/2001/XMLSchema',
 imp.filter.add('http://WebXml.com.cn/')
 
 sapinter = Blueprint('sapinter', __name__)
+@sapinter.route('/SapBatchInfo')
+def sapBatchInfo():
+    '''
+    SAP物料主数据同步页面
+    return:
+    '''
+    return render_template('SapBatchInfo.html')
+@sapinter.route('/SapBatchInfoSearch', methods=['POST', 'GET'])
+def SapBatchInfoSearch():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                pages = int(data['page'])
+                rowsnumber = int(data['rows'])
+                inipage = (pages - 1) * rowsnumber + 0
+                endpage = (pages - 1) * rowsnumber + rowsnumber
+                AUFNR = data.get('AUFNR')
+                if not AUFNR:
+                    total = db_session.query(SapBatchInfo).filter().count()
+                    oclass = db_session.query(SapBatchInfo).filter().order_by(desc("GSTRP")).all()[inipage:endpage]
+                else:
+                    total = db_session.query(SapBatchInfo).filter(
+                        SapBatchInfo.AUFNR == AUFNR).count()
+                    oclass = db_session.query(SapBatchInfo).filter(
+                        SapBatchInfo.AUFNR == AUFNR).order_by(desc("GSTRP")).all()[inipage:endpage]
+                jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
+                jsonoclass = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
+                return jsonoclass
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "工艺质量确认流程表查询报错Error：" + str(e), current_user.Name)
+            return json.dumps("工艺质量确认流程表查询报错", cls=Model.BSFramwork.AlchemyEncoder,ensure_ascii=False)
+@sapinter.route('/SapBrandUnitInfoSearch', methods=['POST', 'GET'])
+def SapBrandUnitInfoSearch():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                pages = int(data['page'])
+                rowsnumber = int(data['rows'])
+                inipage = (pages - 1) * rowsnumber + 0
+                endpage = (pages - 1) * rowsnumber + rowsnumber
+                AUFNR = data.get('AUFNR')
+                if not AUFNR:
+                    total = db_session.query(SapBrandUnitInfo).filter().count()
+                    oclass = db_session.query(SapBrandUnitInfo).filter().order_by(desc("ID")).all()[inipage:endpage]
+                else:
+                    total = db_session.query(SapBrandUnitInfo).filter(
+                        SapBrandUnitInfo.AUFNR == AUFNR).count()
+                    oclass = db_session.query(SapBrandUnitInfo).filter(
+                        SapBrandUnitInfo.AUFNR == AUFNR).order_by(desc("ID")).all()[inipage:endpage]
+                jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
+                jsonoclass = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
+                return jsonoclass
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "工艺质量确认流程表查询报错Error：" + str(e), current_user.Name)
+            return json.dumps("工艺质量确认流程表查询报错", cls=Model.BSFramwork.AlchemyEncoder,ensure_ascii=False)
+
+@sapinter.route('/SapMatailInfoSearch', methods=['POST', 'GET'])
+def SapMatailInfoSearch():
+    if request.method == 'GET':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                pages = int(data['page'])
+                rowsnumber = int(data['rows'])
+                inipage = (pages - 1) * rowsnumber + 0
+                endpage = (pages - 1) * rowsnumber + rowsnumber
+                AUFNR = data.get('AUFNR')
+                if not AUFNR:
+                    total = db_session.query(SapMatailInfo).filter().count()
+                    oclass = db_session.query(SapMatailInfo).filter().order_by(desc("ID")).all()[inipage:endpage]
+                else:
+                    total = db_session.query(SapMatailInfo).filter(
+                        SapMatailInfo.AUFNR == AUFNR).count()
+                    oclass = db_session.query(SapMatailInfo).filter(
+                        SapMatailInfo.AUFNR == AUFNR).order_by(desc("ID")).all()[inipage:endpage]
+                jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
+                jsonoclass = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
+                return jsonoclass
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "工艺质量确认流程表查询报错Error：" + str(e), current_user.Name)
+            return json.dumps("工艺质量确认流程表查询报错", cls=Model.BSFramwork.AlchemyEncoder,ensure_ascii=False)
+
 @sapinter.route('/SAP_MailInfos', methods=['GET', 'POST'])
 def SAP_MailInfos():
     '''SAP物料主数据同步接口'''
@@ -76,7 +171,7 @@ def SAP_MailInfos():
             dic = {}
             data_ma = {"RID": str(uuid.uuid4()), "WERKS": "1100", "MTART": data.get("Mtart"),
                        "SDATE": data.get("StartTime"),
-                       "EDATE": data.get("EndTime"), "SYSID": "MES",
+                       "EDATE": data.get("EndTime"), "SYSID": "WX_MES",
                        "OPDAT": datetime.datetime.now().strftime('%Y%m%d'),
                        "OPTME": datetime.datetime.now().strftime('%H%M%S')}
             dic["CATEGORY"] = ""
@@ -106,7 +201,7 @@ def SAP_MailInfos():
             insertSyslog()
             return json.dumps("调用SAP物料主数据同步接口接口报错！")
 
-
+from Model.control import ctrlPlan
 @sapinter.route('/SAP_OrderSynchonizes', methods=['GET', 'POST'])
 def SAP_OrderSynchonizes():
     '''SAP订单信息同步接口'''
@@ -114,8 +209,8 @@ def SAP_OrderSynchonizes():
         data = request.values
         try:
             dic = {}
-            data_ma = {"RID": str(uuid.uuid4()), "WERKS": "1100", "DAUAT": data.get("DAUAT"),"MATNR": "","VERID": "", "AUFNR": "",
-                       "SDATE": data.get("StartTime"),"EDATE": data.get("EndTime"), "CHARG": "","SYSID": "ZD_MES",
+            data_ma = {"RID": str(uuid.uuid4()), "DWERK": "1100", "DAUAT": data.get("DAUAT"),"MATNR": "","VERID": "", "AUFNR": "",
+                       "SDATE": data.get("StartTime"),"EDATE": data.get("EndTime"), "CHARG": "","SYSID": "WX_MES",
                        "OPDAT": datetime.datetime.now().strftime('%Y%m%d'),"OPTME": datetime.datetime.now().strftime('%H%M%S')}
             dic["CATEGORY"] = ""
             dic["TYPE"] = ""
@@ -128,23 +223,85 @@ def SAP_OrderSynchonizes():
             client = Client(Model.Global.SAPcsurl, transport=t)
             result = client.service.Z_PP_MES_INTF(data_json, 'PP1001', 'MES')
             if result:
-                re = json.loads(result).get("RETURN").get("MSG_LIST")
-                for i in re:
-                    e = PlanManager()
-                    e.SchedulePlanCode = i.get("RID")
-                    e.BatchID = i.get("MATNR")
-                    e.PlanQuantity = i.get("MAKTX")
-                    e.Unit = i.get("GAMNG")
-                    e.BrandID = i.get("UNIT")
-                    e.BrandName = i.get("")
-                    e.PlanStatus = i.get("AUFNR")
-                    e.PlanBeginTime = i.get("DAUAT")
-                    e.PlanEndTime = i.get("")
-                    e.Type = i.get("")
+                hes = json.loads(result).get("HEADER")
+                for i in hes:
+                    ABatchID = i.get("CHARG")
+                    APlanWeight = i.get("GAMNG")
+                    AUnit = i.get("UNIT")
+                    ABrandID = i.get("MATNR")
+                    ABrandName = i.get("MAKTX")
+                    APlanDate = i.get("GSTRP")
+                    PlanCreate = ctrlPlan('PlanCreate')
+                    re = PlanCreate.createLinePlanManager("", APlanWeight, APlanDate, ABatchID, ABrandID,
+                                                          ABrandName, ABrandName, AUnit, current_user.Name)
+                    s = SapBatchInfo()
+                    s.RID   = i.get("RID")
+                    s.AUFNR = i.get("AUFNR")
+                    s.DAUAT = i.get("DAUAT")
+                    s.DWERK = i.get("DWERK")
+                    s.CHARG = i.get("CHARG")
+                    s.MATNR = i.get("MATNR")
+                    s.MAKTX = i.get("MAKTX")
+                    s.GAMNG = i.get("GAMNG")
+                    s.UNIT  = i.get("UNIT ")
+                    s.VERID = i.get("VERID")
+                    s.RSNUM = i.get("RSNUM")
+                    s.ROUTN = i.get("ROUTN")
+                    s.GSTRP = i.get("GSTRP")
+                    s.GLTRP = i.get("GLTRP")
+                    s.STATE = i.get("STATE")
+                    s.PLNNR = i.get("PLNNR")
+                    s.PLNAL = i.get("PLNAL")
+                    s.KTEXT = i.get("KTEXT")
+                    s.GESSTICHPR = i.get("GESSTICHPR")
+                    s.QBASE = i.get("QBASE")
+                    db_session.add(s)
+                    db_session.commit()
+                phs = json.loads(result).get("PHASE")
+                for ph in phs:
+                    sbu = SapBrandUnitInfo()
+                    sbu.RID   = ph.get("RID")
+                    sbu.AUFNR = ph.get("AUFNR")
+                    sbu.ROUTN = ph.get("ROUTN")
+                    sbu.VORNR = ph.get("VORNR")
+                    sbu.LTXA1 = ph.get("LTXA1")
+                    sbu.MGVRG = ph.get("MGVRG")
+                    sbu.UNIT  = ph.get("UNIT")
+                    sbu.STEUS = ph.get("STEUS")
+                    sbu.VORGSCHL = ph.get("VORGSCHL")
+                    sbu.VGW01 = ph.get("VGW01")
+                    sbu.VGW02 = ph.get("VGW02")
+                    sbu.VGW03 = ph.get("VGW03")
+                    sbu.VGW04 = ph.get("VGW04")
+                    sbu.VGW05 = ph.get("VGW05")
+                    sbu.VGW06 = ph.get("VGW06")
+                    db_session.add(sbu)
+                    db_session.commit()
+                cms = json.loads(result).get("COMPT")
+                for cm in cms:
+                    sm = SapMatailInfo()
+                    sm.RID =   cm.get("RID")
+                    sm.AUFNR = cm.get("AUFNR")
+                    sm.RSNUM = cm.get("RSNUM")
+                    sm.RSPOS = cm.get("RSPOS")
+                    sm.VORNR = cm.get("VORNR")
+                    sm.SEQNO = cm.get("SEQNO")
+                    sm.MATNR = cm.get("MATNR")
+                    sm.MAKTX = cm.get("MAKTX")
+                    sm.BDMNG = cm.get("BDMNG")
+                    sm.MEINS = cm.get("MEINS")
+                    sm.BWART = cm.get("BWART")
+                    sm.CHARG = cm.get("CHARG")
+                    sm.WERKS = cm.get("WERKS")
+                    sm.LGORT = cm.get("LGORT")
+                    sm.WEIGH = cm.get("WEIGH")
+                    db_session.add(sm)
                     db_session.commit()
             return json.dumps('OK')
         except Exception as e:
+            db_session.rollback()
             print("调用SAP订单信息同步接口口报错！")
+            insertSyslog("接口error", "SAP_OrderSynchonizes报错Error：" + str(e), current_user.Name)
             return json.dumps("调用SAP订单信息同步接口报错！")
 
 @sapinter.route('/Sap_WorkReport', methods=['GET', 'POST'])
