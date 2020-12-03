@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SAP批次信息</title>
+    <link href="../static/css/base.css" rel="stylesheet">
+	<link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
+	<link href="../static/css/basic_info.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="../static/custom/uimaker/icon.css">
+	<link href="../static/js/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
+    <link href="../static/css/datagridpanel_customer.css" rel="stylesheet">
+    <link href="../static/css/dialogpanel.css" type="text/css" rel="stylesheet">
+    <link href="../static/css/datagrid_customer.css" type="text/css" rel="stylesheet">
+    <script type="text/javascript" src="../static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="../static/js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../static/js/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
+    <script>
+        $(function(){
+            CollectToolbar = {
+                search:function(){
+                    $.ajax({
+                        url: '/allPlanManagers/Search',
+                        method: 'POST',
+                        traditional: true,
+                        data: {BatchID:$('input[name="search"]').val()},
+                        dataType: 'json',
+                        success: function (data) {
+                            $.messager.progress('close');
+                            if (data) {
+                                $("#tab").datagrid('loadData', data);
+                                $.messager.show({
+                                    title: '提示',
+                                    timeout: 1000,
+                                    msg: '查询成功',
+                                    style: {
+                                        right: '',
+                                        top: document.body.scrollTop + document.documentElement.scrollTop,
+                                        bottom: ''
+                                    }
+                                });
+                            }
+                        }
+                    })
+                },
+                refresh:function(){
+                    $("#tab").datagrid('load')
+                }
+            }
+
+            $("#tab").datagrid({
+                //datagrid表格右键操作
+                onRowContextMenu: function (e, rowIndex, rowData) { //右键时触发事件
+                    //三个参数：e里面的内容很多，真心不明白，rowIndex就是当前点击时所在行的索引，rowData当前行的数据
+                    e.preventDefault(); //阻止浏览器捕获右键事件
+                    $(this).datagrid("clearSelections"); //取消所有选中项
+                    $(this).datagrid("selectRow", rowIndex); //根据索引选中该行
+                    $('#contextmenu').menu('show', {
+                        //显示右键菜单
+                        left: e.pageX,//在鼠标点击处显示菜单
+                        top: e.pageY
+                    });
+                    e.preventDefault();  //阻止浏览器自带的右键菜单弹出
+                }
+            });
+        })
+    </script>
+</head>
+<body>
+    <div class="content">
+        <div id="Toolbar" style="padding:0 10px;">
+            批次号:
+            <input type="text" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
+                placeholder="">
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="CollectToolbar.search();">查询</a>
+            <a href="#" class="easyui-linkbutton" id="reload" data-options="iconCls:'icon-reload'" onclick="CollectToolbar.refresh();">刷新</a>
+        </div>
+        <table class="easyui-datagrid" id="tab" title="" style="width:100%;" data-options="
+            rownumbers:true,
+            singleSelect:false,
+            autoRowHeight:false,
+            pagination:true,
+            pageSize:10,
+            toolbar:'#Toolbar',
+            url:'/RealsePlanManagersearch',
+            method:'get'">
+            <thead>
+                <tr>
+                    <th field="ck" checkbox="true"></th>
+                    <th data-options="field:'PlanStatus',width:100,align:'center'" formatter="formatterStatus" styler="styleStatus">计划状态</th>
+                    <th data-options="field:'RID',width:200,align:'center'">MES请求唯一编码</th>
+                    <th data-options="field:'AUFNR',width:200,align:'center'">订单号</th>
+                    <th data-options="field:'DAUAT',width:100,align:'center'">订单类型</th>
+                    <th data-options="field:'DWERK',width:150,align:'center'">工厂</th>
+                    <th data-options="field:'CHARG',width:100,align:'center'">批次编号</th>
+                    <th data-options="field:'MATNR',width:200,align:'center'">产品编码</th>
+                    <th data-options="field:'MAKTX',width:200,align:'center'">产品名称</th>
+                    <th data-options="field:'GAMNG',width:100,align:'center'">计划生产数量</th>
+                    <th data-options="field:'UNIT',width:100,align:'center'">单位</th>
+                    <th data-options="field:'VERID',width:100,align:'center'">生产版本</th>
+                    <th data-options="field:'RSNUM',width:100,align:'center'">预留编号</th>
+                    <th data-options="field:'ROUTN',width:100,align:'center'">工艺路线编号</th>
+                    <th data-options="field:'GSTRP',width:100,align:'center'">计划开始日期</th>
+                    <th data-options="field:'GLTRP',width:100,align:'center'">计划结束日期</th>
+                    <th data-options="field:'STATE',width:100,align:'center'">状态</th>
+                    <th data-options="field:'PLNNR',width:100,align:'center'">配方组</th>
+                    <th data-options="field:'PLNAL',width:100,align:'center'">配方组计数器</th>
+                    <th data-options="field:'KTEXT',width:100,align:'center'">配方描述</th>
+                    <th data-options="field:'GESSTICHPR',width:100,align:'center'">取样量</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+    <!-- 右键菜单 -->
+    <div id="contextmenu" class="easyui-menu" style="width:120px;">
+        <div data-options="iconCls:'icon-reload'" onclick="CollectToolbar.refresh();">刷新</div>
+        <div data-options="iconCls:'icon-add'" onclick="CollectToolbar.create();">新建</div>
+    </div>
+</body>
+</html>

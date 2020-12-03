@@ -1,7 +1,6 @@
 venv/
 .idea/
 __pycache__/
-=======
 .idea/
 system/__pycache__/
 Model/Global.py
