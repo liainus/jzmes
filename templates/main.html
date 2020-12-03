@@ -79,21 +79,21 @@
                         </ul>
                     </li>
                 {% endif %}
-                <!--<li>
+                <li>
                     <a href="javascript:;">
                         <span class="glyphicon glyphicon-calendar sider-nav-icon"></span>
-                        <span class="sider-nav-title">ERP数据管理</span>
+                        <span class="sider-nav-title">SAP数据管理</span>
                         <i class="glyphicon glyphicon-menu-down"></i>
                     </a>
                     <ul class="sider-nav-s">
                         <li>
-                            <a href="#" onclick="addTab('ERP物料信息','/ERP_productinfo')">ERP物料信息</a>
+                            <a href="#" onclick="addTab('SAP物料信息','/ERP_productinfo')">SAP物料信息</a>
                         </li>
                         <li>
-                            <a href="#" onclick="addTab('ERP计划排产','/ERP_productplan')">ERP计划排产</a>
+                            <a href="#" onclick="addTab('SAP计划信息','/SapBatchInfo')">SAP计划信息</a>
                         </li>
                     </ul>
-                </li> -->
+                </li>
                 {% if isIn(['25', '26', '27', '28', '29', '30'], session.get('menus')) %}
                     <li>
                         <a href="javascript:;">
@@ -102,9 +102,6 @@
                             <i class="glyphicon glyphicon-menu-down"></i>
                         </a>
                         <ul class="sider-nav-s">
-                            <li>
-                                <a href="#" onclick="addTab('SAP计划管理','/SapBatchInfo')">SAP计划管理</a>
-                            </li>
                             {% if '25' in session.get('menus') %}
                                 <li>
                                     <a href="#" onclick="addTab('生产管理','/ZYPlanManage')">生产管理</a>
