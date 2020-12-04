@@ -55,7 +55,7 @@
             CollectToolbar = {
                 search:function(){
                     $.ajax({
-                        url: '/allPlanManagers/Search',
+                        url: '/SapBatchInfoSearch',
                         method: 'POST',
                         traditional: true,
                         data: {BatchID:$('input[name="search"]').val()},
@@ -130,7 +130,7 @@
             pagination:true,
             pageSize:10,
             toolbar:'#Toolbar',
-            url:'/RealsePlanManagersearch',
+            url:'/SapBatchInfoSearch',
             method:'get'">
             <thead>
                 <tr>
