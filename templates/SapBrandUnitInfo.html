@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>SAP批次信息</title>
+    <title>SAP工序报工管理</title>
     <link href="../static/css/base.css" rel="stylesheet">
 	<link rel="stylesheet" href="../static/custom/uimaker/easyui.css">
 	<link href="../static/css/basic_info.css" rel="stylesheet">
@@ -17,45 +17,10 @@
     <script type="text/javascript" src="../static/js/Bee.js" charset="utf-8"></script>
     <script>
         $(function(){
-            $("#synchronization").on('click',function(flag){
-                $.messager.confirm('确定操作', '确认要同步到系统吗？', function (flag) {
-                    if (flag) {
-                        $.ajax({
-                            url: '/SAP_OrderSynchonizes',
-                            type: 'GET',
-                            data:{
-                                StartTime:$('#StartTime').datebox('getValue'),
-                                EndTime:$('#EndTime').datebox('getValue'),
-                                DAUAT:$('#DAUAT').datebox('getValue'),
-                            },
-                            success: function (data) {
-                                if (data == "OK") {
-                                    $.messager.show({
-                                        title: '提示',
-                                        timeout: 1000,
-                                        msg: '同步成功',
-                                        style: {
-                                            right: '',
-                                            top: document.body.scrollTop + document.documentElement.scrollTop,
-                                            bottom: ''
-                                        }
-                                    });
-                                    $("#selfTab").datagrid('load')
-                                }else{
-                                    $.messager.alert('提示', data, 'info');
-                                }
-                            },
-                            error: function () {
-                                alert("请求失败，请稍后重试！")
-                            }
-                         });
-                    }
-                })
-            })
             CollectToolbar = {
                 search:function(){
                     $.ajax({
-                        url: '/SapBatchInfoSearch',
+                        url: '/SapBrandUnitInfoSearch',
                         method: 'POST',
                         traditional: true,
                         data: {AUFNR:$('input[name="search"]').val()},
@@ -103,19 +68,6 @@
 </head>
 <body>
     <div style="padding:10px;">
-        <div>
-            选择起止时间和参数：
-            <input id="StartTime" type="text" class="easyui-datebox">
-            -
-            <input id="EndTime" type="text" class="easyui-datebox">
-            <select id="DAUAT" class="easyui-combobox" name="dept" style="width:200px;">
-                <option value="JZ01">江中自制流程订单</option>
-                <option value="JZ02">江中委托加工流程订单</option>
-                <option value="JZ03">江中返工流程订单</option>
-                <option value="JZ99"> 江中三批验证流程订单</option>
-            </select>
-            <a href="#" class="easyui-linkbutton" id="synchronization" data-options="iconCls:'icon-redo'">同步</a>
-        </div>
         <div id="Toolbar" style="padding:0 10px;">
             订单号:
             <input type="text" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
@@ -133,29 +85,25 @@
             pagination:true,
             pageSize:10,
             toolbar:'#Toolbar',
-            url:'/SapBatchInfoSearch',
+            url:'/SapBrandUnitInfoSearch',
             method:'get'">
             <thead>
                 <tr>
                     <th data-options="field:'RID',align:'center'">MES请求唯一编码</th>
                     <th data-options="field:'AUFNR',align:'center'">订单号</th>
-                    <th data-options="field:'DAUAT',align:'center'">订单类型</th>
-                    <th data-options="field:'DWERK',align:'center'">工厂</th>
-                    <th data-options="field:'CHARG',align:'center'">批次编号</th>
-                    <th data-options="field:'MATNR',align:'center'">产品编码</th>
-                    <th data-options="field:'MAKTX',align:'center'">产品名称</th>
-                    <th data-options="field:'GAMNG',align:'center'">计划生产数量</th>
-                    <th data-options="field:'UNIT' ,align:'center'">单位</th>
-                    <th data-options="field:'VERID',align:'center'">生产版本</th>
-                    <th data-options="field:'RSNUM',align:'center'">预留编号</th>
                     <th data-options="field:'ROUTN',align:'center'">工艺路线编号</th>
-                    <th data-options="field:'GSTRP',align:'center'">计划开始日期</th>
-                    <th data-options="field:'GLTRP',align:'center'">计划结束日期</th>
-                    <th data-options="field:'STATE',align:'center'">状态</th>
-                    <th data-options="field:'PLNNR',align:'center'">配方组</th>
-                    <th data-options="field:'PLNAL',align:'center'">配方组计数器</th>
-                    <th data-options="field:'KTEXT',align:'center'">配方描述</th>
-                    <th data-options="field:'GESSTICHPR',align:'center'">取样量</th>
+                    <th data-options="field:'VORNR',align:'center'">操作/活动编号</th>
+                    <th data-options="field:'LTXA1',align:'center'">工序短文本</th>
+                    <th data-options="field:'MGVRG',align:'center'">工序数量</th>
+                    <th data-options="field:'UNIT',align:'center'">工序单位</th>
+                    <th data-options="field:'STEUS',align:'center'">控制码</th>
+                    <th data-options="field:'VORGSCHL',align:'center'">标准值码</th>
+                    <th data-options="field:'VGW01',align:'center'">工时1</th>
+                    <th data-options="field:'VGW02',align:'center'">工时2</th>
+                    <th data-options="field:'VGW03',align:'center'">工时3</th>
+                    <th data-options="field:'VGW04',align:'center'">工时4</th>
+                    <th data-options="field:'VGW05',align:'center'">工时5</th>
+                    <th data-options="field:'VGW06',align:'center'">工时6</th>
                 </tr>
             </thead>
         </table>
