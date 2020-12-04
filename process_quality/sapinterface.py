@@ -243,7 +243,7 @@ def SAP_OrderSynchonizes():
                     s.MATNR = i.get("MATNR")
                     s.MAKTX = i.get("MAKTX")
                     s.GAMNG = i.get("GAMNG")
-                    s.UNIT  = i.get("UNIT ")
+                    s.UNIT  = i.get("UNIT")
                     s.VERID = i.get("VERID")
                     s.RSNUM = i.get("RSNUM")
                     s.ROUTN = i.get("ROUTN")
