@@ -45,7 +45,7 @@
             <a href="#" class="easyui-linkbutton" id="synchronization" data-options="iconCls:'icon-redo'">同步到系统</a>
         </div>
         <div id="toolbar">
-            物料编码:
+            订单号:
             <input type="text" id="SearchVal" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
             placeholder="">
             <a href="#" class="easyui-linkbutton" id="Search" data-options="iconCls:'icon-search'">查询</a>
@@ -54,7 +54,7 @@
         </div>
         <table class="easyui-datagrid" id="selfTab" title="系统物料列表" style="width:100%;" data-options="
             queryParams:{
-                product_code:''
+                AUFNR:''
             },
             loadMsg:false,
             rownumbers:true,
@@ -63,15 +63,26 @@
             autoRowHeight:false,
             pagination:true,
             pageSize:10,
-            url:'/erp_model/productinfoSearch',
+            url:'/SapMatailInfoSearch',
             method:'get'">
             <thead>
                 <tr>
                     <th field="ck" checkbox="true"></th>
-                    <th data-options="field:'product_code',width:200,align:'center'">物料编码</th>
-                    <th data-options="field:'product_name',width:250,align:'center'">物料名称</th>
-                    <th data-options="field:'product_unit',width:200,align:'center'">计量单位</th>
-                    <th data-options="field:'product_type',width:200,align:'center'">物料类型</th>
+                    <th data-options="field:'RID',align:'center'">MES请求唯一编码</th>
+                    <th data-options="field:'AUFNR',align:'center'">订单号</th>
+                    <th data-options="field:'RSNUM',align:'center'">预留编号</th>
+                    <th data-options="field:'RSPOS',align:'center'">预留项目号</th>
+                    <th data-options="field:'VORNR',align:'center'">阶段</th>
+                    <th data-options="field:'SEQNO',align:'center'">次序</th>
+                    <th data-options="field:'MATNR',align:'center'">物料编号</th>
+                    <th data-options="field:'MAKTX',align:'center'">物料描述</th>
+                    <th data-options="field:'BDMNG',align:'center'">物料数量</th>
+                    <th data-options="field:'MEINS',align:'center'">物料单位</th>
+                    <th data-options="field:'BWART',align:'center'">移动类型</th>
+                    <th data-options="field:'CHARG',align:'center'">批次编号</th>
+                    <th data-options="field:'WERKS',align:'center'">工厂</th>
+                    <th data-options="field:'LGORT',align:'center'">存储地点</th>
+                    <th data-options="field:'WEIGH',align:'center'">称量标记</th>
                 </tr>
             </thead>
         </table>
@@ -115,7 +126,7 @@
             })
             $("#Search").on('click',function(){
                 $('#selfTab').datagrid('load',{
-                    product_code: $('#SearchVal').val()
+                    AUFNR: $('#SearchVal').val()
                 });
             })
             $("#synchronizationToWMS").on('click',function(){
