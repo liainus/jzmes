@@ -182,7 +182,7 @@ class SapMatailInfo(Base):
     # 阶段 :
     VORNR = Column(Unicode(60), primary_key=False, autoincrement=False, nullable=True)
 
-    # :
+    # 次序:
     SEQNO = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
     # 物料编号:
@@ -206,7 +206,7 @@ class SapMatailInfo(Base):
     # 工厂
     WERKS = Column(Unicode(100), primary_key=False, autoincrement=False, nullable=True)
 
-    # LGORT
+    # 存储地点
     LGORT = Column(Unicode(100), primary_key=False, autoincrement=False, nullable=True)
 
     # 称量标记 :

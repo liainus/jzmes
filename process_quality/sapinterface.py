@@ -76,6 +76,14 @@ def sapBatchInfo():
     return:
     '''
     return render_template('SapBatchInfo.html')
+
+@sapinter.route('/tosapBrandUnitInfo')
+def tosapBrandUnitInfo():
+    '''
+    SAP物料主数据同步页面
+    return:
+    '''
+    return render_template('SapBrandUnitInfo.html')
 @sapinter.route('/SapBatchInfoSearch', methods=['POST', 'GET'])
 def SapBatchInfoSearch():
     if request.method == 'GET':

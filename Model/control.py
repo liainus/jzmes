@@ -354,7 +354,7 @@ class ctrlPlan:
                     Type = AType,
                     PlanQuantity = APlanQuantity,
                     Unit = AUnit,
-                    PlanStatus = Model.Global.PlanStatus.NEW.value))
+                    PlanStatus = Model.Global.PlanStatus.Checked.value))
             session.commit()
             return bReturn
         except Exception as e:
