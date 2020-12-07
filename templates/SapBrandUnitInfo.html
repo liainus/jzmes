@@ -98,6 +98,7 @@
                         ID:$('input[name="iID"]').val(),
                         BUDAT:$("#BUDAT").datetimebox("getValue"),
                         ActStartTime:$("#ActStartTime").datetimebox("getValue"),
+                        ActFinishTime:$("#ActFinishTime").datetimebox("getValue"),
                         NUM1:$('input[name="NUM1"]').val(),
                         QTY:$('input[name="QTY"]').val(),
                         QDATE:$("#QDATE").datetimebox("getValue"),
@@ -124,6 +125,7 @@
                                         bottom: ''
                                     }
                                 });
+                                $('#ZYPlanClassDialog').dialog('close')
                             }
                         },
                         error:function(){
