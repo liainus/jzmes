@@ -89,7 +89,6 @@
                         data:entity,
                         type:"post",
                         success:function(res){
-                            console.log(res)
                             if(res === '"OK"'){
                                 $.messager.show({
                                     title: '提示',
@@ -111,7 +110,43 @@
                     })
                 },
                 send:function(){
-
+                    var rows = $("#tab2").datagrid('getSelections');
+                    if (rows.length > 1) {
+                        $.messager.alert('警告操作！', '报工记录只能选定一条数据！', 'warning');
+                    } else if (rows.length == 1) {
+                        var row = $("#tab2").datagrid('getSelected');
+                        if (row) {
+                            if(row.BUDAT && row.ActStartTime && row.ActFinishTime && row.NUM1 && row.QTY && row.QDATE && row.HSDAT && row.AGRND && row.SCRAP && row.PRQTY){
+                                $.ajax({
+                                    url:"/Sap_WorkReport",
+                                    data:{
+                                        IDs:[{id:row.ID}]
+                                    },
+                                    type:"post",
+                                    success:function(res){
+                                        if(res === '"OK"'){
+                                            $.messager.show({
+                                                title: '提示',
+                                                timeout: 1000,
+                                                msg: '报工成功',
+                                                style: {
+                                                    right: '',
+                                                    top: document.body.scrollTop + document.documentElement.scrollTop,
+                                                    bottom: ''
+                                                }
+                                            });
+                                            $("#tab2").datagrid('loadData', data);
+                                        }
+                                    },
+                                    error:function(){
+                                        alert("请求错误，请刷新后重试！")
+                                    }
+                                })
+                            }
+                        };
+                    } else if (rows.length == 0) {
+                        $.messager.alert('警告操作！', '请至少选定一条数据进行报工！', 'warning');
+                    }
                 }
             }
             $("#tab").datagrid({
