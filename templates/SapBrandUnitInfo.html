@@ -55,6 +55,7 @@
                             $('input[name="iID"]').val(row.ID);
                             $("#BUDAT").datetimebox("setValue",row.BUDAT)
                             $("#ActStartTime").datetimebox("setValue",row.ActStartTime)
+                            $("#ActFinishTime").datetimebox("setValue",row.ActFinishTime)
                             $('input[name="NUM1"]').val(row.NUM1);
                             $('input[name="QTY"]').val(row.QTY);
                             $("#QDATE").datetimebox("setValue",row.QDATE)
@@ -88,8 +89,7 @@
                         data:entity,
                         type:"post",
                         success:function(res){
-                            if(res == '"OK"'){
-                                $("#tab2").datagrid('loadData', data);
+                            if(res === '"OK"'){
                                 $.messager.show({
                                     title: '提示',
                                     timeout: 1000,
@@ -101,6 +101,7 @@
                                     }
                                 });
                                 $('#ZYPlanClassDialog').dialog('close')
+                                $("#tab2").datagrid('loadData', data);
                             }
                         },
                         error:function(){
@@ -262,53 +263,53 @@
                             </td>
                             <td class="kv-label">过账日期</td>
                             <td class="kv-content">
-                                <input id="BUDAT" name="BUDAT" required="true" type="text" class="easyui-datetimebox" data-options="required:true,showSeconds:false,editable:false" autocomplete="off" placeholder=>
+                                <input id="BUDAT" name="BUDAT" type="text" class="easyui-datetimebox" data-options="required:true,showSeconds:false,editable:false" autocomplete="off" placeholder=>
                             </td>
                         </tr>
                         <tr>
                             <td class="kv-label">实际开始日期</td>
                             <td class="kv-content">
-                                <input id="ActStartTime" name="ActStartTime" required="true" type="text" class="easyui-datetimebox" data-options="required:true,showSeconds:false,editable:false" autocomplete="off" placeholder=>
+                                <input id="ActStartTime" name="ActStartTime" type="text" class="easyui-datetimebox" data-options="required:true,showSeconds:false,editable:false" autocomplete="off" placeholder=>
                             </td>
                             <td class="kv-label">实际结束时间</td>
                             <td class="kv-content">
-                                <input id="ActFinishTime" name="ActFinishTime" required="true" type="text" class="easyui-datetimebox" data-options="required:true,showSeconds:false,editable:false" autocomplete="off" placeholder=>
+                                <input id="ActFinishTime" name="ActFinishTime" type="text" class="easyui-datetimebox" data-options="required:true,showSeconds:false,editable:false" autocomplete="off" placeholder=>
                             </td>
                         </tr>
                         <tr>
                             <td class="kv-label">取样量</td>
                             <td class="kv-content">
-                                <input name="NUM1" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                                <input name="NUM1" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
                             </td>
                             <td class="kv-label">批数量</td>
                             <td class="kv-content">
-                                <input name="QTY" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                                <input name="QTY" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
                             </td>
                         </tr>
                         <tr>
                             <td class="kv-label">请验日期</td>
                             <td class="kv-content">
-                                <input id="QDATE" name="QDATE" required="true" type="text" class="easyui-datetimebox" data-options="required:true,showSeconds:false,editable:false" autocomplete="off" placeholder=>
+                                <input id="QDATE" name="QDATE" type="text" class="easyui-datetimebox" data-options="required:true,showSeconds:false,editable:false" autocomplete="off" placeholder=>
                             </td>
                             <td class="kv-label">生产日期</td>
                             <td class="kv-content">
-                                <input id="HSDAT" name="HSDAT" required="true" type="text" class="easyui-datetimebox" data-options="required:true,showSeconds:false,editable:false" autocomplete="off" placeholder=>
+                                <input id="HSDAT" name="HSDAT" type="text" class="easyui-datetimebox" data-options="required:true,showSeconds:false,editable:false" autocomplete="off" placeholder=>
                             </td>
                         </tr>
                         <tr>
                             <td class="kv-label">差异原因</td>
                             <td class="kv-content">
-                                <input name="AGRND" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                                <input name="AGRND" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
                             </td>
                             <td class="kv-label">废品</td>
                             <td class="kv-content">
-                                <input name="SCRAP" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                                <input name="SCRAP" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
                             </td>
                         </tr>
                         <tr>
                             <td class="kv-label">报工产量</td>
                             <td class="kv-content">
-                                <input name="PRQTY" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                                <input name="PRQTY" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
                             </td>
                         </tr>
                     </tbody>
