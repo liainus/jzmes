@@ -42,29 +42,6 @@
                             }
                         }
                     })
-                    $.ajax({
-                        url: '/SapBrandUnitInfoSearch',
-                        method: 'get',
-                        traditional: true,
-                        data: {AUFNR:$('input[name="search"]').val()},
-                        dataType: 'json',
-                        success: function (data) {
-                            $.messager.progress('close');
-                            if (data) {
-                                $("#tab2").datagrid('loadData', data);
-                                $.messager.show({
-                                    title: '提示',
-                                    timeout: 1000,
-                                    msg: '查询成功',
-                                    style: {
-                                        right: '',
-                                        top: document.body.scrollTop + document.documentElement.scrollTop,
-                                        bottom: ''
-                                    }
-                                });
-                            }
-                        }
-                    })
                 },
                 update:function(){
                     var rows = $("#tab2").datagrid('getSelections');
@@ -85,8 +62,6 @@
                             $('input[name="AGRND"]').val(row.AGRND);
                             $('input[name="SCRAP"]').val(row.SCRAP);
                             $('input[name="PRQTY"]').val(row.PRQTY);
-
-                            //$('#iUnit option:contains('+row.Unit+')').prop("selected", 'selected');
 
                         };
                     } else if (rows.length == 0) {
@@ -137,7 +112,33 @@
 
                 }
             }
-
+            $("#tab").datagrid({
+                onClickRow: function (index, row) {
+                    $.ajax({
+                        url: '/SapBrandUnitInfoSearch',
+                        method: 'get',
+                        traditional: true,
+                        data: {AUFNR:row.AUFNR},
+                        dataType: 'json',
+                        success: function (data) {
+                            $.messager.progress('close');
+                            if (data) {
+                                $("#tab2").datagrid('loadData', data);
+                                $.messager.show({
+                                    title: '提示',
+                                    timeout: 1000,
+                                    msg: '查询成功',
+                                    style: {
+                                        right: '',
+                                        top: document.body.scrollTop + document.documentElement.scrollTop,
+                                        bottom: ''
+                                    }
+                                });
+                            }
+                        }
+                    })
+                }
+            });
             $("#tab2").datagrid({
                 //datagrid表格右键操作
                 onRowContextMenu: function (e, rowIndex, rowData) { //右键时触发事件
@@ -165,7 +166,7 @@
             <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="CollectToolbar.search();">查询</a>
         </div>
         <div style="margin-bottom: 20px;">
-            <table class="easyui-datagrid" id="tab" title="SAP计划列表" style="width:100%;" data-options="
+            <table class="easyui-datagrid" id="tab" title="SAP计划列表（点击一行订单获取报工信息）" style="width:100%;" data-options="
                 queryParams:{
                     AUFNR:''
                 },
