@@ -159,6 +159,41 @@ class SapBrandUnitInfo(Base):
     # 工时6 :
     VGW06 = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
+    # 过账日期 :
+    BUDAT = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 实际开始日期
+    ActStartTime = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 实际结束时间 :
+    ActFinishTime = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 取样量
+    NUM1 = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 批数量
+    QTY = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 请验日期:
+    QDATE = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 生产日期
+    HSDAT = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 差异原因
+    AGRND = Column(Unicode(200), primary_key=False, autoincrement=False, nullable=True)
+
+    # 废品
+    SCRAP = Column(Unicode(100), primary_key=False, autoincrement=False, nullable=True)
+
+    # 报工产量
+    PRQTY = Column(Unicode(100), primary_key=False, autoincrement=False, nullable=True)
+
+    # 确认类型
+    FCONF = Column(Unicode(100), primary_key=False, autoincrement=False, nullable=True)
+
+
+
 class SapMatailInfo(Base):
     '''
     SAP流程订单物料信息（批次物料信息）

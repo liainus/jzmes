@@ -4,7 +4,7 @@ from enum import Enum, IntEnum, unique
 GLOBAL_JSON_RETURN_OK={"status": "OK"}
 
 #数据库连接字符串！
-GLOBAL_DATABASE_CONNECT_STRING= "mssql+pymssql://sa:jzjtxxzx@123@192.168.100.150:1433/MES?charset=utf8"#Qcsw@758@192.168.2.111  root@192.168.2.112  jzjtxxzx@123@192.168.100.150
+GLOBAL_DATABASE_CONNECT_STRING= "mssql+pymssql://sa:root@127.0.0.1:1433/MES?charset=utf8"#Qcsw@758@192.168.2.111  root@192.168.2.112  jzjtxxzx@123@192.168.100.150
 
 # #数据库连接SAP字符串！
 GLOBAL_DATABASE_CONNECT_STRING_ERP= "mssql+pymssql://E55d7568:D67858Fb8b2fD136@10.136.73.153 61592/JzPPMesInterface?charset=utf8"
