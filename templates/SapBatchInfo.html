@@ -29,7 +29,7 @@
                                 DAUAT:$('#DAUAT').datebox('getValue'),
                             },
                             success: function (data) {
-                                if (data == "OK") {
+                                if (data === '"OK"') {
                                     $.messager.show({
                                         title: '提示',
                                         timeout: 1000,
