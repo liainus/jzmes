@@ -502,7 +502,6 @@
                     },
                     success:function(res){
                         res = JSON.parse(res)
-                        console.log(res)
                         html = '<table class="table table-bordered"><tr><td>用户名</td><td>' + res.rows[0].Name +'</td></tr>'+
                         '<tr><td>工号</td><td>'+ res.rows[0].WorkNumber +'</td></tr><tr><td>所属部门</td><td>'+ res.rows[0].OrganizationName +'</td></tr>'+
                         '<tr><td>所属角色</td><td>'+ res.rows[0].RoleName +'</td></tr>'+

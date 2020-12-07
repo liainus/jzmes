@@ -20,8 +20,8 @@
             CollectToolbar = {
                 search:function(){
                     $.ajax({
-                        url: '/SapBrandUnitInfoSearch',
-                        method: 'POST',
+                        url: '/SapBatchInfoSearch',
+                        method: 'get',
                         traditional: true,
                         data: {AUFNR:$('input[name="search"]').val()},
                         dataType: 'json',
@@ -42,13 +42,102 @@
                             }
                         }
                     })
+                    $.ajax({
+                        url: '/SapBrandUnitInfoSearch',
+                        method: 'get',
+                        traditional: true,
+                        data: {AUFNR:$('input[name="search"]').val()},
+                        dataType: 'json',
+                        success: function (data) {
+                            $.messager.progress('close');
+                            if (data) {
+                                $("#tab2").datagrid('loadData', data);
+                                $.messager.show({
+                                    title: '提示',
+                                    timeout: 1000,
+                                    msg: '查询成功',
+                                    style: {
+                                        right: '',
+                                        top: document.body.scrollTop + document.documentElement.scrollTop,
+                                        bottom: ''
+                                    }
+                                });
+                            }
+                        }
+                    })
                 },
-                refresh:function(){
-                    $("#tab").datagrid('load')
+                update:function(){
+                    var rows = $("#tab2").datagrid('getSelections');
+                    if (rows.length > 1) {
+                        $.messager.alert('警告操作！', '编辑记录只能选定一条数据！', 'warning');
+                    } else if (rows.length == 1) {
+                        var row = $("#tab2").datagrid('getSelected');
+                        if (row) {
+                            $("#tab2").dialog('open').dialog('setTitle', '编辑');
+                            $('input[name="iID"]').attr("disabled", "disabled");
+                            $('input[name="iID"]').val(row.ID);
+                            $("#BUDAT").datetimebox("setValue",row.BUDAT)
+                            $("#ActStartTime").datetimebox("setValue",row.ActStartTime)
+                            $('input[name="NUM1"]').val(row.NUM1);
+                            $('input[name="QTY"]').val(row.QTY);
+                            $("#QDATE").datetimebox("setValue",row.QDATE)
+                            $("#HSDAT").datetimebox("setValue",row.HSDAT)
+                            $('input[name="AGRND"]').val(row.AGRND);
+                            $('input[name="SCRAP"]').val(row.SCRAP);
+                            $('input[name="PRQTY"]').val(row.PRQTY);
+                            $('input[name="FCONF"]').val(row.FCONF);
+
+                            //$('#iUnit option:contains('+row.Unit+')').prop("selected", 'selected');
+
+                        };
+                    } else if (rows.length == 0) {
+                        $.messager.alert('警告操作！', '请至少选定一条数据进行编辑！', 'warning');
+                    }
+                },
+                save:function(){
+                    var entity = {
+                        ID:$('input[name="iID"]').val(),
+                        BUDAT:$("#BUDAT").datetimebox("getValue"),
+                        ActStartTime:$("#ActStartTime").datetimebox("getValue"),
+                        NUM1:$('input[name="NUM1"]').val(),
+                        QTY:$('input[name="QTY"]').val(),
+                        QDATE:$("#QDATE").datetimebox("getValue"),
+                        HSDAT:$("#HSDAT").datetimebox("getValue"),
+                        AGRND:$('input[name="AGRND"]').val(),
+                        SCRAP:$('input[name="SCRAP"]').val(),
+                        PRQTY:$('input[name="PRQTY"]').val(),
+                        FCONF:$('input[name="FCONF"]').val()
+                    };
+                     $.ajax({
+                        url:"/SapBrandUnitInfoUpdate",
+                        data:entity,
+                        type:"post",
+                        success:function(res){
+                            if(res == '"OK"'){
+                                $("#tab2").datagrid('loadData', data);
+                                $.messager.show({
+                                    title: '提示',
+                                    timeout: 1000,
+                                    msg: '修改成功',
+                                    style: {
+                                        right: '',
+                                        top: document.body.scrollTop + document.documentElement.scrollTop,
+                                        bottom: ''
+                                    }
+                                });
+                            }
+                        },
+                        error:function(){
+                            alert("请求错误，请刷新后重试！")
+                        }
+                    })
+                },
+                send:function(){
+
                 }
             }
 
-            $("#tab").datagrid({
+            $("#tab2").datagrid({
                 //datagrid表格右键操作
                 onRowContextMenu: function (e, rowIndex, rowData) { //右键时触发事件
                     //三个参数：e里面的内容很多，真心不明白，rowIndex就是当前点击时所在行的索引，rowData当前行的数据
@@ -73,9 +162,50 @@
             <input type="text" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
                 placeholder="">
             <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="CollectToolbar.search();">查询</a>
-            <a href="#" class="easyui-linkbutton" id="reload" data-options="iconCls:'icon-reload'" onclick="CollectToolbar.refresh();">刷新</a>
         </div>
-        <table class="easyui-datagrid" id="tab" title="SAP计划列表" style="width:100%;" data-options="
+        <div style="margin-bottom: 20px;">
+            <table class="easyui-datagrid" id="tab" title="SAP计划列表" style="width:100%;" data-options="
+                queryParams:{
+                    AUFNR:''
+                },
+                rownumbers:true,
+                singleSelect:false,
+                autoRowHeight:false,
+                pagination:true,
+                pageSize:10,
+                toolbar:'#Toolbar',
+                url:'/SapBatchInfoSearch',
+                method:'get'">
+                <thead>
+                    <tr>
+                        <th data-options="field:'RID',align:'center'">MES请求唯一编码</th>
+                        <th data-options="field:'AUFNR',align:'center'">订单号</th>
+                        <th data-options="field:'DAUAT',align:'center'">订单类型</th>
+                        <th data-options="field:'DWERK',align:'center'">工厂</th>
+                        <th data-options="field:'CHARG',align:'center'">批次编号</th>
+                        <th data-options="field:'MATNR',align:'center'">产品编码</th>
+                        <th data-options="field:'MAKTX',align:'center'">产品名称</th>
+                        <th data-options="field:'GAMNG',align:'center'">计划生产数量</th>
+                        <th data-options="field:'UNIT' ,align:'center'">单位</th>
+                        <th data-options="field:'VERID',align:'center'">生产版本</th>
+                        <th data-options="field:'RSNUM',align:'center'">预留编号</th>
+                        <th data-options="field:'ROUTN',align:'center'">工艺路线编号</th>
+                        <th data-options="field:'GSTRP',align:'center'">计划开始日期</th>
+                        <th data-options="field:'GLTRP',align:'center'">计划结束日期</th>
+                        <th data-options="field:'STATE',align:'center'">状态</th>
+                        <th data-options="field:'PLNNR',align:'center'">配方组</th>
+                        <th data-options="field:'PLNAL',align:'center'">配方组计数器</th>
+                        <th data-options="field:'KTEXT',align:'center'">配方描述</th>
+                        <th data-options="field:'GESSTICHPR',align:'center'">取样量</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+        <div id="Toolbar2" style="padding:0 10px;">
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit'" onclick="CollectToolbar.update();">修改</a>
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-redo'" onclick="CollectToolbar.send();">报工</a>
+        </div>
+        <table class="easyui-datagrid" id="tab2" title="SAP工序报工列表" style="width:100%;" data-options="
             queryParams:{
                 AUFNR:''
             },
@@ -84,7 +214,7 @@
             autoRowHeight:false,
             pagination:true,
             pageSize:10,
-            toolbar:'#Toolbar',
+            toolbar:'#Toolbar2',
             url:'/SapBrandUnitInfoSearch',
             method:'get'">
             <thead>
@@ -104,13 +234,96 @@
                     <th data-options="field:'VGW04',align:'center'">工时4</th>
                     <th data-options="field:'VGW05',align:'center'">工时5</th>
                     <th data-options="field:'VGW06',align:'center'">工时6</th>
+                    <th data-options="field:'BUDAT',align:'center'">过账日期</th>
+                    <th data-options="field:'ActStartTime',align:'center'">实际开始日期</th>
+                    <th data-options="field:'ActFinishTime',align:'center'">实际结束时间</th>
+                    <th data-options="field:'NUM1',align:'center'">取样量</th>
+                    <th data-options="field:'QTY',align:'center'">批数量</th>
+                    <th data-options="field:'QDATE',align:'center'">请验日期</th>
+                    <th data-options="field:'HSDAT',align:'center'">生产日期</th>
+                    <th data-options="field:'AGRND',align:'center'">差异原因</th>
+                    <th data-options="field:'SCRAP',align:'center'">废品</th>
+                    <th data-options="field:'PRQTY',align:'center'">报工产量</th>
+                    <th data-options="field:'FCONF',align:'center'">确认类型</th>
                 </tr>
             </thead>
         </table>
-        <!-- 右键菜单 -->
-        <div id="contextmenu" class="easyui-menu" style="width:120px;">
-            <div data-options="iconCls:'icon-reload'" onclick="CollectToolbar.refresh();">刷新</div>
+        <div id="ZYPlanClassDialog" class="easyui-dialog" style="width:760px;height:560px;padding:10px;"
+             data-options="closed:'true',buttons:'#ZYPlanClassDialogButtons',modal:true">
+            <form id="ZYPlanClassForm" method="post" class="dialog-form">
+                <table class="kv-table">
+                    <tbody>
+                        <tr>
+                            <td class="kv-label">ID</td>
+                            <td class="kv-content">
+                                <input  name="iID" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                            </td>
+                            <td class="kv-label">过账日期</td>
+                            <td class="kv-content">
+                                <input id="BUDAT" name="BUDAT" required="true" type="text" class="easyui-datebox" data-options="required:true,showSeconds:false,editable:false" autocomplete="off" placeholder=>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">实际开始日期</td>
+                            <td class="kv-content">
+                                <input id="ActStartTime" name="ActStartTime" required="true" type="text" class="easyui-datebox" data-options="required:true,showSeconds:false,editable:false" autocomplete="off" placeholder=>
+                            </td>
+                            <td class="kv-label">实际结束时间</td>
+                            <td class="kv-content">
+                                <input id="ActFinishTime" name="ActFinishTime" required="true" type="text" class="easyui-datebox" data-options="required:true,showSeconds:false,editable:false" autocomplete="off" placeholder=>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">取样量</td>
+                            <td class="kv-content">
+                                <input name="NUM1" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                            </td>
+                            <td class="kv-label">批数量</td>
+                            <td class="kv-content">
+                                <input name="QTY" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">请验日期</td>
+                            <td class="kv-content">
+                                <input id="QDATE" name="QDATE" required="true" type="text" class="easyui-datebox" data-options="required:true,showSeconds:false,editable:false" autocomplete="off" placeholder=>
+                            </td>
+                            <td class="kv-label">生产日期</td>
+                            <td class="kv-content">
+                                <input id="HSDAT" name="HSDAT" required="true" type="text" class="easyui-datebox" data-options="required:true,showSeconds:false,editable:false" autocomplete="off" placeholder=>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">差异原因</td>
+                            <td class="kv-content">
+                                <input name="AGRND" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                            </td>
+                            <td class="kv-label">废品</td>
+                            <td class="kv-content">
+                                <input name="SCRAP" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">报工产量</td>
+                            <td class="kv-content">
+                                <input name="PRQTY" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                            </td>
+                            <td class="kv-label">确认类型</td>
+                            <td class="kv-content">
+                                <input name="FCONF" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div id="ZYPlanClassDialogButtons" >
+                    <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'"  onclick="ZYPlanClassToolbar.save()" value="submit" >保存</a>
+                    <a href="#" class="easyui-linkbutton" onclick="$('#ZYPlanClassDialog').dialog('close')">关闭</a>
+                </div>
+            </form>
         </div>
+    </div>
+    <div id="contextmenu" class="easyui-menu" style="width:120px;">
+        <div data-options="iconCls:'icon-edit'" onclick="CollectToolbar.update();">修改</div>
     </div>
 </body>
 </html>

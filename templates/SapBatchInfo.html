@@ -56,7 +56,7 @@
                 search:function(){
                     $.ajax({
                         url: '/SapBatchInfoSearch',
-                        method: 'POST',
+                        method: 'get',
                         traditional: true,
                         data: {AUFNR:$('input[name="search"]').val()},
                         dataType: 'json',
