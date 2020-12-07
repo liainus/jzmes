@@ -85,7 +85,6 @@
                             $('input[name="AGRND"]').val(row.AGRND);
                             $('input[name="SCRAP"]').val(row.SCRAP);
                             $('input[name="PRQTY"]').val(row.PRQTY);
-                            $('input[name="FCONF"]').val(row.FCONF);
 
                             //$('#iUnit option:contains('+row.Unit+')').prop("selected", 'selected');
 
@@ -106,7 +105,7 @@
                         AGRND:$('input[name="AGRND"]').val(),
                         SCRAP:$('input[name="SCRAP"]').val(),
                         PRQTY:$('input[name="PRQTY"]').val(),
-                        FCONF:$('input[name="FCONF"]').val()
+                        FCONF:"X"
                     };
                      $.ajax({
                         url:"/SapBrandUnitInfoUpdate",
@@ -308,15 +307,11 @@
                             <td class="kv-content">
                                 <input name="PRQTY" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
                             </td>
-                            <td class="kv-label">确认类型</td>
-                            <td class="kv-content">
-                                <input name="FCONF" required="true" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
-                            </td>
                         </tr>
                     </tbody>
                 </table>
                 <div id="ZYPlanClassDialogButtons" >
-                    <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'"  onclick="ZYPlanClassToolbar.save()" value="submit" >保存</a>
+                    <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'"  onclick="CollectToolbar.save()" value="submit" >保存</a>
                     <a href="#" class="easyui-linkbutton" onclick="$('#ZYPlanClassDialog').dialog('close')">关闭</a>
                 </div>
             </form>
