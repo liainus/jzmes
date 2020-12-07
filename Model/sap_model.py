@@ -192,6 +192,10 @@ class SapBrandUnitInfo(Base):
     # 确认类型
     FCONF = Column(Unicode(100), primary_key=False, autoincrement=False, nullable=True)
 
+    # 状态
+    Status = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+
 
 
 class SapMatailInfo(Base):

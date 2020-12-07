@@ -149,7 +149,7 @@ def SapBrandUnitInfoUpdate():
             if len(json_str) > 10:
                 ID = data.get('ID')
                 if ID:
-                    oclass = db_session.query(SapBrandUnitInfo).filter().first()
+                    oclass = db_session.query(SapBrandUnitInfo).filter(SapBrandUnitInfo.ID == ID).first()
                     oclass.BUDAT = data.get("BUDAT")
                     oclass.ActStartTime = data.get("ActStartTime")
                     oclass.ActFinishTime = data.get("ActFinishTime")
@@ -162,7 +162,7 @@ def SapBrandUnitInfoUpdate():
                     oclass.PRQTY = data.get("PRQTY")
                     oclass.FCONF = data.get("FCONF")
                     db_session.commit()
-                return 'OK'
+                return json.dumps('OK')
         except Exception as e:
             print(e)
             logger.error(e)
@@ -246,7 +246,7 @@ def SAP_OrderSynchonizes():
         try:
             dic = {}
             data_ma = {"RID": str(uuid.uuid4()), "DWERK": "1100", "DAUAT": data.get("DAUAT"),"MATNR": "","VERID": "", "AUFNR": "",
-                       "SDATE": data.get("StartTime"),"EDATE": data.get("EndTime"), "CHARG": "","SYSID": "WX_MES",
+                       "SDATE": data.get("StartTime").replace("-",""),"EDATE": data.get("EndTime").replace("-",""), "CHARG": "","SYSID": "WX_MES",
                        "OPDAT": datetime.datetime.now().strftime('%Y%m%d'),"OPTME": datetime.datetime.now().strftime('%H%M%S')}
             dic["CATEGORY"] = ""
             dic["TYPE"] = ""
@@ -255,8 +255,8 @@ def SAP_OrderSynchonizes():
             dic["DATA"] = data_ma
             data_json = json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False)
             # headers = {'Content-Type': 'application/soap+xml; charset="UTF-8"'}
-            t = HttpAuthenticated(username='INTF', password='Hrjz1234')
-            client = Client(Model.Global.SAPcsurl, transport=t)
+            t = HttpAuthenticated(username='INTF', password='Intf600')
+            client = Client(Model.Global.SAPurl, transport=t)
             result = client.service.Z_PP_MES_INTF(data_json, 'PP1001', 'MES')
             if result:
                 hes = json.loads(result).get("HEADER")
@@ -266,7 +266,8 @@ def SAP_OrderSynchonizes():
                     AUnit = i.get("UNIT")
                     ABrandID = i.get("MATNR")
                     ABrandName = i.get("MAKTX")
-                    APlanDate = i.get("GSTRP")
+                    APlanDate = datetime.datetime.strptime(i.get("GSTRP"), '%Y%m%d')
+                    APlanDate = APlanDate.strftime('%Y-%m-%d %H:%M:%S')
                     PlanCreate = ctrlPlan('PlanCreate')
                     re = PlanCreate.createLinePlanManager("", APlanWeight, APlanDate, ABatchID, ABrandID,
                                                           ABrandName, ABrandName, AUnit, current_user.Name)
@@ -343,15 +344,15 @@ def SAP_OrderSynchonizes():
 @sapinter.route('/Sap_WorkReport', methods=['GET', 'POST'])
 def Sap_WorkReport():
     '''SAP报工信息接口'''
-    if request.method == 'GET':
+    if request.method == 'POST':
         data = request.values
         try:
             dic = {}
             a = ""
             data_list = []
-            IDs = data.get("IDs")
+            IDs = json.loads(data.get("IDs"))
             for ID in IDs:
-                sbui = db_session.query(SapBrandUnitInfo).filter(SapBrandUnitInfo.ID == ID).first()
+                sbui = db_session.query(SapBrandUnitInfo).filter(SapBrandUnitInfo.ID == ID.get("id")).first()
                 data_dir = {"RID": str(uuid.uuid4()), "RIDITEM": "1100", "AUFNR": sbui.AUFNR, "VORNR": sbui.VORNR,
                             "FCONF": sbui.FCONF, "WERKS": "1100",
                             "PRQTY": sbui.PRQTY, "SCRAP": sbui.SCRAP, "AGRND": sbui.AGRND, "MEINS": sbui.UNIT,
@@ -379,25 +380,16 @@ def Sap_WorkReport():
             client = Client(Model.Global.SAPcsurl, transport=t)
             result = client.service.Z_PP_MES_INTF(data_json, 'PP1003', 'WX_MES')
             if result:
-                re = json.loads(result).get("RETURN").get("MSG_LIST")
-                for i in re:
-                    product = i.get("HEADER")
-                    if product:
-                        e = product_plan()
-                        e.plan_period = product.get("RID")
-                        e.product_code = product.get("")
-                        e.product_name = product.get("")
-                        e.plan_quantity = product.get("")
-                        e.product_unit = product.get("")
-                        e.meter_type = product.get("")
-                        e.bill_code = product.get("AUFNR")
-                        e.plan_type = product.get("DAUAT")
-                        e.create_time = product.get("")
-                        e.transform_time = product.get("")
-                        e.transform_flag = product.get("")
-                        db_session.add(e)
-                        db_session.commit()
-            return json.dumps(result)
+                re = json.loads(result).get("RETURN").get("MSGTY")
+                if re == "S":
+                    for ID in IDs:
+                        baog = db_session.query(SapBrandUnitInfo).filter(SapBrandUnitInfo.ID == ID.get("id")).first()
+                        baog.Status = "工序报工完成"
+                    return json.dumps('OK')
+                else:
+                    return json.dumps(json.loads(result).get("RETURN").get("MESSAGE"))
+
         except Exception as e:
             print("调用SAP报工信息接口报错！")
+            insertSyslog("调用SAP报工信息接口报错", "Sap_WorkReport报错Error：" + str(e), current_user.Name)
             return json.dumps("调用SAP报工信息接口报错！")
