@@ -140,6 +140,34 @@ def SapBrandUnitInfoSearch():
             logger.error(e)
             insertSyslog("error", "工艺质量确认流程表查询报错Error：" + str(e), current_user.Name)
             return json.dumps("工艺质量确认流程表查询报错", cls=Model.BSFramwork.AlchemyEncoder,ensure_ascii=False)
+@sapinter.route('/SapBrandUnitInfoUpdate', methods=['POST', 'GET'])
+def SapBrandUnitInfoUpdate():
+    if request.method == 'POST':
+        data = request.values
+        try:
+            json_str = json.dumps(data.to_dict())
+            if len(json_str) > 10:
+                ID = data.get('ID')
+                if ID:
+                    oclass = db_session.query(SapBrandUnitInfo).filter().first()
+                    oclass.BUDAT = data.get("BUDAT")
+                    oclass.ActStartTime = data.get("ActStartTime")
+                    oclass.ActFinishTime = data.get("ActFinishTime")
+                    oclass.NUM1  = data.get("NUM1")
+                    oclass.QTY   = data.get("QTY")
+                    oclass.QDATE = data.get("QDATE")
+                    oclass.HSDAT = data.get("HSDAT")
+                    oclass.AGRND = data.get("AGRND")
+                    oclass.SCRAP = data.get("SCRAP")
+                    oclass.PRQTY = data.get("PRQTY")
+                    oclass.FCONF = data.get("FCONF")
+                    db_session.commit()
+                return 'OK'
+        except Exception as e:
+            print(e)
+            logger.error(e)
+            insertSyslog("error", "SAP流程订单工序信息更新报错Error：" + str(e), current_user.Name)
+            return json.dumps("SAP流程订单工序信息更新报错Error", cls=Model.BSFramwork.AlchemyEncoder,ensure_ascii=False)
 
 @sapinter.route('/SapMatailInfoSearch', methods=['POST', 'GET'])
 def SapMatailInfoSearch():
@@ -320,21 +348,36 @@ def Sap_WorkReport():
         try:
             dic = {}
             a = ""
-            data_ma = {"RID": str(uuid.uuid4()), "WERKS": "1100", "MTART": "Z001",
-                       "CDATE": "20201110",
-                       "EDATE": "20201110", "SYSID": "MES",
-                       "OPDAT": "20201110",
-                       "OPTME": "083030"}
+            data_list = []
+            IDs = data.get("IDs")
+            for ID in IDs:
+                sbui = db_session.query(SapBrandUnitInfo).filter(SapBrandUnitInfo.ID == ID).first()
+                data_dir = {"RID": str(uuid.uuid4()), "RIDITEM": "1100", "AUFNR": sbui.AUFNR, "VORNR": sbui.VORNR,
+                            "FCONF": sbui.FCONF, "WERKS": "1100",
+                            "PRQTY": sbui.PRQTY, "SCRAP": sbui.SCRAP, "AGRND": sbui.AGRND, "MEINS": sbui.UNIT,
+                            "STEUS": sbui.STEUS, "HSDAT": sbui.HSDAT, "QDATE": sbui.QDATE, "QTY": sbui.QTY,
+                            "NUM1": sbui.NUM1, "APP_PER": current_user.Name,
+                            "ESDAT": sbui.ActStartTime[0:10].replace("-", ""),
+                            "ESTME": sbui.ActStartTime[11:19].replace(":", ""),
+                            "EFDAT": sbui.ActFinishTime[0:10].replace("-", ""),
+                            "EFTME": sbui.ActFinishTime[11:19].replace(":", ""), "BUDAT": sbui.BUDAT,
+                            "VGWTS": sbui.VORGSCHL,
+                            "CONFACT1": sbui.VGW01, "CONFACT2": sbui.VGW02, "CONFACT3": sbui.VGW02,
+                            "CONFACT4": sbui.VGW04,
+                            "CONFACT5": sbui.VGW05, "CONFACT6": sbui.VGW06,
+                            "OPDAT": datetime.datetime.now().strftime('%Y%m%d'),
+                            "OPTME": datetime.datetime.now().strftime('%H%M%S')}
+                data_list.append(data_dir)
             dic["CATEGORY"] = ""
             dic["TYPE"] = ""
             dic["OPERATION"] = ""
             dic["DESCRIPTION"] = ""
-            dic["DATA"] = data_ma
+            dic["DATA"] = data_list
             data_json = json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False)
             # headers = {'Content-Type': 'application/soap+xml; charset="UTF-8"'}
             t = HttpAuthenticated(username='INTF', password='Hrjz1234')
             client = Client(Model.Global.SAPcsurl, transport=t)
-            result = client.service.Z_PP_MES_INTF(data_json, 'PP1003', 'MES')
+            result = client.service.Z_PP_MES_INTF(data_json, 'PP1003', 'WX_MES')
             if result:
                 re = json.loads(result).get("RETURN").get("MSG_LIST")
                 for i in re:
