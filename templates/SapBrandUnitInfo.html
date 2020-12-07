@@ -73,7 +73,7 @@
                     } else if (rows.length == 1) {
                         var row = $("#tab2").datagrid('getSelected');
                         if (row) {
-                            $("#tab2").dialog('open').dialog('setTitle', '编辑');
+                            $("#ZYPlanClassDialog").dialog('open').dialog('setTitle', '编辑');
                             $('input[name="iID"]').attr("disabled", "disabled");
                             $('input[name="iID"]').val(row.ID);
                             $("#BUDAT").datetimebox("setValue",row.BUDAT)
