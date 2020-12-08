@@ -96,14 +96,31 @@ def SapBatchInfoSearch():
                 inipage = (pages - 1) * rowsnumber + 0
                 endpage = (pages - 1) * rowsnumber + rowsnumber
                 AUFNR = data.get('AUFNR')
-                if not AUFNR:
+                CHARG = data.get('CHARG')
+                MAKTX = data.get('MAKTX')
+                if AUFNR != None and CHARG != None and MAKTX != None:
+                    total = db_session.query(SapBatchInfo).filter(
+                        SapBatchInfo.AUFNR == AUFNR, SapBatchInfo.CHARG == CHARG, SapBatchInfo.MAKTX == MAKTX).count()
+                    oclass = db_session.query(SapBatchInfo).filter(
+                        SapBatchInfo.AUFNR == AUFNR, SapBatchInfo.CHARG == CHARG, SapBatchInfo.MAKTX == MAKTX
+                    ).order_by(desc("GSTRP")).all()[inipage:endpage]
+                elif AUFNR != None and CHARG != None and MAKTX == None:
+                    total = db_session.query(SapBatchInfo).filter(
+                        SapBatchInfo.AUFNR == AUFNR, SapBatchInfo.CHARG == CHARG).count()
+                    oclass = db_session.query(SapBatchInfo).filter(
+                        SapBatchInfo.AUFNR == AUFNR, SapBatchInfo.CHARG == CHARG
+                    ).order_by(desc("GSTRP")).all()[inipage:endpage]
+                elif  AUFNR == None and CHARG != None and MAKTX != None:
+                    total = db_session.query(SapBatchInfo).filter(SapBatchInfo.CHARG == CHARG, SapBatchInfo.MAKTX == MAKTX).count()
+                    oclass = db_session.query(SapBatchInfo).filter(SapBatchInfo.CHARG == CHARG, SapBatchInfo.MAKTX == MAKTX
+                    ).order_by(desc("GSTRP")).all()[inipage:endpage]
+                elif  AUFNR != None and CHARG == None and MAKTX != None:
+                    total = db_session.query(SapBatchInfo).filter(SapBatchInfo.AUFNR == AUFNR, SapBatchInfo.MAKTX == MAKTX).count()
+                    oclass = db_session.query(SapBatchInfo).filter(SapBatchInfo.AUFNR == AUFNR, SapBatchInfo.MAKTX == MAKTX
+                    ).order_by(desc("GSTRP")).all()[inipage:endpage]
+                else:
                     total = db_session.query(SapBatchInfo).filter().count()
                     oclass = db_session.query(SapBatchInfo).filter().order_by(desc("GSTRP")).all()[inipage:endpage]
-                else:
-                    total = db_session.query(SapBatchInfo).filter(
-                        SapBatchInfo.AUFNR == AUFNR).count()
-                    oclass = db_session.query(SapBatchInfo).filter(
-                        SapBatchInfo.AUFNR == AUFNR).order_by(desc("GSTRP")).all()[inipage:endpage]
                 jsonoclass = json.dumps(oclass, cls=AlchemyEncoder, ensure_ascii=False)
                 jsonoclass = '{"total"' + ":" + str(total) + ',"rows"' + ":\n" + jsonoclass + "}"
                 return jsonoclass
@@ -283,6 +300,8 @@ def SAP_OrderSynchonizes():
                         batchoclass.KTEXT = i.get("KTEXT")
                         batchoclass.GESSTICHPR = i.get("GESSTICHPR")
                         batchoclass.QBASE = i.get("QBASE")
+                        if batchoclass.Status == "已报工":
+                            batchoclass.Status == "修改报工"
                         db_session.commit()
                     else:
                         ABatchID = i.get("CHARG")
@@ -316,28 +335,17 @@ def SAP_OrderSynchonizes():
                         s.KTEXT = i.get("KTEXT")
                         s.GESSTICHPR = i.get("GESSTICHPR")
                         s.QBASE = i.get("QBASE")
+                        s.Status = "未报工"
                         db_session.add(s)
                         db_session.commit()
                 phs = json.loads(result).get("PHASE")
+                j = 0
                 for ph in phs:
-                    brandunitoclass = db_session.query(SapBrandUnitInfo).filter(SapBrandUnitInfo.AUFNR == i.get("AUFNR")).first()
-                    if brandunitoclass:
-                        brandunitoclass.RID = ph.get("RID")
-                        brandunitoclass.AUFNR = ph.get("AUFNR")
-                        brandunitoclass.ROUTN = ph.get("ROUTN")
-                        brandunitoclass.VORNR = ph.get("VORNR")
-                        brandunitoclass.LTXA1 = ph.get("LTXA1")
-                        brandunitoclass.MGVRG = ph.get("MGVRG")
-                        brandunitoclass.UNIT = ph.get("UNIT")
-                        brandunitoclass.STEUS = ph.get("STEUS")
-                        brandunitoclass.VORGSCHL = ph.get("VORGSCHL")
-                        brandunitoclass.VGW01 = ph.get("VGW01")
-                        brandunitoclass.VGW02 = ph.get("VGW02")
-                        brandunitoclass.VGW03 = ph.get("VGW03")
-                        brandunitoclass.VGW04 = ph.get("VGW04")
-                        brandunitoclass.VGW05 = ph.get("VGW05")
-                        brandunitoclass.VGW06 = ph.get("VGW06")
-                        db_session.commit()
+                    if j == 0:
+                        brandunitoclass = db_session.query(SapBrandUnitInfo).filter(SapBrandUnitInfo.AUFNR == i.get("AUFNR")).all()
+                        for brandunito in brandunitoclass:
+                            db_session.delete(brandunito)
+                            db_session.commit()
                     else:
                         sbu = SapBrandUnitInfo()
                         sbu.RID   = ph.get("RID")
@@ -357,6 +365,7 @@ def SAP_OrderSynchonizes():
                         sbu.VGW06 = ph.get("VGW06")
                         db_session.add(sbu)
                         db_session.commit()
+                    j = j + 1
                 cms = json.loads(result).get("COMPT")
                 for cm in cms:
                     matailoclass = db_session.query(SapMatailInfo).filter(
@@ -414,8 +423,10 @@ def Sap_WorkReport():
             a = ""
             data_list = []
             IDs = json.loads(data.get("IDs"))
+            AUFNR = ""
             for ID in IDs:
                 sbui = db_session.query(SapBrandUnitInfo).filter(SapBrandUnitInfo.ID == ID.get("id")).first()
+                AUFNR = sbui.AUFNR
                 data_dir = {"RID": str(uuid.uuid4()), "RIDITEM": "1100", "AUFNR": sbui.AUFNR, "VORNR": sbui.VORNR,
                             "FCONF": sbui.FCONF, "WERKS": "1100",
                             "PRQTY": sbui.PRQTY, "SCRAP": sbui.SCRAP, "AGRND": sbui.AGRND, "MEINS": sbui.UNIT,
@@ -448,6 +459,8 @@ def Sap_WorkReport():
                     for ID in IDs:
                         baog = db_session.query(SapBrandUnitInfo).filter(SapBrandUnitInfo.ID == ID.get("id")).first()
                         baog.Status = "工序报工完成"
+                    sbi = db_session.query(SapBatchInfo).filter(SapBatchInfo.AUFNR == AUFNR).first()
+                    sbi.Status = "已报工"
                     return json.dumps('OK')
                 else:
                     return json.dumps(json.loads(result).get("RETURN").get("MESSAGE"))

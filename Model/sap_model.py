@@ -104,6 +104,9 @@ class SapBatchInfo(Base):
     # 检验依据:
     QBASE = Column(Unicode(100), primary_key=False, autoincrement=False, nullable=True)
 
+    # 报工状态:
+    Status = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
 
 
 class SapBrandUnitInfo(Base):
