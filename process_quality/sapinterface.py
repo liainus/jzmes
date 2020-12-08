@@ -98,23 +98,23 @@ def SapBatchInfoSearch():
                 AUFNR = data.get('AUFNR')
                 CHARG = data.get('CHARG')
                 MAKTX = data.get('MAKTX')
-                if AUFNR != None and CHARG != None and MAKTX != None:
+                if AUFNR != "" and CHARG != "" and MAKTX != "":
                     total = db_session.query(SapBatchInfo).filter(
                         SapBatchInfo.AUFNR == AUFNR, SapBatchInfo.CHARG == CHARG, SapBatchInfo.MAKTX == MAKTX).count()
                     oclass = db_session.query(SapBatchInfo).filter(
                         SapBatchInfo.AUFNR == AUFNR, SapBatchInfo.CHARG == CHARG, SapBatchInfo.MAKTX == MAKTX
                     ).order_by(desc("GSTRP")).all()[inipage:endpage]
-                elif AUFNR != None and CHARG != None and MAKTX == None:
+                elif AUFNR != "" and CHARG != "" and MAKTX == "":
                     total = db_session.query(SapBatchInfo).filter(
                         SapBatchInfo.AUFNR == AUFNR, SapBatchInfo.CHARG == CHARG).count()
                     oclass = db_session.query(SapBatchInfo).filter(
                         SapBatchInfo.AUFNR == AUFNR, SapBatchInfo.CHARG == CHARG
                     ).order_by(desc("GSTRP")).all()[inipage:endpage]
-                elif  AUFNR == None and CHARG != None and MAKTX != None:
+                elif  AUFNR == "" and CHARG != "" and MAKTX != "":
                     total = db_session.query(SapBatchInfo).filter(SapBatchInfo.CHARG == CHARG, SapBatchInfo.MAKTX == MAKTX).count()
                     oclass = db_session.query(SapBatchInfo).filter(SapBatchInfo.CHARG == CHARG, SapBatchInfo.MAKTX == MAKTX
                     ).order_by(desc("GSTRP")).all()[inipage:endpage]
-                elif  AUFNR != None and CHARG == None and MAKTX != None:
+                elif  AUFNR != "" and CHARG == "" and MAKTX != "":
                     total = db_session.query(SapBatchInfo).filter(SapBatchInfo.AUFNR == AUFNR, SapBatchInfo.MAKTX == MAKTX).count()
                     oclass = db_session.query(SapBatchInfo).filter(SapBatchInfo.AUFNR == AUFNR, SapBatchInfo.MAKTX == MAKTX
                     ).order_by(desc("GSTRP")).all()[inipage:endpage]
@@ -346,25 +346,24 @@ def SAP_OrderSynchonizes():
                         for brandunito in brandunitoclass:
                             db_session.delete(brandunito)
                             db_session.commit()
-                    else:
-                        sbu = SapBrandUnitInfo()
-                        sbu.RID   = ph.get("RID")
-                        sbu.AUFNR = ph.get("AUFNR")
-                        sbu.ROUTN = ph.get("ROUTN")
-                        sbu.VORNR = ph.get("VORNR")
-                        sbu.LTXA1 = ph.get("LTXA1")
-                        sbu.MGVRG = ph.get("MGVRG")
-                        sbu.UNIT  = ph.get("UNIT")
-                        sbu.STEUS = ph.get("STEUS")
-                        sbu.VORGSCHL = ph.get("VORGSCHL")
-                        sbu.VGW01 = ph.get("VGW01")
-                        sbu.VGW02 = ph.get("VGW02")
-                        sbu.VGW03 = ph.get("VGW03")
-                        sbu.VGW04 = ph.get("VGW04")
-                        sbu.VGW05 = ph.get("VGW05")
-                        sbu.VGW06 = ph.get("VGW06")
-                        db_session.add(sbu)
-                        db_session.commit()
+                    sbu = SapBrandUnitInfo()
+                    sbu.RID   = ph.get("RID")
+                    sbu.AUFNR = ph.get("AUFNR")
+                    sbu.ROUTN = ph.get("ROUTN")
+                    sbu.VORNR = ph.get("VORNR")
+                    sbu.LTXA1 = ph.get("LTXA1")
+                    sbu.MGVRG = ph.get("MGVRG")
+                    sbu.UNIT  = ph.get("UNIT")
+                    sbu.STEUS = ph.get("STEUS")
+                    sbu.VORGSCHL = ph.get("VORGSCHL")
+                    sbu.VGW01 = ph.get("VGW01")
+                    sbu.VGW02 = ph.get("VGW02")
+                    sbu.VGW03 = ph.get("VGW03")
+                    sbu.VGW04 = ph.get("VGW04")
+                    sbu.VGW05 = ph.get("VGW05")
+                    sbu.VGW06 = ph.get("VGW06")
+                    db_session.add(sbu)
+                    db_session.commit()
                     j = j + 1
                 cms = json.loads(result).get("COMPT")
                 for cm in cms:
@@ -420,29 +419,30 @@ def Sap_WorkReport():
         data = request.values
         try:
             dic = {}
-            a = ""
             data_list = []
-            IDs = json.loads(data.get("IDs"))
-            AUFNR = ""
-            for ID in IDs:
-                sbui = db_session.query(SapBrandUnitInfo).filter(SapBrandUnitInfo.ID == ID.get("id")).first()
-                AUFNR = sbui.AUFNR
-                data_dir = {"RID": str(uuid.uuid4()), "RIDITEM": "1100", "AUFNR": sbui.AUFNR, "VORNR": sbui.VORNR,
-                            "FCONF": sbui.FCONF, "WERKS": "1100",
-                            "PRQTY": sbui.PRQTY, "SCRAP": sbui.SCRAP, "AGRND": sbui.AGRND, "MEINS": sbui.UNIT,
-                            "STEUS": sbui.STEUS, "HSDAT": sbui.HSDAT, "QDATE": sbui.QDATE, "QTY": sbui.QTY,
-                            "NUM1": sbui.NUM1, "APP_PER": current_user.Name,
-                            "ESDAT": sbui.ActStartTime[0:10].replace("-", ""),
-                            "ESTME": sbui.ActStartTime[11:19].replace(":", ""),
-                            "EFDAT": sbui.ActFinishTime[0:10].replace("-", ""),
-                            "EFTME": sbui.ActFinishTime[11:19].replace(":", ""), "BUDAT": sbui.BUDAT,
-                            "VGWTS": sbui.VORGSCHL,
-                            "CONFACT1": sbui.VGW01, "CONFACT2": sbui.VGW02, "CONFACT3": sbui.VGW02,
-                            "CONFACT4": sbui.VGW04,
-                            "CONFACT5": sbui.VGW05, "CONFACT6": sbui.VGW06,
-                            "OPDAT": datetime.datetime.now().strftime('%Y%m%d'),
-                            "OPTME": datetime.datetime.now().strftime('%H%M%S')}
-                data_list.append(data_dir)
+            sbui = db_session.query(SapBrandUnitInfo).filter(SapBrandUnitInfo.ID == data.get("ID")).first()
+            AUFNR = sbui.AUFNR
+            sbuis = db_session.query(SapBrandUnitInfo).filter(SapBrandUnitInfo.ID == AUFNR).all()
+            FCONF = "X"
+            for s in sbuis:
+                if s.Status != "工序报工完成":
+                    FCONF = ""
+            data_dir = {"RID": str(uuid.uuid4()), "RIDITEM": "1100", "AUFNR": sbui.AUFNR, "VORNR": sbui.VORNR,
+                        "FCONF": FCONF, "WERKS": "1100",
+                        "PRQTY": sbui.PRQTY, "SCRAP": "", "AGRND": "", "MEINS": sbui.UNIT,
+                        "STEUS": sbui.STEUS, "HSDAT": sbui.HSDAT[0:10].replace("-", ""), "QDATE": sbui.QDATE[0:10].replace("-", ""), "QTY": sbui.QTY,
+                        "NUM1": sbui.NUM1, "APP_PER": current_user.Name,
+                        "ESDAT": sbui.ActStartTime[0:10].replace("-", ""),
+                        "ESTME": sbui.ActStartTime[11:19].replace(":", ""),
+                        "EFDAT": sbui.ActFinishTime[0:10].replace("-", ""),
+                        "EFTME": sbui.ActFinishTime[11:19].replace(":", ""), "BUDAT": sbui.BUDAT[0:10].replace("-", ""),
+                        "VGWTS": sbui.VORGSCHL,
+                        "CONFACT1": sbui.VGW01, "CONFACT2": sbui.VGW02, "CONFACT3": sbui.VGW02,
+                        "CONFACT4": sbui.VGW04,
+                        "CONFACT5": sbui.VGW05, "CONFACT6": sbui.VGW06,
+                        "OPDAT": datetime.datetime.now().strftime('%Y%m%d'),
+                        "OPTME": datetime.datetime.now().strftime('%H%M%S')}
+            data_list.append(data_dir)
             dic["CATEGORY"] = ""
             dic["TYPE"] = ""
             dic["OPERATION"] = ""
@@ -450,17 +450,22 @@ def Sap_WorkReport():
             dic["DATA"] = data_list
             data_json = json.dumps(dic, cls=AlchemyEncoder, ensure_ascii=False)
             # headers = {'Content-Type': 'application/soap+xml; charset="UTF-8"'}
-            t = HttpAuthenticated(username='INTF', password='Hrjz1234')
-            client = Client(Model.Global.SAPcsurl, transport=t)
-            result = client.service.Z_PP_MES_INTF(data_json, 'PP1003', 'WX_MES')
+            t = HttpAuthenticated(username='INTF', password='Intf600')
+            client = Client(Model.Global.SAPurl, transport=t)
+            result = client.service.Z_PP_MES_INTF(data_json, 'PP1003', 'MES')
             if result:
                 re = json.loads(result).get("RETURN").get("MSGTY")
                 if re == "S":
-                    for ID in IDs:
-                        baog = db_session.query(SapBrandUnitInfo).filter(SapBrandUnitInfo.ID == ID.get("id")).first()
-                        baog.Status = "工序报工完成"
-                    sbi = db_session.query(SapBatchInfo).filter(SapBatchInfo.AUFNR == AUFNR).first()
-                    sbi.Status = "已报工"
+                    baog = db_session.query(SapBrandUnitInfo).filter(SapBrandUnitInfo.ID == data.get("ID")).first()
+                    baog.Status = "工序报工完成"
+                    sbuis = db_session.query(SapBrandUnitInfo).filter(SapBrandUnitInfo.ID == AUFNR).all()
+                    flag = "True"
+                    for s in sbuis:
+                        if s.Status != "工序报工完成":
+                            flag = "Flase"
+                    if flag == "True":
+                        sbi = db_session.query(SapBatchInfo).filter(SapBatchInfo.AUFNR == AUFNR).first()
+                        sbi.Status = "已报工"
                     return json.dumps('OK')
                 else:
                     return json.dumps(json.loads(result).get("RETURN").get("MESSAGE"))
