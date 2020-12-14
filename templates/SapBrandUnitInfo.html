@@ -19,33 +19,11 @@
         $(function(){
             CollectToolbar = {
                 search:function(){
-                    $.ajax({
-                        url: '/SapBatchInfoSearch',
-                        method: 'get',
-                        traditional: true,
-                        data: {
-                            AUFNR:$('input[name="searchAUFNR"]').val(),
-                            CHARG:$('input[name="searchCHARG"]').val(),
-                            MAKTX:$('input[name="searchMAKTX"]').val(),
-                        },
-                        dataType: 'json',
-                        success: function (data) {
-                            $.messager.progress('close');
-                            if (data) {
-                                $("#tab").datagrid('loadData', data);
-                                $.messager.show({
-                                    title: '提示',
-                                    timeout: 1000,
-                                    msg: '查询成功',
-                                    style: {
-                                        right: '',
-                                        top: document.body.scrollTop + document.documentElement.scrollTop,
-                                        bottom: ''
-                                    }
-                                });
-                            }
-                        }
-                    })
+                    $('#tab').datagrid('load', {
+                        AUFNR:$('input[name="searchAUFNR"]').val(),
+                        CHARG:$('input[name="searchCHARG"]').val(),
+                        MAKTX:$('input[name="searchMAKTX"]').val(),
+                    });
                 },
                 update:function(){
                     var rows = $("#tab2").datagrid('getSelections');
@@ -105,7 +83,7 @@
                                     }
                                 });
                                 $('#ZYPlanClassDialog').dialog('close')
-                                $("#tab2").datagrid('loadData', data);
+                                $("#tab2").datagrid('reload');
                             }
                         },
                         error:function(){
@@ -124,9 +102,10 @@
                                 $.ajax({
                                     url:"/Sap_WorkReport",
                                     data:{
-                                        IDs:[{id:row.ID}]
+                                        ID:row.ID
                                     },
                                     type:"post",
+                                    dataType:"json",
                                     success:function(res){
                                         if(res === '"OK"'){
                                             $.messager.show({
@@ -139,7 +118,7 @@
                                                     bottom: ''
                                                 }
                                             });
-                                            $("#tab2").datagrid('loadData', data);
+                                            $("#tab2").datagrid('reload');
                                         }
                                     },
                                     error:function(){
@@ -155,31 +134,9 @@
             }
             $("#tab").datagrid({
                 onClickRow: function (index, row) {
-                    $.ajax({
-                        url: '/SapBrandUnitInfoSearch',
-                        method: 'get',
-                        traditional: true,
-                        data: {
-                            AUFNR:row.AUFNR,
-                        },
-                        dataType: 'json',
-                        success: function (data) {
-                            $.messager.progress('close');
-                            if (data) {
-                                $("#tab2").datagrid('loadData', data);
-                                $.messager.show({
-                                    title: '提示',
-                                    timeout: 1000,
-                                    msg: '查询成功',
-                                    style: {
-                                        right: '',
-                                        top: document.body.scrollTop + document.documentElement.scrollTop,
-                                        bottom: ''
-                                    }
-                                });
-                            }
-                        }
-                    })
+                   $('#tab').datagrid('load', {
+                        AUFNR:row.AUFNR
+                    });
                 }
             });
             $("#tab2").datagrid({
