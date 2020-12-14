@@ -107,6 +107,9 @@ class SapBatchInfo(Base):
     # 报工状态:
     Status = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
+    # 投料信息返回状态:
+    MatilStatus = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
 
 
 class SapBrandUnitInfo(Base):
@@ -253,6 +256,15 @@ class SapMatailInfo(Base):
 
     # 称量标记 :
     WEIGH = Column(Unicode(100), primary_key=False, autoincrement=False, nullable=True)
+
+    # 操作日期 :
+    Opertation = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 过账日期 :
+    BUDAT = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
+
+    # 状态 :
+    Status = Column(Unicode(32), primary_key=False, autoincrement=False, nullable=True)
 
 # 生成表单的执行语句
 Base.metadata.create_all(engine)

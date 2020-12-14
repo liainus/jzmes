@@ -127,13 +127,14 @@ def login():
             if user.Password == password or (user and user.confirm_password(password)):# user and user.confirm_password(password)
                 login_user(user)  # login_user(user)调用user_loader()把用户设置到db_session中
                 # 查询用户当前菜单权限
-                roles = db_session.query(User.RoleName).filter_by(WorkNumber=work_number).all()
+                users = db_session.query(User).filter(User.WorkNumber == work_number).all()
                 menus = []
-                for role in roles:
-                    for index in role:
-                        role_id = db_session.query(Role.ID).filter_by(RoleName=index).first()
+                for u in users:
+                    rolename_list = json.loads(u.RoleName)
+                    for RoleName in rolename_list:
+                        role_oclass = db_session.query(Role).filter(Role.RoleName == RoleName).first()
                         menu = db_session.query(Menu.ModuleCode).join(Role_Menu, isouter=True).filter_by(
-                            Role_ID=role_id).all()
+                            Role_ID=role_oclass.ID).all()
                         for li in menu:
                             menus.append(li[0])
                 session['menus'] = menus
@@ -469,11 +470,9 @@ def userList():
                     endpage = (pages - 1) * rowsnumber + rowsnumber  # 截止页
                     # 通过角色ID获取当前角色对应的用户
                     role_id = data['ID']
-                    role_name = db_session.query(Role.RoleName).filter_by(ID=role_id).first()
-                    if role_name is None:  # 判断当前角色是否存在
-                        return
-                    total = db_session.query(User).filter_by(RoleName=role_name).count()
-                    users_data = db_session.query(User).filter_by(RoleName=role_name).all()[
+                    role_oclass = db_session.query(Role).filter(Role.ID==role_id).first()
+                    total = db_session.query(User).filter(User.RoleName.like("%"+role_oclass.RoleName+"%")).count()
+                    users_data = db_session.query(User).filter(User.RoleName.like("%"+role_oclass.RoleName+"%")).all()[
                                  inipage:endpage]
                     # ORM模型转换json格式
                     jsonusers = json.dumps(users_data, cls=AlchemyEncoder, ensure_ascii=False)
@@ -3912,16 +3911,18 @@ def menuRedirect():
         data = request.values  # 返回请求中的参数和form
         try:
             menuName = data['menuName']
-            RoleNames = db_session.query(User.RoleName).filter(User.Name == current_user.Name).all()
+            us = db_session.query(User).filter(User.Name == current_user.Name).first()
             flag = 'OK'
-            for rN in RoleNames:
-                roleID = db_session.query(Role.ID).filter(Role.RoleName == rN[0]).first()
-                menus = db_session.query(Menu.ModuleName).join(Role_Menu, isouter=True).filter_by(Role_ID=roleID).all()
-                for menu in menus:
-                    if (menu[0] == menuName):
-                        return 'OK'
-                    else:
-                        flag = '当前用户没有此操作权限！'
+            if us:
+                RoleNames = json.loads(us.RoleName)
+                for RoleName in RoleNames:
+                    roleID = db_session.query(Role.ID).filter(Role.RoleName == RoleName).first()
+                    menus = db_session.query(Menu.ModuleName).join(Role_Menu, isouter=True).filter_by(Role_ID=roleID).all()
+                    for menu in menus:
+                        if (menu[0] == menuName):
+                            return 'OK'
+                        else:
+                            flag = '当前用户没有此操作权限！'
             return flag
         except Exception as e:
             print(e)
@@ -6315,18 +6316,20 @@ def electronicBatchRecord():
                     dic["CheckedPeople_f5"] = no.oddUser
                 elif (no.name == "收膏结束，按SOP清场（QA签名）"):
                     dic["QAConfirmPeople_f5"] = no.oddUser
-        RoleNames = db_session.query(User.RoleName).filter(User.Name == current_user.Name).all()
+        us = db_session.query(User).filter(User.Name == current_user.Name).first()
         flag = ""
-        for rN in RoleNames:
-            roleID = db_session.query(Role.ID).filter(Role.RoleName == rN[0]).first()
-            menus = db_session.query(Menu.ModuleName).join(Role_Menu, isouter=True).filter_by(Role_ID=roleID).all()
-            for menu in menus:
-                if (menu[0] == "操作人确认"):
-                    flag = "82"
-                elif (menu[0] == "复核人确认"):
-                    flag = "83"
-                elif (menu[0] == "QA确认"):
-                    flag = "84"
+        if us:
+            RoleNames = json.loads(us.RoleName)
+            for RoleName in RoleNames:
+                roleID = db_session.query(Role.ID).filter(Role.RoleName == RoleName).first()
+                menus = db_session.query(Menu.ModuleName).join(Role_Menu, isouter=True).filter_by(Role_ID=roleID).all()
+                for menu in menus:
+                    if (menu[0] == "操作人确认"):
+                        flag = "82"
+                    elif (menu[0] == "复核人确认"):
+                        flag = "83"
+                    elif (menu[0] == "QA确认"):
+                        flag = "84"
         dir.append(dic)
         if (oclass.BrandID == 1):
             return render_template('electronicBatchRecord.html',
