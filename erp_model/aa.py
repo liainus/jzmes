@@ -5,14 +5,14 @@ import Model
 from Model.system import ImpowerInterface, product_plan
 from constant import constant
 
-engine_ERP = create_engine(Model.Global.GLOBAL_DATABASE_CONNECT_STRING_ERP, deprecate_large_types=True)
-Session_ERP = sessionmaker(bind=engine_ERP)
-ERP_session = Session_ERP()
-
-plans = ERP_session.query(product_plan).filter(product_plan.product_code == "000000000000002120", product_plan.plan_period == "201911").all()
-for pla in plans:
-    pla.transform_flag = '0'
-ERP_session.commit()
+# engine_ERP = create_engine(Model.Global.GLOBAL_DATABASE_CONNECT_STRING_ERP, deprecate_large_types=True)
+# Session_ERP = sessionmaker(bind=engine_ERP)
+# ERP_session = Session_ERP()
+#
+# plans = ERP_session.query(product_plan).filter(product_plan.product_code == "000000000000002120", product_plan.plan_period == "201911").all()
+# for pla in plans:
+#     pla.transform_flag = '0'
+# ERP_session.commit()
 
 # aa = constant.TrayNumber
 # for a in aa:
