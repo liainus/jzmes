@@ -40,7 +40,7 @@
                                             bottom: ''
                                         }
                                     });
-                                    $("#tab").datagrid('reload');
+                                    $("#tab").datagrid('reload')
                                 }else{
                                     $.messager.alert('提示', data, 'info');
                                 }
@@ -54,12 +54,12 @@
             })
             CollectToolbar = {
                 search:function(){
-                    $('#tab').datagrid('load', {
+                    $("#tab").datagrid('load',{
                         AUFNR:$('input[name="searchAUFNR"]').val(),
                         CHARG:$('input[name="searchCHARG"]').val(),
                         MAKTX:$('input[name="searchMAKTX"]').val(),
                     });
-                },
+                }
             }
 
             $("#tab").datagrid({
@@ -101,7 +101,7 @@
             批次号:
             <input type="text" class="textbox-text validatebox-text textbox-prompt" name="searchCHARG" style="height:28px;" autocomplete="off" placeholder="">
             品名:
-            <input type="text" class="textbox-text validatebox-text textbox-prompt" name="searchCHARG" style="height:28px;" autocomplete="off" placeholder="">
+            <input type="text" class="textbox-text validatebox-text textbox-prompt" name="searchMAKTX" style="height:28px;" autocomplete="off" placeholder="">
             <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="CollectToolbar.search();">查询</a>
         </div>
         <table class="easyui-datagrid" id="tab" title="SAP计划列表" style="width:100%;" data-options="
@@ -141,6 +141,7 @@
                     <th data-options="field:'GESSTICHPR',align:'center'">取样量</th>
                     <th data-options="field:'QBASE',align:'center'">检验依据</th>
                     <th data-options="field:'Status',align:'center'">报工状态</th>
+                    <th data-options="field:'MatilStatus',align:'center'">投料返回状态</th>
                 </tr>
             </thead>
         </table>

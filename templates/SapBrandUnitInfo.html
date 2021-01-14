@@ -19,7 +19,7 @@
         $(function(){
             CollectToolbar = {
                 search:function(){
-                    $('#tab').datagrid('load', {
+                   $("#tab").datagrid('load',{
                         AUFNR:$('input[name="searchAUFNR"]').val(),
                         CHARG:$('input[name="searchCHARG"]').val(),
                         MAKTX:$('input[name="searchMAKTX"]').val(),
@@ -42,8 +42,6 @@
                             $('input[name="QTY"]').val(row.QTY);
                             $("#QDATE").datetimebox("setValue",row.QDATE)
                             $("#HSDAT").datetimebox("setValue",row.HSDAT)
-                            $('input[name="AGRND"]').val(row.AGRND);
-                            $('input[name="SCRAP"]').val(row.SCRAP);
                             $('input[name="PRQTY"]').val(row.PRQTY);
 
                         };
@@ -61,10 +59,8 @@
                         QTY:$('input[name="QTY"]').val(),
                         QDATE:$("#QDATE").datetimebox("getValue"),
                         HSDAT:$("#HSDAT").datetimebox("getValue"),
-                        AGRND:$('input[name="AGRND"]').val(),
-                        SCRAP:$('input[name="SCRAP"]').val(),
                         PRQTY:$('input[name="PRQTY"]').val(),
-                        FCONF:"X"
+                        FCONF:'X',
                     };
                      $.ajax({
                         url:"/SapBrandUnitInfoUpdate",
@@ -99,32 +95,59 @@
                         var row = $("#tab2").datagrid('getSelected');
                         if (row) {
                             if(row.BUDAT && row.ActStartTime && row.ActFinishTime && row.QDATE && row.HSDAT && row.PRQTY){
-                                $.ajax({
-                                    url:"/Sap_WorkReport",
-                                    data:{
-                                        ID:row.ID
-                                    },
-                                    type:"post",
-                                    dataType:"json",
-                                    success:function(res){
-                                        if(res === '"OK"'){
-                                            $.messager.show({
-                                                title: '提示',
-                                                timeout: 1000,
-                                                msg: '报工成功',
-                                                style: {
-                                                    right: '',
-                                                    top: document.body.scrollTop + document.documentElement.scrollTop,
-                                                    bottom: ''
+                                $.messager.confirm('确定操作', '确认要发送报工信息到SAP吗？', function (flag) {
+                                    if (flag) {
+                                        $.ajax({
+                                            url:"/Sap_WorkReport",
+                                            data:{
+                                                ID:row.ID
+                                            },
+                                            type:"post",
+                                            dataType:"json",
+                                            success:function(res){
+                                                if(res === '"OK"'){
+                                                    $.messager.show({
+                                                        title: '提示',
+                                                        timeout: 1000,
+                                                        msg: '报工成功',
+                                                        style: {
+                                                            right: '',
+                                                            top: document.body.scrollTop + document.documentElement.scrollTop,
+                                                            bottom: ''
+                                                        }
+                                                    });
+                                                    $("#tab2").datagrid('reload');
+                                                }else{
+                                                    $.messager.show({
+                                                        title: '提示',
+                                                        timeout: 1000,
+                                                        msg: res,
+                                                        style: {
+                                                            right: '',
+                                                            top: document.body.scrollTop + document.documentElement.scrollTop,
+                                                            bottom: ''
+                                                        }
+                                                    });
+                                                    $("#tab2").datagrid('reload');
                                                 }
-                                            });
-                                            $("#tab2").datagrid('reload');
-                                        }
-                                    },
-                                    error:function(){
-                                        alert("请求错误，请刷新后重试！")
+                                            },
+                                            error:function(){
+                                                alert("请求错误，请刷新后重试！")
+                                            }
+                                        })
                                     }
                                 })
+                            }else{
+                                $.messager.show({
+                                    title: '提示',
+                                    timeout: 1000,
+                                    msg: '必填数据为空',
+                                    style: {
+                                        right: '',
+                                        top: document.body.scrollTop + document.documentElement.scrollTop,
+                                        bottom: ''
+                                    }
+                                });
                             }
                         };
                     } else if (rows.length == 0) {
@@ -134,7 +157,7 @@
             }
             $("#tab").datagrid({
                 onClickRow: function (index, row) {
-                   $('#tab').datagrid('load', {
+                    $("#tab2").datagrid('load',{
                         AUFNR:row.AUFNR
                     });
                 }
@@ -165,7 +188,7 @@
             批次号:
             <input type="text" class="textbox-text validatebox-text textbox-prompt" name="searchCHARG" style="height:28px;" autocomplete="off" placeholder="">
             品名:
-            <input type="text" class="textbox-text validatebox-text textbox-prompt" name="searchCHARG" style="height:28px;" autocomplete="off" placeholder="">
+            <input type="text" class="textbox-text validatebox-text textbox-prompt" name="searchMAKTX" style="height:28px;" autocomplete="off" placeholder="">
             <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="CollectToolbar.search();">查询</a>
         </div>
         <div style="margin-bottom: 20px;">
@@ -204,13 +227,16 @@
                         <th data-options="field:'PLNAL',align:'center'">配方组计数器</th>
                         <th data-options="field:'KTEXT',align:'center'">配方描述</th>
                         <th data-options="field:'GESSTICHPR',align:'center'">取样量</th>
+                        <th data-options="field:'QBASE',align:'center'">检验依据</th>
+                        <th data-options="field:'Status',align:'center'">报工状态</th>
+                        <th data-options="field:'MatilStatus',align:'center'">投料返回状态</th>
                     </tr>
                 </thead>
             </table>
         </div>
         <div id="Toolbar2" style="padding:0 10px;">
-            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit'" onclick="CollectToolbar.update();">修改</a>
-            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-redo'" onclick="CollectToolbar.send();">报工</a>
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit'" onclick="CollectToolbar.update();">工序完成确认</a>
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-redo'" onclick="CollectToolbar.send();">工序报工</a>
         </div>
         <table class="easyui-datagrid" id="tab2" title="SAP工序报工列表" style="width:100%;" data-options="
             queryParams:{
@@ -269,17 +295,17 @@
                             </td>
                             <td class="kv-label">过账日期</td>
                             <td class="kv-content">
-                                <input id="BUDAT" name="BUDAT" type="text" class="easyui-datetimebox" data-options="required:true,showSeconds:false,editable:false" autocomplete="off" placeholder=>
+                                <input id="BUDAT" name="BUDAT" type="text" class="easyui-datetimebox" data-options="required:true,showSeconds:true,editable:false" autocomplete="off" placeholder=>
                             </td>
                         </tr>
                         <tr>
                             <td class="kv-label">实际开始日期</td>
                             <td class="kv-content">
-                                <input id="ActStartTime" name="ActStartTime" type="text" class="easyui-datetimebox" data-options="required:true,showSeconds:false,editable:false" autocomplete="off" placeholder=>
+                                <input id="ActStartTime" name="ActStartTime" type="text" class="easyui-datetimebox" data-options="required:true,showSeconds:true,editable:false" autocomplete="off" placeholder=>
                             </td>
                             <td class="kv-label">实际结束时间</td>
                             <td class="kv-content">
-                                <input id="ActFinishTime" name="ActFinishTime" type="text" class="easyui-datetimebox" data-options="required:true,showSeconds:false,editable:false" autocomplete="off" placeholder=>
+                                <input id="ActFinishTime" name="ActFinishTime" type="text" class="easyui-datetimebox" data-options="required:true,showSeconds:true,editable:false" autocomplete="off" placeholder=>
                             </td>
                         </tr>
                         <tr>
@@ -295,21 +321,11 @@
                         <tr>
                             <td class="kv-label">请验日期</td>
                             <td class="kv-content">
-                                <input id="QDATE" name="QDATE" type="text" class="easyui-datetimebox" data-options="required:true,showSeconds:false,editable:false" autocomplete="off" placeholder=>
+                                <input id="QDATE" name="QDATE" type="text" class="easyui-datetimebox" data-options="required:true,showSeconds:true,editable:false" autocomplete="off" placeholder=>
                             </td>
                             <td class="kv-label">生产日期</td>
                             <td class="kv-content">
-                                <input id="HSDAT" name="HSDAT" type="text" class="easyui-datetimebox" data-options="required:true,showSeconds:false,editable:false" autocomplete="off" placeholder=>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="kv-label">差异原因</td>
-                            <td class="kv-content">
-                                <input name="AGRND" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
-                            </td>
-                            <td class="kv-label">废品</td>
-                            <td class="kv-content">
-                                <input name="SCRAP" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                                <input id="HSDAT" name="HSDAT" type="text" class="easyui-datetimebox" data-options="required:true,showSeconds:true,editable:false" autocomplete="off" placeholder=>
                             </td>
                         </tr>
                         <tr>

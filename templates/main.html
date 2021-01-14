@@ -79,24 +79,26 @@
                         </ul>
                     </li>
                 {% endif %}
-                <li>
-                    <a href="javascript:;">
-                        <span class="glyphicon glyphicon-calendar sider-nav-icon"></span>
-                        <span class="sider-nav-title">SAP数据管理</span>
-                        <i class="glyphicon glyphicon-menu-down"></i>
-                    </a>
-                    <ul class="sider-nav-s">
-                        <li>
-                            <a href="#" onclick="addTab('SAP计划信息','/SapBatchInfo')">SAP计划信息</a>
-                        </li>
-                        <li>
-                            <a href="#" onclick="addTab('SAP工序报工管理','/tosapBrandUnitInfo')">SAP工序报工管理</a>
-                        </li>
-                        <li>
-                            <a href="#" onclick="addTab('SAP物料信息','/ERP_productinfo')">SAP物料信息</a>
-                        </li>
-                    </ul>
-                </li>
+                {% if '110' in session.get('menus') %}
+                    <li>
+                        <a href="javascript:;">
+                            <span class="glyphicon glyphicon-calendar sider-nav-icon"></span>
+                            <span class="sider-nav-title">SAP数据管理</span>
+                            <i class="glyphicon glyphicon-menu-down"></i>
+                        </a>
+                        <ul class="sider-nav-s">
+                            <li>
+                                <a href="#" onclick="addTab('SAP计划信息','/SapBatchInfo')">SAP计划信息</a>
+                            </li>
+                            <li>
+                                <a href="#" onclick="addTab('SAP工序报工管理','/tosapBrandUnitInfo')">SAP工序报工管理</a>
+                            </li>
+                            <li>
+                                <a href="#" onclick="addTab('SAP物料信息','/ERP_productinfo')">SAP物料信息</a>
+                            </li>
+                        </ul>
+                    </li>
+                {% endif %}
                 {% if isIn(['25', '26', '27', '28', '29', '30'], session.get('menus')) %}
                     <li>
                         <a href="javascript:;">
