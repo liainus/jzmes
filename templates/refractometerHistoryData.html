@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>折光仪历史数据</title>
+    <title>Brix历史数据</title>
     <link href="../static/css/base.css" rel="stylesheet">
     <script type="text/javascript" src="../static/js/echarts.common.min.js"></script>
     <script type="text/javascript" src="../static/js/jquery-3.3.1.min.js"></script>
@@ -142,7 +142,7 @@
                                 trigger: 'axis'
                             },
                             legend: {
-                                data: ["折光率","温度"]
+                                data: ["Brix","温度"]
                             },
                             toolbox: {
                                 feature: {
@@ -166,7 +166,7 @@
                             yAxis: [
                                 {
                                     type : 'value',
-                                    name: '折光率',
+                                    name: 'Brix',
                                     axisLabel: {
                                         formatter: '{value} Brix'
                                     }
@@ -179,7 +179,7 @@
                                 }
                             ],
                             series: [{
-                                name: "折光率",
+                                name: "Brix",
                                 type: 'line',
                                 yAxisIndex:0,
                                 symbol: 'none', //拐点
@@ -205,8 +205,8 @@
                                         },
                                     },
                                     data : [
-                                        {name : '折光率上限',yAxis:3},
-                                        {name : '折光率下限',yAxis:0.03}
+                                        {name : 'Brix上限',yAxis:5},
+                                        {name : 'Brix下限',yAxis:1.5}
                                     ]
                                 }
                             },{
@@ -236,8 +236,8 @@
                                         },
                                     },
                                     data : [
-                                        {name : '温度上限',yAxis:90},
-                                        {name : '温度下限',yAxis:10}
+                                        {name : '温度上限',yAxis:105},
+                                        {name : '温度下限',yAxis:98}
                                     ]
                                 }
                             }]
@@ -300,17 +300,17 @@
                 <form class="col-sm-6">
                   <div class="form-group">
                     <label for="">
-                        折光率上限
+                        Brix上限
                         <span style="display: inline-block;margin-bottom:3px;width: 50px;height: 3px;background: #ffd85c;"></span>
                     </label>
-                    <input type="number" class="form-control markLineFlg" id="zglTop" value="3"/>
+                    <input type="number" class="form-control markLineFlg" id="zglTop" value="5"/>
                   </div>
                   <div class="form-group">
                     <label for="">
-                        折光率下限
+                        Brix下限
                         <span style="display: inline-block;margin-bottom:3px;width: 50px;height: 3px;background: #ffd85c;"></span>
                     </label>
-                    <input type="number" class="form-control markLineFlg" id="zglBottom" value="0.03"/>
+                    <input type="number" class="form-control markLineFlg" id="zglBottom" value="1.5"/>
                   </div>
                 </form>
                 <form class="col-sm-6">
@@ -319,14 +319,14 @@
                         温度上限
                         <span style="display: inline-block;margin-bottom:3px;width: 50px;height: 3px;background: #37A2DA;"></span>
                     </label>
-                    <input type="number" class="form-control markLineFlg" id="wdTop" value="90"/>
+                    <input type="number" class="form-control markLineFlg" id="wdTop" value="105"/>
                   </div>
                   <div class="form-group">
                     <label for="">
                         温度下限
                         <span style="display: inline-block;margin-bottom:3px;width: 50px;height: 3px;background: #37A2DA;"></span>
                     </label>
-                    <input type="number" class="form-control markLineFlg" id="wdBottom" value="10"/>
+                    <input type="number" class="form-control markLineFlg" id="wdBottom" value="98"/>
                   </div>
                 </form>
             </div>

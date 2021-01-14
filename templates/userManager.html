@@ -75,10 +75,9 @@
                             <tr>
                                 <td class="kv-label">所属角色</td>
                                 <td class="kv-content">
-                                    <select name="RoleName" id="RoleName" type="text" style="width:157px;" autocomplete="off" placeholder="">
-                                        <option value="">请选择</option>
+                                    <select name="RoleName" id="RoleName" class="easyui-combobox" type="text" style="width:157px;" autocomplete="off" placeholder="">
                                         {% for roleName in roleNames %}
-                                            <option value="{{ roleName['RoleID'] }}">{{ roleName['RoleName'] }}</option>
+                                            <option value="{{ roleName['RoleName'] }}">{{ roleName['RoleName'] }}</option>
                                         {% endfor %}
                                     </select>
                                 </td>
@@ -133,6 +132,41 @@
 		</div>
 	</div>
  <script type="text/javascript">
+     $("#RoleName").combobox({
+         multiple:true,
+         formatter: function (row) {
+            var opts = $(this).combobox('options');
+            return '<input type="checkbox" class="combobox-checkbox" id="' + row[opts.valueField] + '">' + row[opts.textField]
+        },
+         onShowPanel: function () {
+            var opts = $(this).combobox('options');
+            var target = this;
+            var values = $(target).combobox('getValues');
+            $.map(values, function (value) {
+                var el = opts.finder.getEl(target, value);
+                el.find('input.combobox-checkbox')._propAttr('checked', true);
+            })
+        },
+        onLoadSuccess: function () {
+            var opts = $(this).combobox('options');
+            var target = this;
+            var values = $(target).combobox('getValues');
+            $.map(values, function (value) {
+                var el = opts.finder.getEl(target, value);
+                el.find('input.combobox-checkbox')._propAttr('checked', true);
+            })
+        },
+        onSelect: function (row) {
+            var opts = $(this).combobox('options');
+            var el = opts.finder.getEl(this, row[opts.valueField]);
+            el.find('input.combobox-checkbox')._propAttr('checked', true);
+        },
+        onUnselect: function (row) {
+            var opts = $(this).combobox('options');
+            var el = opts.finder.getEl(this, row[opts.valueField]);
+            el.find('input.combobox-checkbox')._propAttr('checked', false);
+        }
+     })
     {#    树形菜单点击事件#}
         var code = ""
         $("#tree").tree({
@@ -188,7 +222,7 @@
                     $('input[name="CreateTime"]').val(row.CreateTime);//创建时间
                     $('input[name="LastLoginTime"]').val(row.LastLoginTime);//上次登录时间
                     $('#OrganizationName option:contains('+row.OrganizationName+')').prop("selected", 'selected');//所属部门
-                    $('#RoleName option:contains('+row.RoleName+')').prop("selected", 'selected');//所属角色
+                    $('#RoleName').combobox('setValues',JSON.parse(row.RoleName))
                 }
             } else if (rows.length == 0) {
                 $.messager.alert('警告操作！', '请至少选定一条数据进行编辑！', 'warning');
@@ -262,7 +296,7 @@
                         Creater : $('input[name="Creater"]').val(),
                         CreateTime : $('input[name="CreateTime"]').val(),
                         OrganizationName :$('#OrganizationName').find("option:selected").html(),
-                        RoleName :$('#RoleName').find("option:selected").html()
+                        RoleName :JSON.stringify($("#RoleName").combobox('getValues'))
                     },
                     cache: false,
                     success: function (data,response,status) {
@@ -306,7 +340,7 @@
                         WorkNumber :$('input[name="LoginName"]').val(),
                         Creater : $('input[name="Creater"]').val(),
                         OrganizationName :$('#OrganizationName').find("option:selected").html(),
-                        RoleName :$('#RoleName').find("option:selected").html()
+                        RoleName :JSON.stringify($("#RoleName").combobox('getValues'))
                     },
                     cache: false,
                     success: function (data,response,status) {

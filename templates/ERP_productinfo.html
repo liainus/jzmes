@@ -27,7 +27,7 @@
 <body>
     <div style="padding: 10px;">
         <div>
-            选择起止时间和参数：
+            <!--选择起止时间和参数：
             <input id="startDate" type="text" class="easyui-datebox">
             -
             <input id="endDate" type="text" class="easyui-datebox">
@@ -42,15 +42,66 @@
                 <option value="Z008">无价值物料</option>
                 <option value="Z009">成品-济生桑海</option>
             </select>
-            <a href="#" class="easyui-linkbutton" id="synchronization" data-options="iconCls:'icon-redo'">同步到系统</a>
+            <a href="#" class="easyui-linkbutton" id="synchronization" data-options="iconCls:'icon-redo'">同步到系统</a>-->
+        </div>
+        <div id="Toolbar" style="padding:0 10px;">
+            订单号:
+            <input type="text" class="textbox-text validatebox-text textbox-prompt" name="searchAUFNR" style="height:28px;" autocomplete="off" placeholder="">
+            批次号:
+            <input type="text" class="textbox-text validatebox-text textbox-prompt" name="searchCHARG" style="height:28px;" autocomplete="off" placeholder="">
+            品名:
+            <input type="text" class="textbox-text validatebox-text textbox-prompt" name="searchMAKTX" style="height:28px;" autocomplete="off" placeholder="">
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="CollectToolbar.search();">查询</a>
+        </div>
+        <div style="margin-bottom: 20px;">
+            <table class="easyui-datagrid" id="tab" title="SAP计划列表（点击一行订单获取物料信息）" style="width:100%;" data-options="
+                queryParams:{
+                    AUFNR:'',
+                    CHARG:'',
+                    MAKTX:'',
+                },
+                rownumbers:true,
+                singleSelect:false,
+                autoRowHeight:false,
+                pagination:true,
+                pageSize:10,
+                toolbar:'#Toolbar',
+                url:'/SapBatchInfoSearch',
+                method:'get'">
+                <thead>
+                    <tr>
+                        <th data-options="field:'RID',align:'center'">MES请求唯一编码</th>
+                        <th data-options="field:'AUFNR',align:'center'">订单号</th>
+                        <th data-options="field:'DAUAT',align:'center'">订单类型</th>
+                        <th data-options="field:'DWERK',align:'center'">工厂</th>
+                        <th data-options="field:'CHARG',align:'center'">批次编号</th>
+                        <th data-options="field:'MATNR',align:'center'">产品编码</th>
+                        <th data-options="field:'MAKTX',align:'center'">产品名称</th>
+                        <th data-options="field:'GAMNG',align:'center'">计划生产数量</th>
+                        <th data-options="field:'UNIT' ,align:'center'">单位</th>
+                        <th data-options="field:'VERID',align:'center'">生产版本</th>
+                        <th data-options="field:'RSNUM',align:'center'">预留编号</th>
+                        <th data-options="field:'ROUTN',align:'center'">工艺路线编号</th>
+                        <th data-options="field:'GSTRP',align:'center'">计划开始日期</th>
+                        <th data-options="field:'GLTRP',align:'center'">计划结束日期</th>
+                        <th data-options="field:'STATE',align:'center'">状态</th>
+                        <th data-options="field:'PLNNR',align:'center'">配方组</th>
+                        <th data-options="field:'PLNAL',align:'center'">配方组计数器</th>
+                        <th data-options="field:'KTEXT',align:'center'">配方描述</th>
+                        <th data-options="field:'GESSTICHPR',align:'center'">取样量</th>
+                        <th data-options="field:'QBASE',align:'center'">检验依据</th>
+                        <th data-options="field:'Status',align:'center'">报工状态</th>
+                        <th data-options="field:'MatilStatus',align:'center'">投料返回状态</th>
+                    </tr>
+                </thead>
+            </table>
         </div>
         <div id="toolbar">
-            订单号:
-            <input type="text" id="SearchVal" class="textbox-text validatebox-text textbox-prompt" name="search" style="height:28px;" autocomplete="off"
-            placeholder="">
-            <a href="#" class="easyui-linkbutton" id="Search" data-options="iconCls:'icon-search'">查询</a>
-            <a href="#" class="easyui-linkbutton" id="synchronizationToWMS" data-options="iconCls:'icon-redo'">同步物料到WMS</a>
-            <a href="#" class="easyui-linkbutton" id="synchronizationToBL" data-options="iconCls:'icon-ok'">同步物料到备料段</a>
+            <!--<a href="#" class="easyui-linkbutton" id="synchronizationToWMS" data-options="iconCls:'icon-redo'">同步物料到WMS</a>
+            <a href="#" class="easyui-linkbutton" id="synchronizationToBL" data-options="iconCls:'icon-redo'">同步物料到备料段</a>-->
+            <a href="#" class="easyui-linkbutton" id="add" data-options="iconCls:'icon-add'">添加物料信息</a>
+            <a href="#" class="easyui-linkbutton" id="update" data-options="iconCls:'icon-edit'">投料消耗确认</a>
+            <a href="#" class="easyui-linkbutton" id="Sap_Matailre" data-options="iconCls:'icon-ok'">发送到SAP</a>
         </div>
         <table class="easyui-datagrid" id="selfTab" title="SAP物料列表" style="width:100%;" data-options="
             queryParams:{
@@ -83,9 +134,56 @@
                     <th data-options="field:'WERKS',align:'center'">工厂</th>
                     <th data-options="field:'LGORT',align:'center'">存储地点</th>
                     <th data-options="field:'WEIGH',align:'center'">称量标记</th>
+                    <th data-options="field:'Status',align:'center'">状态</th>
+                    <th data-options="field:'Opertation',align:'center'">操作日期</th>
+                    <th data-options="field:'BUDAT',align:'center'">过账日期</th>
                 </tr>
             </thead>
         </table>
+        <div id="ZYPlanClassDialog" class="easyui-dialog" style="width:560px;height:560px;padding:10px;"
+             data-options="closed:'true',buttons:'#ZYPlanClassDialogButtons',modal:true">
+            <form id="ZYPlanClassForm" method="post" class="dialog-form">
+                <table class="kv-table">
+                    <tbody>
+                        <tr>
+                            <td class="kv-label">ID</td>
+                            <td class="kv-content">
+                                <input  name="iID" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">物料数量</td>
+                            <td class="kv-content">
+                                <input name="BDMNG" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">批次编号</td>
+                            <td class="kv-content">
+                                <input name="CHARG" type="text" class="textbox-text validatebox-text textbox-prompt easyui-validatebox" autocomplete="off" placeholder=>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">操作日期</td>
+                            <td class="kv-content">
+                                <input id="Opertation" name="Opertation" type="text" class="easyui-datetimebox" data-options="required:true,showSeconds:true,editable:false" autocomplete="off" placeholder=>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="kv-label">过账日期</td>
+                            <td class="kv-content">
+                                <input id="BUDAT" name="BUDAT" type="text" class="easyui-datetimebox" data-options="required:true,showSeconds:true,editable:false" autocomplete="off" placeholder=>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div id="ZYPlanClassDialogButtons" >
+                    <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" id="saveAdd" value="submit" >保存</a>
+                    <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" id="saveUpdate" value="submit" >保存</a>
+                    <a href="#" class="easyui-linkbutton" onclick="$('#ZYPlanClassDialog').dialog('close')">关闭</a>
+                </div>
+            </form>
+        </div>
     </div>
     <script>
         $(function(){
@@ -124,10 +222,113 @@
                     }
                 })
             })
-            $("#Search").on('click',function(){
-                $('#selfTab').datagrid('load',{
-                    AUFNR: $('#SearchVal').val()
-                });
+            $("#add").on('click',function(){
+                var rows = $("#selfTab").datagrid('getSelections');
+                if (rows.length > 1) {
+                    $.messager.alert('警告操作！', '添加同一物料信息只能选定一条数据！', 'warning');
+                } else if (rows.length == 1) {
+                    var row = $("#selfTab").datagrid('getSelected');
+                    if (row) {
+                        $("#ZYPlanClassDialog").dialog('open').dialog('setTitle', '添加相同物料信息');
+                        $("#saveAdd").show()
+                        $("#saveUpdate").hide()
+                        $('input[name="iID"]').attr("disabled", "disabled");
+                        $('input[name="iID"]').val(row.ID);
+                        $('input[name="BDMNG"]').val(row.BDMNG);
+                        $('input[name="CHARG"]').val(row.CHARG);
+                        $("#Opertation").datetimebox("setValue",row.Opertation)
+                        $("#BUDAT").datetimebox("setValue",row.BUDAT)
+                    }
+                } else if (rows.length == 0) {
+                    $.messager.alert('警告操作！', '请至少选定一条数据进行添加！', 'warning');
+                }
+            })
+            $("#saveAdd").on('click',function(){
+                var entity = {
+                    ID:$('input[name="iID"]').val(),
+                    BDMNG:$('input[name="BDMNG"]').val(),
+                    CHARG:$('input[name="CHARG"]').val(),
+                    Opertation:$("#Opertation").datetimebox("getValue"),
+                    BUDAT:$("#BUDAT").datetimebox("getValue"),
+                };
+                 $.ajax({
+                    url:"/SapMatailInfoAdd",
+                    data:entity,
+                    type:"post",
+                    success:function(res){
+                        if(res === '"OK"'){
+                            $.messager.show({
+                                title: '提示',
+                                timeout: 1000,
+                                msg: '添加成功',
+                                style: {
+                                    right: '',
+                                    top: document.body.scrollTop + document.documentElement.scrollTop,
+                                    bottom: ''
+                                }
+                            });
+                            $('#ZYPlanClassDialog').dialog('close')
+                            $("#selfTab").datagrid('reload');
+                        }
+                    },
+                    error:function(){
+                        alert("请求错误，请刷新后重试！")
+                    }
+                })
+            })
+            $("#update").on('click',function(){
+                var rows = $("#selfTab").datagrid('getSelections');
+                if (rows.length > 1) {
+                    $.messager.alert('警告操作！', '编辑记录只能选定一条数据！', 'warning');
+                } else if (rows.length == 1) {
+                    var row = $("#selfTab").datagrid('getSelected');
+                    if (row) {
+                        $("#ZYPlanClassDialog").dialog('open').dialog('setTitle', '编辑');
+                        $("#saveUpdate").show()
+                        $("#saveAdd").hide()
+                        $('input[name="iID"]').attr("disabled", "disabled");
+                        $('input[name="iID"]').val(row.ID);
+                        $('input[name="BDMNG"]').val(row.BDMNG);
+                        $('input[name="CHARG"]').val(row.CHARG);
+                        $("#Opertation").datetimebox("setValue",row.Opertation)
+                        $("#BUDAT").datetimebox("setValue",row.BUDAT)
+                    };
+                } else if (rows.length == 0) {
+                    $.messager.alert('警告操作！', '请至少选定一条数据进行编辑！', 'warning');
+                }
+            })
+            $("#saveUpdate").on('click',function(){
+                var entity = {
+                    ID:$('input[name="iID"]').val(),
+                    BDMNG:$('input[name="BDMNG"]').val(),
+                    CHARG:$('input[name="CHARG"]').val(),
+                    Opertation:$("#Opertation").datetimebox("getValue"),
+                    BUDAT:$("#BUDAT").datetimebox("getValue"),
+                };
+                 $.ajax({
+                    url:"/SapMatailInfoUpdate",
+                    data:entity,
+                    type:"post",
+                    success:function(res){
+                        if(res === '"OK"'){
+                            $.messager.show({
+                                title: '提示',
+                                timeout: 1000,
+                                msg: '修改成功',
+                                style: {
+                                    right: '',
+                                    top: document.body.scrollTop + document.documentElement.scrollTop,
+                                    bottom: ''
+                                }
+                            });
+                            $('#ZYPlanClassDialog').dialog('close')
+                            $("#selfTab").datagrid('reload');
+                        }
+                    },
+                    error:function(){
+                        alert("请求错误，请刷新后重试！")
+                    }
+                })
             })
             $("#synchronizationToWMS").on('click',function(){
                 var rows = $("#selfTab").datagrid('getSelections');
@@ -215,6 +416,58 @@
                     $.messager.alert('提示', "请选择要同步的物料", 'info');
                 }
             })
+            $("#Sap_Matailre").on('click',function(){
+                var rows = $("#selfTab").datagrid('getSelections');
+                if (rows.length > 0) {
+                    var jsonarray = [];
+                    $.messager.confirm('确定操作', '您确认要发送到SAP吗？', function (flag) {
+                        if (flag) {
+                            for (var i = 0; i < rows.length; i++) {
+                                jsonarray.push(rows[i].ID);
+                            }
+                            var a = JSON.stringify(jsonarray);
+                            $.ajax({
+                                url: '/Sap_Matailre',
+                                method: 'post',
+                                data: {
+                                    IDS:a
+                                },
+                                dataType:'json',
+                                success: function (data) {
+                                    if (data == "OK") {
+                                        $.messager.progress('close');
+                                        $.messager.show({
+                                            title: '提示',
+                                            timeout: 1000,
+                                            msg: '发送成功',
+                                            style: {
+                                                right: '',
+                                                top: document.body.scrollTop + document.documentElement.scrollTop,
+                                                bottom: ''
+                                            }
+                                        });
+                                        $("#selfTab").datagrid('reload');
+                                    } else {
+                                        $.messager.alert('提示', data, 'info');
+                                    }
+                                },
+                                error: function () {
+                                    alert("请求失败，请稍后重试！")
+                                }
+                            });
+                        }
+                    })
+                }else{
+                    $.messager.alert('提示', "请选择要同步的物料", 'info');
+                }
+            })
+            $("#tab").datagrid({
+                onClickRow: function (index, row) {
+                    $("#selfTab").datagrid('load',{
+                        AUFNR:row.AUFNR
+                    });
+                }
+            });
             $.extend($.fn.datagrid.defaults.editors, {
                 text: {
                     init: function(container, options){
