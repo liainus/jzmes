@@ -77,7 +77,7 @@ python-socketio==4.4.0
 pytz==2018.9
 pywin32==227
 pywin32-ctypes==0.2.0
-PyYAML==5.2
+PyYAML==5.4
 redis==3.3.8
 requests==2.23.0
 six==1.12.0
